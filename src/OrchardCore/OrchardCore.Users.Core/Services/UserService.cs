@@ -404,6 +404,7 @@ public sealed class UserService : IUserService
         var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
             .Cast<User>()
             .Where(user => user.IsEnabled)
+            .Take(2)
             .ToList();
 
         if (enabledUsersOfAdminRole.Count == 1 && user.UserName == enabledUsersOfAdminRole.First().UserName)
