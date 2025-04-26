@@ -105,7 +105,7 @@ public interface IUserService
     Task<bool> EnableAsync(IUser user);
 
     /// <summary>
-    /// Disables the given user
+    /// Disables the given user.
     /// </summary>
     /// <param name="user">The user to disable.</param>
     Task<bool> DisableAsync(IUser user);
