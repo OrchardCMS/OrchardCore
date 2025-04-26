@@ -97,4 +97,16 @@ public interface IUserService
     /// <param name="reportError">The error reported in case failure happened during the create process.</param>
     /// <returns></returns>
     Task<IUser> RegisterAsync(RegisterUserForm model, Action<string, string> reportError);
+
+    /// <summary>
+    /// Enabled the given user.
+    /// </summary>
+    /// <param name="user">The user to enable.</param>
+    Task<bool> EnableAsync(IUser user);
+
+    /// <summary>
+    /// Disables the given user.
+    /// </summary>
+    /// <param name="user">The user to disable.</param>
+    Task<bool> DisableAsync(IUser user);
 }
