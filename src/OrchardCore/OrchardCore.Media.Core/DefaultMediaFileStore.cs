@@ -170,7 +170,7 @@ public class DefaultMediaFileStore : IMediaFileStore
                 foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
                 {
                     // Creating stream disposed by using.
-                    using var creatingStream = outputStream;
+                    var creatingStream = outputStream;
 
                     // Stop disposal of inputStream, as creating stream is the object to dispose.
                     inputStream = null;
