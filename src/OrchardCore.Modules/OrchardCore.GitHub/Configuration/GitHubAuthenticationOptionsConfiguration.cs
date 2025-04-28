@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using AspNet.Security.OAuth.GitHub;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,7 +8,6 @@ using OrchardCore.GitHub.Settings;
 namespace OrchardCore.GitHub.Configuration;
 
 public class GitHubAuthenticationOptionsConfiguration :
-    IConfigureOptions<AuthenticationOptions>,
     IConfigureNamedOptions<GitHubAuthenticationOptions>
 {
     private readonly GitHubAuthenticationSettings _gitHubAuthenticationSettings;
@@ -24,29 +22,6 @@ public class GitHubAuthenticationOptionsConfiguration :
         _gitHubAuthenticationSettings = gitHubAuthenticationSettings.Value;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
-    }
-
-    public void Configure(AuthenticationOptions options)
-    {
-        if (_gitHubAuthenticationSettings == null)
-        {
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientID) ||
-            string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientSecret))
-        {
-            _logger.LogWarning("The GitHub login provider is enabled but not configured.");
-
-            return;
-        }
-
-        // Register the OpenID Connect client handler in the authentication handlers collection.
-        options.AddScheme(GitHubAuthenticationDefaults.AuthenticationScheme, builder =>
-        {
-            builder.DisplayName = GitHubAuthenticationDefaults.DisplayName;
-            builder.HandlerType = typeof(GitHubAuthenticationHandler);
-        });
     }
 
     public void Configure(string name, GitHubAuthenticationOptions options)
