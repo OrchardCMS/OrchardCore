@@ -169,8 +169,7 @@ public class DefaultMediaFileStore : IMediaFileStore
 
                 foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
                 {
-                    var creatingStream = outputStream;
-                    inputStream = null;
+                    var creatingStream = outputStream;                    
                     outputStream = null;
 
                     try
