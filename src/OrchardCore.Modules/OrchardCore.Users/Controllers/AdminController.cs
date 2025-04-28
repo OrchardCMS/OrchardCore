@@ -258,16 +258,14 @@ public sealed class AdminController : Controller
                     case UsersBulkAction.Disable:
                         if (!isSameUser && canEditUser)
                         {
-                            user.IsEnabled = false;
-                            await _userManager.UpdateAsync(user);
+                            await _userService.DisableAsync(user);
                             await _notifier.SuccessAsync(H["User {0} successfully disabled.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Enable:
                         if (!isSameUser && canEditUser)
                         {
-                            user.IsEnabled = true;
-                            await _userManager.UpdateAsync(user);
+                            await _userService.EnableAsync(user);
                             await _notifier.SuccessAsync(H["User {0} successfully enabled.", user.UserName]);
                         }
                         break;
@@ -559,6 +557,56 @@ public sealed class AdminController : Controller
         ViewData["ReturnUrl"] = returnUrl;
 
         return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Enable(string id)
+    {
+        if (await _userManager.FindByIdAsync(id) is not User user)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
+        {
+            return Forbid();
+        }
+
+        if (await _userService.EnableAsync(user))
+        {
+            await _notifier.SuccessAsync(H["User account was successfully enabled."]);
+        }
+        else
+        {
+            await _notifier.ErrorAsync(H["Could not enable the user."]);
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Disable(string id)
+    {
+        if (await _userManager.FindByIdAsync(id) is not User user)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
+        {
+            return Forbid();
+        }
+
+        if (await _userService.DisableAsync(user))
+        {
+            await _notifier.SuccessAsync(H["User account was successfully disabled."]);
+        }
+        else
+        {
+            await _notifier.ErrorAsync(H["Could not disable the user."]);
+        }
+
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
