@@ -778,7 +778,7 @@ One of the key features of Orchard Core is its multi-tenancy support. In this se
 
 In orchard core admin, go to `Configuration` -> `Features` and enable the `Tenants` feature.
 
-![Enalbe tenants feature](./images/enable-tenants.jpg)
+![Enable tenants feature](./images/enable-tenants.jpg)
 
 ## Add the first tenant
 
