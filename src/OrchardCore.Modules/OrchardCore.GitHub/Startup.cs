@@ -30,7 +30,7 @@ public sealed class GitHubLoginStartup : StartupBase
         services.AddNavigationProvider<AdminMenuGitHubLogin>();
 
         // Register the options initializers required by the GitHub Handler.
-        services.AddTransient<IConfigureOptions<AuthenticationOptions>, GitHubAuthenticationOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, AuthenticationOptionsConfiguration>();
 
         services.AddTransient<IConfigureOptions<GitHubAuthenticationOptions>, GitHubAuthenticationOptionsConfiguration>();
 

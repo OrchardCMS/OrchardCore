@@ -11,9 +11,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
 
-public class GitHubAuthenticationOptionsConfiguration :
-    IConfigureOptions<AuthenticationOptions>,
-    IConfigureNamedOptions<GitHubAuthenticationOptions>
+public class GitHubAuthenticationOptionsConfiguration : IConfigureNamedOptions<GitHubAuthenticationOptions>
 {
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -27,27 +25,6 @@ public class GitHubAuthenticationOptionsConfiguration :
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
-    }
-
-    public void Configure(AuthenticationOptions options)
-    {
-        var settings = _siteService.GetSettings<GitHubAuthenticationSettings>();
-
-        if (settings == null)
-        {
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(settings.ClientID) ||
-            string.IsNullOrWhiteSpace(settings.ClientSecret))
-        {
-            _logger.LogWarning("The GitHub login provider is enabled but not configured.");
-
-            return;
-        }
-
-        // Register the OpenID Connect client handler in the authentication handlers collection.
-        options.AddScheme<GitHubAuthenticationHandler>(GitHubAuthenticationDefaults.AuthenticationScheme, GitHubAuthenticationDefaults.DisplayName);
     }
 
     public void Configure(string name, GitHubAuthenticationOptions options)
