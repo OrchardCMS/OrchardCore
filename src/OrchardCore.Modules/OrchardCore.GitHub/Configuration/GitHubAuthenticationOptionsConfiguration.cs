@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Security.Claims;
 using AspNet.Security.OAuth.GitHub;
@@ -7,8 +6,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
+using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
 
@@ -16,25 +15,23 @@ public class GitHubAuthenticationOptionsConfiguration :
     IConfigureOptions<AuthenticationOptions>,
     IConfigureNamedOptions<GitHubAuthenticationOptions>
 {
-    private readonly IGitHubAuthenticationService _gitHubAuthenticationService;
+    private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger _logger;
 
     public GitHubAuthenticationOptionsConfiguration(
-        IGitHubAuthenticationService gitHubAuthenticationService,
+        ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<GitHubAuthenticationOptionsConfiguration> logger)
     {
-        _gitHubAuthenticationService = gitHubAuthenticationService;
+        _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
     }
 
     public void Configure(AuthenticationOptions options)
     {
-        var settings = GetGitHubAuthenticationSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = _siteService.GetSettings<GitHubAuthenticationSettings>();
 
         if (settings == null)
         {
@@ -61,12 +58,18 @@ public class GitHubAuthenticationOptionsConfiguration :
             return;
         }
 
-        var settings = GetGitHubAuthenticationSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = _siteService.GetSettings<GitHubAuthenticationSettings>();
 
         if (settings == null)
         {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(settings.ClientID) ||
+            string.IsNullOrWhiteSpace(settings.ClientSecret))
+        {
+            _logger.LogWarning("The GitHub login provider is enabled but not configured.");
+
             return;
         }
 
@@ -97,16 +100,4 @@ public class GitHubAuthenticationOptionsConfiguration :
 
     public void Configure(GitHubAuthenticationOptions options)
         => Debug.Fail("This infrastructure method shouldn't be called.");
-
-    private async Task<GitHubAuthenticationSettings> GetGitHubAuthenticationSettingsAsync()
-    {
-        var settings = await _gitHubAuthenticationService.GetSettingsAsync();
-
-        if (_gitHubAuthenticationService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
-        {
-            return null;
-        }
-
-        return settings;
-    }
 }
