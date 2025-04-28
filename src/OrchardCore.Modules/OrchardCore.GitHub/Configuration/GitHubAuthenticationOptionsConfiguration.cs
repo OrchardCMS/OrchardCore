@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Security.Claims;
 using AspNet.Security.OAuth.GitHub;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
@@ -14,29 +16,33 @@ public class GitHubAuthenticationOptionsConfiguration :
     IConfigureOptions<AuthenticationOptions>,
     IConfigureNamedOptions<GitHubAuthenticationOptions>
 {
-    private readonly GitHubAuthenticationSettings _gitHubAuthenticationSettings;
+    private readonly IGitHubAuthenticationService _gitHubAuthenticationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger _logger;
 
     public GitHubAuthenticationOptionsConfiguration(
-        IOptions<GitHubAuthenticationSettings> gitHubAuthenticationSettings,
+        IGitHubAuthenticationService gitHubAuthenticationService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<GitHubAuthenticationOptionsConfiguration> logger)
     {
-        _gitHubAuthenticationSettings = gitHubAuthenticationSettings.Value;
+        _gitHubAuthenticationService = gitHubAuthenticationService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
     }
 
     public void Configure(AuthenticationOptions options)
     {
-        if (_gitHubAuthenticationSettings == null)
+        var settings = GetGitHubAuthenticationSettingsAsync()
+            .GetAwaiter()
+            .GetResult();
+
+        if (settings == null)
         {
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientID) ||
-            string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientSecret))
+        if (string.IsNullOrWhiteSpace(settings.ClientID) ||
+            string.IsNullOrWhiteSpace(settings.ClientSecret))
         {
             _logger.LogWarning("The GitHub login provider is enabled but not configured.");
 
@@ -55,7 +61,11 @@ public class GitHubAuthenticationOptionsConfiguration :
             return;
         }
 
-        if (_gitHubAuthenticationSettings == null)
+        var settings = GetGitHubAuthenticationSettingsAsync()
+            .GetAwaiter()
+            .GetResult();
+
+        if (settings == null)
         {
             return;
         }
@@ -65,26 +75,38 @@ public class GitHubAuthenticationOptionsConfiguration :
         options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email", ClaimValueTypes.Email);
         options.ClaimActions.MapJsonKey("url", "url");
 
-        options.ClientId = _gitHubAuthenticationSettings.ClientID;
+        options.ClientId = settings.ClientID;
 
         try
         {
             options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication)
-                .Unprotect(_gitHubAuthenticationSettings.ClientSecret);
+                .Unprotect(settings.ClientSecret);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "The GitHub Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
         }
 
-        if (_gitHubAuthenticationSettings.CallbackPath.HasValue)
+        if (settings.CallbackPath.HasValue)
         {
-            options.CallbackPath = _gitHubAuthenticationSettings.CallbackPath;
+            options.CallbackPath = settings.CallbackPath;
         }
 
-        options.SaveTokens = _gitHubAuthenticationSettings.SaveTokens;
+        options.SaveTokens = settings.SaveTokens;
     }
 
     public void Configure(GitHubAuthenticationOptions options)
         => Debug.Fail("This infrastructure method shouldn't be called.");
+
+    private async Task<GitHubAuthenticationSettings> GetGitHubAuthenticationSettingsAsync()
+    {
+        var settings = await _gitHubAuthenticationService.GetSettingsAsync();
+
+        if (_gitHubAuthenticationService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
+        {
+            return null;
+        }
+
+        return settings;
+    }
 }
