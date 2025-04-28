@@ -88,13 +88,13 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
     // This is the heart of the activity and actually performs the work to be done.
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var email = GetPropertyFromContextOrForm(workflowContext, "Email");
+        var email = GetPropertyFromFormOrContext(workflowContext, "Email");
         if (string.IsNullOrWhiteSpace(email))
         {
             return Outcomes("Done", "Invalid");
         }
 
-        var userName = GetPropertyFromContextOrForm(workflowContext, "UserName") ?? email.Replace('@', '+');
+        var userName = GetPropertyFromFormOrContext(workflowContext, "UserName") ?? email.Replace('@', '+');
         var user = await CreateUserAsync(userName, email);
 
         if (user == null)
@@ -110,15 +110,22 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
         return Outcomes("Done", "Valid");
     }
 
-    private string GetPropertyFromContextOrForm(WorkflowExecutionContext context, string key)
+    private string GetPropertyFromFormOrContext(WorkflowExecutionContext context, string key)
     {
-        if (context.Properties.TryGetValue(key, out var value) && value is string strValue)
+        var form = _httpContextAccessor.HttpContext?.Request.Form;
+        var value = form?[key];
+
+        if (!string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        if (context.Properties.TryGetValue(key, out var objValue) && objValue is string strValue)
         {
             return strValue;
         }
 
-        var form = _httpContextAccessor.HttpContext?.Request.Form;
-        return form?[key];
+        return null;
     }
 
     private async Task<User> CreateUserAsync(string userName, string email)
