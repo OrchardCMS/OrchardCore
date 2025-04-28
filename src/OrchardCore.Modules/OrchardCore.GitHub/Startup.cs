@@ -39,7 +39,6 @@ public sealed class GitHubLoginStartup : StartupBase
     }
 }
 
-
 [Feature(GitHubConstants.Features.GitHubAuthentication)]
 [RequireFeatures("OrchardCore.Recipes.Core")]
 public sealed class RecipesStartup : StartupBase
