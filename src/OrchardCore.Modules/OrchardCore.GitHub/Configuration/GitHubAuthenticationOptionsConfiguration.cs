@@ -1,7 +1,9 @@
 using System.Diagnostics;
+using System.Security.Claims;
 using AspNet.Security.OAuth.GitHub;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.GitHub.Settings;
@@ -42,11 +44,7 @@ public class GitHubAuthenticationOptionsConfiguration :
         }
 
         // Register the OpenID Connect client handler in the authentication handlers collection.
-        options.AddScheme(GitHubAuthenticationDefaults.AuthenticationScheme, builder =>
-        {
-            builder.DisplayName = GitHubAuthenticationDefaults.DisplayName;
-            builder.HandlerType = typeof(GitHubAuthenticationHandler);
-        });
+        options.AddScheme<GitHubAuthenticationHandler>(GitHubAuthenticationDefaults.AuthenticationScheme, GitHubAuthenticationDefaults.DisplayName);
     }
 
     public void Configure(string name, GitHubAuthenticationOptions options)
@@ -62,15 +60,21 @@ public class GitHubAuthenticationOptionsConfiguration :
             return;
         }
 
+        options.CallbackPath = new PathString("/signin-github");
+        options.ClaimActions.MapJsonKey("name", "login");
+        options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email", ClaimValueTypes.Email);
+        options.ClaimActions.MapJsonKey("url", "url");
+
         options.ClientId = _gitHubAuthenticationSettings.ClientID;
 
         try
         {
-            options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication).Unprotect(_gitHubAuthenticationSettings.ClientSecret);
+            options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication)
+                .Unprotect(_gitHubAuthenticationSettings.ClientSecret);
         }
-        catch
+        catch (Exception ex)
         {
-            _logger.LogError("The GitHub Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
+            _logger.LogError(ex, "The GitHub Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
         }
 
         if (_gitHubAuthenticationSettings.CallbackPath.HasValue)
