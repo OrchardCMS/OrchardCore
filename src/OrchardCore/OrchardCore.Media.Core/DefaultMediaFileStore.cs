@@ -169,16 +169,21 @@ public class DefaultMediaFileStore : IMediaFileStore
 
                 foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
                 {
-                    // Creating stream disposed by using.
                     var creatingStream = outputStream;
-
-                    // Stop disposal of inputStream, as creating stream is the object to dispose.
                     inputStream = null;
-
-                    // Outputstream must be created by event handler.
                     outputStream = null;
 
-                    outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
+                    try
+                    {
+                        outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
+                    }
+                    finally
+                    {
+                        if (creatingStream != outputStream)
+                        {
+                            creatingStream.Dispose();
+                        }
+                    }
                 }
 
                 return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
