@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
@@ -22,6 +23,7 @@ public sealed class UserService : IUserService
     private readonly IEnumerable<IRegistrationFormEvents> _registrationFormEvents;
     private readonly RegistrationOptions _registrationOptions;
     private readonly ISiteService _siteService;
+    private readonly IEnumerable<IUserEventHandler> _handlers;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -34,6 +36,7 @@ public sealed class UserService : IUserService
         IEnumerable<IRegistrationFormEvents> registrationFormEvents,
         IOptions<RegistrationOptions> registrationOptions,
         ISiteService siteService,
+        IEnumerable<IUserEventHandler> handlers,
         ILogger<UserService> logger,
         IStringLocalizer<UserService> stringLocalizer)
     {
@@ -44,6 +47,7 @@ public sealed class UserService : IUserService
         _registrationFormEvents = registrationFormEvents;
         _registrationOptions = registrationOptions.Value;
         _siteService = siteService;
+        _handlers = handlers;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -369,5 +373,58 @@ public sealed class UserService : IUserService
         await _registrationFormEvents.InvokeAsync((e, user) => e.RegisteredAsync(user), user, _logger);
 
         return user;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> EnableAsync(IUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            u.IsEnabled = true;
+        }
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            var userContext = new UserContext(user);
+            await _handlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger);
+        }
+
+        return result.Succeeded;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> DisableAsync(IUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
+            .Cast<User>()
+            .Where(user => user.IsEnabled)
+            .Take(2)
+            .ToList();
+
+        if (enabledUsersOfAdminRole.Count == 1 && user.UserName == enabledUsersOfAdminRole.First().UserName)
+        {
+            return false;
+        }
+
+        if (user is User u)
+        {
+            u.IsEnabled = false;
+        }
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            var userContext = new UserContext(user);
+            await _handlers.InvokeAsync((handler, context) => handler.DisabledAsync(context), userContext, _logger);
+        }
+
+        return result.Succeeded;
     }
 }
