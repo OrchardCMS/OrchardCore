@@ -7,7 +7,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
 
-public class AuthenticationOptionsConfiguration : IConfigureOptions<AuthenticationOptions>
+internal sealed class AuthenticationOptionsConfiguration : IConfigureOptions<AuthenticationOptions>
 {
     private readonly ISiteService _siteService;
     private readonly ILogger _logger;
