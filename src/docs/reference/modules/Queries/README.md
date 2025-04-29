@@ -61,9 +61,9 @@ Executes a query with the specified name.
 
 Verbs: **POST** and **GET**
 
-| Parameter | Example | Description |
-| --------- | ---- |------------ |
-| `name` | `myQuery` | The name of the query to execute. |
+| Parameter    | Example      | Description                                             |
+|--------------|--------------|---------------------------------------------------------|
+| `name`       | `myQuery`    | The name of the query to execute.                       |
 | `parameters` | `{ size: 3}` | A Json object representing the parameters of the query. |
 
 ## GraphQL
@@ -279,8 +279,8 @@ These statements will be converted automatically based on the RDBMS in use.
 
 The SQL parser is also able to convert some specific functions to the intended dialect.
 
-| Name             | Description                        |
-| ---------------- |----------------------------------- |
+| Name             | Description                         |
+|------------------|-------------------------------------|
 | `second(_date_)` | Returns the seconds part of a date. |
 | `minute(_date_)` | Returns the minutes part of a date. |
 | `hour(_date_)`   | Returns the hours part of a date.   |
@@ -299,8 +299,8 @@ SELECT * FROM ContentItemIndex ORDER BY random()
 
 The following JavaScript functions are available with this module.
 
-| Function | Description | Signature |
-| -------- | ----------- | --------- |
+| Function       | Description                      | Signature                                                                                |
+|----------------|----------------------------------|------------------------------------------------------------------------------------------|
 | `executeQuery` | Returns the result of the query. | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
 
 ## Videos

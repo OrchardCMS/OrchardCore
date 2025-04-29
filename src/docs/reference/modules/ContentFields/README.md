@@ -147,10 +147,10 @@ Field used to display a link.
 
 #### `LinkFieldViewModel`
 
-| Property | Description                             |
-|----------|-----------------------------------------|
-| Url      | A valid URI for the href                |
-| Text     | The text to display                     |
+| Property | Description                                                                                                           |
+|----------|-----------------------------------------------------------------------------------------------------------------------|
+| Url      | A valid URI for the href                                                                                              |
+| Text     | The text to display                                                                                                   |
 | Target   | The target attribute for the anchor tag, [Target](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target) |
 
 !!! Note: By default the http and https are the only URIs permitted. In order to use other URIs like mailto and tel you must configure the [HTML Sanitizer](../Sanitizer/README.md). 
