@@ -443,9 +443,11 @@ Old workflow instances can be automatically deleted with the Trimming feature. T
 By default, the trimming background task runs once a day and removes at most 5000 workflow instances. You can change the frequency of the background task via [the `OrchardCore.BackgroundTasks` configuration](../BackgroundTasks/README.md), and the batch size via the `OrchardCore_Workflows` configuration from e.g. an `appsettings` file:
 
 ```json
-"OrchardCore_Workflows": {
-  "Trimming": {
-    "BatchSize": 1000
+{
+  "OrchardCore_Workflows": {
+    "Trimming": {
+      "BatchSize": 1000
+    }
   }
 }
 ```

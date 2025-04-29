@@ -18,9 +18,9 @@ See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us
 
 ```json
 {
-    "OrchardCore_Data_Sqlite": {
-        "UseConnectionPooling": false
-    }
+  "OrchardCore_Data_Sqlite": {
+    "UseConnectionPooling": false
+  }
 }
 ```
 
@@ -51,11 +51,14 @@ services.Configure<YesSqlOptions>(options =>
 You may configure `CommandsPageSize`, `QueryGatingEnabled`, and `EnableThreadSafetyChecks` options using a configuration provider like `appsettings.json` using the following
 
 ```json
-"OrchardCore_YesSql": {
+{
+  "OrchardCore_YesSql": {
     "CommandsPageSize": 500,
     "QueryGatingEnabled": true,
     "EnableThreadSafetyChecks": false
-},
+  }
+}
+```
 
 ## Database table
 
@@ -70,10 +73,12 @@ The following database table settings, only used as presets before a given tenan
 #### Configuration Source (ex., `appsettings.json`)
 
 ```json
-"OrchardCore_Data_TableOptions": {
+{
+  "OrchardCore_Data_TableOptions": {
     "DefaultDocumentTable": "Document",
     "DefaultTableNameSeparator": "_",
     "DefaultIdentityColumnSize": "Int64"
+  }
 }
 ```
 
