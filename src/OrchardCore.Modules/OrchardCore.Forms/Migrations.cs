@@ -117,6 +117,9 @@ public sealed class Migrations : DataMigration
             .WithPart("TextAreaPart", part => part
                 .WithPosition("4")
             )
+            .WithPart("FormElementValidationPart", part => part
+                .WithPosition("5")
+            )
             .WithPart("FormInputElementVisibilityPart", part => part
                 .WithPosition("6")
             )
