@@ -238,7 +238,8 @@ public sealed class AdminController : Controller
                     {
                         var mediaFilePath = _mediaFileStore.Combine(path, fileName);
                         stream = file.OpenReadStream();
-                        mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+                        var (outputPath, outputStream) = await _mediaFileStore.CreateMediaFileFromStreamAsync(mediaFilePath, stream);
+                        mediaFilePath = outputPath;
 
                         var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 

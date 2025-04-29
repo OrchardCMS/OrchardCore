@@ -72,7 +72,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
                 if (stream != null)
                 {
-                    await _mediaFileStore.CreateFileFromStreamAsync(file.TargetPath, stream, true);
+                    await _mediaFileStore.CreateMediaFileFromStreamAsync(file.TargetPath, stream, true);
                 }
             }
             finally

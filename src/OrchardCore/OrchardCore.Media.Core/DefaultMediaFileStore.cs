@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -155,11 +156,17 @@ public class DefaultMediaFileStore : IMediaFileStore
 
     public virtual async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
     {
+        var (outputPath, outputStream) = await CreateMediaFileFromStreamAsync(path, inputStream);
+        return outputPath;
+    }
+
+    public virtual async Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+    {
+        string resultPath = path;
+        Stream resultStream = inputStream; // Default to the original inputStream
+
         if (_mediaCreatingEventHandlers.Any())
         {
-            // Follows https://rules.sonarsource.com/csharp/RSPEC-3966
-            // Assumes that each stream should be disposed of only once by it's caller.
-            var outputStream = inputStream;
             try
             {
                 var context = new MediaCreatingContext
@@ -167,43 +174,62 @@ public class DefaultMediaFileStore : IMediaFileStore
                     Path = path,
                 };
 
+                // Iterate through all media creating event handlers
                 foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
                 {
-                    var creatingStream = outputStream;                    
-                    outputStream = null;
+                    Stream creatingStream = resultStream;
+                    resultStream = null;
 
                     try
                     {
-                        outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
+                        // Allow the handler to modify the stream
+                        resultStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
                     }
                     catch
                     {
-                        outputStream = creatingStream;
+                        // If an exception occurs, preserve the original stream
+                        resultStream = creatingStream;
                     }
                     finally
                     {
-                        if (creatingStream != outputStream)
+                        // Dispose of the old stream if it was replaced
+                        if (creatingStream != resultStream)
                         {
                             creatingStream.Dispose();
                         }
                     }
                 }
 
-                return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
+                // Create the file in the file store using the final resultStream
+                resultPath = await _fileStore.CreateFileFromStreamAsync(context.Path, resultStream, overwrite);
             }
-            finally
+            catch
             {
-                if (inputStream != outputStream)
-                {
-                    inputStream = outputStream;                    
-                }                      
+                // If an exception occurs, ensure the resultStream is reset to the inputStream
+                resultStream = inputStream;
             }
         }
         else
         {
-            return await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+            try
+            {
+                // If no handlers are present, directly create the file
+                resultPath = await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+            }
+            catch
+            {
+                // If an exception occurs, ensure the resultStream is reset to the inputStream
+                resultStream = inputStream;
+            }
         }
+
+        // Return the final path and the final resultStream (modified or original)
+        return (resultPath, resultStream);
     }
+
+
+
+
 
     public virtual string MapPathToPublicUrl(string path)
     {
