@@ -18,10 +18,15 @@ When debugging or executing locally, developers have several options for authent
 In addition, you will need to specify the name of your Azure Key Vault and optionally a reload interval in seconds.
 
 ```json
-"OrchardCore_KeyVault_Azure": {
-    "KeyVaultName": "", // Set the name of your Azure Key Vault (not required if you are adding VaultURI).
-    "VaultURI": "", // Set the Vault URI of your Azure Key Vault (not required if you are adding KeyVaultName).
-    "ReloadInterval": "" // Optional, sets the timespan to wait between attempts at polling the Azure KeyVault for changes. Leave blank to disable reloading.
+{
+  "OrchardCore_KeyVault_Azure": {
+    "KeyVaultName": "",
+    // Set the name of your Azure Key Vault (not required if you are adding VaultURI).
+    "VaultURI": "",
+    // Set the Vault URI of your Azure Key Vault (not required if you are adding KeyVaultName).
+    "ReloadInterval": ""
+    // Optional, sets the timespan to wait between attempts at polling the Azure KeyVault for changes. Leave blank to disable reloading.
+  }
 }
 ```
 

@@ -15,10 +15,12 @@ More information about health checks in ASP.NET Core can be found here: <https:/
 The following configurations are available and can be customized:
 
 ```json
-    "OrchardCore_HealthChecks": {
-      "Url": "/health/live",
-      "ShowDetails": true
-    },
+{
+  "OrchardCore_HealthChecks": {
+    "Url": "/health/live",
+    "ShowDetails": true
+  }
+}
 ```
 
 The supported extensions described as following:
