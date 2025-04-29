@@ -72,7 +72,8 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
                 if (stream != null)
                 {
-                    await _mediaFileStore.CreateMediaFileFromStreamAsync(file.TargetPath, stream, true);
+                    var (outputPath, outputStream) = await _mediaFileStore.CreateMediaFileFromStreamAsync(file.TargetPath, stream, true);
+                    stream = outputStream; // Use the stream returned by the file store, which may be different from the original input stream.
                 }
             }
             finally
