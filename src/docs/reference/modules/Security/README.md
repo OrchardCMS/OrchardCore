@@ -23,11 +23,15 @@ The `OrchardCore.Security` module allows the user to use configuration values to
 The following configuration values can be customized:
 
 ```json
-    "OrchardCore_Security": {
-      "ContentSecurityPolicy": {},
-      "PermissionsPolicy": { "fullscreen": "self" },
-      "ReferrerPolicy": "no-referrer"
-    }
+{
+  "OrchardCore_Security": {
+    "ContentSecurityPolicy": {},
+    "PermissionsPolicy": {
+      "fullscreen": "self"
+    },
+    "ReferrerPolicy": "no-referrer"
+  }
+}
 ```
 
 For more information please refer to [Configuration](../Configuration/README.md).

@@ -12,12 +12,12 @@ Here is a sample step:
   "steps":[
     {
       "name":"lucene-index",
-      "Indices":[
+      "Indices": [
         {
-          "Search":{
-            "AnalyzerName":"standardanalyzer",
-            "IndexLatest":false,
-            "IndexedContentTypes":[
+          "Search": {
+            "AnalyzerName": "standardanalyzer",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
               "Article",
               "BlogPost"
             ]
