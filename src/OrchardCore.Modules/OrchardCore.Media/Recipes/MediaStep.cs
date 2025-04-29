@@ -45,6 +45,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
             }
 
             Stream stream = null;
+            HttpResponseMessage response = null;
 
             try
             {
@@ -62,7 +63,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
                 {
                     var httpClient = _httpClientFactory.CreateClient();
 
-                    var response = await httpClient.GetAsync(file.SourceUrl);
+                    response = await httpClient.GetAsync(file.SourceUrl);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -73,7 +74,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
                 if (stream != null)
                 {
                     var (outputPath, outputStream) = await _mediaFileStore.CreateMediaFileFromStreamAsync(file.TargetPath, stream, true);
-                    stream = outputStream; // Use the stream returned by the file store, which may be different from the original input stream.
+                    await outputStream.DisposeAsync();
                 }
             }
             finally
@@ -81,6 +82,12 @@ public sealed class MediaStep : NamedRecipeStepHandler
                 if (stream != null)
                 {
                     await stream.DisposeAsync();
+                }
+
+                // Dispose the HttpResponseMessage if it exists
+                if (response != null)
+                {
+                    response.Dispose();
                 }
             }
         }
