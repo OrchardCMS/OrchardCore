@@ -64,11 +64,11 @@ You may configure `CommandsPageSize`, `QueryGatingEnabled`, and `EnableThreadSaf
 
 The following database table settings, only used as presets before a given tenant is setup, can be provided from any configuration source.
 
-| Setting | Description |
-| --- | --- |
-| `DefaultDocumentTable` | Document table name, defaults to 'Document'. |
+| Setting                     | Description                                                                            |
+|-----------------------------|----------------------------------------------------------------------------------------|
+| `DefaultDocumentTable`      | Document table name, defaults to 'Document'.                                           |
 | `DefaultTableNameSeparator` | Table name separator, one or multiple '_', "NULL" means no separator, defaults to '_'. |
-| `DefaultIdentityColumnSize` | Identity column size, 'Int32' or 'Int64', defaults to 'Int64'. |
+| `DefaultIdentityColumnSize` | Identity column size, 'Int32' or 'Int64', defaults to 'Int64'.                         |
 
 #### Configuration Source (ex., `appsettings.json`)
 
