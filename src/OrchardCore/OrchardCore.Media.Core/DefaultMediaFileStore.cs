@@ -191,6 +191,8 @@ public class DefaultMediaFileStore : IMediaFileStore
                     }
                     catch
                     {
+                        // If an exception occurs, preserve the original stream
+                        resultStream = creatingStream;
                     }
                     finally
                     {
