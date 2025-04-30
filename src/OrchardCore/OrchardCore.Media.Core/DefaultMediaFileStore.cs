@@ -164,7 +164,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         return outputPath;
     }
 
-    public virtual async Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+    public async Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
     {
         string resultPath = path;
         Stream resultStream = inputStream; // Default to the original inputStream
