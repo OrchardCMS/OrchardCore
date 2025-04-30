@@ -80,7 +80,6 @@
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.13.0" />
   </ItemGroup>
-
   <!-- These versions are used for tansitive dependency forced upgrades only. E.g. when a package references a vulnerable version. -->
   <!-- To list all vulnerable direct references run 'dotnet list package -vulnerable' (use double dash, just XML comments can't contain it) -->
   <!-- To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it) -->
@@ -128,6 +127,7 @@
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
   <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
+    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="9.2.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.4" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.4" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.4" />
@@ -139,7 +139,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.4" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.4" />
-
+    
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.4.0" />
 
@@ -148,6 +148,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="8.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.15" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.15" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.15" />
@@ -159,10 +160,10 @@
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="8.0.15" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.15" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="8.0.15" />
-
+    
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
-
+    
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
   </ItemGroup>

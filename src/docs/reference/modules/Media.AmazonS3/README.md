@@ -252,7 +252,7 @@ The following configuration values are used by default and can be customized:
       "CreateBucket": true,
       "RemoveBucket": true, // Whether the 'Bucket' is deleted if the tenant is removed, false by default.
       "BucketName": "imagesharp" // Set the bucket's name (mandatory).
-    },
+    }
   }
 }
 ```

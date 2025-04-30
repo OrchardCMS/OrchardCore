@@ -27,7 +27,7 @@ Orchard Core stores all Configuration data under the `OrchardCore` section in `a
 ```json
 {
   "OrchardCore": {
-      ... module configurations ...
+      // module configurations
   }
 }
 ```
@@ -38,7 +38,7 @@ Each Orchard Core module has its own configuration section under the `OrchardCor
 {
   "OrchardCore": {
     "OrchardCore_Media": {
-      ... individual module configuration ...
+       // individual module configuration
     }
   }
 }
@@ -76,7 +76,7 @@ without having to provide a state value.
   "OrchardCore": {
     "Default": {
       "OrchardCore_Media": {
-        ... specific tenant configuration ...
+         // specific tenant configuration
       }
     }
   }
@@ -172,7 +172,7 @@ Additionally these `appsettings.json` files do not need the `OrchardCore` sectio
 ```json
 {
   "OrchardCore_Media": {
-    ... specific tenant configuration ...
+     // specific tenant configuration
   }
 }
 ```
