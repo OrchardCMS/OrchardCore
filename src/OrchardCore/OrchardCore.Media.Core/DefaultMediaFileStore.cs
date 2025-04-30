@@ -157,6 +157,10 @@ public class DefaultMediaFileStore : IMediaFileStore
     public virtual async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
     {
         var (outputPath, outputStream) = await CreateMediaFileFromStreamAsync(path, inputStream);
+        if (inputStream != outputStream)
+        {
+            await outputStream.DisposeAsync();
+        }
         return outputPath;
     }
 
@@ -187,8 +191,6 @@ public class DefaultMediaFileStore : IMediaFileStore
                     }
                     catch
                     {
-                        // If an exception occurs, preserve the original stream
-                        resultStream = creatingStream;
                     }
                     finally
                     {
@@ -205,8 +207,6 @@ public class DefaultMediaFileStore : IMediaFileStore
             }
             catch
             {
-                // If an exception occurs, ensure the resultStream is reset to the inputStream
-                resultStream = inputStream;
             }
         }
         else
@@ -218,18 +218,12 @@ public class DefaultMediaFileStore : IMediaFileStore
             }
             catch
             {
-                // If an exception occurs, ensure the resultStream is reset to the inputStream
-                resultStream = inputStream;
             }
         }
 
         // Return the final path and the final resultStream (modified or original)
         return (resultPath, resultStream);
     }
-
-
-
-
 
     public virtual string MapPathToPublicUrl(string path)
     {

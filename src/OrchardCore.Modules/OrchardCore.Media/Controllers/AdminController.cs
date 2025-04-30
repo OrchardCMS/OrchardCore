@@ -256,7 +256,15 @@ public sealed class AdminController : Controller
                         // that would be wasteful.
                         try
                         {
-                            stream.Position = 0;
+                            if (stream.CanSeek)
+                            {
+                                stream.Position = 0;
+                            }
+                            else
+                            {
+                                await stream.DisposeAsync();
+                                stream = null;
+                            }
                         }
                         catch (ObjectDisposedException)
                         {
