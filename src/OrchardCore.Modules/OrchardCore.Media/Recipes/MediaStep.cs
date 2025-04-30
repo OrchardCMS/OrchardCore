@@ -46,6 +46,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
             Stream stream = null;
             HttpResponseMessage response = null;
+            (string outputPath, Stream outputStream)? output = null;
 
             try
             {
@@ -73,8 +74,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
                 if (stream != null)
                 {
-                    var (outputPath, outputStream) = await _mediaFileStore.CreateMediaFileFromStreamAsync(file.TargetPath, stream, true);
-                    await outputStream.DisposeAsync();
+                    output = await _mediaFileStore.CreateMediaFileFromStreamAsync(file.TargetPath, stream, true);                    
                 }
             }
             finally
@@ -88,6 +88,11 @@ public sealed class MediaStep : NamedRecipeStepHandler
                 if (response != null)
                 {
                     response.Dispose();
+                }
+
+                if (output?.outputStream != null)
+                {
+                    await output.Value.outputStream.DisposeAsync();
                 }
             }
         }
