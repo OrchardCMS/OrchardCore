@@ -1,6 +1,6 @@
 namespace OrchardCore.Forms.Models;
 
-public class FormVisibilityRule
+public sealed class FormVisibilityRule
 {
     public string Field { get; set; }
 
