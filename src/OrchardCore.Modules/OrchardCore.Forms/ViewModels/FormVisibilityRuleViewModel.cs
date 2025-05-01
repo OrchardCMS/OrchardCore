@@ -5,7 +5,7 @@ namespace OrchardCore.Forms.ViewModels;
 
 public class FormVisibilityRuleViewModel
 {
-    public string Field { get; set; } = "";
+    public string Field { get; set; }
 
     public string Operator { get; set; }
 
