@@ -6,7 +6,7 @@ public class FormInputElementVisibilityDisplayViewModel
 {
     public string ElementName { get; set; }
 
-    public FormVisibilityAction Action { get; set; } = FormVisibilityAction.None;
+    public FormVisibilityAction Action { get; set; }
 
     public IEnumerable<FormVisibilityRuleGroupDisplayViewModel> Groups { get; set; }
 }
