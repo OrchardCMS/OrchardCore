@@ -177,7 +177,7 @@ public sealed class Migrations : DataMigration
             .Stereotype("Widget"));
 
         // Shortcut other migration steps on new content definition schemas.
-        return 6;
+        return 5;
     }
 
     // This code can be removed in a later version.
