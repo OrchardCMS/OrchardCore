@@ -23,7 +23,7 @@ Creating a form typically involves the following steps:
 
 ### Configuring Form Visibility
 
-Once your form’s basic structure is in place, you can enhance it with conditional visibility rules:
+Once your form’s basic structure is in place, you can enhance it with conditional visibility rules. These allow you to hide or show certain failed based on the values of other fields. For example, ...
 
 1. In the **Form editor**, select the input widget you want to control and expand its **Visibility Settings** pane.  
 2. Choose an **Action**:
