@@ -33,7 +33,7 @@ Once your form’s basic structure is in place, you can enhance it with conditio
 3. Build one or more rule groups:
    1. Click **New Group**.  
    2. Within that group, click **New Rule** and configure each rule:
-      - **Field** – the input to observe (e.g. `MembershipType`)  
+      - **Field** – the input to observe (e.g. `MembershipType`). Note that fields will only be listed if you save the form after adding them.
       - **Operator** – how to compare (e.g. `Contains`)  
       - **Value** – the comparison target (e.g. `Premium`)  
    3. **Rule logic** within a group is combined with **AND**: all rules in the same group must pass.  
