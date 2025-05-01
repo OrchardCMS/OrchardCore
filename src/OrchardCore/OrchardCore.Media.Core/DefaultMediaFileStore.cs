@@ -193,10 +193,8 @@ public class DefaultMediaFileStore : IMediaFileStore
             }
             finally
             {
-                if (inputStream != outputStream)
-                {
-                    inputStream = outputStream;                    
-                }                      
+                // This disposes the last outputStream.
+                outputStream?.Dispose();
             }
         }
         else
