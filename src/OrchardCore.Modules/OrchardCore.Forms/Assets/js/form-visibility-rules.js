@@ -7,7 +7,9 @@ window.formVisibilityGroupRules = (function () {
             return;
         }
 
-        if (inputElement.type.toLowerCase() === 'checkbox' || inputElement.type.toLowerCase() === 'radio') {
+        const inputType = inputElement.type.toLowerCase();
+
+        if (inputType === 'checkbox' || inputType === 'radio') {
             inputElement.setAttribute('data-default-value', inputElement.checked ? 'on' : 'off');
         } else {
             inputElement.setAttribute('data-default-value', inputElement.value);
@@ -147,13 +149,15 @@ window.formVisibilityGroupRules = (function () {
                     return;
                 }
 
-                if (fieldElement.type.toLowerCase() === 'radio') {
+                const fieldType = fieldElement.type.toLowerCase();
+
+                if (fieldType === 'radio') {
 
                     var selectedRadio = document.querySelector('input[name="' + rule.field + '"]:checked');
 
                     fieldValue = selectedRadio ? selectedRadio.value : '';
 
-                } else if (fieldElement.type.toLowerCase() === 'checkbox') {
+                } else if (fieldType === 'checkbox') {
 
                     const findCheckboxes = `input[name="${rule.field}"]`;
 
