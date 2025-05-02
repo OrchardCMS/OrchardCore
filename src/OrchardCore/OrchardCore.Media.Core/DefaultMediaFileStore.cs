@@ -169,7 +169,11 @@ public class DefaultMediaFileStore : IMediaFileStore
 
                 foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
                 {
-                    var creatingStream = outputStream;                    
+                    var creatingStream = outputStream;
+                    // Stop disposal of inputStream, as creating stream is the object to dispose.
+                    inputStream = null;
+
+                    // Outputstream must be created by event handler.
                     outputStream = null;
 
                     try
