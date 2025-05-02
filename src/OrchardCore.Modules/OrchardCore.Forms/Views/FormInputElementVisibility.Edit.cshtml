@@ -30,7 +30,8 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () =>
+    {
         const flowWidgetObserver = new MutationObserver(mutationsList => {
             for (const mutation of mutationsList) {
                 if (mutation.type === 'childList') {
@@ -39,19 +40,17 @@
                             const containers = node.matches('.main-group-container')
                                 ? [node]
                                 : [...node.querySelectorAll('.main-group-container')];
+
                             processContainers(containers);
                         }
                     });
                 }
             }
-            document.querySelectorAll('.main-group-container')
-                    .forEach(container => actionVisibilitySettings(container));
+            document.querySelectorAll('.main-group-container').forEach(container =>
+                actionVisibilitySettings(container));
         });
 
-        flowWidgetObserver.observe(document.body, {
-            childList: true,
-            subtree:   true
-        });
+        flowWidgetObserver.observe(document.body, { childList: true, subtree:   true });
 
         Vue.config.productionTip = false;
         Vue.config.devtools = false;
@@ -59,6 +58,7 @@
         const containers = [...document.querySelectorAll('.main-group-container')];
 
         processContainers(containers);
+
     });
 
     function initializeOrUpdateVue(container) {
@@ -89,13 +89,15 @@
 
         var actionElement = document.querySelector('select[name="' + findPrefix + '"]');
 
-        if (!actionElement) return;
+        if (!actionElement) {
+            return;
+        }
 
-        var visibilityContainer = document.querySelector(
-            '.input-visibility-settings[data-prefix="' + prefix + '"]'
-        );
+        var visibilityContainer = document.querySelector('.input-visibility-settings[data-prefix="' + prefix + '"]');
 
-        if (!visibilityContainer) return;
+        if (!visibilityContainer) {
+            return;
+        }
 
         actionElement.addEventListener("change", function(e) {
             if (e.target.value === "None") {
