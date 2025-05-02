@@ -260,57 +260,69 @@ window.formVisibilityGroupRules = (function () {
             return false;
         }
 
-        var lowerInputValue = inputValue ? inputValue.trim().toLowerCase() : '';
+        var rawInputValue = inputValue ? inputValue.trim() : '';
+        var rawRuleValue = rule.value ? rule.value.trim() : '';
 
-        var lowerRuleValue = rule.value ? rule.value.trim().toLowerCase() : '';
+        var inputNumber = getNumeric(rawInputValue);
+        var ruleNumber = getNumeric(rawRuleValue);
 
         switch (rule.operator) {
+
             case 'Is':
-                return lowerInputValue === lowerRuleValue;
+                if (!isNaN(inputNumber) && !isNaN(ruleNumber)) {
+                    return inputNumber === ruleNumber;
+                }
+                return rawInputValue === rawRuleValue;
 
             case 'IsNot':
-                return lowerInputValue !== lowerRuleValue;
+                if (!isNaN(inputNumber) && !isNaN(ruleNumber)) {
+                    return inputNumber !== ruleNumber;
+                }
+                return rawInputValue !== rawRuleValue;
 
             case 'Contains':
-                return lowerInputValue.includes(lowerRuleValue);
+                return rawInputValue.includes(rawRuleValue);
 
             case 'DoesNotContain':
-                return !lowerInputValue.includes(lowerRuleValue);
+                return !rawInputValue.includes(rawRuleValue);
 
             case 'StartsWith':
-                return lowerInputValue.startsWith(lowerRuleValue);
+                return rawInputValue.startsWith(rawRuleValue);
 
             case 'EndsWith':
-                return lowerInputValue.endsWith(lowerRuleValue);
+                return rawInputValue.endsWith(rawRuleValue);
 
             case 'GreaterThan':
-                var numberInputValue = parseFloat(inputValue);
-                var numberRuleValue = parseFloat(rule.value);
-
-                if (!isNaN(numberInputValue) && !isNaN(numberRuleValue)) {
-                    return numberInputValue > numberRuleValue;
+                if (!isNaN(inputNumber) && !isNaN(ruleNumber)) {
+                    return inputNumber > ruleNumber;
                 }
-                return inputValue > rule.value;
+                return false;
 
             case 'LessThan':
-                var numberInputValue = parseFloat(inputValue);
-                var numberRuleValue = parseFloat(rule.value);
-
-                if (!isNaN(numberInputValue) && !isNaN(numberRuleValue)) {
-                    return numberInputValue < numberRuleValue;
+                if (!isNaN(inputNumber) && !isNaN(ruleNumber)) {
+                    return inputNumber < ruleNumber;
                 }
-                return inputValue < rule.value;
+                return false;
 
             case 'Empty':
-                return lowerInputValue === '';
+                return rawInputValue === '';
 
             case 'NotEmpty':
-                return lowerInputValue !== '';
+                return rawInputValue !== '';
 
             default:
                 console.warn(`validateRule: Unknown operator "${rule.operator}" in rule`, rule);
                 return false;
         }
+    }
+
+    function getNumeric(value) {
+
+        var cleaned = (value || '').trim().replace(/,/g, '.');
+
+        var result = parseFloat(cleaned);
+
+        return result;
     }
 
     return {

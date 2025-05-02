@@ -13,28 +13,25 @@
     </div>
 </div>
 
-<div class="input-visibility-settings" data-prefix="@Html.NameForModel()">
+<div class="input-visibility-settings d-none" data-prefix="@Html.NameForModel()">
     <div class="main-group-container"
-         data-groups='@Html.Raw(JsonSerializer.Serialize(Model.Groups ?? [], JOptions.CamelCaseIndented))'
          data-prefix="@Html.NameForModel()"
-         data-operator-options='@Html.Raw(JsonSerializer.Serialize(Model.Operators ?? [], JOptions.CamelCaseIndented))'>
+         data-model="@JsonSerializer.Serialize(Model, JOptions.CamelCase)">
     </div>
 </div>
 
-<script asp-name="form-visibility" asp-src="/OrchardCore.Forms/Scripts/form-visibility.min.js" debug-src="/OrchardCore.Forms/Scripts/form-visibility.js" at="Foot" depends-on="vuejs:2"></script>
+<script asp-name="form-visibility" asp-src="~/OrchardCore.Forms/Scripts/form-visibility.min.js" debug-src="~/OrchardCore.Forms/Scripts/form-visibility.js" at="Foot" depends-on="vuejs:2"> </script>
 
 <script at="Foot" asp-name="InitializeGroups">
-
     function processContainers(containers) {
         containers.forEach(container => {
             initializeOrUpdateVue(container);
-            actionVisibilitySettings(container)
+            actionVisibilitySettings(container);
         });
     }
 
-    document.addEventListener('DOMContentLoaded', () =>
-    {
-        const flowWidgetObserver = new MutationObserver(function (mutationsList) {
+    document.addEventListener('DOMContentLoaded', () => {
+        const flowWidgetObserver = new MutationObserver(mutationsList => {
             for (const mutation of mutationsList) {
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach(node => {
@@ -42,53 +39,63 @@
                             const containers = node.matches('.main-group-container')
                                 ? [node]
                                 : [...node.querySelectorAll('.main-group-container')];
-
-                        processContainers(containers);
+                            processContainers(containers);
                         }
                     });
                 }
             }
-            document.querySelectorAll('.main-group-container').forEach(container => actionVisibilitySettings(container));
+            document.querySelectorAll('.main-group-container')
+                    .forEach(container => actionVisibilitySettings(container));
         });
 
-        flowWidgetObserver.observe(document.body, { childList: true, subtree: true });
+        flowWidgetObserver.observe(document.body, {
+            childList: true,
+            subtree:   true
+        });
 
         Vue.config.productionTip = false;
         Vue.config.devtools = false;
 
         const containers = [...document.querySelectorAll('.main-group-container')];
-        processContainers(containers);
 
+        processContainers(containers);
     });
 
     function initializeOrUpdateVue(container) {
+
+        var rawConfig = container.getAttribute('data-model');
+
+        var cfg = JSON.parse(rawConfig);
+
         formVisibilityGroups.initialize({
             appElementSelector: container,
-            prefix: container.getAttribute('data-prefix'),
-            widgetId: container.getAttribute('data-prefix'),
-            groupOptions: JSON.parse(container.getAttribute('data-groups') || '{}'),
-            operatorOptions: JSON.parse(container.getAttribute('data-operator-options') || '{}'),
+            prefix:             container.getAttribute('data-prefix'),
+            widgetId:           container.getAttribute('data-prefix'),
+            groupOptions:       cfg.groups    || [], // lower‑camel matches serialized JSON
+            operatorOptions:    cfg.operators || []
         });
     }
 
     function actionVisibilitySettings(container) {
-        // Get the data-prefix from the container.
+
         var prefix = container.getAttribute('data-prefix');
+
         if (!prefix) {
-            console.log("No data-prefix found on container. Exiting.", prefix);
+            console.log("No data-prefix found; exiting.");
             return;
         }
-        // Build the select element's expected name.
+
         var findPrefix = prefix + ".Action";
+
         var actionElement = document.querySelector('select[name="' + findPrefix + '"]');
-        if (!actionElement) {
-            return;
-        }
-        // Get the visibility container tied to this instance only by matching its data-prefix.
-        var visibilityContainer = document.querySelector('.input-visibility-settings[data-prefix="' + prefix + '"]');
-        if (!visibilityContainer) {
-            return;
-        }
+
+        if (!actionElement) return;
+
+        var visibilityContainer = document.querySelector(
+            '.input-visibility-settings[data-prefix="' + prefix + '"]'
+        );
+
+        if (!visibilityContainer) return;
 
         actionElement.addEventListener("change", function(e) {
             if (e.target.value === "None") {
@@ -97,7 +104,7 @@
                 visibilityContainer.classList.remove("d-none");
             }
         });
+
         actionElement.dispatchEvent(new Event("change", { bubbles: true }));
     }
-
 </script>
