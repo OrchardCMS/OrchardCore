@@ -8979,3 +8979,15 @@ textarea.form-control.input-validation-error {
   background-color: var(--bs-gray-900);
   border-color: var(--bs-gray-900);
 }
+
+.list-group .first-child-visible {
+    border-top: var(--bs-border-width) solid var(--bs-border-color) !important;
+    border-top-left-radius: var(--bs-border-radius) !important;
+    border-top-right-radius: var(--bs-border-radius) !important;
+}
+
+.list-group .last-child-visible {
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color) !important;
+    border-bottom-left-radius: var(--bs-border-radius) !important;
+    border-bottom-right-radius: var(--bs-border-radius) !important;
+}
