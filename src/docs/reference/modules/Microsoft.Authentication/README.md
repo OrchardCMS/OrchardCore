@@ -102,12 +102,14 @@ The `OrchardCore.Microsoft.Authentication` module allows the user to use configu
 The following configuration values can be customized:
 
 ```json
-    "OrchardCore_Microsoft_Authentication_MicrosoftAccount": {
-      "AppId": "",
-      "AppSecret": "",
-      "CallbackPath": "/signin-microsoft",
-      "SaveTokens": false
-    }
+{
+  "OrchardCore_Microsoft_Authentication_MicrosoftAccount": {
+    "AppId": "",
+    "AppSecret": "",
+    "CallbackPath": "/signin-microsoft",
+    "SaveTokens": false
+  }
+}
 ```
 
 ```json

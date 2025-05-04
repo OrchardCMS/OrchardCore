@@ -15,7 +15,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 | Parameter          | Description                                                                              |
 |--------------------|------------------------------------------------------------------------------------------|
 | `Name`             | The name of your Shortcode, without brackets.                                            |
-| `Hint`             | The hint to display for your Shortcode.                                                  
+| `Hint`             | The hint to display for your Shortcode.                                                  |
 | `Usage`            | An html string to describe the usage and arguments for your Shortcode.                   |
 | `Categories`       | The categories your Shortcode falls under.                                               |
 | `Return Shortcode` | The Shortcode value to return from the Shortcode picker when selected. Defaults to Name. |
@@ -26,7 +26,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 | Parameter | Description                                                                          |
 |-----------|--------------------------------------------------------------------------------------|
 | `Args`    | The arguments provided the user, if any.                                             |
-| `Content` | The inner content provided by the user, if any.                                      
+| `Content` | The inner content provided by the user, if any.                                      |
 | `Context` | The context made available to the Shortcode from the caller, e.g. an `HtmlBodyPart`. |
 
 ### Example Shortcode Templates

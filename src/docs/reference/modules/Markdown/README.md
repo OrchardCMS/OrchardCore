@@ -138,9 +138,11 @@ To disable sanitization:
 The following configuration values are used by default and can be customized:
 
 ```json
-    "OrchardCore_Markdown": {
-      "Extensions": "nohtml+advanced"
-    }
+{
+  "OrchardCore_Markdown": {
+    "Extensions": "nohtml+advanced"
+  }
+}
 ```
 
 The supported extensions described as following:
