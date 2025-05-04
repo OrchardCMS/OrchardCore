@@ -46,7 +46,7 @@
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="ncrontab" Version="3.3.3" />
-    <PackageVersion Include="NJsonSchema" Version="11.2.0" />
+    <PackageVersion Include="NJsonSchema" Version="11.3.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.4.0" />
     <PackageVersion Include="NodaTime" Version="3.2.2" />
     <PackageVersion Include="OpenIddict.Core" Version="6.2.1" />
@@ -67,7 +67,7 @@
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
     <PackageVersion Include="xunit.v3" Version="2.0.2" />
     <PackageVersion Include="xunit.analyzers" Version="1.21.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.0" />
     <PackageVersion Include="YesSql" Version="5.3.0" />
     <PackageVersion Include="YesSql.Abstractions" Version="5.3.0" />
     <PackageVersion Include="YesSql.Core" Version="5.3.0" />
@@ -129,7 +129,7 @@
   <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
   
   <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
-    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="9.2.0" />
+    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="9.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.4" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.4" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.4" />
