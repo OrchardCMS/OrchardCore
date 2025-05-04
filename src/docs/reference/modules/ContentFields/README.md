@@ -5,7 +5,7 @@ This module provides common content fields for capturing data in Orchard Core. F
 !!! note
     While the UI allows adding fields directly to content types, behind the scenes it creates a content part with the same name as the content type and attaches the fields to it.
 
-Fields support multiple editors - different UIs for data input. For example, a TextField can have editors like `Email`, `TextArea`, or `Tel`. Editors can be configured in the field settings.
+Fields support multiple editors — different UIs for data input. For example, a TextField can have editors like `Email`, `TextArea`, or `Tel`. Editors can be configured in the field settings.
 
 ## Available Fields
 
