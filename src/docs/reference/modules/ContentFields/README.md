@@ -223,7 +223,7 @@ per set based on the request culture, if no culture is specified.
     }
     ```
 
-### `UserPicker Field`
+### `UserPickerField`
 
 The User Picker field allows you to relate users to a content item.
 
