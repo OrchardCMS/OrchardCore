@@ -150,7 +150,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="8.3.0" />
+    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="9.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.15" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.15" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.15" />
