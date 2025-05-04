@@ -128,7 +128,7 @@ Some view models have special properties that are computed from the actual field
 | Target   | Anchor target attribute                 |
 
 !!! note
-    Only http/https URIs allowed by default. Configure [HTML Sanitizer](../Sanitizer/README.md) for mailto/tel.
+    Only http/https URIs allowed by default. Configure [HTML Sanitizer](../Sanitizer/README.md) for `mailto`/`tel`.
 
 #### Example
 === "Liquid"
