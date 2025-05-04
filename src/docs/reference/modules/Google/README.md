@@ -64,12 +64,14 @@ The `OrchardCore.Google` module allows the user to use configuration values to o
 The following configuration values can be customized:
 
 ```json
-    "OrchardCore_Google": {
-      "ClientID": "",
-      "ClientSecret": "",
-      "CallbackPath": "/signin-google",
-      "SaveTokens": false
-    }
+{
+  "OrchardCore_Google": {
+    "ClientID": "",
+    "ClientSecret": "",
+    "CallbackPath": "/signin-google",
+    "SaveTokens": false
+  }
+}
 ```
 
 For more information please refer to [Configuration](../Configuration/README.md).
