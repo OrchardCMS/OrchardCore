@@ -11,6 +11,8 @@ public class FormVisibilityRuleViewModel
 
     public string Value { get; set; }
 
+    public bool CaseSensitive { get; set; }
+
     [BindNever]
     public IEnumerable<FormVisibilityFieldViewModel> Fields { get; set; }
 

@@ -40,6 +40,10 @@ window.formVisibilityGroups = function () {
                                 <div class="col" :class="{'d-none': !shouldShowValue(rule.operator)}">
                                     <input type="text" class="form-control" v-model="rule.value" placeholder="Value" :name="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Value'" />
                                 </div>
+                                <div class="col-auto d-flex align-items-center" :class="{'d-none': !shouldShowValue(rule.operator)}">
+                                    <input type="checkbox" class="form-check-input" v-model="rule.caseSensitive" :name="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].CaseSensitive'" :value="true" :false-value="false" />
+                                    <label class="form-check-label ms-2" :for="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].CaseSensitive'"> Case sensitive </label>
+                                </div>
                                 <div class="col-auto">
                                     <input type="hidden" :name="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].IsRemoved'" value="false" />
                                     <button type="button" class="btn btn-sm btn-danger" @click="removeRule(groupIndex, ruleIndex)">
@@ -84,9 +88,10 @@ window.formVisibilityGroups = function () {
                     fieldOptions: config.FieldOptions || [],
                     operatorOptions: config.operatorOptions || [],
                     allOperatorOptions: config.operatorOptions || [],
+                    caseSensitive: config.caseSensitive,
                     prefix: '',
                     widgetId: config.widgetId,
-                    preloadedOptions: []
+                    preloadedOptions: [],
                 };
             },
 
@@ -96,7 +101,8 @@ window.formVisibilityGroups = function () {
                         rules: [{
                             field: '',
                             operator: '',
-                            value: ''
+                            value: '',
+                            caseSensitive: this.caseSensitive
                         }]
                     };
 
@@ -108,7 +114,8 @@ window.formVisibilityGroups = function () {
                     const newRule = {
                         field: '',
                         operator: '',
-                        value: ''
+                        value: '',
+                        caseSensitive: this.caseSensitive
                     };
 
                     this.$set(this.groups[groupIndex].rules, this.groups[groupIndex].rules.length, newRule);

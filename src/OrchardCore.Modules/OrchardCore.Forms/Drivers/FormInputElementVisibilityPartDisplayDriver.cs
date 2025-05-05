@@ -40,6 +40,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                             Field = rule.Field,
                             Operator = rule.Operator.ToString(),
                             Value = rule.Values?.FirstOrDefault(),
+                            CaseSensitive = rule.CaseSensitive,
                         }
                     ),
                 });
@@ -85,6 +86,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                         Value = rule.Values?.FirstOrDefault() ?? string.Empty,
                         Fields = [],
                         Operators = operators,
+                        CaseSensitive = rule.CaseSensitive,
                     }),
                 });
         }).Location("Parts:0#Visibility Settings;5");
@@ -116,6 +118,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                         Field = rule.Field,
                         Operator = parsedOperator,
                         Values = GetValues(rule.Value),
+                        CaseSensitive = rule.CaseSensitive,
                     };
                 }),
             };

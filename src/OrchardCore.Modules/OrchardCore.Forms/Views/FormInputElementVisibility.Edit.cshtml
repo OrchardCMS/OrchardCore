@@ -71,8 +71,9 @@
             appElementSelector: container,
             prefix:             container.getAttribute('data-prefix'),
             widgetId:           container.getAttribute('data-prefix'),
-            groupOptions:       cfg.groups    || [], // lower‑camel matches serialized JSON
-            operatorOptions:    cfg.operators || []
+            groupOptions:       cfg.groups    || [],
+            operatorOptions:    cfg.operators || [],
+            caseSensitive:      cfg.caseSensitive
         });
     }
 

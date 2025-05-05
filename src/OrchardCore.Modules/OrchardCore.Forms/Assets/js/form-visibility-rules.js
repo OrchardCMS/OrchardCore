@@ -175,7 +175,7 @@ window.formVisibilityGroupRules = (function () {
                     fieldValue = fieldElement.value;
                 }
 
-                var validationResult = validateRule(fieldValue, rule);
+                var validationResult = validateRule(fieldValue, rule, rule.caseSensitive);
 
                 if (groupPassed && !validationResult) {
 
@@ -253,7 +253,7 @@ window.formVisibilityGroupRules = (function () {
         return document.querySelector(`input[name="${name}"],select[name="${name}"],textarea[name="${name}"]`);
     }
 
-    function validateRule(inputValue, rule) {
+    function validateRule(inputValue, rule, caseSensitive) {
 
         if (!rule.operator) {
             console.warn("Rule operator is missing for rule", rule);
@@ -262,6 +262,11 @@ window.formVisibilityGroupRules = (function () {
 
         var rawInputValue = inputValue ? inputValue.trim() : '';
         var rawRuleValue = rule.value ? rule.value.trim() : '';
+
+        if (!caseSensitive) {
+            rawInputValue = rawInputValue.toLowerCase();
+            rawRuleValue = rawRuleValue.toLowerCase();
+        }
 
         var inputNumber = getNumeric(rawInputValue);
         var ruleNumber = getNumeric(rawRuleValue);

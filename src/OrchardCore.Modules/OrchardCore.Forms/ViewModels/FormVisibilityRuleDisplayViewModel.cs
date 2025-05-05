@@ -7,4 +7,6 @@ public class FormVisibilityRuleDisplayViewModel
     public string Operator { get; set; }
 
     public string Value { get; set; }
+
+    public bool CaseSensitive { get; set; }
 }

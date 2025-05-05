@@ -8,5 +8,5 @@ public sealed class FormVisibilityRule
 
     public string[] Values { get; set; }
 
-    public string ConditionalField { get; set; }
+    public bool CaseSensitive { get; set; }
 }
