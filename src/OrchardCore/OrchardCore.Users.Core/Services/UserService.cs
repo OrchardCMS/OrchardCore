@@ -382,6 +382,11 @@ public sealed class UserService : IUserService
 
         if (user is User u)
         {
+            if (u.IsEnabled)
+            {
+                return true;
+            }
+
             u.IsEnabled = true;
         }
 
@@ -414,6 +419,11 @@ public sealed class UserService : IUserService
 
         if (user is User u)
         {
+            if (!u.IsEnabled)
+            {
+                return true;
+            }
+
             u.IsEnabled = false;
         }
 

@@ -39,10 +39,10 @@ Currently you can filter shapes by:
 ```json
 {
   "ContentPart": [{
-  "place":"SomeZone"
+  "place":"SomeZone",
   "differentiator":"GalleryPart"
   }],
-  "GalleryPart": [{...}], //this wont work unless you registered a driver for the part
+  "GalleryPart": [{...}] //this wont work unless you registered a driver for the part
 }
 ```
 
@@ -75,7 +75,7 @@ Placement information consists of:
       "wrappers": [ "TextField_Title" ],
       "shape": "AnotherShape"
     }
-  ],
+  ]
 }
 ```
 
