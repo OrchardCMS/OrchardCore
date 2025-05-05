@@ -6,11 +6,13 @@ The `Notifications` module offers a comprehensive infrastructure for managing no
 You can customize the default notification options through the configuration provider using the following settings:
 
 ```json
-"OrchardCore_Notifications": {
+{
+  "OrchardCore_Notifications": {
     "TotalUnreadNotifications": 10,
     "DisableNotificationHtmlBodySanitizer": false,
     "AbsoluteCacheExpirationSeconds": 3600,
     "SlidingCacheExpirationSeconds": 0
+  }
 }
 ```
 

@@ -9,9 +9,11 @@ The `OrchardCore.ReverseProxy` module allows the user to use configuration value
 The following configuration values can be customized:
 
 ```json
-    "OrchardCore_ReverseProxy": {
-      "ForwardedHeaders": "None"
-    }
+{
+  "OrchardCore_ReverseProxy": {
+    "ForwardedHeaders": "None"
+  }
+}
 ```
 
 For more information please refer to [Configuration](../Configuration/README.md).

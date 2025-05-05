@@ -100,11 +100,13 @@ The templates and alternate names for the Content Items contained in a BagPart a
 The name of a BagPart is used as the differentiator in `placement.json`
 
 ```json
+{
   "BagPart": [
     {
       "differentiator": "MyNamedBagPart"
     }
   ]
+}
 ```
 
 ## Video

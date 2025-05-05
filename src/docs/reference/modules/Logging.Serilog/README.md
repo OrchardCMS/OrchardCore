@@ -6,7 +6,7 @@
 
 Add a reference to `OrchardCore.Logging.Serilog`.
 
-### Add serilog configuration in appsettings.json
+### Add serilog configuration in `appsettings.json`
 
 ``` json
   "Serilog": {
