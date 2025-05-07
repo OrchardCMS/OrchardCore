@@ -7972,6 +7972,18 @@ input[type=password]::-ms-clear {
   padding: 0.75rem 0.5rem;
 }
 
+.list-group .first-child-visible {
+  border-top: var(--bs-border-width) solid var(--bs-border-color) !important;
+  border-top-left-radius: var(--bs-border-radius) !important;
+  border-top-right-radius: var(--bs-border-radius) !important;
+}
+
+.list-group .last-child-visible {
+  border-bottom: var(--bs-border-width) solid var(--bs-border-color) !important;
+  border-bottom-left-radius: var(--bs-border-radius) !important;
+  border-bottom-right-radius: var(--bs-border-radius) !important;
+}
+
 .EasyMDEContainer blockquote:not(.blockquote) {
   background: var(--bs-secondary-bg-subtle);
   border-left: 0.4rem solid var(--bs-secondary-border-subtle) !important;
