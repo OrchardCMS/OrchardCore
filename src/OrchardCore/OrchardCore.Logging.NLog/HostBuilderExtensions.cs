@@ -22,12 +22,7 @@ public static class HostBuilderExtensions
             if (LogManager.Configuration == null)
             {
                 LogManager.Configuration = new LoggingConfiguration();
-            }
-
-            if (!Directory.Exists(configDir))
-            {
-                Directory.CreateDirectory(configDir);
-            }
+            }           
 
             LogManager.Configuration.Variables["configDir"] = configDir;
         });

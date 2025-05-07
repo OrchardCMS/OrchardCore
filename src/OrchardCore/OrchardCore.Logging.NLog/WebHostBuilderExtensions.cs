@@ -23,19 +23,14 @@ public static class WebHostBuilderExtensions
                 if (LogManager.Configuration == null)
                 {
                     LogManager.Configuration = new LoggingConfiguration();
-                }
-
-                if (!Directory.Exists(configDir))
-                {
-                    Directory.CreateDirectory(configDir);
-                }
+                }               
 
                 LogManager.Configuration.Variables["configDir"] = configDir;
             });
     }
 }
 
-internal static class AspNetExtensions
+public static class AspNetExtensions
 {
     public static LoggingConfiguration ConfigureNLog(this IHostEnvironment env, string configFileRelativePath)
     {
