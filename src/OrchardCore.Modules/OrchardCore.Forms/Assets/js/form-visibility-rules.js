@@ -323,9 +323,25 @@ window.formVisibilityGroupRules = (function () {
 
     function getNumeric(value) {
 
-        var cleaned = (value || '').trim().replace(/,/g, '.');
+        var raw = (value || '').trim();
 
-        var result = parseFloat(cleaned);
+        var lang = document.documentElement.lang || 'en-US';
+
+        var parts = new Intl.NumberFormat(lang, {
+            style: 'decimal',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 20
+        }).formatToParts(12345.6);
+
+        var groupingSeparator = parts.find(part => part.type === 'group')?.value || ',';
+
+        var decimalSeparator = parts.find(part => part.type === 'decimal')?.value || '.';
+
+        var cleanedValue = raw.split(groupingSeparator).join('');
+
+        var normalized = cleanedValue.split(decimalSeparator).join('.');
+
+        var result = parseFloat(normalized);
 
         return result;
     }
