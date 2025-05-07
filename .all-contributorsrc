@@ -3358,6 +3358,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "rwxzig",
+      "name": "Zig",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42944941?v=4",
+      "profile": "https://github.com/rwxzig",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
