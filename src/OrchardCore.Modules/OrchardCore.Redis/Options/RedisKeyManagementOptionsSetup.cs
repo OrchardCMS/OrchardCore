@@ -66,6 +66,11 @@ public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManage
                 // If the old key does not exist, a new key will be created by the Data Protection system 
                 // when it initializes, ensuring no disruption in functionality.
                 _ = database.KeyCopy(oldRedisKey, redisKey, flags: CommandFlags.FireAndForget);
+
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("The data protection Redis key for tenant '{Tenant}' was updated from '{OldRedisKey}' to '{NewRedisKey}'.", _tenant, oldRedisKey, redisKey);
+                }
             }
         }
         catch (Exception ex)
