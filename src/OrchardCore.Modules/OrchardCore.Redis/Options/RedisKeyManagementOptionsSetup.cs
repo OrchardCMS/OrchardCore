@@ -13,7 +13,10 @@ public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManage
     private readonly ILogger _logger;
     private readonly string _tenant;
 
-    public RedisKeyManagementOptionsSetup(IRedisService redis, ShellSettings shellSettings, ILogger<RedisKeyManagementOptionsSetup> logger)
+    public RedisKeyManagementOptionsSetup(
+        IRedisService redis, 
+        ShellSettings shellSettings, 
+        ILogger<RedisKeyManagementOptionsSetup> logger)
     {
         _redis = redis;
         _logger = logger;
