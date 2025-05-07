@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.DataProtection.StackExchangeRedis;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using StackExchange.Redis;
 
 namespace OrchardCore.Redis.Options;
 
@@ -14,8 +13,8 @@ public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManage
     private readonly string _tenant;
 
     public RedisKeyManagementOptionsSetup(
-        IRedisService redis, 
-        ShellSettings shellSettings, 
+        IRedisService redis,
+        ShellSettings shellSettings,
         ILogger<RedisKeyManagementOptionsSetup> logger)
     {
         _redis = redis;
@@ -64,13 +63,7 @@ public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManage
         {
             if (!database.KeyExists(redisKey))
             {
-                // Using CommandFlags.FireAndForget here is acceptable because if the old key exists, 
-                // it will be copied to the new key without waiting for the operation to complete. 
-                // If the old key does not exist, a new key will be created by the Data Protection system 
-                // when it initializes, ensuring no disruption in functionality.
-                _ = database.KeyCopy(oldRedisKey, redisKey, flags: CommandFlags.FireAndForget);
-
-                if (_logger.IsEnabled(LogLevel.Warning))
+                if (database.KeyCopy(oldRedisKey, redisKey) && _logger.IsEnabled(LogLevel.Warning))
                 {
                     _logger.LogWarning("The data protection Redis key for tenant '{Tenant}' was updated from '{OldRedisKey}' to '{NewRedisKey}'.", _tenant, oldRedisKey, redisKey);
                 }
