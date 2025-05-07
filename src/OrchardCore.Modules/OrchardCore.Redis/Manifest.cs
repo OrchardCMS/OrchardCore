@@ -41,7 +41,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Redis.DataProtection",
     Name = "Distributed Data Protection (Redis)",
-    Description = "Enables distributed data protection using Redis; recommended only with a persistent Redis connection.",
+    Description = "Enables distributed data protection using Redis; recommended only with a Redis server configured for persistence.",
     Dependencies = ["OrchardCore.Redis"],
     Category = "Security"
 )]
