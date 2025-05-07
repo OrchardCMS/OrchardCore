@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.ViewModels;
@@ -34,8 +35,12 @@ internal sealed class ContentAzureAISearchIndexSettingsDisplayDriver : DisplayDr
             model.IndexedContentTypes = metadata.IndexedContentTypes;
             model.Culture = metadata.Culture;
 
-            model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-            .Select(x => new SelectListItem { Text = $"{x.Name} ({x.DisplayName})", Value = x.Name });
+            model.Cultures = ILocalizationService.GetAllCulturesAndAliases()
+            .Select(culture => new SelectListItem
+            {
+                Text = $"{culture.Name} ({culture.DisplayName})",
+                Value = culture.Name,
+            });
 
         }).Location("Content:5");
     }
