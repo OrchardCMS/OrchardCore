@@ -18,19 +18,19 @@ public static class WebHostBuilderExtensions
             .ConfigureAppConfiguration((context, _) =>
             {
                 var environment = context.HostingEnvironment;
-                var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);                
+                var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
                 var configDir = string.IsNullOrWhiteSpace(appData) ? Path.Combine(environment.ContentRootPath, ShellOptionConstants.DefaultAppDataPath) : appData;
-                if (LogManager.Configuration == null)
-                {
-                    LogManager.Configuration = new LoggingConfiguration();
-                }               
+                var loggerConfiguration = LogManager.Configuration;
 
-                LogManager.Configuration.Variables["configDir"] = configDir;
+                if(loggerConfiguration is not null)
+                {
+                    loggerConfiguration.Variables["configDir"] = configDir;
+                }
             });
     }
 }
 
-public static class AspNetExtensions
+internal static class AspNetExtensions
 {
     public static LoggingConfiguration ConfigureNLog(this IHostEnvironment env, string configFileRelativePath)
     {
