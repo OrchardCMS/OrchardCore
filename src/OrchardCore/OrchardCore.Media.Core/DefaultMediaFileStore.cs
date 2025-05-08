@@ -186,7 +186,7 @@ public class DefaultMediaFileStore : IMediaFileStore
                     }
                     finally
                     {
-                        if (creatingStream != outputStream)
+                        if (creatingStream != outputStream && creatingStream != inputStream)
                         {
                             creatingStream.Dispose();
                         }
