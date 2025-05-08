@@ -88,72 +88,97 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
     // This is the heart of the activity and actually performs the work to be done.
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var isValid = false;
-        IFormCollection form = null;
-        string email = null;
-        if (_httpContextAccessor.HttpContext != null)
+        var email = GetPropertyFromContextOrForm(workflowContext, "Email");
+        if (string.IsNullOrWhiteSpace(email))
         {
-            form = _httpContextAccessor.HttpContext.Request.Form;
-            email = form["Email"];
-            isValid = !string.IsNullOrWhiteSpace(email);
-        }
-        var outcome = isValid ? "Valid" : "Invalid";
-
-        if (isValid)
-        {
-            var userName = form["UserName"];
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-                userName = email.Replace('@', '+');
-            }
-
-            var errors = new Dictionary<string, string>();
-            var user = (User)await _userService.CreateUserAsync(new User() { UserName = userName, Email = email, IsEnabled = !RequireModeration }, null, (key, message) => errors.Add(key, message));
-            if (errors.Count > 0)
-            {
-                var updater = _updateModelAccessor.ModelUpdater;
-                if (updater != null)
-                {
-                    foreach (var item in errors)
-                    {
-                        updater.ModelState.TryAddModelError(item.Key, S[item.Value]);
-                    }
-                }
-                outcome = "Invalid";
-            }
-            else if (SendConfirmationEmail)
-            {
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-                var uri = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail",
-                    "Registration", new { area = UserConstants.Features.Users, userId = user.UserId, code });
-
-                workflowContext.Properties["EmailConfirmationUrl"] = uri;
-
-                var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, workflowContext, null);
-
-                var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext, _htmlEncoder);
-
-                var result = await _emailService.SendAsync(email, subject, body);
-
-                if (!result.Succeeded)
-                {
-                    var updater = _updateModelAccessor.ModelUpdater;
-                    if (updater != null)
-                    {
-                        foreach (var error in result.Errors)
-                        {
-                            foreach (var errorMessage in error.Value)
-                            {
-                                updater.ModelState.TryAddModelError(error.Key, errorMessage);
-                            }
-                        }
-                    }
-                    outcome = "Invalid";
-                }
-            }
+            return Outcomes("Done", "Invalid");
         }
 
-        return Outcomes("Done", outcome);
+        var userName = GetPropertyFromContextOrForm(workflowContext, "UserName") ?? email.Replace('@', '+');
+        var user = await CreateUserAsync(userName, email);
+
+        if (user == null)
+        {
+            return Outcomes("Done", "Invalid");
+        }
+
+        if (SendConfirmationEmail && !await SendConfirmationEmailAsync(user, workflowContext, email))
+        {
+            return Outcomes("Done", "Invalid");
+        }
+
+        return Outcomes("Done", "Valid");
+    }
+
+    private string GetPropertyFromContextOrForm(WorkflowExecutionContext context, string key)
+    {
+        if (context.Properties.TryGetValue(key, out var value) && value is string strValue)
+        {
+            return strValue;
+        }
+
+        var form = _httpContextAccessor.HttpContext?.Request.Form;
+        return form?[key];
+    }
+
+    private async Task<User> CreateUserAsync(string userName, string email)
+    {
+        var errors = new Dictionary<string, string>();
+        var user = (User)await _userService.CreateUserAsync(new User
+        {
+            UserName = userName,
+            Email = email,
+            IsEnabled = !RequireModeration,
+        }, null, errors.Add);
+
+        if (errors.Count > 0)
+        {
+            var updater = _updateModelAccessor.ModelUpdater;
+            if (updater != null)
+            {
+                foreach (var item in errors)
+                {
+                    updater.ModelState.TryAddModelError(item.Key, S[item.Value]);
+                }
+            }
+            return null;
+        }
+
+        return user;
+    }
+
+    private async Task<bool> SendConfirmationEmailAsync(User user, WorkflowExecutionContext context, string email)
+    {
+        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+        var uri = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail", "Registration",
+            new { area = UserConstants.Features.Users, userId = user.UserId, code });
+
+        context.Properties["EmailConfirmationUrl"] = uri;
+
+        var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, context, null);
+
+        var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, context, _htmlEncoder);
+
+        var result = await _emailService.SendAsync(email, subject, body);
+
+        if (!result.Succeeded)
+        {
+            var updater = _updateModelAccessor.ModelUpdater;
+            if (updater != null)
+            {
+                foreach (var error in result.Errors)
+                {
+                    foreach (var errorMessage in error.Value)
+                    {
+                        updater.ModelState.TryAddModelError(error.Key, errorMessage);
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        return true;
     }
 }
