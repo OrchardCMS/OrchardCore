@@ -16,7 +16,7 @@ public static class DataLoaderExtensions
         var session = context.RequestServices.GetService<ISession>();
         var status = context.GetArgument<PublicationStatusEnum>("status");
 
-        return accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>("GetContentItemsById", ci => LoadContentItemsAsync(ci, session, status));
+        return accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>($"GetContentItemsById_{status}", ci => LoadContentItemsAsync(ci, session, status));
     }
 
     public static async Task<ILookup<string, ContentItem>> LoadContentItemsAsync(IEnumerable<string> contentItemIds, ISession session, PublicationStatusEnum status)
