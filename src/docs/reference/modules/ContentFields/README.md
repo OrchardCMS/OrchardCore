@@ -11,23 +11,23 @@ Fields support multiple editors — different UIs for data input. For example, a
 
 | Name                                | Properties                                                     | Available Editors |
 |-------------------------------------|----------------------------------------------------------------|-------------------|
-| `BooleanField`                      | `bool Value`                                                   | (Standard ``), `Switch`|
-| `ContentPickerField`                | `string[] ContentItemIds`                                      | (Standard ``)           |
-| `DateField`                         | `DateTime? Value`                                              | (Standard ``), `Localized`        |
-| `DateTimeField`                     | `DateTime? Value`                                              | (Standard ``)    |
-| `HtmlField`                         | `string Html`                                                  | (Standard ``), `Monaco`, `Multiline`, `Trumbowyg`, `Wysiwyg` |
-| `LinkField`                         | `string Url, string Text`                                      | (Standard ``)           |
-| `LocalizationSetContentPickerField` | `string[] LocalizationSets`                                    | (Standard ``)           |
-| `MarkdownField`                     | `string Markdown`                                              | (Standard ``), `Wysiwyg`     |
-| `MediaField`                        | `string[] Paths`                                               | (Standard ``), `Attached`       |
-| `MultiTextField`                    | `string[] Values`                                              | (Standard ``), `CheckboxList`, `Picker`           |
-| `NumericField`                      | `decimal? Value`                                               | (Standard ``), `Range`, `Select`, `Slider`, `Spinner`       |
-| `GeoPointField`                     | `decimal Latitude, decimal Longitude`                          | (Standard ``), `Leaflet`         |
-| `TaxonomyField`                     | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` | (Standard ``), `Tags`         |
-| `TextField`                         | `string Text`                                                  | (Standard ``), `CodeMirror`, `Color`, `Email`, `Header`, `IconPicker`, `Monaco`, `PredefinedList`, `Tel` , `TextArea` , `Url` |
-| `TimeField`                         | `TimeSpan? Value`                                              | (Standard ``)        |
-| `UserPickerField`                   | `string[] UserIds`                                             | (Standard ``), `UserNames`      |
-| `YoutubeField`                      | `string EmbeddedAddress, string RawAddress`                    | (Standard ``)          |
+| `BooleanField`                      | `bool Value`                                                   | (Standard "empty"), `Switch`|
+| `ContentPickerField`                | `string[] ContentItemIds`                                      | (Standard "empty")           |
+| `DateField`                         | `DateTime? Value`                                              | (Standard "empty"), `Localized`        |
+| `DateTimeField`                     | `DateTime? Value`                                              | (Standard "empty")    |
+| `HtmlField`                         | `string Html`                                                  | (Standard "empty"), `Monaco`, `Multiline`, `Trumbowyg`, `Wysiwyg` |
+| `LinkField`                         | `string Url, string Text`                                      | (Standard "empty")           |
+| `LocalizationSetContentPickerField` | `string[] LocalizationSets`                                    | (Standard "empty")           |
+| `MarkdownField`                     | `string Markdown`                                              | (Standard "empty"), `Wysiwyg`     |
+| `MediaField`                        | `string[] Paths`                                               | (Standard "empty"), `Attached`       |
+| `MultiTextField`                    | `string[] Values`                                              | (Standard "empty"), `CheckboxList`, `Picker`           |
+| `NumericField`                      | `decimal? Value`                                               | (Standard "empty"), `Range`, `Select`, `Slider`, `Spinner`       |
+| `GeoPointField`                     | `decimal Latitude, decimal Longitude`                          | (Standard "empty"), `Leaflet`         |
+| `TaxonomyField`                     | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` | (Standard "empty"), `Tags`         |
+| `TextField`                         | `string Text`                                                  | (Standard "empty"), `CodeMirror`, `Color`, `Email`, `Header`, `IconPicker`, `Monaco`, `PredefinedList`, `Tel` , `TextArea` , `Url` |
+| `TimeField`                         | `TimeSpan? Value`                                              | (Standard "empty")        |
+| `UserPickerField`                   | `string[] UserIds`                                             | (Standard "empty"), `UserNames`      |
+| `YoutubeField`                      | `string EmbeddedAddress, string RawAddress`                    | (Standard "empty")          |
 
 !!! note
     Each field is rendered by a corresponding `Shape Type` that uses its own Display view model.  
