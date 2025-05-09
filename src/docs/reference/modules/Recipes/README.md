@@ -147,6 +147,8 @@ Defines or updates content types and content parts.
 }
 ```
 
+For more examples of how to use content fields and parts to build robust content types, refer to the [Content Fields](../ContentFields/README.md#recipes) documentation.
+
 ---
 
 ### `lucene-index`

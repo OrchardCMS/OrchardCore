@@ -58,6 +58,11 @@ public sealed class Migrations : DataMigration
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormInputElementPart", part => part
             .WithDescription("Provides attributes common to all input form elements."));
 
+        await _contentDefinitionManager.AlterPartDefinitionAsync("FormInputElementVisibilityPart", part => part
+            .Attachable()
+            .WithDescription("Provides a way to add advance visibility settings.")
+        );
+
         // Label
         await _contentDefinitionManager.AlterPartDefinitionAsync("LabelPart", part => part
             .WithDescription("Provides label properties."));
@@ -90,6 +95,9 @@ public sealed class Migrations : DataMigration
             .WithPart("FormElementValidationPart", part => part
                 .WithPosition("5")
             )
+            .WithPart("FormInputElementVisibilityPart", part => part
+                .WithPosition("6")
+            )
             .Stereotype("Widget"));
 
         // TextArea
@@ -112,6 +120,9 @@ public sealed class Migrations : DataMigration
             .WithPart("FormElementValidationPart", part => part
                 .WithPosition("5")
             )
+            .WithPart("FormInputElementVisibilityPart", part => part
+                .WithPosition("6")
+            )
             .Stereotype("Widget"));
 
         // Select
@@ -133,6 +144,9 @@ public sealed class Migrations : DataMigration
             )
             .WithPart("FormElementValidationPart", part => part
                 .WithPosition("5")
+            )
+            .WithPart("FormInputElementVisibilityPart", part => part
+                .WithPosition("6")
             )
             .Stereotype("Widget"));
 
@@ -163,7 +177,7 @@ public sealed class Migrations : DataMigration
             .Stereotype("Widget"));
 
         // Shortcut other migration steps on new content definition schemas.
-        return 4;
+        return 5;
     }
 
     // This code can be removed in a later version.
@@ -263,6 +277,31 @@ public sealed class Migrations : DataMigration
         );
 
         return 4;
+    }
+
+    public async Task<int> UpdateFrom4Async()
+    {
+        await _contentDefinitionManager.AlterPartDefinitionAsync("FormInputElementVisibilityPart", part => part
+            .Attachable()
+            .WithDescription("Provides a way to add advanced visibility settings.")
+        );
+
+        await _contentDefinitionManager.AlterTypeDefinitionAsync("Select", type => type
+            .WithPart("FormInputElementVisibilityPart", part => part
+            .WithPosition("6"))
+        );
+
+        await _contentDefinitionManager.AlterTypeDefinitionAsync("Input", type => type
+            .WithPart("FormInputElementVisibilityPart", part => part
+            .WithPosition("6"))
+        );
+
+        await _contentDefinitionManager.AlterTypeDefinitionAsync("TextArea", type => type
+            .WithPart("FormInputElementVisibilityPart", part => part
+            .WithPosition("6"))
+        );
+
+        return 5;
     }
 
     internal sealed class TitlePartSettings
