@@ -109,10 +109,7 @@ public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManage
                 }
                 catch (Exception ex)
                 {
-                    if (_logger.IsEnabled(LogLevel.Error))
-                    {
-                        _logger.LogError(ex, "Unable to check Redis server persistence configuration.");
-                    }
+                    _logger.LogError(ex, "Unable to check Redis server persistence configuration.");
                 }
             }
         }
