@@ -238,7 +238,15 @@ public sealed class AdminController : Controller
                     {
                         var mediaFilePath = _mediaFileStore.Combine(path, fileName);
                         stream = file.OpenReadStream();
-                        mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+                        var (outputPath, outputStream) = await _mediaFileStore.CreateMediaFileFromStreamAsync(mediaFilePath, stream);
+                        // Dispose the original stream if it was replaced
+                        if (stream != outputStream)
+                        {
+                            await stream.DisposeAsync();
+                        }
+
+                        stream = outputStream; // Use the stream returned by the file store, which may be different from the original input stream.
+                        mediaFilePath = outputPath;
 
                         var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
@@ -248,7 +256,15 @@ public sealed class AdminController : Controller
                         // that would be wasteful.
                         try
                         {
-                            stream.Position = 0;
+                            if (stream.CanSeek)
+                            {
+                                stream.Position = 0;
+                            }
+                            else
+                            {
+                                await stream.DisposeAsync();
+                                stream = null;
+                            }
                         }
                         catch (ObjectDisposedException)
                         {

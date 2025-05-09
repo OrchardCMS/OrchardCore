@@ -153,15 +153,26 @@ public class MetaWeblogHandler : IXmlRpcHandler
 
         var directoryName = Path.GetDirectoryName(name);
         var filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
-        Stream stream = null;
+        MemoryStream stream = null;
+        (string outputPath, Stream outputStream)? output = null;
+
         try
         {
             stream = new MemoryStream(bits);
-            filePath = await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream);
+            output = await _mediaFileStore.CreateMediaFileFromStreamAsync(filePath, stream);
+            filePath = output != null ? output.Value.outputPath : filePath;            
         }
         finally
         {
-            stream?.Dispose();
+            if (stream != null)
+            {
+                await stream.DisposeAsync();
+            }
+
+            if (output?.outputStream != null )
+            {
+                await output.Value.outputStream.DisposeAsync();
+            }
         }
 
         var publicUrl = _mediaFileStore.MapPathToPublicUrl(filePath);

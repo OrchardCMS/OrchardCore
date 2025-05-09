@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -155,11 +156,21 @@ public class DefaultMediaFileStore : IMediaFileStore
 
     public virtual async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
     {
+        var (outputPath, outputStream) = await CreateMediaFileFromStreamAsync(path, inputStream);
+        if (inputStream != outputStream)
+        {
+            await outputStream.DisposeAsync();
+        }
+        return outputPath;
+    }
+
+    public async Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+    {
+        string resultPath = path;
+        Stream resultStream = inputStream; // Default to the original inputStream
+
         if (_mediaCreatingEventHandlers.Any())
         {
-            // Follows https://rules.sonarsource.com/csharp/RSPEC-3966
-            // Assumes that each stream should be disposed of only once by it's caller.
-            var outputStream = inputStream;
             try
             {
                 var context = new MediaCreatingContext
@@ -167,32 +178,53 @@ public class DefaultMediaFileStore : IMediaFileStore
                     Path = path,
                 };
 
+                // Iterate through all media creating event handlers
                 foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
                 {
-                    // Creating stream disposed by using.
-                    using var creatingStream = outputStream;
+                    Stream creatingStream = resultStream;
+                    resultStream = null;
 
-                    // Stop disposal of inputStream, as creating stream is the object to dispose.
-                    inputStream = null;
-
-                    // Outputstream must be created by event handler.
-                    outputStream = null;
-
-                    outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
+                    try
+                    {
+                        // Allow the handler to modify the stream
+                        resultStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
+                    }
+                    catch
+                    {
+                        // If an exception occurs, preserve the original stream
+                        resultStream = creatingStream;
+                    }
+                    finally
+                    {
+                        // Dispose of the old stream if it was replaced
+                        if (creatingStream != resultStream)
+                        {
+                            creatingStream.Dispose();
+                        }
+                    }
                 }
 
-                return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
+                // Create the file in the file store using the final resultStream
+                resultPath = await _fileStore.CreateFileFromStreamAsync(context.Path, resultStream, overwrite);
             }
-            finally
+            catch
             {
-                // This disposes the last outputStream.
-                outputStream?.Dispose();
             }
         }
         else
         {
-            return await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+            try
+            {
+                // If no handlers are present, directly create the file
+                resultPath = await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+            }
+            catch
+            {
+            }
         }
+
+        // Return the final path and the final resultStream (modified or original)
+        return (resultPath, resultStream);
     }
 
     public virtual string MapPathToPublicUrl(string path)
