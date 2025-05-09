@@ -11,15 +11,18 @@ public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManage
     private readonly IRedisService _redis;
     private readonly ILogger _logger;
     private readonly string _tenant;
+    private readonly bool _allowAdmin;
 
     public RedisKeyManagementOptionsSetup(
         IRedisService redis,
+        IOptions<RedisOptions> options,
         ShellSettings shellSettings,
         ILogger<RedisKeyManagementOptionsSetup> logger)
     {
         _redis = redis;
         _logger = logger;
         _tenant = shellSettings.Name;
+        _allowAdmin = options.Value.ConfigurationOptions?.AllowAdmin ?? false;
     }
 
     public void Configure(KeyManagementOptions options)
@@ -30,6 +33,13 @@ public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManage
         if (redis.Database == null)
         {
             redis.ConnectAsync().GetAwaiter().GetResult();
+        }
+
+        if (_logger.IsEnabled(LogLevel.Warning) && !CheckRedisPersistenceEnabled())
+        {
+            _logger.LogWarning("Redis data protection is enabled. Ensure your Redis server has a backup strategy in place to prevent data loss. " +
+                "Use either AOF (Append-Only File) or RDB (Redis Database) persistence. " +
+                "For more details, visit: https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/");
         }
 
         ChangeXmlRepositoryRedisKey(redisKey);
@@ -76,5 +86,39 @@ public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManage
                 _logger.LogError(ex, "Unable to copy the old Redis data protection key '{OldRedisKey}' to the new one '{NewRedisKey}'.", oldRedisKey, redisKey);
             }
         }
+    }
+
+    private bool CheckRedisPersistenceEnabled()
+    {
+        if (!_allowAdmin)
+        {
+            // Redis server admin commands are not allowed, we cannot check persistence.
+            return false;
+        }
+
+        var server = _redis.Connection?.GetServers().FirstOrDefault();
+        if (server is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            var persistenceConfig = server.Info("persistence");
+
+            if (persistenceConfig.Any(info =>
+                info.Any(value => (value.Key == "aof_enabled" && value.Value == "1") || (value.Key == "rdb_saves" && value.Value != "0"))))
+            {
+                // AOF or RDB persistence is enabled. Note that the check for RDB is not very reliable, because we are only checking if
+                // any save occurred since the last time Redis has started. We are not checking if periodic saves are enabled.
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unable to check Redis server persistence configuration.");
+        }
+
+        return false;
     }
 }
