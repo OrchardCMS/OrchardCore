@@ -1686,27 +1686,23 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             var filtered = self.mediaItems.filter(function (item) {
               return item.name.toLowerCase().indexOf(self.mediaFilter.toLowerCase()) > -1;
             });
-            switch (self.sortBy) {
-              case 'size':
-                filtered.sort(function (a, b) {
-                  return self.sortAsc ? a.size - b.size : b.size - a.size;
-                });
-                break;
-              case 'mime':
-                filtered.sort(function (a, b) {
-                  return self.sortAsc ? a.mime.toLowerCase().localeCompare(b.mime.toLowerCase()) : b.mime.toLowerCase().localeCompare(a.mime.toLowerCase());
-                });
-                break;
-              case 'lastModify':
-                filtered.sort(function (a, b) {
-                  return self.sortAsc ? a.lastModify - b.lastModify : b.lastModify - a.lastModify;
-                });
-                break;
-              default:
-                filtered.sort(function (a, b) {
-                  return self.sortAsc ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
-                });
-            }
+            var sortDirection = self.sortAsc ? 1 : -1;
+            filtered.sort(function (a, b) {
+              switch (self.sortBy) {
+                case 'size':
+                  return (a.size - b.size) * sortDirection;
+                case 'mime':
+                  return a.mime.localeCompare(b.mime, undefined, {
+                    sensitivity: 'base'
+                  }) * sortDirection;
+                case 'lastModify':
+                  return (new Date(a.lastModify) - new Date(b.lastModify)) * sortDirection;
+                default:
+                  return a.name.localeCompare(b.name, undefined, {
+                    sensitivity: 'base'
+                  }) * sortDirection;
+              }
+            });
             return filtered;
           },
           hiddenCount: function hiddenCount() {
