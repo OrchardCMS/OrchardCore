@@ -57,14 +57,39 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
     public override async Task RemovingAsync(ShellRemovingContext context)
     {
         // Only carry out removal if options are valid.
-        if (!_options.IsConfigured())
+        if (!_options.IsConfigured() || (!_options.RemoveFilesFromBasePath && !_options.RemoveContainer))
         {
             return;
         }
 
         var blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
 
-        if (_options.RemoveFilesFromBasePath && !_options.RemoveContainer)
+        if (_options.RemoveContainer)
+        {
+            try
+            {
+                var response = await blobContainer.DeleteIfExistsAsync();
+                if (!response.Value)
+                {
+                    _logger.LogError("Unable to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);
+                    context.ErrorMessage = S["Unable to remove the Azure Media Storage Container '{0}'.", _options.ContainerName];
+                }
+            }
+            catch (RequestFailedException ex)
+            {
+                _logger.LogError(ex, "Failed to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);
+                context.ErrorMessage = S["Failed to remove the Azure Media Storage Container '{0}'.", _options.ContainerName];
+                context.Error = ex;
+            }
+
+            // If both deletion options are set, return here to avoid errors when trying to delete files from a non-existent container.
+            if (_options.RemoveFilesFromBasePath)
+            {
+                return;
+            }
+        }
+
+        if (_options.RemoveFilesFromBasePath)
         {
             try
             {
@@ -82,25 +107,6 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
             {
                 _logger.LogError("Error during Azure Media Storage blob item removal.");
                 context.ErrorMessage = S["Error during Azure Media Storage blob item removal."];
-                context.Error = ex;
-            }
-        }
-
-        if (_options.RemoveContainer && !_options.RemoveFilesFromBasePath)
-        {
-            try
-            {
-                var response = await blobContainer.DeleteIfExistsAsync();
-                if (!response.Value)
-                {
-                    _logger.LogError("Unable to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);
-                    context.ErrorMessage = S["Unable to remove the Azure Media Storage Container '{0}'.", _options.ContainerName];
-                }
-            }
-            catch (RequestFailedException ex)
-            {
-                _logger.LogError(ex, "Failed to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);
-                context.ErrorMessage = S["Failed to remove the Azure Media Storage Container '{0}'.", _options.ContainerName];
                 context.Error = ex;
             }
         }
