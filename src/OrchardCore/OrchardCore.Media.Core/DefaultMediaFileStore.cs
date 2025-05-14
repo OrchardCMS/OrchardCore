@@ -167,64 +167,48 @@ public class DefaultMediaFileStore : IMediaFileStore
     public async Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
     {
         string resultPath = path;
-        Stream resultStream = inputStream; // Default to the original inputStream
+        Stream outputStream = inputStream; // Default to the original inputStream
 
         if (_mediaCreatingEventHandlers.Any())
         {
-            try
+            var context = new MediaCreatingContext
             {
-                var context = new MediaCreatingContext
-                {
-                    Path = path,
-                };
+                Path = path,
+            };
 
-                // Iterate through all media creating event handlers
-                foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
-                {
-                    Stream creatingStream = resultStream;
-                    resultStream = null;
+            // Iterate through all media creating event handlers
+            foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
+            {
+                Stream creatingStream = outputStream;
+                outputStream = null;
 
-                    try
+                try
+                {
+                    // Allow the handler to modify the stream
+                    outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
+                }
+                finally
+                {
+                    // Dispose of the old stream if it was replaced
+                    if (creatingStream != outputStream && creatingStream != inputStream)
                     {
-                        // Allow the handler to modify the stream
-                        resultStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
-                    }
-                    catch
-                    {
-                        // If an exception occurs, preserve the original stream
-                        resultStream = creatingStream;
-                    }
-                    finally
-                    {
-                        // Dispose of the old stream if it was replaced
-                        if (creatingStream != resultStream)
-                        {
-                            creatingStream.Dispose();
-                        }
+                        creatingStream.Dispose();
                     }
                 }
+            }
 
-                // Create the file in the file store using the final resultStream
-                resultPath = await _fileStore.CreateFileFromStreamAsync(context.Path, resultStream, overwrite);
-            }
-            catch
-            {
-            }
+            // Create the file in the file store using the final resultStream
+            resultPath = await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
         }
         else
         {
-            try
-            {
-                // If no handlers are present, directly create the file
-                resultPath = await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
-            }
-            catch
-            {
-            }
+            // If no handlers are present, directly create the file
+            resultPath = await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+
         }
 
         // Return the final path and the final resultStream (modified or original)
-        return (resultPath, resultStream);
+        return (resultPath, outputStream);
     }
 
     public virtual string MapPathToPublicUrl(string path)
