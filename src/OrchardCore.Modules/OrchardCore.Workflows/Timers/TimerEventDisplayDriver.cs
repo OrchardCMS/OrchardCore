@@ -7,10 +7,12 @@ public sealed class TimerEventDisplayDriver : ActivityDisplayDriver<TimerEvent, 
     protected override void EditActivity(TimerEvent source, TimerEventViewModel model)
     {
         model.CronExpression = source.CronExpression;
+        model.UseLocalTime = source.UseLocalTime;
     }
 
     protected override void UpdateActivity(TimerEventViewModel model, TimerEvent target)
     {
         target.CronExpression = model.CronExpression.Trim();
+        target.UseLocalTime = model.UseLocalTime;
     }
 }
