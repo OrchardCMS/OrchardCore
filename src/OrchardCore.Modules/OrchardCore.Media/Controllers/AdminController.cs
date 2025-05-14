@@ -201,96 +201,103 @@ public sealed class AdminController : Controller
             (_, _, _) => Task.FromResult<IActionResult>(Ok(new { })),
             async (files) =>
             {
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = string.Empty;
-                }
-
-                var result = new List<object>();
-
-                // Loop through each file in the request.
-                foreach (var file in files)
-                {
-                    var extension = Path.GetExtension(file.FileName);
-
-                    if (!allowedExtensions.Contains(extension))
-                    {
-                        result.Add(new
-                        {
-                            name = file.FileName,
-                            size = file.Length,
-                            folder = path,
-                            error = S["This file extension is not allowed: {0}", extension].ToString(),
-                        });
-
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogInformation("File extension not allowed: '{File}'", file.FileName);
-                        }
-
-                        continue;
-                    }
-
-                    var fileName = _mediaNameNormalizerService.NormalizeFileName(file.FileName);
-
-                    Stream stream = null;
-                    try
-                    {
-                        var mediaFilePath = _mediaFileStore.Combine(path, fileName);
-                        stream = file.OpenReadStream();
-                        mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
-
-                        var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
-
-                        // The .NET AWS SDK, and only that from the built-in ones (but others maybe too), disposes
-                        // the stream. There's no better way to check for that than handling the exception. An
-                        // alternative would be to re-read the file for every other storage provider as well but
-                        // that would be wasteful.
-                        try
-                        {
-                            stream.Position = 0;
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                            stream = null;
-                        }
-
-                        await PreCacheRemoteMedia(mediaFile, stream);
-
-                        result.Add(CreateFileResult(mediaFile));
-                    }
-                    catch (ExistsFileStoreException ex)
-                    {
-                        _logger.LogWarning(ex, "An error occurred while uploading a media");
-
-                        result.Add(new
-                        {
-                            name = fileName,
-                            size = file.Length,
-                            folder = path,
-                            error = ex.Message,
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "An error occurred while uploading a media");
-
-                        result.Add(new
-                        {
-                            name = fileName,
-                            size = file.Length,
-                            folder = path,
-                            error = ex.Message,
-                        });
-                    }
-                    finally
-                    {
-                        stream?.Dispose();
-                    }
-                }
+                var result = await ProcessMediaUploadAsync(path, files, allowedExtensions);
 
                 return Ok(new { files = result.ToArray() });
             });
+    }
+
+    private async Task<List<object>> ProcessMediaUploadAsync(string path, IEnumerable<IFormFile> files, HashSet<string> allowedExtensions)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            path = string.Empty;
+        }
+
+        var result = new List<object>();
+
+        // Loop through each file in the request.
+        foreach (var file in files)
+        {
+            var extension = Path.GetExtension(file.FileName);
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                result.Add(new
+                {
+                    name = file.FileName,
+                    size = file.Length,
+                    folder = path,
+                    error = S["This file extension is not allowed: {0}", extension].ToString(),
+                });
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("File extension not allowed: '{File}'", file.FileName);
+                }
+
+                continue;
+            }
+
+            var fileName = _mediaNameNormalizerService.NormalizeFileName(file.FileName);
+
+            Stream stream = null;
+            try
+            {
+                var mediaFilePath = _mediaFileStore.Combine(path, fileName);
+                stream = file.OpenReadStream();
+                mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+
+                var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
+
+                // The .NET AWS SDK, and only that from the built-in ones (but others maybe too), disposes
+                // the stream. There's no better way to check for that than handling the exception. An
+                // alternative would be to re-read the file for every other storage provider as well but
+                // that would be wasteful.
+                try
+                {
+                    stream.Position = 0;
+                }
+                catch (ObjectDisposedException)
+                {
+                    stream = null;
+                }
+
+                await PreCacheRemoteMedia(mediaFile, stream);
+
+                result.Add(CreateFileResult(mediaFile));
+            }
+            catch (ExistsFileStoreException ex)
+            {
+                _logger.LogWarning(ex, "An error occurred while uploading a media");
+
+                result.Add(new
+                {
+                    name = fileName,
+                    size = file.Length,
+                    folder = path,
+                    error = ex.Message,
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while uploading a media");
+
+                result.Add(new
+                {
+                    name = fileName,
+                    size = file.Length,
+                    folder = path,
+                    error = ex.Message,
+                });
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
+        }
+
+        return result;
     }
 
     [HttpPost]
