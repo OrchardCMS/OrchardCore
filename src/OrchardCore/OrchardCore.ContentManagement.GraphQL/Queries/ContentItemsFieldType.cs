@@ -362,7 +362,7 @@ public class ContentItemsFieldType : FieldType
 
                 foreach (var property in orderByArguments)
                 {
-                    var direction = (OrderByDirection)property.Value.Value<int>();
+                    var direction = property.Value.GetEnumValue<OrderByDirection>();
 
                     Expression<Func<ContentItemIndex, object>> selector = null;
 
