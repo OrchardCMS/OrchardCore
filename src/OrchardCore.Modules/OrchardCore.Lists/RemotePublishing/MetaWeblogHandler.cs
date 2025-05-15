@@ -156,7 +156,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         var directoryName = Path.GetDirectoryName(name);
         var filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
         MemoryStream stream = null;
-        (string outputPath, Stream outputStream)? output = null;
+        (string outputPath, Stream outputStream) output = (null, null); // Initialize the tuple to avoid CS0170
 
         try
         {
@@ -165,8 +165,9 @@ public class MetaWeblogHandler : IXmlRpcHandler
             {
                 Path = filePath,
             };
+
             output = await _mediaFileStore.CreateMediaFileFromStreamAsync(context, stream);
-            filePath = output != null ? output.Value.outputPath : filePath;            
+            filePath = string.IsNullOrEmpty(output.outputPath) ? filePath : output.outputPath;
         }
         finally
         {
@@ -175,9 +176,9 @@ public class MetaWeblogHandler : IXmlRpcHandler
                 await stream.DisposeAsync();
             }
 
-            if (output?.outputStream != null )
+            if (output.outputStream is not null)
             {
-                await output.Value.outputStream.DisposeAsync();
+                await output.outputStream.DisposeAsync();
             }
         }
 
