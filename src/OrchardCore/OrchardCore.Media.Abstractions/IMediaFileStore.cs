@@ -36,6 +36,10 @@ public interface IMediaFileStore : IFileStore
     /// If the specified path contains one or more directories, then those directories are
     /// created if they do not already exist.
     /// </remarks>
-    Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(MediaCreatingContext context, Stream inputStream, bool overwrite = false) => Task.FromResult((context.Path, inputStream));
+    async Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(MediaCreatingContext context, Stream inputStream, bool overwrite = false)
+    {
+        var outputPath = await CreateFileFromStreamAsync(context.Path, inputStream, overwrite);
+        return (outputPath, inputStream);
+    }
 
 }
