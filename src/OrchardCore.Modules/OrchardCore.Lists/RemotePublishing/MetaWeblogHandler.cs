@@ -156,7 +156,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         var directoryName = Path.GetDirectoryName(name);
         var filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
         MemoryStream stream = null;
-        (string outputPath, Stream outputStream) output = (null, null); // Initialize the tuple to avoid CS0170
+        (string outputPath, Stream outputStream) output = default;
 
         try
         {
