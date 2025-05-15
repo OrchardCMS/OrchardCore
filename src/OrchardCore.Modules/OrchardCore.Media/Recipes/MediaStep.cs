@@ -48,7 +48,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
             Stream stream = null;
             HttpResponseMessage response = null;
-            (string outputPath, Stream outputStream)? output = null;
+            (string outputPath, Stream outputStream) output = (null, null); // Initialize the tuple to avoid CS0170
 
             try
             {
@@ -80,6 +80,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
                     {
                         Path = file.TargetPath,
                     };
+
                     output = await _mediaFileStore.CreateMediaFileFromStreamAsync(mediaContext, stream, true);                    
                 }
             }
@@ -96,9 +97,9 @@ public sealed class MediaStep : NamedRecipeStepHandler
                     response.Dispose();
                 }
 
-                if (output?.outputStream != null)
+                if (output.outputStream != null)
                 {
-                    await output.Value.outputStream.DisposeAsync();
+                    await output.outputStream.DisposeAsync();
                 }
             }
         }
