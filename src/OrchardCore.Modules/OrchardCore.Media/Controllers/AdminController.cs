@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Events;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
@@ -238,7 +239,11 @@ public sealed class AdminController : Controller
                     {
                         var mediaFilePath = _mediaFileStore.Combine(path, fileName);
                         stream = file.OpenReadStream();
-                        var (outputPath, outputStream) = await _mediaFileStore.CreateMediaFileFromStreamAsync(mediaFilePath, stream);
+                        var context = new MediaCreatingContext
+                        {
+                            Path = mediaFilePath,
+                        };
+                        var (outputPath, outputStream) = await _mediaFileStore.CreateMediaFileFromStreamAsync(context, stream);
                         // Dispose the original stream if it was replaced
                         if (stream != outputStream)
                         {

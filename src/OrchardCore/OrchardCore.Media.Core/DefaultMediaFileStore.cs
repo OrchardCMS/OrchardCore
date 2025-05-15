@@ -156,7 +156,12 @@ public class DefaultMediaFileStore : IMediaFileStore
 
     public virtual async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
     {
-        var (outputPath, outputStream) = await CreateMediaFileFromStreamAsync(path, inputStream);
+        var context = new MediaCreatingContext
+        {
+            Path = path,
+        };
+
+        var (outputPath, outputStream) = await CreateMediaFileFromStreamAsync(context, inputStream);
         if (inputStream != outputStream)
         {
             await outputStream.DisposeAsync();
@@ -164,18 +169,13 @@ public class DefaultMediaFileStore : IMediaFileStore
         return outputPath;
     }
 
-    public async Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+    public async Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(MediaCreatingContext context, Stream inputStream, bool overwrite = false)
     {
-        string resultPath = path;
+        string resultPath = context.Path;
         Stream outputStream = inputStream; // Default to the original inputStream
 
         if (_mediaCreatingEventHandlers.Any())
         {
-            var context = new MediaCreatingContext
-            {
-                Path = path,
-            };
-
             // Iterate through all media creating event handlers
             foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
             {
@@ -203,7 +203,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         else
         {
             // If no handlers are present, directly create the file
-            resultPath = await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+            resultPath = await _fileStore.CreateFileFromStreamAsync(context.Path, inputStream, overwrite);
 
         }
 

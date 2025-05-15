@@ -1,4 +1,5 @@
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Events;
 
 namespace OrchardCore.Media;
 
@@ -17,7 +18,7 @@ public interface IMediaFileStore : IFileStore
     /// <summary>
     /// Creates a new file in the file store from the contents of an input stream.
     /// </summary>
-    /// <param name="path">The path of the file to be created.</param>
+    /// <param name="context">The <see cref="MediaCreatingContext"/> which contains the path of the file to be created.</param>
     /// <param name="inputStream">The stream whose contents to write to the new file.</param>
     /// <param name="overwrite"><c>true</c> to overwrite if a file already exists; <c>false</c> to throw an exception if the file already exists.</param>
     /// <returns>
@@ -35,6 +36,6 @@ public interface IMediaFileStore : IFileStore
     /// If the specified path contains one or more directories, then those directories are
     /// created if they do not already exist.
     /// </remarks>
-    Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false) => Task.FromResult((path, inputStream));
+    Task<(string outputPath, Stream outputStream)> CreateMediaFileFromStreamAsync(MediaCreatingContext context, Stream inputStream, bool overwrite = false) => Task.FromResult((context.Path, inputStream));
 
 }

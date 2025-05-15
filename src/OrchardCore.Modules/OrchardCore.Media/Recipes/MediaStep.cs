@@ -1,7 +1,9 @@
+using System.IO;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Media.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -74,7 +76,11 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
                 if (stream != null)
                 {
-                    output = await _mediaFileStore.CreateMediaFileFromStreamAsync(file.TargetPath, stream, true);                    
+                    var mediaContext = new MediaCreatingContext
+                    {
+                        Path = file.TargetPath,
+                    };
+                    output = await _mediaFileStore.CreateMediaFileFromStreamAsync(mediaContext, stream, true);                    
                 }
             }
             finally

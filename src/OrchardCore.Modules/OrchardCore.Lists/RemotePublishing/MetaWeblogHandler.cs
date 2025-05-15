@@ -1,3 +1,4 @@
+using System.IO;
 using System.Security.Claims;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ using OrchardCore.FileStorage;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using OrchardCore.Media;
+using OrchardCore.Media.Events;
 using OrchardCore.MetaWeblog;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
@@ -159,7 +161,11 @@ public class MetaWeblogHandler : IXmlRpcHandler
         try
         {
             stream = new MemoryStream(bits);
-            output = await _mediaFileStore.CreateMediaFileFromStreamAsync(filePath, stream);
+            var context = new MediaCreatingContext
+            {
+                Path = filePath,
+            };
+            output = await _mediaFileStore.CreateMediaFileFromStreamAsync(context, stream);
             filePath = output != null ? output.Value.outputPath : filePath;            
         }
         finally
