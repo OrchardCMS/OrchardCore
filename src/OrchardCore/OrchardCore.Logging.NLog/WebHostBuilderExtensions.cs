@@ -20,15 +20,12 @@ public static class WebHostBuilderExtensions
                 var environment = context.HostingEnvironment;
                 var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
                 var configDir = string.IsNullOrWhiteSpace(appData) ? Path.Combine(environment.ContentRootPath, ShellOptionConstants.DefaultAppDataPath) : appData;
+                var loggerConfiguration = LogManager.Configuration;
 
-                if (LogManager.Configuration is null)
+                if(loggerConfiguration is not null)
                 {
-                    // Use ConfigureNLog to create a new LoggingConfiguration if none exists.
-                    // Use a default config file name, e.g., "NLog.config"
-                    LogManager.Configuration = environment.ConfigureNLog("NLog.config");
+                    loggerConfiguration.Variables["configDir"] = configDir;
                 }
-
-                LogManager.Configuration.Variables["configDir"] = configDir;
             });
     }
 }
