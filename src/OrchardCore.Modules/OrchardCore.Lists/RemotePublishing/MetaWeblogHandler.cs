@@ -1,3 +1,4 @@
+using System.IO;
 using System.Security.Claims;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ using OrchardCore.FileStorage;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using OrchardCore.Media;
+using OrchardCore.Media.Events;
 using OrchardCore.MetaWeblog;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
@@ -153,15 +155,31 @@ public class MetaWeblogHandler : IXmlRpcHandler
 
         var directoryName = Path.GetDirectoryName(name);
         var filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
-        Stream stream = null;
+        MemoryStream stream = null;
+        (string outputPath, Stream outputStream) output = default;
+
         try
         {
             stream = new MemoryStream(bits);
-            filePath = await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream);
+            var context = new MediaCreatingContext
+            {
+                Path = filePath,
+            };
+
+            output = await _mediaFileStore.CreateMediaFileFromStreamAsync(context, stream);
+            filePath = string.IsNullOrEmpty(output.outputPath) ? filePath : output.outputPath;
         }
         finally
         {
-            stream?.Dispose();
+            if (stream != null)
+            {
+                await stream.DisposeAsync();
+            }
+
+            if (output.outputStream is not null)
+            {
+                await output.outputStream.DisposeAsync();
+            }
         }
 
         var publicUrl = _mediaFileStore.MapPathToPublicUrl(filePath);
