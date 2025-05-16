@@ -194,11 +194,10 @@ public sealed class AdminController : Controller
 
         var allowedExtensions = GetRequestedExtensions(extensions, true);
 
-        return await _chunkFileUploadService.ProcessRequestAsync(
+        var result = await _chunkFileUploadService.ProcessRequestAsync(
             Request,
-
-            // We need this empty object because the frontend expects a JSON object in the response.
-            (_, _, _) => Task.FromResult<IActionResult>(Ok(new { })),
+            // Return an empty object for chunked uploads.
+            (_, _, _) => Task.FromResult<object>(new { }),
             async (files) =>
             {
                 if (string.IsNullOrEmpty(path))
@@ -206,7 +205,7 @@ public sealed class AdminController : Controller
                     path = string.Empty;
                 }
 
-                var result = new List<object>();
+                var resultList = new List<object>();
 
                 // Loop through each file in the request.
                 foreach (var file in files)
@@ -215,7 +214,7 @@ public sealed class AdminController : Controller
 
                     if (!allowedExtensions.Contains(extension))
                     {
-                        result.Add(new
+                        resultList.Add(new
                         {
                             name = file.FileName,
                             size = file.Length,
@@ -242,10 +241,6 @@ public sealed class AdminController : Controller
 
                         var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
-                        // The .NET AWS SDK, and only that from the built-in ones (but others maybe too), disposes
-                        // the stream. There's no better way to check for that than handling the exception. An
-                        // alternative would be to re-read the file for every other storage provider as well but
-                        // that would be wasteful.
                         try
                         {
                             stream.Position = 0;
@@ -257,13 +252,13 @@ public sealed class AdminController : Controller
 
                         await PreCacheRemoteMedia(mediaFile, stream);
 
-                        result.Add(CreateFileResult(mediaFile));
+                        resultList.Add(CreateFileResult(mediaFile));
                     }
                     catch (ExistsFileStoreException ex)
                     {
                         _logger.LogWarning(ex, "An error occurred while uploading a media");
 
-                        result.Add(new
+                        resultList.Add(new
                         {
                             name = fileName,
                             size = file.Length,
@@ -275,7 +270,7 @@ public sealed class AdminController : Controller
                     {
                         _logger.LogError(ex, "An error occurred while uploading a media");
 
-                        result.Add(new
+                        resultList.Add(new
                         {
                             name = fileName,
                             size = file.Length,
@@ -289,8 +284,11 @@ public sealed class AdminController : Controller
                     }
                 }
 
-                return Ok(new { files = result.ToArray() });
+                // Return a plain object, not IActionResult/Ok().
+                return new { files = resultList.ToArray() };
             });
+
+        return new JsonResult(result);
     }
 
     [HttpPost]
