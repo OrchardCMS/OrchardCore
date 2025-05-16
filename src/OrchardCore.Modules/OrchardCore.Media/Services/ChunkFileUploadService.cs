@@ -32,10 +32,10 @@ public class ChunkFileUploadService : IChunkFileUploadService
         _tempFileNamePrefix = $"{shellSettings.TenantId}_";
     }
 
-    public async Task<IActionResult> ProcessRequestAsync(
+    public async Task<object> ProcessRequestAsync(
         HttpRequest request,
-        Func<Guid, IFormFile, ContentRangeHeaderValue, Task<IActionResult>> chunkAsync,
-        Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync)
+        Func<Guid, IFormFile, ContentRangeHeaderValue, Task<object>> chunkAsync,
+        Func<IEnumerable<IFormFile>, Task<object>> completedAsync)
     {
         var contentRangeHeader = request.Headers.ContentRange;
 
@@ -54,7 +54,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
             contentRange.Length > _options.Value.MaxFileSize ||
             contentRange.To - contentRange.From > _options.Value.MaxUploadChunkSize)
         {
-            return new BadRequestResult();
+            return new { error = "Bad request" };
         }
 
         var formFile = request.Form.Files[0];
@@ -72,10 +72,10 @@ public class ChunkFileUploadService : IChunkFileUploadService
             : await chunkAsync(uploadId, formFile, contentRange);
     }
 
-    private async Task<IActionResult> CompleteUploadAsync(
+    private async Task<object> CompleteUploadAsync(
         Guid uploadId,
         IFormFile formFile,
-        Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync)
+        Func<IEnumerable<IFormFile>, Task<object>> completedAsync)
     {
         try
         {
