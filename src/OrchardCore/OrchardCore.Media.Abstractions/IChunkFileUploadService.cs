@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace OrchardCore.Media;
 
