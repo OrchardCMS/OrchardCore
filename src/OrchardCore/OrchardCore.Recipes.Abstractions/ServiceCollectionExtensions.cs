@@ -9,10 +9,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRecipeExecutionStep<TImplementation>(this IServiceCollection services)
         where TImplementation : class, IRecipeStepHandler
     {
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Scoped<IRecipeStepHandler, TImplementation>(),
-        });
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IRecipeStepHandler, TImplementation>());
 
         return services;
     }

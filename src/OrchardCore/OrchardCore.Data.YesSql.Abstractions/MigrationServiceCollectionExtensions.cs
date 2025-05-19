@@ -11,10 +11,7 @@ public static class MigrationServiceCollectionExtensions
     public static IServiceCollection AddDataMigration<TDataMigration>(this IServiceCollection services)
         where TDataMigration : class, IDataMigration
     {
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Scoped<IDataMigration, TDataMigration>(),
-        });
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IDataMigration, TDataMigration>());
 
         return services;
     }

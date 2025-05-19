@@ -16,10 +16,7 @@ public static class SiteServiceCollectionExtensions
     public static IServiceCollection AddDisplayDriver<TModel, TDriver>(this IServiceCollection services)
         where TDriver : class, IDisplayDriver<TModel>
     {
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Scoped<IDisplayDriver<TModel>, TDriver>(),
-        });
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IDisplayDriver<TModel>, TDriver>());
 
         return services;
     }

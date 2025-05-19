@@ -8,10 +8,7 @@ public static class PermissionsServiceCollectionExtensions
     public static IServiceCollection AddPermissionProvider<TProvider>(this IServiceCollection services)
         where TProvider : class, IPermissionProvider
     {
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Scoped<IPermissionProvider, TProvider>(),
-        });
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IPermissionProvider, TProvider>());
 
         return services;
     }

@@ -15,10 +15,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddResourceConfiguration<T>(this IServiceCollection services)
         where T : class, IConfigureOptions<ResourceManagementOptions>
     {
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Transient<IConfigureOptions<ResourceManagementOptions>, T>(),
-        });
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<ResourceManagementOptions>, T>());
 
         return services;
     }
