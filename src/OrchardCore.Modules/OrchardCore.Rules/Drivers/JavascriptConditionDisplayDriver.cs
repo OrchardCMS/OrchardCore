@@ -71,7 +71,7 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
             {
                 ConditionId = condition.ConditionId,
                 Name = condition.Name,
-                Script = model.Script
+                Script = model.Script,
             });
             condition.Script = model.Script;
         }

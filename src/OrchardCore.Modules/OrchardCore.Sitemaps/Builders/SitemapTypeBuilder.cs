@@ -18,7 +18,7 @@ public class SitemapTypeBuilder : SitemapTypeBuilderBase<Sitemap>
     {
         context.Response = new SitemapResponse
         {
-            ResponseElement = new XElement(_namespace + "urlset")
+            ResponseElement = new XElement(_namespace + "urlset"),
         };
 
         foreach (var source in sitemap.SitemapSources)

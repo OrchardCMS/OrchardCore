@@ -205,7 +205,7 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
     {
         var cookieOptions = new CookieOptions
         {
-            HttpOnly = true
+            HttpOnly = true,
         };
 
         if (httpContext.Request.PathBase.HasValue)

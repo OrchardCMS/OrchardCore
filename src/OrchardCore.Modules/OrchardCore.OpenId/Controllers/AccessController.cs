@@ -52,7 +52,7 @@ public sealed class AccessController : Controller
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -95,7 +95,7 @@ public sealed class AccessController : Controller
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The logged in user is not allowed to access this client application."
+                        "The logged in user is not allowed to access this client application.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
             case ConsentTypes.Implicit:
@@ -129,14 +129,14 @@ public sealed class AccessController : Controller
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "Interactive user consent is required."
+                        "Interactive user consent is required.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
             default:
                 return View(new AuthorizeViewModel
                 {
                     ApplicationName = await _applicationManager.GetLocalizedDisplayNameAsync(application),
-                    Scope = request.Scope
+                    Scope = request.Scope,
                 });
         }
 
@@ -149,7 +149,7 @@ public sealed class AccessController : Controller
                 return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
-                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is not logged in."
+                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is not logged in.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
@@ -170,7 +170,7 @@ public sealed class AccessController : Controller
 
             return Challenge(new AuthenticationProperties
             {
-                RedirectUri = GetRedirectUrl()
+                RedirectUri = GetRedirectUrl(),
             });
         }
     }
@@ -214,7 +214,7 @@ public sealed class AccessController : Controller
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -244,7 +244,7 @@ public sealed class AccessController : Controller
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The logged in user is not allowed to access this client application."
+                        "The logged in user is not allowed to access this client application.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
             default:
@@ -283,7 +283,7 @@ public sealed class AccessController : Controller
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -305,7 +305,7 @@ public sealed class AccessController : Controller
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -339,7 +339,7 @@ public sealed class AccessController : Controller
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -376,7 +376,7 @@ public sealed class AccessController : Controller
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -432,7 +432,7 @@ public sealed class AccessController : Controller
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidScope,
                 [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                    "The 'offline_access' scope is not allowed when using the client credentials grant."
+                    "The 'offline_access' scope is not allowed when using the client credentials grant.",
             }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
@@ -494,7 +494,7 @@ public sealed class AccessController : Controller
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnsupportedGrantType,
                 [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                    "The resource owner password credentials grant is not supported."
+                    "The resource owner password credentials grant is not supported.",
             }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
@@ -505,7 +505,7 @@ public sealed class AccessController : Controller
             return Forbid(new AuthenticationProperties(new Dictionary<string, string>
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = error
+                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = error,
             }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
@@ -527,7 +527,7 @@ public sealed class AccessController : Controller
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The logged in user is not allowed to access this client application."
+                        "The logged in user is not allowed to access this client application.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
@@ -570,7 +570,7 @@ public sealed class AccessController : Controller
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnauthorizedClient,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The refresh token grant type is not allowed for refresh tokens retrieved using the client credentials flow."
+                        "The refresh token grant type is not allowed for refresh tokens retrieved using the client credentials flow.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
         }
@@ -628,7 +628,7 @@ public sealed class AccessController : Controller
                 return new[]
                 {
                     Destinations.AccessToken,
-                    Destinations.IdentityToken
+                    Destinations.IdentityToken,
                 };
 
             default: return new[] { Destinations.AccessToken };
@@ -642,7 +642,7 @@ public sealed class AccessController : Controller
         // located in the current tenant without having to explicitly register a scope.
         var resources = new List<string>()
         {
-            OpenIdConstants.Prefixes.Tenant + _shellSettings.Name
+            OpenIdConstants.Prefixes.Tenant + _shellSettings.Name,
         };
 
         await foreach (var resource in _scopeManager.ListResourcesAsync(scopes))

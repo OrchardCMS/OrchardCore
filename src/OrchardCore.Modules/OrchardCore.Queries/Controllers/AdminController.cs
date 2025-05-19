@@ -93,7 +93,7 @@ public sealed class AdminController : Controller
             model.Queries.Add(new QueryEntry
             {
                 Query = query,
-                Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)
+                Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin),
             });
         }
 
@@ -111,7 +111,7 @@ public sealed class AdminController : Controller
     public ActionResult IndexFilterPOST(QueriesIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create(string id)
@@ -131,7 +131,7 @@ public sealed class AdminController : Controller
         var model = new QueriesCreateViewModel
         {
             Editor = await _displayManager.BuildEditorAsync(query, _updateModelAccessor.ModelUpdater, true),
-            SourceName = id
+            SourceName = id,
         };
 
         return View(model);
@@ -188,7 +188,7 @@ public sealed class AdminController : Controller
         {
             QueryId = id,
             Name = query.Name,
-            Editor = await _displayManager.BuildEditorAsync(query, _updateModelAccessor.ModelUpdater, false)
+            Editor = await _displayManager.BuildEditorAsync(query, _updateModelAccessor.ModelUpdater, false),
         };
 
         return View(model);

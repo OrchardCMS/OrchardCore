@@ -155,13 +155,13 @@ public class DataLocalizerTests
                 new("Blog", _context, new[] { "مدونة" }),
                 new("Menu", _context, new[] { "قائمة" }),
                 new("Page", _context, new[] { "صفحة" }),
-                new("Article", _context, new[] { "مقالة" })
+                new("Article", _context, new[] { "مقالة" }),
         });
 
         SetupDictionary("ar-YE", new CultureDictionaryRecord[]
         {
                 new("Blog", _context, new[] { "مدونة" }),
-                new("Product", _context, new[] { "منتج" })
+                new("Product", _context, new[] { "منتج" }),
         });
 
         var localizer = new DataLocalizer(new DataResourceManager(_dataTranslationProviderMock.Object, GetMemoryCache()), includeParentCultures, _logger);

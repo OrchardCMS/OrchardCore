@@ -37,7 +37,7 @@ public class ObjectGraphTypeFieldProvider : IContentFieldProvider
 
                     var contentField = contentPart?.Get(typeToResolve, field.Name);
                     return contentField;
-                })
+                }),
             };
         }
 

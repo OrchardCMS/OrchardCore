@@ -54,7 +54,7 @@ public sealed class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartD
                 var settings = new HtmlBodyPartTrumbowygEditorSettings
                 {
                     InsertMediaWithUrl = model.InsertMediaWithUrl,
-                    Options = options
+                    Options = options,
                 };
 
                 context.Builder.WithSettings(settings);

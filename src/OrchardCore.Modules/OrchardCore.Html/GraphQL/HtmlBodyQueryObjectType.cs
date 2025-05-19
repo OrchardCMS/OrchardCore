@@ -44,7 +44,7 @@ public class HtmlBodyQueryObjectType : ObjectGraphType<HtmlBodyPart>
             {
                 Html = ctx.Source.Html,
                 HtmlBodyPart = ctx.Source,
-                ContentItem = ctx.Source.ContentItem
+                ContentItem = ctx.Source.ContentItem,
             };
             var liquidTemplateManager = ctx.RequestServices.GetRequiredService<ILiquidTemplateManager>();
             var htmlEncoder = ctx.RequestServices.GetService<HtmlEncoder>();
@@ -56,7 +56,7 @@ public class HtmlBodyQueryObjectType : ObjectGraphType<HtmlBodyPart>
             new Context
             {
                 ["ContentItem"] = ctx.Source.ContentItem,
-                ["TypePartDefinition"] = contentTypePartDefinition
+                ["TypePartDefinition"] = contentTypePartDefinition,
             });
     }
 }

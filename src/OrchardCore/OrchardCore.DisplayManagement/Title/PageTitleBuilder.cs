@@ -28,7 +28,7 @@ public class PageTitleBuilder : IPageTitleBuilder
         _titleParts.Add(new PositionalTitlePart
         {
             Value = titlePart,
-            Position = position
+            Position = position,
         });
     }
 

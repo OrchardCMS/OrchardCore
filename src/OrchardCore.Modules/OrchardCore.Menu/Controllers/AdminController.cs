@@ -228,7 +228,7 @@ public sealed class AdminController : Controller
         menuItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
         {
             MergeArrayHandling = MergeArrayHandling.Replace,
-            MergeNullValueHandling = MergeNullValueHandling.Merge
+            MergeNullValueHandling = MergeNullValueHandling.Merge,
         });
 
         // Merge doesn't copy the properties.

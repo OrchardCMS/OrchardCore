@@ -68,7 +68,7 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
                 new Context
                 {
                     ["ContentItem"] = field.ContentItem,
-                    ["PartFieldDefinition"] = context.PartFieldDefinition
+                    ["PartFieldDefinition"] = context.PartFieldDefinition,
                 });
 
             if (settings.SanitizeHtml)

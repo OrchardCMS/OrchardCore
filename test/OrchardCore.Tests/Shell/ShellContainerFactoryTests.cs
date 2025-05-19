@@ -175,7 +175,7 @@ public class ShellContainerFactoryTests
         {
             Settings = new ShellSettings(),
             Descriptor = new ShellDescriptor(),
-            Dependencies = new Dictionary<Type, IEnumerable<IFeatureInfo>>()
+            Dependencies = new Dictionary<Type, IEnumerable<IFeatureInfo>>(),
         };
     }
 

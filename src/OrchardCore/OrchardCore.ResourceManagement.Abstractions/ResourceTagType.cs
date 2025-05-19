@@ -40,5 +40,5 @@ public enum ResourceTagType
     /// <summary>
     /// Resources that should be rendered inside the <c>/html/head</c> element, near the end of the document.
     /// </summary>
-    Footer
+    Footer,
 }

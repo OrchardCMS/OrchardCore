@@ -14,7 +14,7 @@ public class ContentTypeDataLocalizationProviderTests
             .ReturnsAsync(() => new List<EditTypeViewModel> {
                 new() { DisplayName = "Article" },
                 new() { DisplayName = "BlogPost" },
-                new() { DisplayName = "News" }
+                new() { DisplayName = "News" },
             });
 
         //_contentTypeDataLocalizationProvider = new ContentTypeDataLocalizationProvider(contentDefinitionService.Object);

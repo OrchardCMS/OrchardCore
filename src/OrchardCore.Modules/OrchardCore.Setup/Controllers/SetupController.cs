@@ -151,7 +151,7 @@ public sealed class SetupController : Controller
                 { SetupConstants.AdminEmail, model.Email },
                 { SetupConstants.AdminPassword, model.Password },
                 { SetupConstants.SiteTimeZone, model.SiteTimeZone },
-            }
+            },
         };
 
         if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))

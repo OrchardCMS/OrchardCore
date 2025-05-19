@@ -15,7 +15,7 @@ public static class ContentExtensions
     private static readonly JsonMergeSettings _jsonMergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
-        MergeNullValueHandling = MergeNullValueHandling.Merge
+        MergeNullValueHandling = MergeNullValueHandling.Merge,
     };
 
     private static readonly JsonSerializerOptions _jsonReadExistingObjectSettings = new(JOptions.Default)

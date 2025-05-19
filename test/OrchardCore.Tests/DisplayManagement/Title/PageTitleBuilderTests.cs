@@ -129,7 +129,7 @@ public class PageTitleBuilderTests
         var elements = new IHtmlContent[]
         {
             new HtmlString(FirstPartTitle),
-            new HtmlString(SecondPartTitle)
+            new HtmlString(SecondPartTitle),
         };
 
         pageTitleBuilder.AddSegments(elements, "after");

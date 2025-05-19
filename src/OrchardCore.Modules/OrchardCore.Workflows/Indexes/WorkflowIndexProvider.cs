@@ -33,7 +33,7 @@ public class WorkflowIndexProvider : IndexProvider<Workflow>
                     WorkflowTypeId = workflow.WorkflowTypeId,
                     WorkflowId = workflow.WorkflowId,
                     CreatedUtc = workflow.CreatedUtc,
-                    WorkflowStatus = (int)workflow.Status
+                    WorkflowStatus = (int)workflow.Status,
                 }
             );
 
@@ -47,7 +47,7 @@ public class WorkflowIndexProvider : IndexProvider<Workflow>
                     ActivityIsStart = x.IsStart,
                     WorkflowTypeId = workflow.WorkflowTypeId,
                     WorkflowId = workflow.WorkflowId,
-                    WorkflowCorrelationId = workflow.CorrelationId ?? ""
+                    WorkflowCorrelationId = workflow.CorrelationId ?? "",
                 })
             );
     }

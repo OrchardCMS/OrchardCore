@@ -89,7 +89,7 @@ public class ShellContextFactory : IShellContextFactory
             {
                 Settings = settings,
                 Blueprint = blueprint,
-                ServiceProvider = provider
+                ServiceProvider = provider,
             };
         }
         finally
@@ -111,7 +111,7 @@ public class ShellContextFactory : IShellContextFactory
         return new ShellDescriptor
         {
             SerialNumber = -1,
-            Features = new List<ShellFeature>(_shellFeatures)
+            Features = new List<ShellFeature>(_shellFeatures),
         };
     }
 }

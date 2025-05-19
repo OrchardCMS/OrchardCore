@@ -46,7 +46,7 @@ public class MediaSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
                     // Request form has not been read yet, so set the limits
                     var formOptions = new FormOptions
                     {
-                        MultipartBodyLengthLimit = _maxFileSize
+                        MultipartBodyLengthLimit = _maxFileSize,
                     };
 
                     features.Set<IFormFeature>(new FormFeature(context.HttpContext.Request, formOptions));

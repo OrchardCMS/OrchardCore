@@ -17,9 +17,11 @@ Enabling this feature will introduce a new tab labeled **Azure Communication Ser
 You may configure the **Default Azure Communication Services** using any configuration provider via the following settings:
 
 ```json
-"OrchardCore_Sms_AzureCommunicationServices": {
+{
+  "OrchardCore_Sms_AzureCommunicationServices": {
     "PhoneNumber": "",
     "ConnectionString": ""
+  }
 }
 ```
 

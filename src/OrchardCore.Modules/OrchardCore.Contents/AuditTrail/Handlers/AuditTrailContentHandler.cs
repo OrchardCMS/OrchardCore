@@ -91,7 +91,7 @@ public class AuditTrailContentHandler : ContentHandlerBase
                 new AuditTrailContentEvent
                 {
                     ContentItem = content.ContentItem,
-                    VersionNumber = versionNumber
+                    VersionNumber = versionNumber,
                 }
             ));
     }

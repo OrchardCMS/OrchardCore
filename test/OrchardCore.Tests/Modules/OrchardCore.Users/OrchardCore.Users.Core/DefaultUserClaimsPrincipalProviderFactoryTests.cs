@@ -29,7 +29,7 @@ public class DefaultUserClaimsPrincipalProviderFactoryTests
 
         var claimsProviders = new List<IUserClaimsProvider>()
         {
-            new EmailClaimsProvider(userManager.Object)
+            new EmailClaimsProvider(userManager.Object),
         };
 
         var factory = new DefaultUserClaimsPrincipalProviderFactory(userManager.Object, options.Object, claimsProviders, null);

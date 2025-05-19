@@ -37,7 +37,7 @@ internal sealed class WorkflowTypeRouteEntries : WorkflowRouteEntries<WorkflowTy
                 WorkflowId = workflowType.Id.ToString(),
                 ActivityId = x.ActivityId,
                 HttpMethod = activity.HttpMethod,
-                RouteValues = activity.RouteValues
+                RouteValues = activity.RouteValues,
             };
 
             return entry;

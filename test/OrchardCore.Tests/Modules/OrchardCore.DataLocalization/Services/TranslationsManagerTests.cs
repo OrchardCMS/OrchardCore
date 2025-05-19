@@ -72,7 +72,7 @@ public class TranslationsManagerTests
                 Context = "Content Field",
                 Key = "Content Field:Name",
                 Value = "Name",
-            }
+            },
         });
         document.Translations.Add("es", new List<Translation> {
              new() {
@@ -89,7 +89,7 @@ public class TranslationsManagerTests
                 Context = "Content Field",
                 Key = "Content Field:Name",
                 Value = "Nombre",
-            }
+            },
         });
         document.Translations.Add("fr", new List<Translation> {
              new() {
@@ -111,7 +111,7 @@ public class TranslationsManagerTests
                 Context = "Content Field",
                 Key = "Content Field:Name",
                 Value = "Nome",
-            }
+            },
         });
 
         return document;

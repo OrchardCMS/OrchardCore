@@ -52,7 +52,7 @@ public class ModularTenantContainerMiddleware
             {
                 ShellContext = shellScope.ShellContext,
                 OriginalPath = httpContext.Request.Path,
-                OriginalPathBase = httpContext.Request.PathBase
+                OriginalPathBase = httpContext.Request.PathBase,
             });
 
             await shellScope.UsingAsync(async scope =>

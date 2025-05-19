@@ -40,7 +40,7 @@ public sealed class AllRolesDeploymentSource
                     {
                         Name = r.RoleName,
                         Description = r.RoleDescription,
-                        Permissions = r.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
+                        Permissions = r.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray(),
                     }));
             }
         }

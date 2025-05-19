@@ -525,7 +525,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
                 var validateFieldContentContext = new ValidateContentFieldContext(context.ContentItem)
                 {
                     ContentPartFieldDefinition = partFieldDefinition,
-                    PartName = typePartDefinition.Name ?? partName
+                    PartName = typePartDefinition.Name ?? partName,
                 };
 
                 var fieldHandlers = _contentFieldHandlerResolver.GetHandlers(fieldName);

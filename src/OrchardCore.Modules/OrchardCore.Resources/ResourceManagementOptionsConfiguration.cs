@@ -233,6 +233,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("jQuery.nestedSortable")
+            .SetDependencies("jQuery-ui")
             .SetUrl("~/OrchardCore.Resources/Scripts/jquery.mjs.nestedSortable.js")
             .SetCdn(
                 "https://cdn.jsdelivr.net/npm/nestedSortable@1.3.4/jquery.mjs.nestedSortable.js"
@@ -344,14 +345,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Scripts/bootstrap.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js",
-                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.js"
+                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js",
+                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.js"
             )
             .SetCdnIntegrity(
-                "sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy",
-                "sha384-jYoAmFjufJZfBzwTARyz2gk7Jj9mQb2cLeP9n5PcgLCVVd+8QfjY1+qFj+rBkViV"
+                "sha384-RuyvpeZCxMJCqVUGFI0Do1mQrods/hhxYlcVfGPOfQtPJh0JCw12tUAZ/Mv10S7D",
+                "sha384-C9UM413hb6FwXolzfmHwD3g+I5Cz3d2oBxqoWkzxe7IU27p1bGfZLZUYPIvfqABE"
             )
-            .SetVersion("5.3.3");
+            .SetVersion("5.3.6");
 
         manifest
             .DefineScript("bootstrap-bundle")
@@ -361,14 +362,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Scripts/bootstrap.bundle.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.js"
+                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js",
+                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.js"
             )
             .SetCdnIntegrity(
-                "sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz",
-                "sha384-5xO2n1cyGKAe630nacBqFQxWoXjUIkhoc/FxQrWM07EIZ3TuqkAsusDeyPDOIeid"
+                "sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO",
+                "sha384-tcxuNjmU/dcp769u0TRMOD45CdtuScYrGA1/LBcwQA8Oex/WkXW5maQM1hIIbSvF"
             )
-            .SetVersion("5.3.3");
+            .SetVersion("5.3.6");
 
         manifest
             .DefineStyle("bootstrap")
@@ -377,14 +378,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Styles/bootstrap.css"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
-                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.css"
+                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css",
+                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.css"
             )
             .SetCdnIntegrity(
-                "sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH",
-                "sha384-qAlWxD5RDF+aEdUc1Z7GR/tE4zYjX1Igo/LrIexlnzM6G63a6F1fXZWpZKSrSW86"
+                "sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT",
+                "sha384-GxnqyHfAEqlHYcukmQgKA5lCv68Ax5EzStGToZaMSJhmpYozqDWsgMwEahPt2Zti"
             )
-            .SetVersion("5.3.3");
+            .SetVersion("5.3.6");
 
         manifest
             .DefineStyle("bootstrap-rtl")
@@ -393,14 +394,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Styles/bootstrap.rtl.css"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css",
-                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.css"
+                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.rtl.min.css",
+                "https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.rtl.css"
             )
             .SetCdnIntegrity(
-                "sha384-nU14brUcp6StFntEOOEBvcJm4huWjB0OcIeQ3fltAfSmuZFrkAif0T+UtNGlKKQv",
-                "sha384-CEku08bnqQAT/vzi6/zxMQmSyxoOTK1jx7mbT8P7etf/YhPbxASCX5BIVuAK9sfy"
+                "sha384-MdqCcafa5BLgxBDJ3d/4D292geNL64JyRtSGjEszRUQX9rhL1QkcnId+OT7Yw+D+",
+                "sha384-o1oA8P0dbQ3VrAYjwTUGeraS2iX7Vle6fz2bPmL9bFHo+cwrPvKuj6Q9SKbiRinq"
             )
-            .SetVersion("5.3.3");
+            .SetVersion("5.3.6");
 
         manifest
             .DefineStyle("bootstrap-select")
@@ -420,7 +421,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("bootstrap-select")
-            .SetDependencies("jQuery")
+            .SetDependencies("jQuery", "bootstrap")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/bootstrap-select.min.js",
                 "~/OrchardCore.Resources/Scripts/bootstrap-select.js"
@@ -478,6 +479,22 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetCdnIntegrity(
                 "sha384-zaeBlB/vwYsDRSlFajnDd7OydJ0cWk+c2OWybl3eSUf6hW2EbhlCsQPqKr3gkznT",
                 "sha384-bsaAhvdduZPAwUb7RRLRvDgtEtOsggrgjkr/EjPO1i/vdoi+DmdLaG79UOt6M5hD"
+            )
+            .SetVersion(CodeMirrorVersion);
+
+        manifest
+            .DefineStyle("monokai")
+            .SetUrl(
+                "~/OrchardCore.Resources/Styles/codemirror/theme/monokai.min.css",
+                "~/OrchardCore.Resources/Styles/codemirror/theme/monokai.css"
+            )
+            .SetCdn(
+                "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/monokai.min.css",
+                "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/monokai.css"
+            )
+            .SetCdnIntegrity(
+                "sha384-05WuhgjXiqmZzcQ3vQRQ39HN356Yqb+SnhvELzFtpwS5b2IlqE8QsOO5LCSJ2znj",
+                "sha384-TvEldXruOSfbCQy2x7urguD4uK2Pd6WSyfNEJ6DxgYUTkxlJi/Wr3VD1x9mHwDn2"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -1146,6 +1163,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("fontawesome-iconpicker")
+            .SetDependencies("jquery")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/fontawesome-iconpicker.min.js",
                 "~/OrchardCore.Resources/Scripts/fontawesome-iconpicker.js"

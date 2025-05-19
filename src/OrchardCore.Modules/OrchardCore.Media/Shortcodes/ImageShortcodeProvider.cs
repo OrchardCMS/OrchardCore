@@ -15,7 +15,7 @@ public class ImageShortcodeProvider : IShortcodeProvider
     private static readonly HashSet<string> _shortcodes = new(StringComparer.OrdinalIgnoreCase)
     {
         "image",
-        "media" // [media] is a deprecated shortcode, and can be removed in a future release.
+        "media", // [media] is a deprecated shortcode, and can be removed in a future release.
     };
 
     private readonly IMediaFileStore _mediaFileStore;

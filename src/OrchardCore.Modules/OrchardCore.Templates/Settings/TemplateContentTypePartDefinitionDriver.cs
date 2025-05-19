@@ -27,14 +27,14 @@ public sealed class TemplateContentTypePartDefinitionDriver : ContentTypePartDef
                 new ContentSettingsEntry
                 {
                     Key = $"{contentType}__{partName}",
-                    Description = S["Template for the {0} part in a {1} type in detail views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
+                    Description = S["Template for the {0} part in a {1} type in detail views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName],
                 });
 
             model.ContentSettingsEntries.Add(
                 new ContentSettingsEntry
                 {
                     Key = $"{contentType}_Summary__{partName}",
-                    Description = S["Template for the {0} part in a {1} type in summary views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
+                    Description = S["Template for the {0} part in a {1} type in summary views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName],
                 });
         }).Location("Shortcuts");
     }

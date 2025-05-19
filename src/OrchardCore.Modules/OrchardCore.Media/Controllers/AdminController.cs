@@ -98,7 +98,7 @@ public sealed class AdminController : Controller
         }
 
         var allowed = new List<IFileStoreEntry>();
-        
+
         await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path))
         {
             if (e.IsDirectory && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path))
@@ -119,7 +119,7 @@ public sealed class AdminController : Controller
                 LastModifiedUtc = folder.LastModifiedUtc,
                 Length = folder.Length,
                 CanCreateFolder = !isSpecial,
-                CanDeleteFolder = !isSpecial
+                CanDeleteFolder = !isSpecial,
             };
         }));
     }
@@ -145,7 +145,7 @@ public sealed class AdminController : Controller
         var allowedExtensions = GetRequestedExtensions(extensions, false);
 
         var allowed = new List<object>();
-        
+
         await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path))
         {
             if (!e.IsDirectory
@@ -220,7 +220,7 @@ public sealed class AdminController : Controller
                             name = file.FileName,
                             size = file.Length,
                             folder = path,
-                            error = S["This file extension is not allowed: {0}", extension].ToString()
+                            error = S["This file extension is not allowed: {0}", extension].ToString(),
                         });
 
                         if (_logger.IsEnabled(LogLevel.Information))
@@ -259,6 +259,18 @@ public sealed class AdminController : Controller
 
                         result.Add(CreateFileResult(mediaFile));
                     }
+                    catch (ExistsFileStoreException ex)
+                    {
+                        _logger.LogWarning(ex, "An error occurred while uploading a media");
+
+                        result.Add(new
+                        {
+                            name = fileName,
+                            size = file.Length,
+                            folder = path,
+                            error = ex.Message,
+                        });
+                    }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "An error occurred while uploading a media");
@@ -268,7 +280,7 @@ public sealed class AdminController : Controller
                             name = fileName,
                             size = file.Length,
                             folder = path,
-                            error = ex.Message
+                            error = ex.Message,
                         });
                     }
                     finally
@@ -506,7 +518,7 @@ public sealed class AdminController : Controller
             mime = contentType ?? "application/octet-stream",
             mediaText = string.Empty,
             anchor = new { x = 0.5f, y = 0.5f },
-            attachedFileName = string.Empty
+            attachedFileName = string.Empty,
         };
     }
 

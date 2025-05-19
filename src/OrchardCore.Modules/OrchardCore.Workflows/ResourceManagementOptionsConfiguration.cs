@@ -47,7 +47,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         _manifest
             .DefineScript("workflow-editor")
-            .SetDependencies("jsplumb", "admin")
+            .SetDependencies("jsplumb", "bootstrap")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/Workflows/editor/workflow-editor.min.js",
                 "~/OrchardCore.Workflows/Scripts/Workflows/editor/workflow-editor.js"
@@ -56,7 +56,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         _manifest
             .DefineScript("workflow-viewer")
-            .SetDependencies("jsplumb", "admin")
+            .SetDependencies("jsplumb", "bootstrap")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/Workflows/viewer/workflow-viewer.min.js",
                 "~/OrchardCore.Workflows/Scripts/Workflows/viewer/workflow-viewer.js"

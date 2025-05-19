@@ -64,7 +64,7 @@ public class ContentTypeQueryResourceBuilder
         {
             _queries.Add(argument, new Dictionary<string, string>()
             {
-                { fieldName.ToGraphQLStringFormat(),  fieldValue }
+                { fieldName.ToGraphQLStringFormat(),  fieldValue },
             });
         }
 
@@ -93,7 +93,7 @@ public class ContentTypeQueryResourceBuilder
         {
             _queries.Add(argument, new Dictionary<string, string>()
             {
-                { fieldName.ToGraphQLStringFormat(),  $"{{ {fieldValue} }}" }
+                { fieldName.ToGraphQLStringFormat(),  $"{{ {fieldValue} }}" },
             });
         }
 

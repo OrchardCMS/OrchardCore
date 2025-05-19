@@ -14,7 +14,7 @@ public class MockLuceneIndexSettingsDocumentManager : IDocumentManager<LuceneInd
                     { "idx1", new LuceneIndexSettings { IndexName = "idx1" } },
                     { "idx2", new LuceneIndexSettings { IndexName = "idx2" } },
                     { "testIndex", new LuceneIndexSettings { IndexName = "testIndex" } },
-                }
+                },
         });
     }
 

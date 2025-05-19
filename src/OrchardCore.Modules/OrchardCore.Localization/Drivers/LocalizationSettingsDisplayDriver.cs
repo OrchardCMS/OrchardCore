@@ -74,7 +74,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
                     {
                         Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
                         CultureInfo = cultureInfo,
-                        IsDefault = string.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                        IsDefault = string.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase),
                     };
                 }).ToArray();
 

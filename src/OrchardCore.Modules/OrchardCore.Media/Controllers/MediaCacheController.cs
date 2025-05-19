@@ -42,7 +42,7 @@ public sealed class MediaCacheController : Controller
         }
         var model = new MediaCacheViewModel
         {
-            IsConfigured = _mediaFileStoreCache != null
+            IsConfigured = _mediaFileStoreCache != null,
         };
 
         return View(model);

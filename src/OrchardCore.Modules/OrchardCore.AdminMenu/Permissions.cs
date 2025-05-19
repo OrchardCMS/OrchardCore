@@ -8,7 +8,7 @@ public sealed class Permissions : IPermissionProvider
 {
     private static readonly Permission _viewAdminMenu = new("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] {
         AdminMenuPermissions.ManageAdminMenu,
-        AdminMenuPermissions.ViewAdminMenuAll
+        AdminMenuPermissions.ViewAdminMenuAll,
     });
 
     private readonly IEnumerable<Permission> _generalPermissions =

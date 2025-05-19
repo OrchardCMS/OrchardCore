@@ -46,7 +46,7 @@ public class OpenIdServerDeploymentSourceTests
         var result = new OpenIdServerSettings
         {
             Authority = new Uri(authority),
-            AccessTokenFormat = tokenFormat
+            AccessTokenFormat = tokenFormat,
         };
 
         if (initializeAllProperties)
@@ -56,6 +56,7 @@ public class OpenIdServerDeploymentSourceTests
             result.LogoutEndpointPath = "/connect/logout";
             result.UserinfoEndpointPath = "/connect/userinfo";
             result.IntrospectionEndpointPath = "/connect/introspect";
+            result.PushedAuthorizationEndpointPath = "/connect/par";
             result.RevocationEndpointPath = "/connect/revoke";
 
             result.EncryptionCertificateStoreLocation = StoreLocation.LocalMachine;
@@ -77,6 +78,7 @@ public class OpenIdServerDeploymentSourceTests
             result.DisableRollingRefreshTokens = true;
             result.UseReferenceAccessTokens = true;
             result.RequireProofKeyForCodeExchange = true;
+            result.RequirePushedAuthorizationRequests = true;
         }
 
         return result;

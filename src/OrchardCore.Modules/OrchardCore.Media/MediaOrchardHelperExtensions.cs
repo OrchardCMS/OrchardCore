@@ -14,7 +14,7 @@ public static class MediaOrchardHelperExtensions
         ".jpeg",
         ".jpg",
         ".png",
-        ".webp"
+        ".webp",
     };
 
     /// <summary>

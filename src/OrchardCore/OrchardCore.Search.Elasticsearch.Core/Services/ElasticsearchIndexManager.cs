@@ -100,7 +100,7 @@ public sealed class ElasticsearchIndexManager
         { "unique", typeof(UniqueTokenFilter) },
         { "uppercase", typeof(UppercaseTokenFilter) },
         { "word_delimiter_graph", typeof(WordDelimiterGraphTokenFilter) },
-        { "word_delimiter", typeof(WordDelimiterTokenFilter) }
+        { "word_delimiter", typeof(WordDelimiterTokenFilter) },
     };
 
     private static readonly List<char> _charsToRemove =
@@ -246,8 +246,8 @@ public sealed class ElasticsearchIndexManager
                     [IndexingConstants.ContentTypeKey] = new KeywordProperty(),
                 },
 
-                DynamicTemplates = new List<IDictionary<string, DynamicTemplate>>()
-            }
+                DynamicTemplates = new List<IDictionary<string, DynamicTemplate>>(),
+            },
         };
 
         var inheritedPostfix = DynamicTemplate.Mapping(new KeywordProperty());
@@ -366,7 +366,7 @@ public sealed class ElasticsearchIndexManager
 
         var putMappingRequest = new PutMappingRequest(GetFullIndexNameInternal(indexName))
         {
-            Meta = IndexingState
+            Meta = IndexingState,
         };
 
         await _elasticClient.Indices.PutMappingAsync(putMappingRequest);
@@ -699,7 +699,7 @@ public sealed class ElasticsearchIndexManager
                 elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(document)
                 {
                     Score = hit.Score,
-                    Highlights = hit?.Highlight
+                    Highlights = hit.Highlight,
                 });
 
                 continue;
@@ -713,7 +713,7 @@ public sealed class ElasticsearchIndexManager
             elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(topDoc)
             {
                 Score = hit.Score,
-                Highlights = hit.Highlight
+                Highlights = hit.Highlight,
             });
         }
 

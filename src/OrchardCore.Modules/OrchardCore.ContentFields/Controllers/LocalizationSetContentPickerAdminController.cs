@@ -83,7 +83,7 @@ public sealed class LocalizationSetContentPickerAdminController : Controller
                 {
                     Id = contentItem.Key, // localization set
                     DisplayText = contentItem.Value.ToString(),
-                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem.Value)
+                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem.Value),
                 });
             }
         }

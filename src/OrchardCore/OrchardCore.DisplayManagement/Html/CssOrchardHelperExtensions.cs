@@ -43,7 +43,7 @@ public static class CssOrchardHelperExtensions
         {
             var cssClasses = new List<string>(additionalClasses)
             {
-                options.OffsetClasses
+                options.OffsetClasses,
             };
 
             return GetHtmlContentBuilder(options.EndClasses, cssClasses);

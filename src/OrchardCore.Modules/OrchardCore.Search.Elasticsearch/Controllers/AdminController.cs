@@ -135,7 +135,7 @@ public sealed class AdminController : Controller
         {
             Indexes = indexes,
             Options = options,
-            Pager = pagerShape
+            Pager = pagerShape,
         };
 
         model.Options.ContentsBulkAction =
@@ -189,7 +189,7 @@ public sealed class AdminController : Controller
             IndexLatest = settings.IndexLatest,
             Culture = settings.Culture,
             IndexedContentTypes = settings.IndexedContentTypes,
-            StoreSourceData = settings.StoreSourceData
+            StoreSourceData = settings.StoreSourceData,
         };
 
         await PopulateMenuOptionsAsync(model);
@@ -246,7 +246,7 @@ public sealed class AdminController : Controller
                     IndexLatest = model.IndexLatest,
                     IndexedContentTypes = indexedContentTypes,
                     Culture = model.Culture ?? string.Empty,
-                    StoreSourceData = model.StoreSourceData
+                    StoreSourceData = model.StoreSourceData,
                 };
 
                 // We call Rebuild in order to reset the index state cursor too in case the same index
@@ -276,7 +276,7 @@ public sealed class AdminController : Controller
                     IndexLatest = model.IndexLatest,
                     IndexedContentTypes = indexedContentTypes,
                     Culture = model.Culture ?? string.Empty,
-                    StoreSourceData = model.StoreSourceData
+                    StoreSourceData = model.StoreSourceData,
                 };
 
                 await _elasticIndexingService.UpdateIndexAsync(settings);
@@ -431,7 +431,7 @@ public sealed class AdminController : Controller
         return View(new IndexInfoViewModel
         {
             IndexName = _elasticIndexManager.GetFullIndexName(indexName),
-            IndexInfo = formattedJson
+            IndexInfo = formattedJson,
         });
     }
 
@@ -459,7 +459,7 @@ public sealed class AdminController : Controller
             IndexName = indexName,
             DecodedQuery = string.IsNullOrWhiteSpace(query)
             ? string.Empty
-            : Base64.FromUTF8Base64String(query)
+            : Base64.FromUTF8Base64String(query),
         });
     }
 
@@ -622,7 +622,7 @@ public sealed class AdminController : Controller
         model.Cultures = supportedCultures.Select(c => new SelectListItem
         {
             Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})",
-            Value = c
+            Value = c,
         });
 
         model.Analyzers = _elasticSearchOptions.Analyzers

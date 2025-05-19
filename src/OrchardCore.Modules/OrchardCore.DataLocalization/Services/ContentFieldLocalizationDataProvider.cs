@@ -16,7 +16,7 @@ public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
     {
         _contentDefinitionService = contentDefinitionService;
     }
-    
+
     // TODO: Check if there's a better way to get the fields
     public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
         => (await _contentDefinitionService.GetTypesAsync())

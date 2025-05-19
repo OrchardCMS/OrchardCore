@@ -19,7 +19,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        WriteIndented = false
+        WriteIndented = false,
     };
 
     private const string OpenIdCollection = OpenIdAuthorization.OpenIdCollection;

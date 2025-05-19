@@ -43,7 +43,7 @@ public class WorkflowManagerTests
                     {
                         A = new WorkflowExpression<double>("input(\"A\")"),
                         B = new WorkflowExpression<double>("input(\"B\")"),
-                    })
+                    }),
                 },
                 new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
                 new() { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject(new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
@@ -52,7 +52,7 @@ public class WorkflowManagerTests
             [
                 new() { SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" },
                 new() { SourceActivityId = "2", SourceOutcomeName = "Done", DestinationActivityId = "3" }
-            ]
+            ],
         };
 
         var workflowManager = CreateWorkflowManager(serviceProvider, [addTask, writeLineTask, setOutputTask], workflowType);

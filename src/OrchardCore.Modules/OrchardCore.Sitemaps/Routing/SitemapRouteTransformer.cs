@@ -29,7 +29,7 @@ public class SitemapRouteTransformer : DynamicRouteValueTransformer
             {
                 var routeValues = new RouteValueDictionary(_options.GlobalRouteValues)
                 {
-                    [_options.SitemapIdKey] = sitemapId
+                    [_options.SitemapIdKey] = sitemapId,
                 };
 
                 return routeValues;

@@ -10,7 +10,7 @@ public enum NotifyType
     Success,
     Information,
     Warning,
-    Error
+    Error,
 }
 
 public class NotifyEntry

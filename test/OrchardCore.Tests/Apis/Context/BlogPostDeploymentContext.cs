@@ -57,9 +57,9 @@ public class BlogPostDeploymentContext : SiteContext
                 new JsonObject
                 {
                     ["name"] = "content",
-                    ["Data"] = new JsonArray { jContentItem }
-                }
-            }
+                    ["Data"] = new JsonArray { jContentItem },
+                },
+            },
         };
 
         return recipe;

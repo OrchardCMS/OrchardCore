@@ -14,7 +14,7 @@ public class MockElasticIndexSettingsDocumentManager : IDocumentManager<ElasticI
                     { "idx1", new ElasticIndexSettings { IndexName = "idx1" } },
                     { "idx2", new ElasticIndexSettings { IndexName = "idx2" } },
                     { "testIndex", new ElasticIndexSettings { IndexName = "testIndex" } },
-                }
+                },
         });
     }
 

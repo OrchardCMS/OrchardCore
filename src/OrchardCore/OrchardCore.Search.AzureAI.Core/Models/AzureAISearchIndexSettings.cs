@@ -18,13 +18,16 @@ public class AzureAISearchIndexSettings : Entity
 
     public IList<AzureAISearchIndexMap> IndexMappings { get; init; } = [];
 
-    private long _lastTaskId;
-
+    [Obsolete("This method will be removed in a future release.")]
     public long GetLastTaskId()
-        => _lastTaskId;
+        => this.As<ContentIndexingMetadata>().LastTaskId;
 
+    [Obsolete("This method will be removed in a future release.")]
     public void SetLastTaskId(long lastTaskId)
-        => _lastTaskId = lastTaskId;
+        => this.Alter<ContentIndexingMetadata>(metadata =>
+        {
+            metadata.LastTaskId = lastTaskId;
+        });
 
     // The dictionary key should be indexingKey Not AzureFieldKey.
     public Dictionary<string, IEnumerable<AzureAISearchIndexMap>> GetMaps()

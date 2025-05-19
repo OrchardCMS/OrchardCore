@@ -5,7 +5,7 @@
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.WorkflowTypes.Count - 1;
 }
-<script asp-name="bootstrap-select" at="Foot" depends-on="admin"></script>
+<script asp-name="bootstrap-select" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Manage Workflows"])</h1></zone>
 

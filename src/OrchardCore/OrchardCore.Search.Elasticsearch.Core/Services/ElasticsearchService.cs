@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Encodings.Web;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Core.Search;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Fluid.Values;
 using Microsoft.Extensions.Logging;
@@ -90,13 +91,14 @@ public class ElasticsearchService : ISearchService
         {
             var searchType = searchSettings.GetSearchType();
             Query query = null;
+            Highlight highlight = null;
 
             if (searchType == ElasticSettings.CustomSearchType && !string.IsNullOrWhiteSpace(searchSettings.DefaultQuery))
             {
                 var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
                     new Dictionary<string, FluidValue>()
                     {
-                        ["term"] = new StringValue(term)
+                        ["term"] = new StringValue(term),
                     });
 
                 try
@@ -106,6 +108,7 @@ public class ElasticsearchService : ISearchService
                     var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
 
                     query = searchRequest.Query;
+                    highlight = searchRequest.Highlight;
                 }
                 catch { }
             }
@@ -115,7 +118,7 @@ public class ElasticsearchService : ISearchService
                 {
                     Fields = searchSettings.DefaultSearchFields,
                     Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
-                    Query = term
+                    Query = term,
                 };
             }
 
@@ -123,17 +126,17 @@ public class ElasticsearchService : ISearchService
             {
                 Fields = searchSettings.DefaultSearchFields,
                 Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
-                Query = term
+                Query = term,
             };
 
             var searchContext = new ElasticsearchSearchContext(index, query)
             {
                 From = start,
                 Size = pageSize,
+                Highlight = highlight,
             };
 
-            result.ContentItemIds = await _elasticsQueryService.GetContentItemIdsAsync(searchContext);
-
+            await _elasticsQueryService.PopulateResultAsync(searchContext, result);
             result.Success = true;
         }
         catch (Exception e)

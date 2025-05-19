@@ -87,7 +87,7 @@ public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<
                             new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
                         HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
                         IsEditable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.EditContent, contentItem),
-                        IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.ViewContent, contentItem)
+                        IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.ViewContent, contentItem),
                     });
                 }
 

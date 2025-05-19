@@ -22,7 +22,7 @@ public class SmtpResult : EmailResult
             Succeeded = false,
             Errors = new Dictionary<string, LocalizedString[]>()
             {
-                { string.Empty, errors }
-            }
+                { string.Empty, errors },
+            },
         };
 }

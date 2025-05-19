@@ -65,7 +65,7 @@ public static class GetSdkEndpoints
                     }};");
 
                 cache.Set(CacheKey,
-                        new KeyValuePair<ulong, byte[]> (expectedHash, scriptBytes),
+                        new KeyValuePair<ulong, byte[]>(expectedHash, scriptBytes),
                         new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1)));
             }
             else
@@ -121,7 +121,7 @@ public static class GetSdkEndpoints
                 }} (document));");
 
                 cache.Set(CacheKey,
-                        new KeyValuePair<ulong, byte[]> (expectedHash, scriptBytes),
+                        new KeyValuePair<ulong, byte[]>(expectedHash, scriptBytes),
                         new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1)));
             }
             else

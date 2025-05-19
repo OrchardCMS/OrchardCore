@@ -55,6 +55,9 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
     }
 
     public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)
+        => EditInternal(flowPart, context, null);
+
+    private ShapeResult EditInternal(FlowPart flowPart, BuildPartEditorContext context, string[] prefixes)
     {
         return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), async model =>
         {
@@ -87,6 +90,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
             model.FlowPart = flowPart;
             model.Updater = context.Updater;
             model.ContainedContentTypeDefinitions = containedContentTypes;
+            model.Prefixes = prefixes;
         });
     }
 
@@ -123,7 +127,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
         part.Widgets = contentItems;
 
-        return Edit(part, context);
+        return EditInternal(part, context, model.Prefixes);
     }
 
     private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)

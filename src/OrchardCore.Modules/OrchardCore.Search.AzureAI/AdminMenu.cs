@@ -69,12 +69,14 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
-                .AddClass("azure-ai-search")
-                    .Id("azureaisearch")
-                    .Action("Index", "Admin", _routeValues)
-                    .Permission(AzureAISearchPermissions.ManageAzureAISearchIndexes)
-                    .LocalNav()
+                .Add(S["Search"], S["Search"].PrefixPosition(), search => search
+                    .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
+                    .AddClass("azure-ai-search")
+                        .Id("azureaisearch")
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(AzureAISearchPermissions.ManageAzureAISearchIndexes)
+                        .LocalNav()
+                    )
                 )
             );
 

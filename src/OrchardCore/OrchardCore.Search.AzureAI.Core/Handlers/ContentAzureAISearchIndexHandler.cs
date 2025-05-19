@@ -113,12 +113,15 @@ public sealed class ContentAzureAISearchIndexHandler : AzureAISearchIndexSetting
 
     public override Task ResetAsync(AzureAISearchIndexSettingsResetContext context)
     {
-        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, context.Settings.Source, StringComparison.OrdinalIgnoreCase))
+        if (!CanHandle(context.Settings))
         {
             return Task.CompletedTask;
         }
 
-        context.Settings.SetLastTaskId(0);
+        context.Settings.Alter<ContentIndexingMetadata>(metadata =>
+        {
+            metadata.LastTaskId = 0;
+        });
 
         return Task.CompletedTask;
     }

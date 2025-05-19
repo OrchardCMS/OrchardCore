@@ -19,6 +19,6 @@ public class ShortcodeOptionsDescriptorProvider : IShortcodeDescriptorProvider
                 DefaultValue = option.DefaultValue,
                 Usage = option.Usage,
                 Hint = option.Hint,
-                Categories = option.Categories
+                Categories = option.Categories,
             }));
 }

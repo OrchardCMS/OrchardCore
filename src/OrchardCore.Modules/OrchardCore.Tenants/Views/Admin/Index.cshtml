@@ -9,7 +9,7 @@
     int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
 }
 
-<script asp-name="bootstrap-select" at="Foot" depends-on="admin"></script>
+<script asp-name="bootstrap-select" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Tenants"])</h1></zone>
 
@@ -119,7 +119,7 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot">
+<script at="Foot" depends-on="jQuery">
     $(function() {
         $('.selectpicker').selectpicker();
         var actions = $("#actions");

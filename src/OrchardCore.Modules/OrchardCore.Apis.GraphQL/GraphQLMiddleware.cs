@@ -96,7 +96,7 @@ public class GraphQLMiddleware : IMiddleware
                     {
                         request = new GraphQLNamedQueryRequest
                         {
-                            Query = await sr.ReadToEndAsync()
+                            Query = await sr.ReadToEndAsync(),
                         };
                     }
                     else
@@ -187,7 +187,7 @@ public class GraphQLMiddleware : IMiddleware
 
         var request = new GraphQLNamedQueryRequest
         {
-            Query = context.Request.Query["query"]
+            Query = context.Request.Query["query"],
         };
 
         if (context.Request.Query.ContainsKey("variables"))

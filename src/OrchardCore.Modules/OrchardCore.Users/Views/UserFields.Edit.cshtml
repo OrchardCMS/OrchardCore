@@ -7,14 +7,6 @@
 
 @inject IOptions<IdentityOptions> IdentityOptions
 
-<div class="mb-3">
-    <div class="form-check form-switch">
-        <input asp-for="IsEnabled" type="checkbox" class="form-check-input" checked="@Model.IsEnabled" asp-is-disabled="@Model.IsEditingDisabled" />
-        <label asp-for="IsEnabled" class="form-check-label cursor-pointer">@T["Is enabled?"]</label>
-        <span class="hint dashed">@T["Uncheck to disable this user account."]</span>
-    </div>
-</div>
-
 @if (Model.IsNewRequest)
 {
     <div class="password-generator-wrapper">

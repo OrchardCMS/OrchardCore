@@ -9,7 +9,7 @@ public static class HttpRequestHelper
 
         return new HttpRequestMessage(HttpMethod.Post, path)
         {
-            Content = new FormUrlEncodedContent(ToFormPostData(data))
+            Content = new FormUrlEncodedContent(ToFormPostData(data)),
         };
     }
 

@@ -29,7 +29,7 @@ public class SecurityMiddlewareTests
             new object[] { new[] { $"{PermissionsPolicyValue.FullScreen}={PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" }, "fullscreen=self https://www.domain.com https://www.sub.domain.com" },
             new object[] { new[] { $"{PermissionsPolicyValue.Geolocation}={PermissionsPolicyOriginValue.None}", $"{PermissionsPolicyValue.Gyroscope}={PermissionsPolicyOriginValue.Any}" }, "geolocation=();gyroscope=*" },
             new object[] { new[] { $"{PermissionsPolicyValue.Magnetometer}={PermissionsPolicyOriginValue.None}", $"{PermissionsPolicyValue.Microphone}={PermissionsPolicyOriginValue.Any}", $"{PermissionsPolicyValue.Midi}={PermissionsPolicyOriginValue.Self}" }, "magnetometer=();microphone=*;midi=self" },
-            new object[] { new[] { $"{PermissionsPolicyValue.Usb}={PermissionsPolicyOriginValue.Self}", $"{PermissionsPolicyValue.Payment}={PermissionsPolicyOriginValue.Self} https://www.domain.com", $"{PermissionsPolicyValue.PictureInPicture}={PermissionsPolicyOriginValue.Self}", $"{PermissionsPolicyValue.Push}={PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" }, "usb=self;payment=self https://www.domain.com;picture-in-picture=self;push=self https://www.domain.com https://www.sub.domain.com" }
+            new object[] { new[] { $"{PermissionsPolicyValue.Usb}={PermissionsPolicyOriginValue.Self}", $"{PermissionsPolicyValue.Payment}={PermissionsPolicyOriginValue.Self} https://www.domain.com", $"{PermissionsPolicyValue.PictureInPicture}={PermissionsPolicyOriginValue.Self}", $"{PermissionsPolicyValue.Push}={PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" }, "usb=self;payment=self https://www.domain.com;picture-in-picture=self;push=self https://www.domain.com https://www.sub.domain.com" },
         };
 
     public static IEnumerable<object[]> ReferrerPolicies =>
@@ -42,7 +42,7 @@ public class SecurityMiddlewareTests
             new object[] { ReferrerPolicyValue.SameOrigin, "same-origin" },
             new object[] { ReferrerPolicyValue.StrictOrigin, "strict-origin" },
             new object[] { ReferrerPolicyValue.StrictOriginWhenCrossOrigin, "strict-origin-when-cross-origin" },
-            new object[] { ReferrerPolicyValue.UnsafeUrl, "unsafe-url" }
+            new object[] { ReferrerPolicyValue.UnsafeUrl, "unsafe-url" },
         };
 
     [Theory]
@@ -52,7 +52,7 @@ public class SecurityMiddlewareTests
         // Arrange
         var options = new SecurityHeadersOptions
         {
-            ContentSecurityPolicy = contentSecurityPolicies
+            ContentSecurityPolicy = contentSecurityPolicies,
         };
         var middleware = new SecurityHeadersMiddleware(options, Request);
         var context = new DefaultHttpContext();
@@ -71,7 +71,7 @@ public class SecurityMiddlewareTests
         // Arrange
         var options = new SecurityHeadersOptions
         {
-            ContentTypeOptions = ContentTypeOptionsValue.NoSniff
+            ContentTypeOptions = ContentTypeOptionsValue.NoSniff,
         };
         var middleware = new SecurityHeadersMiddleware(options, Request);
         var context = new DefaultHttpContext();
@@ -91,7 +91,7 @@ public class SecurityMiddlewareTests
         // Arrange
         var options = new SecurityHeadersOptions
         {
-            PermissionsPolicy = permissionsPolicies
+            PermissionsPolicy = permissionsPolicies,
         };
         var middleware = new SecurityHeadersMiddleware(options, Request);
         var context = new DefaultHttpContext();
@@ -111,7 +111,7 @@ public class SecurityMiddlewareTests
         // Arrange
         var options = new SecurityHeadersOptions
         {
-            ReferrerPolicy = policy
+            ReferrerPolicy = policy,
         };
         var middleware = new SecurityHeadersMiddleware(options, Request);
         var context = new DefaultHttpContext();

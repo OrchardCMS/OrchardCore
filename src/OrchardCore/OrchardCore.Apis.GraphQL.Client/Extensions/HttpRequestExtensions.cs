@@ -67,7 +67,7 @@ internal static class HttpRequestExtensions
         {
             Method = new HttpMethod("PATCH"),
             RequestUri = new Uri(client.BaseAddress + requestUri),
-            Content = content
+            Content = content,
         };
 
         request.Headers.ExpectContinue = false;

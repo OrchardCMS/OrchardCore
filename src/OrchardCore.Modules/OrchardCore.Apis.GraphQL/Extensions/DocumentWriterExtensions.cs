@@ -13,7 +13,7 @@ internal static class DocumentWriterExtensions
 
         var errorResult = new ExecutionResult
         {
-            Errors = []
+            Errors = [],
         };
 
         if (e == null)

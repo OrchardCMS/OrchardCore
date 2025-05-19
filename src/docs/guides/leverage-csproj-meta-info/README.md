@@ -138,6 +138,6 @@ When you are happy with your `CSPROJ` item lists, then you may comment out the c
 
 ## Summary
 
-In this article we described how to leverage _Orcard Core_ `CSPROJ` _item lists_ and _properties_ in order to enrich and get the absolute most from your authoring experience.
+In this article we described how to leverage _Orchard Core_ `CSPROJ` _item lists_ and _properties_ in order to enrich and get the absolute most from your authoring experience.
 
 Happy coding!
