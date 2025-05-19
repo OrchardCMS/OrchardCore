@@ -99,9 +99,12 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
                     var response = await blobContainer.DeleteBlobIfExistsAsync(blobItem.Name);
                     if (!response.Value)
                     {
-                        _logger.LogError("Unable to remove Azure Media Storage blob item {ItemName}.", blobItem.Name);
+                        _logger.LogError("File removal process failed on file {ItemName}.", blobItem.Name);
 
-                        context.ErrorMessage = S["Unable to remove Azure Media Storage blob item {ItemName}.", blobItem.Name];
+                        context.ErrorMessage = S["File removal process failed on file {ItemName}.", blobItem.Name];
+
+                        // Also stop the removal process if a file fails.
+                        break;
                     }
                 }
             }
