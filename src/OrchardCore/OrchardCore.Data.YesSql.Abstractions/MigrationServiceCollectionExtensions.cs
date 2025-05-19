@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace OrchardCore.Data.Migration;
 
@@ -10,6 +11,11 @@ public static class MigrationServiceCollectionExtensions
     public static IServiceCollection AddDataMigration<TDataMigration>(this IServiceCollection services)
         where TDataMigration : class, IDataMigration
     {
-        return services.AddScoped<IDataMigration, TDataMigration>();
+        services.TryAddEnumerable(new[]
+        {
+            ServiceDescriptor.Scoped<IDataMigration, TDataMigration>(),
+        });
+
+        return services;
     }
 }

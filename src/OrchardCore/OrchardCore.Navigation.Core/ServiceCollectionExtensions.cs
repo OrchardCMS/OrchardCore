@@ -24,6 +24,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddNavigationProvider<TProvider>(this IServiceCollection services)
         where TProvider : class, INavigationProvider
     {
-        return services.AddScoped<INavigationProvider, TProvider>();
+        services.TryAddEnumerable(new[]
+        {
+            ServiceDescriptor.Scoped<INavigationProvider, TProvider>(),
+        });
+
+        return services;
     }
 }

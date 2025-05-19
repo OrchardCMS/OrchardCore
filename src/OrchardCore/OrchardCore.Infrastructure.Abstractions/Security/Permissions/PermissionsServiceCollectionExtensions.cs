@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace OrchardCore.Security.Permissions;
 
@@ -7,10 +8,10 @@ public static class PermissionsServiceCollectionExtensions
     public static IServiceCollection AddPermissionProvider<TProvider>(this IServiceCollection services)
         where TProvider : class, IPermissionProvider
     {
-        if (!services.Any(s => s.ImplementationType == typeof(TProvider)))
+        services.TryAddEnumerable(new[]
         {
-            services.AddScoped<IPermissionProvider, TProvider>();
-        }
+            ServiceDescriptor.Scoped<IPermissionProvider, TProvider>(),
+        });
 
         return services;
     }
