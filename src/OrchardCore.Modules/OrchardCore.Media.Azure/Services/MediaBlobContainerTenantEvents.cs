@@ -63,7 +63,6 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
         }
 
         var blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
-
         if (_options.RemoveContainer)
         {
             try
