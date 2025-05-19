@@ -107,6 +107,7 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
             catch (RequestFailedException ex)
             {
                 _logger.LogError("Error during Azure Media Storage blob item removal.");
+
                 context.ErrorMessage = S["Error during Azure Media Storage blob item removal."];
                 context.Error = ex;
             }
