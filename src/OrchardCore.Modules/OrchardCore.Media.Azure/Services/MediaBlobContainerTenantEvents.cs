@@ -71,6 +71,7 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
                 if (!response.Value)
                 {
                     _logger.LogError("Unable to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);
+
                     context.ErrorMessage = S["Unable to remove the Azure Media Storage Container '{0}'.", _options.ContainerName];
                 }
             }
