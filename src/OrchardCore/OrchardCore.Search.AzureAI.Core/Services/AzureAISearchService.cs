@@ -57,7 +57,7 @@ public class AzureAISearchService : ISearchService
             return result;
         }
 
-        var indexSettings = await _indexSettingsService.GetAsync(index);
+        var indexSettings = await _indexSettingsService.FindByNameAsync(index);
 
         if (indexSettings is null)
         {
