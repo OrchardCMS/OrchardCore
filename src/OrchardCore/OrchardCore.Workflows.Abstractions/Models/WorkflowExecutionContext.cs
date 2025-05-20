@@ -1,7 +1,9 @@
 namespace OrchardCore.Workflows.Models;
 
-public class WorkflowExecutionContext
+public sealed class WorkflowExecutionContext : IDisposable
 {
+    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
     public WorkflowExecutionContext
     (
         WorkflowType workflowType,
@@ -70,9 +72,31 @@ public class WorkflowExecutionContext
     /// </summary>
     public Stack<ExecutedActivity> ExecutedActivities { get; set; }
 
+    /// <summary>
+    /// Gets a cancellation token that gets signaled when the workflow is cancelled.
+    /// </summary>
+    public CancellationToken CancellationToken => _cancellationTokenSource.Token;
+
     public ActivityContext GetActivity(string activityId)
     {
         return Activities[activityId];
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource.Dispose();
+    }
+
+    public void Cancel(string reason = null)
+    {
+        if (!_cancellationTokenSource.IsCancellationRequested)
+        {
+            _cancellationTokenSource.Cancel();
+
+            // Workflow is aborted.
+            Workflow.Status = WorkflowStatus.Aborted;
+            Workflow.FaultMessage = reason;
+        }
     }
 
     public void Fault(Exception exception, ActivityContext _)

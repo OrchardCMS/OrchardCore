@@ -278,7 +278,7 @@ public sealed class AdminController : Controller
             return NotConfigured();
         }
 
-        var settings = await _indexSettingsService.GetAsync(id);
+        var settings = await _indexSettingsService.FindByIdAsync(id);
 
         if (settings == null)
         {
@@ -305,7 +305,7 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        var settings = await _indexSettingsService.GetAsync(id);
+        var settings = await _indexSettingsService.FindByIdAsync(id);
 
         if (settings == null)
         {
@@ -357,7 +357,7 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        var settings = await _indexSettingsService.GetAsync(id);
+        var settings = await _indexSettingsService.FindByIdAsync(id);
 
         if (settings == null)
         {
@@ -369,13 +369,13 @@ public sealed class AdminController : Controller
         if (!exists)
         {
             // At this point we know that the index does not exists on remote server. Let's delete it locally.
-            await _indexSettingsService.DeleteAsync(id);
+            await _indexSettingsService.DeleteByIdAsync(id);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", settings.IndexName]);
         }
         else if (await _indexManager.DeleteAsync(settings.IndexName))
         {
-            await _indexSettingsService.DeleteAsync(id);
+            await _indexSettingsService.DeleteByIdAsync(id);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", settings.IndexName]);
         }
@@ -401,7 +401,7 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        var settings = await _indexSettingsService.GetAsync(id);
+        var settings = await _indexSettingsService.FindByIdAsync(id);
 
         if (settings == null)
         {
@@ -431,7 +431,7 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        var settings = await _indexSettingsService.GetAsync(id);
+        var settings = await _indexSettingsService.FindByIdAsync(id);
 
         if (settings == null)
         {

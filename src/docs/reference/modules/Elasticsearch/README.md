@@ -60,12 +60,12 @@ Here is a sample step:
   "steps":[
     {
       "name":"ElasticIndexSettings",
-      "Indices":[
+      "Indices": [
         {
-          "Search":{
-            "AnalyzerName":"standardanalyzer",
-            "IndexLatest":false,
-            "IndexedContentTypes":[
+          "Search": {
+            "AnalyzerName": "standardanalyzer",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
               "Article",
               "BlogPost"
             ]
@@ -180,6 +180,7 @@ Here is an example for creating a Elasticsearch query from a Queries recipe step
         "Template": "...", // json encoded query template
         "ReturnContentItems": true
     }
+  ]
 }
 ```
 
@@ -219,19 +220,23 @@ See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.
 The Elasticsearch module connection configuration can be set globally in the `appsettings.json` file or per tenant.
 
 ```json
-"OrchardCore_Elasticsearch": {
-  "ConnectionType": "SingleNodeConnectionPool",
-  "Url": "http://localhost",
-  "Ports": [ 9200 ],
-  "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc=",
-  "Username": "admin",
-  "Password": "admin",
-  "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
-  "EnableApiVersioningHeader": false,
-  "IndexPrefix": "",
-  "Analyzers": {
-    "standard": {
-      "type": "standard"
+{
+  "OrchardCore_Elasticsearch": {
+    "ConnectionType": "SingleNodeConnectionPool",
+    "Url": "http://localhost",
+    "Ports": [
+      9200
+    ],
+    "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc=",
+    "Username": "admin",
+    "Password": "admin",
+    "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
+    "EnableApiVersioningHeader": false,
+    "IndexPrefix": "",
+    "Analyzers": {
+      "standard": {
+        "type": "standard"
+      }
     }
   }
 }
@@ -249,13 +254,15 @@ The connection types documentation and examples can be found at this url:
 As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../Configuration/README.md) file
 
 ```json
-"OrchardCore_Elasticsearch": {
-  "Analyzers": {
-    "standard": {
-      "type": "standard"
-    },
-    "stop": {
-      "type": "stop"
+{
+  "OrchardCore_Elasticsearch": {
+    "Analyzers": {
+      "standard": {
+        "type": "standard"
+      },
+      "stop": {
+        "type": "stop"
+      }
     }
   }
 }
@@ -264,30 +271,32 @@ As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/refe
 At the same time, you may define custom analyzers using the [appsettings.json](../Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`.
 
 ```json
-"OrchardCore_Elasticsearch": {
-  "Analyzers": {
-    "standard": {
-      "type": "standard"
-    },
-    "stop": {
-      "type": "stop",
-      "stopwords": [
-         "a", 
-         "the", 
-         "and",
-         "or" 
-       ]
-    },
-    "english_analyzer": {
-      "type": "custom",
-      "tokenizer": "standard",
-      "filter": [
-        "lowercase",
-        "stop"
-      ],
-      "char_filter": [
-        "html_strip"
-      ]
+{
+  "OrchardCore_Elasticsearch": {
+    "Analyzers": {
+      "standard": {
+        "type": "standard"
+      },
+      "stop": {
+        "type": "stop",
+        "stopwords": [
+          "a",
+          "the",
+          "and",
+          "or"
+        ]
+      },
+      "english_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "stop"
+        ],
+        "char_filter": [
+          "html_strip"
+        ]
+      }
     }
   }
 }
@@ -300,20 +309,22 @@ As of version 2.1, you can define custom [token filters](https://www.elastic.co/
 For instance, to create a token filter named `english_stop`, you can include the following configuration in your `appsettings.json` file:
 
 ```json
-"OrchardCore_Elasticsearch": {
-  "TokenFilters": {
-    "english_stop": {
-      "type": "stop",
-      "stopwords": "_english_"
-    }
-  },
-  "Analyzers": {
-    "my_new_analyzer": {
-      "type": "custom",
-      "tokenizer": "standard",
-      "filter": [
-        "english_stop"
-      ]
+{
+  "OrchardCore_Elasticsearch": {
+    "TokenFilters": {
+      "english_stop": {
+        "type": "stop",
+        "stopwords": "_english_"
+      }
+    },
+    "Analyzers": {
+      "my_new_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "english_stop"
+        ]
+      }
     }
   }
 }

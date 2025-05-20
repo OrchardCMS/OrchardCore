@@ -5,7 +5,7 @@
     "@popperjs/core": "2.11.8",
     "@types/bootstrap": "5.2.7",
     "@types/jquery": "3.5.5",
-    "bootstrap": "5.3.5",
+    "bootstrap": "5.3.6",
     "jsplumb": "2.15.6"
   }
 }

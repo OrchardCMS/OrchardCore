@@ -56,7 +56,7 @@ Cultures can be added during recipes using the settings step. Here is a sample s
     "DefaultCulture":  "fr",
     "SupportedCultures": [ "fr", "en" ]
   }
-},
+}
 ```
 
 ### Examples
