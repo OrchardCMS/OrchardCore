@@ -2,7 +2,7 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Models;
 
-public class ElasticsearchIndexSettingsSynchronizedContext
+public sealed class ElasticsearchIndexSettingsSynchronizedContext
 {
     public ElasticIndexSettings Settings { get; }
 

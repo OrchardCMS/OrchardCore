@@ -1,4 +1,4 @@
-using OrchardCore.Search.Elasticsearch.Models;
+using Elastic.Clients.Elasticsearch.Mapping;
 using OrchardCore.Search.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
@@ -15,5 +15,5 @@ public class ElasticIndexSettings : IndexSettingsBase
 
     public string IndexFullName { get; set; }
 
-    public IList<ElasticsearchIndexMap> IndexMappings { get; init; } = [];
+    public TypeMapping IndexMappings { get; init; } = new TypeMapping();
 }

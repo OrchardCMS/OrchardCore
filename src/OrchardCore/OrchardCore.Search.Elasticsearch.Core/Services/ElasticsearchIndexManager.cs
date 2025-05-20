@@ -15,8 +15,8 @@ using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
-using OrchardCore.Search.Elasticsearch.Core.Mappings;
 using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -25,13 +25,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
 /// </summary>
 public sealed class ElasticsearchIndexManager
 {
-    private const string _separator = "_";
-    private const string _idsPostfixPattern = "*" + IndexingConstants.IdsKey;
-    private const string _inheritedPostfixPattern = "*" + IndexingConstants.InheritedKey;
-    private const string _locationPostFixPattern = "*.Location";
-
     private readonly ElasticsearchClient _elasticClient;
-    private readonly ShellSettings _shellSettings;
+    private readonly ElasticsearchIndexNameService _elasticsearchIndexNameService;
+    private readonly IEnumerable<IElasticsearchIndexEvents> _indexEvents;
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly ElasticsearchOptions _elasticSearchOptions;
@@ -118,18 +114,18 @@ public sealed class ElasticsearchIndexManager
         '.',
     ];
 
-    private string _indexPrefix;
-
     public ElasticsearchIndexManager(
         ElasticsearchClient elasticClient,
-        ShellSettings shellSettings,
+        ElasticsearchIndexNameService elasticsearchIndexNameService,
         IOptions<ElasticsearchOptions> elasticsearchOptions,
+        IEnumerable<IElasticsearchIndexEvents> indexEvents,
         IClock clock,
         ILogger<ElasticsearchIndexManager> logger
         )
     {
         _elasticClient = elasticClient;
-        _shellSettings = shellSettings;
+        _elasticsearchIndexNameService = elasticsearchIndexNameService;
+        _indexEvents = indexEvents;
         _clock = clock;
         _logger = logger;
         _elasticSearchOptions = elasticsearchOptions.Value;
@@ -144,142 +140,31 @@ public sealed class ElasticsearchIndexManager
     /// </para>
     /// </summary>
     /// <returns><see cref="bool"/>.</returns>
-    public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
+    public async Task<bool> CreateIndexAsync(ElasticIndexSettings settings)
     {
         // Get Index name scoped by ShellName
-        if (await ExistsAsync(elasticIndexSettings.IndexName))
+        if (await ExistsAsync(settings.IndexName))
         {
             return true;
         }
 
-        var indexSettings = new IndexSettings
-        {
-            Analysis = new IndexSettingsAnalysis()
-            {
-                Analyzers = new Analyzers(),
-                TokenFilters = new TokenFilters(),
-            },
-        };
+        var context = new ElasticsearchIndexCreateContext(settings);
 
-        // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
-        var analyzerName = (elasticIndexSettings.AnalyzerName == "standardanalyzer"
-        ? null
-        : elasticIndexSettings.AnalyzerName) ?? ElasticsearchConstants.DefaultAnalyzer;
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger);
 
-        if (_elasticSearchOptions.Analyzers is not null && _elasticSearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
-        {
-            var analyzer = GetAnalyzer(analyzerProperties);
-
-            indexSettings.Analysis.Analyzers.Add(analyzerName, analyzer);
-        }
-
-        if (_elasticSearchOptions.TokenFilters is not null && _elasticSearchOptions.TokenFilters.Count > 0)
-        {
-            foreach (var filter in _elasticSearchOptions.TokenFilters)
-            {
-                if (!filter.Value.TryGetPropertyValue("type", out var typeObject) ||
-                    !_tokenFilterGetter.TryGetValue(typeObject.ToString(), out var tokenFilterType))
-                {
-                    continue;
-                }
-
-                RemoveTypeNode(filter.Value);
-
-                var tokenFilter = filter.Value.ToObject(tokenFilterType) as ITokenFilter;
-
-                if (tokenFilter is not null)
-                {
-                    indexSettings.Analysis.TokenFilters.Add(filter.Key, tokenFilter);
-                }
-            }
-        }
-
-        // Custom metadata to store the last indexing task id.
-        var IndexingState = new FluentDictionary<string, object>()
-        {
-            { _lastTaskId, 0 },
-        };
-
-        var createIndexRequest = new CreateIndexRequest(GetFullIndexName(elasticIndexSettings.IndexName))
-        {
-            Settings = indexSettings,
-            Mappings = new TypeMapping
-            {
-                Source = new SourceField()
-                {
-                    Enabled = elasticIndexSettings.StoreSourceData,
-                    Excludes = [IndexingConstants.DisplayTextAnalyzedKey],
-                },
-                Meta = IndexingState,
-                Properties = new Properties
-                {
-                    [IndexingConstants.ContentItemIdKey] = new KeywordProperty(),
-                    [IndexingConstants.ContentItemVersionIdKey] = new KeywordProperty(),
-                    [IndexingConstants.OwnerKey] = new KeywordProperty(),
-                    [IndexingConstants.FullTextKey] = new TextProperty(),
-                    [IndexingConstants.ContainedPartKey] = new ObjectProperty()
-                    {
-                        Properties = new Properties()
-                        {
-                            [nameof(ContainedPartModel.Ids)] = new KeywordProperty(),
-                            [nameof(ContainedPartModel.Order)] = new FloatNumberProperty(),
-                        },
-                    },
-
-                    // We map DisplayText here because we have 3 different fields with it.
-                    // We can't have Content.ContentItem.DisplayText as it is mapped as an Object in Elasticsearch.
-                    [IndexingConstants.DisplayTextKey] = new ObjectProperty()
-                    {
-                        Properties = new Properties()
-                        {
-                            [nameof(DisplayTextModel.Analyzed)] = new TextProperty(),
-                            [nameof(DisplayTextModel.Normalized)] = new KeywordProperty(),
-                            [nameof(DisplayTextModel.Keyword)] = new KeywordProperty(),
-                        },
-                    },
-
-                    // We map ContentType as a keyword because else the automatic mapping will break the queries.
-                    // We need to access it with Content.ContentItem.ContentType as a keyword
-                    // for the ContentPickerResultProvider(s).
-                    [IndexingConstants.ContentTypeKey] = new KeywordProperty(),
-                },
-
-                DynamicTemplates = [],
-            },
-        };
-
-        var inheritedPostfix = new DynamicTemplate
-        {
-            Mapping = new KeywordProperty(),
-            PathMatch = [_inheritedPostfixPattern],
-            MatchMappingType = ["string"],
-        };
-
-        createIndexRequest.Mappings.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_inheritedPostfixPattern, inheritedPostfix));
-
-        var idsPostfix = new DynamicTemplate
-        {
-            Mapping = new KeywordProperty(),
-            PathMatch = [_idsPostfixPattern],
-            MatchMappingType = ["string"],
-        };
-        createIndexRequest.Mappings.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_idsPostfixPattern, idsPostfix));
-
-        var locationPostfix = new DynamicTemplate
-        {
-            Mapping = new GeoPointProperty(),
-            PathMatch = [_locationPostFixPattern],
-            MatchMappingType = ["object"],
-        };
-
+        var createIndexRequest = GetCreateIndexRequest(settings);
         var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
+
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger);
 
         return response.Acknowledged;
     }
 
     public async Task<string> GetIndexMappings(string indexName)
     {
-        var indexFullName = GetFullIndexName(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+
+        var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
 
         var response = await _elasticClient.Indices.GetMappingAsync<GetMappingResponse>((t) =>
         {
@@ -307,11 +192,13 @@ public sealed class ElasticsearchIndexManager
 
     public async Task<string> GetIndexSettings(string indexName)
     {
-        var fullName = GetFullIndexName(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+
+        var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
 
         var response = await _elasticClient.Indices.GetAsync<GetIndexResponse>(o =>
         {
-            o.Indices(fullName);
+            o.Indices(indexFullName);
         });
 
         if (!response.IsValidResponse)
@@ -326,18 +213,20 @@ public sealed class ElasticsearchIndexManager
             }
         }
 
-        var settings = response.Indices[fullName].Settings;
+        var setting = response.Indices[indexFullName].Settings;
 
-        return _elasticClient.RequestResponseSerializer.SerializeToString(settings);
+        return _elasticClient.RequestResponseSerializer.SerializeToString(setting);
     }
 
     public async Task<string> GetIndexInfo(string indexName)
     {
-        var fullName = GetFullIndexName(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+
+        var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
 
         var response = await _elasticClient.Indices.GetAsync<GetIndexResponse>(o =>
         {
-            o.Indices(fullName);
+            o.Indices(indexFullName);
         });
 
         if (!response.IsValidResponse)
@@ -352,7 +241,7 @@ public sealed class ElasticsearchIndexManager
             }
         }
 
-        var info = response.Indices[fullName];
+        var info = response.Indices[indexFullName];
 
         return _elasticClient.RequestResponseSerializer.SerializeToString(info);
     }
@@ -366,12 +255,14 @@ public sealed class ElasticsearchIndexManager
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
 
+        var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
+
         var IndexingState = new FluentDictionary<string, object>()
         {
             { _lastTaskId, lastTaskId },
         };
 
-        var putMappingRequest = new PutMappingRequest(GetFullIndexNameInternal(indexName))
+        var putMappingRequest = new PutMappingRequest(indexFullName)
         {
             Meta = IndexingState,
         };
@@ -408,9 +299,9 @@ public sealed class ElasticsearchIndexManager
 
         if (contentItemIds.Any())
         {
-            IndexName fullName = GetFullIndexName(indexName);
+            var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
 
-            var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(fullName, descriptor => descriptor
+            var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(indexFullName, descriptor => descriptor
                 .Query(q => q
                     .Bool(b => b
                         .Filter(f => f
@@ -435,9 +326,11 @@ public sealed class ElasticsearchIndexManager
     /// </summary>
     public async Task<bool> DeleteAllDocumentsAsync(string indexName)
     {
-        IndexName fullName = GetFullIndexName(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
 
-        var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(fullName, descriptor => descriptor
+        var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
+
+        var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(indexFullName, descriptor => descriptor
             .Query(q => q
                 .MatchAll(new MatchAllQuery())
              )
@@ -448,11 +341,45 @@ public sealed class ElasticsearchIndexManager
 
     public async Task<bool> DeleteIndexAsync(string indexName)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+
         if (await ExistsAsync(indexName))
         {
-            var result = await _elasticClient.Indices.DeleteAsync(GetFullIndexName(indexName));
+            var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
+
+            var context = new ElasticsearchIndexRemoveContext(indexName, indexFullName);
+
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
+
+            var result = await _elasticClient.Indices.DeleteAsync(indexFullName);
+
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger);
 
             return result.Acknowledged;
+        }
+
+        return true;
+    }
+
+    public async Task<bool> RebuildIndexAsync(ElasticIndexSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+
+        if (await ExistsAsync(settings.IndexName))
+        {
+            var context = new ElasticsearchIndexRebuildContext(settings);
+
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
+
+            var createIndexRequest = GetCreateIndexRequest(settings);
+
+            await _elasticClient.Indices.DeleteAsync(settings.IndexFullName);
+
+            var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
+
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
+
+            return response.Acknowledged;
         }
 
         return true;
@@ -463,12 +390,11 @@ public sealed class ElasticsearchIndexManager
     /// </summary>
     public async Task<bool> ExistsAsync(string indexName)
     {
-        if (string.IsNullOrWhiteSpace(indexName))
-        {
-            return false;
-        }
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
 
-        var existResponse = await _elasticClient.Indices.ExistsAsync(GetFullIndexNameInternal(indexName));
+        var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
+
+        var existResponse = await _elasticClient.Indices.ExistsAsync(indexFullName);
 
         return existResponse.Exists;
     }
@@ -493,9 +419,9 @@ public sealed class ElasticsearchIndexManager
         return indexName;
     }
 
-    public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
+    public async Task StoreDocumentsAsync(ElasticIndexSettings settings, IEnumerable<DocumentIndex> indexDocuments)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentNullException.ThrowIfNull(settings);
         ArgumentNullException.ThrowIfNull(indexDocuments);
 
         if (indexDocuments == null || !indexDocuments.Any())
@@ -503,11 +429,9 @@ public sealed class ElasticsearchIndexManager
             return;
         }
 
-        var indexFullName = GetFullIndexNameInternal(indexName);
-
         foreach (var batch in indexDocuments.PagesOf(2500))
         {
-            var response = await _elasticClient.BulkAsync(indexFullName,
+            var response = await _elasticClient.BulkAsync(settings.IndexFullName,
                 descriptor => descriptor.CreateElasticDocument(batch).Refresh(Refresh.True));
 
             if (!response.IsValidResponse)
@@ -533,11 +457,9 @@ public sealed class ElasticsearchIndexManager
             TopDocs = [],
         };
 
-        if (await ExistsAsync(context.IndexName))
+        if (await ExistsAsync(context.Settings.IndexName))
         {
-            var fullIndexName = GetFullIndexName(context.IndexName);
-
-            var searchRequest = new SearchRequest(fullIndexName)
+            var searchRequest = new SearchRequest(context.Settings.IndexFullName)
             {
                 Query = context.Query,
                 From = context.From,
@@ -555,32 +477,10 @@ public sealed class ElasticsearchIndexManager
                 ProcessSuccessfulSearchResponse(elasticTopDocs, searchResponse);
             }
 
-            _timestamps[fullIndexName] = _clock.UtcNow;
+            _timestamps[context.Settings.IndexFullName] = _clock.UtcNow;
         }
 
         return elasticTopDocs;
-    }
-
-    /// <summary>
-    /// Returns results from a search made with a NEST QueryContainer query.
-    /// </summary>
-    /// <param name="indexName"></param>
-    /// <param name="query"></param>
-    /// <param name="sort"></param>
-    /// <param name="from"></param>
-    /// <param name="size"></param>
-    /// <returns><see cref="ElasticsearchResult"/>.</returns>
-    [Obsolete("This method will be removed in future release. Instead use SearchAsync(ElasticsearchSearchContext) method instead.")]
-    public Task<ElasticsearchResult> SearchAsync(string indexName, Query query, IList<SortOptions> sort, int from, int size)
-    {
-        var context = new ElasticsearchSearchContext(indexName, query)
-        {
-            Sorts = sort,
-            From = from,
-            Size = size,
-        };
-
-        return SearchAsync(context);
     }
 
     /// <summary>
@@ -595,15 +495,68 @@ public sealed class ElasticsearchIndexManager
         {
             await elasticClient(_elasticClient);
 
-            _timestamps[GetFullIndexName(indexName)] = _clock.UtcNow;
+            var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
+
+            _timestamps[indexFullName] = _clock.UtcNow;
         }
     }
 
-    public string GetFullIndexName(string indexName)
+    private CreateIndexRequest GetCreateIndexRequest(ElasticIndexSettings settings)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        var indexSettings = new IndexSettings
+        {
+            Analysis = new IndexSettingsAnalysis()
+            {
+                Analyzers = new Analyzers(),
+                TokenFilters = new TokenFilters(),
+            },
+        };
 
-        return GetFullIndexNameInternal(indexName);
+        // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
+        var analyzerName = (settings.AnalyzerName == "standardanalyzer"
+        ? null
+        : settings.AnalyzerName) ?? ElasticsearchConstants.DefaultAnalyzer;
+
+        if (_elasticSearchOptions.Analyzers is not null && _elasticSearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
+        {
+            var analyzer = GetAnalyzer(analyzerProperties);
+
+            indexSettings.Analysis.Analyzers.Add(analyzerName, analyzer);
+        }
+
+        if (_elasticSearchOptions.TokenFilters is not null && _elasticSearchOptions.TokenFilters.Count > 0)
+        {
+            foreach (var filter in _elasticSearchOptions.TokenFilters)
+            {
+                if (!filter.Value.TryGetPropertyValue("type", out var typeObject) ||
+                    !_tokenFilterGetter.TryGetValue(typeObject.ToString(), out var tokenFilterType))
+                {
+                    continue;
+                }
+
+                RemoveTypeNode(filter.Value);
+
+                var tokenFilter = filter.Value.ToObject(tokenFilterType) as ITokenFilter;
+
+                if (tokenFilter is not null)
+                {
+                    indexSettings.Analysis.TokenFilters.Add(filter.Key, tokenFilter);
+                }
+            }
+        }
+
+        var createIndexRequest = new CreateIndexRequest(settings.IndexFullName)
+        {
+            Settings = indexSettings,
+            Mappings = settings.IndexMappings ?? new TypeMapping(),
+        };
+
+        // Custom metadata to store the last indexing task id.
+        createIndexRequest.Mappings.Meta ??= new FluentDictionary<string, object>();
+
+        createIndexRequest.Mappings.Meta[_lastTaskId] = 0;
+
+        return createIndexRequest;
     }
 
     internal async Task<ElasticsearchResult> SearchAsync(string indexName, string query)
@@ -616,11 +569,11 @@ public sealed class ElasticsearchIndexManager
             TopDocs = [],
         };
 
+        var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
+
         if (await ExistsAsync(indexName))
         {
-            var fullIndexName = GetFullIndexName(indexName);
-
-            var endpoint = new EndpointPath(Elastic.Transport.HttpMethod.GET, fullIndexName + "/_search");
+            var endpoint = new EndpointPath(Elastic.Transport.HttpMethod.GET, $"{indexFullName}/_search");
             var searchResponse = await _elasticClient.Transport
                 .RequestAsync<SearchResponse<JsonObject>>(endpoint, postData: PostData.String(query));
 
@@ -629,7 +582,7 @@ public sealed class ElasticsearchIndexManager
                 ProcessSuccessfulSearchResponse(elasticTopDocs, searchResponse);
             }
 
-            _timestamps[fullIndexName] = _clock.UtcNow;
+            _timestamps[indexFullName] = _clock.UtcNow;
         }
 
         return elasticTopDocs;
@@ -666,27 +619,6 @@ public sealed class ElasticsearchIndexManager
         return analyzer;
     }
 
-    private string GetFullIndexNameInternal(string indexName)
-        => GetIndexPrefix() + _separator + indexName;
-
-    private string GetIndexPrefix()
-    {
-        if (_indexPrefix == null)
-        {
-            var parts = new List<string>();
-
-            if (!string.IsNullOrWhiteSpace(_elasticSearchOptions.IndexPrefix))
-            {
-                parts.Add(_elasticSearchOptions.IndexPrefix.ToLowerInvariant());
-            }
-
-            parts.Add(_shellSettings.Name.ToLowerInvariant());
-
-            _indexPrefix = string.Join(_separator, parts);
-        }
-
-        return _indexPrefix;
-    }
 
     private static void ProcessSuccessfulSearchResponse(ElasticsearchResult elasticTopDocs, SearchResponse<JsonObject> searchResponse)
     {

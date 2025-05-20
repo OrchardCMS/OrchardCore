@@ -25,8 +25,8 @@
 <form asp-action="Query" method="post">
     <div asp-validation-summary="All"></div>
     <div class="mb-3">
-        <label asp-for="IndexName" class="form-label">@T["Index"]</label>
-        <select asp-for="IndexName" class="form-control">
+        <label asp-for="Id" class="form-label">@T["Index"]</label>
+        <select asp-for="Id" class="form-control">
             @foreach (var index in Model.Indices)
             {
                 <option value="@index">@index</option>
@@ -38,7 +38,7 @@
     <div class="mb-3">
         <label asp-for="DecodedQuery" class="form-label">@T["Template"]</label>
         <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
-        <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch", Query = matchAllQuery, IndexName = Model.IndexName }))]</span>
+        <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch", Query = matchAllQuery, IndexName = Model.Id }))]</span>
         <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
     </div>
 

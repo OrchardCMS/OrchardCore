@@ -20,5 +20,7 @@ public interface IElasticsearchIndexSettingsHandler
 
     Task SynchronizedAsync(ElasticsearchIndexSettingsSynchronizedContext context);
 
+    Task SynchronizedSettingsAsync(ElasticsearchIndexSettingsSynchronizedSettingsContext context);
+
     Task ExportingAsync(ElasticsearchIndexSettingsExportingContext context);
 }

@@ -6,6 +6,7 @@ using OrchardCore.Entities;
 using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Models;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers;

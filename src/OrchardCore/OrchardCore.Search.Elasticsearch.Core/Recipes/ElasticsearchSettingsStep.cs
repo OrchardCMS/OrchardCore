@@ -9,9 +9,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// </summary>
 public sealed class ElasticsearchSettingsStep : NamedRecipeStepHandler
 {
-    private readonly ElasticsearchIndexingService _elasticIndexingService;
+    private readonly ElasticsearchContentIndexingService _elasticIndexingService;
 
-    public ElasticsearchSettingsStep(ElasticsearchIndexingService elasticIndexingService)
+    public ElasticsearchSettingsStep(ElasticsearchContentIndexingService elasticIndexingService)
         : base("Settings")
     {
         _elasticIndexingService = elasticIndexingService;
@@ -23,7 +23,7 @@ public sealed class ElasticsearchSettingsStep : NamedRecipeStepHandler
 
         if (step != null && step["SyncWithLucene"] != null && step["SyncWithLucene"].GetValue<bool>())
         {
-            return _elasticIndexingService.SyncSettings();
+            return _elasticIndexingService.SyncSettingsAsync();
         }
 
         return Task.CompletedTask;

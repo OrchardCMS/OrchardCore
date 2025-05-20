@@ -81,8 +81,8 @@ public class AzureAISearchIndexSettingsService
             throw new InvalidOperationException("Another index with the same name already exists.");
         }
 
-        var updatedContext = new AzureAISearchIndexSettingsCreateContext(settings);
-        await _handlers.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), updatedContext, _logger);
+        var createContext = new AzureAISearchIndexSettingsCreateContext(settings);
+        await _handlers.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), createContext, _logger);
 
         if (settings.IndexMappings.Count == 0)
         {
@@ -92,7 +92,7 @@ public class AzureAISearchIndexSettingsService
         document.IndexSettings[settings.Id] = settings;
         await DocumentManager.UpdateAsync(document);
 
-        await _handlers.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), updatedContext, _logger);
+        await _handlers.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), createContext, _logger);
     }
 
     public async Task UpdateAsync(AzureAISearchIndexSettings settings)
@@ -106,8 +106,8 @@ public class AzureAISearchIndexSettingsService
             throw new InvalidOperationException("Another index with the same name already exists.");
         }
 
-        var updatedContext = new AzureAISearchIndexSettingsUpdateContext(settings);
-        await _handlers.InvokeAsync((handler, ctx) => handler.UpdatingAsync(ctx), updatedContext, _logger);
+        var updateContext = new AzureAISearchIndexSettingsUpdateContext(settings);
+        await _handlers.InvokeAsync((handler, ctx) => handler.UpdatingAsync(ctx), updateContext, _logger);
 
         if (settings.IndexMappings.Count == 0)
         {
@@ -117,7 +117,7 @@ public class AzureAISearchIndexSettingsService
         document.IndexSettings[settings.Id] = settings;
         await DocumentManager.UpdateAsync(document);
 
-        await _handlers.InvokeAsync((handler, ctx) => handler.UpdatedAsync(ctx), updatedContext, _logger);
+        await _handlers.InvokeAsync((handler, ctx) => handler.UpdatedAsync(ctx), updateContext, _logger);
     }
 
     public async Task SynchronizeAsync(AzureAISearchIndexSettings settings)
@@ -161,16 +161,8 @@ public class AzureAISearchIndexSettingsService
     }
 
     [Obsolete("This method will be removed in future release. Instead use DeleteByIdAsync or DeleteByNameAsync")]
-    public async Task DeleteAsync(string id)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(id);
-
-        var document = await LoadDocumentAsync();
-
-        document.IndexSettings.Remove(id);
-
-        await DocumentManager.UpdateAsync(document);
-    }
+    public Task DeleteAsync(string name)
+        => DeleteByNameAsync(name);
 
     public async Task<AzureAISearchIndexSettings> NewAsync(string source, JsonNode data = null)
     {
@@ -212,8 +204,8 @@ public class AzureAISearchIndexSettingsService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var validatingContext = new AzureAISearchIndexSettingsResetContext(settings);
-        await _handlers.InvokeAsync((handler, ctx) => handler.ResetAsync(ctx), validatingContext, _logger);
+        var resettingContext = new AzureAISearchIndexSettingsResetContext(settings);
+        await _handlers.InvokeAsync((handler, ctx) => handler.ResetAsync(ctx), resettingContext, _logger);
     }
 
     private static IDocumentManager<AzureAISearchIndexSettingsDocument> DocumentManager

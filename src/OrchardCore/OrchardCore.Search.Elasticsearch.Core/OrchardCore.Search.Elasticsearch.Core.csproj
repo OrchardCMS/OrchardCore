@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <RootNamespace>OrchardCore.Search.Elasticsearch.Core</RootNamespace>
@@ -7,7 +7,8 @@
     <Description>
       $(OCCMSDescription)
 
-      Core Implementation for Elasticsearch Search module.</Description>
+      Core Implementation for Elasticsearch Search module.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
@@ -17,6 +18,10 @@
 
   <ItemGroup>
     <PackageReference Include="Elastic.Clients.Elasticsearch" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Search.Elasticsearch" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
+using Elastic.Clients.Elasticsearch.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,6 @@ using OrchardCore.Contents.Indexing;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
-using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
 using OrchardCore.Search.Elasticsearch.Core;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -63,21 +63,28 @@ public sealed class ContentElasticsearchIndexHandler : ElasticsearchIndexSetting
 
         var metadata = settings.As<ContentIndexMetadata>();
 
-        var indexLatest = data[nameof(ContentIndexMetadata.IndexLatest)]?.GetValue<bool>();
+        var indexLatest = data[nameof(metadata.IndexLatest)]?.GetValue<bool>();
 
         if (indexLatest.HasValue)
         {
             metadata.IndexLatest = indexLatest.Value;
         }
 
-        var culture = data[nameof(ContentIndexMetadata.Culture)]?.GetValue<string>()?.Trim();
+        var storeSourceData = data[nameof(metadata.StoreSourceData)]?.GetValue<bool>();
+
+        if (storeSourceData.HasValue)
+        {
+            metadata.StoreSourceData = storeSourceData.Value;
+        }
+
+        var culture = data[nameof(metadata.Culture)]?.GetValue<string>()?.Trim();
 
         if (!string.IsNullOrEmpty(culture))
         {
             metadata.Culture = culture;
         }
 
-        var indexContentTypes = data[nameof(ContentIndexMetadata.IndexedContentTypes)]?.AsArray();
+        var indexContentTypes = data[nameof(metadata.IndexedContentTypes)]?.AsArray();
 
         if (indexContentTypes is not null)
         {
@@ -137,7 +144,7 @@ public sealed class ContentElasticsearchIndexHandler : ElasticsearchIndexSetting
 
         return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-elasticsearch", context.Settings.IndexName, async (scope, indexName) =>
         {
-            var indexingService = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexingService>();
+            var indexingService = scope.ServiceProvider.GetRequiredService<ElasticsearchContentIndexingService>();
             await indexingService.ProcessContentItemsAsync(indexName);
         });
     }
@@ -198,24 +205,17 @@ public sealed class ContentElasticsearchIndexHandler : ElasticsearchIndexSetting
         }
     }
 
-    private static bool CanHandle(ElasticIndexSettings settings)
-    {
-        return string.Equals(ElasticsearchConstants.ContentsIndexSource, settings.Source, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private async Task AddIndexMappingAsync(IList<ElasticsearchIndexMap> indexMappings, string safeFieldName, DocumentIndexEntry entry, ElasticIndexSettings settings)
+    private async Task AddIndexMappingAsync(TypeMapping mapping, string safeFieldName, DocumentIndexEntry entry, ElasticIndexSettings settings)
     {
         var indexMap = new ElasticsearchIndexMap(safeFieldName, entry.Type, entry.Options)
         {
             IndexingKey = entry.Name,
         };
 
-        var context = new SearchIndexDefinition(indexMap, entry, settings);
+        var context = new SearchIndexDefinition(mapping, entry, settings);
 
         await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappingAsync(ctx), context, _logger);
 
         await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappedAsync(ctx), context, _logger);
-
-        indexMappings.Add(indexMap);
     }
 }

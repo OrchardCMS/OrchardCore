@@ -19,7 +19,7 @@ public sealed class IndexingBackgroundTask : IBackgroundTask
 {
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        var indexingService = serviceProvider.GetService<ElasticsearchIndexingService>();
+        var indexingService = serviceProvider.GetService<ElasticsearchContentIndexingService>();
 
         if (indexingService != null)
         {

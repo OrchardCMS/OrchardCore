@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -17,11 +18,13 @@ using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
+using OrchardCore.Search.Elasticsearch.Core.Handlers;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Handlers;
+using OrchardCore.Search.Elasticsearch.Migrations;
 using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Security.Permissions;
@@ -134,6 +137,12 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddDataMigration<ElasticIndexSettingsMigrations>();
+
+        services.AddScoped<IElasticsearchIndexSettingsHandler, ContentElasticsearchFieldIndexEvents>();
+        services.AddScoped<ElasticsearchContentIndexingService>();
+        services.AddScoped<IContentHandler, ElasticsearchIndexingContentHandler>();
+
         services.AddDisplayDriver<ElasticIndexSettings, ContentElasticIndexSettingsDisplayDriver>();
         services.AddScoped<IElasticsearchIndexSettingsHandler, ContentElasticsearchIndexHandler>();
 

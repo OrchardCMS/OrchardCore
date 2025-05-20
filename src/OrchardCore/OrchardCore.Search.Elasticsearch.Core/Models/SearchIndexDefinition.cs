@@ -1,3 +1,4 @@
+using Elastic.Clients.Elasticsearch.Mapping;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using static OrchardCore.Indexing.DocumentIndexBase;
 
@@ -6,16 +7,16 @@ namespace OrchardCore.Search.Elasticsearch.Models;
 public sealed class SearchIndexDefinition
 {
     public SearchIndexDefinition(
-        ElasticsearchIndexMap indexMap,
+        TypeMapping typeMapping,
         DocumentIndexEntry indexEntry,
         ElasticIndexSettings indexSettings)
     {
-        Map = indexMap;
+        Map = typeMapping;
         IndexEntry = indexEntry;
         IndexSettings = indexSettings;
     }
 
-    public ElasticsearchIndexMap Map { get; }
+    public TypeMapping Map { get; }
 
     public DocumentIndexEntry IndexEntry { get; }
 

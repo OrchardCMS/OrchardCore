@@ -7,22 +7,25 @@ using OrchardCore.Documents;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Search.AzureAI.Models;
+using OrchardCore.Search.Elasticsearch.Core.Handlers;
+using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.Models;
 using YesSql;
 using YesSql.Sql;
 
-namespace OrchardCore.Search.AzureAI.Migrations;
+namespace OrchardCore.Search.Elasticsearch.Migrations;
 
 /// <summary>
 /// In version 3, we introduced Source, Id and the ability to add metadata to index settings.
 /// This migration will migrate any index that was created before v3 to use the new structure.
 /// This migration will be removed in future releases.
 /// </summary>
-internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
+internal sealed class ElasticIndexSettingsMigrations : DataMigration
 {
     private readonly ShellSettings _shellSettings;
 
-    public AzureAISearchIndexSettingsMigrations(ShellSettings shellSettings)
+    public ElasticIndexSettingsMigrations(ShellSettings shellSettings)
     {
         _shellSettings = shellSettings;
     }
@@ -38,8 +41,9 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
         ShellScope.AddDeferredTask(async scope =>
         {
             var store = scope.ServiceProvider.GetRequiredService<IStore>();
+            var elasticsearchIndexNameService = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexNameService>();
             var dbConnectionAccessor = scope.ServiceProvider.GetRequiredService<IDbConnectionAccessor>();
-            var settingsManager = scope.ServiceProvider.GetRequiredService<IDocumentManager<AzureAISearchIndexSettingsDocument>>();
+            var settingsManager = scope.ServiceProvider.GetRequiredService<IDocumentManager<ElasticIndexSettingsDocument>>();
 
             var documentTableName = store.Configuration.TableNameConvention.GetDocumentTable();
             var table = $"{store.Configuration.TablePrefix}{documentTableName}";
@@ -51,7 +55,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
             var sqlBuilder = new SqlBuilder(store.Configuration.TablePrefix, store.Configuration.SqlDialect);
             sqlBuilder.AddSelector(quotedContentColumnName);
             sqlBuilder.From(quotedTableName);
-            sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Search.AzureAI.Models.AzureAISearchIndexSettingsDocument, OrchardCore.Search.AzureAI.Core' ");
+            sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Search.Elasticsearch.Core.Models.ElasticIndexSettingsDocument, OrchardCore.Search.Elasticsearch.Core' ");
             sqlBuilder.Take("1");
 
             await using var connection = dbConnectionAccessor.CreateConnection();
@@ -65,7 +69,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
             var jsonObject = JsonNode.Parse(jsonContent);
 
-            if (jsonObject["IndexSettings"] is not JsonObject indexesObject)
+            if (jsonObject["ElasticIndexSettings"] is not JsonObject indexesObject)
             {
                 return;
             }
@@ -82,42 +86,41 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                     continue;
                 }
 
-                var indexName = indexObject.Value["IndexName"]?.GetValue<string>();
+                var indexName = indexObject.Key;
 
-                if (string.IsNullOrEmpty(indexName))
+                var indexSettings = new ElasticIndexSettings()
                 {
-                    // Bad index! this is a scenario that should never happen.
-                    continue;
-                }
+                    Id = IdGenerator.GenerateId(),
+                    IndexName = indexName,
+                    IndexFullName = elasticsearchIndexNameService.GetFullIndexName(indexName),
+                    Source = ElasticsearchConstants.ContentsIndexSource,
+                };
 
-                if (!document.IndexSettings.TryGetValue(indexName, out var indexSettings))
-                {
-                    // Bad index! this is a scenario that should never happen.
-                    continue;
-                }
-
-                indexSettings.Source = AzureAISearchConstants.ContentsIndexSource;
-
-                if (string.IsNullOrEmpty(indexSettings.Id))
-                {
-                    indexSettings.Id = IdGenerator.GenerateId();
-                }
+                indexSettings.AnalyzerName = indexObject.Value[nameof(indexSettings.AnalyzerName)]?.GetValue<string>();
+                indexSettings.QueryAnalyzerName = indexObject.Value[nameof(indexSettings.QueryAnalyzerName)]?.GetValue<string>();
 
                 var metadata = indexSettings.As<ContentIndexMetadata>();
 
                 if (string.IsNullOrEmpty(metadata.Culture))
                 {
-                    metadata.Culture = indexObject.Value[nameof(ContentIndexMetadata.Culture)]?.GetValue<string>();
+                    metadata.Culture = indexObject.Value[nameof(metadata.Culture)]?.GetValue<string>();
                 }
 
-                var indexLatest = indexObject.Value[nameof(ContentIndexMetadata.IndexLatest)]?.GetValue<bool>();
+                var indexLatest = indexObject.Value[nameof(metadata.IndexLatest)]?.GetValue<bool>();
 
                 if (indexLatest.HasValue)
                 {
                     metadata.IndexLatest = indexLatest.Value;
                 }
 
-                var indexContentTypes = indexObject.Value[nameof(ContentIndexMetadata.IndexedContentTypes)]?.AsArray();
+                var storeSourceData = indexObject.Value[nameof(metadata.StoreSourceData)]?.GetValue<bool>();
+
+                if (storeSourceData.HasValue)
+                {
+                    metadata.StoreSourceData = storeSourceData.Value;
+                }
+
+                var indexContentTypes = indexObject.Value[nameof(metadata.IndexedContentTypes)]?.AsArray();
 
                 if (indexContentTypes is not null)
                 {
@@ -138,8 +141,11 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 indexSettings.Put(metadata);
 
-                document.IndexSettings.Remove(indexName);
-                document.IndexSettings[indexSettings.Id] = indexSettings;
+                ContentElasticsearchFieldIndexEvents.AddMappings(indexSettings);
+
+                document.ElasticIndexSettings.Remove(indexName);
+
+                document.ElasticIndexSettings[indexSettings.Id] = indexSettings;
             }
 
             await settingsManager.UpdateAsync(document);

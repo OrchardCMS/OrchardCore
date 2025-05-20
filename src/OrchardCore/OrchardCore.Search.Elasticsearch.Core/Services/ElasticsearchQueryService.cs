@@ -8,13 +8,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
 public class ElasticsearchQueryService
 {
     private readonly ElasticsearchIndexManager _elasticIndexManager;
+    private readonly ElasticsearchIndexSettingsService _elasticsearchIndexSettingsService;
     private readonly ILogger _logger;
 
     public ElasticsearchQueryService(
         ElasticsearchIndexManager elasticIndexManager,
+        ElasticsearchIndexSettingsService elasticsearchIndexSettingsService,
         ILogger<ElasticsearchQueryService> logger)
     {
         _elasticIndexManager = elasticIndexManager;
+        _elasticsearchIndexSettingsService = elasticsearchIndexSettingsService;
         _logger = logger;
     }
 
@@ -73,20 +76,23 @@ public class ElasticsearchQueryService
         return contentItemIds;
     }
 
-    public Task<ElasticsearchResult> SearchAsync(string indexName, string query)
+    public async Task<ElasticsearchResult> SearchAsync(string indexName, string query)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
         ArgumentException.ThrowIfNullOrEmpty(query);
 
         try
         {
-            return _elasticIndexManager.SearchAsync(indexName, query);
+            var settings = await _elasticsearchIndexSettingsService.FindByNameAsync(indexName)
+                ?? throw new InvalidOperationException($"Unable to find index named '{indexName}'.");
+
+            return await _elasticIndexManager.SearchAsync(settings.IndexName, query);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while querying elastic with exception: {Message}", ex.Message);
         }
 
-        return Task.FromResult(new ElasticsearchResult());
+        return new ElasticsearchResult();
     }
 }

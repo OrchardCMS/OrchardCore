@@ -11,14 +11,17 @@ namespace OrchardCore.Search.Elasticsearch.Handlers;
 public sealed class ElasticsearchIndexHandler : ElasticsearchIndexSettingsHandlerBase
 {
     private readonly ElasticsearchIndexNameService _searchIndexNameService;
+    private readonly ElasticsearchIndexManager _indexManager;
 
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public ElasticsearchIndexHandler(
         ElasticsearchIndexNameService searchIndexNameService,
+        ElasticsearchIndexManager indexManager,
         IStringLocalizer<ElasticsearchIndexHandler> stringLocalizer)
     {
         _searchIndexNameService = searchIndexNameService;
+        _indexManager = indexManager;
         S = stringLocalizer;
     }
 
@@ -57,6 +60,9 @@ public sealed class ElasticsearchIndexHandler : ElasticsearchIndexSettingsHandle
 
         return Task.CompletedTask;
     }
+
+    public override Task ResetAsync(ElasticsearchIndexSettingsResetContext context)
+        => _indexManager.SetLastTaskIdAsync(context.Settings.IndexName, 0);
 
     public override Task ValidatingAsync(ElasticsearchIndexSettingsValidatingContext context)
     {

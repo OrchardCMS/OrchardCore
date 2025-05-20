@@ -1,4 +1,4 @@
-namespace OrchardCore.Search.AzureAI.Models;
+namespace OrchardCore.Search.Elasticsearch.Models;
 
 public class ContentIndexMetadata
 {

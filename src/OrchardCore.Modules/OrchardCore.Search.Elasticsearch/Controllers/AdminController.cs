@@ -17,7 +17,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
-using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -36,7 +35,6 @@ public sealed class AdminController : Controller
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly ElasticsearchIndexManager _indexManager;
-    private readonly ElasticsearchIndexingService _elasticIndexingService;
     private readonly ElasticsearchIndexSettingsService _indexSettingsService;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ElasticsearchOptions _elasticSearchOptions;
@@ -45,7 +43,6 @@ public sealed class AdminController : Controller
     private readonly IOptions<TemplateOptions> _templateOptions;
     private readonly ElasticsearchQueryService _elasticQueryService;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
-    private readonly ILocalizationService _localizationService;
     private readonly IDisplayManager<ElasticIndexSettings> _displayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -57,7 +54,6 @@ public sealed class AdminController : Controller
         ILiquidTemplateManager liquidTemplateManager,
         IAuthorizationService authorizationService,
         ElasticsearchIndexManager elasticIndexManager,
-        ElasticsearchIndexingService elasticIndexingService,
         ElasticsearchIndexSettingsService elasticIndexSettingsService,
         JavaScriptEncoder javaScriptEncoder,
         IOptions<ElasticsearchOptions> elasticSearchOptions,
@@ -66,7 +62,6 @@ public sealed class AdminController : Controller
         IOptions<TemplateOptions> templateOptions,
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         ElasticsearchQueryService elasticQueryService,
-        ILocalizationService localizationService,
         IDisplayManager<ElasticIndexSettings> displayManager,
         IUpdateModelAccessor updateModelAccessor,
         IStringLocalizer<AdminController> stringLocalizer,
@@ -76,7 +71,6 @@ public sealed class AdminController : Controller
         _liquidTemplateManager = liquidTemplateManager;
         _authorizationService = authorizationService;
         _indexManager = elasticIndexManager;
-        _elasticIndexingService = elasticIndexingService;
         _indexSettingsService = elasticIndexSettingsService;
         _javaScriptEncoder = javaScriptEncoder;
         _elasticSearchOptions = elasticSearchOptions.Value;
@@ -85,7 +79,6 @@ public sealed class AdminController : Controller
         _templateOptions = templateOptions;
         _elasticQueryService = elasticQueryService;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
-        _localizationService = localizationService;
         _displayManager = displayManager;
         _updateModelAccessor = updateModelAccessor;
         S = stringLocalizer;
@@ -394,7 +387,7 @@ public sealed class AdminController : Controller
 
         await _indexSettingsService.ResetAsync(settings);
         await _indexSettingsService.UpdateAsync(settings);
-        await _elasticIndexingService.RebuildIndexAsync(settings);
+        await _indexManager.RebuildIndexAsync(settings);
         await _indexSettingsService.SynchronizeAsync(settings);
         await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", settings.IndexName]);
 
@@ -445,14 +438,22 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> IndexInfo(string indexName)
+    public async Task<IActionResult> IndexInfo(string id)
     {
-        var info = await _indexManager.GetIndexInfo(indexName);
+        var settings = await _indexSettingsService.FindByIdAsync(id);
+
+        if (settings == null)
+        {
+            return NotFound();
+        }
+
+        var exists = await _indexManager.ExistsAsync(settings.IndexName);
+        var info = await _indexManager.GetIndexInfo(settings.IndexName);
 
         var formattedJson = JNode.Parse(info).ToJsonString(JOptions.Indented);
         return View(new IndexInfoViewModel
         {
-            IndexName = _indexManager.GetFullIndexName(indexName),
+            IndexName = settings.IndexFullName,
             IndexInfo = formattedJson,
         });
     }
@@ -464,12 +465,12 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        await _elasticIndexingService.SyncSettings();
+        await _indexSettingsService.SynchronizeSettingsAsync();
 
         return RedirectToAction(nameof(Index));
     }
 
-    public Task<IActionResult> Query(string indexName, string query)
+    public Task<IActionResult> Query(string id, string query)
     {
         if (!_elasticConnectionOptions.ConfigurationExists())
         {
@@ -478,7 +479,7 @@ public sealed class AdminController : Controller
 
         return Query(new AdminQueryViewModel
         {
-            IndexName = indexName,
+            Id = id,
             DecodedQuery = string.IsNullOrWhiteSpace(query)
             ? string.Empty
             : Base64.FromUTF8Base64String(query),
@@ -500,18 +501,25 @@ public sealed class AdminController : Controller
 
         model.Indices = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
+        var settings = await _indexSettingsService.FindByIdAsync(model.Id);
+
+        if (settings == null)
+        {
+            return NotFound();
+        }
+
         // Can't query if there are no indices.
         if (model.Indices.Length == 0)
         {
             return RedirectToAction(nameof(Index));
         }
 
-        if (string.IsNullOrEmpty(model.IndexName))
+        if (string.IsNullOrEmpty(model.Id))
         {
-            model.IndexName = model.Indices[0];
+            model.Id = model.Indices[0];
         }
 
-        if (!await _indexManager.ExistsAsync(model.IndexName))
+        if (!await _indexManager.ExistsAsync(settings.IndexName))
         {
             return NotFound();
         }
@@ -523,7 +531,7 @@ public sealed class AdminController : Controller
 
         if (string.IsNullOrEmpty(model.Parameters))
         {
-            model.Parameters = "{ }";
+            model.Parameters = "{}";
         }
 
         var stopwatch = new Stopwatch();
@@ -534,7 +542,7 @@ public sealed class AdminController : Controller
 
         try
         {
-            var results = await _elasticQueryService.SearchAsync(model.IndexName, tokenizedContent);
+            var results = await _elasticQueryService.SearchAsync(model.Id, tokenizedContent);
 
             if (results != null)
             {
@@ -577,8 +585,13 @@ public sealed class AdminController : Controller
                 case ContentsBulkAction.Remove:
                     foreach (var id in itemIds)
                     {
+                        var settings = await _indexSettingsService.FindByIdAsync(id);
+                        if (settings is null)
+                        {
+                            continue;
+                        }
                         await _indexSettingsService.DeleteByIdAsync(id);
-                        await _indexManager.DeleteIndexAsync(id);
+                        await _indexManager.DeleteIndexAsync(settings.IndexName);
                     }
                     await _notifier.SuccessAsync(H["Indices successfully removed."]);
                     break;
@@ -619,8 +632,7 @@ public sealed class AdminController : Controller
 
                         await _indexSettingsService.ResetAsync(settings);
                         await _indexSettingsService.UpdateAsync(settings);
-                        await _indexManager.DeleteIndexAsync(settings.IndexName);
-                        await _indexManager.CreateIndexAsync(settings);
+                        await _indexManager.RebuildIndexAsync(settings);
                         await _indexSettingsService.SynchronizeAsync(settings);
 
                         await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", settings.IndexName]);

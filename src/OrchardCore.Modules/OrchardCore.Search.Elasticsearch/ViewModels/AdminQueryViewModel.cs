@@ -5,7 +5,7 @@ namespace OrchardCore.Search.Elasticsearch.ViewModels;
 public class AdminQueryViewModel
 {
     public string DecodedQuery { get; set; }
-    public string IndexName { get; set; }
+    public string Id { get; set; }
     public string Parameters { get; set; }
 
     [BindNever]

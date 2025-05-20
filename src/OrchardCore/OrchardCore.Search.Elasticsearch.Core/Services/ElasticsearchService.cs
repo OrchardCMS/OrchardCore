@@ -6,10 +6,12 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using Fluid.Values;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch.Services;
@@ -70,15 +72,23 @@ public class ElasticsearchService : ISearchService
             ? indexName.Trim()
             : searchSettings.SearchIndex ?? (await _elasticIndexSettingsService.GetSettingsAsync()).FirstOrDefault()?.IndexName;
 
-        if (index == null || !await _elasticIndexManager.ExistsAsync(index))
+        if (index == null)
         {
             _logger.LogWarning("Elasticsearch: Couldn't execute search. The search index doesn't exist.");
 
             return result;
         }
 
-        var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync(index);
-        result.Latest = elasticIndexSettings.IndexLatest;
+        var indexSettings = await _elasticIndexSettingsService.FindByNameAsync(index);
+
+        if (!await _elasticIndexManager.ExistsAsync(indexSettings.IndexName))
+        {
+            _logger.LogWarning("Elasticsearch: Couldn't execute search. The search index doesn't exist.");
+
+            return result;
+        }
+
+        result.Latest = indexSettings.As<ContentIndexMetadata>().IndexLatest;
 
         if (searchSettings.DefaultSearchFields == null || searchSettings.DefaultSearchFields.Length == 0)
         {
@@ -129,7 +139,7 @@ public class ElasticsearchService : ISearchService
                 Query = term,
             };
 
-            var searchContext = new ElasticsearchSearchContext(index, query)
+            var searchContext = new ElasticsearchSearchContext(indexSettings, query)
             {
                 From = start,
                 Size = pageSize,

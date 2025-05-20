@@ -1,3 +1,5 @@
+using OrchardCore.Search.Elasticsearch;
+using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Models;
 using OrchardCore.Search.Elasticsearch.Services;
 
@@ -23,6 +25,9 @@ public abstract class ElasticsearchIndexSettingsHandlerBase : IElasticsearchInde
     public virtual Task SynchronizedAsync(ElasticsearchIndexSettingsSynchronizedContext context)
         => Task.CompletedTask;
 
+    public virtual Task SynchronizedSettingsAsync(ElasticsearchIndexSettingsSynchronizedSettingsContext context)
+        => Task.CompletedTask;
+
     public virtual Task UpdatingAsync(ElasticsearchIndexSettingsUpdateContext context)
         => Task.CompletedTask;
 
@@ -31,4 +36,9 @@ public abstract class ElasticsearchIndexSettingsHandlerBase : IElasticsearchInde
 
     public virtual Task ValidatingAsync(ElasticsearchIndexSettingsValidatingContext context)
         => Task.CompletedTask;
+
+    protected static bool CanHandle(ElasticIndexSettings settings)
+    {
+        return string.Equals(ElasticsearchConstants.ContentsIndexSource, settings.Source, StringComparison.OrdinalIgnoreCase);
+    }
 }

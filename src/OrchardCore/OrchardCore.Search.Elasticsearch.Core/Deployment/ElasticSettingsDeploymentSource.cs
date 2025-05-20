@@ -7,16 +7,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 public sealed class ElasticSettingsDeploymentSource
     : DeploymentSourceBase<ElasticSettingsDeploymentStep>
 {
-    private readonly ElasticsearchIndexingService _elasticIndexingService;
+    private readonly ElasticsearchIndexSettingsService _elasticsearchIndexSettingsService;
 
-    public ElasticSettingsDeploymentSource(ElasticsearchIndexingService elasticIndexingService)
+    public ElasticSettingsDeploymentSource(ElasticsearchIndexSettingsService elasticsearchIndexSettingsService)
     {
-        _elasticIndexingService = elasticIndexingService;
+        _elasticsearchIndexSettingsService = elasticsearchIndexSettingsService;
     }
 
     protected override async Task ProcessAsync(ElasticSettingsDeploymentStep step, DeploymentPlanResult result)
     {
-        var elasticSettings = await _elasticIndexingService.GetElasticSettingsAsync();
+        var elasticSettings = await _elasticsearchIndexSettingsService.GetSettingsAsync();
 
         result.Steps.Add(new JsonObject
         {

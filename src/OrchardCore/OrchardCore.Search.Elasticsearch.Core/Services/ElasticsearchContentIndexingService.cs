@@ -5,10 +5,11 @@ using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Core.Models;
-using OrchardCore.Settings;
+using OrchardCore.Search.Elasticsearch.Models;
 using YesSql;
 using YesSql.Services;
 
@@ -17,7 +18,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
 /// <summary>
 /// This class provides services to update all the Elasticsearch indices.
 /// </summary>
-public class ElasticsearchIndexingService
+public class ElasticsearchContentIndexingService
 {
     private const int BatchSize = 100;
 
@@ -25,30 +26,27 @@ public class ElasticsearchIndexingService
     private readonly ElasticsearchIndexManager _indexManager;
     private readonly IIndexingTaskManager _indexingTaskManager;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
-    private readonly ISiteService _siteService;
     private readonly IContentManager _contentManager;
     private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
     private readonly IStore _store;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ILogger _logger;
 
-    public ElasticsearchIndexingService(
+    public ElasticsearchContentIndexingService(
         ElasticsearchIndexSettingsService elasticIndexSettingsService,
         ElasticsearchIndexManager indexManager,
         IIndexingTaskManager indexingTaskManager,
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
-        ISiteService siteService,
         IContentManager contentManager,
         IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
         IStore store,
         IContentDefinitionManager contentDefinitionManager,
-        ILogger<ElasticsearchIndexingService> logger)
+        ILogger<ElasticsearchContentIndexingService> logger)
     {
         _elasticIndexSettingsService = elasticIndexSettingsService;
         _indexManager = indexManager;
         _indexingTaskManager = indexingTaskManager;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
-        _siteService = siteService;
         _contentManager = contentManager;
         _contentItemIndexHandlers = contentItemIndexHandlers;
         _store = store;
@@ -88,7 +86,7 @@ public class ElasticsearchIndexingService
         }
 
         IEnumerable<IndexingTask> tasks = [];
-        var allContentTypes = indexSettingsList.SelectMany(x => x.IndexedContentTypes ?? []).Distinct().ToArray();
+        var allContentTypes = indexSettingsList.SelectMany(x => x.As<ContentIndexMetadata>().IndexedContentTypes ?? []).Distinct().ToArray();
         var readOnlySession = _store.CreateSession(withTracking: false);
 
         while (true)
@@ -111,14 +109,15 @@ public class ElasticsearchIndexingService
 
             var settingsByIndex = indexSettingsList.ToDictionary(x => x.IndexName);
 
-            if (indexSettingsList.Any(x => !x.IndexLatest))
+
+            if (indexSettingsList.Any(x => !x.As<ContentIndexMetadata>().IndexLatest))
             {
                 var publishedContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
                 allPublished = publishedContentItems.DistinctBy(x => x.ContentItemId)
                 .ToDictionary(k => k.ContentItemId);
             }
 
-            if (indexSettingsList.Any(x => x.IndexLatest))
+            if (indexSettingsList.Any(x => x.As<ContentIndexMetadata>().IndexLatest))
             {
                 var latestContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
                 allLatest = latestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
@@ -132,7 +131,7 @@ public class ElasticsearchIndexingService
                 updatedDocumentsByIndex[index.Key] = [];
             }
 
-            var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) != null;
+            var needPublished = indexSettingsList.Any(x => !x.As<ContentIndexMetadata>().IndexLatest);
 
             foreach (var task in tasks)
             {
@@ -168,7 +167,9 @@ public class ElasticsearchIndexingService
                         continue;
                     }
 
-                    var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
+                    var metadata = settings.As<ContentIndexMetadata>();
+
+                    var context = !metadata.IndexLatest ? publishedIndexContext : latestIndexContext;
 
                     // We index only if we actually found a content item in the database.
                     if (context == null)
@@ -179,10 +180,10 @@ public class ElasticsearchIndexingService
 
                     var cultureAspect = await _contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                     var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                    var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
+                    var ignoreIndexedCulture = metadata.Culture != "any" && culture != metadata.Culture;
 
                     // Ignore if the content item content type or culture is not indexed in this index.
-                    if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
+                    if (!metadata.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
                     {
                         continue;
                     }
@@ -194,14 +195,24 @@ public class ElasticsearchIndexingService
             // Delete all the existing documents.
             foreach (var index in updatedDocumentsByIndex)
             {
+                if (!settingsByIndex.TryGetValue(index.Key, out var settings))
+                {
+                    continue;
+                }
+
                 var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
-                await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
+                await _indexManager.DeleteDocumentsAsync(settings.IndexName, deletedDocuments);
             }
 
             // Submits all the new documents to the index.
             foreach (var index in updatedDocumentsByIndex)
             {
-                await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
+                if (!settingsByIndex.TryGetValue(index.Key, out var settings))
+                {
+                    continue;
+                }
+
+                await _indexManager.StoreDocumentsAsync(settings, updatedDocumentsByIndex[index.Key]);
             }
 
             // Update task ids.
@@ -209,72 +220,18 @@ public class ElasticsearchIndexingService
 
             foreach (var indexStatus in allIndices)
             {
-                if (indexStatus.Value < lastTaskId)
+                if (indexStatus.Value < lastTaskId && settingsByIndex.TryGetValue(indexStatus.Key, out var settings))
                 {
-                    await _indexManager.SetLastTaskIdAsync(indexStatus.Key, lastTaskId);
+                    await _indexManager.SetLastTaskIdAsync(settings.IndexName, lastTaskId);
                 }
             }
         }
     }
 
     /// <summary>
-    /// Creates a new index.
-    /// </summary>
-    public async Task CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
-    {
-        await _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
-        await RebuildIndexAsync(elasticIndexSettings);
-    }
-
-    /// <summary>
-    /// Update an existing index.
-    /// </summary>
-    public Task UpdateIndexAsync(ElasticIndexSettings elasticIndexSettings)
-        => _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
-
-    /// <summary>
-    /// Deletes permanently an index.
-    /// </summary>
-    public async Task<bool> DeleteIndexAsync(string indexName)
-    {
-        // Delete the Elasticsearch Index first.
-        var result = await _indexManager.DeleteIndexAsync(indexName);
-
-        if (result)
-        {
-            // Now delete it's setting.
-            await _elasticIndexSettingsService.DeleteIndexAsync(indexName);
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Restarts the indexing process from the beginning in order to update
-    /// current content items. It doesn't delete existing entries from the index.
-    /// </summary>
-    public async Task ResetIndexAsync(string indexName)
-    {
-        await _indexManager.SetLastTaskIdAsync(indexName, 0);
-    }
-
-    /// <summary>
-    /// Deletes and recreates the full index content.
-    /// </summary>
-    public async Task RebuildIndexAsync(ElasticIndexSettings elasticIndexSettings)
-    {
-        await _indexManager.DeleteIndexAsync(elasticIndexSettings.IndexName);
-        await _indexManager.CreateIndexAsync(elasticIndexSettings);
-        await ResetIndexAsync(elasticIndexSettings.IndexName);
-    }
-
-    public async Task<ElasticSettings> GetElasticSettingsAsync()
-        => await _siteService.GetSettingsAsync<ElasticSettings>() ?? new ElasticSettings();
-
-    /// <summary>
     /// Synchronizes Elasticsearch content index settings with Lucene ones.
     /// </summary>
-    public async Task SyncSettings()
+    public async Task SyncSettingsAsync()
     {
         var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
 

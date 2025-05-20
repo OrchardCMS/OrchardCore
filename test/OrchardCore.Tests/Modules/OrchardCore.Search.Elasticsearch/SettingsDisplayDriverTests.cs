@@ -77,9 +77,11 @@ public partial class SettingsDisplayDriverTests
                 Indices = ["idx1", "idx2", "testIndex"],
             };
 
+            var settingsServiceLoggerMock = new Mock<ILogger<ElasticsearchIndexSettingsService>>();
+
             // Act
             var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
-            var elasticService = new ElasticsearchIndexSettingsService();
+            var elasticService = new ElasticsearchIndexSettingsService([], settingsServiceLoggerMock.Object);
             var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldElasticEditorSettingsDriver(elasticService));
             var shape = (ContentPickerFieldElasticEditorSettings)shapeResult.Shape;
 

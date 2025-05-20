@@ -10,17 +10,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// </summary>
 public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
 {
-    private readonly ElasticsearchIndexingService _elasticIndexingService;
     private readonly ElasticsearchIndexManager _elasticIndexManager;
 
-    public ElasticsearchIndexStep(
-        ElasticsearchIndexingService elasticIndexingService,
-        ElasticsearchIndexManager elasticIndexManager
-        )
+    public ElasticsearchIndexStep(ElasticsearchIndexManager elasticIndexManager)
         : base("ElasticIndexSettings")
     {
         _elasticIndexManager = elasticIndexManager;
-        _elasticIndexingService = elasticIndexingService;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -32,7 +27,7 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
         {
             if (!await _elasticIndexManager.ExistsAsync(setting.IndexName))
             {
-                await _elasticIndexingService.CreateIndexAsync(setting);
+                await _elasticIndexManager.CreateIndexAsync(setting);
             }
         }
     }

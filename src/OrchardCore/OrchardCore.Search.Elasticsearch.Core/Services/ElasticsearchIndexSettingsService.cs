@@ -117,7 +117,7 @@ public class ElasticsearchIndexSettingsService
         var updatedContext = new ElasticsearchIndexSettingsUpdateContext(settings);
         await _handlers.InvokeAsync((handler, ctx) => handler.UpdatingAsync(ctx), updatedContext, _logger);
 
-        if (settings.IndexMappings.Count == 0)
+        if (settings.IndexMappings.Properties is null || !settings.IndexMappings.Properties.Any())
         {
             throw new InvalidOperationException("At least one index-mapping is required.");
         }
@@ -169,7 +169,7 @@ public class ElasticsearchIndexSettingsService
         var updatedContext = new ElasticsearchIndexSettingsCreateContext(settings);
         await _handlers.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), updatedContext, _logger);
 
-        if (settings.IndexMappings.Count == 0)
+        if (settings.IndexMappings.Properties is null || !settings.IndexMappings.Properties.Any())
         {
             throw new InvalidOperationException("At least one index-mapping is required.");
         }
@@ -194,7 +194,7 @@ public class ElasticsearchIndexSettingsService
         var updatedContext = new ElasticsearchIndexSettingsUpdateContext(settings);
         await _handlers.InvokeAsync((handler, ctx) => handler.UpdatingAsync(ctx), updatedContext, _logger);
 
-        if (settings.IndexMappings.Count == 0)
+        if (settings.IndexMappings.Properties is null || !settings.IndexMappings.Properties.Any())
         {
             throw new InvalidOperationException("At least one index-mapping is required.");
         }
@@ -258,12 +258,9 @@ public class ElasticsearchIndexSettingsService
         return false;
     }
 
-    public async Task DeleteIndexAsync(string indexName)
-    {
-        var document = await LoadDocumentAsync();
-        document.ElasticIndexSettings.Remove(indexName);
-        await DocumentManager.UpdateAsync(document);
-    }
+    [Obsolete("Use DeleteByNameAsync or DeleteByIdAsync")]
+    public Task DeleteIndexAsync(string indexName)
+        => DeleteByNameAsync(indexName);
 
     private static IDocumentManager<ElasticIndexSettingsDocument> DocumentManager =>
         ShellScope.Services.GetRequiredService<IDocumentManager<ElasticIndexSettingsDocument>>();
@@ -278,5 +275,11 @@ public class ElasticsearchIndexSettingsService
         }
 
         return ElasticsearchConstants.DefaultAnalyzer;
+    }
+
+    public async Task SynchronizeSettingsAsync()
+    {
+        var synchronizedContext = new ElasticsearchIndexSettingsSynchronizedSettingsContext();
+        await _handlers.InvokeAsync((handler, ctx) => handler.SynchronizedSettingsAsync(ctx), synchronizedContext, _logger);
     }
 }
