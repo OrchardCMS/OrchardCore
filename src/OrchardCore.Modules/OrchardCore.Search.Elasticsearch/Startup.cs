@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
@@ -20,6 +21,7 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
+using OrchardCore.Search.Elasticsearch.Handlers;
 using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Security.Permissions;
@@ -60,6 +62,10 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Query, ElasticsearchQueryDisplayDriver>();
         services.AddDataMigration<ElasticsearchQueryMigrations>();
         services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();
+
+        services.AddDisplayDriver<ElasticIndexSettings, ElasticIndexSettingsDisplayDriver>();
+        services.AddScoped<IElasticsearchIndexSettingsHandler, ElasticsearchIndexHandler>();
+
     }
 }
 
@@ -113,5 +119,31 @@ public sealed class ContentTypesStartup : StartupBase
     {
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Contents")]
+public sealed class ContentsStartup : StartupBase
+{
+    private readonly IStringLocalizer S;
+
+    public ContentsStartup(IStringLocalizer<ContentsStartup> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<ElasticIndexSettings, ContentElasticIndexSettingsDisplayDriver>();
+        services.AddScoped<IElasticsearchIndexSettingsHandler, ContentElasticsearchIndexHandler>();
+
+        services.Configure<ElasticsearchOptions>(options =>
+        {
+            options.AddIndexSource(ElasticsearchConstants.ContentsIndexSource, o =>
+            {
+                o.DisplayName = S["Contents"];
+                o.Description = S["Create an index based on content items."];
+            });
+        });
     }
 }

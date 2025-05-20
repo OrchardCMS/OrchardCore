@@ -1,10 +1,13 @@
+@using OrchardCore.DisplayManagement
+
 @model AdminIndexViewModel
 @{
-    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
-    int endIndex = startIndex + Model.Indexes.Count() - 1;
+    var startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    var totalIndexes = Model.Indexes.Count;
+    var endIndex = startIndex + totalIndexes - 1;
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Elasticsearch Indices"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Elasticsearch Indexes"])</h1></zone>
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="Index" method="post">
@@ -22,14 +25,13 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <a asp-route-action="SyncSettings" title="@T["Synchronize Elasticsearch content index settings with Lucene."]" class="btn btn-secondary sync" role="button" data-url-af="RemoveUrl UnsafeUrl" data-title=@T["Synchronize Content Index Settings"] data-message=@T["Are you sure you want to synchronize all Elasticsearch content index settings with Lucene ones?"]>@T["Synchronize Settings"]</a>
-                    <a asp-route-action="Edit" class="btn btn-secondary create" role="button">@T["Add Index"]</a>
+                    <button type="button" class="btn btn-secondary create" role="button" data-bs-toggle="modal" data-bs-target="#modalAddIndex">@T["Add index"]</button>
                 </div>
             </div>
         </div>
     </div>
     <ul class="list-group with-checkbox">
-        @if (Model.Indexes.Any())
+        @if (totalIndexes > 0)
         {
             <li class="list-group-item text-bg-theme">
                 <div class="row">
@@ -37,7 +39,7 @@
                         <div class="form-check mt-2 me-n2">
                             <input type="checkbox" class="form-check-input" id="select-all">
                             <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            <label id="items" for="select-all">@T.Plural(Model.Indexes.Count(), "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                            <label id="items" for="select-all">@T.Plural(totalIndexes, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
                             <label id="selected-items" class="text-muted" for="select-all"></label>
                         </div>
                     </div>
@@ -58,32 +60,16 @@
             </li>
             @foreach (var entry in Model.Indexes)
             {
-                <li class="list-group-item">
-                    <div class="w-100">
-                        <div class="form-check float-start">
-                            <input type="checkbox" class="form-check-input" value="@entry.Name" name="itemIds" id="itemIds-@entry.Name">
-                            <label class="form-check-label" for="itemIds-@entry.Name">&nbsp;</label>
+                <li class="list-group-item item d-flex justify-content-between align-items-center" data-filter-value="@entry.Index.IndexName.ToLowerInvariant()">
+                    <div class="d-flex flex-row">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" value="@entry.Index.Id" name="itemIds" id="itemIds-@entry.Index.Id">
+                            <label class="form-check-label" for="itemIds-@entry.Index.Id">&nbsp;</label>
                         </div>
-                        <div class="float-start">
-                            <h5>@entry.Name</h5>
-                            <p>@entry.AnalyzerName</p>
-                        </div>
-                        <div class="float-end">
-                            <a asp-action="IndexInfo" asp-route-IndexName="@entry.Name" class="btn btn-primary btn-sm">@T["Index Info"]</a>
-                            <a asp-action="Query" asp-route-IndexName="@entry.Name" class="btn btn-success btn-sm">@T["Query"]</a>
-                            <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="UnsafeUrl">@T["Reset"]</a>
-                            <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
-                            <a asp-action="Edit" asp-route-IndexName="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <div class="btn-group">
-                                <a class="btn btn-danger btn-sm" type="button" asp-action="Delete" asp-route-IndexName="@entry.Name" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                                <button type="button" class="btn btn-danger btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a title="@T["Removes the index configuration only."]" class="dropdown-item" asp-action="ForceDelete" asp-route-IndexName="@entry.Name" data-url-af="RemoveUrl UnsafeUrl">@T["Force Delete"]</a>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+
+                    <div class="flex-grow-1">
+                        @await DisplayAsync(entry.Shape)
                     </div>
                 </li>
             }
@@ -99,10 +85,43 @@
     </ul>
 </form>
 
+<!-- Modal -->
+<div class="modal fade" id="modalAddIndex" tabindex="-1" role="dialog" aria-labelledby="available-rule-types-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="available-rule-types-title">@T["Available Sources"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (!Model.SourceNames.Any())
+                {
+                    <p class="p-3 mb-2 bg-warning text-white">@T["You need to enable a feature which provides an Elasticsearch source."]</p>
+                }
+                else
+                {
+                    <div class="row row-cols-1 row-cols-md-3 g-2">
+                        @foreach (var providerName in Model.SourceNames)
+                        {
+                            IShape shape = await New.AzureAISearchIndexSettings_Link(Source: providerName);
+                            shape.Metadata.Alternates.Add("ElasticIndexSettings_Link__" + providerName);
+
+                            @await DisplayAsync(shape)
+                        }
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot" depends-on="jQuery">
-    $(function() {
+<script depends-on="jQuery" at="Foot">
+    $(function () {
         //$('select').selectpicker();
 
         var actions = $("#actions");
@@ -127,13 +146,13 @@
             }
         }
 
-        $(".dropdown-menu .dropdown-item").filter(function() {
+        $(".dropdown-menu .dropdown-item").filter(function () {
             return $(this).data("action");
-        }).on("click", function() {
+        }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
                 confirmDialog({
-                    ...$this.data(), callback: function(r) {
+                    ...$this.data(), callback: function (r) {
                         if (r) {
                             $("[name='Options.BulkAction']").val($this.data("action"));
                             $("[name='submit.BulkAction']").click();
@@ -143,13 +162,13 @@
             }
         });
 
-        selectAllCtrl.click(function() {
+        selectAllCtrl.click(function () {
             itemsCheckboxes.not(this).prop("checked", this.checked);
             selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
             displayActionsOrFilters();
         });
 
-        itemsCheckboxes.on("click", function() {
+        itemsCheckboxes.on("click", function () {
             var itemsCount = $(":checkbox[name='itemIds']").length;
             var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
 

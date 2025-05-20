@@ -5,12 +5,15 @@ namespace OrchardCore.Search.Elasticsearch.ViewModels;
 
 public class AdminIndexViewModel
 {
-    public IEnumerable<IndexViewModel> Indexes { get; set; }
+    public IList<IndexViewModel> Indexes { get; set; }
 
     public ContentOptions Options { get; set; } = new ContentOptions();
 
     [BindNever]
     public dynamic Pager { get; set; }
+
+    [BindNever]
+    public IEnumerable<string> SourceNames { get; set; }
 }
 
 public class ContentOptions

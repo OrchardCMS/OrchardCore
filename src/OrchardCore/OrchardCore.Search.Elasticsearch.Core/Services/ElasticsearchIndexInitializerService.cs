@@ -75,7 +75,7 @@ public sealed class ElasticsearchIndexInitializerService : ModularTenantEvents
             var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
             foreach (var settings in elasticIndexSettings)
             {
-                var result = await _elasticIndexManager.DeleteIndex(settings.IndexName);
+                var result = await _elasticIndexManager.DeleteIndexAsync(settings.IndexName);
                 if (!result)
                 {
                     _logger.LogError("Failed to remove the Elasticsearch index {IndexName}", settings.IndexName);

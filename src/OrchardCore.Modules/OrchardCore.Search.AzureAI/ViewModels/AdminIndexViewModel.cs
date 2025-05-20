@@ -12,5 +12,6 @@ public class AdminIndexViewModel
     [BindNever]
     public dynamic Pager { get; set; }
 
+    [BindNever]
     public IEnumerable<string> SourceNames { get; set; }
 }

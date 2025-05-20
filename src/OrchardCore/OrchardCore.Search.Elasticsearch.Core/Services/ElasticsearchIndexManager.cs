@@ -355,7 +355,7 @@ public sealed class ElasticsearchIndexManager
     /// This allows storing the last indexing task id executed on the Elasticsearch index.
     /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>.
     /// </summary>
-    public async Task SetLastTaskId(string indexName, long lastTaskId)
+    public async Task SetLastTaskIdAsync(string indexName, long lastTaskId)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
 
@@ -439,7 +439,7 @@ public sealed class ElasticsearchIndexManager
         return response.IsValidResponse;
     }
 
-    public async Task<bool> DeleteIndex(string indexName)
+    public async Task<bool> DeleteIndexAsync(string indexName)
     {
         if (await ExistsAsync(indexName))
         {

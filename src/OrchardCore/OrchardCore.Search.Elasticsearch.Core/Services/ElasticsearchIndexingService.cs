@@ -211,7 +211,7 @@ public class ElasticsearchIndexingService
             {
                 if (indexStatus.Value < lastTaskId)
                 {
-                    await _indexManager.SetLastTaskId(indexStatus.Key, lastTaskId);
+                    await _indexManager.SetLastTaskIdAsync(indexStatus.Key, lastTaskId);
                 }
             }
         }
@@ -238,7 +238,7 @@ public class ElasticsearchIndexingService
     public async Task<bool> DeleteIndexAsync(string indexName)
     {
         // Delete the Elasticsearch Index first.
-        var result = await _indexManager.DeleteIndex(indexName);
+        var result = await _indexManager.DeleteIndexAsync(indexName);
 
         if (result)
         {
@@ -255,7 +255,7 @@ public class ElasticsearchIndexingService
     /// </summary>
     public async Task ResetIndexAsync(string indexName)
     {
-        await _indexManager.SetLastTaskId(indexName, 0);
+        await _indexManager.SetLastTaskIdAsync(indexName, 0);
     }
 
     /// <summary>
@@ -263,7 +263,7 @@ public class ElasticsearchIndexingService
     /// </summary>
     public async Task RebuildIndexAsync(ElasticIndexSettings elasticIndexSettings)
     {
-        await _indexManager.DeleteIndex(elasticIndexSettings.IndexName);
+        await _indexManager.DeleteIndexAsync(elasticIndexSettings.IndexName);
         await _indexManager.CreateIndexAsync(elasticIndexSettings);
         await ResetIndexAsync(elasticIndexSettings.IndexName);
     }
