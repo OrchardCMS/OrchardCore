@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Azure;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Analysis;
 using Elastic.Clients.Elasticsearch.IndexManagement;
@@ -296,7 +295,6 @@ public sealed class ElasticsearchIndexManager
         }
 
         return response.Acknowledged;
-
     }
 
     public async Task<string> GetIndexMappings(string indexName)
