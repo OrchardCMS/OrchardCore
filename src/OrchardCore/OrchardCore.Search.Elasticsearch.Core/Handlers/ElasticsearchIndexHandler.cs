@@ -70,7 +70,7 @@ public sealed class ElasticsearchIndexHandler : ElasticsearchIndexSettingsHandle
         {
             context.Result.Fail(new ValidationResult(S["The index name is required."]));
         }
-        else if (ElasticsearchIndexManager.ToSafeIndexName(context.Settings.IndexName) != context.Settings.IndexName)
+        else if (ElasticsearchIndexNameService.ToSafeIndexName(context.Settings.IndexName) != context.Settings.IndexName)
         {
             context.Result.Fail(new ValidationResult(S["The index name contains forbidden characters."]));
         }

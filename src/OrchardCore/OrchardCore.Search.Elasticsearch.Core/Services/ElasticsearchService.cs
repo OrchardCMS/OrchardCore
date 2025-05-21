@@ -81,7 +81,7 @@ public class ElasticsearchService : ISearchService
 
         var indexSettings = await _elasticIndexSettingsService.FindByNameAsync(index);
 
-        if (!await _elasticIndexManager.ExistsAsync(indexSettings.IndexName))
+        if (indexSettings is null || !await _elasticIndexManager.ExistsAsync(indexSettings.IndexName))
         {
             _logger.LogWarning("Elasticsearch: Couldn't execute search. The search index doesn't exist.");
 

@@ -29,9 +29,17 @@ internal sealed class ElasticIndexSettingsDisplayDriver : DisplayDriver<ElasticI
     public override Task<IDisplayResult> DisplayAsync(ElasticIndexSettings settings, BuildDisplayContext context)
     {
         return CombineAsync(
-            View("ElasticIndexSettings_Fields_SummaryAdmin", settings).Location("Content:1"),
-            View("ElasticIndexSettings_Buttons_SummaryAdmin", settings).Location("Actions:5"),
-            View("ElasticIndexSettings_DefaultTags_SummaryAdmin", settings).Location("Tags:5")
+            View("ElasticIndexSettings_Fields_SummaryAdmin", settings)
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1"),
+
+            View("ElasticIndexSettings_Buttons_SummaryAdmin", settings)
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5"),
+
+            View("ElasticIndexSettings_ActionsMenuItems_SummaryAdmin", settings)
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:5"),
+
+            View("ElasticIndexSettings_DefaultTags_SummaryAdmin", settings)
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5")
         );
     }
 
@@ -58,7 +66,7 @@ internal sealed class ElasticIndexSettingsDisplayDriver : DisplayDriver<ElasticI
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["The index name is required."]);
             }
-            else if (ElasticsearchIndexManager.ToSafeIndexName(model.IndexName) != model.IndexName)
+            else if (ElasticsearchIndexNameService.ToSafeIndexName(model.IndexName) != model.IndexName)
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["The index name contains forbidden characters."]);
             }

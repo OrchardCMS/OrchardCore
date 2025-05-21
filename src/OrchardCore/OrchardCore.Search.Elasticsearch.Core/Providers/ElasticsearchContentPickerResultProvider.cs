@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Json.Path;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -14,15 +15,18 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
     private readonly ElasticsearchIndexSettingsService _elasticsearchIndexSettingsService;
     private readonly ElasticsearchIndexManager _elasticIndexManager;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
+    private readonly ILogger _logger;
 
     public ElasticsearchContentPickerResultProvider(
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         ElasticsearchIndexSettingsService elasticsearchIndexSettingsService,
-        ElasticsearchIndexManager elasticIndexManager)
+        ElasticsearchIndexManager elasticIndexManager,
+        ILogger<ElasticsearchContentPickerResultProvider> logger)
     {
         _elasticConnectionOptions = elasticConnectionOptions.Value;
         _elasticsearchIndexSettingsService = elasticsearchIndexSettingsService;
         _elasticIndexManager = elasticIndexManager;
+        _logger = logger;
     }
 
     public string Name => "Elasticsearch";
@@ -78,6 +82,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                             )
                         )
                     )
+                    .RequestConfiguration(_elasticIndexManager.GetDefaultConfiguration())
                 );
             }
             else
@@ -100,10 +105,22 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                             )
                         )
                     )
+                    .RequestConfiguration(_elasticIndexManager.GetDefaultConfiguration())
                 );
             }
 
-            if (searchResponse.IsValidResponse)
+            if (!searchResponse.IsValidResponse)
+            {
+                if (searchResponse.TryGetOriginalException(out var ex))
+                {
+                    _logger.LogWarning("There were issues creating an index in Elasticsearch. Exception: {OriginalException}", ex);
+                }
+                else
+                {
+                    _logger.LogWarning("There were issues creating an index in Elasticsearch.");
+                }
+            }
+            else
             {
                 elasticTopDocs.TopDocs = searchResponse.Documents.Select(doc => new ElasticsearchRecord(doc)).ToList();
             }

@@ -26,13 +26,8 @@
     <div asp-validation-summary="All"></div>
     <div class="mb-3">
         <label asp-for="Id" class="form-label">@T["Index"]</label>
-        <select asp-for="Id" class="form-control">
-            @foreach (var index in Model.Indices)
-            {
-                <option value="@index">@index</option>
-            }
-        </select>
-        <span class="hint">@T["The Elasticsearch index to search on"]</span>
+        <select asp-for="Id" class="form-control" asp-items="Model.Indexes"></select>
+        <span class="hint">@T["The Elasticsearch index to search"]</span>
     </div>
 
     <div class="mb-3">

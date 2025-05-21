@@ -195,7 +195,7 @@ public sealed class ContentElasticsearchIndexHandler : ElasticsearchIndexSetting
 
             foreach (var entry in index.Entries)
             {
-                if (ElasticsearchIndexManager.ToSafeIndexName(entry.Name) != entry.Name)
+                if (ElasticsearchIndexNameService.ToSafeIndexName(entry.Name) != entry.Name)
                 {
                     continue;
                 }

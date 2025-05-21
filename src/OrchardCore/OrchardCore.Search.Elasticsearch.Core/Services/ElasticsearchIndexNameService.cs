@@ -8,6 +8,9 @@ public sealed class ElasticsearchIndexNameService
 {
     private const string _separator = "_";
 
+    private static readonly List<char> _charsToRemove =
+        ['\\', '/', '*', '\"', '|', '<', '>', '`', '\'', ' ', '#', ':', '.'];
+
     private readonly IMemoryCache _memoryCache;
     private readonly ShellSettings _shellSettings;
     private readonly ElasticsearchOptions _elasticsearchOptions;
@@ -49,5 +52,25 @@ public sealed class ElasticsearchIndexNameService
         }
 
         return value ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Makes sure that the index names are compliant with Elasticsearch specifications.
+    /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params"/>.
+    /// </summary>
+    public static string ToSafeIndexName(string indexName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+
+        indexName = indexName.ToLowerInvariant();
+
+        if (indexName[0] == '-' || indexName[0] == '_' || indexName[0] == '+' || indexName[0] == '.')
+        {
+            indexName = indexName.Remove(0, 1);
+        }
+
+        _charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), string.Empty));
+
+        return indexName;
     }
 }

@@ -438,6 +438,7 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Admin("elasticsearch/IndexInfo/{id}", "ElasticsearchIndexInfo")]
     public async Task<IActionResult> IndexInfo(string id)
     {
         var settings = await _indexSettingsService.FindByIdAsync(id);
@@ -447,10 +448,15 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var exists = await _indexManager.ExistsAsync(settings.IndexName);
-        var info = await _indexManager.GetIndexInfo(settings.IndexName);
+        if (!await _indexManager.ExistsAsync(settings.IndexName))
+        {
+            return NotFound();
+        }
+
+        var info = await _indexManager.GetIndexInfoAsync(settings.IndexName);
 
         var formattedJson = JNode.Parse(info).ToJsonString(JOptions.Indented);
+
         return View(new IndexInfoViewModel
         {
             IndexName = settings.IndexFullName,
@@ -467,17 +473,27 @@ public sealed class AdminController : Controller
 
         await _indexSettingsService.SynchronizeSettingsAsync();
 
+        await _notifier.SuccessAsync(H["The settings have been successfully synchronized."]);
+
         return RedirectToAction(nameof(Index));
     }
 
-    public Task<IActionResult> Query(string id, string query)
+    [Admin("elasticsearch/Query/{id}", "ElasticsearchQuery")]
+    public async Task<IActionResult> Query(string id, string query)
     {
         if (!_elasticConnectionOptions.ConfigurationExists())
         {
-            return Task.FromResult<IActionResult>(NotConfigured());
+            return NotConfigured();
         }
 
-        return Query(new AdminQueryViewModel
+        var settings = await _indexSettingsService.FindByIdAsync(id);
+
+        if (settings == null)
+        {
+            return NotFound();
+        }
+
+        return await Query(new AdminQueryViewModel
         {
             Id = id,
             DecodedQuery = string.IsNullOrWhiteSpace(query)
@@ -487,6 +503,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
+    [Admin("elasticsearch/Query/{id}", "ElasticsearchQuery")]
     public async Task<IActionResult> Query(AdminQueryViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
@@ -499,8 +516,6 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        model.Indices = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-
         var settings = await _indexSettingsService.FindByIdAsync(model.Id);
 
         if (settings == null)
@@ -508,20 +523,18 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        // Can't query if there are no indices.
-        if (model.Indices.Length == 0)
-        {
-            return RedirectToAction(nameof(Index));
-        }
-
-        if (string.IsNullOrEmpty(model.Id))
-        {
-            model.Id = model.Indices[0];
-        }
-
         if (!await _indexManager.ExistsAsync(settings.IndexName))
         {
             return NotFound();
+        }
+
+        model.Indexes = (await _indexSettingsService.GetSettingsAsync())
+            .Select(x => new SelectListItem(x.IndexName, x.Id));
+
+        // Can't query if there are no indices.
+        if (!model.Indexes.Any())
+        {
+            return RedirectToAction(nameof(Index));
         }
 
         if (string.IsNullOrWhiteSpace(model.DecodedQuery))
@@ -542,7 +555,7 @@ public sealed class AdminController : Controller
 
         try
         {
-            var results = await _elasticQueryService.SearchAsync(model.Id, tokenizedContent);
+            var results = await _elasticQueryService.SearchAsync(settings.IndexName, tokenizedContent);
 
             if (results != null)
             {

@@ -24,7 +24,9 @@
                         <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                     </div>
                 </div>
+
                 <div class="col-auto">
+                    <a asp-route-action="SyncSettings" title="@T["Synchronize Elasticsearch content index settings with Lucene."]" class="btn btn-secondary sync" role="button" data-url-af="RemoveUrl UnsafeUrl" data-title=@T["Synchronize Content Index Settings"] data-message=@T["Are you sure you want to synchronize all Elasticsearch content index settings with Lucene ones?"]>@T["Synchronize Settings"]</a>
                     <button type="button" class="btn btn-secondary create" role="button" data-bs-toggle="modal" data-bs-target="#modalAddIndex">@T["Add index"]</button>
                 </div>
             </div>

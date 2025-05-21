@@ -80,7 +80,7 @@ public class ElasticsearchContentIndexingService
         // Find the lowest task id to process.
         foreach (var indexSetting in indexSettingsList)
         {
-            var taskId = await _indexManager.GetLastTaskId(indexSetting.IndexName);
+            var taskId = await _indexManager.GetLastTaskIdAsync(indexSetting.IndexName);
             lastTaskId = Math.Min(lastTaskId, taskId);
             allIndices.Add(indexSetting.IndexName, taskId);
         }
