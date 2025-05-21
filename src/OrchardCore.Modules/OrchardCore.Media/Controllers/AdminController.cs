@@ -250,8 +250,7 @@ public sealed class AdminController : Controller
 
                 var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
-                stream = null; // Must always reopen the resulting file
-                await PreCacheRemoteMedia(mediaFile, stream);
+                await PreCacheRemoteMedia(mediaFile);
 
                 result.Add(CreateFileResult(mediaFile));
             }
@@ -567,7 +566,7 @@ public sealed class AdminController : Controller
     // this, the Media Library page will try to load the thumbnail without a cache busting parameter, since
     // ShellFileVersionProvider won't find it in the local cache.
     // This is not required for files moved across folders, because the folder will be reopened anyway.
-    private async Task PreCacheRemoteMedia(IFileStoreEntry mediaFile, Stream stream = null)
+    private async Task PreCacheRemoteMedia(IFileStoreEntry mediaFile)
     {
         var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
         if (mediaFileStoreCache == null)
@@ -575,16 +574,11 @@ public sealed class AdminController : Controller
             return;
         }
 
-        Stream localStream = null;
-
-        if (stream == null)
-        {
-            stream = localStream = await _mediaFileStore.GetFileStreamAsync(mediaFile);
-        }
+        var localStream = await _mediaFileStore.GetFileStreamAsync(mediaFile);
 
         try
         {
-            await mediaFileStoreCache.SetCacheAsync(stream, mediaFile, HttpContext.RequestAborted);
+            await mediaFileStoreCache.SetCacheAsync(localStream, mediaFile, HttpContext.RequestAborted);
         }
         finally
         {
