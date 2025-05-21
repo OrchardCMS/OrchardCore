@@ -71,7 +71,8 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                                 )
                             )
                         )
-                    ).RequestConfiguration(_elasticIndexManager.GetDefaultConfiguration())
+                    )
+                    .RequestConfiguration(_elasticIndexManager.GetDefaultConfiguration())
                 );
             }
             else
@@ -93,7 +94,8 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                                 )
                             )
                         )
-                    ).RequestConfiguration(_elasticIndexManager.GetDefaultConfiguration())
+                    )
+                    .RequestConfiguration(_elasticIndexManager.GetDefaultConfiguration())
                 );
             }
 
@@ -101,11 +103,11 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
             {
                 if (searchResponse.TryGetOriginalException(out var ex))
                 {
-                    _logger.LogWarning("There were issues creating an index in Elasticsearch. Exception: {OriginalException}", ex);
+                    _logger.LogError(ex, "There were issues creating an index in Elasticsearch");
                 }
                 else
                 {
-                    _logger.LogWarning("There were issues creating an index in Elasticsearch.");
+                    _logger.LogWarning("There were issues creating an index in Elasticsearch");
                 }
             }
             else
