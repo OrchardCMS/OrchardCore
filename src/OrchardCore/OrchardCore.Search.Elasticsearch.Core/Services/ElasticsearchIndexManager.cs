@@ -471,11 +471,9 @@ public sealed class ElasticsearchIndexManager
         }
 
         var jsonDocument = JsonDocument.Parse(mappings);
-        jsonDocument.RootElement.TryGetProperty("_meta", out var meta);
-        meta.TryGetProperty(_lastTaskId, out var lastTaskId);
-        lastTaskId.TryGetInt64(out var longValue);
-
-        return longValue;
+        return jsonDocument.RootElement.TryGetProperty("_meta", out var meta) && meta.TryGetProperty(_lastTaskId, out var lastTaskId)
+            ? lastTaskId.GetInt64()
+            : 0;
     }
 
     /// <summary>
