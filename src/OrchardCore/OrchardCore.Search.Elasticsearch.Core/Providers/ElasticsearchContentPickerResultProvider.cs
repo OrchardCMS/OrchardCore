@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
-using Elastic.Transport;
 using Json.Path;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -61,9 +60,8 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
 
             if (string.IsNullOrWhiteSpace(searchContext.Query))
             {
-                searchResponse = await elasticClient.SearchAsync<JsonObject>(s =>
-                {
-                    s.Indices(_elasticIndexManager.GetFullIndexName(indexName))
+                searchResponse = await elasticClient.SearchAsync<JsonObject>(s => s
+                    .Indices(_elasticIndexManager.GetFullIndexName(indexName))
                     .Query(q => q
                         .Bool(b => b
                             .Filter(f => f
@@ -73,23 +71,13 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                                 )
                             )
                         )
-                    );
-
-                    if (!string.IsNullOrEmpty(_elasticConnectionOptions.CompatibleVersion))
-                    {
-                        s.RequestConfiguration(new RequestConfiguration
-                        {
-                            Accept = $"application/vnd.elasticsearch+json;compatible-with={_elasticConnectionOptions.CompatibleVersion}",
-                            ContentType = $"application/vnd.elasticsearch+json;compatible-with={_elasticConnectionOptions.CompatibleVersion}",
-                        });
-                    }
-                });
+                    ).RequestConfiguration(_elasticIndexManager.GetDefaultConfiguration())
+                );
             }
             else
             {
-                searchResponse = await elasticClient.SearchAsync<JsonObject>(descriptor =>
-                {
-                    descriptor.Indices(_elasticIndexManager.GetFullIndexName(indexName))
+                searchResponse = await elasticClient.SearchAsync<JsonObject>(descriptor => descriptor
+                    .Indices(_elasticIndexManager.GetFullIndexName(indexName))
                     .Query(q => q
                         .Bool(b => b
                             .Filter(f => f
@@ -105,17 +93,8 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                                 )
                             )
                         )
-                    );
-
-                    if (!string.IsNullOrEmpty(_elasticConnectionOptions.CompatibleVersion))
-                    {
-                        descriptor.RequestConfiguration(new RequestConfiguration
-                        {
-                            Accept = $"application/vnd.elasticsearch+json;compatible-with={_elasticConnectionOptions.CompatibleVersion}",
-                            ContentType = $"application/vnd.elasticsearch+json;compatible-with={_elasticConnectionOptions.CompatibleVersion}",
-                        });
-                    }
-                });
+                    ).RequestConfiguration(_elasticIndexManager.GetDefaultConfiguration())
+                );
             }
 
             if (!searchResponse.IsValidResponse)
