@@ -145,11 +145,11 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogError(ex, "There were issues creating an index in Elasticsearch.");
+                _logger.LogError(ex, "There were issues creating an index in Elasticsearch");
             }
             else
             {
-                _logger.LogWarning("There were issues creating an index in Elasticsearch.");
+                _logger.LogWarning("There were issues creating an index in Elasticsearch");
             }
         }
 
@@ -173,11 +173,11 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogError(ex, "There were issues retrieving index mappings from Elasticsearch.");
+                _logger.LogError(ex, "There were issues retrieving index mappings from Elasticsearch");
             }
             else
             {
-                _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch.");
+                _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch");
             }
 
             return null;
@@ -203,11 +203,11 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogError(ex, "There were issues retrieving index settings from Elasticsearch.");
+                _logger.LogError(ex, "There were issues retrieving index settings from Elasticsearch");
             }
             else
             {
-                _logger.LogWarning("There were issues retrieving index settings from Elasticsearch.");
+                _logger.LogWarning("There were issues retrieving index settings from Elasticsearch");
             }
         }
 
@@ -231,11 +231,11 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogError(ex, "There were issues retrieving index info from Elasticsearch.");
+                _logger.LogError(ex, "There were issues retrieving index info from Elasticsearch");
             }
             else
             {
-                _logger.LogWarning("There were issues retrieving index info from Elasticsearch.");
+                _logger.LogWarning("There were issues retrieving index info from Elasticsearch");
             }
         }
 
@@ -632,11 +632,11 @@ public sealed class ElasticsearchIndexManager
             {
                 if (response.TryGetOriginalException(out var ex))
                 {
-                    _logger.LogWarning("There were issues creating an index in Elasticsearch. Exception: {OriginalException}", ex);
+                    _logger.LogError(ex, "There were issues creating an index in Elasticsearch");
                 }
                 else
                 {
-                    _logger.LogWarning("There were issues creating an index in Elasticsearch.");
+                    _logger.LogWarning("There were issues creating an index in Elasticsearch");
                 }
             }
             else
