@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Core.Models;

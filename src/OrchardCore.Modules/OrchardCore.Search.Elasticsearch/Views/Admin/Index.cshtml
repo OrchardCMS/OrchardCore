@@ -103,7 +103,7 @@
                     <div class="row row-cols-1 row-cols-md-3 g-2">
                         @foreach (var providerName in Model.SourceNames)
                         {
-                            IShape shape = await New.AzureAISearchIndexSettings_Link(Source: providerName);
+                            IShape shape = await New.ElasticIndexSettings_Link(Source: providerName);
                             shape.Metadata.Alternates.Add("ElasticIndexSettings_Link__" + providerName);
 
                             @await DisplayAsync(shape)

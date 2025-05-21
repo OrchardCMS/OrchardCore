@@ -68,7 +68,6 @@ public sealed class Startup : StartupBase
 
         services.AddDisplayDriver<ElasticIndexSettings, ElasticIndexSettingsDisplayDriver>();
         services.AddScoped<IElasticsearchIndexSettingsHandler, ElasticsearchIndexHandler>();
-
     }
 }
 

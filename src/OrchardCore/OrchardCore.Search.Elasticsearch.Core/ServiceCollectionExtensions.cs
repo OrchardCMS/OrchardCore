@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Modules;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
@@ -14,7 +16,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddElasticsearchServices(this IServiceCollection services)
     {
-        services.AddSingleton<ElasticsearchIndexSettingsService>();
+        services.AddScoped<ElasticsearchIndexSettingsService>();
         services.AddSingleton<ElasticsearchIndexManager>();
         services.AddScoped<ElasticsearchQueryService>();
         services.AddScoped<ElasticsearchQueryService>();
@@ -28,6 +30,8 @@ public static class ServiceCollectionExtensions
         services.AddRecipeExecutionStep<ElasticsearchSettingsStep>();
         services.AddRecipeExecutionStep<ElasticsearchIndexRebuildStep>();
         services.AddRecipeExecutionStep<ElasticsearchIndexResetStep>();
+
+        services.AddTransient<IConfigureOptions<DocumentJsonSerializerOptions>, DocumentJsonSerializerOptionsConfiguration>();
 
         return services;
     }
