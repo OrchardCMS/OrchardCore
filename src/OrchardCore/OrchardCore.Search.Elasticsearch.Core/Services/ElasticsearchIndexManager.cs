@@ -284,11 +284,11 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogWarning("There were issues creating an index in Elasticsearch. Exception: {OriginalException}", ex);
+                _logger.LogError(ex, "There were issues creating an index in Elasticsearch");
             }
             else
             {
-                _logger.LogWarning("There were issues creating an index in Elasticsearch.");
+                _logger.LogWarning("There were issues creating an index in Elasticsearch");
             }
 
             return false;
@@ -310,11 +310,11 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch. Exception: {OriginalException}", ex);
+                _logger.LogError(ex, "There were issues retrieving index mappings from Elasticsearch");
             }
             else
             {
-                _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch.");
+                _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch");
             }
 
             return null;
@@ -338,11 +338,11 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogWarning("There were issues retrieving index settings from Elasticsearch. Exception: {OriginalException}", ex);
+                _logger.LogError(ex, "There were issues retrieving index settings from Elasticsearch");
             }
             else
             {
-                _logger.LogWarning("There were issues retrieving index settings from Elasticsearch.");
+                _logger.LogWarning("There were issues retrieving index settings from Elasticsearch");
             }
         }
 
@@ -364,11 +364,11 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogWarning("There were issues retrieving index info from Elasticsearch. Exception: {OriginalException}", ex);
+                _logger.LogError(ex, "There were issues retrieving index info from Elasticsearch");
             }
             else
             {
-                _logger.LogWarning("There were issues retrieving index info from Elasticsearch.");
+                _logger.LogWarning("There were issues retrieving index info from Elasticsearch");
             }
         }
 
@@ -403,7 +403,7 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogWarning("There were issues updating mappings in an Elasticsearch index. Exception: {OriginalException}", ex);
+                _logger.LogError(ex, "There were issues updating mappings in an Elasticsearch index");
             }
             else
             {
@@ -457,14 +457,15 @@ public sealed class ElasticsearchIndexManager
                             )
                         )
                     )
-                ).RequestConfiguration(GetDefaultConfiguration())
+                )
+                .RequestConfiguration(GetDefaultConfiguration())
             );
 
             if (!response.IsValidResponse)
             {
                 if (response.TryGetOriginalException(out var ex))
                 {
-                    _logger.LogWarning("There were issues deleting documents in an Elasticsearch index. Exception: {OriginalException}", ex);
+                    _logger.LogError(ex, "There were issues deleting documents in an Elasticsearch index");
                 }
                 else
                 {
@@ -498,7 +499,7 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogWarning("There were issues deleting documents in an Elasticsearch index. Exception: {OriginalException}", ex);
+                _logger.LogError(ex, "There were issues deleting documents in an Elasticsearch index");
             }
             else
             {
@@ -524,11 +525,11 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogWarning("There were issues deleting an index in Elasticsearch. Exception: {OriginalException}", ex);
+                _logger.LogError(ex, "There were issues deleting an index in Elasticsearch");
             }
             else if (response.ApiCallDetails.HttpStatusCode != 404)
             {
-                _logger.LogWarning("There were issues deleting an index in Elasticsearch.");
+                _logger.LogWarning("There were issues deleting an index in Elasticsearch");
             }
 
             return false;
@@ -558,11 +559,11 @@ public sealed class ElasticsearchIndexManager
         {
             if (response.TryGetOriginalException(out var ex))
             {
-                _logger.LogWarning("There were issues checking if an index in Elasticsearch Exists. Exception: {OriginalException}", ex);
+                _logger.LogError(ex, "There were issues checking if an index in Elasticsearch Exists");
             }
             else if (response.ApiCallDetails.HttpStatusCode != 404)
             {
-                _logger.LogWarning("There were issues checking if an index in Elasticsearch Exists.");
+                _logger.LogWarning("There were issues checking if an index in Elasticsearch Exists");
             }
 
             return false;
@@ -615,11 +616,11 @@ public sealed class ElasticsearchIndexManager
             {
                 if (response.TryGetOriginalException(out var ex))
                 {
-                    _logger.LogWarning("There were issues indexing a document using Elasticsearch. Exception: {OriginalException}", ex);
+                    _logger.LogError(ex, "There were issues indexing a document using Elasticsearch");
                 }
                 else
                 {
-                    _logger.LogWarning("There were issues indexing a document using Elasticsearch.");
+                    _logger.LogWarning("There were issues indexing a document using Elasticsearch");
                 }
             }
         }
@@ -656,15 +657,14 @@ public sealed class ElasticsearchIndexManager
             {
                 if (searchResponse.TryGetOriginalException(out var ex))
                 {
-                    _logger.LogWarning("There were issues creating an index in Elasticsearch. Exception: {OriginalException}", ex);
+                    _logger.LogError(ex, "There were issues creating an index in Elasticsearch");
                 }
                 else
                 {
-                    _logger.LogWarning("There were issues creating an index in Elasticsearch.");
+                    _logger.LogWarning("There were issues creating an index in Elasticsearch");
                 }
             }
-
-            if (searchResponse.IsSuccess())
+            else
             {
                 ProcessSuccessfulSearchResponse(elasticTopDocs, searchResponse);
             }
@@ -741,15 +741,14 @@ public sealed class ElasticsearchIndexManager
             {
                 if (response.TryGetOriginalException(out var ex))
                 {
-                    _logger.LogWarning("There were issues creating an index in Elasticsearch. Exception: {OriginalException}", ex);
+                    _logger.LogError(ex, "There were issues creating an index in Elasticsearch");
                 }
                 else
                 {
-                    _logger.LogWarning("There were issues creating an index in Elasticsearch.");
+                    _logger.LogWarning("There were issues creating an index in Elasticsearch");
                 }
             }
-
-            if (response.IsSuccess())
+            else
             {
                 ProcessSuccessfulSearchResponse(elasticTopDocs, response);
             }
