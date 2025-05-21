@@ -301,15 +301,10 @@ public sealed class ElasticsearchIndexManager
     {
         var indexFullName = GetFullIndexName(indexName);
 
-        var response = await _elasticClient.Indices.GetMappingAsync<GetMappingResponse>((t) =>
-        {
-            t.Indices(indexFullName);
-
-            if (!string.IsNullOrEmpty(_elasticConfiguration.CompatibleVersion))
-            {
-                t.RequestConfiguration(GetDefaultConfiguration());
-            }
-        });
+        var response = await _elasticClient.Indices.GetMappingAsync<GetMappingResponse>((descriptor) => descriptor
+            .Indices(indexFullName)
+            .RequestConfiguration(GetDefaultConfiguration())
+        );
 
         if (!response.IsValidResponse)
         {
@@ -518,33 +513,28 @@ public sealed class ElasticsearchIndexManager
 
     public async Task<bool> DeleteIndex(string indexName)
     {
-        if (await ExistsAsync(indexName))
+        var request = new DeleteIndexRequest(GetFullIndexName(indexName))
         {
-            var request = new DeleteIndexRequest(GetFullIndexName(indexName))
+            RequestConfiguration = GetDefaultConfiguration(),
+        };
+
+        var response = await _elasticClient.Indices.DeleteAsync(request);
+
+        if (!response.IsValidResponse)
+        {
+            if (response.TryGetOriginalException(out var ex))
             {
-                RequestConfiguration = GetDefaultConfiguration(),
-            };
-
-            var response = await _elasticClient.Indices.DeleteAsync(request);
-
-            if (!response.IsValidResponse)
+                _logger.LogWarning("There were issues deleting an index in Elasticsearch. Exception: {OriginalException}", ex);
+            }
+            else if (response.ApiCallDetails.HttpStatusCode != 404)
             {
-                if (response.TryGetOriginalException(out var ex))
-                {
-                    _logger.LogWarning("There were issues deleting an index in Elasticsearch. Exception: {OriginalException}", ex);
-                }
-                else
-                {
-                    _logger.LogWarning("There were issues deleting an index in Elasticsearch.");
-                }
-
-                return false;
+                _logger.LogWarning("There were issues deleting an index in Elasticsearch.");
             }
 
-            return response.Acknowledged;
+            return false;
         }
 
-        return true;
+        return response.Acknowledged;
     }
 
     /// <summary>
