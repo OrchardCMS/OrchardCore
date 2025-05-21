@@ -570,7 +570,7 @@ public sealed class ElasticsearchIndexManager
             {
                 _logger.LogWarning("There were issues checking if an index in Elasticsearch Exists. Exception: {OriginalException}", ex);
             }
-            else
+            else if (response.ApiCallDetails.HttpStatusCode != 404)
             {
                 _logger.LogWarning("There were issues checking if an index in Elasticsearch Exists.");
             }
