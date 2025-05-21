@@ -1,7 +1,9 @@
 using System.Text.Json.Nodes;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using Elastic.Transport;
 using Json.Path;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -13,13 +15,16 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
 {
     private readonly ElasticsearchIndexManager _elasticIndexManager;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
+    private readonly ILogger _logger;
 
     public ElasticsearchContentPickerResultProvider(
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
-        ElasticsearchIndexManager elasticIndexManager)
+        ElasticsearchIndexManager elasticIndexManager,
+        ILogger<ElasticsearchContentPickerResultProvider> logger)
     {
         _elasticConnectionOptions = elasticConnectionOptions.Value;
         _elasticIndexManager = elasticIndexManager;
+        _logger = logger;
     }
 
     public string Name => "Elasticsearch";
@@ -56,8 +61,9 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
 
             if (string.IsNullOrWhiteSpace(searchContext.Query))
             {
-                searchResponse = await elasticClient.SearchAsync<JsonObject>(s => s
-                    .Indices(_elasticIndexManager.GetFullIndexName(indexName))
+                searchResponse = await elasticClient.SearchAsync<JsonObject>(s =>
+                {
+                    s.Indices(_elasticIndexManager.GetFullIndexName(indexName))
                     .Query(q => q
                         .Bool(b => b
                             .Filter(f => f
@@ -67,13 +73,23 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                                 )
                             )
                         )
-                    )
-                );
+                    );
+
+                    if (!string.IsNullOrEmpty(_elasticConnectionOptions.CompatibleVersion))
+                    {
+                        s.RequestConfiguration(new RequestConfiguration
+                        {
+                            Accept = $"application/vnd.elasticsearch+json;compatible-with={_elasticConnectionOptions.CompatibleVersion}",
+                            ContentType = $"application/vnd.elasticsearch+json;compatible-with={_elasticConnectionOptions.CompatibleVersion}",
+                        });
+                    }
+                });
             }
             else
             {
-                searchResponse = await elasticClient.SearchAsync<JsonObject>(s => s
-                    .Indices(_elasticIndexManager.GetFullIndexName(indexName))
+                searchResponse = await elasticClient.SearchAsync<JsonObject>(descriptor =>
+                {
+                    descriptor.Indices(_elasticIndexManager.GetFullIndexName(indexName))
                     .Query(q => q
                         .Bool(b => b
                             .Filter(f => f
@@ -89,11 +105,31 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                                 )
                             )
                         )
-                    )
-                );
+                    );
+
+                    if (!string.IsNullOrEmpty(_elasticConnectionOptions.CompatibleVersion))
+                    {
+                        descriptor.RequestConfiguration(new RequestConfiguration
+                        {
+                            Accept = $"application/vnd.elasticsearch+json;compatible-with={_elasticConnectionOptions.CompatibleVersion}",
+                            ContentType = $"application/vnd.elasticsearch+json;compatible-with={_elasticConnectionOptions.CompatibleVersion}",
+                        });
+                    }
+                });
             }
 
-            if (searchResponse.IsValidResponse)
+            if (!searchResponse.IsValidResponse)
+            {
+                if (searchResponse.TryGetOriginalException(out var ex))
+                {
+                    _logger.LogWarning("There were issues creating an index in Elasticsearch. Exception: {OriginalException}", ex);
+                }
+                else
+                {
+                    _logger.LogWarning("There were issues creating an index in Elasticsearch.");
+                }
+            }
+            else
             {
                 elasticTopDocs.TopDocs = searchResponse.Documents.Select(doc => new ElasticsearchRecord(doc)).ToList();
             }
