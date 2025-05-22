@@ -83,11 +83,8 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
                 context.Error = ex;
             }
 
-            // If both deletion options are set, return here to avoid errors when trying to delete files from a non-existent container.
-            if (_options.RemoveFilesFromBasePath)
-            {
-                return;
-            }
+            // Return here to avoid errors when trying to delete files from a non-existent container in case both deletion options are set.
+            return;
         }
 
         if (_options.RemoveFilesFromBasePath)
