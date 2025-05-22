@@ -1,0 +1,20 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Indexing.Deployments
+
+@model ShapeViewModel<IndexEntityDeploymentStep>
+
+<h5>@T["Indexes"]</h5>
+
+@if (Model.Value.IncludeAll)
+{
+    <span class="badge text-bg-success">@T["All Indexes"]</span>
+}
+else if (Model.Value.SourceIds?.Length > 0)
+{
+    <span class="badge text-bg-warning">@T.Plural(Model.Value.SourceIds.Length, "1 selected index.", "{0} selected indexes.", Model.Value.SourceIds.Length)</span>
+}
+else
+{
+    <span class="badge text-bg-warning">@T["No selected indexes."]</span>
+}

@@ -5,6 +5,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Indexing.Core;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -21,6 +22,13 @@ namespace OrchardCore.Search.AzureAI;
 
 public sealed class Startup : StartupBase
 {
+    internal readonly IStringLocalizer S;
+
+    public Startup(IStringLocalizer<Startup> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddAzureAISearchServices();
@@ -31,6 +39,15 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAzureAISearchIndexSettingsHandler, AzureAISearchIndexHandler>();
 
         services.AddDataMigration<AzureAISearchIndexSettingsMigrations>();
+
+        services.Configure<IndexingOptions>(options =>
+        {
+            options.AddIndexingSource(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
+            {
+                o.DisplayName = S["Content in Azure AI Search"];
+                o.Description = S["Create an Azure AI Search index based on site contents."];
+            });
+        });
     }
 }
 
