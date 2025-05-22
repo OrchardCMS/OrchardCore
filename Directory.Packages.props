@@ -4,6 +4,12 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Aspire Packages -->
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.3.0" />
+    <PackageVersion Include="Aspire.Hosting.Elasticsearch" Version="9.2.1-preview.1.25222.1" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="9.3.0" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.3.0" />
     <PackageVersion Include="AWSSDK.S3" Version="3.7.416.28" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
@@ -62,7 +68,7 @@
     <PackageVersion Include="StackExchange.Redis" Version="2.8.37" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
+    <PackageVersion Include="System.IO.Hashing" Version="9.0.5" />
     <PackageVersion Include="xunit.v3" Version="2.0.2" />
     <PackageVersion Include="xunit.analyzers" Version="1.21.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.0" />
