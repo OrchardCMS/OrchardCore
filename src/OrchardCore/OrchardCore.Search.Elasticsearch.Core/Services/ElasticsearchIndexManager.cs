@@ -307,25 +307,25 @@ public sealed class ElasticsearchIndexManager
     /// Deletes documents from the index using the specified contentItemIds in a single request.
     /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-delete-by-query.html"/>.
     /// </summary>
-    public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
+    public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> ids)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
-        ArgumentNullException.ThrowIfNull(contentItemIds);
+        ArgumentNullException.ThrowIfNull(ids);
 
-        if (!contentItemIds.Any())
+        if (!ids.Any())
         {
             return false;
         }
 
         var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
 
-        var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(indexFullName, descriptor => descriptor
+        var response = await _elasticClient.DeleteByQueryAsync(indexFullName, descriptor => descriptor
             .Query(q => q
                 .Bool(b => b
                     .Filter(f => f
                         .Terms(t => t
                             .Field(IndexingConstants.ContentItemIdKey)
-                            .Terms(new TermsQueryField(contentItemIds.Select(id => FieldValue.String(id)).ToArray()))
+                            .Terms(new TermsQueryField(ids.Select(id => FieldValue.String(id)).ToArray()))
                         )
                     )
                 )
@@ -358,7 +358,7 @@ public sealed class ElasticsearchIndexManager
 
         var indexFullName = _elasticsearchIndexNameService.GetFullIndexName(indexName);
 
-        var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(indexFullName, descriptor => descriptor
+        var response = await _elasticClient.DeleteByQueryAsync(indexFullName, descriptor => descriptor
             .Query(q => q
                 .MatchAll(new MatchAllQuery())
              )

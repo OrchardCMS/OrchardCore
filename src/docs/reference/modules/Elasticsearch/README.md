@@ -254,7 +254,7 @@ The Elasticsearch module connection configuration can be set globally in the `ap
     "Username": "admin",
     "Password": "admin",
     "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
-    "EnableApiVersioningHeader": false,
+    "CompatibleVersion": "",
     "IndexPrefix": "",
     "Analyzers": {
       "standard": {
