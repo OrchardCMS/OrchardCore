@@ -50,7 +50,30 @@ You should get this result in Docker Desktop app:
 2. Start an Orchard Core instance with your IDE or the .NET CLI.
 3. Go to Orchard Core features, Enable Elasticsearch.
 
-## Recipe step
+## Custom Sources  
+
+As of version 3, Elasticsearch supports multiple index sources. When the **Contents** feature is enabled, the `Contents` source is automatically added, allowing you to create indexes based on content types.  
+
+If you need to create an index for data that doesn't originate from Orchard's content items, you can do so by registering a custom index source. This gives you full control over where the data comes from and how it is mapped to your index fields.  
+
+For example, let's define a custom source called **CustomSource**:  
+
+```csharp
+services.Configure<ElasticsearchOptions>(options =>
+{
+    options.AddIndexSource("CustomSource", o =>
+    {
+        o.DisplayName = S["Custom Source"];
+        o.Description = S["Create an index based on custom data."];
+    });
+});
+```  
+
+Next, you need to implement the `IElasticsearchIndexSettingsHandler` interface. In the `CreatingAsync` and `UpdatingAsync` methods, populate or update the `context.Settings.IndexMappings` to define the index fields and their types. You may use `ElasticsearchIndexSettingsHandlerBase` to simplify your implementation. 
+
+If you want the UI to capture custom data related to your source, implement `DisplayDriver<ElasticIndexSettings>`.  
+
+## Recipes
 
 Elasticsearch indices can be created during recipe execution using the `ElasticIndexSettings` step.  
 Here is a sample step:
@@ -231,7 +254,7 @@ The Elasticsearch module connection configuration can be set globally in the `ap
     "Username": "admin",
     "Password": "admin",
     "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
-    "EnableApiVersioningHeader": false,
+    "CompatibleVersion": "",
     "IndexPrefix": "",
     "Analyzers": {
       "standard": {

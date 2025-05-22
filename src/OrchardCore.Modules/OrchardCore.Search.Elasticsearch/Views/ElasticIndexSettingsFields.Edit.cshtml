@@ -1,0 +1,14 @@
+@model ElasticIndexSettingsViewModel
+
+<div class="mb-3" asp-validation-class-for="IndexName">
+    <label asp-for="IndexName" class="form-label">@T["Index Name"]</label>
+    <input asp-for="IndexName" class="form-control" asp-is-disabled="!Model.IsNew" />
+    <span class="hint">@T["Should be all lowercase. The shell name will be automatically prepended."]<a class="ms-2 seedoc" href="https://learn.microsoft.com/en-us/rest/api/searchservice/naming-rules" target="_blank">@T["See documentation"].</a></span>
+    <span asp-validation-for="IndexName" class="text-danger"></span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="AnalyzerName">
+    <label asp-for="AnalyzerName" class="form-label">@T["Analyzer Name"]</label>
+    <select asp-for="AnalyzerName" asp-items="Model.Analyzers" class="form-select"></select>
+    <span asp-validation-for="AnalyzerName" class="text-danger"></span>
+</div>

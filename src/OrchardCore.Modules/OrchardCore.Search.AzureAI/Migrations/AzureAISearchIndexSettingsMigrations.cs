@@ -5,6 +5,7 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Documents;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Search.AzureAI.Models;
 using YesSql;
@@ -19,10 +20,21 @@ namespace OrchardCore.Search.AzureAI.Migrations;
 /// </summary>
 internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 {
-#pragma warning disable CA1822 // Mark members as static
-    public int Create()
-#pragma warning restore CA1822 // Mark members as static
+    private readonly ShellSettings _shellSettings;
+
+    public AzureAISearchIndexSettingsMigrations(ShellSettings shellSettings)
     {
+        _shellSettings = shellSettings;
+    }
+
+    public int Create()
+    {
+        if (_shellSettings.IsInitializing())
+        {
+            // Don't run this migration when initializing the shell.
+            return 1;
+        }
+
         ShellScope.AddDeferredTask(async scope =>
         {
             var store = scope.ServiceProvider.GetRequiredService<IStore>();

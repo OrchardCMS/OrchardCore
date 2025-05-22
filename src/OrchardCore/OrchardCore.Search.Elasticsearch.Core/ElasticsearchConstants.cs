@@ -2,6 +2,8 @@ namespace OrchardCore.Search.Elasticsearch;
 
 public static class ElasticsearchConstants
 {
+    public const string ContentsIndexSource = "Contents";
+
     public const string DefaultAnalyzer = "standard";
 
     public const string SimpleAnalyzer = "simple";

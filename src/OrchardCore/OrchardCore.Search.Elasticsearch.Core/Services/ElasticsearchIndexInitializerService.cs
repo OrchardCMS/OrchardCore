@@ -46,7 +46,6 @@ public sealed class ElasticsearchIndexInitializerService : ModularTenantEvents
         await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-initialize", async scope =>
         {
             var elasticIndexSettingsService = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexSettingsService>();
-            var elasticIndexingService = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexingService>();
             var indexManager = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexManager>();
 
             var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync();
@@ -56,14 +55,10 @@ public sealed class ElasticsearchIndexInitializerService : ModularTenantEvents
             {
                 if (!await indexManager.ExistsAsync(settings.IndexName))
                 {
-                    await elasticIndexingService.CreateIndexAsync(settings);
+                    await indexManager.CreateIndexAsync(settings);
                     createdIndexes.Add(settings.IndexName);
+                    await elasticIndexSettingsService.SynchronizeAsync(settings);
                 }
-            }
-
-            if (createdIndexes.Count > 0)
-            {
-                await elasticIndexingService.ProcessContentItemsAsync(createdIndexes.ToArray());
             }
         });
     }
@@ -75,7 +70,7 @@ public sealed class ElasticsearchIndexInitializerService : ModularTenantEvents
             var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
             foreach (var settings in elasticIndexSettings)
             {
-                var result = await _elasticIndexManager.DeleteIndex(settings.IndexName);
+                var result = await _elasticIndexManager.DeleteIndexAsync(settings.IndexName);
                 if (!result)
                 {
                     _logger.LogError("Failed to remove the Elasticsearch index {IndexName}", settings.IndexName);

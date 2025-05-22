@@ -42,6 +42,11 @@ public class ElasticsearchConnectionOptions
     /// </summary>
     private bool _fileConfigurationExists { get; set; }
 
+    /// <summary>
+    /// The version of the Elasticsearch server.
+    /// </summary>
+    public string CompatibleVersion { get; set; }
+
     public void SetFileConfigurationExists(bool fileConfigurationExists)
         => _fileConfigurationExists = fileConfigurationExists;
 

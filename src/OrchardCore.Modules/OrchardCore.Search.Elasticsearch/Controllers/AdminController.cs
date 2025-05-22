@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Globalization;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -10,16 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.BackgroundJobs;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
-using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -37,9 +34,8 @@ public sealed class AdminController : Controller
     private readonly ISiteService _siteService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ElasticsearchIndexManager _elasticIndexManager;
-    private readonly ElasticsearchIndexingService _elasticIndexingService;
-    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexManager _indexManager;
+    private readonly ElasticsearchIndexSettingsService _indexSettingsService;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ElasticsearchOptions _elasticSearchOptions;
     private readonly INotifier _notifier;
@@ -47,7 +43,8 @@ public sealed class AdminController : Controller
     private readonly IOptions<TemplateOptions> _templateOptions;
     private readonly ElasticsearchQueryService _elasticQueryService;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
-    private readonly ILocalizationService _localizationService;
+    private readonly IDisplayManager<ElasticIndexSettings> _displayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -57,7 +54,6 @@ public sealed class AdminController : Controller
         ILiquidTemplateManager liquidTemplateManager,
         IAuthorizationService authorizationService,
         ElasticsearchIndexManager elasticIndexManager,
-        ElasticsearchIndexingService elasticIndexingService,
         ElasticsearchIndexSettingsService elasticIndexSettingsService,
         JavaScriptEncoder javaScriptEncoder,
         IOptions<ElasticsearchOptions> elasticSearchOptions,
@@ -66,16 +62,16 @@ public sealed class AdminController : Controller
         IOptions<TemplateOptions> templateOptions,
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         ElasticsearchQueryService elasticQueryService,
-        ILocalizationService localizationService,
+        IDisplayManager<ElasticIndexSettings> displayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
         _siteService = siteService;
         _liquidTemplateManager = liquidTemplateManager;
         _authorizationService = authorizationService;
-        _elasticIndexManager = elasticIndexManager;
-        _elasticIndexingService = elasticIndexingService;
-        _elasticIndexSettingsService = elasticIndexSettingsService;
+        _indexManager = elasticIndexManager;
+        _indexSettingsService = elasticIndexSettingsService;
         _javaScriptEncoder = javaScriptEncoder;
         _elasticSearchOptions = elasticSearchOptions.Value;
         _notifier = notifier;
@@ -83,7 +79,8 @@ public sealed class AdminController : Controller
         _templateOptions = templateOptions;
         _elasticQueryService = elasticQueryService;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
-        _localizationService = localizationService;
+        _displayManager = displayManager;
+        _updateModelAccessor = updateModelAccessor;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -103,18 +100,17 @@ public sealed class AdminController : Controller
             return NotConfigured();
         }
 
-        var indexes = (await _elasticIndexSettingsService.GetSettingsAsync())
-            .Select(i => new IndexViewModel { Name = i.IndexName })
-            .ToList();
+        var indexes = (await _indexSettingsService.GetSettingsAsync()).ToList();
 
         var totalIndexes = indexes.Count;
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
         if (!string.IsNullOrWhiteSpace(options.Search))
         {
-            indexes = indexes.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+            indexes = indexes.Where(q => q.IndexName.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
         }
+
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
         indexes = indexes
             .Skip(pager.GetStartIndex())
@@ -129,14 +125,22 @@ public sealed class AdminController : Controller
             routeData.Values.TryAdd(_optionsSearch, options.Search);
         }
 
-        var pagerShape = await shapeFactory.PagerAsync(pager, totalIndexes, routeData);
-
         var model = new AdminIndexViewModel
         {
-            Indexes = indexes,
+            Indexes = [],
             Options = options,
-            Pager = pagerShape,
+            Pager = await shapeFactory.PagerAsync(pager, totalIndexes, routeData),
+            SourceNames = _elasticSearchOptions.IndexSources.Keys.Order(),
         };
+
+        foreach (var index in indexes)
+        {
+            model.Indexes.Add(new IndexViewModel
+            {
+                Index = index,
+                Shape = await _displayManager.BuildDisplayAsync(index, _updateModelAccessor.ModelUpdater, "SummaryAdmin"),
+            });
+        }
 
         model.Options.ContentsBulkAction =
         [
@@ -156,11 +160,9 @@ public sealed class AdminController : Controller
             { _optionsSearch, model.Options.Search },
         });
 
-    public async Task<IActionResult> Edit(string indexName = null)
+    [Admin("elasticsearch/create/{source}", "ElasticsearchCreate")]
+    public async Task<IActionResult> Create(string source)
     {
-        var IsCreate = string.IsNullOrWhiteSpace(indexName);
-        var settings = new ElasticIndexSettings();
-
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
@@ -171,34 +173,25 @@ public sealed class AdminController : Controller
             return NotConfigured();
         }
 
-        if (!IsCreate)
+        if (!_elasticSearchOptions.IndexSources.TryGetValue(source, out var indexSource))
         {
-            settings = await _elasticIndexSettingsService.GetSettingsAsync(indexName);
+            await _notifier.ErrorAsync(H["Unable to find a provider with the name '{0}'.", source]);
 
-            if (settings == null)
-            {
-                return NotFound();
-            }
+            return RedirectToAction(nameof(Index));
         }
 
-        var model = new ElasticIndexSettingsViewModel
-        {
-            IsCreate = IsCreate,
-            IndexName = IsCreate ? string.Empty : settings.IndexName,
-            AnalyzerName = IsCreate ? "standardanalyzer" : settings.AnalyzerName,
-            IndexLatest = settings.IndexLatest,
-            Culture = settings.Culture,
-            IndexedContentTypes = settings.IndexedContentTypes,
-            StoreSourceData = settings.StoreSourceData,
-        };
+        var settings = await _indexSettingsService.NewAsync(indexSource.Source);
 
-        await PopulateMenuOptionsAsync(model);
+        var model = await _displayManager.BuildEditorAsync(settings, _updateModelAccessor.ModelUpdater, true);
 
         return View(model);
     }
 
-    [HttpPost, ActionName(nameof(Edit))]
-    public async Task<ActionResult> EditPost(ElasticIndexSettingsViewModel model, string[] indexedContentTypes)
+    [HttpPost]
+    [ActionName(nameof(Create))]
+    [Admin("elasticsearch/create/{source}", "ElasticsearchCreate")]
+
+    public async Task<IActionResult> CreatePost(string source)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
@@ -210,94 +203,123 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        ValidateModel(model);
+        if (!_elasticSearchOptions.IndexSources.TryGetValue(source, out var indexSource))
+        {
+            await _notifier.ErrorAsync(H["Unable to find a provider with the name '{0}'.", source]);
 
-        if (model.IsCreate)
-        {
-            if (await _elasticIndexManager.ExistsAsync(model.IndexName))
-            {
-                ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", model.IndexName]);
-            }
-        }
-        else
-        {
-            if (!await _elasticIndexManager.ExistsAsync(model.IndexName))
-            {
-                ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", model.IndexName]);
-            }
+            return RedirectToAction(nameof(Index));
         }
 
-        if (!ModelState.IsValid)
-        {
-            await PopulateMenuOptionsAsync(model);
+        var settings = await _indexSettingsService.NewAsync(indexSource.Source);
 
-            return View(model);
-        }
+        var model = await _displayManager.UpdateEditorAsync(settings, _updateModelAccessor.ModelUpdater, true);
 
-        if (model.IsCreate)
+        if (ModelState.IsValid)
         {
             try
             {
-                var settings = new ElasticIndexSettings
-                {
-                    IndexName = model.IndexName,
-                    AnalyzerName = model.AnalyzerName,
-                    QueryAnalyzerName = model.AnalyzerName,
-                    IndexLatest = model.IndexLatest,
-                    IndexedContentTypes = indexedContentTypes,
-                    Culture = model.Culture ?? string.Empty,
-                    StoreSourceData = model.StoreSourceData,
-                };
+                await _indexSettingsService.CreateAsync(settings);
 
-                // We call Rebuild in order to reset the index state cursor too in case the same index
-                // name was also used previously.
-                await _elasticIndexingService.CreateIndexAsync(settings);
+                if (await _indexManager.CreateIndexAsync(settings))
+                {
+                    await _indexSettingsService.SynchronizeAsync(settings);
+                    await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", settings.IndexName]);
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
             }
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
-                _logger.LogError(e, "An error occurred while creating index: {IndexName}.", _elasticIndexManager.GetFullIndexName(model.IndexName));
-
-                await PopulateMenuOptionsAsync(model);
-
-                return View(model);
+                _logger.LogError(e, "An error occurred while creating an index {IndexName}.", settings.IndexFullName);
             }
-
-            await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
         }
-        else
+
+        return View(model);
+    }
+
+    [Admin("elasticsearch/Edit/{id}", "ElasticsearchEdit")]
+    public async Task<IActionResult> Edit(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
-            try
-            {
-                var settings = new ElasticIndexSettings
-                {
-                    IndexName = model.IndexName,
-                    AnalyzerName = model.AnalyzerName,
-                    IndexLatest = model.IndexLatest,
-                    IndexedContentTypes = indexedContentTypes,
-                    Culture = model.Culture ?? string.Empty,
-                    StoreSourceData = model.StoreSourceData,
-                };
-
-                await _elasticIndexingService.UpdateIndexAsync(settings);
-            }
-            catch (Exception e)
-            {
-                await _notifier.ErrorAsync(H["An error occurred while editing the index."]);
-                _logger.LogError(e, "An error occurred while editing index: {IndexName}.", _elasticIndexManager.GetFullIndexName(model.IndexName));
-
-                await PopulateMenuOptionsAsync(model);
-
-                return View(model);
-            }
-
-            await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider rebuilding the index.</strong>", model.IndexName]);
+            return Forbid();
         }
 
-        return RedirectToAction(nameof(Index));
+        if (!_elasticConnectionOptions.ConfigurationExists())
+        {
+            return NotConfigured();
+        }
+
+        var settings = await _indexSettingsService.FindByIdAsync(id);
+
+        if (settings == null)
+        {
+            return NotFound();
+        }
+
+        var model = await _displayManager.BuildEditorAsync(settings, _updateModelAccessor.ModelUpdater, false);
+
+        return View(model);
     }
 
     [HttpPost]
+    [ActionName(nameof(Edit))]
+    [Admin("elasticsearch/Edit/{id}", "ElasticsearchEdit")]
+    public async Task<ActionResult> EditPost(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
+        {
+            return Forbid();
+        }
+
+        if (!_elasticConnectionOptions.ConfigurationExists())
+        {
+            return BadRequest();
+        }
+
+        var settings = await _indexSettingsService.FindByIdAsync(id);
+
+        if (settings == null)
+        {
+            return NotFound();
+        }
+
+        var model = await _displayManager.UpdateEditorAsync(settings, _updateModelAccessor.ModelUpdater, false);
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                if (!await _indexManager.CreateIndexAsync(settings))
+                {
+                    await _notifier.ErrorAsync(H["An error occurred while updating the index."]);
+                }
+                else
+                {
+                    await _indexSettingsService.UpdateAsync(settings);
+                    await _indexSettingsService.SynchronizeAsync(settings);
+
+                    await _notifier.SuccessAsync(H["Index <em>{0}</em> updated successfully.", settings.IndexName]);
+
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception e)
+            {
+                await _notifier.ErrorAsync(H["An error occurred while updating the index."]);
+
+                _logger.LogError(e, "An error occurred while updating an index {IndexName}.", settings.IndexFullName);
+            }
+        }
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [Admin("elasticsearch/Reset/{id}", "ElasticsearchReset")]
     public async Task<ActionResult> Reset(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
@@ -310,20 +332,30 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        if (!await _elasticIndexManager.ExistsAsync(id))
+        var settings = await _indexSettingsService.FindByIdAsync(id);
+
+        if (settings == null)
         {
             return NotFound();
         }
 
-        await _elasticIndexingService.ResetIndexAsync(id);
-        await ProcessContentItemsAsync(id);
+        if (!await _indexManager.ExistsAsync(settings.IndexName))
+        {
+            await _notifier.ErrorAsync(H["Unable to reset the <em>{0}</em> index. Try rebuilding it instead.", settings.IndexName]);
 
-        await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", id]);
+            return RedirectToAction(nameof(Index));
+        }
 
-        return RedirectToAction("Index");
+        await _indexSettingsService.ResetAsync(settings);
+        await _indexSettingsService.UpdateAsync(settings);
+        await _indexSettingsService.SynchronizeAsync(settings);
+        await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", settings.IndexName]);
+
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
+    [Admin("elasticsearch/Rebuild/{id}", "ElasticsearchRebuild")]
     public async Task<ActionResult> Rebuild(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
@@ -336,33 +368,35 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        if (!await _elasticIndexManager.ExistsAsync(id))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
+        {
+            return Forbid();
+        }
+
+        if (!_elasticConnectionOptions.ConfigurationExists())
+        {
+            return BadRequest();
+        }
+
+        var settings = await _indexSettingsService.FindByIdAsync(id);
+
+        if (settings == null)
         {
             return NotFound();
         }
 
-        var settings = await _elasticIndexSettingsService.GetSettingsAsync(id);
-
-        await _elasticIndexingService.RebuildIndexAsync(settings);
-
-        if (settings.QueryAnalyzerName != settings.AnalyzerName)
-        {
-            // Query Analyzer may be different until the index in rebuilt.
-            // Since the index is rebuilt, lets make sure we query using the same analyzer.
-            settings.QueryAnalyzerName = settings.AnalyzerName;
-
-            await _elasticIndexSettingsService.UpdateIndexAsync(settings);
-        }
-
-        await ProcessContentItemsAsync(id);
-
-        await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", id]);
+        await _indexSettingsService.ResetAsync(settings);
+        await _indexSettingsService.UpdateAsync(settings);
+        await _indexManager.RebuildIndexAsync(settings);
+        await _indexSettingsService.SynchronizeAsync(settings);
+        await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", settings.IndexName]);
 
         return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
-    public async Task<ActionResult> Delete(ElasticIndexSettingsViewModel model)
+    [Admin("elasticsearch/Delete/{id}", "ElasticsearchDelete")]
+    public async Task<ActionResult> Delete(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
@@ -374,63 +408,58 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        if (!await _elasticIndexManager.ExistsAsync(model.IndexName))
+        var settings = await _indexSettingsService.FindByIdAsync(id);
+
+        if (settings == null)
         {
-            await _notifier.SuccessAsync(H["Index not found on Elasticsearch server.", model.IndexName]);
-            return RedirectToAction("Index");
+            return NotFound();
         }
 
-        try
-        {
-            await _elasticIndexingService.DeleteIndexAsync(model.IndexName);
+        var exists = await _indexManager.ExistsAsync(settings.IndexName);
 
-            await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+        if (!exists)
+        {
+            // At this point we know that the index does not exists on remote server. Let's delete it locally.
+            await _indexSettingsService.DeleteByIdAsync(id);
+
+            await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", settings.IndexName]);
         }
-        catch (Exception e)
+        else if (await _indexManager.DeleteIndexAsync(settings.IndexName))
         {
-            await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-            _logger.LogError(e, "An error occurred while deleting the index {IndexName}", _elasticIndexManager.GetFullIndexName(model.IndexName));
+            await _indexSettingsService.DeleteByIdAsync(id);
+
+            await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", settings.IndexName]);
         }
-
-        return RedirectToAction("Index");
-    }
-
-    [HttpPost]
-    public async Task<ActionResult> ForceDelete(ElasticIndexSettingsViewModel model)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
+        else
         {
-            return Forbid();
-        }
-
-        if (!_elasticConnectionOptions.ConfigurationExists())
-        {
-            return BadRequest();
-        }
-
-        try
-        {
-            await _elasticIndexingService.DeleteIndexAsync(model.IndexName);
-
-            await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
-        }
-        catch (Exception e)
-        {
-            await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-            _logger.LogError(e, "An error occurred while deleting the index {IndexName}", _elasticIndexManager.GetFullIndexName(model.IndexName));
+            await _notifier.ErrorAsync(H["An error occurred while deleting the <em>{0}</em> index.", settings.IndexName]);
         }
 
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> IndexInfo(string indexName)
+    [Admin("elasticsearch/IndexInfo/{id}", "ElasticsearchIndexInfo")]
+    public async Task<IActionResult> IndexInfo(string id)
     {
-        var info = await _elasticIndexManager.GetIndexInfo(indexName);
+        var settings = await _indexSettingsService.FindByIdAsync(id);
+
+        if (settings == null)
+        {
+            return NotFound();
+        }
+
+        if (!await _indexManager.ExistsAsync(settings.IndexName))
+        {
+            return NotFound();
+        }
+
+        var info = await _indexManager.GetIndexInfoAsync(settings.IndexName);
 
         var formattedJson = JNode.Parse(info).ToJsonString(JOptions.Indented);
+
         return View(new IndexInfoViewModel
         {
-            IndexName = _elasticIndexManager.GetFullIndexName(indexName),
+            IndexName = settings.IndexFullName,
             IndexInfo = formattedJson,
         });
     }
@@ -442,21 +471,31 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        await _elasticIndexingService.SyncSettings();
+        await _indexSettingsService.SynchronizeSettingsAsync();
+
+        await _notifier.SuccessAsync(H["The settings have been successfully synchronized."]);
 
         return RedirectToAction(nameof(Index));
     }
 
-    public Task<IActionResult> Query(string indexName, string query)
+    [Admin("elasticsearch/Query/{id}", "ElasticsearchQuery")]
+    public async Task<IActionResult> Query(string id, string query)
     {
         if (!_elasticConnectionOptions.ConfigurationExists())
         {
-            return Task.FromResult<IActionResult>(NotConfigured());
+            return NotConfigured();
         }
 
-        return Query(new AdminQueryViewModel
+        var settings = await _indexSettingsService.FindByIdAsync(id);
+
+        if (settings == null)
         {
-            IndexName = indexName,
+            return NotFound();
+        }
+
+        return await Query(new AdminQueryViewModel
+        {
+            Id = id,
             DecodedQuery = string.IsNullOrWhiteSpace(query)
             ? string.Empty
             : Base64.FromUTF8Base64String(query),
@@ -464,6 +503,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
+    [Admin("elasticsearch/Query/{id}", "ElasticsearchQuery")]
     public async Task<IActionResult> Query(AdminQueryViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
@@ -476,22 +516,25 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+        var settings = await _indexSettingsService.FindByIdAsync(model.Id);
 
-        // Can't query if there are no indices.
-        if (model.Indices.Length == 0)
-        {
-            return RedirectToAction(nameof(Index));
-        }
-
-        if (string.IsNullOrEmpty(model.IndexName))
-        {
-            model.IndexName = model.Indices[0];
-        }
-
-        if (!await _elasticIndexManager.ExistsAsync(model.IndexName))
+        if (settings == null)
         {
             return NotFound();
+        }
+
+        if (!await _indexManager.ExistsAsync(settings.IndexName))
+        {
+            return NotFound();
+        }
+
+        model.Indexes = (await _indexSettingsService.GetSettingsAsync())
+            .Select(x => new SelectListItem(x.IndexName, x.Id));
+
+        // Can't query if there are no indices.
+        if (!model.Indexes.Any())
+        {
+            return RedirectToAction(nameof(Index));
         }
 
         if (string.IsNullOrWhiteSpace(model.DecodedQuery))
@@ -501,7 +544,7 @@ public sealed class AdminController : Controller
 
         if (string.IsNullOrEmpty(model.Parameters))
         {
-            model.Parameters = "{ }";
+            model.Parameters = "{}";
         }
 
         var stopwatch = new Stopwatch();
@@ -512,7 +555,7 @@ public sealed class AdminController : Controller
 
         try
         {
-            var results = await _elasticQueryService.SearchAsync(model.IndexName, tokenizedContent);
+            var results = await _elasticQueryService.SearchAsync(settings.IndexName, tokenizedContent);
 
             if (results != null)
             {
@@ -548,46 +591,64 @@ public sealed class AdminController : Controller
 
         if (itemIds?.Count() > 0)
         {
-            var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
-            var checkedContentItems = elasticIndexSettings.Where(x => itemIds.Contains(x.IndexName));
-
             switch (options.BulkAction)
             {
                 case ContentsBulkAction.None:
                     break;
                 case ContentsBulkAction.Remove:
-                    foreach (var item in checkedContentItems)
+                    foreach (var id in itemIds)
                     {
-                        await _elasticIndexingService.DeleteIndexAsync(item.IndexName);
+                        var settings = await _indexSettingsService.FindByIdAsync(id);
+                        if (settings is null)
+                        {
+                            continue;
+                        }
+                        await _indexSettingsService.DeleteByIdAsync(id);
+                        await _indexManager.DeleteIndexAsync(settings.IndexName);
                     }
                     await _notifier.SuccessAsync(H["Indices successfully removed."]);
                     break;
                 case ContentsBulkAction.Reset:
-                    foreach (var item in checkedContentItems)
+                    foreach (var itemId in itemIds)
                     {
-                        if (!await _elasticIndexManager.ExistsAsync(item.IndexName))
+                        var settings = await _indexSettingsService.FindByIdAsync(itemId);
+                        if (settings is null)
                         {
-                            return NotFound();
+                            continue;
                         }
 
-                        await _elasticIndexingService.ResetIndexAsync(item.IndexName);
-                        await ProcessContentItemsAsync(item.IndexName);
+                        if (!await _indexManager.ExistsAsync(settings.IndexName))
+                        {
+                            continue;
+                        }
 
-                        await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
+                        await _indexSettingsService.ResetAsync(settings);
+                        await _indexSettingsService.UpdateAsync(settings);
+                        await _indexSettingsService.SynchronizeAsync(settings);
+
+                        await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", settings.IndexName]);
                     }
                     break;
                 case ContentsBulkAction.Rebuild:
-                    foreach (var item in checkedContentItems)
+                    foreach (var itemId in itemIds)
                     {
-                        if (!await _elasticIndexManager.ExistsAsync(item.IndexName))
+                        var settings = await _indexSettingsService.FindByIdAsync(itemId);
+                        if (settings is null)
                         {
-                            return NotFound();
+                            continue;
                         }
 
-                        await _elasticIndexingService.RebuildIndexAsync(await _elasticIndexSettingsService.GetSettingsAsync(item.IndexName));
+                        if (!await _indexManager.ExistsAsync(settings.IndexName))
+                        {
+                            continue;
+                        }
 
-                        await ProcessContentItemsAsync(item.IndexName);
-                        await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
+                        await _indexSettingsService.ResetAsync(settings);
+                        await _indexSettingsService.UpdateAsync(settings);
+                        await _indexManager.RebuildIndexAsync(settings);
+                        await _indexSettingsService.SynchronizeAsync(settings);
+
+                        await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", settings.IndexName]);
                     }
                     break;
                 default:
@@ -598,44 +659,6 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private void ValidateModel(ElasticIndexSettingsViewModel model)
-    {
-        if (model.IndexedContentTypes == null || model.IndexedContentTypes.Length < 1)
-        {
-            ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexedContentTypes), S["At least one content type is required."]);
-        }
-
-        if (string.IsNullOrWhiteSpace(model.IndexName))
-        {
-            ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name is required."]);
-        }
-        else if (ElasticsearchIndexManager.ToSafeIndexName(model.IndexName) != model.IndexName)
-        {
-            ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name contains forbidden characters."]);
-        }
-    }
-
-    private async Task PopulateMenuOptionsAsync(ElasticIndexSettingsViewModel model)
-    {
-        var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
-
-        model.Cultures = supportedCultures.Select(c => new SelectListItem
-        {
-            Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})",
-            Value = c,
-        });
-
-        model.Analyzers = _elasticSearchOptions.Analyzers
-            .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
-    }
-
     private ViewResult NotConfigured()
         => View("NotConfigured");
-
-    private static Task ProcessContentItemsAsync(string indexName)
-        => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-elasticsearch-" + indexName, async (scope) =>
-        {
-            var indexingService = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexingService>();
-            await indexingService.ProcessContentItemsAsync(indexName);
-        });
 }

@@ -5,11 +5,13 @@ using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentPreview;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Handlers;
 
@@ -89,25 +91,27 @@ public sealed class ElasticsearchIndexingContentHandler : ContentHandlerBase
 
             foreach (var indexSettings in await elasticIndexSettingsService.GetSettingsAsync())
             {
+                var metadata = indexSettings.As<ContentIndexMetadata>();
+
                 var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                 var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                var ignoreIndexedCulture = indexSettings.Culture != "any" && culture != indexSettings.Culture;
+                var ignoreIndexedCulture = metadata.Culture != "any" && culture != metadata.Culture;
 
-                if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
+                if (metadata.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                 {
-                    if (!indexSettings.IndexLatest && !publishedLoaded)
+                    if (!metadata.IndexLatest && !publishedLoaded)
                     {
                         publishedLoaded = true;
                         published = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
                     }
 
-                    if (indexSettings.IndexLatest && !latestLoaded)
+                    if (metadata.IndexLatest && !latestLoaded)
                     {
                         latestLoaded = true;
                         latest = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Latest);
                     }
 
-                    var contentItem = !indexSettings.IndexLatest ? published : latest;
+                    var contentItem = !metadata.IndexLatest ? published : latest;
 
                     if (contentItem == null)
                     {
@@ -119,7 +123,7 @@ public sealed class ElasticsearchIndexingContentHandler : ContentHandlerBase
                         await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
                         await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, [contentItem.ContentItemId]);
-                        await elasticIndexManager.StoreDocumentsAsync(indexSettings.IndexName, [buildIndexContext.DocumentIndex]);
+                        await elasticIndexManager.StoreDocumentsAsync(indexSettings, [buildIndexContext.DocumentIndex]);
                     }
                 }
             }

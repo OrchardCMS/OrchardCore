@@ -26,7 +26,6 @@ public sealed class ElasticsearchIndexRebuildStep : NamedRecipeStepHandler
         {
             await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope =>
             {
-                var elasticIndexingService = scope.ServiceProvider.GetService<ElasticsearchIndexingService>();
                 var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticsearchIndexSettingsService>();
                 var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexManager>();
 
@@ -36,24 +35,23 @@ public sealed class ElasticsearchIndexRebuildStep : NamedRecipeStepHandler
 
                 foreach (var indexName in indexNames)
                 {
-                    var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
+                    var elasticIndexSettings = await elasticIndexSettingsService.FindByNameAsync(indexName);
 
                     if (elasticIndexSettings == null)
                     {
                         continue;
                     }
 
-                    if (!await elasticIndexManager.ExistsAsync(indexName))
+                    if (!await elasticIndexManager.ExistsAsync(elasticIndexSettings.IndexName))
                     {
-                        await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
+                        await elasticIndexManager.CreateIndexAsync(elasticIndexSettings);
                     }
                     else
                     {
-                        await elasticIndexingService.RebuildIndexAsync(elasticIndexSettings);
+                        await elasticIndexManager.RebuildIndexAsync(elasticIndexSettings);
+                        await elasticIndexSettingsService.SynchronizeAsync(elasticIndexSettings);
                     }
                 }
-
-                await elasticIndexingService.ProcessContentItemsAsync(indexNames);
             });
         }
     }

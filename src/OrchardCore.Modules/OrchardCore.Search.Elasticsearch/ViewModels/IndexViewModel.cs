@@ -1,8 +1,11 @@
+using OrchardCore.DisplayManagement;
+using OrchardCore.Search.Elasticsearch.Core.Models;
+
 namespace OrchardCore.Search.Elasticsearch.ViewModels;
 
 public class IndexViewModel
 {
-    public string Name { get; set; }
-    public string AnalyzerName { get; set; }
-    public DateTime LastUpdateUtc { get; set; }
+    public ElasticIndexSettings Index { get; set; }
+
+    public IShape Shape { get; set; }
 }
