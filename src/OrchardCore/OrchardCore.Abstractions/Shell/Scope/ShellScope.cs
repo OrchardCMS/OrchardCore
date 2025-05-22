@@ -654,10 +654,10 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     [Flags]
     private enum ShellScopeStates : byte
     {
-        ServiceScopeOnly = 0b0000_0001,
-        ShellTerminated = 0b0000_0010,
-        IsTerminating = 0b0000_0100,
-        Terminated = 0b0000_1000,
-        IsDisposed = 0b0001_0000,
+        ServiceScopeOnly = 1,
+        ShellTerminated = 2,
+        IsTerminating = 4,
+        Terminated = 8,
+        IsDisposed = 16,
     }
 }
