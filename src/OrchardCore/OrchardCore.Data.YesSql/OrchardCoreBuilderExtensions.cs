@@ -153,9 +153,10 @@ public static class OrchardCoreBuilderExtensions
 
                 // Register automated document store commit and rollback when the ISession is used
                 // on the DI scope of the shell. All other scopes will not be automatically committed.
-                if (sp == ShellScope.Current?.ServiceProvider)
+                var shellScope = ShellScope.Current;
+                if (sp == shellScope?.ServiceProvider)
                 {
-                    ShellScope.Current
+                    shellScope
                         .RegisterBeforeDispose(scope =>
                         {
                             return scope.ServiceProvider
