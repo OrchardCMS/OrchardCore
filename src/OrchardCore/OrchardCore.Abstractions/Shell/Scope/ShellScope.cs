@@ -20,10 +20,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     private List<Func<ShellScope, Task>> _deferredTasks;
     private List<Func<ShellScope, Exception, Task>> _exceptionHandlers;
 
-    private bool _serviceScopeOnly;
-    private bool _shellTerminated;
-    private bool _terminated;
-    private bool _disposed;
+    private ShellScopeStates _state;
 
     /// <summary>
     /// Initializes a <see cref="ShellScope"/> from a given parent <see cref="Builders.ShellContext"/>.
@@ -255,7 +252,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     public Task UsingServiceScopeAsync(Func<ShellScope, Task> execute)
     {
-        _serviceScopeOnly = true;
+        _state |= ShellScopeStates.ServiceScopeOnly;
         return UsingAsync(execute);
     }
 
@@ -325,7 +322,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
             return;
         }
 
-        if (_serviceScopeOnly)
+        if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
             return;
         }
@@ -376,6 +373,8 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// If true, the delegate is added to the end of the invocation list; otherwise, it is added to the beginning.</param>
     internal void BeforeDispose(Func<ShellScope, Task> callback, bool last)
     {
+        ThrowIfTerminating();
+
         var list = _beforeDispose ??= [];
 
         if (last)
@@ -391,17 +390,32 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Adds a Signal (if not already present) to be sent just after 'BeforeDisposeAsync()'.
     /// </summary>
-    internal void DeferredSignal(string key) => (_deferredSignals ??= []).Add(key);
+    internal void DeferredSignal(string key)
+    {
+        ThrowIfTerminating();
+
+        (_deferredSignals ??= []).Add(key);
+    }
 
     /// <summary>
     /// Adds a Task to be executed in a new scope after 'BeforeDisposeAsync()'.
     /// </summary>
-    internal void DeferredTask(Func<ShellScope, Task> task) => (_deferredTasks ??= []).Add(task);
+    internal void DeferredTask(Func<ShellScope, Task> task)
+    {
+        ThrowIfTerminating();
+
+        (_deferredTasks ??= []).Add(task);
+    }
 
     /// <summary>
     /// Adds an handler to be invoked if an exception is thrown while executing in this shell scope.
     /// </summary>
-    internal void ExceptionHandler(Func<ShellScope, Exception, Task> callback) => (_exceptionHandlers ??= []).Add(callback);
+    internal void ExceptionHandler(Func<ShellScope, Exception, Task> callback)
+    {
+        ThrowIfTerminating();
+
+        (_exceptionHandlers ??= []).Add(callback);
+    }
 
     /// <summary>
     /// Registers a delegate to be invoked before the current shell scope will be disposed.
@@ -453,7 +467,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
             }
         }
 
-        if (_serviceScopeOnly)
+        if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
             return;
         }
@@ -516,12 +530,14 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     internal async Task TerminateShellInternalAsync()
     {
-        if (_serviceScopeOnly)
+        _state |= ShellScopeStates.IsTerminating;
+
+        if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
             return;
         }
 
-        _terminated = true;
+        _state |= ShellScopeStates.Terminated;
 
         // If the shell context is released and in its last shell scope, according to the ref counter value,
         // the terminate event handlers are called, and the shell will be disposed at the end of this scope.
@@ -552,7 +568,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                 return;
             }
 
-            _shellTerminated = true;
+            _state |= ShellScopeStates.ShellTerminated;
 
             var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
             foreach (var tenantEvent in tenantEvents)
@@ -569,16 +585,16 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
     public void Dispose()
     {
-        if (_disposed)
+        if (_state.HasFlag(ShellScopeStates.IsDisposed))
         {
             return;
         }
 
-        _disposed = true;
+        _state |= ShellScopeStates.IsDisposed;
 
         _serviceScope.Dispose();
 
-        if (_shellTerminated)
+        if (_state.HasFlag(ShellScopeStates.ShellTerminated))
         {
             ShellContext.Dispose();
         }
@@ -588,16 +604,16 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (_disposed)
+        if (_state.HasFlag(ShellScopeStates.IsDisposed))
         {
             return;
         }
 
-        _disposed = true;
+        _state |= ShellScopeStates.IsDisposed;
 
         await _serviceScope.DisposeAsync();
 
-        if (_shellTerminated)
+        if (_state.HasFlag(ShellScopeStates.ShellTerminated))
         {
             await ShellContext.DisposeAsync();
         }
@@ -607,7 +623,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
     private void Terminate()
     {
-        if (!_terminated)
+        if (!_state.HasFlag(ShellScopeStates.Terminated))
         {
             // Keep the counter clean if not yet decremented.
             Interlocked.Decrement(ref ShellContext._refCount);
@@ -621,8 +637,27 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         }
     }
 
+    private void ThrowIfTerminating()
+    {
+        if (_state.HasFlag(ShellScopeStates.IsTerminating))
+        {
+            throw new InvalidOperationException(
+                $"Cannot perform this operation because the shell scope for tenant '{ShellContext.Settings.Name}' is already terminating.");
+        }
+    }
+
     private sealed class ShellScopeHolder
     {
         public ShellScope Scope;
+    }
+
+    [Flags]
+    private enum ShellScopeStates : byte
+    {
+        ServiceScopeOnly = 0b0000_0001,
+        ShellTerminated = 0b0000_0010,
+        IsTerminating = 0b0000_0100,
+        Terminated = 0b0000_1000,
+        IsDisposed = 0b0001_0000,
     }
 }
