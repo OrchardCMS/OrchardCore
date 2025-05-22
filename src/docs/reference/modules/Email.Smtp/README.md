@@ -42,7 +42,7 @@ You may configure the Default SMTP provider by the configuration provider using 
     // Uncomment if SMTP server runs through a proxy server
     //"ProxyHost": "proxy.domain.com",
     //"ProxyPort": 5050,
-    "EncryptionMethod": "SSLTLS",
+    "EncryptionMethod": "SslTls",
     "AutoSelectEncryption": false,
     "UseDefaultCredentials": false,
     "RequireCredentials": true,
