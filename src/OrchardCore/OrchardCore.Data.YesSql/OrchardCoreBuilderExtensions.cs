@@ -151,19 +151,24 @@ public static class OrchardCoreBuilderExtensions
 
                 session.RegisterIndexes(scopedServices.ToArray());
 
-                ShellScope.Current
-                    .RegisterBeforeDispose(scope =>
-                    {
-                        return scope.ServiceProvider
-                            .GetRequiredService<IDocumentStore>()
-                            .CommitAsync();
-                    })
-                    .AddExceptionHandler((scope, e) =>
-                    {
-                        return scope.ServiceProvider
-                            .GetRequiredService<IDocumentStore>()
-                            .CancelAsync();
-                    });
+                // Register automated document store commit and rollback when the ISession is used
+                // on the DI scope of the shell. All other scopes will not be automatically committed.
+                if (sp == ShellScope.Current?.ServiceProvider)
+                {
+                    ShellScope.Current
+                        .RegisterBeforeDispose(scope =>
+                        {
+                            return scope.ServiceProvider
+                                .GetRequiredService<IDocumentStore>()
+                                .CommitAsync();
+                        })
+                        .AddExceptionHandler((scope, e) =>
+                        {
+                            return scope.ServiceProvider
+                                .GetRequiredService<IDocumentStore>()
+                                .CancelAsync();
+                        });
+                }
 
                 return session;
             });
