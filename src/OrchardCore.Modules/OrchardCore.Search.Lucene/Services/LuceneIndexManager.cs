@@ -188,14 +188,14 @@ public class LuceneIndexManager : IDisposable
             // These fields need to be indexed as a StringField because it needs to be searchable for the writer.DeleteDocuments method.
             // Else it won't be able to prune oldest draft from the indexes.
             // Maybe eventually find a way to remove a document from a StoredDocument.
-            new StringField(IndexingConstants.ContentItemIdKey, documentIndex.ContentItemId.ToString(), Field.Store.YES),
-            new StringField(IndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId.ToString(), Field.Store.YES),
+            new StringField(ContentIndexingConstants.ContentItemIdKey, documentIndex.ContentItemId.ToString(), Field.Store.YES),
+            new StringField(ContentIndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId.ToString(), Field.Store.YES),
         };
 
         if (indexSettings.StoreSourceData)
         {
-            doc.Add(new StoredField(IndexingConstants.SourceKey + IndexingConstants.ContentItemIdKey, documentIndex.ContentItemId.ToString()));
-            doc.Add(new StoredField(IndexingConstants.SourceKey + IndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId.ToString()));
+            doc.Add(new StoredField(ContentIndexingConstants.SourceKey + ContentIndexingConstants.ContentItemIdKey, documentIndex.ContentItemId.ToString()));
+            doc.Add(new StoredField(ContentIndexingConstants.SourceKey + ContentIndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId.ToString()));
         }
 
         foreach (var entry in documentIndex.Entries)
@@ -212,7 +212,7 @@ public class LuceneIndexManager : IDisposable
 
                     if (indexSettings.StoreSourceData)
                     {
-                        doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, Convert.ToString(entry.Value).ToLowerInvariant()));
+                        doc.Add(new StoredField(ContentIndexingConstants.SourceKey + entry.Name, Convert.ToString(entry.Value).ToLowerInvariant()));
                     }
                     break;
 
@@ -232,17 +232,17 @@ public class LuceneIndexManager : IDisposable
                         {
                             if (entry.Value is DateTimeOffset)
                             {
-                                doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND)));
+                                doc.Add(new StoredField(ContentIndexingConstants.SourceKey + entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND)));
                             }
                             else
                             {
-                                doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND)));
+                                doc.Add(new StoredField(ContentIndexingConstants.SourceKey + entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND)));
                             }
                         }
                     }
                     else
                     {
-                        doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
+                        doc.Add(new StringField(entry.Name, ContentIndexingConstants.NullValue, store));
                     }
                     break;
 
@@ -253,12 +253,12 @@ public class LuceneIndexManager : IDisposable
 
                         if (indexSettings.StoreSourceData)
                         {
-                            doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, value));
+                            doc.Add(new StoredField(ContentIndexingConstants.SourceKey + entry.Name, value));
                         }
                     }
                     else
                     {
-                        doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
+                        doc.Add(new StringField(entry.Name, ContentIndexingConstants.NullValue, store));
                     }
 
                     break;
@@ -270,12 +270,12 @@ public class LuceneIndexManager : IDisposable
 
                         if (indexSettings.StoreSourceData)
                         {
-                            doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, Convert.ToDouble(entry.Value)));
+                            doc.Add(new StoredField(ContentIndexingConstants.SourceKey + entry.Name, Convert.ToDouble(entry.Value)));
                         }
                     }
                     else
                     {
-                        doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
+                        doc.Add(new StringField(entry.Name, ContentIndexingConstants.NullValue, store));
                     }
                     break;
 
@@ -303,18 +303,18 @@ public class LuceneIndexManager : IDisposable
 
                         if (indexSettings.StoreSourceData)
                         {
-                            doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, stringValue));
+                            doc.Add(new StoredField(ContentIndexingConstants.SourceKey + entry.Name, stringValue));
                         }
                     }
                     else
                     {
                         if (entry.Options.HasFlag(DocumentIndexOptions.Keyword))
                         {
-                            doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
+                            doc.Add(new StringField(entry.Name, ContentIndexingConstants.NullValue, store));
                         }
                         else
                         {
-                            doc.Add(new TextField(entry.Name, IndexingConstants.NullValue, store));
+                            doc.Add(new TextField(entry.Name, ContentIndexingConstants.NullValue, store));
                         }
                     }
                     break;
@@ -334,12 +334,12 @@ public class LuceneIndexManager : IDisposable
 
                         if (indexSettings.StoreSourceData)
                         {
-                            doc.Add(new StoredField(IndexingConstants.SourceKey + strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+                            doc.Add(new StoredField(ContentIndexingConstants.SourceKey + strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
                         }
                     }
                     else
                     {
-                        doc.Add(new StoredField(strategy.FieldName, IndexingConstants.NullValue));
+                        doc.Add(new StoredField(strategy.FieldName, ContentIndexingConstants.NullValue));
                     }
                     break;
             }

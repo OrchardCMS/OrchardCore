@@ -5,43 +5,50 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Indexing;
+using OrchardCore.Indexing.Core;
+using OrchardCore.Indexing.Core.Handlers;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Migrations;
 using OrchardCore.Search.AzureAI.Models;
-using OrchardCore.Search.AzureAI.Recipes;
 using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI;
 
 public sealed class Startup : StartupBase
 {
+    internal readonly IStringLocalizer S;
+
+    public Startup(IStringLocalizer<Startup> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<IIndexEntityHandler, AzureAISearchIndexHandler>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddAzureAISearchServices();
         services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
-        services.AddNavigationProvider<AdminMenu>();
 
-        services.AddDisplayDriver<AzureAISearchIndexSettings, AzureAISearchIndexSettingsDisplayDriver>();
-        services.AddScoped<IAzureAISearchIndexSettingsHandler, AzureAISearchIndexHandler>();
+        services.AddDisplayDriver<IndexEntity, AzureAISearchIndexEntityDisplayDriver>();
 
         services.AddDataMigration<AzureAISearchIndexSettingsMigrations>();
-    }
-}
 
-[RequireFeatures("OrchardCore.Recipes.Core")]
-public sealed class RecipeStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddRecipeExecutionStep<AzureAISearchIndexRebuildStep>();
-        services.AddRecipeExecutionStep<AzureAISearchIndexResetStep>();
-        services.AddRecipeExecutionStep<AzureAISearchIndexSettingsStep>();
+        services.Configure<IndexingOptions>(options =>
+        {
+            options.AddIndexingSource(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
+            {
+                o.DisplayName = S["Content in Azure AI Search"];
+                o.Description = S["Create an Azure AI Search index based on site contents."];
+            });
+        });
     }
 }
 
@@ -50,9 +57,8 @@ public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSiteDisplayDriver<AzureAISearchSettingsDisplayDriver>();
         services.AddScoped<ISearchService, AzureAISearchService>();
-        services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
+        services.AddScoped<IAuthorizationHandler, IndexingAuthorizationHandler>();
     }
 }
 
@@ -63,7 +69,7 @@ public sealed class ContentTypesStartup : StartupBase
     {
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-        services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
+        services.AddScoped<IAuthorizationHandler, IndexingAuthorizationHandler>();
     }
 }
 
@@ -79,11 +85,10 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDisplayDriver<AzureAISearchIndexSettings, ContentAzureAISearchIndexSettingsDisplayDriver>();
-        services.AddScoped<IAzureAISearchIndexSettingsHandler, ContentAzureAISearchIndexHandler>();
+        services.AddScoped<IIndexEntityHandler, AzureAISearchContentIndexEntityHandler>();
         services.Configure<AzureAISearchOptions>(options =>
         {
-            options.AddIndexSource(AzureAISearchConstants.ContentsIndexSource, o =>
+            options.AddIndexSource(IndexingConstants.ContentsIndexSource, o =>
             {
                 o.DisplayName = S["Contents"];
                 o.Description = S["Create an index based on content items."];
@@ -97,9 +102,6 @@ public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<AzureAISearchIndexDeploymentSource, AzureAISearchIndexDeploymentStep, AzureAISearchIndexDeploymentStepDriver>();
         services.AddDeployment<AzureAISearchSettingsDeploymentSource, AzureAISearchSettingsDeploymentStep, AzureAISearchSettingsDeploymentStepDriver>();
-        services.AddDeployment<AzureAISearchIndexRebuildDeploymentSource, AzureAISearchIndexRebuildDeploymentStep, AzureAISearchIndexRebuildDeploymentStepDriver>();
-        services.AddDeployment<AzureAISearchIndexResetDeploymentSource, AzureAISearchIndexResetDeploymentStep, AzureAISearchIndexResetDeploymentStepDriver>();
     }
 }

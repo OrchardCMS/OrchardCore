@@ -29,7 +29,7 @@
     <ProjectReference Include="..\OrchardCore.ContentPreview.Abstractions\OrchardCore.ContentPreview.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj" />
     <ProjectReference Include="..\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Indexing.Abstractions\OrchardCore.Indexing.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Indexing.Core\OrchardCore.Indexing.Core.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Search.Abstractions\OrchardCore.Search.Abstractions.csproj" />
   </ItemGroup>

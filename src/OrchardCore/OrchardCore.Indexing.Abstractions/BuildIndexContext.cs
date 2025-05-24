@@ -18,7 +18,10 @@ public class BuildIndexContext
     }
 
     public IList<string> Keys { get; }
+
     public ContentItem ContentItem { get; }
+
     public DocumentIndex DocumentIndex { get; }
+
     public IContentIndexSettings Settings { get; }
 }

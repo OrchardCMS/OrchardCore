@@ -2,29 +2,34 @@ using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Contents.Indexing;
+using OrchardCore.Entities;
 using OrchardCore.Indexing;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
 using static OrchardCore.Indexing.DocumentIndexBase;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAIIndexDocumentManager
+public class AzureAIIndexDocumentManager : IIndexDocumentManager
 {
     private readonly AzureAIClientFactory _clientFactory;
     private readonly AzureAISearchIndexNameService _indexNameService;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
+    private readonly IIndexEntityStore _indexStore;
     private readonly ILogger _logger;
 
     public AzureAIIndexDocumentManager(
         AzureAIClientFactory clientFactory,
         AzureAISearchIndexNameService indexNameService,
         IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
+        IIndexEntityStore indexStore,
         ILogger<AzureAIIndexDocumentManager> logger)
     {
         _clientFactory = clientFactory;
         _indexNameService = indexNameService;
         _documentEvents = documentEvents;
+        _indexStore = indexStore;
         _logger = logger;
     }
 
@@ -47,13 +52,13 @@ public class AzureAIIndexDocumentManager
         return docs;
     }
 
-    public async Task<long?> SearchAsync(string indexName, string searchText, Action<SearchDocument> action, SearchOptions searchOptions = null)
+    public async Task<long?> SearchAsync(string indexFullName, string searchText, Action<SearchDocument> action, SearchOptions searchOptions = null)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
+        ArgumentException.ThrowIfNullOrEmpty(indexFullName, nameof(indexFullName));
         ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
         ArgumentNullException.ThrowIfNull(action);
 
-        var client = GetSearchClient(indexName);
+        var client = GetSearchClient(indexFullName);
 
         var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions);
         var counter = 0L;
@@ -72,36 +77,40 @@ public class AzureAIIndexDocumentManager
         return searchResult.Value.TotalCount ?? counter;
     }
 
-    public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
+    public async Task<bool> DeleteDocumentsAsync(string indexFullName, IEnumerable<string> documentIds)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName);
-        ArgumentNullException.ThrowIfNull(contentItemIds);
+        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
+        ArgumentNullException.ThrowIfNull(documentIds);
 
         try
         {
-            var client = GetSearchClient(indexName);
+            var client = GetSearchClient(indexFullName);
 
-            await client.DeleteDocumentsAsync(IndexingConstants.ContentItemIdKey, contentItemIds);
+            await client.DeleteDocumentsAsync(ContentIndexingConstants.ContentItemIdKey, documentIds);
+
+            return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unable to delete documents from Azure AI Search Settings");
         }
+
+        return false;
     }
 
-    public async Task DeleteAllDocumentsAsync(string indexName)
+    public async Task<bool> DeleteAllDocumentsAsync(string indexFullName)
     {
         var contentItemIds = new List<string>();
 
         try
         {
             var searchOptions = new SearchOptions();
-            searchOptions.Select.Add(IndexingConstants.ContentItemIdKey);
+            searchOptions.Select.Add(ContentIndexingConstants.ContentItemIdKey);
 
             // Match-all documents.
-            var totalRecords = SearchAsync(indexName, "*", (doc) =>
+            var totalRecords = SearchAsync(indexFullName, "*", (doc) =>
             {
-                if (doc.TryGetValue(IndexingConstants.ContentItemIdKey, out var contentItemId))
+                if (doc.TryGetValue(ContentIndexingConstants.ContentItemIdKey, out var contentItemId))
                 {
                     contentItemIds.Add(contentItemId.ToString());
                 }
@@ -114,29 +123,29 @@ public class AzureAIIndexDocumentManager
 
         if (contentItemIds.Count == 0)
         {
-            return;
+            return false;
         }
 
-        await DeleteDocumentsAsync(indexName, contentItemIds);
+        return await DeleteDocumentsAsync(indexFullName, contentItemIds);
     }
 
-    public async Task<bool> MergeOrUploadDocumentsAsync(string indexName, IList<DocumentIndexBase> indexDocuments, AzureAISearchIndexSettings indexSettings)
+    public async Task<bool> MergeOrUploadDocumentsAsync(string indexFullName, IEnumerable<DocumentIndexBase> indexDocuments, IndexEntity index)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
         ArgumentNullException.ThrowIfNull(indexDocuments);
-        ArgumentNullException.ThrowIfNull(indexSettings);
+        ArgumentNullException.ThrowIfNull(index);
 
-        if (indexDocuments.Count == 0)
+        if (!indexDocuments.Any())
         {
-            return true;
+            return false;
         }
 
         try
         {
-            var client = GetSearchClient(indexName);
+            var client = GetSearchClient(indexFullName);
 
             // The dictionary key should be indexingKey Not AzureFieldKey.
-            var maps = indexSettings.GetMaps();
+            var maps = index.As<AzureAISearchIndexMetadata>().GetMaps();
 
             var pages = indexDocuments.PagesOf(32000);
 
@@ -159,17 +168,17 @@ public class AzureAIIndexDocumentManager
         return false;
     }
 
-    public async Task UploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
+    public async Task UploadDocumentsAsync(string indexFullName, IEnumerable<DocumentIndex> indexDocuments, IndexEntity index)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
         ArgumentNullException.ThrowIfNull(indexDocuments);
-        ArgumentNullException.ThrowIfNull(indexSettings);
+        ArgumentNullException.ThrowIfNull(index);
 
         try
         {
-            var client = GetSearchClient(indexName);
+            var client = GetSearchClient(indexFullName);
 
-            var maps = indexSettings.GetMaps();
+            var maps = index.As<AzureAISearchIndexMetadata>().GetMaps();
 
             var pages = indexDocuments.PagesOf(32000);
 
@@ -188,6 +197,28 @@ public class AzureAIIndexDocumentManager
         }
     }
 
+    public Task<long> GetLastTaskIdAsync(IndexEntity index)
+    {
+        ArgumentNullException.ThrowIfNull(index);
+
+        return Task.FromResult(index.As<ContentIndexingMetadata>().LastTaskId);
+    }
+
+    public async Task SetLastTaskIdAsync(IndexEntity index, long lastTaskId)
+    {
+        ArgumentNullException.ThrowIfNull(index);
+
+        index.Alter<ContentIndexingMetadata>(metadata =>
+        {
+            metadata.LastTaskId = lastTaskId;
+        });
+
+        await _indexStore.UpdateAsync(index);
+    }
+
+    public IContentIndexSettings GetContentIndexSettings()
+        => new AzureAISearchContentIndexSettings();
+
     private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndexBase> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
     {
         foreach (var indexDocument in indexDocuments)
@@ -202,8 +233,8 @@ public class AzureAIIndexDocumentManager
 
         if (documentIndex is DocumentIndex index)
         {
-            doc.Add(IndexingConstants.ContentItemIdKey, index.ContentItemId);
-            doc.Add(IndexingConstants.ContentItemVersionIdKey, index.ContentItemVersionId);
+            doc.Add(ContentIndexingConstants.ContentItemIdKey, index.ContentItemId);
+            doc.Add(ContentIndexingConstants.ContentItemVersionIdKey, index.ContentItemVersionId);
         }
 
         foreach (var entry in documentIndex.Entries)
@@ -269,7 +300,7 @@ public class AzureAIIndexDocumentManager
                     {
                         var stringValue = Convert.ToString(entry.Value);
 
-                        if (!string.IsNullOrEmpty(stringValue) && stringValue != IndexingConstants.NullValue)
+                        if (!string.IsNullOrEmpty(stringValue) && stringValue != ContentIndexingConstants.NullValue)
                         {
                             if (UseSingleValue(map))
                             {

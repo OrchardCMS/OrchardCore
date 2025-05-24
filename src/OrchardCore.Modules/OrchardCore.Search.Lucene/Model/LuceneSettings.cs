@@ -7,7 +7,7 @@ public class LuceneSettings
 {
     public const string StandardAnalyzer = "standardanalyzer";
 
-    public static readonly string[] FullTextField = [IndexingConstants.FullTextKey];
+    public static readonly string[] FullTextField = [ContentIndexingConstants.FullTextKey];
 
     public static readonly LuceneVersion DefaultVersion = LuceneVersion.LUCENE_48;
 
