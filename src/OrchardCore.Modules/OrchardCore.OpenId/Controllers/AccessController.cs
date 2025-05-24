@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using OrchardCore.Environment.Shell;
@@ -47,7 +46,7 @@ public sealed class AccessController : Controller
     public async Task<IActionResult> Authorize()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
@@ -62,20 +61,47 @@ public sealed class AccessController : Controller
             return NotFound();
         }
 
-        // Retrieve the claims stored in the authentication cookie.
-        // If they can't be extracted, redirect the user to the login page.
+        // Try to retrieve the user principal stored in the authentication cookie and redirect
+        // the user agent to the login page (or to an external provider) in the following cases:
+        //
+        //  - If the user principal can't be extracted or the cookie is too old.
+        //  - If prompt=login was specified by the client application.
+        //  - If max_age=0 was specified by the client application (max_age=0 is equivalent to prompt=login).
+        //  - If a max_age parameter was provided and the authentication cookie is not considered "fresh" enough.
         var result = await HttpContext.AuthenticateAsync();
-        if (result == null || !result.Succeeded || request.HasPromptValue(PromptValues.Login))
+        if (result is not { Succeeded: true } ||
+            ((request.HasPromptValue(PromptValues.Login) || request.MaxAge is 0 ||
+             (request.MaxAge is not null && result.Properties?.IssuedUtc is not null &&
+              TimeProvider.System.GetUtcNow() - result.Properties.IssuedUtc > TimeSpan.FromSeconds(request.MaxAge.Value))) &&
+            TempData["IgnoreAuthenticationChallenge"] is null or false))
         {
-            return RedirectToLoginPage(request);
-        }
+            // If the client application requested promptless authentication,
+            // return an error indicating that the user is not logged in.
+            if (request.HasPromptValue(PromptValues.None))
+            {
+                return Forbid(
+                    authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
+                    properties: new AuthenticationProperties(new Dictionary<string, string>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is not logged in.",
+                    }));
+            }
 
-        // If a max_age parameter was provided, ensure that the cookie is not too old.
-        // If it's too old, automatically redirect the user agent to the login page.
-        if (request.MaxAge != null && result.Properties.IssuedUtc != null &&
-            DateTimeOffset.UtcNow - result.Properties.IssuedUtc > TimeSpan.FromSeconds(request.MaxAge.Value))
-        {
-            return RedirectToLoginPage(request);
+            // To avoid endless login endpoint -> authorization endpoint redirects, a special temp data entry is
+            // used to skip the challenge if the user agent has already been redirected to the login endpoint.
+            //
+            // Note: this flag doesn't guarantee that the user has accepted to re-authenticate. If such a guarantee
+            // is needed, the existing authentication cookie MUST be deleted AND revoked (e.g using ASP.NET Core
+            // Identity's security stamp feature with an extremely short revalidation time span) before triggering
+            // a challenge to redirect the user agent to the login endpoint.
+            TempData["IgnoreAuthenticationChallenge"] = true;
+
+            return Challenge(new AuthenticationProperties
+            {
+                RedirectUri = Request.PathBase + Request.Path + QueryString.Create(
+                    Request.HasFormContentType ? Request.Form : Request.Query),
+            });
         }
 
         var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
@@ -139,40 +165,6 @@ public sealed class AccessController : Controller
                     Scope = request.Scope
                 });
         }
-
-        IActionResult RedirectToLoginPage(OpenIddictRequest request)
-        {
-            // If the client application requested promptless authentication,
-            // return an error indicating that the user is not logged in.
-            if (request.HasPromptValue(PromptValues.None))
-            {
-                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                {
-                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
-                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is not logged in."
-                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-            }
-
-            string GetRedirectUrl()
-            {
-                // To avoid endless login -> authorization redirects, the prompt=login flag
-                // is removed from the authorization request payload before redirecting the user.
-                var prompt = string.Join(" ", request.GetPromptValues().Remove(PromptValues.Login));
-
-                var parameters = Request.HasFormContentType ?
-                    Request.Form.Where(parameter => parameter.Key != Parameters.Prompt).ToList() :
-                    Request.Query.Where(parameter => parameter.Key != Parameters.Prompt).ToList();
-
-                parameters.Add(new(Parameters.Prompt, new StringValues(prompt)));
-
-                return Request.PathBase + Request.Path + QueryString.Create(parameters);
-            }
-
-            return Challenge(new AuthenticationProperties
-            {
-                RedirectUri = GetRedirectUrl()
-            });
-        }
     }
 
     private static void PopulateIdentityClaims(ClaimsPrincipal principal, ClaimsIdentity identity)
@@ -209,7 +201,7 @@ public sealed class AccessController : Controller
         // get codes/tokens without the user explicitly approving the authorization demand.
 
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
@@ -278,7 +270,7 @@ public sealed class AccessController : Controller
     public IActionResult AuthorizeDeny()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
@@ -300,7 +292,7 @@ public sealed class AccessController : Controller
     public async Task<IActionResult> Logout()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
@@ -334,7 +326,7 @@ public sealed class AccessController : Controller
     public async Task<IActionResult> LogoutAccept()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
@@ -371,7 +363,7 @@ public sealed class AccessController : Controller
     public IActionResult LogoutDeny()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
@@ -464,7 +456,7 @@ public sealed class AccessController : Controller
             identity.AddClaim(new Claim(identity.RoleClaimType, role)
                 .SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
 
-            if (roleService != null)
+            if (roleService is not null)
             {
                 foreach (var claim in await roleService.GetRoleClaimsAsync(role))
                 {
@@ -581,10 +573,10 @@ public sealed class AccessController : Controller
         // If the user service is available, try to refresh the principal by retrieving
         // the user object from the database and creating a new claims-based principal.
         var service = HttpContext.RequestServices.GetService<IUserService>();
-        if (service != null)
+        if (service is not null)
         {
             var user = await service.GetUserByUniqueIdAsync(principal.GetUserIdentifier());
-            if (user != null)
+            if (user is not null)
             {
                 principal = await service.CreatePrincipalAsync(user);
                 // Copy the granted scopes and resources from the original authorization code/refresh token principal
