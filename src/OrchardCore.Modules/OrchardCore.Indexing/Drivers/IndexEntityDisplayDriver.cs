@@ -20,10 +20,16 @@ internal sealed class IndexEntityDisplayDriver : DisplayDriver<IndexEntity>
     public override Task<IDisplayResult> DisplayAsync(IndexEntity entity, BuildDisplayContext context)
     {
         return CombineAsync(
-            View("IndexEntity_Fields_SummaryAdmin", entity).Location("Content:1"),
-            View("IndexEntity_Buttons_SummaryAdmin", entity).Location("Actions:5"),
-            View("IndexEntity_DefaultTags_SummaryAdmin", entity).Location("Tags:5"),
-            View("IndexEntity_DefaultMeta_SummaryAdmin", entity).Location("Meta:5")
+            View("IndexEntity_Fields_SummaryAdmin", entity)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1"),
+            View("IndexEntity_Buttons_SummaryAdmin", entity)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5"),
+            View("IndexEntity_DefaultTags_SummaryAdmin", entity)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5"),
+            View("IndexEntity_DefaultMeta_SummaryAdmin", entity)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:5"),
+            View("IndexEntity_ActionsMenuItems_SummaryAdmin", entity)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:5")
         );
     }
 
@@ -32,6 +38,8 @@ internal sealed class IndexEntityDisplayDriver : DisplayDriver<IndexEntity>
         return Initialize<EditIndexEntityViewModel>("IndexEntityFields_Edit", model =>
         {
             model.DisplayText = entity.DisplayText;
+            model.IndexName = entity.IndexName;
+            model.IsNew = context.IsNew;
         }).Location("Content:1");
     }
 
@@ -40,6 +48,16 @@ internal sealed class IndexEntityDisplayDriver : DisplayDriver<IndexEntity>
         var model = new EditIndexEntityViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        if (context.IsNew)
+        {
+            if (string.IsNullOrEmpty(model.IndexName))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["The index name is a required field."]);
+            }
+
+            entity.IndexName = model.IndexName;
+        }
 
         if (string.IsNullOrEmpty(model.DisplayText))
         {

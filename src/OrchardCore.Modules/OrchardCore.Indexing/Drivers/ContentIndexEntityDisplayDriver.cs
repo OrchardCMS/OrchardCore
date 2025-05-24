@@ -29,9 +29,9 @@ internal sealed class ContentIndexEntityDisplayDriver : DisplayDriver<IndexEntit
             return null;
         }
 
-        return Initialize<ContentIndexMetadataViewModel>("ContentIndexEntityMetadata_Edit", model =>
+        return Initialize<ContentIndexMetadataViewModel>("ContentIndexMetadata_Edit", model =>
         {
-            var metadata = entity.As<ContentIndexEntityMetadata>();
+            var metadata = entity.As<ContentIndexMetadata>();
 
             model.IndexLatest = metadata.IndexLatest;
             model.IndexedContentTypes = metadata.IndexedContentTypes;
@@ -62,7 +62,7 @@ internal sealed class ContentIndexEntityDisplayDriver : DisplayDriver<IndexEntit
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexedContentTypes), S["At least one content type must be selected."]);
         }
 
-        entity.Alter<ContentIndexEntityMetadata>(m =>
+        entity.Alter<ContentIndexMetadata>(m =>
         {
             m.IndexLatest = model.IndexLatest;
             m.IndexedContentTypes = model.IndexedContentTypes ?? [];

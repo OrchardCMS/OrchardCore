@@ -17,6 +17,16 @@ public interface IIndexEntityManager
     ValueTask<IndexEntity> FindByIdAsync(string id);
 
     /// <summary>
+    /// Asynchronously retrieves a model by its name.
+    /// </summary>
+    /// <param name="name">The index name.</param>
+    /// <returns>
+    /// A <see cref="ValueTask{TResult}"/> that represents the asynchronous operation.
+    /// The result is the model corresponding to the specified ID, or <c>null</c> if not found.
+    /// </returns>
+    ValueTask<IndexEntity> FindByNameAsync(string name);
+
+    /// <summary>
     /// Asynchronously retrieves a list of all models.
     /// </summary>
     /// <returns>
@@ -99,4 +109,9 @@ public interface IIndexEntityManager
     /// The result is a collection of models associated with the given source.
     /// </returns>
     ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName, string type);
+
+
+    Task SynchronizeAsync(IndexEntity index);
+
+    Task ResetAsync(IndexEntity index);
 }

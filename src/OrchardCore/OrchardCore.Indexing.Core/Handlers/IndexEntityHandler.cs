@@ -9,7 +9,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core.Handlers;
 
-internal class IndexEntityHandler : ModelHandlerBase<IndexEntity>
+internal sealed class IndexEntityHandler : IndexEntityHandlerBase
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IndexingOptions _indexingOptions;
@@ -39,6 +39,11 @@ internal class IndexEntityHandler : ModelHandlerBase<IndexEntity>
         if (string.IsNullOrWhiteSpace(context.Model.DisplayText))
         {
             context.Result.Fail(new ValidationResult(S["Index display-text is required."], [nameof(IndexEntity.DisplayText)]));
+        }
+
+        if (string.IsNullOrWhiteSpace(context.Model.IndexName))
+        {
+            context.Result.Fail(new ValidationResult(S["The index name is required."]));
         }
 
         var hasProviderName = !string.IsNullOrWhiteSpace(context.Model.ProviderName);
@@ -85,11 +90,18 @@ internal class IndexEntityHandler : ModelHandlerBase<IndexEntity>
             dataSource.DisplayText = displayText;
         }
 
+        var indexName = data[nameof(IndexEntity.IndexName)]?.GetValue<string>()?.Trim();
+
+        if (!string.IsNullOrEmpty(indexName))
+        {
+            dataSource.IndexName = indexName;
+        }
+
         var providerName = data[nameof(IndexEntity.ProviderName)]?.GetValue<string>()?.Trim();
 
-        if (!string.IsNullOrEmpty(providerName))
+        if (!string.IsNullOrEmpty(indexName))
         {
-            dataSource.ProviderName = providerName;
+            dataSource.ProviderName = indexName;
         }
 
         var type = data[nameof(IndexEntity.Type)]?.GetValue<string>()?.Trim();

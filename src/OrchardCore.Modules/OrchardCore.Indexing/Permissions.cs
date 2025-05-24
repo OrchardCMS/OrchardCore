@@ -1,3 +1,4 @@
+using OrchardCore.Indexing.Core;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Indexing;
@@ -9,11 +10,25 @@ public sealed class Permissions : IPermissionProvider
         IndexingPermissions.ManageIndexes,
     ];
 
-    [Obsolete("This will be removed in a future release. Instead use 'IndexingPermissions.ManageIndexes'.")]
-    public static readonly Permission ManageIndexes = IndexingPermissions.ManageIndexes;
+    private readonly IIndexEntityStore _indexEntityStore;
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-       => Task.FromResult(_allPermissions);
+    public Permissions(IIndexEntityStore indexEntityStore)
+    {
+        _indexEntityStore = indexEntityStore;
+    }
+
+
+    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        var result = new List<Permission>();
+
+        foreach (var index in await _indexEntityStore.GetAllAsync())
+        {
+            result.Add(IndexingPermissions.CreateDynamicPermission(index.IndexName));
+        }
+
+        return result;
+    }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [

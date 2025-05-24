@@ -28,6 +28,6 @@ public class FullTextContentIndexHandler(IContentManager contentManager) : ICont
             return;
         }
 
-        context.DocumentIndex.Set(IndexingConstants.FullTextKey, value, DocumentIndexOptions.Sanitize);
+        context.DocumentIndex.Set(ContentIndexingConstants.FullTextKey, value, DocumentIndexOptions.Sanitize);
     }
 }

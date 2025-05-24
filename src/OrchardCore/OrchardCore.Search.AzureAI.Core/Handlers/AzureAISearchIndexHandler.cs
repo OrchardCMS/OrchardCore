@@ -1,12 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Entities;
+using OrchardCore.Indexing.Core.Handlers;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
 
-public sealed class AzureAISearchIndexHandler : AzureAISearchIndexSettingsHandlerBase
+public sealed class AzureAISearchIndexHandler : IndexEntityHandlerBase
 {
     private readonly AzureAISearchIndexNameService _searchIndexNameService;
 
@@ -20,49 +23,42 @@ public sealed class AzureAISearchIndexHandler : AzureAISearchIndexSettingsHandle
         S = stringLocalizer;
     }
 
-    public override Task CreatingAsync(AzureAISearchIndexSettingsCreateContext context)
+    public override Task CreatingAsync(CreatingContext<IndexEntity> context)
     {
-        context.Settings.IndexFullName = _searchIndexNameService.GetFullIndexName(context.Settings.IndexName);
+        context.Model.IndexFullName = _searchIndexNameService.GetFullIndexName(context.Model.IndexName);
 
         return Task.CompletedTask;
     }
 
-    public override Task InitializingAsync(AzureAISearchIndexSettingsInitializingContext context)
-        => PopulateAsync(context.Settings, context.Data);
+    public override Task InitializingAsync(InitializingContext<IndexEntity> context)
+        => PopulateAsync(context.Model, context.Data);
 
-    private static Task PopulateAsync(AzureAISearchIndexSettings index, JsonNode data)
+    private static Task PopulateAsync(IndexEntity index, JsonNode data)
     {
-        var name = data[nameof(AzureAISearchIndexSettings.IndexName)]?.GetValue<string>()?.Trim();
+        var metadata = index.As<AzureAISearchIndexMetadata>();
 
-        if (!string.IsNullOrEmpty(name))
-        {
-            index.IndexName = name;
-        }
-
-        var analyzerName = data[nameof(AzureAISearchIndexSettings.AnalyzerName)]?.GetValue<string>()?.Trim();
+        var analyzerName = data[nameof(AzureAISearchIndexMetadata.AnalyzerName)]?.GetValue<string>()?.Trim();
 
         if (!string.IsNullOrEmpty(analyzerName))
         {
-            index.AnalyzerName = analyzerName;
+            metadata.AnalyzerName = analyzerName;
         }
 
-        var queryAnalyzerName = data[nameof(AzureAISearchIndexSettings.QueryAnalyzerName)]?.GetValue<string>()?.Trim();
+        var queryAnalyzerName = data[nameof(AzureAISearchIndexMetadata.QueryAnalyzerName)]?.GetValue<string>()?.Trim();
 
         if (!string.IsNullOrEmpty(queryAnalyzerName))
         {
-            index.QueryAnalyzerName = queryAnalyzerName;
+            metadata.QueryAnalyzerName = queryAnalyzerName;
         }
+
+        index.Put(metadata);
 
         return Task.CompletedTask;
     }
 
-    public override Task ValidatingAsync(AzureAISearchIndexSettingsValidatingContext context)
+    public override Task ValidatingAsync(ValidatingContext<IndexEntity> context)
     {
-        if (string.IsNullOrWhiteSpace(context.Settings.IndexName))
-        {
-            context.Result.Fail(new ValidationResult(S["The index name is required."]));
-        }
-        else if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(context.Settings.IndexName, out var indexName) || indexName != context.Settings.IndexName)
+        if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(context.Model.IndexName, out var indexName) || indexName != context.Model.IndexName)
         {
             context.Result.Fail(new ValidationResult(S["The index name contains forbidden characters."]));
         }

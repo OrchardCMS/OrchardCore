@@ -7,43 +7,43 @@ public class DefaultContentIndexHandler : IContentItemIndexHandler
     public Task BuildIndexAsync(BuildIndexContext context)
     {
         context.DocumentIndex.Set(
-            IndexingConstants.ContentTypeKey,
+            ContentIndexingConstants.ContentTypeKey,
             context.ContentItem.ContentType,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         context.DocumentIndex.Set(
-            IndexingConstants.CreatedUtcKey,
+            ContentIndexingConstants.CreatedUtcKey,
             context.ContentItem.CreatedUtc,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         context.DocumentIndex.Set(
-            IndexingConstants.LatestKey,
+            ContentIndexingConstants.LatestKey,
             context.ContentItem.Latest,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         context.DocumentIndex.Set(
-            IndexingConstants.OwnerKey,
+            ContentIndexingConstants.OwnerKey,
             context.ContentItem.Owner,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         context.DocumentIndex.Set(
-            IndexingConstants.AuthorKey,
+            ContentIndexingConstants.AuthorKey,
             context.ContentItem.Author,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         context.DocumentIndex.Set(
-            IndexingConstants.ModifiedUtcKey,
+            ContentIndexingConstants.ModifiedUtcKey,
             context.ContentItem.ModifiedUtc,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         // We need to store because of ContentPickerResultProvider(s)
         context.DocumentIndex.Set(
-            IndexingConstants.PublishedKey,
+            ContentIndexingConstants.PublishedKey,
             context.ContentItem.Published,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         context.DocumentIndex.Set(
-            IndexingConstants.PublishedUtcKey,
+            ContentIndexingConstants.PublishedUtcKey,
             context.ContentItem.PublishedUtc,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 

@@ -1,0 +1,27 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Indexing.Core.Deployments
+
+@model ShapeViewModel<ResetIndexEntityDeploymentStep>
+
+@{
+    var includeAll = Model.Value.IncludeAll;
+    var indexes = Model.Value.Indexes;
+}
+
+<h5>@T["Reset Indexes"]</h5>
+
+@if (includeAll)
+{
+    <span class="badge text-bg-success">@T["All"]</span>
+}
+else if (indexes?.Length > 0)
+{
+    foreach (var indexName in indexes)
+    {
+        <span class="badge ta-badge">@indexName</span>
+    }
+}
+else
+{
+    <span class="badge text-bg-warning">@T["No index selected."]</span>
+}

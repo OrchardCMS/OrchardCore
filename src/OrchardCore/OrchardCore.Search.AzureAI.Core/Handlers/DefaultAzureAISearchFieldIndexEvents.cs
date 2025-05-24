@@ -36,14 +36,14 @@ public sealed class DefaultAzureAISearchFieldIndexEvents : IAzureAISearchFieldIn
             context.Map.IsSearchable = true;
             context.Map.IsCollection = false;
         }
-        else if (context.Map.AzureFieldKey == IndexingConstants.ContentItemIdKey)
+        else if (context.Map.AzureFieldKey == ContentIndexingConstants.ContentItemIdKey)
         {
             context.Map.IsKey = true;
             context.Map.IsFilterable = true;
             context.Map.IsSortable = true;
         }
-        else if (context.Map.AzureFieldKey == IndexingConstants.ContentItemVersionIdKey ||
-            context.Map.AzureFieldKey == IndexingConstants.OwnerKey)
+        else if (context.Map.AzureFieldKey == ContentIndexingConstants.ContentItemVersionIdKey ||
+            context.Map.AzureFieldKey == ContentIndexingConstants.OwnerKey)
         {
             context.Map.IsFilterable = true;
             context.Map.IsSortable = true;

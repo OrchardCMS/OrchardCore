@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Indexing.Core;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Indexing;

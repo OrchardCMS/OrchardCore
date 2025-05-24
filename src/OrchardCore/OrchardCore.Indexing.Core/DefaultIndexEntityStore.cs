@@ -43,7 +43,17 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
         {
             return record;
         }
+
         return null;
+    }
+
+    public async ValueTask<IndexEntity> FindByNameAsync(string name)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        var document = await _documentManager.GetOrCreateImmutableAsync();
+
+        return document.Records.Values.FirstOrDefault(x => string.Equals(x.IndexName, name, StringComparison.OrdinalIgnoreCase));
     }
 
     public async ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName)
@@ -91,6 +101,11 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
 
         var document = await _documentManager.GetOrCreateMutableAsync();
 
+        if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new InvalidOperationException("There is already another index with the same name.");
+        }
+
         if (string.IsNullOrEmpty(record.Id))
         {
             record.Id = IdGenerator.GenerateId();
@@ -106,6 +121,11 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
         ArgumentNullException.ThrowIfNull(record);
 
         var document = await _documentManager.GetOrCreateMutableAsync();
+
+        if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase) && x.Id != record.Id))
+        {
+            throw new InvalidOperationException("There is already another index with the same name.");
+        }
 
         if (string.IsNullOrEmpty(record.Id))
         {

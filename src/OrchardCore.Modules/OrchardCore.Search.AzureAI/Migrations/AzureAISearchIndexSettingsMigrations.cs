@@ -3,9 +3,12 @@ using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.Documents;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Indexing;
+using OrchardCore.Indexing.Core;
+using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Search.AzureAI.Models;
 using YesSql;
 using YesSql.Sql;
@@ -19,15 +22,32 @@ namespace OrchardCore.Search.AzureAI.Migrations;
 /// </summary>
 internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 {
+    private readonly ShellSettings _shellSettings;
+
+    public AzureAISearchIndexSettingsMigrations(ShellSettings shellSettings)
+    {
+        _shellSettings = shellSettings;
+    }
+
 #pragma warning disable CA1822 // Mark members as static
     public int Create()
 #pragma warning restore CA1822 // Mark members as static
     {
+        return 2;
+    }
+
+    public int UpdateFrom1()
+    {
+        if (_shellSettings.IsInitializing())
+        {
+            return 2;
+        }
+
         ShellScope.AddDeferredTask(async scope =>
         {
             var store = scope.ServiceProvider.GetRequiredService<IStore>();
             var dbConnectionAccessor = scope.ServiceProvider.GetRequiredService<IDbConnectionAccessor>();
-            var settingsManager = scope.ServiceProvider.GetRequiredService<IDocumentManager<AzureAISearchIndexSettingsDocument>>();
+            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
 
             var documentTableName = store.Configuration.TableNameConvention.GetDocumentTable();
             var table = $"{store.Configuration.TablePrefix}{documentTableName}";
@@ -58,54 +78,42 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                 return;
             }
 
-            var document = await settingsManager.GetOrCreateMutableAsync();
-
             foreach (var indexObject in indexesObject)
             {
-                var source = indexObject.Value["Source"]?.GetValue<string>();
-
-                if (!string.IsNullOrEmpty(source))
-                {
-                    // No migration is needed.
-                    continue;
-                }
-
                 var indexName = indexObject.Value["IndexName"]?.GetValue<string>();
 
                 if (string.IsNullOrEmpty(indexName))
                 {
-                    // Bad index! this is a scenario that should never happen.
-                    continue;
+                    indexName = indexObject.Key;
                 }
 
-                if (!document.IndexSettings.TryGetValue(indexName, out var indexSettings))
+                var source = indexObject.Value["Source"]?.GetValue<string>();
+
+                var index = await indexManager.NewAsync(AzureAISearchConstants.ProviderName, source ?? IndexingConstants.ContentsIndexSource);
+                index.IndexName = indexName;
+                index.IndexFullName = _shellSettings.Name + "_" + indexName;
+                var id = indexObject.Value["Id"]?.GetValue<string>();
+
+                if (!string.IsNullOrEmpty(id))
                 {
-                    // Bad index! this is a scenario that should never happen.
-                    continue;
+                    index.Id = id;
                 }
 
-                indexSettings.Source = AzureAISearchConstants.ContentsIndexSource;
-
-                if (string.IsNullOrEmpty(indexSettings.Id))
-                {
-                    indexSettings.Id = IdGenerator.GenerateId();
-                }
-
-                var metadata = indexSettings.As<ContentIndexMetadata>();
+                var metadata = index.As<ContentIndexMetadata>();
 
                 if (string.IsNullOrEmpty(metadata.Culture))
                 {
-                    metadata.Culture = indexObject.Value[nameof(ContentIndexMetadata.Culture)]?.GetValue<string>();
+                    metadata.Culture = indexObject.Value[nameof(metadata.Culture)]?.GetValue<string>();
                 }
 
-                var indexLatest = indexObject.Value[nameof(ContentIndexMetadata.IndexLatest)]?.GetValue<bool>();
+                var indexLatest = indexObject.Value[nameof(metadata.IndexLatest)]?.GetValue<bool>();
 
                 if (indexLatest.HasValue)
                 {
                     metadata.IndexLatest = indexLatest.Value;
                 }
 
-                var indexContentTypes = indexObject.Value[nameof(ContentIndexMetadata.IndexedContentTypes)]?.AsArray();
+                var indexContentTypes = indexObject.Value[nameof(metadata.IndexedContentTypes)]?.AsArray();
 
                 if (indexContentTypes is not null)
                 {
@@ -124,15 +132,39 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                     metadata.IndexedContentTypes = items.ToArray();
                 }
 
-                indexSettings.Put(metadata);
+                index.Put(metadata);
 
-                document.IndexSettings.Remove(indexName);
-                document.IndexSettings[indexSettings.Id] = indexSettings;
+                var azureMetadata = index.As<AzureAISearchIndexMetadata>();
+
+                if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
+                {
+                    azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
+                }
+
+                if (string.IsNullOrEmpty(azureMetadata.QueryAnalyzerName))
+                {
+                    azureMetadata.QueryAnalyzerName = indexObject.Value[nameof(azureMetadata.QueryAnalyzerName)]?.GetValue<string>();
+                }
+
+                if (string.IsNullOrEmpty(azureMetadata.QueryAnalyzerName))
+                {
+                    azureMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
+                }
+
+                var indexMappings = indexObject.Value[nameof(azureMetadata.IndexMappings)]?.AsArray();
+
+                if (indexMappings is not null)
+                {
+                    foreach (var indexMapping in indexMappings)
+                    {
+                        azureMetadata.IndexMappings.Add(indexMapping.GetValue<AzureAISearchIndexMap>());
+                    }
+                }
+
+                await indexManager.CreateAsync(index);
             }
-
-            await settingsManager.UpdateAsync(document);
         });
 
-        return 1;
+        return 2;
     }
 }

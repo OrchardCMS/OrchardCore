@@ -4,10 +4,11 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing.Core;
+using OrchardCore.Indexing.Core.Deployments;
+using OrchardCore.Indexing.Core.Recipes;
 using OrchardCore.Indexing.Deployments;
 using OrchardCore.Indexing.Drivers;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Indexing.Recipes;
 using OrchardCore.Indexing.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -44,6 +45,8 @@ public sealed class RecipesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddRecipeExecutionStep<IndexEntityStep>();
+        services.AddRecipeExecutionStep<ResetIndexEntityStep>();
+        services.AddRecipeExecutionStep<RebuildIndexEntityStep>();
     }
 }
 
@@ -53,5 +56,7 @@ public sealed class DeploymentsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<IndexEntityDeploymentSource, IndexEntityDeploymentStep, IndexEntityDeploymentStepDisplayDriver>();
+        services.AddDeployment<RebuildIndexEntityDeploymentSource, RebuildIndexEntityDeploymentStep, RebuildIndexEntityDeploymentStepDriver>();
+        services.AddDeployment<ResetIndexEntityDeploymentSource, ResetIndexEntityDeploymentStep, ResetIndexEntityDeploymentStepDriver>();
     }
 }

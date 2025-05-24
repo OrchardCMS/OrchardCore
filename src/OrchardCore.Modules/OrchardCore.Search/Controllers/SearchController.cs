@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions;
@@ -28,6 +29,7 @@ public sealed class SearchController : Controller
     private readonly IEnumerable<ISearchHandler> _searchHandlers;
     private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
+    private readonly IIndexEntityStore _indexEntityStore;
 
     internal readonly IHtmlLocalizer H;
 
@@ -38,6 +40,7 @@ public sealed class SearchController : Controller
         IServiceProvider serviceProvider,
         INotifier notifier,
         IHtmlLocalizer<SearchController> htmlLocalizer,
+        IIndexEntityStore indexEntityStore,
         IEnumerable<ISearchHandler> searchHandlers,
         IShapeFactory shapeFactory,
         ILogger<SearchController> logger
@@ -49,6 +52,7 @@ public sealed class SearchController : Controller
         _serviceProvider = serviceProvider;
         _notifier = notifier;
         H = htmlLocalizer;
+        _indexEntityStore = indexEntityStore;
         _searchHandlers = searchHandlers;
         _shapeFactory = shapeFactory;
         _logger = logger;
@@ -75,7 +79,22 @@ public sealed class SearchController : Controller
 
         searchService ??= searchServices.First();
 
-        if (!await _authorizationService.AuthorizeAsync(User, SearchPermissions.QuerySearchIndex, new SearchPermissionParameters(searchService.Name, viewModel.Index)))
+        var indexName = viewModel.Index;
+
+        if (string.IsNullOrWhiteSpace(indexName) && !string.IsNullOrEmpty(searchSettings.DefaultIndexId))
+        {
+            var indexEntity = await _indexEntityStore.FindByIdAsync(searchSettings.DefaultIndexId);
+            indexName = indexEntity?.IndexName;
+        }
+
+        if (string.IsNullOrEmpty(indexName))
+        {
+            await _notifier.WarningAsync(H["No default search index is set."]);
+
+            return View();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, SearchPermissions.QuerySearchIndex, new SearchPermissionParameters(searchService.Name, indexName)))
         {
             return this.ChallengeOrForbid();
         }

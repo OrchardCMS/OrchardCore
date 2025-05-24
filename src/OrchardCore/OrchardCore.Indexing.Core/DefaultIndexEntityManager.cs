@@ -9,12 +9,12 @@ namespace OrchardCore.Indexing.Core;
 public sealed class DefaultIndexEntityManager : IIndexEntityManager
 {
     private readonly IIndexEntityStore _store;
-    private readonly IEnumerable<IModelHandler<IndexEntity>> _handlers;
+    private readonly IEnumerable<IIndexEntityHandler> _handlers;
     private readonly ILogger _logger;
 
     public DefaultIndexEntityManager(
         IIndexEntityStore store,
-        IEnumerable<IModelHandler<IndexEntity>> handlers,
+        IEnumerable<IIndexEntityHandler> handlers,
         ILogger<DefaultIndexEntityManager> logger)
     {
         _store = store;
@@ -45,6 +45,19 @@ public sealed class DefaultIndexEntityManager : IIndexEntityManager
     public async ValueTask<IndexEntity> FindByIdAsync(string id)
     {
         var model = await _store.FindByIdAsync(id);
+        if (model is not null)
+        {
+            await LoadAsync(model);
+
+            return model;
+        }
+
+        return null;
+    }
+
+    public async ValueTask<IndexEntity> FindByNameAsync(string name)
+    {
+        var model = await _store.FindByNameAsync(name);
         if (model is not null)
         {
             await LoadAsync(model);
@@ -160,9 +173,25 @@ public sealed class DefaultIndexEntityManager : IIndexEntityManager
         return models;
     }
 
-    private async Task LoadAsync(IndexEntity model)
+    public async Task SynchronizeAsync(IndexEntity index)
     {
-        var loadedContext = new LoadedContext<IndexEntity>(model);
+        ArgumentNullException.ThrowIfNull(index);
+
+        var synchronizedContext = new IndexEntitySynchronizedContext(index);
+        await _handlers.InvokeAsync((handler, ctx) => handler.SynchronizedAsync(ctx), synchronizedContext, _logger);
+    }
+
+    public async Task ResetAsync(IndexEntity index)
+    {
+        ArgumentNullException.ThrowIfNull(index);
+
+        var validatingContext = new IndexEntityResetContext(index);
+        await _handlers.InvokeAsync((handler, ctx) => handler.ResetAsync(ctx), validatingContext, _logger);
+    }
+
+    private async Task LoadAsync(IndexEntity index)
+    {
+        var loadedContext = new LoadedContext<IndexEntity>(index);
 
         await _handlers.InvokeAsync((handler, context) => handler.LoadedAsync(context), loadedContext, _logger);
     }

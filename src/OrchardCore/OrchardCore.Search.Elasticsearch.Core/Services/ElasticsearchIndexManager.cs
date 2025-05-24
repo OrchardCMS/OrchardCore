@@ -26,8 +26,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
 public sealed class ElasticsearchIndexManager
 {
     private const string _separator = "_";
-    private const string _idsPostfixPattern = "*" + IndexingConstants.IdsKey;
-    private const string _inheritedPostfixPattern = "*" + IndexingConstants.InheritedKey;
+    private const string _idsPostfixPattern = "*" + ContentIndexingConstants.IdsKey;
+    private const string _inheritedPostfixPattern = "*" + ContentIndexingConstants.InheritedKey;
     private const string _locationPostFixPattern = "*.Location";
 
     private readonly ElasticsearchClient _elasticClient;
@@ -208,16 +208,16 @@ public sealed class ElasticsearchIndexManager
                 Source = new SourceField()
                 {
                     Enabled = elasticIndexSettings.StoreSourceData,
-                    Excludes = [IndexingConstants.DisplayTextAnalyzedKey],
+                    Excludes = [ContentIndexingConstants.DisplayTextAnalyzedKey],
                 },
                 Meta = IndexingState,
                 Properties = new Properties
                 {
-                    [IndexingConstants.ContentItemIdKey] = new KeywordProperty(),
-                    [IndexingConstants.ContentItemVersionIdKey] = new KeywordProperty(),
-                    [IndexingConstants.OwnerKey] = new KeywordProperty(),
-                    [IndexingConstants.FullTextKey] = new TextProperty(),
-                    [IndexingConstants.ContainedPartKey] = new ObjectProperty()
+                    [ContentIndexingConstants.ContentItemIdKey] = new KeywordProperty(),
+                    [ContentIndexingConstants.ContentItemVersionIdKey] = new KeywordProperty(),
+                    [ContentIndexingConstants.OwnerKey] = new KeywordProperty(),
+                    [ContentIndexingConstants.FullTextKey] = new TextProperty(),
+                    [ContentIndexingConstants.ContainedPartKey] = new ObjectProperty()
                     {
                         Properties = new Properties()
                         {
@@ -228,7 +228,7 @@ public sealed class ElasticsearchIndexManager
 
                     // We map DisplayText here because we have 3 different fields with it.
                     // We can't have Content.ContentItem.DisplayText as it is mapped as an Object in Elasticsearch.
-                    [IndexingConstants.DisplayTextKey] = new ObjectProperty()
+                    [ContentIndexingConstants.DisplayTextKey] = new ObjectProperty()
                     {
                         Properties = new Properties()
                         {
@@ -241,7 +241,7 @@ public sealed class ElasticsearchIndexManager
                     // We map ContentType as a keyword because else the automatic mapping will break the queries.
                     // We need to access it with Content.ContentItem.ContentType as a keyword
                     // for the ContentPickerResultProvider(s).
-                    [IndexingConstants.ContentTypeKey] = new KeywordProperty(),
+                    [ContentIndexingConstants.ContentTypeKey] = new KeywordProperty(),
                 },
 
                 DynamicTemplates = [],
@@ -413,7 +413,7 @@ public sealed class ElasticsearchIndexManager
                     .Bool(b => b
                         .Filter(f => f
                             .Terms(t => t
-                                .Field(IndexingConstants.ContentItemIdKey)
+                                .Field(ContentIndexingConstants.ContentItemIdKey)
                                 .Terms(new TermsQueryField(contentItemIds.Select(id => FieldValue.String(id)).ToArray()))
                             )
                         )

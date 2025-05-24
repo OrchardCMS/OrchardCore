@@ -4,5 +4,5 @@ public class IndexEntityDeploymentStepViewModel
 {
     public bool IncludeAll { get; set; }
 
-    public IndexEntitySourceViewModel[] Sources { get; set; }
+    public IndexEntitySourceViewModel[] Indexes { get; set; }
 }

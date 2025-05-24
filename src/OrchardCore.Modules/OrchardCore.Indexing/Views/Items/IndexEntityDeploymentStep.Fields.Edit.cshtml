@@ -17,12 +17,12 @@
     <div class="hint mb-1">@T["The indexes to export as part of the plan."]</div>
 
     <div class="mb-3">
-        @for (var i = 0; i < Model.Sources.Length; i++)
+        @for (var i = 0; i < Model.Indexes.Length; i++)
         {
             <div class="form-check">
-                <input type="hidden" asp-for="Sources[i].Id" />
-                <input asp-for="Sources[i].IsSelected" type="checkbox" class="form-check-input">
-                <label class="form-check-label" asp-for="Sources[i].IsSelected">@Model.Sources[i].DisplayText</label>
+                <input type="hidden" asp-for="Indexes[i].IndexName" />
+                <input asp-for="Indexes[i].IsSelected" type="checkbox" class="form-check-input">
+                <label class="form-check-label" asp-for="Indexes[i].IsSelected">@Model.Indexes[i].DisplayText</label>
             </div>
         }
     </div>

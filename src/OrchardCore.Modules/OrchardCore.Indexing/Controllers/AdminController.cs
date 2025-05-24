@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -23,7 +24,7 @@ public sealed class AdminController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IIndexEntityManager _indexManager;
+    private readonly IIndexEntityManager _indexEntityManager;
     private readonly IndexingOptions _indexingOptions;
     private readonly IDisplayManager<IndexEntity> _displayManager;
     private readonly INotifier _notifier;
@@ -43,7 +44,7 @@ public sealed class AdminController : Controller
     {
         _authorizationService = authorizationService;
         _updateModelAccessor = updateModelAccessor;
-        _indexManager = indexManager;
+        _indexEntityManager = indexManager;
         _displayManager = displayManager;
         _indexingOptions = indexingOptions.Value;
         _notifier = notifier;
@@ -65,7 +66,7 @@ public sealed class AdminController : Controller
 
         var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
-        var result = await _indexManager.PageAsync(pager.Page, pager.PageSize, new QueryContext
+        var result = await _indexEntityManager.PageAsync(pager.Page, pager.PageSize, new QueryContext
         {
             Sorted = true,
             Name = options.Search,
@@ -133,7 +134,7 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var dataSource = await _indexManager.NewAsync(source, type);
+        var dataSource = await _indexEntityManager.NewAsync(source, type);
 
         if (dataSource == null)
         {
@@ -168,9 +169,9 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var deployment = await _indexManager.NewAsync(source, type);
+        var index = await _indexEntityManager.NewAsync(source, type);
 
-        if (deployment == null)
+        if (index == null)
         {
             await _notifier.ErrorAsync(H["Invalid provider or type."]);
 
@@ -180,12 +181,25 @@ public sealed class AdminController : Controller
         var model = new ModelViewModel
         {
             DisplayName = service.DisplayName,
-            Editor = await _displayManager.UpdateEditorAsync(deployment, _updateModelAccessor.ModelUpdater, isNew: true),
+            Editor = await _displayManager.UpdateEditorAsync(index, _updateModelAccessor.ModelUpdater, isNew: true),
         };
+
+        var validate = await _indexEntityManager.ValidateAsync(index);
+
+        if (!validate.Succeeded)
+        {
+            foreach (var error in validate.Errors)
+            {
+                foreach (var memberName in error.MemberNames)
+                {
+                    ModelState.AddModelError(memberName, error.ErrorMessage);
+                }
+            }
+        }
 
         if (ModelState.IsValid)
         {
-            await _indexManager.CreateAsync(deployment);
+            await _indexEntityManager.CreateAsync(index);
 
             await _notifier.SuccessAsync(H["An index has been created successfully."]);
 
@@ -203,17 +217,17 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var deployment = await _indexManager.FindByIdAsync(id);
+        var index = await _indexEntityManager.FindByIdAsync(id);
 
-        if (deployment == null)
+        if (index == null)
         {
             return NotFound();
         }
 
         var model = new ModelViewModel
         {
-            DisplayName = deployment.DisplayText,
-            Editor = await _displayManager.BuildEditorAsync(deployment, _updateModelAccessor.ModelUpdater, isNew: false),
+            DisplayName = index.DisplayText,
+            Editor = await _displayManager.BuildEditorAsync(index, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 
         return View(model);
@@ -229,15 +243,15 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var deployment = await _indexManager.FindByIdAsync(id);
+        var index = await _indexEntityManager.FindByIdAsync(id);
 
-        if (deployment == null)
+        if (index == null)
         {
             return NotFound();
         }
 
         // Clone the deployment to prevent modifying the original instance in the store.
-        var mutableProfile = deployment.Clone();
+        var mutableProfile = index.Clone();
 
         var model = new ModelViewModel
         {
@@ -245,9 +259,22 @@ public sealed class AdminController : Controller
             Editor = await _displayManager.UpdateEditorAsync(mutableProfile, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 
+        var validate = await _indexEntityManager.ValidateAsync(index);
+
+        if (!validate.Succeeded)
+        {
+            foreach (var error in validate.Errors)
+            {
+                foreach (var memberName in error.MemberNames)
+                {
+                    ModelState.AddModelError(memberName, error.ErrorMessage);
+                }
+            }
+        }
+
         if (ModelState.IsValid)
         {
-            await _indexManager.UpdateAsync(mutableProfile);
+            await _indexEntityManager.UpdateAsync(mutableProfile);
 
             await _notifier.SuccessAsync(H["An index has been updated successfully."]);
 
@@ -266,16 +293,76 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var deployment = await _indexManager.FindByIdAsync(id);
+        var index = await _indexEntityManager.FindByIdAsync(id);
 
-        if (deployment == null)
+        if (index == null)
         {
             return NotFound();
         }
 
-        await _indexManager.DeleteAsync(deployment);
+        await _indexEntityManager.DeleteAsync(index);
 
         await _notifier.SuccessAsync(H["An index has been deleted successfully."]);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [Admin("indexing/reset/{id}", "IndexingReset")]
+    public async Task<IActionResult> Reset(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
+        {
+            return Forbid();
+        }
+
+        var index = await _indexEntityManager.FindByIdAsync(id);
+
+        if (index == null)
+        {
+            return NotFound();
+        }
+
+        await _indexEntityManager.ResetAsync(index);
+        await _indexEntityManager.UpdateAsync(index);
+        await _indexEntityManager.SynchronizeAsync(index);
+
+        await _notifier.SuccessAsync(H["An index has been reset successfully. The synchronizing process was triggered in the background."]);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [Admin("indexing/rebuild/{id}", "IndexingRebuild")]
+    public async Task<IActionResult> Rebuild(string id, [FromServices] IServiceProvider serviceProvider)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
+        {
+            return Forbid();
+        }
+
+        var index = await _indexEntityManager.FindByIdAsync(id);
+
+        if (index == null)
+        {
+            return NotFound();
+        }
+
+        var indexManager = serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+
+        if (indexManager is null)
+        {
+            await _notifier.ErrorAsync(H["No index manager found to rebuild index for provider '{0}'.", index.ProviderName]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        await _indexEntityManager.ResetAsync(index);
+        await _indexEntityManager.UpdateAsync(index);
+        await indexManager.RebuildAsync(index);
+        await _indexEntityManager.SynchronizeAsync(index);
+
+        await _notifier.SuccessAsync(H["An index has been rebuilt successfully. The synchronizing process was triggered in the background."]);
 
         return RedirectToAction(nameof(Index));
     }
@@ -301,14 +388,14 @@ public sealed class AdminController : Controller
                     var counter = 0;
                     foreach (var id in itemIds)
                     {
-                        var dataSource = await _indexManager.FindByIdAsync(id);
+                        var dataSource = await _indexEntityManager.FindByIdAsync(id);
 
                         if (dataSource == null)
                         {
                             continue;
                         }
 
-                        if (await _indexManager.DeleteAsync(dataSource))
+                        if (await _indexEntityManager.DeleteAsync(dataSource))
                         {
                             counter++;
                         }

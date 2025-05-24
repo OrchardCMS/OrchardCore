@@ -20,8 +20,8 @@ internal static class BulkRequestDescriptorExtensions
     {
         var entries = new Dictionary<string, object>
         {
-            { IndexingConstants.ContentItemIdKey, documentIndex.ContentItemId },
-            { IndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId },
+            { ContentIndexingConstants.ContentItemIdKey, documentIndex.ContentItemId },
+            { ContentIndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId },
         };
 
         foreach (var entry in documentIndex.Entries)

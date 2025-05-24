@@ -3,8 +3,14 @@
 
 @model EditIndexEntityViewModel
 
+<div class="mb-3" asp-validation-class-for="IndexName">
+    <label asp-for="IndexName" class="form-label">@T["Index Name"]</label>
+    <input asp-for="IndexName" class="form-control" asp-is-disabled="!Model.IsNew" />
+    <span asp-validation-for="IndexName" class="text-danger"></span>
+</div>
+
 <div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="DisplayText" class="@Orchard.GetLabelClasses()">@T["Display text"]</label>
+    <label asp-for="DisplayText" class="@Orchard.GetLabelClasses()">@T["Display Text"]</label>
     <div class="@Orchard.GetEndClasses()">
         <input asp-for="DisplayText" class="form-control" />
         <span asp-validation-for="DisplayText" class="text-danger"></span>

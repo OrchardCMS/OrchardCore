@@ -8,7 +8,7 @@ public class ElasticSettings
 
     public const string QueryStringSearchType = "query_string";
 
-    public static readonly string[] FullTextField = [IndexingConstants.FullTextKey];
+    public static readonly string[] FullTextField = [ContentIndexingConstants.FullTextKey];
 
     public string SearchIndex { get; set; }
 
