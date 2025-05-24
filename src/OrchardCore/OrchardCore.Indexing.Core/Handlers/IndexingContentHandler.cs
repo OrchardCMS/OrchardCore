@@ -129,14 +129,14 @@ public class IndexingContentHandler : ContentHandlerBase
 
                     if (contentItem == null)
                     {
-                        await indexManager.DeleteDocumentsAsync(index.IndexFullName, [context.ContentItem.ContentItemId]);
+                        await indexManager.DeleteDocumentsAsync(index, [context.ContentItem.ContentItemId]);
                     }
                     else
                     {
                         var document = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
                         var buildIndexContext = new BuildIndexContext(document, contentItem, [contentItem.ContentType], indexManager.GetContentIndexSettings());
                         await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
-                        await indexManager.MergeOrUploadDocumentsAsync(index.IndexFullName, new DocumentIndex[] { buildIndexContext.DocumentIndex }, index);
+                        await indexManager.MergeOrUploadDocumentsAsync(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                     }
                 }
             }

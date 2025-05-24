@@ -3,11 +3,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Entities;
-using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core.Models;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.AzureAI.Models;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
@@ -15,30 +14,26 @@ public class AzureAISearchService : ISearchService
 {
     public const string Key = "Azure AI Search";
 
-    private readonly ISiteService _siteService;
     private readonly AzureAIIndexDocumentManager _indexDocumentManager;
-    private readonly IIndexEntityStore _indexStore;
     private readonly ILogger<AzureAISearchService> _logger;
     private readonly AzureAISearchDefaultOptions _azureAIOptions;
 
     public AzureAISearchService(
-        ISiteService siteService,
         AzureAIIndexDocumentManager indexDocumentManager,
-        IIndexEntityStore indexStore,
         ILogger<AzureAISearchService> logger,
         IOptions<AzureAISearchDefaultOptions> azureAIOptions)
     {
-        _siteService = siteService;
         _indexDocumentManager = indexDocumentManager;
-        _indexStore = indexStore;
         _logger = logger;
         _azureAIOptions = azureAIOptions.Value;
     }
 
     public string Name => Key;
 
-    public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int size)
+    public async Task<SearchResult> SearchAsync(IndexEntity index, string term, int start, int size)
     {
+        ArgumentNullException.ThrowIfNull(index);
+
         var result = new SearchResult();
 
         if (!_azureAIOptions.ConfigurationExists())
@@ -48,29 +43,8 @@ public class AzureAISearchService : ISearchService
             return result;
         }
 
-        var searchSettings = await _siteService.GetSettingsAsync<AzureAISearchSettings>();
-
-        var index = !string.IsNullOrWhiteSpace(indexName)
-            ? indexName.Trim()
-            : searchSettings.SearchIndex;
-
-        if (string.IsNullOrEmpty(index))
-        {
-            _logger.LogWarning("Azure AI Search: Couldn't execute search. No search provider settings was defined.");
-
-            return result;
-        }
-
-        var indexSettings = await _indexStore.FindByIdAsync(index);
-
-        if (indexSettings is null)
-        {
-            _logger.LogWarning("Azure AI Search: Couldn't execute search. Unable to get the search index settings. Index name {IndexName}", index);
-
-            return result;
-        }
-
-        result.Latest = indexSettings.As<ContentIndexMetadata>().IndexLatest;
+        result.Latest = index.As<ContentIndexMetadata>().IndexLatest;
+        var queryMetadata = index.As<AzureAISearchDefaultQueryMetadata>();
 
         try
         {
@@ -80,19 +54,33 @@ public class AzureAISearchService : ISearchService
             {
                 Skip = start,
                 Size = size,
+                Select = { ContentIndexingConstants.ContentItemIdKey },
             };
 
-            searchOptions.Select.Add(ContentIndexingConstants.ContentItemIdKey);
 
-            if (searchSettings.DefaultSearchFields?.Length > 0)
+            if (queryMetadata.DefaultSearchFields?.Length > 0)
             {
-                foreach (var field in searchSettings.DefaultSearchFields)
+                foreach (var field in queryMetadata.DefaultSearchFields)
                 {
                     searchOptions.SearchFields.Add(field);
                 }
             }
+            else
+            {
+                var indexMetadata = index.As<AzureAISearchIndexMetadata>();
 
-            await _indexDocumentManager.SearchAsync(index, term, (doc) =>
+                foreach (var field in indexMetadata.IndexMappings)
+                {
+                    if (!field.IsSearchable)
+                    {
+                        continue;
+                    }
+
+                    searchOptions.SearchFields.Add(field.AzureFieldKey);
+                }
+            }
+
+            await _indexDocumentManager.SearchAsync(index.IndexFullName, term, (doc) =>
             {
                 if (doc.TryGetValue(ContentIndexingConstants.ContentItemIdKey, out var contentItemId))
                 {

@@ -13,7 +13,6 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IIndexEntityManager, DefaultIndexEntityManager>();
         services.TryAddScoped<IIndexEntityStore, DefaultIndexEntityStore>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, IndexEntityHandler>());
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, ContentIndexEntryHandler>());
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IContentHandler, IndexingContentHandler>());
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IAuthorizationHandler, IndexingAuthorizationHandler>());
 

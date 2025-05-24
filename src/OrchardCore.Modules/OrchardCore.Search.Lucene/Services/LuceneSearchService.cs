@@ -1,5 +1,7 @@
 using Lucene.Net.QueryParsers.Classic;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Entities;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Settings;
@@ -38,20 +40,18 @@ public class LuceneSearchService : ISearchService
 
     public string Name => Key;
 
-    public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int size)
+    public async Task<SearchResult> SearchAsync(IndexEntity index, string term, int start, int size)
     {
-        var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : await DefaultIndexAsync();
-
         var result = new SearchResult();
 
-        if (index == null || !_luceneIndexManager.Exists(index))
+        if (index == null || !_luceneIndexManager.Exists(index.IndexFullName))
         {
             _logger.LogWarning("Lucene: Couldn't execute search. Lucene has not been configured yet.");
 
             return result;
         }
 
-        var defaultSearchFields = await GetSearchFieldsAsync();
+        var defaultSearchFields = index.As<LuceneDefaultQueryMetadata>()?.DefaultSearchFields ?? [];
 
         if (defaultSearchFields == null || defaultSearchFields.Length == 0)
         {
@@ -60,13 +60,13 @@ public class LuceneSearchService : ISearchService
             return result;
         }
 
-        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(index));
+        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(index.IndexName));
         var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, defaultSearchFields, analyzer);
 
         try
         {
             var query = queryParser.Parse(term);
-            result.ContentItemIds = await _luceneSearchQueryService.ExecuteQueryAsync(query, index, start, size);
+            result.ContentItemIds = await _luceneSearchQueryService.ExecuteQueryAsync(query, index.IndexName, start, size);
             result.Success = true;
         }
         catch (ParseException e)
@@ -75,15 +75,5 @@ public class LuceneSearchService : ISearchService
         }
 
         return result;
-    }
-
-    private async Task<string> DefaultIndexAsync()
-        => (await _siteService.GetSettingsAsync<LuceneSettings>()).SearchIndex;
-
-    private async Task<string[]> GetSearchFieldsAsync()
-    {
-        var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
-
-        return luceneSettings?.DefaultSearchFields ?? [];
     }
 }

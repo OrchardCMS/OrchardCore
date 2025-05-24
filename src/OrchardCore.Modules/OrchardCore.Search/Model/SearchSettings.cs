@@ -4,8 +4,6 @@ public class SearchSettings
 {
     public string DefaultIndexId { get; set; }
 
-    public string ProviderName { get; set; }
-
     public string Placeholder { get; set; }
 
     public string PageTitle { get; set; }

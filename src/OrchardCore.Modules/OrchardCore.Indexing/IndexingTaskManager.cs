@@ -173,6 +173,9 @@ public class IndexingTaskManager : IIndexingTaskManager
             }
 
             sqlBuilder.WhereAnd($"{dialect.QuoteForColumnName("Id")} > @Id");
+
+            // It is important to sort the tasks by Id to ensure that the tasks are processed in the order
+            // they are created as the sql server does not guarantee ordering.
             sqlBuilder.OrderBy($"{dialect.QuoteForColumnName("Id")}");
 
             return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId });

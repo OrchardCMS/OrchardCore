@@ -20,3 +20,13 @@
    data-ok-text="@T["Yes"]"
    data-cancel-text="@T["No"]"
    data-url-af="UnsafeUrl">@T["Rebuild"]</a>
+
+<a asp-action="Delete"
+   asp-route-id="@Model.Value.Id"
+   asp-route-force="true"
+   class="dropdown-item btn-sm text-danger"
+   data-title="@T["Force Delete"]"
+   data-message="@T["Your index will be forcing to delete, which might alter some services during the process. Continue?"]"
+   data-ok-text="@T["Yes"]"
+   data-cancel-text="@T["No"]"
+   data-url-af="RemoveUrl UnsafeUrl">@T["Force Delete"]</a>

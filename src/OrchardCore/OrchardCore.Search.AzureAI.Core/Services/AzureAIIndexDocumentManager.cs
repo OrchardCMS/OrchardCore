@@ -14,31 +14,28 @@ namespace OrchardCore.Search.AzureAI.Services;
 public class AzureAIIndexDocumentManager : IIndexDocumentManager
 {
     private readonly AzureAIClientFactory _clientFactory;
-    private readonly AzureAISearchIndexNameService _indexNameService;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
     private readonly IIndexEntityStore _indexStore;
     private readonly ILogger _logger;
 
     public AzureAIIndexDocumentManager(
         AzureAIClientFactory clientFactory,
-        AzureAISearchIndexNameService indexNameService,
         IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
         IIndexEntityStore indexStore,
         ILogger<AzureAIIndexDocumentManager> logger)
     {
         _clientFactory = clientFactory;
-        _indexNameService = indexNameService;
         _documentEvents = documentEvents;
         _indexStore = indexStore;
         _logger = logger;
     }
 
-    public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, SearchOptions searchOptions = null)
+    public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexFullName, string searchText, SearchOptions searchOptions = null)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
         ArgumentException.ThrowIfNullOrWhiteSpace(searchText);
 
-        var client = GetSearchClient(indexName);
+        var client = _clientFactory.CreateSearchClient(indexFullName);
 
         var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions);
 
@@ -54,11 +51,11 @@ public class AzureAIIndexDocumentManager : IIndexDocumentManager
 
     public async Task<long?> SearchAsync(string indexFullName, string searchText, Action<SearchDocument> action, SearchOptions searchOptions = null)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexFullName, nameof(indexFullName));
-        ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
+        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(searchText);
         ArgumentNullException.ThrowIfNull(action);
 
-        var client = GetSearchClient(indexFullName);
+        var client = _clientFactory.CreateSearchClient(indexFullName);
 
         var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions);
         var counter = 0L;
@@ -77,16 +74,23 @@ public class AzureAIIndexDocumentManager : IIndexDocumentManager
         return searchResult.Value.TotalCount ?? counter;
     }
 
-    public async Task<bool> DeleteDocumentsAsync(string indexFullName, IEnumerable<string> documentIds)
+    public async Task<bool> DeleteDocumentsAsync(IndexEntity index, IEnumerable<string> documentIds)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
+        ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(documentIds);
+
+        if (!documentIds.Any())
+        {
+            return false;
+        }
 
         try
         {
-            var client = GetSearchClient(indexFullName);
+            var client = _clientFactory.CreateSearchClient(index.IndexFullName);
 
-            await client.DeleteDocumentsAsync(ContentIndexingConstants.ContentItemIdKey, documentIds);
+            var keyName = GetKeyFieldNameOrThrow(index);
+
+            await client.DeleteDocumentsAsync(keyName, documentIds);
 
             return true;
         }
@@ -98,42 +102,46 @@ public class AzureAIIndexDocumentManager : IIndexDocumentManager
         return false;
     }
 
-    public async Task<bool> DeleteAllDocumentsAsync(string indexFullName)
+    public async Task<bool> DeleteAllDocumentsAsync(IndexEntity index)
     {
-        var contentItemIds = new List<string>();
+        ArgumentNullException.ThrowIfNull(index);
+
+        var documentIds = new List<string>();
 
         try
         {
-            var searchOptions = new SearchOptions();
-            searchOptions.Select.Add(ContentIndexingConstants.ContentItemIdKey);
+            var keyName = GetKeyFieldNameOrThrow(index);
 
             // Match-all documents.
-            var totalRecords = SearchAsync(indexFullName, "*", (doc) =>
+            var totalRecords = SearchAsync(index.IndexFullName, "*", (doc) =>
             {
-                if (doc.TryGetValue(ContentIndexingConstants.ContentItemIdKey, out var contentItemId))
+                if (doc.TryGetValue(keyName, out var contentItemId))
                 {
-                    contentItemIds.Add(contentItemId.ToString());
+                    documentIds.Add(contentItemId.ToString());
                 }
-            }, searchOptions);
+            }, new SearchOptions()
+            {
+                Select = { keyName },
+            });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unable to search documents using Azure AI Search");
         }
 
-        if (contentItemIds.Count == 0)
+        if (documentIds.Count == 0)
         {
             return false;
         }
 
-        return await DeleteDocumentsAsync(indexFullName, contentItemIds);
+        return await DeleteDocumentsAsync(index, documentIds);
     }
 
-    public async Task<bool> MergeOrUploadDocumentsAsync(string indexFullName, IEnumerable<DocumentIndexBase> indexDocuments, IndexEntity index)
+    public async Task<bool> MergeOrUploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndexBase> indexDocuments)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
-        ArgumentNullException.ThrowIfNull(indexDocuments);
         ArgumentNullException.ThrowIfNull(index);
+
+        ArgumentNullException.ThrowIfNull(indexDocuments);
 
         if (!indexDocuments.Any())
         {
@@ -142,7 +150,7 @@ public class AzureAIIndexDocumentManager : IIndexDocumentManager
 
         try
         {
-            var client = GetSearchClient(indexFullName);
+            var client = _clientFactory.CreateSearchClient(index.IndexFullName);
 
             // The dictionary key should be indexingKey Not AzureFieldKey.
             var maps = index.As<AzureAISearchIndexMetadata>().GetMaps();
@@ -168,15 +176,14 @@ public class AzureAIIndexDocumentManager : IIndexDocumentManager
         return false;
     }
 
-    public async Task UploadDocumentsAsync(string indexFullName, IEnumerable<DocumentIndex> indexDocuments, IndexEntity index)
+    public async Task UploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndex> indexDocuments)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
-        ArgumentNullException.ThrowIfNull(indexDocuments);
         ArgumentNullException.ThrowIfNull(index);
+        ArgumentNullException.ThrowIfNull(indexDocuments);
 
         try
         {
-            var client = GetSearchClient(indexFullName);
+            var client = _clientFactory.CreateSearchClient(index.IndexFullName);
 
             var maps = index.As<AzureAISearchIndexMetadata>().GetMaps();
 
@@ -218,6 +225,18 @@ public class AzureAIIndexDocumentManager : IIndexDocumentManager
 
     public IContentIndexSettings GetContentIndexSettings()
         => new AzureAISearchContentIndexSettings();
+
+    private static string GetKeyFieldNameOrThrow(IndexEntity index)
+    {
+        var keyName = index.As<AzureAISearchIndexMetadata>().IndexMappings.FirstOrDefault(x => x.IsKey)?.AzureFieldKey;
+
+        if (string.IsNullOrEmpty(keyName))
+        {
+            throw new InvalidOperationException($"The index {index.IndexFullName} does not have a key field.");
+        }
+
+        return keyName;
+    }
 
     private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndexBase> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
     {
@@ -335,12 +354,5 @@ public class AzureAIIndexDocumentManager : IIndexDocumentManager
         return map.AzureFieldKey == AzureAISearchIndexManager.FullTextKey
             || map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey
             || !map.IsCollection;
-    }
-
-    private SearchClient GetSearchClient(string indexName)
-    {
-        var fullIndexName = _indexNameService.GetFullIndexName(indexName);
-
-        return _clientFactory.CreateSearchClient(fullIndexName);
     }
 }

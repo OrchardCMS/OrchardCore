@@ -1,10 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Deployments;
+using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Core.Recipes;
 using OrchardCore.Indexing.Deployments;
 using OrchardCore.Indexing.Drivers;
@@ -35,6 +37,8 @@ public sealed class ContentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.TryAddScoped<ContentIndexingService>();
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, ContentIndexEntryHandler>());
         services.AddDisplayDriver<IndexEntity, ContentIndexEntityDisplayDriver>();
     }
 }

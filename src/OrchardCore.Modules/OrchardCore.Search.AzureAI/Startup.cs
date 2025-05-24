@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
@@ -7,7 +7,6 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
-using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -32,7 +31,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IIndexEntityHandler, AzureAISearchIndexHandler>();
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, AzureAISearchIndexHandler>());
         services.AddNavigationProvider<AdminMenu>();
         services.AddAzureAISearchServices();
         services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
@@ -57,8 +56,7 @@ public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ISearchService, AzureAISearchService>();
-        services.AddScoped<IAuthorizationHandler, IndexingAuthorizationHandler>();
+        services.AddKeyedScoped<ISearchService, AzureAISearchService>(AzureAISearchConstants.ProviderName);
     }
 }
 
@@ -69,7 +67,6 @@ public sealed class ContentTypesStartup : StartupBase
     {
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-        services.AddScoped<IAuthorizationHandler, IndexingAuthorizationHandler>();
     }
 }
 
@@ -85,7 +82,7 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IIndexEntityHandler, AzureAISearchContentIndexEntityHandler>();
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, AzureAISearchContentIndexEntityHandler>());
         services.Configure<AzureAISearchOptions>(options =>
         {
             options.AddIndexSource(IndexingConstants.ContentsIndexSource, o =>

@@ -5,11 +5,11 @@ namespace OrchardCore.Indexing;
 
 public interface IIndexDocumentManager
 {
-    Task<bool> MergeOrUploadDocumentsAsync(string indexFullName, IEnumerable<DocumentIndexBase> documents, IndexEntity settings);
+    Task<bool> MergeOrUploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndexBase> documents);
 
-    Task<bool> DeleteDocumentsAsync(string indexFullName, IEnumerable<string> documentIds);
+    Task<bool> DeleteDocumentsAsync(IndexEntity index, IEnumerable<string> documentIds);
 
-    Task<bool> DeleteAllDocumentsAsync(string indexFullName);
+    Task<bool> DeleteAllDocumentsAsync(IndexEntity index);
 
     Task<long> GetLastTaskIdAsync(IndexEntity index);
 

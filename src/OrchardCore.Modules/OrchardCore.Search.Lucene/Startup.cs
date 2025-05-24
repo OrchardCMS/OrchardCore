@@ -1,5 +1,4 @@
 using Lucene.Net.Analysis.Standard;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
@@ -18,7 +17,6 @@ using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Deployment;
 using OrchardCore.Search.Lucene.Drivers;
-using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Search.Lucene.Handlers;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Recipes;
@@ -56,7 +54,6 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<LuceneIndexStep>();
         services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
         services.AddRecipeExecutionStep<LuceneIndexResetStep>();
-        services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
         services.AddDataMigration<LuceneQueryMigrations>();
         services.AddScoped<IQueryHandler, LuceneQueryHandler>();
     }
@@ -67,9 +64,8 @@ public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ISearchService, LuceneSearchService>();
+        services.AddKeyedScoped<ISearchService, LuceneSearchService>(LuceneConstants.ProviderName);
         services.AddSiteDisplayDriver<LuceneSettingsDisplayDriver>();
-        services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
     }
 }
 

@@ -27,6 +27,7 @@ public sealed class AdminController : Controller
     private readonly IIndexEntityManager _indexEntityManager;
     private readonly IndexingOptions _indexingOptions;
     private readonly IDisplayManager<IndexEntity> _displayManager;
+    private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
 
     internal readonly IHtmlLocalizer H;
@@ -38,6 +39,7 @@ public sealed class AdminController : Controller
         IIndexEntityManager indexManager,
         IDisplayManager<IndexEntity> displayManager,
         IOptions<IndexingOptions> indexingOptions,
+        IServiceProvider serviceProvider,
         INotifier notifier,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
@@ -46,6 +48,7 @@ public sealed class AdminController : Controller
         _updateModelAccessor = updateModelAccessor;
         _indexEntityManager = indexManager;
         _displayManager = displayManager;
+        _serviceProvider = serviceProvider;
         _indexingOptions = indexingOptions.Value;
         _notifier = notifier;
         H = htmlLocalizer;
@@ -134,9 +137,9 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var dataSource = await _indexEntityManager.NewAsync(source, type);
+        var index = await _indexEntityManager.NewAsync(source, type);
 
-        if (dataSource == null)
+        if (index == null)
         {
             await _notifier.ErrorAsync(H["Invalid provider or type."]);
 
@@ -146,7 +149,7 @@ public sealed class AdminController : Controller
         var model = new ModelViewModel
         {
             DisplayName = service.DisplayName,
-            Editor = await _displayManager.BuildEditorAsync(dataSource, _updateModelAccessor.ModelUpdater, isNew: true),
+            Editor = await _displayManager.BuildEditorAsync(index, _updateModelAccessor.ModelUpdater, isNew: true),
         };
 
         return View(model);
@@ -199,9 +202,31 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
+            var indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+
+            if (indexManager is null)
+            {
+                await _notifier.ErrorAsync(H["No index manager found to rebuild index for provider '{0}'.", index.ProviderName]);
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Before creating the index in the provider, we need to create it locally to ensure all the properties are set.
             await _indexEntityManager.CreateAsync(index);
 
-            await _notifier.SuccessAsync(H["An index has been created successfully."]);
+            if (!await indexManager.CreateAsync(index))
+            {
+                // Delete the index locally if we failed to create it in the provider.
+                await _indexEntityManager.DeleteAsync(index);
+
+                await _notifier.ErrorAsync(H["Unable to create the index for the provider '{0}'.", index.ProviderName]);
+
+                return View(model);
+            }
+
+            await _indexEntityManager.SynchronizeAsync(index);
+
+            await _notifier.SuccessAsync(H["An index has been created successfully. The synchronizing process was triggered in the background."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -286,7 +311,7 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [Admin("indexing/delete/{id}", "IndexingDelete")]
-    public async Task<IActionResult> Delete(string id)
+    public async Task<IActionResult> Delete(string id, bool force = false)
     {
         if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
         {
@@ -300,9 +325,42 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        await _indexEntityManager.DeleteAsync(index);
+        var indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
 
-        await _notifier.SuccessAsync(H["An index has been deleted successfully."]);
+        if (force)
+        {
+            await indexManager?.DeleteAsync(index.IndexFullName);
+            await _indexEntityManager.DeleteAsync(index);
+
+            await _notifier.SuccessAsync(H["The index was removed successfully."]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (indexManager is null)
+        {
+            await _notifier.ErrorAsync(H["No index manager found to rebuild index for provider '{0}'.", index.ProviderName]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        var exists = await indexManager.ExistsAsync(index.IndexFullName);
+
+        if (exists && !await indexManager.DeleteAsync(index.IndexFullName))
+        {
+            await _notifier.ErrorAsync(H["Unable to delete the index for the provider {0}.", index.ProviderName]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (await _indexEntityManager.DeleteAsync(index))
+        {
+            await _notifier.SuccessAsync(H["The index was removed successfully."]);
+        }
+        else
+        {
+            await _notifier.ErrorAsync(H["Unable to delete the index locally. Try force-deleting the index."]);
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -334,7 +392,7 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [Admin("indexing/rebuild/{id}", "IndexingRebuild")]
-    public async Task<IActionResult> Rebuild(string id, [FromServices] IServiceProvider serviceProvider)
+    public async Task<IActionResult> Rebuild(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
         {
@@ -348,7 +406,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var indexManager = serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+        var indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
 
         if (indexManager is null)
         {
@@ -358,11 +416,18 @@ public sealed class AdminController : Controller
         }
 
         await _indexEntityManager.ResetAsync(index);
-        await _indexEntityManager.UpdateAsync(index);
-        await indexManager.RebuildAsync(index);
-        await _indexEntityManager.SynchronizeAsync(index);
 
-        await _notifier.SuccessAsync(H["An index has been rebuilt successfully. The synchronizing process was triggered in the background."]);
+        await _indexEntityManager.UpdateAsync(index);
+
+        if (await indexManager.RebuildAsync(index))
+        {
+            await _indexEntityManager.SynchronizeAsync(index);
+            await _notifier.SuccessAsync(H["An index has been rebuilt successfully. The synchronizing process was triggered in the background."]);
+        }
+        else
+        {
+            await _notifier.ErrorAsync(H["An error occurred while rebuilding the index."]);
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -380,6 +445,8 @@ public sealed class AdminController : Controller
 
         if (itemIds?.Count() > 0)
         {
+            var indexManagers = new Dictionary<string, IIndexManager>();
+
             switch (options.BulkAction)
             {
                 case ModelAction.None:
@@ -388,25 +455,44 @@ public sealed class AdminController : Controller
                     var counter = 0;
                     foreach (var id in itemIds)
                     {
-                        var dataSource = await _indexEntityManager.FindByIdAsync(id);
+                        var index = await _indexEntityManager.FindByIdAsync(id);
 
-                        if (dataSource == null)
+                        if (index == null)
                         {
                             continue;
                         }
 
-                        if (await _indexEntityManager.DeleteAsync(dataSource))
+                        if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+                        {
+                            indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+                            indexManagers.Add(index.ProviderName, indexManager);
+                        }
+
+                        if (indexManager is null)
+                        {
+                            continue;
+                        }
+
+                        var exists = await indexManager.ExistsAsync(index.IndexFullName);
+
+                        if (exists && !await indexManager.DeleteAsync(index.IndexFullName))
+                        {
+                            continue;
+                        }
+
+                        if (await _indexEntityManager.DeleteAsync(index))
                         {
                             counter++;
                         }
                     }
+
                     if (counter == 0)
                     {
-                        await _notifier.WarningAsync(H["No data sources were removed."]);
+                        await _notifier.WarningAsync(H["No index were removed."]);
                     }
                     else
                     {
-                        await _notifier.SuccessAsync(H.Plural(counter, "1 data source has been removed successfully.", "{0} data sources have been removed successfully."));
+                        await _notifier.SuccessAsync(H.Plural(counter, "1 index has been removed successfully.", "{0} indexes have been removed successfully."));
                     }
                     break;
                 default:

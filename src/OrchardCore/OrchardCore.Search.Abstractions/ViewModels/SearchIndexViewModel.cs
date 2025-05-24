@@ -18,7 +18,7 @@ public class SearchIndexViewModel : ShapeViewModel
 
     public string Terms { get; set; }
 
-    public string Index { get; set; }
+    public string IndexId { get; set; }
 
     [BindNever]
     public string PageTitle { get; set; }

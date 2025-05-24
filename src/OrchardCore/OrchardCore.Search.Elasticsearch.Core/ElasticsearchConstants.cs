@@ -17,4 +17,6 @@ public static class ElasticsearchConstants
     public const string CustomAnalyzer = "custom";
 
     public const string StopAnalyzer = "stop";
+
+    public const string ProviderName = "Elasticsearch";
 }

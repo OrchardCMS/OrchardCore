@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Search.Abstractions;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Security;
 
 namespace OrchardCore.Indexing.Core.Handlers;
@@ -24,14 +24,14 @@ public sealed class IndexingAuthorizationHandler : AuthorizationHandler<Permissi
             return;
         }
 
-        if (context.Resource is not SearchPermissionParameters parameters || string.IsNullOrEmpty(parameters.IndexName))
+        if (context.Resource is not IndexEntity index)
         {
             return;
         }
 
         _authorizationService ??= _serviceProvider?.GetService<IAuthorizationService>();
 
-        var permission = IndexingPermissions.CreateDynamicPermission(parameters.IndexName);
+        var permission = IndexingPermissions.CreateDynamicPermission(index.IndexName);
 
         if (await _authorizationService.AuthorizeAsync(context.User, permission))
         {

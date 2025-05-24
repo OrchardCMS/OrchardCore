@@ -25,7 +25,10 @@ public sealed class AzureAISearchIndexHandler : IndexEntityHandlerBase
 
     public override Task CreatingAsync(CreatingContext<IndexEntity> context)
     {
-        context.Model.IndexFullName = _searchIndexNameService.GetFullIndexName(context.Model.IndexName);
+        if (!string.IsNullOrEmpty(context.Model.IndexName))
+        {
+            context.Model.IndexFullName = _searchIndexNameService.GetFullIndexName(context.Model.IndexName);
+        }
 
         return Task.CompletedTask;
     }

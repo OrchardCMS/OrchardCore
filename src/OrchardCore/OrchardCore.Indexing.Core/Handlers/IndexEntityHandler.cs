@@ -31,6 +31,7 @@ internal sealed class IndexEntityHandler : IndexEntityHandlerBase
 
     public override Task InitializingAsync(InitializingContext<IndexEntity> context)
         => PopulateAsync(context.Model, context.Data);
+
     public override Task UpdatingAsync(UpdatingContext<IndexEntity> context)
     => PopulateAsync(context.Model, context.Data);
 
@@ -44,6 +45,11 @@ internal sealed class IndexEntityHandler : IndexEntityHandlerBase
         if (string.IsNullOrWhiteSpace(context.Model.IndexName))
         {
             context.Result.Fail(new ValidationResult(S["The index name is required."]));
+        }
+
+        if (string.IsNullOrWhiteSpace(context.Model.IndexFullName))
+        {
+            context.Result.Fail(new ValidationResult(S["The index full name is required."]));
         }
 
         var hasProviderName = !string.IsNullOrWhiteSpace(context.Model.ProviderName);

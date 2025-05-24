@@ -6,6 +6,9 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using Fluid.Values;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Entities;
+using OrchardCore.Indexing.Core.Models;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Liquid;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -53,8 +56,10 @@ public class ElasticsearchService : ISearchService
 
     public string Name => Key;
 
-    public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int pageSize)
+    public async Task<SearchResult> SearchAsync(IndexEntity index, string term, int start, int pageSize)
     {
+        ArgumentNullException.ThrowIfNull(index);
+
         var result = new SearchResult();
 
         if (!_elasticConnectionOptions.ConfigurationExists())
@@ -64,38 +69,35 @@ public class ElasticsearchService : ISearchService
             return result;
         }
 
-        var searchSettings = await _siteService.GetSettingsAsync<ElasticSettings>();
+        var metadata = index.As<ContentIndexMetadata>();
 
-        var index = !string.IsNullOrWhiteSpace(indexName)
-            ? indexName.Trim()
-            : searchSettings.SearchIndex ?? (await _elasticIndexSettingsService.GetSettingsAsync()).FirstOrDefault()?.IndexName;
+        var queryMetadata = index.As<ElasticsearchDefaultQueryMetadata>();
 
-        if (index == null || !await _elasticIndexManager.ExistsAsync(index))
+        if (index == null || !await _elasticIndexManager.ExistsAsync(index.IndexFullName))
         {
             _logger.LogWarning("Elasticsearch: Couldn't execute search. The search index doesn't exist.");
 
             return result;
         }
 
-        var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync(index);
-        result.Latest = elasticIndexSettings.IndexLatest;
+        result.Latest = metadata.IndexLatest;
 
-        if (searchSettings.DefaultSearchFields == null || searchSettings.DefaultSearchFields.Length == 0)
+        if (queryMetadata.DefaultSearchFields == null || queryMetadata.DefaultSearchFields.Length == 0)
         {
-            _logger.LogWarning("Elasticsearch: Couldn't execute search. No search provider settings was defined.");
+            _logger.LogWarning("Elasticsearch: Couldn't execute search. No default query settings were configured.");
 
             return result;
         }
 
         try
         {
-            var searchType = searchSettings.GetSearchType();
+            var searchType = queryMetadata.GetSearchType();
             Query query = null;
             Highlight highlight = null;
 
-            if (searchType == ElasticSettings.CustomSearchType && !string.IsNullOrWhiteSpace(searchSettings.DefaultQuery))
+            if (searchType == ElasticSettings.CustomSearchType && !string.IsNullOrWhiteSpace(queryMetadata.DefaultQuery))
             {
-                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
+                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(queryMetadata.DefaultQuery, _javaScriptEncoder,
                     new Dictionary<string, FluidValue>()
                     {
                         ["term"] = new StringValue(term),
@@ -116,20 +118,20 @@ public class ElasticsearchService : ISearchService
             {
                 query = new QueryStringQuery
                 {
-                    Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
+                    Fields = queryMetadata.DefaultSearchFields,
+                    Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index.IndexName),
                     Query = term,
                 };
             }
 
             query ??= new MultiMatchQuery
             {
-                Fields = searchSettings.DefaultSearchFields,
-                Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
+                Fields = queryMetadata.DefaultSearchFields,
+                Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index.IndexName),
                 Query = term,
             };
 
-            var searchContext = new ElasticsearchSearchContext(index, query)
+            var searchContext = new ElasticsearchSearchContext(index.IndexName, query)
             {
                 From = start,
                 Size = pageSize,

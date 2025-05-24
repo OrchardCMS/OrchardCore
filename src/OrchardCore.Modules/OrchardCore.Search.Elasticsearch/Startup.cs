@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
@@ -21,7 +20,6 @@ using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Services;
-using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.Elasticsearch;
@@ -68,9 +66,8 @@ public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ISearchService, ElasticsearchService>();
+        services.AddKeyedScoped<ISearchService, ElasticsearchService>(ElasticsearchConstants.ProviderName);
         services.AddSiteDisplayDriver<ElasticSettingsDisplayDriver>();
-        services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
     }
 }
 

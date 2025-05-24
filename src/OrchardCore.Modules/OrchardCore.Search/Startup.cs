@@ -1,17 +1,12 @@
 using Fluid;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
-using OrchardCore.Search.Configuration;
 using OrchardCore.Search.Deployment;
 using OrchardCore.Search.Drivers;
 using OrchardCore.Search.Migrations;
@@ -28,20 +23,17 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
-        services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
-        services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
     }
+}
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+[RequireFeatures("OrchardCore.Indexing")]
+public sealed class IndexingStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        routes.MapAreaControllerRoute(
-            name: "Search",
-            areaName: "OrchardCore.Search",
-            pattern: "search/{index?}",
-            defaults: new { controller = typeof(SearchController).ControllerName(), action = nameof(SearchController.Search) }
-        );
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
     }
 }
 
