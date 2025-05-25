@@ -69,6 +69,18 @@ public sealed class DefaultIndexEntityManager : IIndexEntityManager
         return null;
     }
 
+    public async ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName)
+    {
+        var models = await _store.GetAsync(providerName);
+
+        foreach (var model in models)
+        {
+            await LoadAsync(model);
+        }
+
+        return models;
+    }
+
     public async ValueTask<IndexEntity> NewAsync(string providerName, string type, JsonNode data = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(providerName);

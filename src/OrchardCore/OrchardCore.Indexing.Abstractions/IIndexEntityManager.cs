@@ -109,10 +109,34 @@ public interface IIndexEntityManager
     /// A <see cref="IEnumerable{IndexEntity}"/> representing the asynchronous operation.
     /// The result is a collection of models associated with the given source.
     /// </returns>
+    ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName);
+
+    /// <summary>
+    /// Asynchronously retrieves all models associated with the specified source.
+    /// </summary>
+    /// <param name="providerName">The source of the models. Must not be <c>null</c> or empty.</param>
+    /// <param name="type">The implementation type of the index. Must not be <c>null</c> or empty.</param>
+    /// <returns>
+    /// A <see cref="IEnumerable{IndexEntity}"/> representing the asynchronous operation.
+    /// The result is a collection of models associated with the given source.
+    /// </returns>
     ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName, string type);
 
-
+    /// <summary>
+    /// Asynchronously synchronizes the specified index entity.
+    /// </summary>
+    /// <param name="index">The index entity to synchronize.</param>
+    /// <returns>
+    /// A <see cref="Task"/> that represents the asynchronous operation.
+    /// </returns>
     Task SynchronizeAsync(IndexEntity index);
 
+    /// <summary>
+    /// Asynchronously resets the specified index entity.
+    /// </summary>
+    /// <param name="index">The index entity to reset.</param>
+    /// <returns>
+    /// A <see cref="Task"/> that represents the asynchronous operation.
+    /// </returns>
     Task ResetAsync(IndexEntity index);
 }
