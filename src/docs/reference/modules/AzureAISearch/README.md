@@ -88,6 +88,10 @@ The `Create Index Step` create an Azure AI Search index if one does not already 
 }
 ```
 
+note !!!
+     It's recommended to use the `Indexing` recipe step instead as the `azureai-index-create` step is obsolete. 
+
+
 ### Reset Azure AI Search Index Step
 
 The `Reset Index Step` resets an Azure AI Search index. Restarts the indexing process from the beginning in order to update current content items. It doesn't delete existing entries from the index.
@@ -118,6 +122,9 @@ To reset all indices:
   ]
 }
 ```
+
+note !!!
+     It's recommended to use the `ResetIndexing` recipe step instead as the `azureai-index-reset` step is obsolete. 
 
 ### Rebuild Azure AI Search Index Step
 
@@ -150,11 +157,14 @@ To rebuild all indices:
 }
 ```
 
+note !!!
+     It's recommended to use the `RebuildIndexing` recipe step instead as the `azureai-index-rebuild` step is obsolete. 
+
 ## Search Module (`OrchardCore.Search`)
 
 When the Search module is enabled along with Azure AI Search, you'll be able to use run the frontend site search against your Azure AI Search indices.
 
-To configure the frontend site search settings, navigate to `Search` >> `Settings`. On the `Content` tab, change the default search provider to `Azure AI Search`. Then click on the `Azure AI Search` tab select the default search index to use.
+To configure the frontend site search settings, navigate to `Settings` >> `Search`. Select the default index to use.
 
 ### Using the Search Feature to Perform Full-Text Search
 ![image](images/frontend-search.gif)

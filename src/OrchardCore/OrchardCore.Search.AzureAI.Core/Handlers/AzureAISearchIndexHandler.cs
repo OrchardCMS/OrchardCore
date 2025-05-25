@@ -39,6 +39,25 @@ public sealed class AzureAISearchIndexHandler : IndexEntityHandlerBase
             metadata.QueryAnalyzerName = queryAnalyzerName;
         }
 
+        var indexMappings = data[nameof(AzureAISearchIndexMetadata.IndexMappings)].AsArray();
+
+        if (indexMappings is not null && indexMappings.Count > 0)
+        {
+            metadata.IndexMappings.Clear();
+
+            foreach (var indexMapping in indexMappings)
+            {
+                var map = indexMapping.ToObject<AzureAISearchIndexMap>();
+
+                metadata.IndexMappings.Add(map);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(queryAnalyzerName))
+        {
+            metadata.QueryAnalyzerName = queryAnalyzerName;
+        }
+
         index.Put(metadata);
 
         return Task.CompletedTask;

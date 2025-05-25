@@ -34,8 +34,7 @@ The following recipes are available in the `Indexing` module:
   - `Indexing` allows you to create or update an index.
   - `ResetIndexing` allows you to reset an index.
   - `RebuildIndexing` allows you to rebuild an index.
-  
-  - 
+    
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6jJH9ntqi_A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
