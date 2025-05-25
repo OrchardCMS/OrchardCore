@@ -12,8 +12,6 @@ namespace OrchardCore.Search.AzureAI.Services;
 
 public class AzureAISearchService : ISearchService
 {
-    public const string Key = "Azure AI Search";
-
     private readonly AzureAIIndexDocumentManager _indexDocumentManager;
     private readonly ILogger<AzureAISearchService> _logger;
     private readonly AzureAISearchDefaultOptions _azureAIOptions;
@@ -27,8 +25,6 @@ public class AzureAISearchService : ISearchService
         _logger = logger;
         _azureAIOptions = azureAIOptions.Value;
     }
-
-    public string Name => Key;
 
     public async Task<SearchResult> SearchAsync(IndexEntity index, string term, int start, int size)
     {

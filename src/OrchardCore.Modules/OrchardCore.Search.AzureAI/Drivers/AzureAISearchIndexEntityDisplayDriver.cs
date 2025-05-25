@@ -41,7 +41,7 @@ internal sealed class AzureAISearchIndexEntityDisplayDriver : DisplayDriver<Inde
                 .Where(x => x.IsSearchable)
                 .Select(x => new SelectListItem
                 {
-                    Text = x.IndexingKey,
+                    Text = x.AzureFieldKey,
                     Value = x.AzureFieldKey,
                     Selected = metadata.DefaultSearchFields?.Contains(x.AzureFieldKey) ?? false,
                 }).OrderBy(x => x.Text)

@@ -43,16 +43,6 @@ public sealed class IndexEntityStep : NamedRecipeStepHandler
                 index = await _indexEntityManager.FindByIdAsync(id);
             }
 
-            if (index is null)
-            {
-                var indexName = token[nameof(index.IndexName)]?.GetValue<string>();
-
-                if (!string.IsNullOrEmpty(indexName))
-                {
-                    index = await _indexEntityManager.FindByNameAsync(indexName);
-                }
-            }
-
             if (index is not null)
             {
                 await _indexEntityManager.UpdateAsync(index, token);

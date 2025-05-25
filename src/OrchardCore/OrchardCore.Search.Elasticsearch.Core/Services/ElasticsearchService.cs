@@ -13,15 +13,11 @@ using OrchardCore.Liquid;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch.Services;
 
 public class ElasticsearchService : ISearchService
 {
-    public const string Key = "Elasticsearch";
-
-    private readonly ISiteService _siteService;
     private readonly ElasticsearchIndexManager _elasticIndexManager;
     private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly ElasticsearchClient _elasticClient;
@@ -32,7 +28,6 @@ public class ElasticsearchService : ISearchService
     private readonly ILogger _logger;
 
     public ElasticsearchService(
-        ISiteService siteService,
         ElasticsearchIndexManager elasticIndexManager,
         ElasticsearchIndexSettingsService elasticIndexSettingsService,
         ElasticsearchClient elasticClient,
@@ -43,7 +38,6 @@ public class ElasticsearchService : ISearchService
         ILogger<ElasticsearchService> logger
         )
     {
-        _siteService = siteService;
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexSettingsService = elasticIndexSettingsService;
         _elasticClient = elasticClient;
@@ -53,8 +47,6 @@ public class ElasticsearchService : ISearchService
         _elasticsQueryService = elasticQueryService;
         _logger = logger;
     }
-
-    public string Name => Key;
 
     public async Task<SearchResult> SearchAsync(IndexEntity index, string term, int start, int pageSize)
     {

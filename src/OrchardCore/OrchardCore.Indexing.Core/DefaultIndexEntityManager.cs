@@ -55,9 +55,10 @@ public sealed class DefaultIndexEntityManager : IIndexEntityManager
         return null;
     }
 
-    public async ValueTask<IndexEntity> FindByNameAsync(string name)
+    public async ValueTask<IndexEntity> FindByNameAndProviderAsync(string indexName, string providerName)
     {
-        var model = await _store.FindByNameAsync(name);
+        var model = await _store.FindByNameAndProviderAsync(indexName, providerName);
+
         if (model is not null)
         {
             await LoadAsync(model);

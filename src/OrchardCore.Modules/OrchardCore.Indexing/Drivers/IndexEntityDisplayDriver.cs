@@ -10,10 +10,15 @@ namespace OrchardCore.Indexing.Drivers;
 
 internal sealed class IndexEntityDisplayDriver : DisplayDriver<IndexEntity>
 {
+    private readonly IIndexEntityStore _indexEntityStore;
+
     internal readonly IStringLocalizer S;
 
-    public IndexEntityDisplayDriver(IStringLocalizer<IndexEntityDisplayDriver> stringLocalizer)
+    public IndexEntityDisplayDriver(
+        IIndexEntityStore indexEntityStore,
+        IStringLocalizer<IndexEntityDisplayDriver> stringLocalizer)
     {
+        _indexEntityStore = indexEntityStore;
         S = stringLocalizer;
     }
 
@@ -54,6 +59,10 @@ internal sealed class IndexEntityDisplayDriver : DisplayDriver<IndexEntity>
             if (string.IsNullOrEmpty(model.IndexName))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["The index name is a required field."]);
+            }
+            else if (await _indexEntityStore.FindByNameAndProviderAsync(model.IndexName, entity.ProviderName) is not null)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["There is already another index with the same name."]);
             }
 
             entity.IndexName = model.IndexName;

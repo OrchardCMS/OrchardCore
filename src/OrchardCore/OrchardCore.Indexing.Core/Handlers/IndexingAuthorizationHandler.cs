@@ -31,7 +31,7 @@ public sealed class IndexingAuthorizationHandler : AuthorizationHandler<Permissi
 
         _authorizationService ??= _serviceProvider?.GetService<IAuthorizationService>();
 
-        var permission = IndexingPermissions.CreateDynamicPermission(index.IndexName);
+        var permission = IndexingPermissions.CreateDynamicPermission(index);
 
         if (await _authorizationService.AuthorizeAsync(context.User, permission))
         {

@@ -16,14 +16,15 @@ public interface IIndexEntityStore
     ValueTask<IndexEntity> FindByIdAsync(string id);
 
     /// <summary>
-    /// Asynchronously retrieves a model by its unique identifier.
+    /// Asynchronously retrieves a model by its index name and provider name.
     /// </summary>
-    /// <param name="name">The unique identifier of the model. Must not be <c>null</c> or empty.</param>
+    /// <param name="indexName">The name of the index. Must not be <c>null</c> or empty.</param>
+    /// <param name="providerName">The name of the provider. Must not be <c>null</c> or empty.</param>
     /// <returns>
     /// A <see cref="ValueTask{TResult}"/> representing the asynchronous operation.
-    /// The result is the model if found, or <c>null</c> if no matching model exists in the store.
+    /// The result is the <see cref="IndexEntity"/> if found, or <c>null</c> if no matching model exists in the store.
     /// </returns>
-    ValueTask<IndexEntity> FindByNameAsync(string name);
+    ValueTask<IndexEntity> FindByNameAndProviderAsync(string indexName, string providerName);
 
     /// <summary>
     /// Asynchronously retrieves all models from the store.

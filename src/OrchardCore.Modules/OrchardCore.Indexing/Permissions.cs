@@ -24,7 +24,7 @@ public sealed class Permissions : IPermissionProvider
 
         foreach (var index in await _indexEntityStore.GetAllAsync())
         {
-            result.Add(IndexingPermissions.CreateDynamicPermission(index.IndexName));
+            result.Add(IndexingPermissions.CreateDynamicPermission(index));
         }
 
         return result;

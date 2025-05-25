@@ -47,13 +47,15 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
         return null;
     }
 
-    public async ValueTask<IndexEntity> FindByNameAsync(string name)
+    public async ValueTask<IndexEntity> FindByNameAndProviderAsync(string indexName, string providerName)
     {
-        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(providerName);
 
         var document = await _documentManager.GetOrCreateImmutableAsync();
 
-        return document.Records.Values.FirstOrDefault(x => string.Equals(x.IndexName, name, StringComparison.OrdinalIgnoreCase));
+        return document.Records.Values.FirstOrDefault(x => string.Equals(x.IndexName, indexName, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(x.ProviderName, providerName, StringComparison.OrdinalIgnoreCase));
     }
 
     public async ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName)

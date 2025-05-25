@@ -4,41 +4,30 @@ using OrchardCore.Entities;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Model;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene.Services;
 
 public class LuceneSearchService : ISearchService
 {
-    public const string Key = "Lucene";
-
-    private readonly ISiteService _siteService;
     private readonly LuceneIndexManager _luceneIndexManager;
-    private readonly LuceneIndexingService _luceneIndexingService;
     private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
     private readonly ILuceneSearchQueryService _luceneSearchQueryService;
     private readonly ILogger _logger;
 
     public LuceneSearchService(
-        ISiteService siteService,
         LuceneIndexManager luceneIndexManager,
-        LuceneIndexingService luceneIndexingService,
         LuceneAnalyzerManager luceneAnalyzerManager,
         LuceneIndexSettingsService luceneIndexSettingsService,
         ILuceneSearchQueryService luceneSearchQueryService,
         ILogger<LuceneSearchService> logger)
     {
-        _siteService = siteService;
         _luceneIndexManager = luceneIndexManager;
-        _luceneIndexingService = luceneIndexingService;
         _luceneAnalyzerManager = luceneAnalyzerManager;
         _luceneIndexSettingsService = luceneIndexSettingsService;
         _luceneSearchQueryService = luceneSearchQueryService;
         _logger = logger;
     }
-
-    public string Name => Key;
 
     public async Task<SearchResult> SearchAsync(IndexEntity index, string term, int start, int size)
     {

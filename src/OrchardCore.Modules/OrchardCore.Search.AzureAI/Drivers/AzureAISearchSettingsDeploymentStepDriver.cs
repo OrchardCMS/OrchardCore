@@ -9,8 +9,10 @@ public sealed class AzureAISearchSettingsDeploymentStepDriver : DisplayDriver<De
 {
     public override Task<IDisplayResult> DisplayAsync(AzureAISearchSettingsDeploymentStep step, BuildDisplayContext context)
         => CombineAsync(
-            View("AzureAISearchSettingsDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-            View("AzureAISearchSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            View("AzureAISearchSettingsDeploymentStep_Fields_Summary", step)
+                .Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
+            View("AzureAISearchSettingsDeploymentStep_Fields_Thumbnail", step)
+                .Location("Thumbnail", "Content")
         );
 
     public override IDisplayResult Edit(AzureAISearchSettingsDeploymentStep step, BuildEditorContext context)
