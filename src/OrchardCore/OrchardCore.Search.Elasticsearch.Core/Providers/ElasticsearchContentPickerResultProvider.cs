@@ -57,7 +57,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
             if (string.IsNullOrWhiteSpace(searchContext.Query))
             {
                 searchResponse = await elasticClient.SearchAsync<JsonObject>(s => s
-                    .Indices(_elasticIndexManager.GetFullIndexName(indexName))
+                    .Index(_elasticIndexManager.GetFullIndexName(indexName))
                     .Query(q => q
                         .Bool(b => b
                             .Filter(f => f
@@ -73,7 +73,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
             else
             {
                 searchResponse = await elasticClient.SearchAsync<JsonObject>(s => s
-                    .Indices(_elasticIndexManager.GetFullIndexName(indexName))
+                    .Index(_elasticIndexManager.GetFullIndexName(indexName))
                     .Query(q => q
                         .Bool(b => b
                             .Filter(f => f

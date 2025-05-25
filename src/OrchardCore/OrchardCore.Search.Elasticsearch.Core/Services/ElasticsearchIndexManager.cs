@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Analysis;
+using Elastic.Clients.Elasticsearch.Fluent;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Clients.Elasticsearch.QueryDsl;
@@ -46,6 +47,7 @@ public sealed class ElasticsearchIndexManager
         { ElasticsearchConstants.KeywordAnalyzer, typeof(KeywordAnalyzer) },
         { ElasticsearchConstants.WhitespaceAnalyzer, typeof(WhitespaceAnalyzer) },
         { ElasticsearchConstants.PatternAnalyzer, typeof(PatternAnalyzer) },
+        { ElasticsearchConstants.LanguageAnalyzer, typeof(LanguageAnalyzer) },
         { ElasticsearchConstants.FingerprintAnalyzer, typeof(FingerprintAnalyzer) },
         { ElasticsearchConstants.CustomAnalyzer, typeof(CustomAnalyzer) },
         { ElasticsearchConstants.StopAnalyzer, typeof(StopAnalyzer) },
@@ -244,33 +246,33 @@ public sealed class ElasticsearchIndexManager
                     [ContentIndexingConstants.ContentTypeKey] = new KeywordProperty(),
                 },
 
-                DynamicTemplates = [],
+                DynamicTemplates = new List<IDictionary<string, DynamicTemplate>>(),
             },
         };
 
-        var inheritedPostfix = new DynamicTemplate
+        var inheritedPostfix = DynamicTemplate.Mapping(new KeywordProperty());
+        inheritedPostfix.PathMatch = [_inheritedPostfixPattern];
+        inheritedPostfix.MatchMappingType = ["string"];
+        createIndexRequest.Mappings.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
         {
-            Mapping = new KeywordProperty(),
-            PathMatch = [_inheritedPostfixPattern],
-            MatchMappingType = ["string"],
-        };
+            { _inheritedPostfixPattern, inheritedPostfix },
+        });
 
-        createIndexRequest.Mappings.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_inheritedPostfixPattern, inheritedPostfix));
-
-        var idsPostfix = new DynamicTemplate
+        var idsPostfix = DynamicTemplate.Mapping(new KeywordProperty());
+        idsPostfix.PathMatch = [_idsPostfixPattern];
+        idsPostfix.MatchMappingType = ["string"];
+        createIndexRequest.Mappings.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
         {
-            Mapping = new KeywordProperty(),
-            PathMatch = [_idsPostfixPattern],
-            MatchMappingType = ["string"],
-        };
-        createIndexRequest.Mappings.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_idsPostfixPattern, idsPostfix));
+            { _idsPostfixPattern, idsPostfix },
+        });
 
-        var locationPostfix = new DynamicTemplate
+        var locationPostfix = DynamicTemplate.Mapping(new GeoPointProperty());
+        locationPostfix.PathMatch = [_locationPostFixPattern];
+        locationPostfix.MatchMappingType = ["object"];
+        createIndexRequest.Mappings.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
         {
-            Mapping = new GeoPointProperty(),
-            PathMatch = [_locationPostFixPattern],
-            MatchMappingType = ["object"],
-        };
+            { _locationPostFixPattern, locationPostfix },
+        });
 
         var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
 
@@ -279,12 +281,9 @@ public sealed class ElasticsearchIndexManager
 
     public async Task<string> GetIndexMappings(string indexName)
     {
-        var indexFullName = GetFullIndexName(indexName);
+        IndexName indexFullName = GetFullIndexName(indexName);
 
-        var response = await _elasticClient.Indices.GetMappingAsync<GetMappingResponse>((t) =>
-        {
-            t.Indices(indexFullName);
-        });
+        var response = await _elasticClient.Indices.GetMappingAsync<GetMappingResponse>(indexFullName);
 
         if (!response.IsValidResponse)
         {
@@ -300,19 +299,16 @@ public sealed class ElasticsearchIndexManager
             return null;
         }
 
-        var mappings = response.Mappings[indexFullName];
+        var mappings = response.Indices[indexFullName].Mappings;
 
         return _elasticClient.RequestResponseSerializer.SerializeToString(mappings);
     }
 
     public async Task<string> GetIndexSettings(string indexName)
     {
-        var fullName = GetFullIndexName(indexName);
+        IndexName fullName = GetFullIndexName(indexName);
 
-        var response = await _elasticClient.Indices.GetAsync<GetIndexResponse>(o =>
-        {
-            o.Indices(fullName);
-        });
+        var response = await _elasticClient.Indices.GetAsync<GetIndexResponse>(fullName);
 
         if (!response.IsValidResponse)
         {
@@ -333,12 +329,9 @@ public sealed class ElasticsearchIndexManager
 
     public async Task<string> GetIndexInfo(string indexName)
     {
-        var fullName = GetFullIndexName(indexName);
+        IndexName fullName = GetFullIndexName(indexName);
 
-        var response = await _elasticClient.Indices.GetAsync<GetIndexResponse>(o =>
-        {
-            o.Indices(fullName);
-        });
+        var response = await _elasticClient.Indices.GetAsync<GetIndexResponse>(fullName);
 
         if (!response.IsValidResponse)
         {
@@ -721,6 +714,7 @@ public sealed class ElasticsearchIndexManager
                 Highlights = hit.Highlight,
             });
         }
+
     }
 
     private static void RemoveTypeNode(JsonObject analyzerProperties)
