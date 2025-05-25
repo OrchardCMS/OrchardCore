@@ -10,25 +10,17 @@ As of version 3, the `Indexing` module also provide a user interface for all ind
 
 You can extend the indexing feature by adding your own indexing source. This allows you to create a custom index provider that can be used to index content items from a specific source. The custom source can be anything, such as a database, an external API, or any other data source.
 
+To create a custom source, you'll need to implement the `IIndexManager`, `IIndexDocumentManager` and `IIndexNameProvider` interfaces and register them as following
+
 To register a new source, you can add the following code to your `Startup.cs` file:
 
 ```csharp
-services.Configure<IndexingOptions>(options =>
+// Currently we support AzureAISearch, Elasticsearch, and Lucene providers.
+services.AddIndexingSource<CustomSourceIndexManager, CustomSourceDocumentManager, CustomSourceIndexNameProvider>("ProviderName", "CustomSource", o =>
 {
-    // Currently we support AzureAISearch, Elasticsearch, and Lucene providers.
-    options.AddIndexingSource("ProviderName", "CustomSource", o =>
-    {
-        o.DisplayName = S["Custom Source in Provider"];
-        o.Description = S["Create a Provider index based on custom source."];
-    });
+    o.DisplayName = S["Custom Source in Provider"];
+    o.Description = S["Create a Provider index based on custom source."];
 });
-```
-
-You'll also need to implement the `IIndexManager` and `IIndexDocumentManager` interfaces and register them as following
-
-```csharp
-services.AddKeyedScoped<IIndexManager, CustomSourceIndexManager>("ProviderName");
-services.AddKeyedScoped<IIndexDocumentManager, CustomSourceDocumentManager>("ProviderName");
 ```
 
 Should you need to add custom metadata to the index, you can do so by adding a display driver that is derived by `DisplayDriver<IndexEntity>`.

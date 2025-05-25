@@ -47,7 +47,6 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
         {
             var store = scope.ServiceProvider.GetRequiredService<IStore>();
             var dbConnectionAccessor = scope.ServiceProvider.GetRequiredService<IDbConnectionAccessor>();
-            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
 
             var documentTableName = store.Configuration.TableNameConvention.GetDocumentTable();
             var table = $"{store.Configuration.TablePrefix}{documentTableName}";
@@ -78,6 +77,9 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                 return;
             }
 
+            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
+            var indexNamingProvider = scope.ServiceProvider.GetKeyedService<IIndexNameProvider>(AzureAISearchConstants.ProviderName);
+
             foreach (var indexObject in indexesObject)
             {
                 var indexName = indexObject.Value["IndexName"]?.GetValue<string>();
@@ -91,7 +93,9 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 var index = await indexManager.NewAsync(AzureAISearchConstants.ProviderName, source ?? IndexingConstants.ContentsIndexSource);
                 index.IndexName = indexName;
-                index.IndexFullName = _shellSettings.Name + "_" + indexName;
+                index.IndexFullName = indexNamingProvider.GetFullIndexName(indexName);
+                index.DisplayText = indexName;
+
                 var id = indexObject.Value["Id"]?.GetValue<string>();
 
                 if (!string.IsNullOrEmpty(id))
@@ -114,6 +118,11 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                 }
 
                 var indexContentTypes = indexObject.Value[nameof(metadata.IndexedContentTypes)]?.AsArray();
+
+                if (indexContentTypes is null || indexContentTypes.Count == 0)
+                {
+                    indexContentTypes = indexObject.Value["Properties"]?["ContentIndexMetadata"]?["IndexedContentTypes"]?.AsArray();
+                }
 
                 if (indexContentTypes is not null)
                 {
@@ -157,7 +166,9 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                 {
                     foreach (var indexMapping in indexMappings)
                     {
-                        azureMetadata.IndexMappings.Add(indexMapping.GetValue<AzureAISearchIndexMap>());
+                        var map = indexMapping.ToObject<AzureAISearchIndexMap>();
+
+                        azureMetadata.IndexMappings.Add(map);
                     }
                 }
 

@@ -12,5 +12,5 @@ public sealed class IndexEntityDeploymentStep : DeploymentStep
 
     public bool IncludeAll { get; set; }
 
-    public string[] Indexes { get; set; }
+    public string[] IndexeIds { get; set; }
 }

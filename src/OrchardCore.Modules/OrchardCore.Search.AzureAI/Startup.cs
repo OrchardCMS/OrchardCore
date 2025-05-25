@@ -15,7 +15,6 @@ using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Migrations;
-using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI;
@@ -39,15 +38,6 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<IndexEntity, AzureAISearchIndexEntityDisplayDriver>();
 
         services.AddDataMigration<AzureAISearchIndexSettingsMigrations>();
-
-        services.Configure<IndexingOptions>(options =>
-        {
-            options.AddIndexingSource(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
-            {
-                o.DisplayName = S["Content in Azure AI Search"];
-                o.Description = S["Create an Azure AI Search index based on site contents."];
-            });
-        });
     }
 }
 
@@ -56,7 +46,7 @@ public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddKeyedScoped<ISearchService, AzureAISearchService>(AzureAISearchConstants.ProviderName);
+        services.AddSearchService<AzureAISearchService>(AzureAISearchConstants.ProviderName);
     }
 }
 
@@ -82,15 +72,13 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, AzureAISearchContentIndexEntityHandler>());
-        services.Configure<AzureAISearchOptions>(options =>
-        {
-            options.AddIndexSource(IndexingConstants.ContentsIndexSource, o =>
+        services
+            .AddIndexEntityHandler<AzureAISearchContentIndexEntityHandler>()
+            .AddIndexingSource<AzureAISearchIndexManager, AzureAISearchIndexDocumentManager, AzureAISearchIndexNameProvider>(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
             {
-                o.DisplayName = S["Contents"];
-                o.Description = S["Create an index based on content items."];
+                o.DisplayName = S["Content in Azure AI Search"];
+                o.Description = S["Create an Azure AI Search index based on site contents."];
             });
-        });
     }
 }
 

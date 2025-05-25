@@ -11,18 +11,18 @@ using static OrchardCore.Indexing.DocumentIndexBase;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAIIndexDocumentManager : IIndexDocumentManager
+public class AzureAISearchIndexDocumentManager : IIndexDocumentManager
 {
     private readonly AzureAIClientFactory _clientFactory;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
     private readonly IIndexEntityStore _indexStore;
     private readonly ILogger _logger;
 
-    public AzureAIIndexDocumentManager(
+    public AzureAISearchIndexDocumentManager(
         AzureAIClientFactory clientFactory,
         IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
         IIndexEntityStore indexStore,
-        ILogger<AzureAIIndexDocumentManager> logger)
+        ILogger<AzureAISearchIndexDocumentManager> logger)
     {
         _clientFactory = clientFactory;
         _documentEvents = documentEvents;

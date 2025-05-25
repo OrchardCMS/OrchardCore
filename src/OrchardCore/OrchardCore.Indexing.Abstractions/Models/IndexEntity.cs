@@ -28,11 +28,11 @@ public sealed class IndexEntity : Entity
         return new IndexEntity
         {
             Id = Id,
-            DisplayText = DisplayText,
             ProviderName = ProviderName,
+            Type = Type,
+            DisplayText = DisplayText,
             IndexName = IndexName,
             IndexFullName = IndexFullName,
-            Type = Type,
             CreatedUtc = CreatedUtc,
             Author = Author,
             OwnerId = OwnerId,

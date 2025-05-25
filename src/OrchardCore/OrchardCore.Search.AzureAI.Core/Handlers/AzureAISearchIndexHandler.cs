@@ -5,32 +5,17 @@ using OrchardCore.Entities;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Search.AzureAI.Models;
-using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
 
 public sealed class AzureAISearchIndexHandler : IndexEntityHandlerBase
 {
-    private readonly AzureAISearchIndexNameService _searchIndexNameService;
 
     private readonly IStringLocalizer S;
 
-    public AzureAISearchIndexHandler(
-        AzureAISearchIndexNameService searchIndexNameService,
-        IStringLocalizer<AzureAISearchIndexHandler> stringLocalizer)
+    public AzureAISearchIndexHandler(IStringLocalizer<AzureAISearchIndexHandler> stringLocalizer)
     {
-        _searchIndexNameService = searchIndexNameService;
         S = stringLocalizer;
-    }
-
-    public override Task CreatingAsync(CreatingContext<IndexEntity> context)
-    {
-        if (!string.IsNullOrEmpty(context.Model.IndexName))
-        {
-            context.Model.IndexFullName = _searchIndexNameService.GetFullIndexName(context.Model.IndexName);
-        }
-
-        return Task.CompletedTask;
     }
 
     public override Task InitializingAsync(InitializingContext<IndexEntity> context)

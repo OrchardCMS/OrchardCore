@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -11,14 +12,17 @@ namespace OrchardCore.Indexing.Drivers;
 internal sealed class IndexEntityDisplayDriver : DisplayDriver<IndexEntity>
 {
     private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
 
     public IndexEntityDisplayDriver(
         IIndexEntityStore indexEntityStore,
+        IServiceProvider serviceProvider,
         IStringLocalizer<IndexEntityDisplayDriver> stringLocalizer)
     {
         _indexEntityStore = indexEntityStore;
+        _serviceProvider = serviceProvider;
         S = stringLocalizer;
     }
 
@@ -56,13 +60,25 @@ internal sealed class IndexEntityDisplayDriver : DisplayDriver<IndexEntity>
 
         if (context.IsNew)
         {
-            if (string.IsNullOrEmpty(model.IndexName))
+            var hasIndexName = !string.IsNullOrEmpty(model.IndexName);
+
+            if (!hasIndexName)
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["The index name is a required field."]);
             }
             else if (await _indexEntityStore.FindByNameAndProviderAsync(model.IndexName, entity.ProviderName) is not null)
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["There is already another index with the same name."]);
+            }
+
+            if (hasIndexName && !string.IsNullOrEmpty(entity.ProviderName))
+            {
+                var nameProvider = _serviceProvider.GetKeyedService<IIndexNameProvider>(entity.ProviderName);
+
+                if (nameProvider is not null)
+                {
+                    entity.IndexFullName = nameProvider.GetFullIndexName(model.IndexName);
+                }
             }
 
             entity.IndexName = model.IndexName;

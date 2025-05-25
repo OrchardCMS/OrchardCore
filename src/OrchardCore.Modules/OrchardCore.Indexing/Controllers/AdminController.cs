@@ -275,7 +275,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        // Clone the deployment to prevent modifying the original instance in the store.
+        // Clone the index to prevent modifying the original instance in the store.
         var mutableProfile = index.Clone();
 
         var model = new ModelViewModel

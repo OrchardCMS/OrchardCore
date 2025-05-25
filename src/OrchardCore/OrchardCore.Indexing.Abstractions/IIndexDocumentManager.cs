@@ -15,6 +15,6 @@ public interface IIndexDocumentManager
 
     Task SetLastTaskIdAsync(IndexEntity index, long lastTaskId);
 
-    // TO Do, remove this from here.
+    // TODO, remove this from here.
     IContentIndexSettings GetContentIndexSettings();
 }

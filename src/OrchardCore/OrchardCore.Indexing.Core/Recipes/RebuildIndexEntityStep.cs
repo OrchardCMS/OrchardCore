@@ -25,7 +25,7 @@ public sealed class RebuildIndexEntityStep : NamedRecipeStepHandler
             return;
         }
 
-        if (!model.IncludeAll && (model.Indexes == null || model.Indexes.Length == 0))
+        if (!model.IncludeAll && (model.IndexeIds == null || model.IndexeIds.Length == 0))
         {
             return;
         }
@@ -36,7 +36,7 @@ public sealed class RebuildIndexEntityStep : NamedRecipeStepHandler
 
             var indexes = model.IncludeAll
                 ? await indexEntityManager.GetAllAsync()
-                : (await indexEntityManager.GetAllAsync()).Where(x => model.Indexes.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
+                : (await indexEntityManager.GetAllAsync()).Where(x => model.IndexeIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase));
 
             Dictionary<string, IIndexManager> indexManagers = new();
 

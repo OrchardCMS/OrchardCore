@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -36,12 +37,10 @@ internal sealed class IndexEntityDeploymentStepDisplayDriver : DisplayDriver<Dep
         return Initialize<IndexEntityDeploymentStepViewModel>("IndexEntityDeploymentStep_Fields_Edit", async model =>
         {
             model.IncludeAll = step.IncludeAll;
-            model.Indexes = (await _store.GetAllAsync()).Select(x => new IndexEntitySourceViewModel
+            model.Indexes = (await _store.GetAllAsync()).Select(x => new SelectListItem(x.DisplayText, x.Id)
             {
-                IndexName = x.IndexName,
-                DisplayText = x.DisplayText,
-                IsSelected = step.Indexes?.Contains(x.IndexName) ?? false,
-            }).OrderBy(x => x.DisplayText)
+                Selected = step.IndexeIds?.Contains(x.IndexName) ?? false,
+            }).OrderBy(x => x.Text)
             .ToArray();
         }).Location("Content");
     }
@@ -57,17 +56,17 @@ internal sealed class IndexEntityDeploymentStepDisplayDriver : DisplayDriver<Dep
         if (model.IncludeAll)
         {
             step.IncludeAll = true;
-            step.Indexes = [];
+            step.IndexeIds = [];
         }
         else
         {
             if (model.Indexes == null || model.Indexes.Length == 0)
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Indexes), S["At least one data-source is required."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Indexes), S["At least one index is required."]);
             }
 
             step.IncludeAll = false;
-            step.Indexes = model.Indexes.Where(x => x.IsSelected).Select(x => x.IndexName).ToArray();
+            step.IndexeIds = model.Indexes.Where(x => x.Selected).Select(x => x.Value).ToArray();
         }
 
         return Edit(step, context);

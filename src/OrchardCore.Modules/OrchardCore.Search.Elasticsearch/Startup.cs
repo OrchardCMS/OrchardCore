@@ -13,7 +13,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Migrations;
-using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
@@ -66,7 +65,7 @@ public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddKeyedScoped<ISearchService, ElasticsearchService>(ElasticsearchConstants.ProviderName);
+        services.AddSearchService<ElasticsearchService>(ElasticsearchConstants.ProviderName);
         services.AddSiteDisplayDriver<ElasticSettingsDisplayDriver>();
     }
 }

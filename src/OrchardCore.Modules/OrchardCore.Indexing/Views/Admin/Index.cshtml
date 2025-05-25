@@ -71,7 +71,7 @@
             </li>
             @foreach (var entry in Model.Models)
             {
-                <li class="list-group-item item d-flex justify-content-between align-items-center" data-filter-value="@entry.Model.DisplayText.ToLowerInvariant()">
+                <li class="list-group-item item d-flex justify-content-between align-items-center" data-filter-value="@entry.Model?.DisplayText.ToLowerInvariant()">
                     <div class="d-flex flex-row">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" value="@entry.Model.Id" name="itemIds" id="itemIds-@entry.Model.Id">

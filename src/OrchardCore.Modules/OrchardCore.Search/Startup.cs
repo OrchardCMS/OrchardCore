@@ -16,9 +16,6 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search;
 
-/// <summary>
-/// These services are registered on the tenant service collection.
-/// </summary>
 public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
@@ -33,6 +30,7 @@ public sealed class IndexingStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<AdminMenu>();
+        services.AddDataMigration<SearchSettingsMigrations>();
         services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
     }
 }

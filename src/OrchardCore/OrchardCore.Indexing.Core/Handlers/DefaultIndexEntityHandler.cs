@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Indexing.Models;
@@ -9,21 +10,24 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core.Handlers;
 
-internal sealed class IndexEntityHandler : IndexEntityHandlerBase
+internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IndexingOptions _indexingOptions;
     private readonly IClock _clock;
 
     internal readonly IStringLocalizer S;
 
-    public IndexEntityHandler(
+    public DefaultIndexEntityHandler(
         IHttpContextAccessor httpContextAccessor,
+        IServiceProvider serviceProvider,
         IOptions<IndexingOptions> indexingOptions,
         IClock clock,
-        IStringLocalizer<IndexEntityHandler> stringLocalizer)
+        IStringLocalizer<DefaultIndexEntityHandler> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
+        _serviceProvider = serviceProvider;
         _indexingOptions = indexingOptions.Value;
         _clock = clock;
         S = stringLocalizer;
@@ -42,7 +46,9 @@ internal sealed class IndexEntityHandler : IndexEntityHandlerBase
             context.Result.Fail(new ValidationResult(S["Index display-text is required."], [nameof(IndexEntity.DisplayText)]));
         }
 
-        if (string.IsNullOrWhiteSpace(context.Model.IndexName))
+        var hasIndexName = !string.IsNullOrWhiteSpace(context.Model.IndexName);
+
+        if (!hasIndexName)
         {
             context.Result.Fail(new ValidationResult(S["The index name is required."]));
         }
@@ -68,6 +74,49 @@ internal sealed class IndexEntityHandler : IndexEntityHandlerBase
         if (hasProviderName && hasType && !_indexingOptions.Sources.TryGetValue(new IndexEntityKey(context.Model.ProviderName, context.Model.Type), out _))
         {
             context.Result.Fail(new ValidationResult(S["Unable to find a provider named '{0}' with the type '{1}'.", context.Model.ProviderName, context.Model.Type], [nameof(IndexEntity.Type)]));
+        }
+
+        if (string.IsNullOrEmpty(context.Model.IndexFullName))
+        {
+            if (!hasProviderName || !hasIndexName)
+            {
+                context.Result.Fail(new ValidationResult(S["The index full name is required."]));
+            }
+            else
+            {
+                var nameProvider = _serviceProvider.GetKeyedService<IIndexNameProvider>(context.Model.ProviderName);
+
+                if (nameProvider is null)
+                {
+                    context.Result.Fail(new ValidationResult(S["The index full name is required. Unable to find a index name provider that with the provider name '{0}'.", context.Model.ProviderName, context.Model.Type], [nameof(IndexEntity.Type)]));
+                }
+                else
+                {
+                    // Set the full name of the index.
+                    context.Model.IndexFullName = nameProvider.GetFullIndexName(context.Model.IndexName);
+                }
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public override Task CreatingAsync(CreatingContext<IndexEntity> context)
+    {
+        if (string.IsNullOrEmpty(context.Model.IndexFullName))
+        {
+            var nameProvider = _serviceProvider.GetKeyedService<IIndexNameProvider>(context.Model.ProviderName);
+
+            if (nameProvider is not null)
+            {
+                // Set the full name of the index.
+                context.Model.IndexFullName = nameProvider.GetFullIndexName(context.Model.IndexName);
+            }
+        }
+
+        if (string.IsNullOrEmpty(context.Model.IndexName) || string.IsNullOrEmpty(context.Model.IndexFullName))
+        {
+            throw new InvalidOperationException("Both the index-name and index full-name must be set.");
         }
 
         return Task.CompletedTask;

@@ -14,7 +14,6 @@ using OrchardCore.Queries;
 using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Recipes;
-using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Deployment;
 using OrchardCore.Search.Lucene.Drivers;
 using OrchardCore.Search.Lucene.Handlers;
@@ -64,7 +63,7 @@ public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddKeyedScoped<ISearchService, LuceneSearchService>(LuceneConstants.ProviderName);
+        services.AddSearchService<LuceneSearchService>(LuceneConstants.ProviderName);
         services.AddSiteDisplayDriver<LuceneSettingsDisplayDriver>();
     }
 }

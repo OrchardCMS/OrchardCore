@@ -28,4 +28,8 @@
     <PackageReference Include="Azure.Search.Documents" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Recipes\" />
+  </ItemGroup>
+
 </Project>

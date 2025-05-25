@@ -12,12 +12,12 @@ namespace OrchardCore.Search.AzureAI.Services;
 
 public class AzureAISearchService : ISearchService
 {
-    private readonly AzureAIIndexDocumentManager _indexDocumentManager;
+    private readonly AzureAISearchIndexDocumentManager _indexDocumentManager;
     private readonly ILogger<AzureAISearchService> _logger;
     private readonly AzureAISearchDefaultOptions _azureAIOptions;
 
     public AzureAISearchService(
-        AzureAIIndexDocumentManager indexDocumentManager,
+        AzureAISearchIndexDocumentManager indexDocumentManager,
         ILogger<AzureAISearchService> logger,
         IOptions<AzureAISearchDefaultOptions> azureAIOptions)
     {

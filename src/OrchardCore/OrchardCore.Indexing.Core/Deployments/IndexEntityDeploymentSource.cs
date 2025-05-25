@@ -30,7 +30,7 @@ public sealed class IndexEntityDeploymentSource : DeploymentSourceBase<IndexEnti
 
         var sourceIds = step.IncludeAll
             ? []
-            : step.Indexes ?? [];
+            : step.IndexeIds ?? [];
 
         foreach (var index in indexes)
         {
