@@ -38,8 +38,8 @@
     <PackageVersion Include="MailKit" Version="4.12.1" />
     <PackageVersion Include="Markdig" Version="0.41.1" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.11.0" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="3.9.1" />
-    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.10.0" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="3.9.2" />
+    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.11.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageVersion Include="MimeKit" Version="4.12.0" />
