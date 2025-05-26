@@ -176,6 +176,7 @@ public class DefaultMediaFileStore : IMediaFileStore
 
                     try
                     {
+                        creatingStream.Seek(0, SeekOrigin.Begin);
                         outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
                     }
                     finally
