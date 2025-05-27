@@ -80,8 +80,6 @@ internal sealed class IndexingMigrations : DataMigration
             {
                 var indexName = indexObject.Key;
 
-                var source = indexObject.Value["Source"]?.GetValue<string>();
-
                 var indexFullName = indexNamingProvider.GetFullIndexName(indexName);
 
                 var index = await indexManager.NewAsync(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource);

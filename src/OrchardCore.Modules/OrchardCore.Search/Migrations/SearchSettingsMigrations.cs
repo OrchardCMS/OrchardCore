@@ -41,7 +41,7 @@ internal sealed class SearchSettingsMigrations : DataMigration
 
             var elasticsearchIndex = await MigrateElasticsearchSettingsAsync(site, indexStore);
 
-            var luceneIndex = await MigrateLuceneSettingsAsync(site, indexStore);
+            // var luceneIndex = await MigrateLuceneSettingsAsync(site, indexStore);
 
             var defaultSearchProvider = site.Properties["SearchSettings"]?["ProviderName"]?.GetValue<string>();
 
@@ -53,10 +53,12 @@ internal sealed class SearchSettingsMigrations : DataMigration
             {
                 searchSettings.DefaultIndexId = elasticsearchIndex?.Id;
             }
+            /*
             else if (defaultSearchProvider == "Lucene")
             {
                 searchSettings.DefaultIndexId = luceneIndex?.Id;
             }
+            */
 
             site.Put(searchSettings);
 
@@ -147,11 +149,12 @@ internal sealed class SearchSettingsMigrations : DataMigration
         return index;
     }
 
-    private static Task<IndexEntity> MigrateLuceneSettingsAsync(ISite site, IIndexEntityStore indexStore)
+    /*'
+     * private static Task<IndexEntity> MigrateLuceneSettingsAsync(ISite site, IIndexEntityStore indexStore)
     {
         // TODO, migrate the Lucene settings.
 
         return Task.FromResult<IndexEntity>(null);
     }
-
+    */
 }
