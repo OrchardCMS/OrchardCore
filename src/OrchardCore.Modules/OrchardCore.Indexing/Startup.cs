@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -15,6 +16,7 @@ using OrchardCore.Indexing.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Search.Indexing.Core;
 
 namespace OrchardCore.Indexing;
 
@@ -63,5 +65,14 @@ public sealed class DeploymentsStartup : StartupBase
         services.AddDeployment<IndexEntityDeploymentSource, IndexEntityDeploymentStep, IndexEntityDeploymentStepDisplayDriver>();
         services.AddDeployment<RebuildIndexEntityDeploymentSource, RebuildIndexEntityDeploymentStep, RebuildIndexEntityDeploymentStepDriver>();
         services.AddDeployment<ResetIndexEntityDeploymentSource, ResetIndexEntityDeploymentStep, ResetIndexEntityDeploymentStepDriver>();
+    }
+}
+
+[Feature(IndexingConstants.Feature.Worker)]
+public sealed class WorkerStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
     }
 }
