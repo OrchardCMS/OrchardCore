@@ -66,7 +66,7 @@ public sealed class AzureAISearchContentIndexEntityHandler : IndexEntityHandlerB
 
     private static Task PopulateAsync(IndexEntity index, JsonNode data)
     {
-        if (index.Type != IndexingConstants.ContentsIndexSource)
+        if (!CanHandle(index))
         {
             return Task.CompletedTask;
         }
@@ -74,21 +74,14 @@ public sealed class AzureAISearchContentIndexEntityHandler : IndexEntityHandlerB
         var metadata = index.As<AzureAISearchIndexMetadata>();
 
         // For backward compatibility, we look for 'AnalyzerName' and 'QueryAnalyzerName' in the data.
-        var analyzerName = data[nameof(AzureAISearchIndexMetadata.AnalyzerName)]?.GetValue<string>();
+        var analyzerName = data[nameof(metadata.AnalyzerName)]?.GetValue<string>();
 
         if (!string.IsNullOrEmpty(analyzerName))
         {
             metadata.AnalyzerName = analyzerName;
         }
 
-        var queryAnalyzerName = data[nameof(AzureAISearchIndexMetadata.QueryAnalyzerName)]?.GetValue<string>();
-
-        if (!string.IsNullOrEmpty(queryAnalyzerName))
-        {
-            metadata.QueryAnalyzerName = queryAnalyzerName;
-        }
-
-        var indexMappings = data[nameof(AzureAISearchIndexMetadata.IndexMappings)]?.AsArray();
+        var indexMappings = data[nameof(metadata.IndexMappings)]?.AsArray();
 
         if (indexMappings is not null)
         {
@@ -99,6 +92,32 @@ public sealed class AzureAISearchContentIndexEntityHandler : IndexEntityHandlerB
         }
 
         index.Put(metadata);
+
+        var queryMetadata = index.As<AzureAISearchDefaultQueryMetadata>();
+
+        var queryAnalyzerName = data[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
+
+        if (!string.IsNullOrEmpty(queryAnalyzerName))
+        {
+            queryMetadata.QueryAnalyzerName = queryAnalyzerName;
+        }
+
+        var defaultFields = data[nameof(queryMetadata.DefaultSearchFields)]?.AsArray();
+
+        if (defaultFields is not null && defaultFields.Count > 0)
+        {
+            var fields = new List<string>();
+
+            foreach (var field in defaultFields)
+            {
+                fields.Add(field.GetValue<string>());
+            }
+
+            queryMetadata.DefaultSearchFields = fields.ToArray();
+        }
+
+        index.Put(queryMetadata);
+
 
         return Task.CompletedTask;
     }
@@ -113,16 +132,8 @@ public sealed class AzureAISearchContentIndexEntityHandler : IndexEntityHandlerB
         var metadata = context.Index.As<AzureAISearchIndexMetadata>();
 
         context.Data["AnalyzerName"] = metadata.AnalyzerName;
-        context.Data["QueryAnalyzerName"] = metadata.QueryAnalyzerName;
-
-        var jsonArray = new JsonArray();
-
-        foreach (var IndexMapping in metadata.IndexMappings)
-        {
-            jsonArray.Add(IndexMapping);
-        }
-
-        context.Data["IndexMappings"] = jsonArray;
+        context.Data["QueryAnalyzerName"] = context.Index.As<AzureAISearchDefaultQueryMetadata>().QueryAnalyzerName;
+        context.Data["IndexMappings"] = JArray.FromObject(metadata.IndexMappings);
 
         return Task.CompletedTask;
     }
@@ -143,6 +154,7 @@ public sealed class AzureAISearchContentIndexEntityHandler : IndexEntityHandlerB
         foreach (var contentType in metadata.IndexedContentTypes ?? [])
         {
             var contentItem = await _contentManager.NewAsync(contentType);
+
             var document = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
             var buildIndexContext = new BuildIndexContext(document, contentItem, [contentType], new AzureAISearchContentIndexSettings());
             await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Indexing.Core.Handlers;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core;
 
@@ -15,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, DefaultIndexEntityHandler>());
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IContentHandler, IndexingContentHandler>());
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IAuthorizationHandler, IndexingAuthorizationHandler>());
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IModularTenantEvents, IndexInitializerService>());
 
         return services;
     }
@@ -27,9 +29,10 @@ public static class ServiceCollectionExtensions
         ArgumentException.ThrowIfNullOrEmpty(providerName);
         ArgumentException.ThrowIfNullOrEmpty(implementationType);
 
-        services.AddKeyedScoped<IIndexManager, TManager>(providerName);
+        services.TryAddScoped<TManager>();
+        services.AddKeyedScoped<IIndexManager>(providerName, (sp, key) => sp.GetRequiredService<TManager>());
         services.TryAddScoped<TDocumentManager>();
-        services.AddKeyedScoped<IIndexDocumentManager, TDocumentManager>(providerName, (sp, key) => sp.GetRequiredService<TDocumentManager>());
+        services.AddKeyedScoped<IIndexDocumentManager>(providerName, (sp, key) => sp.GetRequiredService<TDocumentManager>());
         services.AddKeyedScoped<IIndexNameProvider, TNamingProvider>(providerName);
 
         services.Configure<IndexingOptions>(options =>

@@ -1,10 +1,9 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.BackgroundJobs;
+using OrchardCore.Indexing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
-using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 
@@ -13,9 +12,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// </summary>
 public sealed class ElasticsearchIndexResetStep : NamedRecipeStepHandler
 {
-    public ElasticsearchIndexResetStep()
+    private readonly IIndexEntityManager _indexEntityManager;
+    private readonly IServiceProvider _serviceProvider;
+
+    public ElasticsearchIndexResetStep(
+        IIndexEntityManager indexEntityManager,
+        IServiceProvider serviceProvider)
         : base("elastic-index-reset")
     {
+        _indexEntityManager = indexEntityManager;
+        _serviceProvider = serviceProvider;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -24,37 +30,38 @@ public sealed class ElasticsearchIndexResetStep : NamedRecipeStepHandler
 
         if (model != null && (model.IncludeAll || model.Indices.Length > 0))
         {
-            await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-reset", async scope =>
+            if (model != null && (model.IncludeAll || model.Indices.Length > 0))
             {
-                var elasticIndexingService = scope.ServiceProvider.GetService<ElasticsearchIndexingService>();
-                var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticsearchIndexSettingsService>();
-                var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexManager>();
+                var indexes = model.IncludeAll
+                ? (await _indexEntityManager.GetAsync(ElasticsearchConstants.ProviderName))
+                : (await _indexEntityManager.GetAsync(ElasticsearchConstants.ProviderName)).Where(x => model.Indices.Contains(x.Id));
 
-                var indexNames = model.IncludeAll
-                ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray()
-                : model.Indices;
+                var indexManagers = new Dictionary<string, IIndexManager>();
 
-                foreach (var indexName in indexNames)
+                foreach (var index in indexes)
                 {
-                    var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
+                    if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+                    {
+                        indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+                        indexManagers[index.ProviderName] = indexManager;
+                    }
 
-                    if (elasticIndexSettings == null)
+                    if (indexManager is null)
                     {
                         continue;
                     }
 
-                    if (!await elasticIndexManager.ExistsAsync(indexName))
-                    {
-                        await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
-                    }
-                    else
-                    {
-                        await elasticIndexingService.ResetIndexAsync(elasticIndexSettings.IndexName);
-                    }
-                }
+                    await _indexEntityManager.ResetAsync(index);
+                    await _indexEntityManager.UpdateAsync(index);
 
-                await elasticIndexingService.ProcessContentItemsAsync(indexNames);
-            });
+                    if (!await indexManager.ExistsAsync(index.IndexFullName))
+                    {
+                        await indexManager.CreateAsync(index);
+                    }
+
+                    await _indexEntityManager.SynchronizeAsync(index);
+                }
+            }
         }
     }
 }

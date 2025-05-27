@@ -65,7 +65,7 @@ public sealed class AzureAISearchIndexDeploymentSource
                 { "Type", index.Type },
                 { "DisplayText", index.DisplayText },
                 { "AnalyzerName", indexMetadata.AnalyzerName },
-                { "QueryAnalyzerName", indexMetadata.QueryAnalyzerName },
+                { "QueryAnalyzerName", index.As<AzureAISearchDefaultQueryMetadata>().QueryAnalyzerName },
                 { "IndexMappings", JArray.FromObject(indexMetadata.IndexMappings ?? []) },
                 { "IndexedContentTypes", contentTypes },
                 { "Culture", metadata.Culture },

@@ -4,8 +4,6 @@ public class AzureAISearchIndexMetadata
 {
     public string AnalyzerName { get; set; }
 
-    public string QueryAnalyzerName { get; set; }
-
     public IList<AzureAISearchIndexMap> IndexMappings { get; init; } = [];
 
     // The dictionary key should be indexingKey Not AzureFieldKey.

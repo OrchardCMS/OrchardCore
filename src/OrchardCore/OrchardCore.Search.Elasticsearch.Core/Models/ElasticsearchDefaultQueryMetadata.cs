@@ -1,20 +1,12 @@
-using OrchardCore.Contents.Indexing;
-
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
-public class ElasticsearchDefaultQueryMetadata
+public sealed class ElasticsearchDefaultQueryMetadata
 {
-    public const string CustomSearchType = "custom";
-
-    public const string QueryStringSearchType = "query_string";
-
-    public static readonly string[] FullTextField = [ContentIndexingConstants.FullTextKey];
-
-    public string SearchIndex { get; set; }
+    public string QueryAnalyzerName { get; set; }
 
     public string DefaultQuery { get; set; }
 
-    public string[] DefaultSearchFields { get; set; } = FullTextField;
+    public string[] DefaultSearchFields { get; set; }
 
     public string SearchType { get; set; }
 
@@ -22,7 +14,7 @@ public class ElasticsearchDefaultQueryMetadata
     {
         if (SearchType == null)
         {
-            return QueryStringSearchType;
+            return ElasticsearchConstants.QueryStringSearchType;
         }
 
         return SearchType;

@@ -7,8 +7,6 @@ public class AzureAISettingsIndexEntityViewModel
 {
     public string AnalyzerName { get; set; }
 
-    public string QueryAnalyzerName { get; set; }
-
     [BindNever]
     public IEnumerable<SelectListItem> Analyzers { get; set; }
 }

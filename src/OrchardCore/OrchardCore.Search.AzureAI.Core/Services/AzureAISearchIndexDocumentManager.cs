@@ -11,7 +11,7 @@ using static OrchardCore.Indexing.DocumentIndexBase;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAISearchIndexDocumentManager : IIndexDocumentManager
+public sealed class AzureAISearchIndexDocumentManager : IIndexDocumentManager
 {
     private readonly AzureAIClientFactory _clientFactory;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;

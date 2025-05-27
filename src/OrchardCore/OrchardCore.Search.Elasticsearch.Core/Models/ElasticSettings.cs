@@ -2,6 +2,7 @@ using OrchardCore.Contents.Indexing;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
+[Obsolete("This class should be removed")]
 public class ElasticSettings
 {
     public const string CustomSearchType = "custom";

@@ -6,8 +6,3 @@
     <span asp-validation-for="AnalyzerName" class="text-danger"></span>
 </div>
 
-<div class="mb-3" asp-validation-class-for="QueryAnalyzerName">
-    <label asp-for="QueryAnalyzerName" class="form-label">@T["Default Query Analyzer"]</label>
-    <select asp-for="QueryAnalyzerName" asp-items="Model.Analyzers" class="form-select"></select>
-    <span asp-validation-for="QueryAnalyzerName" class="text-danger"></span>
-</div>

@@ -40,6 +40,7 @@ public sealed class ContentStartup : StartupBase
         services.TryAddScoped<ContentIndexingService>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, ContentIndexEntryHandler>());
         services.AddDisplayDriver<IndexEntity, ContentIndexEntityDisplayDriver>();
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IModularTenantEvents, ContentIndexInitializerService>());
     }
 }
 

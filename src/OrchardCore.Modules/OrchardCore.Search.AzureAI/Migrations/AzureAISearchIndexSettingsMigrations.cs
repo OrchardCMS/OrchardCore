@@ -144,20 +144,21 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                 index.Put(metadata);
 
                 var azureMetadata = index.As<AzureAISearchIndexMetadata>();
+                var queryMetadata = index.As<AzureAISearchDefaultQueryMetadata>();
 
                 if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
                 {
                     azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
                 }
 
-                if (string.IsNullOrEmpty(azureMetadata.QueryAnalyzerName))
+                if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {
-                    azureMetadata.QueryAnalyzerName = indexObject.Value[nameof(azureMetadata.QueryAnalyzerName)]?.GetValue<string>();
+                    queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
                 }
 
-                if (string.IsNullOrEmpty(azureMetadata.QueryAnalyzerName))
+                if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {
-                    azureMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
+                    queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
                 }
 
                 var indexMappings = indexObject.Value[nameof(azureMetadata.IndexMappings)]?.AsArray();
@@ -171,6 +172,9 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                         azureMetadata.IndexMappings.Add(map);
                     }
                 }
+
+                index.Put(azureMetadata);
+                index.Put(queryMetadata);
 
                 await indexManager.CreateAsync(index);
             }

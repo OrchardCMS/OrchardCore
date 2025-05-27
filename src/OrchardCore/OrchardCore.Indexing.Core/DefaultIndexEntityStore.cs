@@ -103,7 +103,8 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
 
         var document = await _documentManager.GetOrCreateMutableAsync();
 
-        if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase)))
+        if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase) &&
+            x.ProviderName.Equals(record.ProviderName, StringComparison.OrdinalIgnoreCase)))
         {
             throw new InvalidOperationException("There is already another index with the same name.");
         }
@@ -124,7 +125,9 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
 
         var document = await _documentManager.GetOrCreateMutableAsync();
 
-        if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase) && x.Id != record.Id))
+        if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase) &&
+        x.ProviderName.Equals(record.ProviderName, StringComparison.OrdinalIgnoreCase) &&
+        x.Id != record.Id))
         {
             throw new InvalidOperationException("There is already another index with the same name.");
         }

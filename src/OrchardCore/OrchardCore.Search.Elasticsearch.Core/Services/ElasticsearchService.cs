@@ -19,7 +19,6 @@ namespace OrchardCore.Search.Elasticsearch.Services;
 public class ElasticsearchService : ISearchService
 {
     private readonly ElasticsearchIndexManager _elasticIndexManager;
-    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly ElasticsearchClient _elasticClient;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
@@ -29,7 +28,6 @@ public class ElasticsearchService : ISearchService
 
     public ElasticsearchService(
         ElasticsearchIndexManager elasticIndexManager,
-        ElasticsearchIndexSettingsService elasticIndexSettingsService,
         ElasticsearchClient elasticClient,
         JavaScriptEncoder javaScriptEncoder,
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
@@ -39,7 +37,6 @@ public class ElasticsearchService : ISearchService
         )
     {
         _elasticIndexManager = elasticIndexManager;
-        _elasticIndexSettingsService = elasticIndexSettingsService;
         _elasticClient = elasticClient;
         _javaScriptEncoder = javaScriptEncoder;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
@@ -86,8 +83,8 @@ public class ElasticsearchService : ISearchService
             var searchType = queryMetadata.GetSearchType();
             Query query = null;
             Highlight highlight = null;
-
-            if (searchType == ElasticSettings.CustomSearchType && !string.IsNullOrWhiteSpace(queryMetadata.DefaultQuery))
+            var metadataIndex = index.As<ElasticsearchIndexMetadata>();
+            if (searchType == ElasticsearchConstants.CustomSearchType && !string.IsNullOrWhiteSpace(queryMetadata.DefaultQuery))
             {
                 var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(queryMetadata.DefaultQuery, _javaScriptEncoder,
                     new Dictionary<string, FluidValue>()
@@ -106,12 +103,12 @@ public class ElasticsearchService : ISearchService
                 }
                 catch { }
             }
-            else if (searchType == ElasticSettings.QueryStringSearchType)
+            else if (searchType == ElasticsearchConstants.QueryStringSearchType)
             {
                 query = new QueryStringQuery
                 {
                     Fields = queryMetadata.DefaultSearchFields,
-                    Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index.IndexName),
+                    Analyzer = metadataIndex.GetQueryAnalyzerName(),
                     Query = term,
                 };
             }
@@ -119,11 +116,11 @@ public class ElasticsearchService : ISearchService
             query ??= new MultiMatchQuery
             {
                 Fields = queryMetadata.DefaultSearchFields,
-                Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index.IndexName),
+                Analyzer = metadataIndex.GetQueryAnalyzerName(),
                 Query = term,
             };
 
-            var searchContext = new ElasticsearchSearchContext(index.IndexName, query)
+            var searchContext = new ElasticsearchSearchContext(index, query)
             {
                 From = start,
                 Size = pageSize,

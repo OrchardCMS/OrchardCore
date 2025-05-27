@@ -31,13 +31,10 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, AzureAISearchIndexHandler>());
+        services.AddIndexEntityHandler<AzureAISearchIndexHandler>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddAzureAISearchServices();
         services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
-
-        services.AddDisplayDriver<IndexEntity, AzureAISearchIndexEntityDisplayDriver>();
-
         services.AddDataMigration<AzureAISearchIndexSettingsMigrations>();
     }
 }
@@ -64,7 +61,7 @@ public sealed class ContentTypesStartup : StartupBase
 [RequireFeatures("OrchardCore.Contents")]
 public sealed class ContentsStartup : StartupBase
 {
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public ContentsStartup(IStringLocalizer<ContentsStartup> stringLocalizer)
     {
@@ -73,6 +70,8 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddDisplayDriver<IndexEntity, AzureAISearchIndexEntityDisplayDriver>();
+
         services
             .AddIndexEntityHandler<AzureAISearchContentIndexEntityHandler>()
             .AddIndexingSource<AzureAISearchIndexManager, AzureAISearchIndexDocumentManager, AzureAISearchIndexNameProvider>(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>

@@ -5,6 +5,12 @@
     return;
 }
 
+<div class="mb-3" asp-validation-class-for="QueryAnalyzerName">
+    <label asp-for="QueryAnalyzerName" class="form-label">@T["Default Query Analyzer"]</label>
+    <select asp-for="QueryAnalyzerName" asp-items="Model.Analyzers" class="form-select"></select>
+    <span asp-validation-for="QueryAnalyzerName" class="text-danger"></span>
+</div>
+
 <div class="mb-3" asp-validation-class-for="DefaultSearchFields">
     <label asp-for="DefaultSearchFields" class="form-label">@T["Default query field names"]</label>
     <div>
@@ -19,7 +25,7 @@
                                    type="checkbox"
                                    name="@Html.NameFor(m => m.DefaultSearchFields[i].Selected)"
                                    value="true"
-                            @(option.Selected ? "checked" : string.Empty) />
+                                   @(option.Selected ? "checked" : string.Empty) />
                             <input type="hidden" name="@Html.NameFor(m => m.DefaultSearchFields[i].Text)" value="@option.Text" />
                             <input type="hidden" name="@Html.NameFor(m => m.DefaultSearchFields[i].Value)" value="@option.Value" />
                             @option.Text

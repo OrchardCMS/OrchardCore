@@ -18,15 +18,6 @@ public sealed class AdminMenu : AdminNavigationProvider
             .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                 .AddClass("search")
                 .Id("search")
-                .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
-                    .Add(S["Elasticsearch Indices"], S["Elasticsearch Indices"].PrefixPosition(), indexes => indexes
-                        .Action("Index", "Admin", "OrchardCore.Search.Elasticsearch")
-                        .AddClass("elasticsearchindices")
-                        .Id("elasticsearchindices")
-                        .Permission(ElasticsearchPermissions.ManageElasticIndexes)
-                        .LocalNav()
-                    )
-                )
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
                     .Add(S["Run Elasticsearch Query"], S["Run Elasticsearch Query"].PrefixPosition(), queries => queries
                         .Action("Query", "Admin", "OrchardCore.Search.Elasticsearch")

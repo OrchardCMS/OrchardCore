@@ -4,6 +4,14 @@ namespace OrchardCore.Indexing;
 
 public class DocumentIndexBase
 {
+    public string Id { get; private set; }
+
+    public DocumentIndexBase(string id)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(id);
+        Id = id;
+    }
+
     public List<DocumentIndexEntry> Entries { get; } = [];
 
     public void Set(string name, string value, DocumentIndexOptions options)

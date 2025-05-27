@@ -68,7 +68,6 @@ internal sealed class SearchSettingsMigrations : DataMigration
 
     private static async Task<IndexEntity> MigrateAzureAISearchSettingsAsync(ISite site, IIndexEntityStore indexStore)
     {
-        // migrate Azure settings
         var azureAISearchSettings = site.Properties["AzureAISearchSettings"];
 
         if (azureAISearchSettings is null)
@@ -107,11 +106,45 @@ internal sealed class SearchSettingsMigrations : DataMigration
         return index;
     }
 
-    private static Task<IndexEntity> MigrateElasticsearchSettingsAsync(ISite site, IIndexEntityStore indexStore)
+    private static async Task<IndexEntity> MigrateElasticsearchSettingsAsync(ISite site, IIndexEntityStore indexStore)
     {
-        // TODO, migrate the Elasticsearch settings.
+        var elasticSettings = site.Properties["ElasticSettings"];
 
-        return Task.FromResult<IndexEntity>(null);
+        if (elasticSettings is null)
+        {
+            return null;
+        }
+
+        var defaultIndexName = elasticSettings["SearchIndex"]?.GetValue<string>();
+
+        if (string.IsNullOrEmpty(defaultIndexName))
+        {
+            return null;
+        }
+
+        var index = await indexStore.FindByNameAndProviderAsync(defaultIndexName, "AzureAISearch");
+
+        if (index is null)
+        {
+            // Nothing to do, the index does not exist.
+            return null;
+        }
+
+        var defaultQuery = elasticSettings["DefaultQuery"]?.GetValue<string>();
+
+        var defaultSearchFields = elasticSettings["FullTextField"]?.AsArray();
+
+        if (defaultSearchFields?.Count > 0)
+        {
+            elasticSettings["SearchIndex"] = null;
+
+            // Migrate the default query settings to the index properties.
+            index.Properties["ElasticsearchDefaultQueryMetadata"] = elasticSettings;
+
+            await indexStore.UpdateAsync(index);
+        }
+
+        return index;
     }
 
     private static Task<IndexEntity> MigrateLuceneSettingsAsync(ISite site, IIndexEntityStore indexStore)

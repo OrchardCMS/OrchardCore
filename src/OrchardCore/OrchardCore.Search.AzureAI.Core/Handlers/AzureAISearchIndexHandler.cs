@@ -25,21 +25,14 @@ public sealed class AzureAISearchIndexHandler : IndexEntityHandlerBase
     {
         var metadata = index.As<AzureAISearchIndexMetadata>();
 
-        var analyzerName = data[nameof(AzureAISearchIndexMetadata.AnalyzerName)]?.GetValue<string>()?.Trim();
+        var analyzerName = data[nameof(metadata.AnalyzerName)]?.GetValue<string>()?.Trim();
 
         if (!string.IsNullOrEmpty(analyzerName))
         {
             metadata.AnalyzerName = analyzerName;
         }
 
-        var queryAnalyzerName = data[nameof(AzureAISearchIndexMetadata.QueryAnalyzerName)]?.GetValue<string>()?.Trim();
-
-        if (!string.IsNullOrEmpty(queryAnalyzerName))
-        {
-            metadata.QueryAnalyzerName = queryAnalyzerName;
-        }
-
-        var indexMappings = data[nameof(AzureAISearchIndexMetadata.IndexMappings)].AsArray();
+        var indexMappings = data[nameof(metadata.IndexMappings)]?.AsArray();
 
         if (indexMappings is not null && indexMappings.Count > 0)
         {
@@ -51,11 +44,6 @@ public sealed class AzureAISearchIndexHandler : IndexEntityHandlerBase
 
                 metadata.IndexMappings.Add(map);
             }
-        }
-
-        if (!string.IsNullOrEmpty(queryAnalyzerName))
-        {
-            metadata.QueryAnalyzerName = queryAnalyzerName;
         }
 
         index.Put(metadata);
