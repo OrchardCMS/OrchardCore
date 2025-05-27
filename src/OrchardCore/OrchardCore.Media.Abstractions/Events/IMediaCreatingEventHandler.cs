@@ -6,10 +6,6 @@ namespace OrchardCore.Media.Events;
 public interface IMediaCreatingEventHandler
 {
     /// <summary>
-    /// The Order of execution for this event handler.
-    /// </summary>
-    int Priority { get; }
-    /// <summary>
     /// Allows a stream to be mutated during creation of media.
     /// Any implementation must return a new stream,
     /// which should be disposed by the caller.
