@@ -91,6 +91,11 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 var source = indexObject.Value["Source"]?.GetValue<string>();
 
+                if (source == "Contents")
+                {
+                    source = null;
+                }
+
                 var index = await indexManager.NewAsync(AzureAISearchConstants.ProviderName, source ?? IndexingConstants.ContentsIndexSource);
                 index.IndexName = indexName;
                 index.IndexFullName = indexNamingProvider.GetFullIndexName(indexName);

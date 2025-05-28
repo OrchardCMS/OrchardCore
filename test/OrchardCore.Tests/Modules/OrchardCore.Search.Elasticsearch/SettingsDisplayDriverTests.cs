@@ -77,15 +77,35 @@ public partial class SettingsDisplayDriverTests
             };
 
             var indexes = new List<IndexEntity>
-        {
-            new IndexEntity
             {
-                Id = "testIndex",
-                ProviderName = "elasticsearch",
-                Type = "Content",
-                DisplayText = "Test Index",
-            },
-        };
+                new IndexEntity
+                {
+                    Id = "idx1",
+                    IndexName = "idx1",
+                    IndexFullName = "idx1",
+                    ProviderName = "elasticsearch",
+                    Type = "Content",
+                    DisplayText = "Test Index",
+                },
+                new IndexEntity
+                {
+                    Id = "idx2",
+                    IndexName = "idx2",
+                    IndexFullName = "idx2",
+                    ProviderName = "elasticsearch",
+                    Type = "Content",
+                    DisplayText = "Test Index",
+                },
+                new IndexEntity
+                {
+                    Id = "testIndex",
+                    IndexName = "testIndex",
+                    IndexFullName = "testIndex",
+                    ProviderName = "elasticsearch",
+                    Type = "Content",
+                    DisplayText = "Test Index",
+                },
+            };
 
             // Act
             var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
