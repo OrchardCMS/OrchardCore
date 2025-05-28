@@ -97,10 +97,12 @@ internal sealed class SearchSettingsMigrations : DataMigration
         if (defaultSearchFields?.Count > 0)
         {
             // Migrate the default query settings to the index properties.
-            index.Properties["AzureAISearchDefaultQueryMetadata"] = new JsonObject
+
+            if (!index.Properties.ContainsKey("AzureAISearchDefaultQueryMetadata"))
             {
-                ["DefaultSearchFields"] = defaultSearchFields,
-            };
+                index.Properties["AzureAISearchDefaultQueryMetadata"] = new JsonObject();
+            }
+            index.Properties["AzureAISearchDefaultQueryMetadata"]["DefaultSearchFields"] = defaultSearchFields;
 
             await indexStore.UpdateAsync(index);
         }
@@ -124,7 +126,7 @@ internal sealed class SearchSettingsMigrations : DataMigration
             return null;
         }
 
-        var index = await indexStore.FindByNameAndProviderAsync(defaultIndexName, "AzureAISearch");
+        var index = await indexStore.FindByNameAndProviderAsync(defaultIndexName, "Elasticsearch");
 
         if (index is null)
         {
@@ -132,19 +134,13 @@ internal sealed class SearchSettingsMigrations : DataMigration
             return null;
         }
 
-        var defaultQuery = elasticSettings["DefaultQuery"]?.GetValue<string>();
+        elasticSettings["SearchIndex"] = null;
 
-        var defaultSearchFields = elasticSettings["FullTextField"]?.AsArray();
+        // Migrate the default query settings to the index properties.
+        index.Properties["ElasticsearchDefaultQueryMetadata"] = elasticSettings;
 
-        if (defaultSearchFields?.Count > 0)
-        {
-            elasticSettings["SearchIndex"] = null;
+        await indexStore.UpdateAsync(index);
 
-            // Migrate the default query settings to the index properties.
-            index.Properties["ElasticsearchDefaultQueryMetadata"] = elasticSettings;
-
-            await indexStore.UpdateAsync(index);
-        }
 
         return index;
     }

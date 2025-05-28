@@ -10,6 +10,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Search.AzureAI.Models;
+using OrchardCore.Search.AzureAI.Services;
 using YesSql;
 using YesSql.Sql;
 
@@ -93,7 +94,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 if (source == "Contents")
                 {
-                    source = null;
+                    source = IndexingConstants.ContentsIndexSource;
                 }
 
                 var index = await indexManager.NewAsync(AzureAISearchConstants.ProviderName, source ?? IndexingConstants.ContentsIndexSource);
@@ -164,6 +165,11 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                 if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {
                     queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
+                }
+
+                if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
+                {
+                    queryMetadata.DefaultSearchFields = [AzureAISearchIndexManager.FullTextKey];
                 }
 
                 var indexMappings = indexObject.Value[nameof(azureMetadata.IndexMappings)]?.AsArray();

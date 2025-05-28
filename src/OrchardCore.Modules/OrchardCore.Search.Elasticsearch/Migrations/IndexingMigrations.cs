@@ -122,15 +122,6 @@ internal sealed class IndexingMigrations : DataMigration
 
                 index.Put(metadata);
 
-                var azureMetadata = index.As<ElasticsearchIndexMetadata>();
-
-                if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
-                {
-                    azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
-                }
-
-                index.Put(azureMetadata);
-
                 var contentMetadata = index.As<ElasticsearchContentIndexMetadata>();
 
                 var storeSourceData = indexObject.Value[nameof(contentMetadata.StoreSourceData)]?.GetValue<bool>();
@@ -142,16 +133,13 @@ internal sealed class IndexingMigrations : DataMigration
 
                 index.Put(contentMetadata);
 
-                var queryMetadata = index.As<ElasticsearchDefaultQueryMetadata>();
-                if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
+                var azureMetadata = index.As<ElasticsearchIndexMetadata>();
+
+                if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
                 {
-                    queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
+                    azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
                 }
 
-                if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
-                {
-                    queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
-                }
                 var mapping = await indexDocumentManager.GetIndexMappingsAsync(indexFullName);
 
                 azureMetadata.IndexMappings = new ElasticsearchIndexMap
@@ -168,6 +156,24 @@ internal sealed class IndexingMigrations : DataMigration
                 foreach (var dynamicTemplate in mapping.DynamicTemplates)
                 {
                     azureMetadata.IndexMappings.DynamicTemplates.Add(dynamicTemplate);
+                }
+
+                index.Put(azureMetadata);
+
+                var queryMetadata = index.As<ElasticsearchDefaultQueryMetadata>();
+                if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
+                {
+                    queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
+                }
+
+                if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
+                {
+                    queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
+                }
+
+                if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
+                {
+                    queryMetadata.DefaultSearchFields = [ContentIndexingConstants.FullTextKey];
                 }
 
                 index.Put(queryMetadata);

@@ -34,11 +34,6 @@ public sealed class IndexingOptions
 
         _sources[key] = entry;
     }
-
-    public void AddIndexingSource(object providerName, string contentsIndexSource, Action<IndexingOptionsEntry> value)
-    {
-        throw new NotImplementedException();
-    }
 }
 
 public sealed class IndexingOptionsEntry
