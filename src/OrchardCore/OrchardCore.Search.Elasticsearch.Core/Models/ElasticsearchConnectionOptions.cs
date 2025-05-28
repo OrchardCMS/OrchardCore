@@ -1,6 +1,8 @@
+using OrchardCore.Indexing;
+
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
-public class ElasticsearchConnectionOptions
+public class ElasticsearchConnectionOptions : ISearchProviderOptions
 {
     /// <summary>
     /// The server url.

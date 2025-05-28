@@ -1,11 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
@@ -15,6 +13,7 @@ using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Migrations;
+using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Recipes;
 using OrchardCore.Search.AzureAI.Services;
 
@@ -74,7 +73,7 @@ public sealed class ContentsStartup : StartupBase
 
         services
             .AddIndexEntityHandler<AzureAISearchContentIndexEntityHandler>()
-            .AddIndexingSource<AzureAISearchIndexManager, AzureAISearchIndexDocumentManager, AzureAISearchIndexNameProvider>(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
+            .AddIndexingSource<AzureAISearchIndexManager, AzureAISearchIndexDocumentManager, AzureAISearchIndexNameProvider, AzureAISearchDefaultOptions>(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
             {
                 o.DisplayName = S["Content in Azure AI Search"];
                 o.Description = S["Create an Azure AI Search index based on site contents."];
