@@ -171,7 +171,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 var indexMappings = indexObject.Value[nameof(azureMetadata.IndexMappings)]?.AsArray();
 
-                if (indexMappings is not null)
+                if (indexMappings is not null && indexMappings.Count > 0)
                 {
                     foreach (var indexMapping in indexMappings)
                     {

@@ -4,7 +4,6 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Analysis;
 using Elastic.Clients.Elasticsearch.Fluent;
 using Elastic.Clients.Elasticsearch.IndexManagement;
-using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Transport;
 using Elastic.Transport.Extensions;
 using Microsoft.Extensions.Logging;
@@ -451,27 +450,10 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             throw new InvalidOperationException("Index mappings cannot be null.");
         }
 
-        var mapping = new TypeMapping()
-        {
-            Source = metadata.IndexMappings.SourceField,
-            Properties = [],
-            DynamicTemplates = [],
-        };
-
-        foreach (var property in metadata.IndexMappings.Properties)
-        {
-            mapping.Properties.Add(property.Key, property.Value);
-        }
-
-        foreach (var dynamicTemplate in metadata.IndexMappings.DynamicTemplates)
-        {
-            mapping.DynamicTemplates.Add(dynamicTemplate);
-        }
-
         var createIndexRequest = new CreateIndexRequest(index.IndexFullName)
         {
             Settings = indexSettings,
-            Mappings = mapping,
+            Mappings = metadata.IndexMappings.Mapping,
         };
 
         // Custom metadata to store the last indexing task id.

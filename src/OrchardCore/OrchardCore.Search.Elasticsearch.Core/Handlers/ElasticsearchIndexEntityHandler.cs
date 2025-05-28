@@ -28,7 +28,7 @@ public sealed class ElasticsearchIndexEntityHandler : IndexEntityHandlerBase
             // When the provider is AzureAI, "regardless of the type" we need to validate the index mappings.
             var metadata = context.Model.As<ElasticsearchIndexMetadata>();
 
-            if (metadata.IndexMappings?.Properties is null || metadata.IndexMappings.Properties.Count == 0)
+            if (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any())
             {
                 context.Result.Fail(new ValidationResult(S["At least one mapping property is required."]));
             }

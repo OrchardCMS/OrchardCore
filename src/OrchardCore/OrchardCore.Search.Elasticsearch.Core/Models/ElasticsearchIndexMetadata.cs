@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using OrchardCore.Search.Elasticsearch.Core.Json;
 using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
@@ -8,6 +10,7 @@ public sealed class ElasticsearchIndexMetadata
 
     public string AnalyzerName { get; set; }
 
+    [JsonConverter(typeof(ElasticsearchIndexMapConverter))]
     public ElasticsearchIndexMap IndexMappings { get; set; }
 
     public string GetAnalyzerName()

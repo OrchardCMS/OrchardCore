@@ -65,13 +65,14 @@ internal sealed class ElasticsearchIndexEntityDisplayDriver : DisplayDriver<Inde
                 new(S["Query String Query"], ElasticsearchConstants.QueryStringSearchType),
                 new(S["Custom Query"], ElasticsearchConstants.CustomSearchType),
             ];
-            if (metadata.IndexMappings?.Properties is null || metadata.IndexMappings?.Properties.Count == 0)
+
+            if (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any())
             {
                 model.DefaultSearchFields = [];
             }
             else
             {
-                model.DefaultSearchFields = metadata.IndexMappings.Properties.Select(x => x.Key)
+                model.DefaultSearchFields = metadata.IndexMappings.GetFieldPaths()
                     .Select(propertyName => new SelectListItem
                     {
                         Text = propertyName,

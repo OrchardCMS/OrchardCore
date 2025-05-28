@@ -32,18 +32,23 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
 
         metadata.KeyFieldName = ContentIndexingConstants.ContentItemIdKey;
 
-        var mapping = new ElasticsearchIndexMap()
+        var map = new ElasticsearchIndexMap()
         {
-            SourceField = new SourceField
+            Mapping = new TypeMapping()
             {
-                Enabled = index.As<ElasticsearchContentIndexMetadata>().StoreSourceData,
-                Excludes = [ContentIndexingConstants.DisplayTextAnalyzedKey],
+                Source = new SourceField
+                {
+                    Enabled = index.As<ElasticsearchContentIndexMetadata>().StoreSourceData,
+                    Excludes = [ContentIndexingConstants.DisplayTextAnalyzedKey],
+                },
+                Properties = [],
+                DynamicTemplates = [],
             },
         };
 
-        PopulateTypeMapping(mapping);
+        PopulateTypeMapping(map.Mapping);
 
-        metadata.IndexMappings = mapping;
+        metadata.IndexMappings = map;
 
         index.Put(metadata);
 
@@ -67,7 +72,7 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
             string.Equals(IndexingConstants.ContentsIndexSource, index.Type, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static void PopulateTypeMapping(ElasticsearchIndexMap mapping)
+    private static void PopulateTypeMapping(TypeMapping mapping)
     {
         mapping.Properties[ContentIndexingConstants.ContentItemIdKey] = new KeywordProperty();
         mapping.Properties[ContentIndexingConstants.ContentItemVersionIdKey] = new KeywordProperty();

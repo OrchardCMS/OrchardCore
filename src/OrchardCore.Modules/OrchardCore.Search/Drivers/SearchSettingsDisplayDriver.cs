@@ -49,7 +49,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
             model.Placeholder = settings.Placeholder;
             model.PageTitle = settings.PageTitle;
             model.Indexes = (await _indexEntityStore.GetAllAsync())
-                .Select(index => new SelectListItem(index.DisplayText, index.Id))
+                .Select(index => new SelectListItem($"{index.DisplayText} ({index.ProviderName})", index.Id))
                 .ToArray();
         }).Location("Content:2")
         .OnGroup(SettingsGroupId);

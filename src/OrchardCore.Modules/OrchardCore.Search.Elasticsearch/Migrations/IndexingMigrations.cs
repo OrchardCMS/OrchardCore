@@ -154,18 +154,8 @@ internal sealed class IndexingMigrations : DataMigration
                 azureMetadata.IndexMappings = new ElasticsearchIndexMap
                 {
                     KeyFieldName = ContentIndexingConstants.ContentItemIdKey,
-                    SourceField = mapping.Source,
+                    Mapping = mapping,
                 };
-
-                foreach (var property in mapping.Properties)
-                {
-                    azureMetadata.IndexMappings.Properties.Add(property.Key.Name, property.Value);
-                }
-
-                foreach (var dynamicTemplate in mapping.DynamicTemplates)
-                {
-                    azureMetadata.IndexMappings.DynamicTemplates.Add(dynamicTemplate);
-                }
 
                 index.Put(azureMetadata);
 

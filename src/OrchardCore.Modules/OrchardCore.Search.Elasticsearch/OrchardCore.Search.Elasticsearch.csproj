@@ -36,8 +36,4 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Search.Elasticsearch.Core\OrchardCore.Search.Elasticsearch.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>
