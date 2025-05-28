@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -11,11 +10,11 @@ using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Models;
-using OrchardCore.Json;
 using OrchardCore.Search.Elasticsearch;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
+using OrchardCore.Settings;
 using YesSql;
 using YesSql.Sql;
 
@@ -75,7 +74,17 @@ internal sealed class IndexingMigrations : DataMigration
             var indexNamingProvider = scope.ServiceProvider.GetKeyedService<IIndexNameProvider>(ElasticsearchConstants.ProviderName);
             var indexDocumentManager = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexDocumentManager>();
 
-            var _serializerOptions = scope.ServiceProvider.GetRequiredService<IOptions<DocumentJsonSerializerOptions>>();
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+            var site = await siteService.LoadSiteSettingsAsync();
+
+            var defaultSearchProvider = site.Properties["SearchSettings"]?["ProviderName"]?.GetValue<string>();
+            var elasticSettings = site.Properties["ElasticSettings"] ?? new JsonObject();
+
+            var saveSiteSettings = false;
+
+            var defaultSearchIndexName = elasticSettings["SearchIndex"]?.GetValue<string>();
+            var defaultSearchFields = GetDefaultSearchFields(elasticSettings);
+
             foreach (var indexObject in indexesObject)
             {
                 var indexName = indexObject.Key;
@@ -171,17 +180,67 @@ internal sealed class IndexingMigrations : DataMigration
                     queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
                 }
 
+                queryMetadata.DefaultQuery = indexObject.Value[nameof(queryMetadata.DefaultQuery)]?.GetValue<string>();
+
+                if (string.IsNullOrEmpty(queryMetadata.DefaultQuery))
+                {
+                    queryMetadata.DefaultQuery = elasticSettings["DefaultQuery"]?.GetValue<string>();
+                }
+
                 if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
                 {
-                    queryMetadata.DefaultSearchFields = [ContentIndexingConstants.FullTextKey];
+                    queryMetadata.DefaultSearchFields = defaultSearchFields;
+                }
+
+                if (string.IsNullOrEmpty(queryMetadata.SearchType))
+                {
+                    queryMetadata.SearchType = elasticSettings["SearchType"]?.GetValue<string>();
                 }
 
                 index.Put(queryMetadata);
 
                 await indexManager.CreateAsync(index);
+
+                if (indexName == defaultSearchIndexName && defaultSearchProvider == "Elasticsearch")
+                {
+                    site.Properties["SearchSettings"]["DefaultIndexId"] = index.Id;
+                    saveSiteSettings = true;
+                }
+            }
+
+            if (saveSiteSettings)
+            {
+                await siteService.UpdateSiteSettingsAsync(site);
             }
         });
 
         return 1;
+    }
+
+    private static string[] GetDefaultSearchFields(JsonNode settings)
+    {
+        var defaultSearchFields = new List<string>();
+
+        var searchFields = settings["DefaultSearchFields"]?.AsArray();
+
+        if (searchFields is not null && searchFields.Count > 0)
+        {
+            foreach (var field in searchFields)
+            {
+                var value = field.GetValue<string>();
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    defaultSearchFields.Add(value);
+                }
+            }
+        }
+
+        if (defaultSearchFields.Count == 0)
+        {
+            defaultSearchFields.Add(ContentIndexingConstants.FullTextKey);
+        }
+
+        return defaultSearchFields.ToArray();
     }
 }

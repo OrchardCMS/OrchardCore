@@ -30,7 +30,6 @@ public sealed class IndexingStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<AdminMenu>();
-        services.AddDataMigration<SearchSettingsMigrations>();
         services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
     }
 }

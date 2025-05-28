@@ -9,8 +9,10 @@ using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Models;
+using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
+using OrchardCore.Settings;
 using YesSql;
 using YesSql.Sql;
 
@@ -81,6 +83,17 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
             var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
             var indexNamingProvider = scope.ServiceProvider.GetKeyedService<IIndexNameProvider>(AzureAISearchConstants.ProviderName);
 
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+            var site = await siteService.LoadSiteSettingsAsync();
+
+            var defaultSearchProvider = site.Properties["SearchSettings"]?["ProviderName"]?.GetValue<string>();
+
+            var azureAISearchSettings = site.Properties["AzureAISearchSettings"] ?? new JsonObject();
+            var saveSiteSettings = false;
+            var defaultSearchIndexName = azureAISearchSettings["SearchIndex"]?.GetValue<string>();
+
+            var defaultSearchFields = GetDefaultSearchFields(azureAISearchSettings);
+
             foreach (var indexObject in indexesObject)
             {
                 var indexName = indexObject.Value["IndexName"]?.GetValue<string>();
@@ -150,12 +163,32 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                 index.Put(metadata);
 
                 var azureMetadata = index.As<AzureAISearchIndexMetadata>();
-                var queryMetadata = index.As<AzureAISearchDefaultQueryMetadata>();
 
                 if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
                 {
                     azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
                 }
+
+                var indexMappings = indexObject.Value[nameof(azureMetadata.IndexMappings)]?.AsArray();
+
+                if (indexMappings is not null)
+                {
+                    foreach (var indexMapping in indexMappings)
+                    {
+                        var map = indexMapping.ToObject<AzureAISearchIndexMap>();
+
+                        if (azureMetadata.IndexMappings.Any(map => map.AzureFieldKey.EqualsOrdinalIgnoreCase(map.AzureFieldKey)))
+                        {
+                            continue;
+                        }
+
+                        azureMetadata.IndexMappings.Add(map);
+                    }
+                }
+
+                index.Put(azureMetadata);
+
+                var queryMetadata = index.As<AzureAISearchDefaultQueryMetadata>();
 
                 if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {
@@ -169,28 +202,53 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
                 {
-                    queryMetadata.DefaultSearchFields = [AzureAISearchIndexManager.FullTextKey];
+                    queryMetadata.DefaultSearchFields = defaultSearchFields;
                 }
 
-                var indexMappings = indexObject.Value[nameof(azureMetadata.IndexMappings)]?.AsArray();
-
-                if (indexMappings is not null)
-                {
-                    foreach (var indexMapping in indexMappings)
-                    {
-                        var map = indexMapping.ToObject<AzureAISearchIndexMap>();
-
-                        azureMetadata.IndexMappings.Add(map);
-                    }
-                }
-
-                index.Put(azureMetadata);
                 index.Put(queryMetadata);
 
                 await indexManager.CreateAsync(index);
+
+                if (indexName == defaultSearchIndexName && defaultSearchProvider == "Azure AI Search")
+                {
+                    site.Properties["SearchSettings"]["DefaultIndexId"] = index.Id;
+                    saveSiteSettings = true;
+                }
+            }
+
+            if (saveSiteSettings)
+            {
+                await siteService.UpdateSiteSettingsAsync(site);
             }
         });
 
         return 2;
+    }
+
+    private static string[] GetDefaultSearchFields(JsonNode settings)
+    {
+        var defaultSearchFields = new List<string>();
+
+        var searchFields = settings["DefaultSearchFields"]?.AsArray();
+
+        if (searchFields is not null && searchFields.Count > 0)
+        {
+            foreach (var field in searchFields)
+            {
+                var value = field.GetValue<string>();
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    defaultSearchFields.Add(value);
+                }
+            }
+        }
+
+        if (defaultSearchFields.Count == 0)
+        {
+            defaultSearchFields.Add(AzureAISearchIndexManager.FullTextKey);
+        }
+
+        return defaultSearchFields.ToArray();
     }
 }
