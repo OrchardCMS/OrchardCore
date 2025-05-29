@@ -23,7 +23,6 @@ namespace OrchardCore.Search.Lucene;
 public sealed class LuceneIndexManager : IIndexManager, IIndexDocumentManager
 {
     private readonly LuceneIndexStore _luceneStore;
-    private readonly IClock _clock;
     private readonly LuceneIndexingState _luceneIndexingState;
     private readonly ILogger _logger;
 
@@ -33,14 +32,12 @@ public sealed class LuceneIndexManager : IIndexManager, IIndexDocumentManager
 
     public LuceneIndexManager(
         LuceneIndexStore luceneStore,
-        IClock clock,
         LuceneIndexingState luceneIndexingState,
         ILogger<LuceneIndexManager> logger,
         IEnumerable<IIndexEvents> indexEvents
         )
     {
         _luceneStore = luceneStore;
-        _clock = clock;
         _luceneIndexingState = luceneIndexingState;
         _logger = logger;
 

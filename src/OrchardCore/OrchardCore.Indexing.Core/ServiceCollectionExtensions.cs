@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
         ArgumentException.ThrowIfNullOrEmpty(providerName);
         ArgumentException.ThrowIfNullOrEmpty(implementationType);
 
-        services.AddIndexingSourceServices<TManager, TDocumentManager, TNamingProvider>(providerName, implementationType);
+        services.AddIndexingSourceServices<TManager, TDocumentManager, TNamingProvider>(providerName);
 
         services.Configure<IndexingOptions>(options =>
         {
@@ -73,7 +73,7 @@ public static class ServiceCollectionExtensions
         ArgumentException.ThrowIfNullOrEmpty(providerName);
         ArgumentException.ThrowIfNullOrEmpty(implementationType);
 
-        services.AddIndexingSourceServices<TManager, TDocumentManager, TNamingProvider>(providerName, implementationType);
+        services.AddIndexingSourceServices<TManager, TDocumentManager, TNamingProvider>(providerName);
 
         services
             .AddOptions<IndexingOptions>()
@@ -90,7 +90,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddIndexingSourceServices<TManager, TDocumentManager, TNamingProvider>(this IServiceCollection services, string providerName, string implementationType)
+    private static IServiceCollection AddIndexingSourceServices<TManager, TDocumentManager, TNamingProvider>(this IServiceCollection services, string providerName)
        where TManager : class, IIndexManager
        where TDocumentManager : class, IIndexDocumentManager
        where TNamingProvider : class, IIndexNameProvider
