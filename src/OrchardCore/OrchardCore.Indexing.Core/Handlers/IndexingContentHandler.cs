@@ -94,8 +94,7 @@ public class IndexingContentHandler : ContentHandlerBase
             // Only process the last context.
             var context = ContextsById.Last();
 
-            ContentItem published = null, latest = null;
-            bool publishedLoaded = false, latestLoaded = false;
+            ContentItem contentItem = null;
 
             foreach (var index in indexes)
             {
@@ -105,37 +104,37 @@ public class IndexingContentHandler : ContentHandlerBase
                 var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
                 var ignoreIndexedCulture = metadata.Culture != "any" && culture != metadata.Culture;
 
-                if (metadata.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
+                if (ignoreIndexedCulture || !metadata.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
-                    if (!metadata.IndexLatest && !publishedLoaded)
-                    {
-                        publishedLoaded = true;
-                        published = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
-                    }
+                    continue;
+                }
 
-                    if (metadata.IndexLatest && !latestLoaded)
-                    {
-                        latestLoaded = true;
-                        latest = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Latest);
-                    }
+                if (metadata.IndexLatest)
+                {
+                    contentItem = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Latest);
+                }
+                else
+                {
+                    contentItem = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
+                }
 
-                    var contentItem = !metadata.IndexLatest ? published : latest;
+                if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+                {
+                    indexManager = services.GetRequiredKeyedService<IIndexDocumentManager>(index.ProviderName);
+                    indexManagers.Add(index.ProviderName, indexManager);
+                }
 
-                    if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
-                    {
-                        indexManager = services.GetRequiredKeyedService<IIndexDocumentManager>(index.ProviderName);
-                        indexManagers.Add(index.ProviderName, indexManager);
-                    }
+                await indexManager.DeleteDocumentsAsync(index, [context.ContentItem.ContentItemId]);
 
-                    await indexManager.DeleteDocumentsAsync(index, [context.ContentItem.ContentItemId]);
+                if (contentItem is not null)
+                {
+                    var document = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
 
-                    if (contentItem != null)
-                    {
-                        var document = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
-                        var buildIndexContext = new BuildIndexContext(document, contentItem, [contentItem.ContentType], indexManager.GetContentIndexSettings());
-                        await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
-                        await indexManager.MergeOrUploadDocumentsAsync(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
-                    }
+                    var buildIndexContext = new BuildIndexContext(document, contentItem, [contentItem.ContentType], indexManager.GetContentIndexSettings());
+
+                    await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
+
+                    await indexManager.MergeOrUploadDocumentsAsync(index, [buildIndexContext.DocumentIndex]);
                 }
             }
         }
