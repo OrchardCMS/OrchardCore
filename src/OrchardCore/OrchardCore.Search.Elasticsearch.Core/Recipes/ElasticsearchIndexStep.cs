@@ -4,27 +4,29 @@ using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Search.Elasticsearch.Core.Services;
 
-namespace OrchardCore.Search.Lucene.Recipes;
+namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 
 /// <summary>
-/// This recipe step creates a Lucene index.
+/// This recipe step creates a Elasticsearch index.
 /// </summary>
-public sealed class LuceneIndexStep : NamedRecipeStepHandler
+public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
 {
-    private readonly IIndexEntityManager _indexManager;
+    private readonly IIndexEntityManager _indexEntityManager;
+    private readonly ElasticsearchIndexManager _elasticIndexManager;
     private readonly ILogger _logger;
-    private readonly LuceneIndexManager _luceneIndexManager;
 
-    public LuceneIndexStep(
-        IIndexEntityManager indexManager,
-        LuceneIndexManager luceneIndexManager,
-        ILogger<LuceneIndexStep> logger
-        ) : base("lucene-index")
+    public ElasticsearchIndexStep(
+        IIndexEntityManager indexEntityManager,
+        ElasticsearchIndexManager elasticIndexManager,
+        ILogger<ElasticsearchIndexStep> logger
+        )
+        : base("ElasticIndexSettings")
     {
-        _luceneIndexManager = luceneIndexManager;
-        _indexManager = indexManager;
+        _elasticIndexManager = elasticIndexManager;
         _logger = logger;
+        _indexEntityManager = indexEntityManager;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -44,16 +46,16 @@ public sealed class LuceneIndexStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                var index = await _indexManager.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
+                var index = await _indexEntityManager.FindByNameAndProviderAsync(indexName, ElasticsearchConstants.ProviderName);
 
                 if (index is null)
                 {
                     var data = item.Value;
                     data[nameof(index.IndexName)] = indexName;
 
-                    index = await _indexManager.NewAsync(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource, data);
+                    index = await _indexEntityManager.NewAsync(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, data);
 
-                    var validationResult = await _indexManager.ValidateAsync(index);
+                    var validationResult = await _indexEntityManager.ValidateAsync(index);
 
                     if (!validationResult.Succeeded)
                     {
@@ -65,19 +67,19 @@ public sealed class LuceneIndexStep : NamedRecipeStepHandler
                         continue;
                     }
 
-                    await _indexManager.CreateAsync(index);
+                    await _indexEntityManager.CreateAsync(index);
                 }
 
-                var exists = await _luceneIndexManager.ExistsAsync(index.IndexFullName);
+                var exists = await _elasticIndexManager.ExistsAsync(index.IndexFullName);
 
                 if (!exists)
                 {
-                    exists = await _luceneIndexManager.CreateAsync(index);
+                    exists = await _elasticIndexManager.CreateAsync(index);
                 }
 
                 if (exists)
                 {
-                    await _indexManager.SynchronizeAsync(index);
+                    await _indexEntityManager.SynchronizeAsync(index);
                 }
             }
         }

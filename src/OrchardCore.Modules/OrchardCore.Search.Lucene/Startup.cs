@@ -53,13 +53,21 @@ public sealed class Startup : StartupBase
             .AddLuceneQueries()
             .AddQuerySource<LuceneQuerySource>(LuceneQuerySource.SourceName);
 
-        services.AddRecipeExecutionStep<LuceneIndexStep>();
-        services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
-        services.AddRecipeExecutionStep<LuceneIndexResetStep>();
         services.AddDataMigration<LuceneQueryMigrations>();
         services.AddScoped<IQueryHandler, LuceneQueryHandler>();
 
         services.AddDisplayDriver<IndexEntity, LuceneIndexEntityDisplayDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Recipes.Core")]
+public sealed class RecipeStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRecipeExecutionStep<LuceneIndexStep>();
+        services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
+        services.AddRecipeExecutionStep<LuceneIndexResetStep>();
     }
 }
 
