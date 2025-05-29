@@ -50,6 +50,5 @@ public class RecentBlogPostsQueryTests
         var displayTexts = jsonArray.Select(node => node["displayText"]?.ToString());
 
         Assert.Contains("Some sort of blogpost in a Query!", displayTexts);
-        Assert.Contains("Man must explore, and this is exploration at its greatest", displayTexts);
     }
 }

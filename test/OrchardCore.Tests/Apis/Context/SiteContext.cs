@@ -138,9 +138,6 @@ public class SiteContext : IDisposable
             await indexManager.UpdateAsync(index);
             await indexManager.SynchronizeAsync(index);
         });
-
-        // The indexing of the content items happens in the background and may not be immediately available,
-        await Task.Delay(2000);
     }
 
     public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func, bool draft = false)
