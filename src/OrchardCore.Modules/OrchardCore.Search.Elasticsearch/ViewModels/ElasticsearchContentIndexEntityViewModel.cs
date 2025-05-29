@@ -1,4 +1,4 @@
-namespace OrchardCore.Search.AzureAI.ViewModels;
+namespace OrchardCore.Search.Elasticsearch.ViewModels;
 
 public class ElasticsearchContentIndexEntityViewModel
 {

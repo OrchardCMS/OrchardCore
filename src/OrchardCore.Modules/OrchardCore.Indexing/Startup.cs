@@ -12,7 +12,6 @@ using OrchardCore.Indexing.Core.Recipes;
 using OrchardCore.Indexing.Deployments;
 using OrchardCore.Indexing.Drivers;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Indexing.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -25,8 +24,6 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddIndexingCore();
-        services.AddScoped<IIndexingTaskManager, IndexingTaskManager>();
-        services.AddScoped<IContentHandler, CreateIndexingTaskContentHandler>();
         services.AddDataMigration<Migrations>();
 
         services.AddNavigationProvider<AdminMenu>();
@@ -39,8 +36,10 @@ public sealed class ContentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IContentHandler, IndexingContentHandler>());
+        services.AddScoped<IContentHandler, CreateIndexingTaskContentHandler>();
         services.TryAddScoped<ContentIndexingService>();
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, ContentIndexEntryHandler>());
+        services.AddIndexEntityHandler<ContentIndexEntryHandler>();
         services.AddDisplayDriver<IndexEntity, ContentIndexEntityDisplayDriver>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IModularTenantEvents, ContentIndexInitializerService>());
     }

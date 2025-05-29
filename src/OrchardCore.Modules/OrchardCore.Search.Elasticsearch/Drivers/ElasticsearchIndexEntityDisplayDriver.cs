@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Search.AzureAI.ViewModels;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 

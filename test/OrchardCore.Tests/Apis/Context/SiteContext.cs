@@ -3,6 +3,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Indexing;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene;
 
@@ -128,13 +129,14 @@ public class SiteContext : IDisposable
     {
         await UsingTenantScopeAsync(async scope =>
         {
-            var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
-            var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
+            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
+            var luceneManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
 
-            var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
+            var index = await indexManager.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
 
-            luceneIndexingService.ResetIndexAsync(indexName);
-            await luceneIndexingService.ProcessContentItemsAsync(indexName);
+            await indexManager.ResetAsync(index);
+            await indexManager.UpdateAsync(index);
+            await indexManager.SynchronizeAsync(index);
         });
     }
 

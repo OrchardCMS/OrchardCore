@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Indexing.Core.Handlers;
+using OrchardCore.Indexing.Services;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core;
@@ -12,10 +12,10 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddIndexingCore(this IServiceCollection services)
     {
+        services.TryAddScoped<IIndexingTaskManager, IndexingTaskManager>();
         services.TryAddScoped<IIndexEntityManager, DefaultIndexEntityManager>();
         services.TryAddScoped<IIndexEntityStore, DefaultIndexEntityStore>();
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, DefaultIndexEntityHandler>());
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IContentHandler, IndexingContentHandler>());
+        services.AddIndexEntityHandler<DefaultIndexEntityHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IAuthorizationHandler, IndexingAuthorizationHandler>());
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IModularTenantEvents, IndexInitializerService>());
 

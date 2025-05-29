@@ -1,16 +1,8 @@
-@model OrchardCore.Search.Lucene.ViewModels.AdminQueryViewModel
 @using OrchardCore.ContentManagement
+
+@model OrchardCore.Search.Lucene.ViewModels.AdminQueryViewModel
+
 @inject IContentManager ContentManager
-
-@{
-    var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"{
-  ""query"": {
-    ""match_all"": { }
-  },
-  ""size"": 10
-}"));
-
-}
 
 <style asp-name="codemirror"></style>
 <script asp-name="codemirror" at="Foot"></script>
@@ -21,20 +13,17 @@
 <form asp-action="Query" method="post" class="no-multisubmit">
     <div asp-validation-summary="All"></div>
     <div class="mb-3">
-        <label asp-for="IndexName" class="form-label">@T["Index"]</label>
-        <select asp-for="IndexName" class="form-select">
-            @foreach (var index in Model.Indices)
-            {
-                <option value="@index">@index</option>
-            }
+        <label asp-for="Id" class="form-label">@T["Index"]</label>
+        <select asp-for="Id" class="form-select" asp-items="Model.Indexes">
+            <option value="">@T["Select an index"]</option>
         </select>
-        <span class="hint">@T["The lucene index to search on"]</span>
+        <span class="hint">@T["The Lucene index to search on"]</span>
     </div>
 
     <div class="mb-3">
         <label asp-for="DecodedQuery" class="form-label">@T["Template"]</label>
         <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
-        <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Search.Lucene", Query = matchAllQuery, IndexName = Model.IndexName }))]</span>
+        <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Search.Lucene", query = Model.MatchAllQuery, id = Model.Id }))]</span>
         <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
     </div>
 

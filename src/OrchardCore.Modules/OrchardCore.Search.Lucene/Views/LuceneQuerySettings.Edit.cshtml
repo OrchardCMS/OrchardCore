@@ -1,0 +1,50 @@
+@using OrchardCore.Search.Lucene.ViewModels
+
+@model LuceneDefaultQueryViewModel
+
+<div class="mb-3" asp-validation-class-for="QueryAnalyzerName">
+    <label asp-for="QueryAnalyzerName" class="form-label">@T["Query Analyzer"]</label>
+    <select asp-for="QueryAnalyzerName" asp-items="Model.Analyzers" class="form-select"></select>
+    <span asp-validation-for="QueryAnalyzerName" class="text-danger"></span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="DefaultVersion">
+    <label asp-for="DefaultVersion" class="form-label">@T["Version"]</label>
+    <select asp-for="DefaultVersion" asp-items="Model.DefaultVersions" class="form-select"></select>
+    <span asp-validation-for="DefaultVersion" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="AllowLuceneQueries" checked="@Model.AllowLuceneQueries" />
+        <label class="form-check-label" asp-for="AllowLuceneQueries">@T["Allow Lucene Queries"]</label>
+        <span class="hint dashed">@T["Check to allow Lucene queries."]</span>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="DefaultSearchFields" id="DefaultQueryFields">
+    <label asp-for="DefaultSearchFields" class="form-label">@T["Default query field names"]</label>
+    <div>
+        <ul class="list-group">
+            @for (int i = 0; i < Model.DefaultSearchFields.Length; i++)
+            {
+                var option = Model.DefaultSearchFields[i];
+                <li class="list-group-item">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="@Html.NameFor(m => m.DefaultSearchFields[i].Selected)"
+                                   value="true"
+                                   @(option.Selected ? "checked" : string.Empty) />
+                            <input type="hidden" name="@Html.NameFor(m => m.DefaultSearchFields[i].Text)" value="@option.Text" />
+                            <input type="hidden" name="@Html.NameFor(m => m.DefaultSearchFields[i].Value)" value="@option.Value" />
+                            @option.Text
+                        </label>
+                    </div>
+                </li>
+            }
+        </ul>
+        <span class="hint">@T["The fields to use for query. Leave it blank to query all searchable fields."]</span>
+    </div>
+</div>

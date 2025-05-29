@@ -28,7 +28,7 @@ public class LuceneAnalyzerManager
 
     public Analyzer CreateAnalyzer(string name)
     {
-        if (_analyzers.TryGetValue(name, out var analyzer))
+        if (name is not null && _analyzers.TryGetValue(name, out var analyzer))
         {
             return analyzer.CreateAnalyzer();
         }

@@ -114,10 +114,9 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     /// <returns><see cref="bool"/>.</returns>
     public async Task<bool> CreateAsync(IndexEntity index)
     {
-        // Get Index name scoped by ShellName
         if (await ExistsAsync(index.IndexFullName))
         {
-            return true;
+            return false;
         }
 
         var context = new IndexCreateContext(index);
@@ -229,14 +228,12 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
+        var context = new IndexRebuildContext(index);
+
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
+
         if (await ExistsAsync(index.IndexFullName))
         {
-            var context = new IndexRebuildContext(index);
-
-            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
-
-            var createIndexRequest = GetCreateIndexRequest(index);
-
             var deleteRequest = new DeleteIndexRequest(index.IndexFullName);
 
             var deleteResponse = await _elasticClient.Indices.DeleteAsync(deleteRequest);
@@ -252,29 +249,29 @@ public sealed class ElasticsearchIndexManager : IIndexManager
                     _logger.LogWarning("There were issues removing an index in Elasticsearch");
                 }
             }
-
-            var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
-
-            if (!response.IsValidResponse)
-            {
-                if (response.TryGetOriginalException(out var ex))
-                {
-                    _logger.LogError(ex, "There were issues creating an index in Elasticsearch");
-                }
-                else
-                {
-                    _logger.LogWarning("There were issues creating an index in Elasticsearch");
-                }
-
-                return false;
-            }
-
-            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
-
-            return response.Acknowledged;
         }
 
-        return false;
+        var createIndexRequest = GetCreateIndexRequest(index);
+
+        var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
+
+        if (!response.IsValidResponse)
+        {
+            if (response.TryGetOriginalException(out var ex))
+            {
+                _logger.LogError(ex, "There were issues creating an index in Elasticsearch");
+            }
+            else
+            {
+                _logger.LogWarning("There were issues creating an index in Elasticsearch");
+            }
+
+            return false;
+        }
+
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
+
+        return response.Acknowledged;
     }
 
     /// <summary>

@@ -10,14 +10,12 @@ using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Models;
-using OrchardCore.Search.Elasticsearch.Core.Models;
-using OrchardCore.Search.Elasticsearch.Core.Services;
-using OrchardCore.Search.Elasticsearch.Models;
+using OrchardCore.Search.Lucene.Models;
 using OrchardCore.Settings;
 using YesSql;
 using YesSql.Sql;
 
-namespace OrchardCore.Search.Elasticsearch.Migrations;
+namespace OrchardCore.Search.Lucene.DataMigrations;
 
 internal sealed class IndexingMigrations : DataMigration
 {
@@ -50,7 +48,7 @@ internal sealed class IndexingMigrations : DataMigration
             var sqlBuilder = new SqlBuilder(store.Configuration.TablePrefix, store.Configuration.SqlDialect);
             sqlBuilder.AddSelector(quotedContentColumnName);
             sqlBuilder.From(quotedTableName);
-            sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Search.Elasticsearch.Core.Models.ElasticIndexSettingsDocument, OrchardCore.Search.Elasticsearch.Core' ");
+            sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Search.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Search.Lucene' ");
             sqlBuilder.Take("1");
 
             await using var connection = dbConnectionAccessor.CreateConnection();
@@ -64,25 +62,24 @@ internal sealed class IndexingMigrations : DataMigration
 
             var jsonObject = JsonNode.Parse(jsonContent);
 
-            if (jsonObject["ElasticIndexSettings"] is not JsonObject indexesObject)
+            if (jsonObject["LuceneIndexSettings"] is not JsonObject indexesObject)
             {
                 return;
             }
 
             var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
-            var indexNamingProvider = scope.ServiceProvider.GetKeyedService<IIndexNameProvider>(ElasticsearchConstants.ProviderName);
-            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexDocumentManager>();
+            var indexNamingProvider = scope.ServiceProvider.GetKeyedService<IIndexNameProvider>(LuceneConstants.ProviderName);
+            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
 
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
             var site = await siteService.LoadSiteSettingsAsync();
 
             var defaultSearchProvider = site.Properties["SearchSettings"]?["ProviderName"]?.GetValue<string>();
-            var elasticSettings = site.Properties["ElasticSettings"] ?? new JsonObject();
+            var elasticSettings = site.Properties["LuceneSettings"] ?? new JsonObject();
 
             var saveSiteSettings = false;
 
             var defaultSearchIndexName = elasticSettings["SearchIndex"]?.GetValue<string>();
-            var defaultSearchFields = GetDefaultSearchFields(elasticSettings);
 
             foreach (var indexObject in indexesObject)
             {
@@ -90,7 +87,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 var indexFullName = indexNamingProvider.GetFullIndexName(indexName);
 
-                var index = await indexManager.NewAsync(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource);
+                var index = await indexManager.NewAsync(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource);
                 index.IndexName = indexName;
                 index.IndexFullName = indexFullName;
                 index.DisplayText = indexName;
@@ -130,7 +127,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 index.Put(metadata);
 
-                var contentMetadata = index.As<ElasticsearchContentIndexMetadata>();
+                var contentMetadata = index.As<LuceneContentIndexMetadata>();
 
                 var storeSourceData = indexObject.Value[nameof(contentMetadata.StoreSourceData)]?.GetValue<bool>();
 
@@ -141,24 +138,16 @@ internal sealed class IndexingMigrations : DataMigration
 
                 index.Put(contentMetadata);
 
-                var azureMetadata = index.As<ElasticsearchIndexMetadata>();
+                var azureMetadata = index.As<LuceneIndexMetadata>();
 
                 if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
                 {
                     azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
                 }
 
-                var mapping = await indexDocumentManager.GetIndexMappingsAsync(indexFullName);
-
-                azureMetadata.IndexMappings = new ElasticsearchIndexMap
-                {
-                    KeyFieldName = ContentIndexingConstants.ContentItemIdKey,
-                    Mapping = mapping,
-                };
-
                 index.Put(azureMetadata);
 
-                var queryMetadata = index.As<ElasticsearchDefaultQueryMetadata>();
+                var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
                 if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {
                     queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
@@ -169,28 +158,16 @@ internal sealed class IndexingMigrations : DataMigration
                     queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
                 }
 
-                queryMetadata.DefaultQuery = indexObject.Value[nameof(queryMetadata.DefaultQuery)]?.GetValue<string>();
-
-                if (string.IsNullOrEmpty(queryMetadata.DefaultQuery))
-                {
-                    queryMetadata.DefaultQuery = elasticSettings["DefaultQuery"]?.GetValue<string>();
-                }
-
                 if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
                 {
-                    queryMetadata.DefaultSearchFields = defaultSearchFields;
-                }
-
-                if (string.IsNullOrEmpty(queryMetadata.SearchType))
-                {
-                    queryMetadata.SearchType = elasticSettings["SearchType"]?.GetValue<string>();
+                    queryMetadata.DefaultSearchFields = [ContentIndexingConstants.FullTextKey];
                 }
 
                 index.Put(queryMetadata);
 
                 await indexManager.CreateAsync(index);
 
-                if (indexName == defaultSearchIndexName && defaultSearchProvider == "Elasticsearch")
+                if (indexName == defaultSearchIndexName && defaultSearchProvider == "Lucene")
                 {
                     site.Properties["SearchSettings"]["DefaultIndexId"] = index.Id;
                     saveSiteSettings = true;
@@ -204,32 +181,5 @@ internal sealed class IndexingMigrations : DataMigration
         });
 
         return 1;
-    }
-
-    private static string[] GetDefaultSearchFields(JsonNode settings)
-    {
-        var defaultSearchFields = new List<string>();
-
-        var searchFields = settings["DefaultSearchFields"]?.AsArray();
-
-        if (searchFields is not null && searchFields.Count > 0)
-        {
-            foreach (var field in searchFields)
-            {
-                var value = field.GetValue<string>();
-
-                if (!string.IsNullOrEmpty(value))
-                {
-                    defaultSearchFields.Add(value);
-                }
-            }
-        }
-
-        if (defaultSearchFields.Count == 0)
-        {
-            defaultSearchFields.Add(ContentIndexingConstants.FullTextKey);
-        }
-
-        return defaultSearchFields.ToArray();
     }
 }

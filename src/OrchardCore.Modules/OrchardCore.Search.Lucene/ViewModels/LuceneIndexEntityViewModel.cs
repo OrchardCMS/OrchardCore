@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace OrchardCore.Search.Elasticsearch.ViewModels;
+namespace OrchardCore.Search.Lucene.ViewModels;
 
-public class ElasticsearchIndexEntityViewModel
+public class LuceneIndexEntityViewModel
 {
     public string AnalyzerName { get; set; }
 

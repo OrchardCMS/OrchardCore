@@ -1,7 +1,9 @@
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Indexing;
+using OrchardCore.Indexing.Core;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Search.Lucene.Model;
 
 namespace OrchardCore.Search.Lucene.Recipes;
 
@@ -10,28 +12,73 @@ namespace OrchardCore.Search.Lucene.Recipes;
 /// </summary>
 public sealed class LuceneIndexStep : NamedRecipeStepHandler
 {
-    private readonly LuceneIndexingService _luceneIndexingService;
+    private readonly IIndexEntityManager _indexManager;
+    private readonly ILogger _logger;
     private readonly LuceneIndexManager _luceneIndexManager;
 
     public LuceneIndexStep(
-        LuceneIndexingService luceneIndexingService,
-        LuceneIndexManager luceneIndexManager
-        )
-        : base("lucene-index")
+        IIndexEntityManager indexManager,
+        LuceneIndexManager luceneIndexManager,
+        ILogger<LuceneIndexStep> logger
+        ) : base("lucene-index")
     {
         _luceneIndexManager = luceneIndexManager;
-        _luceneIndexingService = luceneIndexingService;
+        _indexManager = indexManager;
+        _logger = logger;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        var settings = context.GetIndexSettings<LuceneIndexSettings>();
+        var settings = context.Step.ToObject<ContentStepModel>();
 
-        foreach (var setting in settings)
+        foreach (var entry in settings.Indices)
         {
-            if (!_luceneIndexManager.Exists(setting.IndexName))
+            foreach (var item in entry.AsObject())
             {
-                await _luceneIndexingService.CreateIndexAsync(setting);
+                var indexName = item.Key;
+
+                if (string.IsNullOrEmpty(indexName))
+                {
+                    _logger.LogWarning("The Lucene index name is empty. Skipping creation.");
+
+                    continue;
+                }
+
+                var index = await _indexManager.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
+
+                if (index is null)
+                {
+                    var data = item.Value;
+                    data[nameof(index.IndexName)] = indexName;
+
+                    index = await _indexManager.NewAsync(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource, data);
+
+                    var validationResult = await _indexManager.ValidateAsync(index);
+
+                    if (!validationResult.Succeeded)
+                    {
+                        foreach (var error in validationResult.Errors)
+                        {
+                            context.Errors.Add(error.ErrorMessage);
+                        }
+
+                        continue;
+                    }
+
+                    await _indexManager.CreateAsync(index);
+                }
+
+                var exists = await _luceneIndexManager.ExistsAsync(index.IndexFullName);
+
+                if (!exists)
+                {
+                    exists = await _luceneIndexManager.CreateAsync(index);
+                }
+
+                if (exists)
+                {
+                    await _indexManager.SynchronizeAsync(index);
+                }
             }
         }
     }
@@ -39,5 +86,5 @@ public sealed class LuceneIndexStep : NamedRecipeStepHandler
 
 public sealed class ContentStepModel
 {
-    public JsonObject Data { get; set; }
+    public JsonArray Indices { get; set; }
 }

@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Mapping;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
@@ -13,11 +15,19 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers;
 
 public sealed class ElasticsearchIndexEntityHandler : IndexEntityHandlerBase
 {
+    private static readonly JsonWriterOptions _writerOptions = new JsonWriterOptions
+    {
+        SkipValidation = true,
+    };
+
+    private readonly ElasticsearchClient _elasticsearchClient;
     internal readonly IStringLocalizer S;
 
     public ElasticsearchIndexEntityHandler(
+        ElasticsearchClient elasticsearchClient,
         IStringLocalizer<ElasticsearchIndexEntityHandler> stringLocalizer)
     {
+        _elasticsearchClient = elasticsearchClient;
         S = stringLocalizer;
     }
 
@@ -33,9 +43,9 @@ public sealed class ElasticsearchIndexEntityHandler : IndexEntityHandlerBase
                 context.Result.Fail(new ValidationResult(S["At least one mapping property is required."]));
             }
 
-            if (string.IsNullOrEmpty(metadata.KeyFieldName))
+            if (string.IsNullOrEmpty(metadata.IndexMappings.KeyFieldName))
             {
-                context.Result.Fail(new ValidationResult(S["The '{0}' is required.", nameof(metadata.KeyFieldName)]));
+                context.Result.Fail(new ValidationResult(S["The '{0}' is required.", nameof(ElasticsearchIndexMap.KeyFieldName)]));
             }
         }
 
@@ -45,7 +55,7 @@ public sealed class ElasticsearchIndexEntityHandler : IndexEntityHandlerBase
     public override Task InitializingAsync(InitializingContext<IndexEntity> context)
        => PopulateAsync(context.Model, context.Data);
 
-    private static Task PopulateAsync(IndexEntity index, JsonNode data)
+    private Task PopulateAsync(IndexEntity index, JsonNode data)
     {
         if (string.Equals(ElasticsearchConstants.ProviderName, index.ProviderName, StringComparison.OrdinalIgnoreCase))
         {
@@ -54,19 +64,20 @@ public sealed class ElasticsearchIndexEntityHandler : IndexEntityHandlerBase
 
         var metadata = index.As<ElasticsearchIndexMetadata>();
 
-        // For backward compatibility, we look for 'AnalyzerName' and 'QueryAnalyzerName' in the data.
-        var keyFieldName = data[nameof(metadata.KeyFieldName)]?.GetValue<string>();
-
-        if (!string.IsNullOrEmpty(keyFieldName))
-        {
-            metadata.KeyFieldName = keyFieldName;
-        }
+        metadata.IndexMappings ??= new ElasticsearchIndexMap();
 
         var indexMappings = data[nameof(metadata.IndexMappings)];
 
         if (indexMappings is not null)
         {
-            metadata.IndexMappings = JsonSerializer.Deserialize<ElasticsearchIndexMap>(indexMappings);
+            using var mappingStream = new MemoryStream();
+            using (var writer = new Utf8JsonWriter(mappingStream, _writerOptions))
+            {
+                indexMappings.WriteTo(writer);
+            }
+            mappingStream.Position = 0;
+
+            metadata.IndexMappings.Mapping = _elasticsearchClient.RequestResponseSerializer.Deserialize<TypeMapping>(mappingStream);
         }
 
         index.Put(metadata);

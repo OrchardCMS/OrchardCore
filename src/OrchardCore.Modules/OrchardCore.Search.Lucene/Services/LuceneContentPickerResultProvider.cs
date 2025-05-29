@@ -1,16 +1,21 @@
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using OrchardCore.ContentManagement;
+using OrchardCore.Indexing;
 using OrchardCore.Search.Lucene.Settings;
 
 namespace OrchardCore.Search.Lucene.Services;
 
 public class LuceneContentPickerResultProvider : IContentPickerResultProvider
 {
+    private readonly IIndexEntityStore _indexStore;
     private readonly LuceneIndexManager _luceneIndexManager;
 
-    public LuceneContentPickerResultProvider(LuceneIndexManager luceneIndexManager)
+    public LuceneContentPickerResultProvider(
+        IIndexEntityStore indexStore,
+        LuceneIndexManager luceneIndexManager)
     {
+        _indexStore = indexStore;
         _luceneIndexManager = luceneIndexManager;
     }
 
@@ -27,14 +32,21 @@ public class LuceneContentPickerResultProvider : IContentPickerResultProvider
             indexName = fieldSettings.Index;
         }
 
-        if (!_luceneIndexManager.Exists(indexName))
+        if (string.IsNullOrWhiteSpace(fieldSettings?.Index))
+        {
+            return [];
+        }
+
+        var index = await _indexStore.FindByNameAndProviderAsync(LuceneConstants.ProviderName, fieldSettings.Index);
+
+        if (index is null || !await _luceneIndexManager.ExistsAsync(index.IndexFullName))
         {
             return [];
         }
 
         var results = new List<ContentPickerResult>();
 
-        await _luceneIndexManager.SearchAsync(indexName, searcher =>
+        await _luceneIndexManager.SearchAsync(index, searcher =>
         {
             Query query = null;
 

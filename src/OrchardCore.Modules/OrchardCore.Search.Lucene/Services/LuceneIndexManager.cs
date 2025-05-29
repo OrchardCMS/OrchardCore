@@ -8,10 +8,13 @@ using Lucene.Net.Store;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Indexing;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Search.Lucene.Model;
+using OrchardCore.Search.Lucene.Models;
 using OrchardCore.Search.Lucene.Services;
 using Spatial4n.Context;
 using Directory = System.IO.Directory;
@@ -24,9 +27,10 @@ namespace OrchardCore.Search.Lucene;
 /// Provides methods to manage physical Lucene indices.
 /// This class is provided as a singleton to that the index searcher can be reused across requests.
 /// </summary>
-public class LuceneIndexManager : IDisposable
+public sealed class LuceneIndexManager : IIndexManager, IIndexDocumentManager, IDisposable
 {
     private readonly IClock _clock;
+    private readonly LuceneIndexingState _luceneIndexingState;
     private readonly ILogger _logger;
     private readonly string _rootPath;
     private bool _disposed;
@@ -34,7 +38,7 @@ public class LuceneIndexManager : IDisposable
     private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
     private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
-    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+    private readonly IEnumerable<IIndexEvents> _indexEvents;
     private readonly SpatialContext _ctx;
     private readonly GeohashPrefixTree _grid;
     private static readonly object _synLock = new();
@@ -43,12 +47,14 @@ public class LuceneIndexManager : IDisposable
         IClock clock,
         IOptions<ShellOptions> shellOptions,
         ShellSettings shellSettings,
+        LuceneIndexingState luceneIndexingState,
         ILogger<LuceneIndexManager> logger,
         LuceneAnalyzerManager luceneAnalyzerManager,
-        LuceneIndexSettingsService luceneIndexSettingsService
+        IEnumerable<IIndexEvents> indexEvents
         )
     {
         _clock = clock;
+        _luceneIndexingState = luceneIndexingState;
         _logger = logger;
         _rootPath = PathExtensions.Combine(
             shellOptions.Value.ShellsApplicationDataPath,
@@ -56,7 +62,7 @@ public class LuceneIndexManager : IDisposable
             shellSettings.Name, "Lucene");
         Directory.CreateDirectory(_rootPath);
         _luceneAnalyzerManager = luceneAnalyzerManager;
-        _luceneIndexSettingsService = luceneIndexSettingsService;
+        _indexEvents = indexEvents;
 
         // Typical geospatial context.
         // These can also be constructed from SpatialContextFactory.
@@ -69,45 +75,248 @@ public class LuceneIndexManager : IDisposable
         _grid = new GeohashPrefixTree(_ctx, maxLevels);
     }
 
-    public async Task CreateIndexAsync(string indexName)
+    public async Task<bool> CreateAsync(IndexEntity index)
     {
-        await WriteAsync(indexName, _ => { }, true);
+        if (await ExistsAsync(index.IndexFullName))
+        {
+            return false;
+        }
+
+        var context = new IndexCreateContext(index);
+
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger);
+
+        try
+        {
+            await WriteAsync(index, _ => { }, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating index: {IndexFullName}", index.IndexFullName);
+
+            return false;
+        }
+
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger);
+
+        return true;
     }
 
-    public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
+    public async Task<bool> RebuildAsync(IndexEntity index)
     {
-        await WriteAsync(indexName, writer =>
+        ArgumentNullException.ThrowIfNull(index);
+
+        var context = new IndexRebuildContext(index);
+
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
+
+        if (await ExistsAsync(index.IndexFullName))
         {
-            writer.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
+            RemoveIndexInternal(index.IndexFullName);
+        }
+
+        try
+        {
+            await WriteAsync(index, _ => { }, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating index: {IndexFullName}", index.IndexFullName);
+
+            return false;
+        }
+
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
+
+        return true;
+    }
+
+    public async Task<bool> DeleteAsync(string indexFullName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
+
+        var context = new IndexRemoveContext(indexFullName);
+
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
+        try
+        {
+            RemoveIndexInternal(indexFullName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error removing index: {IndexFullName}", indexFullName);
+
+            return false;
+        }
+
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger);
+
+        return true;
+    }
+
+    public Task<bool> ExistsAsync(string indexFullName)
+    {
+        if (string.IsNullOrWhiteSpace(indexFullName))
+        {
+            return Task.FromResult(false);
+        }
+
+        try
+        {
+            var exists = Directory.Exists(PathExtensions.Combine(_rootPath, indexFullName));
+
+            return Task.FromResult(exists);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking existence of index: {IndexFullName}", indexFullName);
+
+            return Task.FromResult(false);
+        }
+    }
+
+    public async Task<bool> DeleteDocumentsAsync(IndexEntity index, IEnumerable<string> documentIds)
+    {
+        ArgumentNullException.ThrowIfNull(index);
+        ArgumentNullException.ThrowIfNull(documentIds);
+
+        if (!documentIds.Any())
+        {
+            return false;
+        }
+
+        await WriteAsync(index, writer =>
+        {
+            var metadata = index.As<LuceneIndexMetadata>();
+
+            writer.DeleteDocuments(documentIds.Select(x => new Term(metadata.IndexMappings.KeyFieldName, x)).ToArray());
 
             writer.Commit();
 
-            if (_indexPools.TryRemove(indexName, out var pool))
+            if (_indexPools.TryRemove(index.IndexFullName, out var pool))
             {
                 pool.MakeDirty();
                 pool.Release();
             }
         });
+
+        return true;
     }
 
-    public void DeleteIndex(string indexName)
+    public async Task<bool> MergeOrUploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndexBase> documents)
+    {
+        ArgumentNullException.ThrowIfNull(index);
+
+        var metadata = index.As<LuceneContentIndexMetadata>();
+
+        try
+        {
+            await WriteAsync(index, writer =>
+            {
+                foreach (var indexDocument in documents)
+                {
+                    writer.AddDocument(CreateLuceneDocument(indexDocument, metadata.StoreSourceData));
+                }
+
+                writer.Commit();
+
+                if (_indexPools.TryRemove(index.IndexFullName, out var pool))
+                {
+                    pool.MakeDirty();
+                    pool.Release();
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error merging or uploading documents to index: {IndexFullName}", index.IndexFullName);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public async Task<bool> DeleteAllDocumentsAsync(IndexEntity index)
+    {
+        ArgumentNullException.ThrowIfNull(index);
+
+        try
+        {
+            await WriteAsync(index, writer =>
+            {
+                writer.DeleteAll();
+                writer.Commit();
+
+                if (_indexPools.TryRemove(index.IndexFullName, out var pool))
+                {
+                    pool.MakeDirty();
+                    pool.Release();
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting all documents from index: {IndexFullName}", index.IndexFullName);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public Task<long> GetLastTaskIdAsync(IndexEntity index)
+    {
+        ArgumentNullException.ThrowIfNull(index);
+
+        return Task.FromResult(_luceneIndexingState.GetLastTaskId(index.IndexFullName));
+    }
+
+    public Task SetLastTaskIdAsync(IndexEntity index, long lastTaskId)
+    {
+        ArgumentNullException.ThrowIfNull(index);
+
+        _luceneIndexingState.SetLastTaskId(index.IndexFullName, lastTaskId);
+        _luceneIndexingState.Update();
+
+        return Task.CompletedTask;
+    }
+
+    public IContentIndexSettings GetContentIndexSettings()
+         => new LuceneContentIndexSettings();
+
+    public async Task SearchAsync(IndexEntity index, Func<IndexSearcher, Task> searcher)
+    {
+        if (await ExistsAsync(index.IndexFullName))
+        {
+            using (var reader = GetReader(index.IndexFullName))
+            {
+                var indexSearcher = new IndexSearcher(reader.IndexReader);
+                await searcher(indexSearcher);
+            }
+
+            _timestamps[index.IndexFullName] = _clock.UtcNow;
+        }
+    }
+
+    private void RemoveIndexInternal(string indexFullName)
     {
         lock (this)
         {
-            if (_writers.TryGetValue(indexName, out var writer))
+            if (_writers.TryGetValue(indexFullName, out var writer))
             {
                 writer.IsClosing = true;
                 writer.Dispose();
             }
 
-            if (_indexPools.TryRemove(indexName, out var reader))
+            if (_indexPools.TryRemove(indexFullName, out var reader))
             {
                 reader.Dispose();
             }
 
-            _timestamps.TryRemove(indexName, out _);
+            _timestamps.TryRemove(indexFullName, out _);
 
-            var indexFolder = PathExtensions.Combine(_rootPath, indexName);
+            var indexFolder = PathExtensions.Combine(_rootPath, indexFullName);
 
             if (Directory.Exists(indexFolder))
             {
@@ -118,87 +327,31 @@ public class LuceneIndexManager : IDisposable
                 catch { }
             }
 
-            _writers.TryRemove(indexName, out _);
+            _writers.TryRemove(indexFullName, out _);
         }
     }
 
-    public bool Exists(string indexName)
+    private Document CreateLuceneDocument(DocumentIndexBase document, bool storeSourceData)
     {
-        if (string.IsNullOrWhiteSpace(indexName))
-        {
-            return false;
-        }
+        var doc = new Document();
 
-        return Directory.Exists(PathExtensions.Combine(_rootPath, indexName));
-    }
-
-    public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
-    {
-        var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
-
-        await WriteAsync(indexName, writer =>
-        {
-            foreach (var indexDocument in indexDocuments)
-            {
-                writer.AddDocument(CreateLuceneDocument(indexDocument, luceneIndexSettings));
-            }
-
-            writer.Commit();
-
-            if (_indexPools.TryRemove(indexName, out var pool))
-            {
-                pool.MakeDirty();
-                pool.Release();
-            }
-        });
-    }
-
-    public async Task SearchAsync(string indexName, Func<IndexSearcher, Task> searcher)
-    {
-        if (Exists(indexName))
-        {
-            using (var reader = GetReader(indexName))
-            {
-                var indexSearcher = new IndexSearcher(reader.IndexReader);
-                await searcher(indexSearcher);
-            }
-
-            _timestamps[indexName] = _clock.UtcNow;
-        }
-    }
-
-    public void Read(string indexName, Action<IndexReader> reader)
-    {
-        if (Exists(indexName))
-        {
-            using (var indexReader = GetReader(indexName))
-            {
-                reader(indexReader.IndexReader);
-            }
-
-            _timestamps[indexName] = _clock.UtcNow;
-        }
-    }
-
-    private Document CreateLuceneDocument(DocumentIndex documentIndex, LuceneIndexSettings indexSettings)
-    {
-        var doc = new Document
+        if (document is DocumentIndex documentIndex)
         {
             // Always store the content item id and version id.
             // These fields need to be indexed as a StringField because it needs to be searchable for the writer.DeleteDocuments method.
             // Else it won't be able to prune oldest draft from the indexes.
             // Maybe eventually find a way to remove a document from a StoredDocument.
-            new StringField(ContentIndexingConstants.ContentItemIdKey, documentIndex.ContentItemId.ToString(), Field.Store.YES),
-            new StringField(ContentIndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId.ToString(), Field.Store.YES),
-        };
+            doc.Add(new StringField(ContentIndexingConstants.ContentItemIdKey, documentIndex.ContentItemId.ToString(), Field.Store.YES));
+            doc.Add(new StringField(ContentIndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId?.ToString(), Field.Store.YES));
 
-        if (indexSettings.StoreSourceData)
-        {
-            doc.Add(new StoredField(ContentIndexingConstants.SourceKey + ContentIndexingConstants.ContentItemIdKey, documentIndex.ContentItemId.ToString()));
-            doc.Add(new StoredField(ContentIndexingConstants.SourceKey + ContentIndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId.ToString()));
+            if (storeSourceData)
+            {
+                doc.Add(new StoredField(ContentIndexingConstants.SourceKey + ContentIndexingConstants.ContentItemIdKey, documentIndex.ContentItemId.ToString()));
+                doc.Add(new StoredField(ContentIndexingConstants.SourceKey + ContentIndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId.ToString()));
+            }
         }
 
-        foreach (var entry in documentIndex.Entries)
+        foreach (var entry in document.Entries)
         {
             var store = entry.Options.HasFlag(DocumentIndexOptions.Store)
                         ? Field.Store.YES
@@ -210,7 +363,7 @@ public class LuceneIndexManager : IDisposable
                     // Store "true"/"false" for boolean.
                     doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
 
-                    if (indexSettings.StoreSourceData)
+                    if (storeSourceData)
                     {
                         doc.Add(new StoredField(ContentIndexingConstants.SourceKey + entry.Name, Convert.ToString(entry.Value).ToLowerInvariant()));
                     }
@@ -228,7 +381,7 @@ public class LuceneIndexManager : IDisposable
                             doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND), store));
                         }
 
-                        if (indexSettings.StoreSourceData)
+                        if (storeSourceData)
                         {
                             if (entry.Value is DateTimeOffset)
                             {
@@ -251,7 +404,7 @@ public class LuceneIndexManager : IDisposable
                     {
                         doc.Add(new Int64Field(entry.Name, value, store));
 
-                        if (indexSettings.StoreSourceData)
+                        if (storeSourceData)
                         {
                             doc.Add(new StoredField(ContentIndexingConstants.SourceKey + entry.Name, value));
                         }
@@ -268,7 +421,7 @@ public class LuceneIndexManager : IDisposable
                     {
                         doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
 
-                        if (indexSettings.StoreSourceData)
+                        if (storeSourceData)
                         {
                             doc.Add(new StoredField(ContentIndexingConstants.SourceKey + entry.Name, Convert.ToDouble(entry.Value)));
                         }
@@ -301,7 +454,7 @@ public class LuceneIndexManager : IDisposable
                             doc.Add(new StringField($"{entry.Name}.keyword", stringValue, Field.Store.NO));
                         }
 
-                        if (indexSettings.StoreSourceData)
+                        if (storeSourceData)
                         {
                             doc.Add(new StoredField(ContentIndexingConstants.SourceKey + entry.Name, stringValue));
                         }
@@ -332,7 +485,7 @@ public class LuceneIndexManager : IDisposable
 
                         doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
 
-                        if (indexSettings.StoreSourceData)
+                        if (storeSourceData)
                         {
                             doc.Add(new StoredField(ContentIndexingConstants.SourceKey + strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
                         }
@@ -367,18 +520,20 @@ public class LuceneIndexManager : IDisposable
         }
     }
 
-    private async Task WriteAsync(string indexName, Action<IndexWriter> action, bool close = false)
+    private Task WriteAsync(IndexEntity index, Action<IndexWriter> action, bool close = false)
     {
-        if (!_writers.TryGetValue(indexName, out var writer))
+        if (!_writers.TryGetValue(index.IndexFullName, out var writer))
         {
-            var indexAnalyzer = await _luceneIndexSettingsService.LoadIndexAnalyzerAsync(indexName);
+            var metadata = index.As<LuceneIndexMetadata>();
+            var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
+
             lock (this)
             {
-                if (!_writers.TryGetValue(indexName, out writer))
+                if (!_writers.TryGetValue(index.IndexFullName, out writer))
                 {
-                    var directory = CreateDirectory(indexName);
-                    var analyzer = _luceneAnalyzerManager.CreateAnalyzer(indexAnalyzer);
-                    var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
+                    var directory = CreateDirectory(index.IndexFullName);
+                    var analyzer = _luceneAnalyzerManager.CreateAnalyzer(metadata.AnalyzerName ?? LuceneConstants.DefaultAnalyzer);
+                    var config = new IndexWriterConfig(queryMetadata.DefaultVersion, analyzer)
                     {
                         OpenMode = OpenMode.CREATE_OR_APPEND,
                         WriteLockTimeout = LuceneLock.LOCK_POLL_INTERVAL * 3,
@@ -390,30 +545,32 @@ public class LuceneIndexManager : IDisposable
                     {
                         action?.Invoke(writer);
                         writer.Dispose();
-                        _timestamps[indexName] = _clock.UtcNow;
-                        return;
+                        _timestamps[index.IndexFullName] = _clock.UtcNow;
+                        return Task.CompletedTask;
                     }
 
-                    _writers[indexName] = writer;
+                    _writers[index.IndexFullName] = writer;
                 }
             }
         }
 
         if (writer.IsClosing)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         action?.Invoke(writer);
 
-        _timestamps[indexName] = _clock.UtcNow;
+        _timestamps[index.IndexFullName] = _clock.UtcNow;
+
+        return Task.CompletedTask;
     }
 
-    private IndexReaderPool.IndexReaderLease GetReader(string indexName)
+    private IndexReaderPool.IndexReaderLease GetReader(string indexFullName)
     {
-        var pool = _indexPools.GetOrAdd(indexName, n =>
+        var pool = _indexPools.GetOrAdd(indexFullName, n =>
         {
-            var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
+            var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexFullName));
             var reader = DirectoryReader.Open(FSDirectory.Open(path));
             return new IndexReaderPool(reader);
         });
@@ -452,40 +609,6 @@ public class LuceneIndexManager : IDisposable
             _writers.Clear();
             _indexPools.Clear();
             _timestamps.Clear();
-        }
-    }
-
-    /// <summary>
-    /// Releases all readers and writers. This can be used after some time of inactivity to free resources.
-    /// </summary>
-    public void FreeReaderWriter(string indexName)
-    {
-        lock (this)
-        {
-            if (_writers.TryGetValue(indexName, out var writer))
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Freeing writer for: '{IndexName}'.", indexName);
-                }
-
-                writer.IsClosing = true;
-                writer.Dispose();
-            }
-
-            if (_indexPools.TryGetValue(indexName, out var reader))
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Freeing reader for: '{IndexName}'.", indexName);
-                }
-
-                reader.Dispose();
-            }
-
-            _timestamps.TryRemove(indexName, out _);
-
-            _writers.TryRemove(indexName, out _);
         }
     }
 

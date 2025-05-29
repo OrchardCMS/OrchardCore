@@ -107,12 +107,12 @@ public partial class SettingsDisplayDriverTests
                 },
             };
 
-            // Act
             var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
             var storeMock = new Mock<IIndexEntityStore>();
             storeMock.Setup(x => x.GetAsync(It.IsAny<string>()))
                 .ReturnsAsync(indexes);
 
+            // Act
             var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldElasticEditorSettingsDriver(storeMock.Object));
             var shape = (ContentPickerFieldElasticEditorSettings)shapeResult.Shape;
 

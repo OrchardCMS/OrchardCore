@@ -67,7 +67,7 @@ public sealed class ElasticsearchIndexDocumentManager : IIndexDocumentManager
                 .Bool(b => b
                     .Filter(f => f
                         .Terms(t => t
-                            .Field(metadata.KeyFieldName)
+                            .Field(metadata.IndexMappings.KeyFieldName)
                             .Terms(new TermsQueryField(ids.Select(id => FieldValue.String(id)).ToArray()))
                         )
                     )

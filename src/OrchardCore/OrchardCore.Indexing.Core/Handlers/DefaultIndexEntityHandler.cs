@@ -37,7 +37,7 @@ internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
         => PopulateAsync(context.Model, context.Data);
 
     public override Task UpdatingAsync(UpdatingContext<IndexEntity> context)
-    => PopulateAsync(context.Model, context.Data);
+        => PopulateAsync(context.Model, context.Data);
 
     public override Task ValidatingAsync(ValidatingContext<IndexEntity> context)
     {
@@ -103,16 +103,7 @@ internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
 
     public override Task CreatingAsync(CreatingContext<IndexEntity> context)
     {
-        if (string.IsNullOrEmpty(context.Model.IndexFullName))
-        {
-            var nameProvider = _serviceProvider.GetKeyedService<IIndexNameProvider>(context.Model.ProviderName);
-
-            if (nameProvider is not null)
-            {
-                // Set the full name of the index.
-                context.Model.IndexFullName = nameProvider.GetFullIndexName(context.Model.IndexName);
-            }
-        }
+        SetIndexFullName(context.Model);
 
         if (string.IsNullOrEmpty(context.Model.IndexName) || string.IsNullOrEmpty(context.Model.IndexFullName))
         {
@@ -136,44 +127,66 @@ internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
         return Task.CompletedTask;
     }
 
-    private static Task PopulateAsync(IndexEntity dataSource, JsonNode data)
+    private Task PopulateAsync(IndexEntity index, JsonNode data)
     {
-        var displayText = data[nameof(IndexEntity.DisplayText)]?.GetValue<string>()?.Trim();
+        var displayText = data[nameof(index.DisplayText)]?.GetValue<string>()?.Trim();
 
         if (!string.IsNullOrEmpty(displayText))
         {
-            dataSource.DisplayText = displayText;
+            index.DisplayText = displayText;
         }
 
-        var indexName = data[nameof(IndexEntity.IndexName)]?.GetValue<string>()?.Trim();
+        var indexName = data[nameof(index.IndexName)]?.GetValue<string>()?.Trim();
 
         if (!string.IsNullOrEmpty(indexName))
         {
-            dataSource.IndexName = indexName;
+            index.IndexName = indexName;
         }
 
-        var providerName = data[nameof(IndexEntity.ProviderName)]?.GetValue<string>()?.Trim();
+        var providerName = data[nameof(index.ProviderName)]?.GetValue<string>()?.Trim();
 
-        if (!string.IsNullOrEmpty(indexName))
+        if (!string.IsNullOrEmpty(providerName))
         {
-            dataSource.ProviderName = indexName;
+            index.ProviderName = providerName;
         }
 
-        var type = data[nameof(IndexEntity.Type)]?.GetValue<string>()?.Trim();
+        var type = data[nameof(index.Type)]?.GetValue<string>()?.Trim();
 
         if (!string.IsNullOrEmpty(type))
         {
-            dataSource.Type = type;
+            index.Type = type;
         }
 
-        var properties = data[nameof(IndexEntity.Properties)]?.AsObject();
+        var properties = data[nameof(index.Properties)]?.AsObject();
 
         if (properties != null)
         {
-            dataSource.Properties = properties.Clone();
+            index.Properties = properties.Clone();
         }
 
+        if (string.IsNullOrWhiteSpace(index.DisplayText))
+        {
+            index.DisplayText = index.IndexName;
+        }
+
+        SetIndexFullName(index);
+
         return Task.CompletedTask;
+    }
+
+    private void SetIndexFullName(IndexEntity index)
+    {
+        if (!string.IsNullOrEmpty(index.IndexFullName))
+        {
+            return;
+        }
+
+        var nameProvider = _serviceProvider.GetKeyedService<IIndexNameProvider>(index.ProviderName);
+        if (nameProvider is not null)
+        {
+            // Set the full name of the index.
+            index.IndexFullName = nameProvider.GetFullIndexName(index.IndexName);
+        }
     }
 }
 

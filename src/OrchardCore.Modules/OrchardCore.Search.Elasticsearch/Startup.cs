@@ -22,6 +22,7 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
+using OrchardCore.Search.Elasticsearch.Migrations;
 using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Security.Permissions;
 

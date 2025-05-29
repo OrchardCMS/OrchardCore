@@ -132,8 +132,7 @@ public sealed class ContentIndexingService
             var latestContentItems = new Dictionary<string, ContentItem>();
 
             // Group all DocumentIndex by index to batch update them.
-            var deletedDocumentsByIndex = indexes.ToDictionary(x => x.Id, b => new List<string>());
-            var updatedDocumentsByIndex = indexes.ToDictionary(x => x.Id, b => new List<DocumentIndexBase>());
+            var updatedDocumentsByIndex = indexes.ToDictionary(x => x.Id, b => new List<DocumentIndex>());
 
             if (contentTypesPublished.Count > 0)
             {
@@ -161,14 +160,6 @@ public sealed class ContentIndexingService
                         continue;
                     }
 
-                    if (task.Type == IndexingTaskTypes.Delete)
-                    {
-                        // Handle the deleted documents.
-                        deletedDocumentsByIndex[index.Id].Add(task.ContentItemId);
-
-                        continue;
-                    }
-
                     if (task.Type != IndexingTaskTypes.Update)
                     {
                         continue;
@@ -183,12 +174,12 @@ public sealed class ContentIndexingService
 
                     if (metadata.IndexLatest && latestContentItems.TryGetValue(task.ContentItemId, out var latestContentItem) && metadata.IndexedContentTypes.Contains(latestContentItem.ContentType))
                     {
-                        buildIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], indexManager.GetContentIndexSettings());
+                        buildIndexContext = new BuildIndexContext(new DocumentIndex(latestContentItem.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], indexManager.GetContentIndexSettings());
                     }
 
                     if (buildIndexContext is null && publishedContentItems.TryGetValue(task.ContentItemId, out var publishedContentItem) && metadata.IndexedContentTypes.Contains(publishedContentItem.ContentType))
                     {
-                        buildIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], indexManager.GetContentIndexSettings());
+                        buildIndexContext = new BuildIndexContext(new DocumentIndex(publishedContentItem.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], indexManager.GetContentIndexSettings());
                     }
 
                     // We index only if we actually found a content item in the database.
@@ -215,23 +206,8 @@ public sealed class ContentIndexingService
 
             lastTaskId = tasks.Last().Id;
 
-            // Delete all the deleted documents from the index.
-            foreach (var indexEntry in deletedDocumentsByIndex)
-            {
-                if (indexEntry.Value.Count == 0)
-                {
-                    continue;
-                }
-
-                var index = tracker[indexEntry.Key].Index;
-                var indexManager = indexManagers[index.ProviderName];
-
-                await indexManager.DeleteDocumentsAsync(index, indexEntry.Value);
-            }
-
             var resultTracker = new HashSet<string>();
 
-            // Send all the new documents to the index.
             foreach (var indexEntry in updatedDocumentsByIndex)
             {
                 if (indexEntry.Value.Count == 0)
@@ -242,6 +218,12 @@ public sealed class ContentIndexingService
                 var index = tracker[indexEntry.Key].Index;
                 var indexManager = indexManagers[index.ProviderName];
 
+                // Delete all the deleted documents from the index.
+                var deletedDocumentIds = indexEntry.Value.Select(x => x.Id);
+
+                await indexManager.DeleteDocumentsAsync(index, deletedDocumentIds);
+
+                // Upload documents to the index.
                 if (!await indexManager.MergeOrUploadDocumentsAsync(index, indexEntry.Value))
                 {
                     // At this point we know something went wrong while trying update content items for this index.

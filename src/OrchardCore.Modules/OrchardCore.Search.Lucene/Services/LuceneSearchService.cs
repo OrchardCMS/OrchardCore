@@ -4,6 +4,7 @@ using OrchardCore.Entities;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Model;
+using OrchardCore.Search.Lucene.Models;
 
 namespace OrchardCore.Search.Lucene.Services;
 
@@ -11,20 +12,17 @@ public class LuceneSearchService : ISearchService
 {
     private readonly LuceneIndexManager _luceneIndexManager;
     private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
-    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
     private readonly ILuceneSearchQueryService _luceneSearchQueryService;
     private readonly ILogger _logger;
 
     public LuceneSearchService(
         LuceneIndexManager luceneIndexManager,
         LuceneAnalyzerManager luceneAnalyzerManager,
-        LuceneIndexSettingsService luceneIndexSettingsService,
         ILuceneSearchQueryService luceneSearchQueryService,
         ILogger<LuceneSearchService> logger)
     {
         _luceneIndexManager = luceneIndexManager;
         _luceneAnalyzerManager = luceneAnalyzerManager;
-        _luceneIndexSettingsService = luceneIndexSettingsService;
         _luceneSearchQueryService = luceneSearchQueryService;
         _logger = logger;
     }
@@ -33,7 +31,7 @@ public class LuceneSearchService : ISearchService
     {
         var result = new SearchResult();
 
-        if (index == null || !_luceneIndexManager.Exists(index.IndexFullName))
+        if (index == null || !await _luceneIndexManager.ExistsAsync(index.IndexFullName))
         {
             _logger.LogWarning("Lucene: Couldn't execute search. Lucene has not been configured yet.");
 
@@ -48,9 +46,11 @@ public class LuceneSearchService : ISearchService
 
             return result;
         }
+        var metadata = index.As<LuceneIndexMetadata>();
+        var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
 
-        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(index.IndexName));
-        var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, defaultSearchFields, analyzer);
+        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(metadata.AnalyzerName);
+        var queryParser = new MultiFieldQueryParser(queryMetadata.DefaultVersion, defaultSearchFields, analyzer);
 
         try
         {

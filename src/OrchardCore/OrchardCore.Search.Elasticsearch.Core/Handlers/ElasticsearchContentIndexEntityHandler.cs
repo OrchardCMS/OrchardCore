@@ -30,10 +30,9 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
 
         var metadata = index.As<ElasticsearchIndexMetadata>();
 
-        metadata.KeyFieldName = ContentIndexingConstants.ContentItemIdKey;
-
         var map = new ElasticsearchIndexMap()
         {
+            KeyFieldName = ContentIndexingConstants.ContentItemIdKey,
             Mapping = new TypeMapping()
             {
                 Source = new SourceField

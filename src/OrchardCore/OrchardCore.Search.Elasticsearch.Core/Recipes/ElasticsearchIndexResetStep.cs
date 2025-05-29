@@ -30,37 +30,34 @@ public sealed class ElasticsearchIndexResetStep : NamedRecipeStepHandler
 
         if (model != null && (model.IncludeAll || model.Indices.Length > 0))
         {
-            if (model != null && (model.IncludeAll || model.Indices.Length > 0))
+            var indexes = model.IncludeAll
+            ? (await _indexEntityManager.GetAsync(ElasticsearchConstants.ProviderName))
+            : (await _indexEntityManager.GetAsync(ElasticsearchConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
+
+            var indexManagers = new Dictionary<string, IIndexManager>();
+
+            foreach (var index in indexes)
             {
-                var indexes = model.IncludeAll
-                ? (await _indexEntityManager.GetAsync(ElasticsearchConstants.ProviderName))
-                : (await _indexEntityManager.GetAsync(ElasticsearchConstants.ProviderName)).Where(x => model.Indices.Contains(x.Id));
-
-                var indexManagers = new Dictionary<string, IIndexManager>();
-
-                foreach (var index in indexes)
+                if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
                 {
-                    if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
-                    {
-                        indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
-                        indexManagers[index.ProviderName] = indexManager;
-                    }
-
-                    if (indexManager is null)
-                    {
-                        continue;
-                    }
-
-                    await _indexEntityManager.ResetAsync(index);
-                    await _indexEntityManager.UpdateAsync(index);
-
-                    if (!await indexManager.ExistsAsync(index.IndexFullName))
-                    {
-                        await indexManager.CreateAsync(index);
-                    }
-
-                    await _indexEntityManager.SynchronizeAsync(index);
+                    indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+                    indexManagers[index.ProviderName] = indexManager;
                 }
+
+                if (indexManager is null)
+                {
+                    continue;
+                }
+
+                await _indexEntityManager.ResetAsync(index);
+                await _indexEntityManager.UpdateAsync(index);
+
+                if (!await indexManager.ExistsAsync(index.IndexFullName))
+                {
+                    await indexManager.CreateAsync(index);
+                }
+
+                await _indexEntityManager.SynchronizeAsync(index);
             }
         }
     }
