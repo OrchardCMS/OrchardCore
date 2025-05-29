@@ -3,7 +3,7 @@ using OrchardCore.Indexing.Models;
 
 namespace OrchardCore.Indexing;
 
-public interface IIndexDocumentManager
+public interface IDocumentIndexManager
 {
     Task<bool> MergeOrUploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndexBase> documents);
 

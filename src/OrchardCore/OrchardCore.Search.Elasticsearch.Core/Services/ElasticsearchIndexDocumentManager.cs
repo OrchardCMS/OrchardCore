@@ -12,7 +12,7 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public sealed class ElasticsearchIndexDocumentManager : IIndexDocumentManager
+public sealed class ElasticsearchIndexDocumentManager : IDocumentIndexManager
 {
     private readonly ElasticsearchClient _elasticClient;
     private readonly ILogger _logger;

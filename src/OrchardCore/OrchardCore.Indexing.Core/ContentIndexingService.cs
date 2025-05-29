@@ -58,20 +58,20 @@ public sealed class ContentIndexingService
 
         var tracker = new Dictionary<string, IndexingPosition>();
 
-        var indexManagers = new Dictionary<string, IIndexDocumentManager>();
+        var documentIndexManagers = new Dictionary<string, IDocumentIndexManager>();
 
         var lastTaskId = long.MaxValue;
 
         // Find the lowest task id to process.
         foreach (var index in indexes)
         {
-            if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+            if (!documentIndexManagers.TryGetValue(index.ProviderName, out var documentIndexManager))
             {
-                indexManager = _serviceProvider.GetRequiredKeyedService<IIndexDocumentManager>(index.ProviderName);
-                indexManagers.Add(index.ProviderName, indexManager);
+                documentIndexManager = _serviceProvider.GetRequiredKeyedService<IDocumentIndexManager>(index.ProviderName);
+                documentIndexManagers.Add(index.ProviderName, documentIndexManager);
             }
 
-            var taskId = await indexManager.GetLastTaskIdAsync(index);
+            var taskId = await documentIndexManager.GetLastTaskIdAsync(index);
             lastTaskId = Math.Min(lastTaskId, taskId);
             tracker.Add(index.Id, new IndexingPosition
             {
@@ -168,7 +168,7 @@ public sealed class ContentIndexingService
                     // Handle the updated documents.
                     var metadata = index.As<ContentIndexMetadata>();
 
-                    var indexManager = indexManagers[index.ProviderName];
+                    var indexManager = documentIndexManagers[index.ProviderName];
 
                     BuildIndexContext buildIndexContext = null;
 
@@ -216,7 +216,7 @@ public sealed class ContentIndexingService
                 }
 
                 var index = tracker[indexEntry.Key].Index;
-                var indexManager = indexManagers[index.ProviderName];
+                var indexManager = documentIndexManagers[index.ProviderName];
 
                 // Delete all the deleted documents from the index.
                 var deletedDocumentIds = indexEntry.Value.Select(x => x.Id);

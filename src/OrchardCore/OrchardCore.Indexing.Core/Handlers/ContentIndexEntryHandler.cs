@@ -83,9 +83,9 @@ public sealed class ContentIndexEntryHandler : IndexEntityHandlerBase
             return;
         }
 
-        var documentManager = _serviceProvider.GetKeyedService<IIndexDocumentManager>(context.Index.ProviderName);
+        var documentIndexManager = _serviceProvider.GetKeyedService<IDocumentIndexManager>(context.Index.ProviderName);
 
-        if (documentManager is null)
+        if (documentIndexManager is null)
         {
             return;
         }
@@ -93,7 +93,7 @@ public sealed class ContentIndexEntryHandler : IndexEntityHandlerBase
         // Cache the indexes per-request to avoid having to reset the same index multiple times.
         if (_resetIndexIds.Add(context.Index.Id))
         {
-            await documentManager.SetLastTaskIdAsync(context.Index, 0);
+            await documentIndexManager.SetLastTaskIdAsync(context.Index, 0);
         }
     }
 

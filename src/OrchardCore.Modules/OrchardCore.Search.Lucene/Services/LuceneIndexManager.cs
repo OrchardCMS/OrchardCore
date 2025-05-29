@@ -20,7 +20,7 @@ namespace OrchardCore.Search.Lucene;
 /// Provides methods to manage physical Lucene indices.
 /// This class is provided as a singleton to that the index searcher can be reused across requests.
 /// </summary>
-public sealed class LuceneIndexManager : IIndexManager, IIndexDocumentManager
+public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 {
     private readonly LuceneIndexStore _luceneStore;
     private readonly LuceneIndexingState _luceneIndexingState;

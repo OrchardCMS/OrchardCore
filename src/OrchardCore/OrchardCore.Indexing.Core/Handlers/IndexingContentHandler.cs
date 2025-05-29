@@ -14,7 +14,7 @@ namespace OrchardCore.Indexing.Core.Handlers;
 
 public class IndexingContentHandler : ContentHandlerBase
 {
-    private readonly List<ContentContextBase> _contexts = [];
+    private readonly Dictionary<string, ContentContextBase> _contexts = [];
 
     private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -36,6 +36,9 @@ public class IndexingContentHandler : ContentHandlerBase
         => AddContextAsync(context);
 
     public override Task UnpublishedAsync(PublishContentContext context)
+        => AddContextAsync(context);
+
+    public override Task ImportedAsync(ImportContentContext context)
         => AddContextAsync(context);
 
     private Task AddContextAsync(ContentContextBase context)
@@ -60,13 +63,18 @@ public class IndexingContentHandler : ContentHandlerBase
             ShellScope.AddDeferredTask(scope => IndexingAsync(scope, contexts));
         }
 
-        _contexts.Add(context);
+        _contexts[context.ContentItem.ContentItemId] = context;
 
         return Task.CompletedTask;
     }
 
-    private static async Task IndexingAsync(ShellScope scope, IEnumerable<ContentContextBase> contexts)
+    private static async Task IndexingAsync(ShellScope scope, Dictionary<string, ContentContextBase> contexts)
     {
+        if (contexts.Count == 0)
+        {
+            return;
+        }
+
         var services = scope.ServiceProvider;
 
         var indexStore = services.GetRequiredService<IIndexEntityStore>();
@@ -83,58 +91,54 @@ public class IndexingContentHandler : ContentHandlerBase
 
         var logger = services.GetRequiredService<ILogger<IndexingContentHandler>>();
 
-        var indexManagers = new Dictionary<string, IIndexDocumentManager>();
+        var documentIndexManagers = new Dictionary<string, IDocumentIndexManager>();
 
         // Multiple items may have been updated in the same scope, e.g through a recipe.
-        var contextsGroupById = contexts.GroupBy(c => c.ContentItem.ContentItemId);
 
         // Get all contexts for each content item id.
-        foreach (var ContextsById in contextsGroupById)
+        foreach (var context in contexts)
         {
-            // Only process the last context.
-            var context = ContextsById.Last();
-
             ContentItem contentItem = null;
 
             foreach (var index in indexes)
             {
                 var metadata = index.As<ContentIndexMetadata>();
 
-                var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
+                var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.Value.ContentItem);
                 var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
                 var ignoreIndexedCulture = metadata.Culture != "any" && culture != metadata.Culture;
 
-                if (ignoreIndexedCulture || !metadata.IndexedContentTypes.Contains(context.ContentItem.ContentType))
+                if (ignoreIndexedCulture || !metadata.IndexedContentTypes.Contains(context.Value.ContentItem.ContentType))
                 {
                     continue;
                 }
 
                 if (metadata.IndexLatest)
                 {
-                    contentItem = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Latest);
+                    contentItem = await contentManager.GetAsync(context.Key, VersionOptions.Latest);
                 }
                 else
                 {
-                    contentItem = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
+                    contentItem = await contentManager.GetAsync(context.Key, VersionOptions.Published);
                 }
 
-                if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+                if (!documentIndexManagers.TryGetValue(index.ProviderName, out var documentIndexManager))
                 {
-                    indexManager = services.GetRequiredKeyedService<IIndexDocumentManager>(index.ProviderName);
-                    indexManagers.Add(index.ProviderName, indexManager);
+                    documentIndexManager = services.GetRequiredKeyedService<IDocumentIndexManager>(index.ProviderName);
+                    documentIndexManagers.Add(index.ProviderName, documentIndexManager);
                 }
 
-                await indexManager.DeleteDocumentsAsync(index, [context.ContentItem.ContentItemId]);
+                await documentIndexManager.DeleteDocumentsAsync(index, [context.Key]);
 
                 if (contentItem is not null)
                 {
                     var document = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
 
-                    var buildIndexContext = new BuildIndexContext(document, contentItem, [contentItem.ContentType], indexManager.GetContentIndexSettings());
+                    var buildIndexContext = new BuildIndexContext(document, contentItem, [contentItem.ContentType], documentIndexManager.GetContentIndexSettings());
 
                     await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
-                    await indexManager.MergeOrUploadDocumentsAsync(index, [buildIndexContext.DocumentIndex]);
+                    await documentIndexManager.MergeOrUploadDocumentsAsync(index, [buildIndexContext.DocumentIndex]);
                 }
             }
         }

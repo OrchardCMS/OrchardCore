@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddIndexingSource<TManager, TDocumentManager, TNamingProvider>(this IServiceCollection services, string providerName, string implementationType, Action<IndexingOptionsEntry> action = null)
         where TManager : class, IIndexManager
-        where TDocumentManager : class, IIndexDocumentManager
+        where TDocumentManager : class, IDocumentIndexManager
         where TNamingProvider : class, IIndexNameProvider
     {
         ArgumentException.ThrowIfNullOrEmpty(providerName);
@@ -66,7 +66,7 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddIndexingSource<TManager, TDocumentManager, TNamingProvider, TOptions>(this IServiceCollection services, string providerName, string implementationType, Action<IndexingOptionsEntry> action = null)
         where TManager : class, IIndexManager
-        where TDocumentManager : class, IIndexDocumentManager
+        where TDocumentManager : class, IDocumentIndexManager
         where TNamingProvider : class, IIndexNameProvider
         where TOptions : class, ISearchProviderOptions
     {
@@ -92,13 +92,13 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddIndexingSourceServices<TManager, TDocumentManager, TNamingProvider>(this IServiceCollection services, string providerName)
        where TManager : class, IIndexManager
-       where TDocumentManager : class, IIndexDocumentManager
+       where TDocumentManager : class, IDocumentIndexManager
        where TNamingProvider : class, IIndexNameProvider
     {
         services.TryAddScoped<TManager>();
         services.AddKeyedScoped<IIndexManager>(providerName, (sp, key) => sp.GetRequiredService<TManager>());
         services.TryAddScoped<TDocumentManager>();
-        services.AddKeyedScoped<IIndexDocumentManager>(providerName, (sp, key) => sp.GetRequiredService<TDocumentManager>());
+        services.AddKeyedScoped<IDocumentIndexManager>(providerName, (sp, key) => sp.GetRequiredService<TDocumentManager>());
         services.AddKeyedScoped<IIndexNameProvider, TNamingProvider>(providerName);
 
         return services;
