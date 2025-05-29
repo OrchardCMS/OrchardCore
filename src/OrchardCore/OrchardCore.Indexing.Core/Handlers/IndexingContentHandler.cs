@@ -127,11 +127,9 @@ public class IndexingContentHandler : ContentHandlerBase
                         indexManagers.Add(index.ProviderName, indexManager);
                     }
 
-                    if (contentItem == null)
-                    {
-                        await indexManager.DeleteDocumentsAsync(index, [context.ContentItem.ContentItemId]);
-                    }
-                    else
+                    await indexManager.DeleteDocumentsAsync(index, [context.ContentItem.ContentItemId]);
+
+                    if (contentItem != null)
                     {
                         var document = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
                         var buildIndexContext = new BuildIndexContext(document, contentItem, [contentItem.ContentType], indexManager.GetContentIndexSettings());

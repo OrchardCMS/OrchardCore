@@ -148,17 +148,17 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (string.IsNullOrWhiteSpace(model.DecodedQuery))
-        {
-            return View(model);
-        }
-
         if (string.IsNullOrEmpty(model.Parameters))
         {
             model.Parameters = "{ }";
         }
 
         model.MatchAllQuery = GetMatchAllQuery();
+
+        if (string.IsNullOrWhiteSpace(model.DecodedQuery))
+        {
+            return View(model);
+        }
 
         var stopwatch = new Stopwatch();
         stopwatch.Start();
