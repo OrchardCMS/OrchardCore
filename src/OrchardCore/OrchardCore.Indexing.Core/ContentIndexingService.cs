@@ -23,6 +23,9 @@ public sealed class ContentIndexingService
     private readonly IServiceProvider _serviceProvider;
     private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
     private readonly ILogger _logger;
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+
+    private readonly HashSet<string> _inProgressIndexes = [];
 
     public ContentIndexingService(
         IIndexingTaskManager indexingTaskManager,
@@ -56,28 +59,50 @@ public sealed class ContentIndexingService
             return;
         }
 
+        // This service could be called multiple times during the same request,
+        // so we need to ensure that we only process each index once at a time.
+        // This is not guaranteed to be thread-safe, but it should be sufficient for the current use case.
+        await _semaphore.WaitAsync();
+
+        var indexableIndexes = new List<IndexEntity>();
+
         var tracker = new Dictionary<string, IndexingPosition>();
 
         var documentIndexManagers = new Dictionary<string, IDocumentIndexManager>();
 
         var lastTaskId = long.MaxValue;
 
-        // Find the lowest task id to process.
-        foreach (var index in indexes)
+        try
         {
-            if (!documentIndexManagers.TryGetValue(index.ProviderName, out var documentIndexManager))
+            // Find the lowest task id to process.
+            foreach (var index in indexes)
             {
-                documentIndexManager = _serviceProvider.GetRequiredKeyedService<IDocumentIndexManager>(index.ProviderName);
-                documentIndexManagers.Add(index.ProviderName, documentIndexManager);
-            }
+                if (!_inProgressIndexes.Add(index.Id))
+                {
+                    // If the index is already being processed, skip it.
+                    continue;
+                }
 
-            var taskId = await documentIndexManager.GetLastTaskIdAsync(index);
-            lastTaskId = Math.Min(lastTaskId, taskId);
-            tracker.Add(index.Id, new IndexingPosition
-            {
-                Index = index,
-                LastTaskId = taskId,
-            });
+                indexableIndexes.Add(index);
+
+                if (!documentIndexManagers.TryGetValue(index.ProviderName, out var documentIndexManager))
+                {
+                    documentIndexManager = _serviceProvider.GetRequiredKeyedService<IDocumentIndexManager>(index.ProviderName);
+                    documentIndexManagers.Add(index.ProviderName, documentIndexManager);
+                }
+
+                var taskId = await documentIndexManager.GetLastTaskIdAsync(index);
+                lastTaskId = Math.Min(lastTaskId, taskId);
+                tracker.Add(index.Id, new IndexingPosition
+                {
+                    Index = index,
+                    LastTaskId = taskId,
+                });
+            }
+        }
+        finally
+        {
+            _semaphore.Release();
         }
 
         var tasks = new List<IndexingTask>();
@@ -85,7 +110,7 @@ public sealed class ContentIndexingService
         var contentTypesLatest = new HashSet<string>();
         var contentTypesPublished = new HashSet<string>();
 
-        foreach (var index in indexes)
+        foreach (var index in indexableIndexes)
         {
             var metadata = index.As<ContentIndexMetadata>();
 
@@ -110,7 +135,6 @@ public sealed class ContentIndexingService
             }
         }
 
-        // var allContentTypes = indexes.SelectMany(x => x.As<ContentIndexMetadata>().IndexedContentTypes ?? []).Distinct().ToArray();
         var readOnlySession = _store.CreateSession(withTracking: false);
 
         while (tasks.Count <= _batchSize)
@@ -132,7 +156,7 @@ public sealed class ContentIndexingService
             var latestContentItems = new Dictionary<string, ContentItem>();
 
             // Group all DocumentIndex by index to batch update them.
-            var updatedDocumentsByIndex = indexes.ToDictionary(x => x.Id, b => new List<DocumentIndex>());
+            var updatedDocumentsByIndex = indexableIndexes.ToDictionary(x => x.Id, b => new List<DocumentIndex>());
 
             if (contentTypesPublished.Count > 0)
             {
@@ -153,7 +177,7 @@ public sealed class ContentIndexingService
             foreach (var task in tasks)
             {
                 // Update the document from the index if its lastIndexId is smaller than the current task id.
-                foreach (var index in indexes)
+                foreach (var index in indexableIndexes)
                 {
                     if (!tracker.TryGetValue(index.Id, out var indexPosition) || indexPosition.LastTaskId >= task.Id)
                     {
@@ -238,6 +262,11 @@ public sealed class ContentIndexingService
                     await indexManager.SetLastTaskIdAsync(index, lastTaskId);
                 }
             }
+        }
+
+        foreach (var index in indexableIndexes)
+        {
+            _inProgressIndexes.Remove(index.Id);
         }
     }
 

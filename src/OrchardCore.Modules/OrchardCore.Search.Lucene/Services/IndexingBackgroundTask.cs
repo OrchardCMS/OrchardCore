@@ -13,12 +13,13 @@ namespace OrchardCore.Search.Lucene;
 [BackgroundTask(
     Title = "Lucene Indexes Updater",
     Schedule = "* * * * *",
-    Description = "Updates lucene indexes.")]
+    Description = "Updates Lucene indexes.")]
 public sealed class IndexingBackgroundTask : IBackgroundTask
 {
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var indexingService = serviceProvider.GetService<ContentIndexingService>();
+
         return indexingService.ProcessContentItemsForAllIndexesAsync();
     }
 }

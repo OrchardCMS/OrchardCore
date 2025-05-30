@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -38,8 +39,15 @@ public class IndexingContentHandler : ContentHandlerBase
     public override Task UnpublishedAsync(PublishContentContext context)
         => AddContextAsync(context);
 
-    public override Task ImportedAsync(ImportContentContext context)
-        => AddContextAsync(context);
+    public override Task ImportCompletedAsync(ImportedContentsContext context)
+    {
+        return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("imported-content-items", async scope =>
+        {
+            var contentIndexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
+
+            await contentIndexingService.ProcessContentItemsForAllIndexesAsync();
+        });
+    }
 
     private Task AddContextAsync(ContentContextBase context)
     {
