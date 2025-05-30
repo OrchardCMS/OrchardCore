@@ -12,8 +12,6 @@ public static class ElasticsearchConstants
 
     public const string PatternAnalyzer = "pattern";
 
-    public const string LanguageAnalyzer = "language";
-
     public const string FingerprintAnalyzer = "fingerprint";
 
     public const string CustomAnalyzer = "custom";
