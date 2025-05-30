@@ -1,6 +1,5 @@
 using Lucene.Net.Analysis.Standard;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
@@ -35,7 +34,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<Migrations>();
-        services.TryAddSingleton<LuceneIndexStore>();
+        services.AddSingleton<LuceneIndexStore>();
         services.AddSingleton<LuceneIndexingState>();
         services.AddSingleton<LuceneIndexManager>();
         services.AddSingleton<LuceneAnalyzerManager>();

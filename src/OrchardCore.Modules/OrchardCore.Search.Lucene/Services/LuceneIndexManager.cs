@@ -153,7 +153,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         {
             var metadata = index.As<LuceneIndexMetadata>();
 
-            writer.DeleteDocuments(documentIds.Select(x => new Term(metadata.IndexMappings.KeyFieldName, x)).ToArray());
+            writer.DeleteDocuments(documentIds.Select(id => new Term(metadata.IndexMappings.KeyFieldName, id)).ToArray());
 
             writer.Commit();
         });

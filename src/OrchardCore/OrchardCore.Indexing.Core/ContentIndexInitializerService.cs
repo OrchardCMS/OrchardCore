@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 
@@ -27,7 +26,7 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
         await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("indexing-initialize", async scope =>
         {
             var indexStore = scope.ServiceProvider.GetRequiredService<IIndexEntityStore>();
-            var elasticIndexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
+            var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
 
             var indexes = await indexStore.GetAllAsync();
 
@@ -58,7 +57,7 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
 
             if (createdIndexes.Count > 0)
             {
-                await elasticIndexingService.ProcessContentItemsAsync(createdIndexes);
+                await indexingService.ProcessContentItemsAsync(createdIndexes);
             }
         });
     }

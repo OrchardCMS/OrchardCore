@@ -1,4 +1,4 @@
-namespace OrchardCore.Search.Lucene.Model;
+namespace OrchardCore.Search.Lucene.Models;
 
 public sealed class LuceneQueryMetadata
 {

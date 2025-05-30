@@ -5,7 +5,7 @@ using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Queries;
-using OrchardCore.Search.Lucene.Model;
+using OrchardCore.Search.Lucene.Models;
 using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Drivers;

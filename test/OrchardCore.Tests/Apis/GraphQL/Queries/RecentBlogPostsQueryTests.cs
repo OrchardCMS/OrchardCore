@@ -27,14 +27,14 @@ public class RecentBlogPostsQueryTests
             });
 
         var result = await context
-        .GraphQLClient
-        .Content
-        .Query("RecentBlogPosts", builder =>
-        {
-            builder
-                .WithField("displayText")
-                .WithField("contentItemId");
-        });
+            .GraphQLClient
+            .Content
+            .Query("RecentBlogPosts", builder =>
+            {
+                builder
+                    .WithField("displayText")
+                    .WithField("contentItemId");
+            });
 
         var jsonArray = result["data"]?["recentBlogPosts"]?.AsArray();
 

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Models;
 
 namespace OrchardCore.Search.Lucene.Services;
@@ -38,19 +37,18 @@ public class LuceneSearchService : ISearchService
             return result;
         }
 
-        var defaultSearchFields = index.As<LuceneDefaultQueryMetadata>()?.DefaultSearchFields ?? [];
+        var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
 
-        if (defaultSearchFields == null || defaultSearchFields.Length == 0)
+        if (queryMetadata.DefaultSearchFields == null || queryMetadata.DefaultSearchFields.Length == 0)
         {
             _logger.LogWarning("Lucene: Couldn't execute search. No search provider settings was defined.");
 
             return result;
         }
         var metadata = index.As<LuceneIndexMetadata>();
-        var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
 
         var analyzer = _luceneAnalyzerManager.CreateAnalyzer(metadata.AnalyzerName);
-        var queryParser = new MultiFieldQueryParser(queryMetadata.DefaultVersion, defaultSearchFields, analyzer);
+        var queryParser = new MultiFieldQueryParser(queryMetadata.DefaultVersion, queryMetadata.DefaultSearchFields, analyzer);
 
         try
         {

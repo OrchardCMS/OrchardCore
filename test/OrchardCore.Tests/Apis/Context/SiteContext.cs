@@ -3,10 +3,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Indexing;
-using OrchardCore.Indexing.Core;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Search.Lucene;
 
 namespace OrchardCore.Tests.Apis.Context;
 
@@ -123,24 +120,6 @@ public class SiteContext : IDisposable
                 recipe,
                 new Dictionary<string, object>(),
                 CancellationToken.None);
-        });
-    }
-
-    public async Task ResetLuceneIndexesAsync(string indexName)
-    {
-        await UsingTenantScopeAsync(async scope =>
-        {
-            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
-            var luceneManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
-            var contentIndexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
-
-            var index = await indexManager.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
-
-            await indexManager.ResetAsync(index);
-            await indexManager.UpdateAsync(index);
-            // Instead of calling SynchronizeAsync which triggers the indexing in a background process,
-            // directly call and await the indexing process.
-            await contentIndexingService.ProcessContentItemsForAllIndexesAsync();
         });
     }
 
