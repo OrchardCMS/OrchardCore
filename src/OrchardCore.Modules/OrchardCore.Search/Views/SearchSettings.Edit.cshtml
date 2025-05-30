@@ -1,12 +1,14 @@
 @model SearchSettingsViewModel
 
-@if (Model.SearchServices != null && Model.SearchServices.Count > 0)
+@if (Model.Indexes?.Count > 0)
 {
-    <div class="mb-3" asp-validation-class-for="ProviderName">
-        <label asp-for="ProviderName" class="form-label">@T["Default search provider"]</label>
-        <select asp-for="ProviderName" asp-items="Model.SearchServices" class="form-select"></select>
-        <span asp-validation-for="ProviderName"></span>
-        <span class="hint">@T["The default search provider to use for the search page."]</span>
+    <div class="mb-3" asp-validation-class-for="DefaultIndexId">
+        <label asp-for="DefaultIndexId" class="form-label">@T["Default search index"]</label>
+        <select asp-for="DefaultIndexId" asp-items="Model.Indexes" class="form-select">
+            <option value="">@T["Select a default index"]</option>
+        </select>
+        <span asp-validation-for="DefaultIndexId"></span>
+        <span class="hint">@T["The default index to use for the search page."]</span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="Placeholder">
@@ -17,6 +19,6 @@
 }
 else
 {
-    <div class="alert alert-warning">@T["You need to enable at least one search provider (Lucene, Elasticsearch, or Azure AI Search)."]</div>
+    <div class="alert alert-warning">@T["No available indexes. Add at least one index to search."]</div>
 }
 

@@ -1,22 +1,23 @@
 using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
-using OrchardCore.Search.Lucene.Model;
+using OrchardCore.Indexing;
+using OrchardCore.Indexing.Models;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
 public sealed class LuceneIndexDeploymentSource
     : DeploymentSourceBase<LuceneIndexDeploymentStep>
 {
-    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+    private readonly IIndexEntityStore _indexStore;
 
-    public LuceneIndexDeploymentSource(LuceneIndexSettingsService luceneIndexSettingsService)
+    public LuceneIndexDeploymentSource(IIndexEntityStore indexStore)
     {
-        _luceneIndexSettingsService = luceneIndexSettingsService;
+        _indexStore = indexStore;
     }
 
     protected override async Task ProcessAsync(LuceneIndexDeploymentStep step, DeploymentPlanResult result)
     {
-        var indexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
+        var indexSettings = await _indexStore.GetAsync(LuceneConstants.ProviderName);
 
         var data = new JsonArray();
         var indicesToAdd = step.IncludeAll
@@ -27,7 +28,7 @@ public sealed class LuceneIndexDeploymentSource
         {
             if (indicesToAdd.Contains(index.IndexName))
             {
-                var indexSettingsDict = new Dictionary<string, LuceneIndexSettings>
+                var indexSettingsDict = new Dictionary<string, IndexEntity>
                 {
                     { index.IndexName, index },
                 };

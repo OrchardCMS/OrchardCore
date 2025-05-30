@@ -1,9 +1,11 @@
 @model dynamic
+@using OrchardCore.Indexing
+@using OrchardCore.Search.Elasticsearch
 @using OrchardCore.Search.Elasticsearch.Core.Services
-@inject ElasticsearchIndexSettingsService ElasticIndexSettingsService
+@inject IIndexEntityStore IndexStore
 
 @{
-    var disabled = !(await ElasticIndexSettingsService.GetSettingsAsync()).Any();
+    var disabled = !(await IndexStore.GetAsync(ElasticsearchConstants.ProviderName)).Any();
 }
 <div class="card">
     <div class="card-body">

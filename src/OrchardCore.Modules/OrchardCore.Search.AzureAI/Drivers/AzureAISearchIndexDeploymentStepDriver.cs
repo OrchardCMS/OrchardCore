@@ -1,19 +1,19 @@
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Indexing;
 using OrchardCore.Search.AzureAI.Deployment;
-using OrchardCore.Search.AzureAI.Services;
 using OrchardCore.Search.AzureAI.ViewModels;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
 public sealed class AzureAISearchIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, AzureAISearchIndexDeploymentStep>
 {
-    private readonly AzureAISearchIndexSettingsService _indexSettingsService;
+    private readonly IIndexEntityStore _indexStore;
 
-    public AzureAISearchIndexDeploymentStepDriver(AzureAISearchIndexSettingsService indexSettingsService)
+    public AzureAISearchIndexDeploymentStepDriver(IIndexEntityStore indexStore)
     {
-        _indexSettingsService = indexSettingsService;
+        _indexStore = indexStore;
     }
     public override Task<IDisplayResult> DisplayAsync(AzureAISearchIndexDeploymentStep step, BuildDisplayContext context)
         => CombineAsync(
@@ -27,7 +27,7 @@ public sealed class AzureAISearchIndexDeploymentStepDriver : DisplayDriver<Deplo
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
-            model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexStore.GetAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
 
 

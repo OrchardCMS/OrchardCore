@@ -7,6 +7,7 @@ public class DocumentIndex : DocumentIndexBase
     public string ContentItemVersionId { get; }
 
     public DocumentIndex(string contentItemId, string contentItemVersionId)
+        : base(contentItemId)
     {
         ContentItemId = contentItemId;
         ContentItemVersionId = contentItemVersionId;

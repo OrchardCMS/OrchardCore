@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Indexing.Core;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -19,11 +20,11 @@ public sealed class IndexingBackgroundTask : IBackgroundTask
 {
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        var indexingService = serviceProvider.GetService<ElasticsearchIndexingService>();
+        var indexingService = serviceProvider.GetService<ContentIndexingService>();
 
         if (indexingService != null)
         {
-            return indexingService.ProcessContentItemsAsync();
+            return indexingService.ProcessContentItemsForAllIndexesAsync();
         }
 
         return Task.CompletedTask;

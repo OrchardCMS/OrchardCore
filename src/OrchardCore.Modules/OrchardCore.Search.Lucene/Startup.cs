@@ -1,26 +1,27 @@
 using Lucene.Net.Analysis.Standard;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Indexing.Core;
+using OrchardCore.Indexing.Models;
+using OrchardCore.Lucene.Core;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Recipes;
-using OrchardCore.Search.Abstractions;
+using OrchardCore.Search.Elasticsearch.Drivers;
+using OrchardCore.Search.Lucene.Core.Handlers;
+using OrchardCore.Search.Lucene.DataMigrations;
 using OrchardCore.Search.Lucene.Deployment;
 using OrchardCore.Search.Lucene.Drivers;
-using OrchardCore.Search.Lucene.Handler;
-using OrchardCore.Search.Lucene.Handlers;
-using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Recipes;
 using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.Settings;
@@ -33,32 +34,64 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<Migrations>();
+        services.AddSingleton<LuceneIndexStore>();
         services.AddSingleton<LuceneIndexingState>();
-        services.AddSingleton<LuceneIndexSettingsService>();
         services.AddSingleton<LuceneIndexManager>();
         services.AddSingleton<LuceneAnalyzerManager>();
-        services.AddScoped<LuceneIndexingService>();
-        services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
         services.AddScoped<ILuceneSearchQueryService, LuceneSearchQueryService>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
 
         services.Configure<LuceneOptions>(o =>
-            o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
-                new StandardAnalyzer(LuceneSettings.DefaultVersion))));
+            o.Analyzers.Add(new LuceneAnalyzer(LuceneConstants.DefaultAnalyzer,
+                new StandardAnalyzer(LuceneConstants.DefaultVersion))));
 
         services.AddDisplayDriver<Query, LuceneQueryDisplayDriver>();
-        services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
 
-        services.AddLuceneQueries()
+        services
+            .AddLuceneQueries()
             .AddQuerySource<LuceneQuerySource>(LuceneQuerySource.SourceName);
 
+        services.AddDataMigration<LuceneQueryMigrations>();
+        services.AddScoped<IQueryHandler, LuceneQueryHandler>();
+
+        services.AddDisplayDriver<IndexEntity, LuceneIndexEntityDisplayDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Recipes.Core")]
+public sealed class RecipeStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services.AddRecipeExecutionStep<LuceneIndexStep>();
         services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
         services.AddRecipeExecutionStep<LuceneIndexResetStep>();
-        services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
-        services.AddDataMigration<LuceneQueryMigrations>();
-        services.AddScoped<IQueryHandler, LuceneQueryHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Contents")]
+public sealed class ContentsStartup : StartupBase
+{
+    internal readonly IStringLocalizer S;
+
+    public ContentsStartup(IStringLocalizer<ContentsStartup> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<IndexEntity, LuceneContentIndexEntityDisplayDriver>();
+        services.AddDataMigration<IndexingMigrations>();
+
+        services
+            .AddIndexEntityHandler<LuceneContentIndexEntityHandler>()
+            .AddIndexingSource<LuceneIndexManager, LuceneIndexManager, LuceneIndexNameProvider>(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
+            {
+                o.DisplayName = S["Content in Lucene"];
+                o.Description = S["Create an Lucene index based on site contents."];
+            });
     }
 }
 
@@ -67,9 +100,7 @@ public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ISearchService, LuceneSearchService>();
-        services.AddSiteDisplayDriver<LuceneSettingsDisplayDriver>();
-        services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
+        services.AddSearchService<LuceneSearchService>(LuceneConstants.ProviderName);
     }
 }
 
@@ -79,7 +110,6 @@ public sealed class DeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<LuceneIndexDeploymentSource, LuceneIndexDeploymentStep, LuceneIndexDeploymentStepDriver>();
-        services.AddDeployment<LuceneSettingsDeploymentSource, LuceneSettingsDeploymentStep, LuceneSettingsDeploymentStepDriver>();
         services.AddDeployment<LuceneIndexRebuildDeploymentSource, LuceneIndexRebuildDeploymentStep, LuceneIndexRebuildDeploymentStepDriver>();
         services.AddDeployment<LuceneIndexResetDeploymentSource, LuceneIndexResetDeploymentStep, LuceneIndexResetDeploymentStepDriver>();
     }

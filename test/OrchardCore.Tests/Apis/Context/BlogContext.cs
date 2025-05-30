@@ -18,7 +18,6 @@ public class BlogContext : SiteContext
     {
         await base.InitializeAsync();
         await RunRecipeAsync(luceneRecipeName, luceneRecipePath);
-        await ResetLuceneIndiciesAsync(luceneIndexName);
 
         var result = await GraphQLClient
             .Content

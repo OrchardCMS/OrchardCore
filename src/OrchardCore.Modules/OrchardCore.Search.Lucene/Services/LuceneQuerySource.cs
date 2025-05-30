@@ -7,9 +7,11 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Entities;
+using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Queries;
 using OrchardCore.Search.Lucene.Model;
+using OrchardCore.Search.Lucene.Models;
 using OrchardCore.Search.Lucene.Services;
 using YesSql;
 using YesSql.Services;
@@ -21,7 +23,7 @@ public sealed class LuceneQuerySource : IQuerySource
     public const string SourceName = "Lucene";
 
     private readonly LuceneIndexManager _luceneIndexManager;
-    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+    private readonly IIndexEntityStore _indexStore;
     private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
     private readonly ILuceneQueryService _queryService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -31,7 +33,7 @@ public sealed class LuceneQuerySource : IQuerySource
 
     public LuceneQuerySource(
         LuceneIndexManager luceneIndexManager,
-        LuceneIndexSettingsService luceneIndexSettingsService,
+        IIndexEntityStore indexStore,
         LuceneAnalyzerManager luceneAnalyzerManager,
         ILuceneQueryService queryService,
         ILiquidTemplateManager liquidTemplateManager,
@@ -40,7 +42,7 @@ public sealed class LuceneQuerySource : IQuerySource
         IOptions<TemplateOptions> templateOptions)
     {
         _luceneIndexManager = luceneIndexManager;
-        _luceneIndexSettingsService = luceneIndexSettingsService;
+        _indexStore = indexStore;
         _luceneAnalyzerManager = luceneAnalyzerManager;
         _queryService = queryService;
         _liquidTemplateManager = liquidTemplateManager;
@@ -54,17 +56,31 @@ public sealed class LuceneQuerySource : IQuerySource
 
     public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
     {
-        var luceneQueryResults = new LuceneQueryResults();
+        var luceneQueryResults = new LuceneQueryResults()
+        {
+            Items = [],
+        };
+
         var metadata = query.As<LuceneQueryMetadata>();
 
-        await _luceneIndexManager.SearchAsync(metadata.Index, async searcher =>
+        var index = await _indexStore.FindByNameAndProviderAsync(metadata.Index, LuceneConstants.ProviderName);
+
+        if (index is null)
+        {
+            return luceneQueryResults;
+        }
+
+        await _luceneIndexManager.SearchAsync(index, async searcher =>
         {
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
             var parameterizedQuery = JsonNode.Parse(tokenizedContent, JOptions.Node, JOptions.Document).AsObject();
 
-            var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(metadata.Index));
-            var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
+            var analyzer = _luceneAnalyzerManager.CreateAnalyzer(index.As<LuceneIndexMetadata>().AnalyzerName);
+
+            var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
+
+            var context = new LuceneQueryContext(searcher, queryMetadata.DefaultVersion, analyzer);
             var docs = await _queryService.SearchAsync(context, parameterizedQuery);
             luceneQueryResults.Count = docs.Count;
 
@@ -77,7 +93,7 @@ public sealed class LuceneQuerySource : IQuerySource
                 var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("ContentItemVersionId")).ToArray();
                 var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
-                // Reorder the result to preserve the one from the lucene query.
+                // Reorder the result to preserve the one from the Lucene query.
                 if (dbContentItems.Any())
                 {
                     var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);

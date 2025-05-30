@@ -17,7 +17,7 @@ public class RecentBlogPostsQueryTests
             {
                 builder.Published = true;
                 builder.Latest = true;
-                builder.DisplayText = "Some sorta blogpost in a Query!";
+                builder.DisplayText = "Some sort of blogpost in a Query!";
 
                 builder
                     .Weld(new ContainedPart
@@ -32,7 +32,8 @@ public class RecentBlogPostsQueryTests
             .Query("RecentBlogPosts", builder =>
             {
                 builder
-                    .WithField("displayText");
+                    .WithField("displayText")
+                    .WithField("contentItemId");
             });
 
         var jsonArray = result["data"]?["recentBlogPosts"]?.AsArray();
@@ -46,7 +47,9 @@ public class RecentBlogPostsQueryTests
         // of the result.
         var displayTexts = jsonArray.Select(node => node["displayText"]?.ToString());
 
-        Assert.Contains("Some sorta blogpost in a Query!", displayTexts);
+        Assert.Contains("Some sort of blogpost in a Query!", displayTexts);
+
+        // This is the blog post created by the default blog recipe.
         Assert.Contains("Man must explore, and this is exploration at its greatest", displayTexts);
     }
 }

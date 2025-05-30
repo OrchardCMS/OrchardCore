@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Indexing.Core;
 
 namespace OrchardCore.Search.Lucene;
 
@@ -12,12 +13,13 @@ namespace OrchardCore.Search.Lucene;
 [BackgroundTask(
     Title = "Lucene Indexes Updater",
     Schedule = "* * * * *",
-    Description = "Updates lucene indexes.")]
+    Description = "Updates Lucene indexes.")]
 public sealed class IndexingBackgroundTask : IBackgroundTask
 {
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        var indexingService = serviceProvider.GetService<LuceneIndexingService>();
-        return indexingService.ProcessContentItemsAsync();
+        var indexingService = serviceProvider.GetService<ContentIndexingService>();
+
+        return indexingService.ProcessContentItemsForAllIndexesAsync();
     }
 }

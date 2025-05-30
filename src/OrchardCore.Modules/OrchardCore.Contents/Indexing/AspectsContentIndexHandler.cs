@@ -21,25 +21,25 @@ public class AspectsContentIndexHandler : IContentItemIndexHandler
         if (body != null && body.Body != null)
         {
             context.DocumentIndex.Set(
-                IndexingConstants.BodyAspectBodyKey,
+                ContentIndexingConstants.BodyAspectBodyKey,
                 body.Body,
                 DocumentIndexOptions.Sanitize);
         }
 
         context.DocumentIndex.Set(
-            IndexingConstants.DisplayTextAnalyzedKey,
+            ContentIndexingConstants.DisplayTextAnalyzedKey,
             context.ContentItem.DisplayText,
             DocumentIndexOptions.Sanitize);
 
         // We need to store because of ContentPickerResultProvider(s)
         context.DocumentIndex.Set(
-            IndexingConstants.DisplayTextKey + IndexingConstants.KeywordKey,
+            ContentIndexingConstants.DisplayTextKey + ContentIndexingConstants.KeywordKey,
             context.ContentItem.DisplayText,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         // We need to store because of ContentPickerResultProvider(s)
         context.DocumentIndex.Set(
-            IndexingConstants.DisplayTextNormalizedKey,
+            ContentIndexingConstants.DisplayTextNormalizedKey,
             context.ContentItem.DisplayText?.ReplaceDiacritics().ToLower(),
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
     }

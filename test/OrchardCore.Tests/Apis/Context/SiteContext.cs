@@ -4,7 +4,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Search.Lucene;
 
 namespace OrchardCore.Tests.Apis.Context;
 
@@ -121,20 +120,6 @@ public class SiteContext : IDisposable
                 recipe,
                 new Dictionary<string, object>(),
                 CancellationToken.None);
-        });
-    }
-
-    public async Task ResetLuceneIndiciesAsync(string indexName)
-    {
-        await UsingTenantScopeAsync(async scope =>
-        {
-            var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
-            var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
-
-            var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
-
-            luceneIndexingService.ResetIndexAsync(indexName);
-            await luceneIndexingService.ProcessContentItemsAsync(indexName);
         });
     }
 

@@ -656,6 +656,8 @@ public class DefaultContentManager : IContentManager
 
         var importedVersionIds = new HashSet<string>();
 
+        var importedContentItems = new List<ContentItem>();
+
         var batchedContentItems = contentItems.Take(_importBatchSize);
 
         while (batchedContentItems.Any())
@@ -721,6 +723,8 @@ public class DefaultContentManager : IContentManager
                     // Imported handlers will only be fired if the validation has been successful.
                     // Consumers should implement validated handlers to alter the success of that operation.
                     await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
+
+                    importedContentItems.Add(importingItem);
                 }
                 else
                 {
@@ -774,12 +778,18 @@ public class DefaultContentManager : IContentManager
                     // Imported handlers will only be fired if the validation has been successful.
                     // Consumers should implement validated handlers to alter the success of that operation.
                     await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
+
+                    importedContentItems.Add(importingItem);
                 }
             }
 
             skip += _importBatchSize;
             batchedContentItems = contentItems.Skip(skip).Take(_importBatchSize);
         }
+
+        var importedContext = new ImportedContentsContext(importedContentItems, contentItems);
+
+        await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportCompletedAsync(context), importedContext, _logger);
     }
 
     public async Task UpdateAsync(ContentItem contentItem)

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Entities;
 using OrchardCore.Queries;
-using OrchardCore.Search.Lucene.Model;
+using OrchardCore.Search.Lucene.Models;
 
 namespace OrchardCore.Search.Lucene.Controllers;
 

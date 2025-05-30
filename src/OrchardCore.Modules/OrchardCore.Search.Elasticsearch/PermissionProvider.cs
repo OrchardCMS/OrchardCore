@@ -1,16 +1,15 @@
-using OrchardCore.Search.Elasticsearch.Core;
-using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Indexing;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.Elasticsearch;
 
 public sealed class PermissionProvider : IPermissionProvider
 {
-    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
+    private readonly IIndexEntityStore _indexStore;
 
-    public PermissionProvider(ElasticsearchIndexSettingsService elasticIndexSettingsService)
+    public PermissionProvider(IIndexEntityStore indexStore)
     {
-        _elasticIndexSettingsService = elasticIndexSettingsService;
+        _indexStore = indexStore;
     }
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -21,7 +20,7 @@ public sealed class PermissionProvider : IPermissionProvider
             ElasticsearchPermissions.QueryElasticApi,
         };
 
-        var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
+        var elasticIndexSettings = await _indexStore.GetAsync(ElasticsearchConstants.ProviderName);
 
         foreach (var index in elasticIndexSettings)
         {

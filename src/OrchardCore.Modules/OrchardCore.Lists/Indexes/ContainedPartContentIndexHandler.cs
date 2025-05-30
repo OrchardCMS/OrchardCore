@@ -17,12 +17,12 @@ public class ContainedPartContentIndexHandler : IContentItemIndexHandler
         }
 
         context.DocumentIndex.Set(
-            IndexingConstants.ContainedPartKey + IndexingConstants.IdsKey,
+            ContentIndexingConstants.ContainedPartKey + ContentIndexingConstants.IdsKey,
             parent.ListContentItemId,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         context.DocumentIndex.Set(
-            IndexingConstants.ContainedPartKey + IndexingConstants.OrderKey,
+            ContentIndexingConstants.ContainedPartKey + ContentIndexingConstants.OrderKey,
             parent.Order,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 

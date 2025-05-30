@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Indexing;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Queries;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -12,15 +13,15 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
 {
-    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
+    private readonly IIndexEntityStore _indexStore;
 
     internal readonly IStringLocalizer S;
 
     public ElasticsearchQueryDisplayDriver(
-        IStringLocalizer<ElasticsearchQueryDisplayDriver> stringLocalizer,
-        ElasticsearchIndexSettingsService elasticIndexSettingsService)
+        IIndexEntityStore indexStore,
+        IStringLocalizer<ElasticsearchQueryDisplayDriver> stringLocalizer)
     {
-        _elasticIndexSettingsService = elasticIndexSettingsService;
+        _indexStore = indexStore;
         S = stringLocalizer;
     }
 
@@ -51,7 +52,7 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
             model.Query = metadata.Template;
             model.Index = metadata.Index;
             model.ReturnContentItems = query.ReturnContentItems;
-            model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            model.Indices = (await _indexStore.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
 
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(metadata.Template))
