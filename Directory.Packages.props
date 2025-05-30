@@ -16,7 +16,7 @@
     <PackageVersion Include="Azure.Identity" Version="1.14.0" />
     <PackageVersion Include="Azure.Search.Documents" Version="11.6.0" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.24.0" />
-    <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.0" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.17.4" />
@@ -41,13 +41,13 @@
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.9.2" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.11.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />
     <PackageVersion Include="MimeKit" Version="4.12.0" />
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="ncrontab" Version="3.3.3" />
     <PackageVersion Include="NJsonSchema" Version="11.3.2" />
-    <PackageVersion Include="NLog.Web.AspNetCore" Version="5.4.0" />
+    <PackageVersion Include="NLog.Web.AspNetCore" Version="5.5.0" />
     <PackageVersion Include="NodaTime" Version="3.2.2" />
     <PackageVersion Include="OpenIddict.Core" Version="6.3.0" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.3.0" />
@@ -127,7 +127,7 @@
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
   <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
-    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="9.3.0" />
+    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="9.4.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.5" />
