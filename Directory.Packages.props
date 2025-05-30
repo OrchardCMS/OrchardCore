@@ -47,7 +47,7 @@
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="ncrontab" Version="3.3.3" />
     <PackageVersion Include="NJsonSchema" Version="11.3.2" />
-    <PackageVersion Include="NLog.Web.AspNetCore" Version="5.4.0" />
+    <PackageVersion Include="NLog.Web.AspNetCore" Version="5.5.0" />
     <PackageVersion Include="NodaTime" Version="3.2.2" />
     <PackageVersion Include="OpenIddict.Core" Version="6.3.0" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.3.0" />
@@ -139,7 +139,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="9.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.5" />
-    
+
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.5.0" />
 
@@ -160,10 +160,10 @@
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="8.0.16" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.16" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="8.0.16" />
-    
+
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
-    
+
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
   </ItemGroup>
