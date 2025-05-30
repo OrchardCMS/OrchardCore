@@ -176,6 +176,7 @@ public class DefaultMediaFileStore : IMediaFileStore
 
                     try
                     {
+                        creatingStream.Seek(0, SeekOrigin.Begin);
                         outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
                     }
                     finally
@@ -187,7 +188,16 @@ public class DefaultMediaFileStore : IMediaFileStore
                     }
                 }
 
-                return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
+                if (outputStream.CanSeek)
+                {
+                    outputStream.Seek(0, SeekOrigin.Begin);
+                    // Create the file in the file store using the final resultStream
+                    return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
+                }
+                else
+                {
+                    return await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+                }                
             }
             finally
             {
