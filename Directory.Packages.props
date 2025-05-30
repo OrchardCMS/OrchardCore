@@ -19,7 +19,7 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.3.0" />
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.17.4" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.18.1" />
     <PackageVersion Include="Fluid.Core" Version="2.24.0" />
     <PackageVersion Include="GraphQL" Version="8.5.0" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.5.0" />
@@ -139,7 +139,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="9.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.5" />
-    
+
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.5.0" />
 
@@ -160,10 +160,10 @@
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="8.0.16" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.16" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="8.0.16" />
-    
+
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
-    
+
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
   </ItemGroup>
