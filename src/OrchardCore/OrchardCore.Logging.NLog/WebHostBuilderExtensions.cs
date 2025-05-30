@@ -19,8 +19,13 @@ public static class WebHostBuilderExtensions
             {
                 var environment = context.HostingEnvironment;
                 var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
-                var configDir = string.IsNullOrWhiteSpace(appData) ? $"{environment.ContentRootPath}/{ShellOptionConstants.DefaultAppDataPath}" : appData;
-                LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
+                var configDir = string.IsNullOrWhiteSpace(appData) ? Path.Combine(environment.ContentRootPath, ShellOptionConstants.DefaultAppDataPath) : appData;
+                var loggerConfiguration = LogManager.Configuration;
+
+                if(loggerConfiguration is not null)
+                {
+                    loggerConfiguration.Variables["configDir"] = configDir;
+                }
             });
     }
 }
