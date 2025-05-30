@@ -47,7 +47,6 @@ public sealed class ElasticsearchIndexManager
         { ElasticsearchConstants.KeywordAnalyzer, typeof(KeywordAnalyzer) },
         { ElasticsearchConstants.WhitespaceAnalyzer, typeof(WhitespaceAnalyzer) },
         { ElasticsearchConstants.PatternAnalyzer, typeof(PatternAnalyzer) },
-        { ElasticsearchConstants.LanguageAnalyzer, typeof(LanguageAnalyzer) },
         { ElasticsearchConstants.FingerprintAnalyzer, typeof(FingerprintAnalyzer) },
         { ElasticsearchConstants.CustomAnalyzer, typeof(CustomAnalyzer) },
         { ElasticsearchConstants.StopAnalyzer, typeof(StopAnalyzer) },
@@ -246,33 +245,24 @@ public sealed class ElasticsearchIndexManager
                     [IndexingConstants.ContentTypeKey] = new KeywordProperty(),
                 },
 
-                DynamicTemplates = new List<IDictionary<string, DynamicTemplate>>(),
+                DynamicTemplates = [],
             },
         };
 
         var inheritedPostfix = DynamicTemplate.Mapping(new KeywordProperty());
         inheritedPostfix.PathMatch = [_inheritedPostfixPattern];
         inheritedPostfix.MatchMappingType = ["string"];
-        createIndexRequest.Mappings.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
-        {
-            { _inheritedPostfixPattern, inheritedPostfix },
-        });
+        createIndexRequest.Mappings.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_inheritedPostfixPattern, inheritedPostfix));
 
         var idsPostfix = DynamicTemplate.Mapping(new KeywordProperty());
         idsPostfix.PathMatch = [_idsPostfixPattern];
         idsPostfix.MatchMappingType = ["string"];
-        createIndexRequest.Mappings.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
-        {
-            { _idsPostfixPattern, idsPostfix },
-        });
+        createIndexRequest.Mappings.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_idsPostfixPattern, idsPostfix));
 
         var locationPostfix = DynamicTemplate.Mapping(new GeoPointProperty());
         locationPostfix.PathMatch = [_locationPostFixPattern];
         locationPostfix.MatchMappingType = ["object"];
-        createIndexRequest.Mappings.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
-        {
-            { _locationPostFixPattern, locationPostfix },
-        });
+        createIndexRequest.Mappings.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_locationPostFixPattern, locationPostfix));
 
         var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
 
