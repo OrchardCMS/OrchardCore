@@ -156,16 +156,14 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
                     if (close)
                     {
-                        if (action is not null)
-                        {
-                            action.Invoke(writer);
+                        action?.Invoke(writer);
 
-                            if (_indexPools.TryRemove(index.IndexFullName, out var pool))
-                            {
-                                pool.MakeDirty();
-                                pool.Release();
-                            }
+                        if (_indexPools.TryRemove(index.IndexFullName, out var pool))
+                        {
+                            pool.MakeDirty();
+                            pool.Release();
                         }
+
                         writer.IsClosing = true;
                         writer.Dispose();
 
