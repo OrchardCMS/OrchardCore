@@ -24,7 +24,9 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
 
-    private static readonly object _synLock = new();
+    private readonly object _synLock = new();
+
+    private readonly object _lock = new();
 
     private readonly string _rootPath;
     private readonly IClock _clock;
@@ -74,13 +76,13 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
         var removed = false;
 
-        lock (this)
+        lock (_lock)
         {
             if (_writers.TryGetValue(indexFullName, out var writer))
             {
                 writer.IsClosing = true;
                 writer.Dispose();
-                removed = true;
+                removed = _writers.TryRemove(indexFullName, out var removedWriter);
             }
 
             if (_indexPools.TryRemove(indexFullName, out var reader))
@@ -100,8 +102,6 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                 }
                 catch { }
             }
-
-            _writers.TryRemove(indexFullName, out _);
         }
 
         return Task.FromResult(removed);
@@ -109,6 +109,9 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
     public async Task SearchAsync(IndexEntity index, Func<IndexSearcher, Task> searcher)
     {
+        ArgumentNullException.ThrowIfNull(index);
+        ArgumentNullException.ThrowIfNull(searcher);
+
         if (!await ExistsAsync(index.IndexFullName))
         {
             return;
@@ -138,7 +141,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
             var analyzer = _analyzerManager.CreateAnalyzer(metadata.AnalyzerName ?? LuceneConstants.DefaultAnalyzer);
 
-            lock (this)
+            lock (_lock)
             {
                 if (!_writers.TryGetValue(index.IndexFullName, out writer))
                 {
@@ -163,19 +166,24 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                                 pool.Release();
                             }
                         }
-
+                        writer.IsClosing = true;
                         writer.Dispose();
-                        _timestamps.AddOrUpdate(index.IndexFullName, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
+
                         return Task.CompletedTask;
                     }
 
                     _writers.AddOrUpdate(index.IndexFullName, writer, (key, oldValue) => writer);
+                    _timestamps.AddOrUpdate(index.IndexFullName, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
                 }
             }
         }
 
         if (writer.IsClosing)
         {
+            _writers.TryRemove(index.IndexFullName, out var removedWriter);
+
+            removedWriter?.Dispose();
+
             return Task.CompletedTask;
         }
 
@@ -190,8 +198,12 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     {
         var pool = _indexPools.GetOrAdd(indexFullName, n =>
         {
-            var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexFullName));
-            var reader = DirectoryReader.Open(FSDirectory.Open(path));
+            var path = new DirectoryInfo(GetFullPath(indexFullName));
+
+            var directory = FSDirectory.Open(path);
+
+            var reader = DirectoryReader.Open(directory);
+
             return new IndexReaderPool(reader);
         });
 
@@ -203,7 +215,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
     private FSDirectory CreateDirectory(string indexFullName)
     {
-        lock (this)
+        lock (_lock)
         {
             var path = new DirectoryInfo(GetFullPath(indexFullName));
 
@@ -225,7 +237,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     /// </summary>
     public void FreeReaderWriter()
     {
-        lock (this)
+        lock (_lock)
         {
             foreach (var writer in _writers)
             {
