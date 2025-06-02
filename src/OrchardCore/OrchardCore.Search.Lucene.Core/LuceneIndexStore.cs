@@ -15,6 +15,7 @@ using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
 using LuceneLock = Lucene.Net.Store.Lock;
 using OpenMode = Lucene.Net.Index.OpenMode;
+
 namespace OrchardCore.Lucene.Core;
 
 public sealed class LuceneIndexStore : IDisposable
@@ -104,16 +105,18 @@ public sealed class LuceneIndexStore : IDisposable
 
     public async Task SearchAsync(IndexEntity index, Func<IndexSearcher, Task> searcher)
     {
-        if (Exists(index.IndexFullName))
+        if (!Exists(index.IndexFullName))
         {
-            using (var reader = GetReader(index.IndexFullName))
-            {
-                var indexSearcher = new IndexSearcher(reader.IndexReader);
-                await searcher(indexSearcher);
-            }
-
-            _timestamps[index.IndexFullName] = _clock.UtcNow;
+            return;
         }
+
+        using (var reader = GetReader(index.IndexFullName))
+        {
+            var indexSearcher = new IndexSearcher(reader.IndexReader);
+            await searcher(indexSearcher);
+        }
+
+        _timestamps.AddOrUpdate(index.IndexFullName, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
     }
 
     public Task WriteAndClose(IndexEntity index)
@@ -158,11 +161,11 @@ public sealed class LuceneIndexStore : IDisposable
                         }
 
                         writer.Dispose();
-                        _timestamps[index.IndexFullName] = _clock.UtcNow;
+                        _timestamps.AddOrUpdate(index.IndexFullName, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
                         return Task.CompletedTask;
                     }
 
-                    _writers[index.IndexFullName] = writer;
+                    _writers.AddOrUpdate(index.IndexFullName, writer, (key, oldValue) => writer);
                 }
             }
         }
@@ -174,7 +177,7 @@ public sealed class LuceneIndexStore : IDisposable
 
         action?.Invoke(writer);
 
-        _timestamps[index.IndexFullName] = _clock.UtcNow;
+        _timestamps.AddOrUpdate(index.IndexFullName, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
 
         return Task.CompletedTask;
     }

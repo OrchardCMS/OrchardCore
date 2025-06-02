@@ -22,8 +22,8 @@ namespace OrchardCore.Search.Lucene;
 /// </summary>
 public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 {
-    private readonly LuceneIndexStore _luceneStore;
-    private readonly LuceneIndexingState _luceneIndexingState;
+    private readonly LuceneIndexStore _indexStore;
+    private readonly LuceneIndexingState _indexingState;
     private readonly ILogger _logger;
 
     private readonly IEnumerable<IIndexEvents> _indexEvents;
@@ -31,14 +31,14 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     private readonly GeohashPrefixTree _grid;
 
     public LuceneIndexManager(
-        LuceneIndexStore luceneStore,
-        LuceneIndexingState luceneIndexingState,
+        LuceneIndexStore indexStore,
+        LuceneIndexingState indexingState,
         ILogger<LuceneIndexManager> logger,
         IEnumerable<IIndexEvents> indexEvents
         )
     {
-        _luceneStore = luceneStore;
-        _luceneIndexingState = luceneIndexingState;
+        _indexStore = indexStore;
+        _indexingState = indexingState;
         _logger = logger;
 
         _indexEvents = indexEvents;
@@ -67,7 +67,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         try
         {
-            await _luceneStore.WriteAndClose(index);
+            await _indexStore.WriteAndClose(index);
         }
         catch (Exception ex)
         {
@@ -91,12 +91,12 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         if (await ExistsAsync(index.IndexFullName))
         {
-            _luceneStore.Remove(index.IndexFullName);
+            _indexStore.Remove(index.IndexFullName);
         }
 
         try
         {
-            await _luceneStore.WriteAndClose(index);
+            await _indexStore.WriteAndClose(index);
         }
         catch (Exception ex)
         {
@@ -120,7 +120,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         try
         {
-            _luceneStore.Remove(indexFullName);
+            _indexStore.Remove(indexFullName);
         }
         catch (Exception ex)
         {
@@ -136,7 +136,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
     public Task<bool> ExistsAsync(string indexFullName)
     {
-        return Task.FromResult(_luceneStore.Exists(indexFullName));
+        return Task.FromResult(_indexStore.Exists(indexFullName));
     }
 
     public async Task<bool> DeleteDocumentsAsync(IndexEntity index, IEnumerable<string> documentIds)
@@ -149,7 +149,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             return false;
         }
 
-        await _luceneStore.WriteAsync(index, writer =>
+        await _indexStore.WriteAsync(index, writer =>
         {
             var metadata = index.As<LuceneIndexMetadata>();
 
@@ -169,7 +169,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         try
         {
-            await _luceneStore.WriteAsync(index, writer =>
+            await _indexStore.WriteAsync(index, writer =>
             {
                 foreach (var indexDocument in documents)
                 {
@@ -195,7 +195,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         try
         {
-            await _luceneStore.WriteAsync(index, writer =>
+            await _indexStore.WriteAsync(index, writer =>
             {
                 writer.DeleteAll();
                 writer.Commit();
@@ -215,15 +215,15 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        return Task.FromResult(_luceneIndexingState.GetLastTaskId(index.IndexFullName));
+        return Task.FromResult(_indexingState.GetLastTaskId(index.IndexFullName));
     }
 
     public Task SetLastTaskIdAsync(IndexEntity index, long lastTaskId)
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        _luceneIndexingState.SetLastTaskId(index.IndexFullName, lastTaskId);
-        _luceneIndexingState.Update();
+        _indexingState.SetLastTaskId(index.IndexFullName, lastTaskId);
+        _indexingState.Update();
 
         return Task.CompletedTask;
     }
@@ -232,7 +232,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
          => new LuceneContentIndexSettings();
 
     public Task SearchAsync(IndexEntity index, Func<IndexSearcher, Task> searcher)
-        => _luceneStore.SearchAsync(index, searcher);
+        => _indexStore.SearchAsync(index, searcher);
 
     private Document CreateLuceneDocument(DocumentIndexBase document, bool storeSourceData)
     {
