@@ -71,7 +71,7 @@ internal sealed class IndexingMigrations : DataMigration
 
             var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
             var indexNamingProvider = scope.ServiceProvider.GetKeyedService<IIndexNameProvider>(ElasticsearchConstants.ProviderName);
-            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexDocumentManager>();
+            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<ElasticsearchDocumentIndexManager>();
 
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
             var site = await siteService.LoadSiteSettingsAsync();

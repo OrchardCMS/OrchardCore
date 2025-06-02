@@ -12,16 +12,16 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public sealed class ElasticsearchIndexDocumentManager : IDocumentIndexManager
+public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 {
-    private readonly ElasticsearchClient _elasticClient;
+    private readonly ElasticsearchClient _client;
     private readonly ILogger _logger;
 
-    public ElasticsearchIndexDocumentManager(
-        ElasticsearchClient elasticsearchClient,
-        ILogger<ElasticsearchIndexDocumentManager> logger)
+    public ElasticsearchDocumentIndexManager(
+        ElasticsearchClient client,
+        ILogger<ElasticsearchDocumentIndexManager> logger)
     {
-        _elasticClient = elasticsearchClient;
+        _client = client;
         _logger = logger;
     }
 
@@ -29,7 +29,7 @@ public sealed class ElasticsearchIndexDocumentManager : IDocumentIndexManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        var response = await _elasticClient.DeleteByQueryAsync(index.IndexFullName, descriptor => descriptor
+        var response = await _client.DeleteByQueryAsync(index.IndexFullName, descriptor => descriptor
             .Query(q => q
                 .MatchAll(new MatchAllQuery())
              )
@@ -62,7 +62,7 @@ public sealed class ElasticsearchIndexDocumentManager : IDocumentIndexManager
 
         var metadata = index.As<ElasticsearchIndexMetadata>();
 
-        var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(index.IndexFullName, descriptor => descriptor
+        var response = await _client.DeleteByQueryAsync<Dictionary<string, object>>(index.IndexFullName, descriptor => descriptor
             .Query(q => q
                 .Bool(b => b
                     .Filter(f => f
@@ -117,14 +117,14 @@ public sealed class ElasticsearchIndexDocumentManager : IDocumentIndexManager
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(documents);
 
-        if (documents == null || !documents.Any())
+        if (!documents.Any())
         {
             return false;
         }
 
         foreach (var batch in documents.PagesOf(2500))
         {
-            var response = await _elasticClient.BulkAsync(index.IndexFullName, descriptor =>
+            var response = await _client.BulkAsync(index.IndexFullName, descriptor =>
             {
                 descriptor.Refresh(Refresh.True);
 
@@ -154,7 +154,7 @@ public sealed class ElasticsearchIndexDocumentManager : IDocumentIndexManager
     {
         ArgumentException.ThrowIfNullOrEmpty(indexFullName);
 
-        var response = await _elasticClient.Indices.GetMappingAsync<GetMappingResponse>(descriptor => descriptor
+        var response = await _client.Indices.GetMappingAsync<GetMappingResponse>(descriptor => descriptor
             .Indices(indexFullName)
         );
 
@@ -293,7 +293,7 @@ public sealed class ElasticsearchIndexDocumentManager : IDocumentIndexManager
             Meta = IndexingState,
         };
 
-        var response = await _elasticClient.Indices.PutMappingAsync(putMappingRequest);
+        var response = await _client.Indices.PutMappingAsync(putMappingRequest);
 
         if (!response.IsValidResponse)
         {

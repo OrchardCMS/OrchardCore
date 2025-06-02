@@ -11,18 +11,18 @@ using static OrchardCore.Indexing.DocumentIndexBase;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public sealed class AzureAISearchIndexDocumentManager : IDocumentIndexManager
+public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 {
     private readonly AzureAIClientFactory _clientFactory;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
     private readonly IIndexEntityStore _indexStore;
     private readonly ILogger _logger;
 
-    public AzureAISearchIndexDocumentManager(
+    public AzureAISearchDocumentIndexManager(
         AzureAIClientFactory clientFactory,
         IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
         IIndexEntityStore indexStore,
-        ILogger<AzureAISearchIndexDocumentManager> logger)
+        ILogger<AzureAISearchDocumentIndexManager> logger)
     {
         _clientFactory = clientFactory;
         _documentEvents = documentEvents;
@@ -140,7 +140,6 @@ public sealed class AzureAISearchIndexDocumentManager : IDocumentIndexManager
     public async Task<bool> MergeOrUploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndexBase> indexDocuments)
     {
         ArgumentNullException.ThrowIfNull(index);
-
         ArgumentNullException.ThrowIfNull(indexDocuments);
 
         if (!indexDocuments.Any())

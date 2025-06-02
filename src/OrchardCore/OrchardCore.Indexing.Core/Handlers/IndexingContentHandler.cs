@@ -16,6 +16,8 @@ public class IndexingContentHandler : ContentHandlerBase
 {
     private readonly Dictionary<string, ContentItem> _contentItems = [];
 
+    private readonly Dictionary<string, ContentItem> _removedContentItems = [];
+
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public IndexingContentHandler(IHttpContextAccessor httpContextAccessor)
@@ -24,30 +26,40 @@ public class IndexingContentHandler : ContentHandlerBase
     }
 
     public override Task PublishedAsync(PublishContentContext context)
-        => AddContextAsync(context.ContentItem);
+        => AddContentItemAsync(context.ContentItem);
 
     public override Task CreatedAsync(CreateContentContext context)
-        => AddContextAsync(context.ContentItem);
+        => AddContentItemAsync(context.ContentItem);
 
     public override Task UpdatedAsync(UpdateContentContext context)
-        => AddContextAsync(context.ContentItem);
+        => AddContentItemAsync(context.ContentItem);
 
     public override Task RemovedAsync(RemoveContentContext context)
-        => AddContextAsync(context.ContentItem);
+        => RemovedContentItemAsync(context.ContentItem);
+
+    public override Task DraftSavedAsync(SaveDraftContentContext context)
+        => AddContentItemAsync(context.ContentItem);
 
     public override Task UnpublishedAsync(PublishContentContext context)
-        => AddContextAsync(context.ContentItem);
+        => AddContentItemAsync(context.ContentItem);
 
-    public override Task ImportCompletedAsync(ImportedContentsContext context)
+    private Task RemovedContentItemAsync(ContentItem contentItem)
     {
-        var contentItems = context.ImportedItems;
+        if (contentItem.Id == 0)
+        {
+            // Ignore that case, when Update is called on a content item which has not been created yet.
+            return Task.CompletedTask;
+        }
 
-        ShellScope.AddDeferredTask(scope => IndexAsync(scope, contentItems));
+        AddDeferredTask();
+
+        // Store the last content item in the request.
+        _removedContentItems[contentItem.ContentItemId] = contentItem;
 
         return Task.CompletedTask;
     }
 
-    private Task AddContextAsync(ContentItem contentItem)
+    private Task AddContentItemAsync(ContentItem contentItem)
     {
         // Do not index a preview content item.
         if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
@@ -61,13 +73,7 @@ public class IndexingContentHandler : ContentHandlerBase
             return Task.CompletedTask;
         }
 
-        if (_contentItems.Count == 0)
-        {
-            var contentItems = _contentItems;
-
-            // Using a local variable prevents the lambda from holding a ref on this scoped service.
-            ShellScope.AddDeferredTask(scope => IndexAsync(scope, contentItems.Values));
-        }
+        AddDeferredTask();
 
         // Store the last content item in the request.
         _contentItems[contentItem.ContentItemId] = contentItem;
@@ -75,9 +81,27 @@ public class IndexingContentHandler : ContentHandlerBase
         return Task.CompletedTask;
     }
 
-    private static async Task IndexAsync(ShellScope scope, IEnumerable<ContentItem> contentItems)
+    private bool _taskAdded;
+
+    private void AddDeferredTask()
     {
-        if (!contentItems.Any())
+        if (_taskAdded)
+        {
+            return;
+        }
+
+        _taskAdded = true;
+
+        // Using a local variable prevents the lambda from holding a ref on this scoped service.
+        var contentItems = _contentItems;
+        var removedContentItems = _removedContentItems;
+
+        ShellScope.AddDeferredTask(scope => IndexAsync(scope, contentItems.Values, removedContentItems.Keys));
+    }
+
+    private static async Task IndexAsync(ShellScope scope, IEnumerable<ContentItem> contentItems, IEnumerable<string> removedIds)
+    {
+        if (!contentItems.Any() && !removedIds.Any())
         {
             return;
         }
@@ -98,7 +122,12 @@ public class IndexingContentHandler : ContentHandlerBase
 
         var logger = services.GetRequiredService<ILogger<IndexingContentHandler>>();
 
+        var allContentItems = contentItems.Select(x => x.ContentItemId).ToArray();
+
         // Multiple items may have been updated in the same scope, e.g through a recipe.
+
+        var cultureAspects = new Dictionary<string, CultureAspect>();
+
         foreach (var index in indexes)
         {
             var metadata = index.As<ContentIndexMetadata>();
@@ -111,6 +140,9 @@ public class IndexingContentHandler : ContentHandlerBase
                 continue;
             }
 
+            var documents = new List<DocumentIndex>();
+            var anyCulture = string.IsNullOrEmpty(metadata.Culture) || metadata.Culture == "any";
+
             foreach (var contentItem in contentItems)
             {
                 if (!contentTypes.Contains(contentItem.ContentType))
@@ -118,15 +150,18 @@ public class IndexingContentHandler : ContentHandlerBase
                     continue;
                 }
 
-                await documentIndexManager.DeleteDocumentsAsync(index, [contentItem.ContentItemId]);
-
-                var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(contentItem);
-                var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                var ignoreIndexedCulture = metadata.Culture != "any" && culture != metadata.Culture;
-
-                if (ignoreIndexedCulture)
+                if (!anyCulture)
                 {
-                    continue;
+                    if (!cultureAspects.TryGetValue(contentItem.ContentItemVersionId ?? contentItem.ContentItemId, out var cultureAspect))
+                    {
+                        cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(contentItem);
+                        cultureAspects[contentItem.ContentItemVersionId ?? contentItem.ContentItemId] = cultureAspect;
+                    }
+
+                    if (cultureAspect.Culture?.Name != metadata.Culture)
+                    {
+                        continue;
+                    }
                 }
 
                 if (metadata.IndexLatest && !contentItem.Latest)
@@ -145,9 +180,20 @@ public class IndexingContentHandler : ContentHandlerBase
 
                 await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
-                await documentIndexManager.MergeOrUploadDocumentsAsync(index, [buildIndexContext.DocumentIndex]);
+                documents.Add(document);
             }
-        }
 
+            // Delete all of the documents that we'll be updating in this scope.
+            await documentIndexManager.DeleteDocumentsAsync(index, contentItems.Select(x => x.ContentItemId));
+
+            if (documents.Count > 0)
+            {
+                // Update all of the documents that were updated in this scope.
+                await documentIndexManager.MergeOrUploadDocumentsAsync(index, documents);
+            }
+
+            // At the end of the indexing, we remove the documents that were removed in the same scope.
+            await documentIndexManager.DeleteDocumentsAsync(index, removedIds);
+        }
     }
 }

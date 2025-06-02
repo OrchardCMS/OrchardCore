@@ -9,62 +9,75 @@ namespace OrchardCore.Search.Lucene;
 /// This class persists the indexing state, a cursor, on the filesystem alongside the index itself.
 /// This state has to be on the filesystem as each node has its own local storage for the index.
 /// </summary>
-public class LuceneIndexingState
+public class LuceneIndexingState : ILuceneIndexingState
 {
-    private readonly string _indexSettingsFilename;
-    private readonly JsonObject _content;
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly string _stateFileName;
+
+    private JsonObject _stateDocument;
 
     public LuceneIndexingState(
         IOptions<ShellOptions> shellOptions,
         ShellSettings shellSettings
         )
     {
-        _indexSettingsFilename = PathExtensions.Combine(
+        _stateFileName = PathExtensions.Combine(
             shellOptions.Value.ShellsApplicationDataPath,
             shellOptions.Value.ShellsContainerName,
             shellSettings.Name,
             "lucene.status.json");
-
-        if (!File.Exists(_indexSettingsFilename))
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
-
-            File.WriteAllText(_indexSettingsFilename, new JsonObject().ToJsonString(JOptions.Indented));
-        }
-
-        _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename));
     }
 
-    public long GetLastTaskId(string indexName)
+    public async Task<long> GetLastTaskIdAsync(string indexFullName)
     {
-        if (_content.TryGetPropertyValue(indexName, out var value))
+        ArgumentNullException.ThrowIfNull(indexFullName);
+
+        await EnsureContentIsSetAsync();
+
+        if (_stateDocument.TryGetPropertyValue(indexFullName, out var value))
         {
             return value.Value<long>();
         }
-        else
-        {
-            lock (this)
-            {
-                _content.Add(indexName, JsonValue.Create<long>(0));
-            }
 
-            return 0L;
+        await SetLastTaskIdAsync(indexFullName, 0);
+
+        return 0;
+    }
+
+    public async Task SetLastTaskIdAsync(string indexFullName, long taskId)
+    {
+        ArgumentNullException.ThrowIfNull(indexFullName);
+
+        await EnsureContentIsSetAsync();
+
+        await _semaphore.WaitAsync();
+
+        _stateDocument[indexFullName] = taskId > 0 ? taskId : 0;
+
+        try
+        {
+            await File.WriteAllTextAsync(_stateFileName, _stateDocument.ToJsonString(JOptions.Indented));
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 
-    public void SetLastTaskId(string indexName, long taskId)
+    private async Task EnsureContentIsSetAsync()
     {
-        lock (this)
+        if (_stateDocument is not null)
         {
-            _content[indexName] = taskId;
+            return;
         }
-    }
 
-    public void Update()
-    {
-        lock (this)
+        if (!File.Exists(_stateFileName))
         {
-            File.WriteAllText(_indexSettingsFilename, _content.ToJsonString(JOptions.Indented));
+            Directory.CreateDirectory(Path.GetDirectoryName(_stateFileName));
+
+            await File.WriteAllTextAsync(_stateFileName, new JsonObject().ToJsonString(JOptions.Indented));
         }
+
+        _stateDocument = JObject.Parse(await File.ReadAllTextAsync(_stateFileName));
     }
 }

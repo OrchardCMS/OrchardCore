@@ -73,7 +73,7 @@ public sealed class ContentsStartup : StartupBase
 
         services
             .AddIndexEntityHandler<AzureAISearchContentIndexEntityHandler>()
-            .AddIndexingSource<AzureAISearchIndexManager, AzureAISearchIndexDocumentManager, AzureAISearchIndexNameProvider, AzureAISearchDefaultOptions>(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
+            .AddIndexingSource<AzureAISearchIndexManager, AzureAISearchDocumentIndexManager, AzureAISearchIndexNameProvider, AzureAISearchDefaultOptions>(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
             {
                 o.DisplayName = S["Content in Azure AI Search"];
                 o.Description = S["Create an Azure AI Search index based on site contents."];

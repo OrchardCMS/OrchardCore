@@ -18,7 +18,7 @@ using OpenMode = Lucene.Net.Index.OpenMode;
 
 namespace OrchardCore.Lucene.Core;
 
-public sealed class LuceneIndexStore : IDisposable
+public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 {
     private readonly ConcurrentDictionary<string, IndexReaderPool> _indexPools = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new(StringComparer.OrdinalIgnoreCase);
@@ -50,7 +50,7 @@ public sealed class LuceneIndexStore : IDisposable
         Directory.CreateDirectory(_rootPath);
     }
 
-    public bool Exists(string indexFullName)
+    public Task<bool> ExistsAsync(string indexFullName)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexFullName);
 
@@ -58,19 +58,21 @@ public sealed class LuceneIndexStore : IDisposable
         {
             var path = GetFullPath(indexFullName);
 
-            return Directory.Exists(path);
+            return Task.FromResult(Directory.Exists(path));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error checking existence of index: {IndexFullName}", indexFullName);
 
-            return false;
+            return Task.FromResult(false);
         }
     }
 
-    public void Remove(string indexFullName)
+    public Task<bool> RemoveAsync(string indexFullName)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexFullName);
+
+        var removed = false;
 
         lock (this)
         {
@@ -78,6 +80,7 @@ public sealed class LuceneIndexStore : IDisposable
             {
                 writer.IsClosing = true;
                 writer.Dispose();
+                removed = true;
             }
 
             if (_indexPools.TryRemove(indexFullName, out var reader))
@@ -101,11 +104,12 @@ public sealed class LuceneIndexStore : IDisposable
             _writers.TryRemove(indexFullName, out _);
         }
 
+        return Task.FromResult(removed);
     }
 
     public async Task SearchAsync(IndexEntity index, Func<IndexSearcher, Task> searcher)
     {
-        if (!Exists(index.IndexFullName))
+        if (!await ExistsAsync(index.IndexFullName))
         {
             return;
         }
@@ -197,11 +201,11 @@ public sealed class LuceneIndexStore : IDisposable
     private string GetFullPath(string indexFullName)
         => PathExtensions.Combine(_rootPath, indexFullName);
 
-    private FSDirectory CreateDirectory(string indexName)
+    private FSDirectory CreateDirectory(string indexFullName)
     {
         lock (this)
         {
-            var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
+            var path = new DirectoryInfo(GetFullPath(indexFullName));
 
             if (!path.Exists)
             {
@@ -277,7 +281,8 @@ public sealed class LuceneIndexStore : IDisposable
 
 internal sealed class IndexWriterWrapper : IndexWriter
 {
-    public IndexWriterWrapper(LDirectory directory, IndexWriterConfig config) : base(directory, config)
+    public IndexWriterWrapper(LDirectory directory, IndexWriterConfig config)
+        : base(directory, config)
     {
         IsClosing = false;
     }

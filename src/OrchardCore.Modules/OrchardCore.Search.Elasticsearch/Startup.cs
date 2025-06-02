@@ -99,7 +99,7 @@ public sealed class ContentsStartup : StartupBase
 
         services
             .AddIndexEntityHandler<ElasticsearchContentIndexEntityHandler>()
-            .AddIndexingSource<ElasticsearchIndexManager, ElasticsearchIndexDocumentManager, ElasticsearchIndexNameProvider, ElasticsearchConnectionOptions>(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
+            .AddIndexingSource<ElasticsearchIndexManager, ElasticsearchDocumentIndexManager, ElasticsearchIndexNameProvider, ElasticsearchConnectionOptions>(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
             {
                 o.DisplayName = S["Content in Elasticsearch"];
                 o.Description = S["Create an Elasticsearch index based on site contents."];

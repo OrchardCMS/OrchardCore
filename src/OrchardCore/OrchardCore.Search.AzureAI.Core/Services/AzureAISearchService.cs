@@ -10,18 +10,18 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAISearchService : ISearchService
+public sealed class AzureAISearchService : ISearchService
 {
-    private readonly AzureAISearchIndexDocumentManager _indexDocumentManager;
+    private readonly AzureAISearchDocumentIndexManager _indexDocumentManager;
     private readonly ILogger<AzureAISearchService> _logger;
     private readonly AzureAISearchDefaultOptions _azureAIOptions;
 
     public AzureAISearchService(
-        AzureAISearchIndexDocumentManager indexDocumentManager,
+        AzureAISearchDocumentIndexManager documentManager,
         ILogger<AzureAISearchService> logger,
         IOptions<AzureAISearchDefaultOptions> azureAIOptions)
     {
-        _indexDocumentManager = indexDocumentManager;
+        _indexDocumentManager = documentManager;
         _logger = logger;
         _azureAIOptions = azureAIOptions.Value;
     }

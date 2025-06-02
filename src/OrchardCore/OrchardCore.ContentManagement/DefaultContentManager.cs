@@ -644,9 +644,7 @@ public class DefaultContentManager : IContentManager
     }
 
     public Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion)
-    {
-        return UpdateContentItemVersionAsync(updatingVersion, updatedVersion, null);
-    }
+        => UpdateContentItemVersionAsync(updatingVersion, updatedVersion, null);
 
     public async Task ImportAsync(IEnumerable<ContentItem> contentItems)
     {
@@ -999,20 +997,18 @@ public class DefaultContentManager : IContentManager
         var context = new CreateContentContext(contentItem);
         await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
 
+        var result = await ValidateAsync(contentItem);
+        if (!result.Succeeded)
+        {
+            return result;
+        }
+
         // The content item should be placed in the session store so that further calls
         // to ContentManager.Get by a scoped index provider will resolve the imported item correctly.
         await _session.SaveAsync(contentItem);
         _contentManagerSession.Store(contentItem);
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
-
-        await UpdateAsync(contentItem);
-
-        var result = await ValidateAsync(contentItem);
-        if (!result.Succeeded)
-        {
-            return result;
-        }
 
         if (contentItem.Published)
         {

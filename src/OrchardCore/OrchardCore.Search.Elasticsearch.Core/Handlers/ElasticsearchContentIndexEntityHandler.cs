@@ -21,6 +21,9 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
     public override Task InitializingAsync(InitializingContext<IndexEntity> context)
        => PopulateAsync(context.Model, context.Data);
 
+    public override Task UpdatingAsync(UpdatingContext<IndexEntity> context)
+        => PopulateAsync(context.Model, context.Data);
+
     private static Task PopulateAsync(IndexEntity index, JsonNode data)
     {
         if (!CanHandle(index))
@@ -45,7 +48,7 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
             },
         };
 
-        PopulateTypeMapping(map.Mapping);
+        PopulateTypeMapping(map.Mapping, index.As<ElasticsearchContentIndexMetadata>().StoreSourceData);
 
         metadata.IndexMappings = map;
 
@@ -71,38 +74,41 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
             string.Equals(IndexingConstants.ContentsIndexSource, index.Type, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static void PopulateTypeMapping(TypeMapping mapping)
+    private static void PopulateTypeMapping(TypeMapping mapping, bool storeSource)
     {
-        mapping.Properties[ContentIndexingConstants.ContentItemIdKey] = new KeywordProperty();
-        mapping.Properties[ContentIndexingConstants.ContentItemVersionIdKey] = new KeywordProperty();
-        mapping.Properties[ContentIndexingConstants.OwnerKey] = new KeywordProperty();
-        mapping.Properties[ContentIndexingConstants.FullTextKey] = new TextProperty();
-
-        mapping.Properties[ContentIndexingConstants.ContainedPartKey] = new ObjectProperty
+        if (storeSource)
         {
-            Properties = new Properties
-            {
-                [nameof(ContainedPartModel.Ids)] = new KeywordProperty(),
-                [nameof(ContainedPartModel.Order)] = new FloatNumberProperty(),
-            },
-        };
+            mapping.Properties[ContentIndexingConstants.ContentItemIdKey] = new KeywordProperty();
+            mapping.Properties[ContentIndexingConstants.ContentItemVersionIdKey] = new KeywordProperty();
+            mapping.Properties[ContentIndexingConstants.OwnerKey] = new KeywordProperty();
+            mapping.Properties[ContentIndexingConstants.FullTextKey] = new TextProperty();
 
-        // We map DisplayText here because we have 3 different fields with it.
-        // We can't have Content.ContentItem.DisplayText as it is mapped as an Object in Elasticsearch.
-        mapping.Properties[ContentIndexingConstants.DisplayTextKey] = new ObjectProperty
-        {
-            Properties = new Properties
+            mapping.Properties[ContentIndexingConstants.ContainedPartKey] = new ObjectProperty
             {
-                [nameof(DisplayTextModel.Analyzed)] = new TextProperty(),
-                [nameof(DisplayTextModel.Normalized)] = new KeywordProperty(),
-                [nameof(DisplayTextModel.Keyword)] = new KeywordProperty(),
-            },
-        };
+                Properties = new Properties
+                {
+                    [nameof(ContainedPartModel.Ids)] = new KeywordProperty(),
+                    [nameof(ContainedPartModel.Order)] = new FloatNumberProperty(),
+                },
+            };
 
-        // We map ContentType as a keyword because else the automatic mapping will break the queries.
-        // We need to access it with Content.ContentItem.ContentType as a keyword
-        // for the ContentPickerResultProvider(s).
-        mapping.Properties[ContentIndexingConstants.ContentTypeKey] = new KeywordProperty();
+            // We map DisplayText here because we have 3 different fields with it.
+            // We can't have Content.ContentItem.DisplayText as it is mapped as an Object in Elasticsearch.
+            mapping.Properties[ContentIndexingConstants.DisplayTextKey] = new ObjectProperty
+            {
+                Properties = new Properties
+                {
+                    [nameof(DisplayTextModel.Analyzed)] = new TextProperty(),
+                    [nameof(DisplayTextModel.Normalized)] = new KeywordProperty(),
+                    [nameof(DisplayTextModel.Keyword)] = new KeywordProperty(),
+                },
+            };
+
+            // We map ContentType as a keyword because else the automatic mapping will break the queries.
+            // We need to access it with Content.ContentItem.ContentType as a keyword
+            // for the ContentPickerResultProvider(s).
+            mapping.Properties[ContentIndexingConstants.ContentTypeKey] = new KeywordProperty();
+        }
 
         mapping.DynamicTemplates ??= [];
 

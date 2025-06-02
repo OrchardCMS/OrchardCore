@@ -14,8 +14,6 @@ public static class ServiceCollectionExtensions
         services.AddAzureClientsCore();
         services.AddTransient<IConfigureOptions<AzureAISearchDefaultOptions>, AzureAISearchDefaultOptionsConfigurations>();
 
-        services.AddScoped<AzureAISearchIndexDocumentManager>();
-
         services.AddScoped<IAzureAISearchFieldIndexEvents, DefaultAzureAISearchFieldIndexEvents>();
         services.AddSingleton<AzureAIClientFactory>();
 

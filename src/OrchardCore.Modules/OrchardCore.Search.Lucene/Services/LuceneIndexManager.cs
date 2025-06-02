@@ -22,8 +22,8 @@ namespace OrchardCore.Search.Lucene;
 /// </summary>
 public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 {
-    private readonly LuceneIndexStore _indexStore;
-    private readonly LuceneIndexingState _indexingState;
+    private readonly ILuceneIndexStore _indexStore;
+    private readonly ILuceneIndexingState _indexingState;
     private readonly ILogger _logger;
 
     private readonly IEnumerable<IIndexEvents> _indexEvents;
@@ -31,8 +31,8 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     private readonly GeohashPrefixTree _grid;
 
     public LuceneIndexManager(
-        LuceneIndexStore indexStore,
-        LuceneIndexingState indexingState,
+        ILuceneIndexStore indexStore,
+        ILuceneIndexingState indexingState,
         ILogger<LuceneIndexManager> logger,
         IEnumerable<IIndexEvents> indexEvents
         )
@@ -91,7 +91,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         if (await ExistsAsync(index.IndexFullName))
         {
-            _indexStore.Remove(index.IndexFullName);
+            await _indexStore.RemoveAsync(index.IndexFullName);
         }
 
         try
@@ -120,7 +120,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         try
         {
-            _indexStore.Remove(indexFullName);
+            await _indexStore.RemoveAsync(indexFullName);
         }
         catch (Exception ex)
         {
@@ -135,9 +135,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     }
 
     public Task<bool> ExistsAsync(string indexFullName)
-    {
-        return Task.FromResult(_indexStore.Exists(indexFullName));
-    }
+        => _indexStore.ExistsAsync(indexFullName);
 
     public async Task<bool> DeleteDocumentsAsync(IndexEntity index, IEnumerable<string> documentIds)
     {
@@ -164,6 +162,12 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     public async Task<bool> MergeOrUploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndexBase> documents)
     {
         ArgumentNullException.ThrowIfNull(index);
+        ArgumentNullException.ThrowIfNull(documents);
+
+        if (!documents.Any())
+        {
+            return false;
+        }
 
         var contentMetadata = index.As<LuceneContentIndexMetadata>();
 
@@ -212,21 +216,10 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     }
 
     public Task<long> GetLastTaskIdAsync(IndexEntity index)
-    {
-        ArgumentNullException.ThrowIfNull(index);
-
-        return Task.FromResult(_indexingState.GetLastTaskId(index.IndexFullName));
-    }
+        => _indexingState.GetLastTaskIdAsync(index.IndexFullName);
 
     public Task SetLastTaskIdAsync(IndexEntity index, long lastTaskId)
-    {
-        ArgumentNullException.ThrowIfNull(index);
-
-        _indexingState.SetLastTaskId(index.IndexFullName, lastTaskId);
-        _indexingState.Update();
-
-        return Task.CompletedTask;
-    }
+        => _indexingState.SetLastTaskIdAsync(index.IndexFullName, lastTaskId);
 
     public IContentIndexSettings GetContentIndexSettings()
          => new LuceneContentIndexSettings();
