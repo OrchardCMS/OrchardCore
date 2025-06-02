@@ -104,41 +104,39 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
         // for the ContentPickerResultProvider(s).
         mapping.Properties[ContentIndexingConstants.ContentTypeKey] = new KeywordProperty();
 
-        Dictionary<string, DynamicTemplate> dynamicTemplates;
+        mapping.DynamicTemplates ??= [];
 
-        if (mapping.DynamicTemplates is not null && mapping.DynamicTemplates.Count > 0)
-        {
-            dynamicTemplates = new Dictionary<string, DynamicTemplate>(mapping.DynamicTemplates);
-        }
-        else
-        {
-            dynamicTemplates = new Dictionary<string, DynamicTemplate>();
-        }
-
-        if (!dynamicTemplates.ContainsKey(_inheritedPostfixPattern))
+        if (!mapping.DynamicTemplates.Any(x => x.ContainsKey(_inheritedPostfixPattern)))
         {
             var inheritedPostfix = DynamicTemplate.Mapping(new KeywordProperty());
             inheritedPostfix.PathMatch = [_inheritedPostfixPattern];
             inheritedPostfix.MatchMappingType = ["string"];
-            dynamicTemplates.Add(_inheritedPostfixPattern, inheritedPostfix);
+            mapping.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
+            {
+                { _inheritedPostfixPattern, inheritedPostfix },
+            });
         }
 
-        if (!dynamicTemplates.ContainsKey(_idsPostfixPattern))
+        if (!mapping.DynamicTemplates.Any(x => x.ContainsKey(_idsPostfixPattern)))
         {
             var idsPostfix = DynamicTemplate.Mapping(new KeywordProperty());
             idsPostfix.PathMatch = [_idsPostfixPattern];
             idsPostfix.MatchMappingType = ["string"];
-            dynamicTemplates.Add(_idsPostfixPattern, idsPostfix);
+            mapping.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
+            {
+                { _idsPostfixPattern, idsPostfix },
+            });
         }
 
-        if (!dynamicTemplates.ContainsKey(_locationPostFixPattern))
+        if (!mapping.DynamicTemplates.Any(x => x.ContainsKey(_locationPostFixPattern)))
         {
             var locationPostfix = DynamicTemplate.Mapping(new GeoPointProperty());
             locationPostfix.PathMatch = [_locationPostFixPattern];
             locationPostfix.MatchMappingType = ["object"];
-            dynamicTemplates.Add(_locationPostFixPattern, locationPostfix);
+            mapping.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
+            {
+                { _locationPostFixPattern, locationPostfix },
+            });
         }
-
-        mapping.DynamicTemplates = dynamicTemplates;
     }
 }
