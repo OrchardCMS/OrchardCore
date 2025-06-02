@@ -4,6 +4,7 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Analysis;
 using Elastic.Clients.Elasticsearch.Fluent;
 using Elastic.Clients.Elasticsearch.IndexManagement;
+using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Transport;
 using Elastic.Transport.Extensions;
 using Microsoft.Extensions.Logging;
@@ -450,7 +451,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         var createIndexRequest = new CreateIndexRequest(index.IndexFullName)
         {
             Settings = indexSettings,
-            Mappings = metadata.IndexMappings.Mapping,
+            Mappings = metadata.IndexMappings.Mapping ?? new TypeMapping(),
         };
 
         // Custom metadata to store the last indexing task id.

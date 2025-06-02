@@ -6,23 +6,31 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
 public class ElasticsearchClientFactory
 {
-    public static ElasticsearchClient Create(ElasticsearchConnectionOptions elasticConfiguration)
+    public static ElasticsearchClient Create(ElasticsearchConnectionOptions configuration)
     {
-        var settings = elasticConfiguration.ConnectionType switch
+        var settings = configuration.ConnectionType switch
         {
-            ElasticsearchConnectionType.CloudConnectionPool => new ElasticsearchClientSettings(elasticConfiguration.CloudId, new BasicAuthentication(elasticConfiguration.Username, elasticConfiguration.Password)),
-            ElasticsearchConnectionType.StaticConnectionPool => new ElasticsearchClientSettings(new StaticNodePool(GetNodeUris(elasticConfiguration))),
-            ElasticsearchConnectionType.SniffingConnectionPool => new ElasticsearchClientSettings(new SniffingNodePool(GetNodeUris(elasticConfiguration))),
-            ElasticsearchConnectionType.StickyConnectionPool => new ElasticsearchClientSettings(new StickyNodePool(GetNodeUris(elasticConfiguration))),
-            _ => new ElasticsearchClientSettings(GetNodeUris(elasticConfiguration).FirstOrDefault()),
+            ElasticsearchConnectionType.CloudConnectionPool => new ElasticsearchClientSettings(configuration.CloudId, new BasicAuthentication(configuration.Username, configuration.Password)),
+            ElasticsearchConnectionType.StaticConnectionPool => new ElasticsearchClientSettings(new StaticNodePool(GetNodeUris(configuration))),
+            ElasticsearchConnectionType.SniffingConnectionPool => new ElasticsearchClientSettings(new SniffingNodePool(GetNodeUris(configuration))),
+            ElasticsearchConnectionType.StickyConnectionPool => new ElasticsearchClientSettings(new StickyNodePool(GetNodeUris(configuration))),
+            _ => new ElasticsearchClientSettings(GetNodeUris(configuration).FirstOrDefault()),
         };
 
-        if (!string.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
+        if (!string.IsNullOrWhiteSpace(configuration.CertificateFingerprint))
         {
-            settings.CertificateFingerprint(elasticConfiguration.CertificateFingerprint);
+            settings.CertificateFingerprint(configuration.CertificateFingerprint);
         }
 
-        settings.EnableHttpCompression();
+        if (configuration.EnableDebugMode)
+        {
+            settings.EnableDebugMode();
+        }
+
+        if (configuration.EnableHttpCompression)
+        {
+            settings.EnableHttpCompression();
+        }
 
         return new ElasticsearchClient(settings);
     }

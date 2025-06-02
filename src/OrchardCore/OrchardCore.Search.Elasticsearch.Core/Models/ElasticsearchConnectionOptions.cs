@@ -35,6 +35,16 @@ public class ElasticsearchConnectionOptions : ISearchProviderOptions
     public string Password { get; set; }
 
     /// <summary>
+    /// Enable the Http Compression.
+    /// </summary>
+    public bool EnableHttpCompression { get; set; } = true;
+
+    /// <summary>
+    /// Enable the debug mode.
+    /// </summary>
+    public bool EnableDebugMode { get; set; }
+
+    /// <summary>
     /// The server Certificate Fingerprint.
     /// </summary>
     public string CertificateFingerprint { get; set; }

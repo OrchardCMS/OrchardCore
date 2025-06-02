@@ -104,28 +104,41 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
         // for the ContentPickerResultProvider(s).
         mapping.Properties[ContentIndexingConstants.ContentTypeKey] = new KeywordProperty();
 
-        if (!mapping.DynamicTemplates.Any(x => x.Key == _inheritedPostfixPattern))
+        Dictionary<string, DynamicTemplate> dynamicTemplates;
+
+        if (mapping.DynamicTemplates is not null && mapping.DynamicTemplates.Count > 0)
+        {
+            dynamicTemplates = new Dictionary<string, DynamicTemplate>(mapping.DynamicTemplates);
+        }
+        else
+        {
+            dynamicTemplates = new Dictionary<string, DynamicTemplate>();
+        }
+
+        if (!dynamicTemplates.ContainsKey(_inheritedPostfixPattern))
         {
             var inheritedPostfix = DynamicTemplate.Mapping(new KeywordProperty());
             inheritedPostfix.PathMatch = [_inheritedPostfixPattern];
             inheritedPostfix.MatchMappingType = ["string"];
-            mapping.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_inheritedPostfixPattern, inheritedPostfix));
+            dynamicTemplates.Add(_inheritedPostfixPattern, inheritedPostfix);
         }
 
-        if (!mapping.DynamicTemplates.Any(x => x.Key == _idsPostfixPattern))
+        if (!dynamicTemplates.ContainsKey(_idsPostfixPattern))
         {
             var idsPostfix = DynamicTemplate.Mapping(new KeywordProperty());
             idsPostfix.PathMatch = [_idsPostfixPattern];
             idsPostfix.MatchMappingType = ["string"];
-            mapping.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_idsPostfixPattern, idsPostfix));
+            dynamicTemplates.Add(_idsPostfixPattern, idsPostfix);
         }
 
-        if (!mapping.DynamicTemplates.Any(x => x.Key == _locationPostFixPattern))
+        if (!dynamicTemplates.ContainsKey(_locationPostFixPattern))
         {
             var locationPostfix = DynamicTemplate.Mapping(new GeoPointProperty());
             locationPostfix.PathMatch = [_locationPostFixPattern];
             locationPostfix.MatchMappingType = ["object"];
-            mapping.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_locationPostFixPattern, locationPostfix));
+            dynamicTemplates.Add(_locationPostFixPattern, locationPostfix);
         }
+
+        mapping.DynamicTemplates = dynamicTemplates;
     }
 }
