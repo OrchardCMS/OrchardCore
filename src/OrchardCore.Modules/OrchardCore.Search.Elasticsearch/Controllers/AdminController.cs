@@ -83,12 +83,17 @@ public sealed class AdminController : Controller
         });
     }
 
-    [Admin("elasticsearch/Query/{id}", "Elasticsearch.Query")]
-    public Task<IActionResult> Query(string id, string query = null)
+    [Admin("elasticsearch/Query/{id?}", "Elasticsearch.Query")]
+    public async Task<IActionResult> Query(string id, string query = null)
     {
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
+        {
+            return Forbid();
+        }
+
         if (!_elasticConnectionOptions.ConfigurationExists())
         {
-            return Task.FromResult<IActionResult>(NotConfigured());
+            return NotConfigured();
         }
 
         var matchAllQuery = GetMatchAllQuery();
@@ -98,14 +103,25 @@ public sealed class AdminController : Controller
             query = matchAllQuery;
         }
 
-        return Query(new AdminQueryViewModel
+        var model = new AdminQueryViewModel
         {
             Id = id,
             MatchAllQuery = matchAllQuery,
             DecodedQuery = string.IsNullOrWhiteSpace(query)
-            ? string.Empty
-            : Base64.FromUTF8Base64String(query),
-        });
+                ? string.Empty
+                : Base64.FromUTF8Base64String(query),
+        };
+
+        if (!string.IsNullOrEmpty(id))
+        {
+            return await Query(model);
+        }
+
+        model.Indexes = (await _indexEntityStore.GetAsync(ElasticsearchConstants.ProviderName))
+            .Select(x => new SelectListItem(x.DisplayText, x.Id))
+            .OrderBy(x => x.Text);
+
+        return View(model);
     }
 
     [HttpPost]
@@ -122,9 +138,14 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        if (string.IsNullOrEmpty(model.Id))
+        model.MatchAllQuery = GetMatchAllQuery();
+        model.Indexes = (await _indexEntityStore.GetAsync(ElasticsearchConstants.ProviderName))
+            .Select(x => new SelectListItem(x.DisplayText, x.Id))
+            .OrderBy(x => x.Text);
+
+        if (!ModelState.IsValid)
         {
-            return NotFound();
+            return View(model);
         }
 
         var index = await _indexEntityStore.FindByIdAsync(model.Id);
@@ -139,10 +160,6 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        model.Indexes = (await _indexEntityStore.GetAsync(ElasticsearchConstants.ProviderName))
-            .Select(x => new SelectListItem(x.DisplayText, x.Id))
-            .OrderBy(x => x.Text);
-
         if (!await _elasticIndexManager.ExistsAsync(index.IndexFullName))
         {
             return NotFound();
@@ -151,13 +168,6 @@ public sealed class AdminController : Controller
         if (string.IsNullOrEmpty(model.Parameters))
         {
             model.Parameters = "{ }";
-        }
-
-        model.MatchAllQuery = GetMatchAllQuery();
-
-        if (string.IsNullOrWhiteSpace(model.DecodedQuery))
-        {
-            return View(model);
         }
 
         var stopwatch = new Stopwatch();
@@ -180,8 +190,8 @@ public sealed class AdminController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error while executing query");
-            ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
+            _logger.LogError(e, "Error while executing Elasticsearch query");
+            ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query: {0}", e.Message]);
         }
 
         stopwatch.Stop();

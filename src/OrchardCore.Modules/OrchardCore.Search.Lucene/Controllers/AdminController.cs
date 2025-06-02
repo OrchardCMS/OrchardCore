@@ -23,9 +23,9 @@ namespace OrchardCore.Search.Lucene.Controllers;
 
 public sealed class AdminController : Controller
 {
-    private readonly LuceneIndexManager _luceneIndexManager;
+    private readonly LuceneIndexManager _indexManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
+    private readonly LuceneAnalyzerManager _analyzerManager;
     private readonly ILuceneQueryService _queryService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IIndexEntityStore _indexEntityStore;
@@ -38,9 +38,9 @@ public sealed class AdminController : Controller
 
     public AdminController(
         IIndexEntityStore indexEntityStore,
-        LuceneIndexManager luceneIndexManager,
+        LuceneIndexManager indexManager,
         IAuthorizationService authorizationService,
-        LuceneAnalyzerManager luceneAnalyzerManager,
+        LuceneAnalyzerManager analyzerManager,
         ILuceneQueryService queryService,
         ILiquidTemplateManager liquidTemplateManager,
         JavaScriptEncoder javaScriptEncoder,
@@ -49,9 +49,9 @@ public sealed class AdminController : Controller
         ILogger<AdminController> logger,
         IOptions<TemplateOptions> templateOptions)
     {
-        _luceneIndexManager = luceneIndexManager;
+        _indexManager = indexManager;
         _authorizationService = authorizationService;
-        _luceneAnalyzerManager = luceneAnalyzerManager;
+        _analyzerManager = analyzerManager;
         _queryService = queryService;
         _liquidTemplateManager = liquidTemplateManager;
         _indexEntityStore = indexEntityStore;
@@ -62,9 +62,14 @@ public sealed class AdminController : Controller
         _templateOptions = templateOptions;
     }
 
-    [Admin("Lucene/{Query}/{id?}", "LuceneQuery")]
-    public Task<IActionResult> Query(string id, string query)
+    [Admin("Lucene/Query/{id?}", "LuceneQuery")]
+    public async Task<IActionResult> Query(string id, string query = null)
     {
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.ManageLuceneIndexes))
+        {
+            return Forbid();
+        }
+
         var matchAllQuery = GetMatchAllQuery();
 
         if (string.IsNullOrEmpty(query))
@@ -72,19 +77,29 @@ public sealed class AdminController : Controller
             query = matchAllQuery;
         }
 
-        query = string.IsNullOrWhiteSpace(query)
-            ? string.Empty
-            : Base64.FromUTF8Base64String(query);
-
-        return Query(new AdminQueryViewModel
+        var model = new AdminQueryViewModel
         {
             Id = id,
             MatchAllQuery = matchAllQuery,
-            DecodedQuery = query,
-        });
+            DecodedQuery = string.IsNullOrWhiteSpace(query)
+                ? string.Empty
+                : Base64.FromUTF8Base64String(query),
+        };
+
+        if (!string.IsNullOrEmpty(id))
+        {
+            return await Query(model);
+        }
+
+        model.Indexes = (await _indexEntityStore.GetAsync(LuceneConstants.ProviderName))
+            .Select(x => new SelectListItem(x.DisplayText, x.Id))
+            .OrderBy(x => x.Text);
+
+        return View(model);
     }
 
     [HttpPost]
+    [Admin("Lucene/Query/{id?}", "LuceneQuery")]
     public async Task<IActionResult> Query(AdminQueryViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.ManageLuceneIndexes))
@@ -92,9 +107,14 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (string.IsNullOrEmpty(model.Id))
+        model.MatchAllQuery = GetMatchAllQuery();
+        model.Indexes = (await _indexEntityStore.GetAsync(LuceneConstants.ProviderName))
+            .Select(x => new SelectListItem(x.DisplayText, x.Id))
+            .OrderBy(x => x.Text);
+
+        if (!ModelState.IsValid)
         {
-            return NotFound();
+            return View(model);
         }
 
         var index = await _indexEntityStore.FindByIdAsync(model.Id);
@@ -109,34 +129,23 @@ public sealed class AdminController : Controller
             return BadRequest();
         }
 
-        model.Indexes = (await _indexEntityStore.GetAsync(LuceneConstants.ProviderName))
-            .Select(x => new SelectListItem(x.DisplayText, x.Id))
-            .OrderBy(x => x.Text);
-
-        if (!await _luceneIndexManager.ExistsAsync(index.IndexFullName))
+        if (!await _indexManager.ExistsAsync(index.IndexFullName))
         {
             return NotFound();
         }
-
-        model.MatchAllQuery = GetMatchAllQuery();
 
         if (string.IsNullOrEmpty(model.Parameters))
         {
             model.Parameters = "{ }";
         }
 
-        if (string.IsNullOrWhiteSpace(model.DecodedQuery))
-        {
-            return View(model);
-        }
-
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        await _luceneIndexManager.SearchAsync(index, async searcher =>
+        await _indexManager.SearchAsync(index, async searcher =>
         {
             var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
-            var analyzer = _luceneAnalyzerManager.CreateAnalyzer(index.As<LuceneIndexMetadata>().AnalyzerName);
+            var analyzer = _analyzerManager.CreateAnalyzer(index.As<LuceneIndexMetadata>().AnalyzerName);
             var context = new LuceneQueryContext(searcher, queryMetadata.DefaultVersion, analyzer);
 
             var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
@@ -146,18 +155,18 @@ public sealed class AdminController : Controller
             try
             {
                 var parameterizedQuery = JsonNode.Parse(tokenizedContent, JOptions.Node, JOptions.Document).AsObject();
-                var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
+                var topDocs = await _queryService.SearchAsync(context, parameterizedQuery);
 
-                if (luceneTopDocs != null)
+                if (topDocs != null)
                 {
-                    model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
-                    model.Count = luceneTopDocs.Count;
+                    model.Documents = topDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                    model.Count = topDocs.Count;
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error while executing query");
-                ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
+                _logger.LogError(e, "Error while executing Lucene query");
+                ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query: {0}", e.Message]);
             }
 
             stopwatch.Stop();

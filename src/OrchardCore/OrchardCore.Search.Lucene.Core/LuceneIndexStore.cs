@@ -27,7 +27,7 @@ public sealed class LuceneIndexStore : IDisposable
 
     private readonly string _rootPath;
     private readonly IClock _clock;
-    private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
+    private readonly LuceneAnalyzerManager _analyzerManager;
     private readonly ILogger<LuceneIndexStore> _logger;
 
     private bool _disposed;
@@ -36,11 +36,11 @@ public sealed class LuceneIndexStore : IDisposable
         IClock clock,
         ShellSettings shellSettings,
         IOptions<ShellOptions> shellOptions,
-        LuceneAnalyzerManager luceneAnalyzerManager,
+        LuceneAnalyzerManager analyzerManager,
         ILogger<LuceneIndexStore> logger)
     {
         _clock = clock;
-        _luceneAnalyzerManager = luceneAnalyzerManager;
+        _analyzerManager = analyzerManager;
         _logger = logger;
         _rootPath = PathExtensions.Combine(
                 shellOptions.Value.ShellsApplicationDataPath,
@@ -129,7 +129,7 @@ public sealed class LuceneIndexStore : IDisposable
             var metadata = index.As<LuceneIndexMetadata>();
             var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
 
-            var analyzer = _luceneAnalyzerManager.CreateAnalyzer(metadata.AnalyzerName ?? LuceneConstants.DefaultAnalyzer);
+            var analyzer = _analyzerManager.CreateAnalyzer(metadata.AnalyzerName ?? LuceneConstants.DefaultAnalyzer);
 
             lock (this)
             {

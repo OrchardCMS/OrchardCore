@@ -38,14 +38,14 @@ public class IndexingContentHandler : ContentHandlerBase
     public override Task UnpublishedAsync(PublishContentContext context)
         => AddContextAsync(context.ContentItem);
 
-    // public override Task ImportCompletedAsync(ImportedContentsContext context)
-    // {
-    //     var contentItems = context.ImportedItems;
-    // 
-    //     ShellScope.AddDeferredTask(scope => IndexAsync(scope, contentItems));
-    // 
-    //     return Task.CompletedTask;
-    // }
+    public override Task ImportCompletedAsync(ImportedContentsContext context)
+    {
+        var contentItems = context.ImportedItems;
+
+        ShellScope.AddDeferredTask(scope => IndexAsync(scope, contentItems));
+
+        return Task.CompletedTask;
+    }
 
     private Task AddContextAsync(ContentItem contentItem)
     {
@@ -69,6 +69,7 @@ public class IndexingContentHandler : ContentHandlerBase
             ShellScope.AddDeferredTask(scope => IndexAsync(scope, contentItems.Values));
         }
 
+        // Store the last content item in the request.
         _contentItems[contentItem.ContentItemId] = contentItem;
 
         return Task.CompletedTask;
@@ -98,17 +99,21 @@ public class IndexingContentHandler : ContentHandlerBase
         var logger = services.GetRequiredService<ILogger<IndexingContentHandler>>();
 
         // Multiple items may have been updated in the same scope, e.g through a recipe.
-
-        // Get all contexts for each content item id.
-
         foreach (var index in indexes)
         {
             var metadata = index.As<ContentIndexMetadata>();
-            var documentIndexManager = services.GetRequiredKeyedService<IDocumentIndexManager>(index.ProviderName);
+            var documentIndexManager = services.GetKeyedService<IDocumentIndexManager>(index.ProviderName);
+            var contentTypes = metadata.IndexedContentTypes.ToHashSet();
+            if (documentIndexManager == null)
+            {
+                logger.LogWarning("No document index manager found for provider '{ProviderName}'.", index.ProviderName);
+
+                continue;
+            }
 
             foreach (var contentItem in contentItems)
             {
-                if (!metadata.IndexedContentTypes.Contains(contentItem.ContentType))
+                if (!contentTypes.Contains(contentItem.ContentType))
                 {
                     continue;
                 }

@@ -2,8 +2,9 @@
 @using OrchardCore.ContentManagement
 @using System.Text.Json
 @using Json.Path
+@using OrchardCore.Environment.Shell
 @inject IContentManager ContentManager
-
+@inject IShellFeaturesManager ShellFeaturesManager
 @{
     var hasFields = Model.Fields?.Any() == true;
     var hasDocuments = Model.Documents?.Any() == true;
@@ -26,7 +27,7 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="DecodedQuery" class="form-label">@T["Template"]</label>
+        <label asp-for="DecodedQuery" class="form-label">@T["Query"]</label>
         <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
         <span class="hint">@T["You can use the <a href=\"{0}\">Match all query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch", query = Model.MatchAllQuery, id = Model.Id }))]</span>
         <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
@@ -39,7 +40,7 @@
     </div>
 
     <div class="mb-3">
-        <button type="submit" class="btn btn-primary">@T["Query"]</button>
+        <button type="submit" class="btn btn-primary">@T["Run Query"]</button>
     </div>
 </form>
 
@@ -50,10 +51,10 @@
     }
 </div>
 
-@if (hasDocuments || hasFields)
+@if ((hasDocuments || hasFields) && await ShellFeaturesManager.IsFeatureEnabledAsync("OrchardCore.Queries"))
 {
     <div class="mb-3">
-        <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Elasticsearch", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+        <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Elasticsearch", query = Model.DecodedQuery })" class="btn btn-success">@T["Save Query"]</a>
     </div>
 }
 

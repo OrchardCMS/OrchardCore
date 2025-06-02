@@ -1,8 +1,10 @@
 @using OrchardCore.ContentManagement
+@using OrchardCore.Environment.Shell
 
 @model OrchardCore.Search.Lucene.ViewModels.AdminQueryViewModel
 
 @inject IContentManager ContentManager
+@inject IShellFeaturesManager ShellFeaturesManager
 
 <style asp-name="codemirror"></style>
 <script asp-name="codemirror" at="Foot"></script>
@@ -21,7 +23,7 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="DecodedQuery" class="form-label">@T["Template"]</label>
+        <label asp-for="DecodedQuery" class="form-label">@T["Query"]</label>
         <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
         <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Search.Lucene", query = Model.MatchAllQuery, id = Model.Id }))]</span>
         <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
@@ -47,10 +49,12 @@
 @if (Model.Documents.Any())
 {
     var fieldNames = Model.Documents.SelectMany(d => d.Fields.Select(f => f.Name)).Distinct();
-
-    <div class="mb-3">
-        <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Lucene", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
-    </div>
+    @if (await ShellFeaturesManager.IsFeatureEnabledAsync("OrchardCore.Queries"))
+    {
+        <div class="mb-3">
+            <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Lucene", query = Model.DecodedQuery })" class="btn btn-secondary">@T["Save Query"]</a>
+        </div>
+    }
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>
