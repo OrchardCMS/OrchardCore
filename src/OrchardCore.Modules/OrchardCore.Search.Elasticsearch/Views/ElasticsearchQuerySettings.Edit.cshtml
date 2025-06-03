@@ -1,27 +1,28 @@
 @using OrchardCore.Search.Elasticsearch
 @model ElasticsearchDefaultQueryViewModel
 
+<h4 class="mt-4">@T["Default Query Settings"]</h4>
 <div class="mb-3" asp-validation-class-for="QueryAnalyzerName">
-    <label asp-for="QueryAnalyzerName" class="form-label">@T["Query Analyzer"]</label>
+    <label asp-for="QueryAnalyzerName" class="form-label">@T["Query analyzer"]</label>
     <select asp-for="QueryAnalyzerName" asp-items="Model.Analyzers" class="form-select"></select>
     <span asp-validation-for="QueryAnalyzerName" class="text-danger"></span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="SearchType">
-    <label asp-for="SearchType" class="form-label">@T["Default search type"]</label>
+    <label asp-for="SearchType" class="form-label">@T["Search type"]</label>
     <select asp-for="SearchType" class="form-select" asp-items="Model.SearchTypes" data-raw-type="@ElasticsearchConstants.CustomSearchType"></select>
     <span asp-validation-for="SearchType"></span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="DefaultQuery" id="DefaultQueryContainer">
-    <label asp-for="DefaultQuery" class="form-label">@T["Default query"]</label>
+    <label asp-for="DefaultQuery" class="form-label">@T["Query"]</label>
     <textarea asp-for="DefaultQuery" class="form-control" rows="10"></textarea>
     <span asp-validation-for="DefaultQuery"></span>
     <span class="hint">@T["Create a custom Elasticsearch query to be utilized for each search request. Liquid is supported, so use <code>{0}</code> template as a substitute for the user-provided search term.", "{{ term }}"]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="DefaultSearchFields" id="DefaultQueryFields">
-    <label asp-for="DefaultSearchFields" class="form-label">@T["Default query field names"]</label>
+    <label asp-for="DefaultSearchFields" class="form-label">@T["Query field names"]</label>
     <div>
         <ul class="list-group">
             @for (int i = 0; i < Model.DefaultSearchFields.Length; i++)

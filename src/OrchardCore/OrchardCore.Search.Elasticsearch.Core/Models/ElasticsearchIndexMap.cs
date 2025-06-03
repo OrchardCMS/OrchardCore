@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
 using Elastic.Clients.Elasticsearch.Mapping;
+using OrchardCore.Search.Elasticsearch.Core.Json;
 
 namespace OrchardCore.Search.Elasticsearch.Models;
 
+[JsonConverter(typeof(ElasticsearchIndexMapConverter))]
 public sealed class ElasticsearchIndexMap
 {
     public string KeyFieldName { get; set; }

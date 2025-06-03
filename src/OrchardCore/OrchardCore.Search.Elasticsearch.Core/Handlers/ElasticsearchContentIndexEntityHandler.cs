@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using Elastic.Clients.Elasticsearch.Mapping;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
@@ -20,12 +19,12 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
     private const string _locationPostFixPattern = "*.Location";
 
     public override Task InitializingAsync(InitializingContext<IndexEntity> context)
-       => PopulateAsync(context.Model, context.Data);
+       => PopulateAsync(context.Model);
 
     public override Task UpdatingAsync(UpdatingContext<IndexEntity> context)
-        => PopulateAsync(context.Model, context.Data);
+        => PopulateAsync(context.Model);
 
-    private static Task PopulateAsync(IndexEntity index, JsonNode data)
+    private static Task PopulateAsync(IndexEntity index)
     {
         if (!CanHandle(index))
         {
@@ -41,7 +40,7 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
             {
                 Source = new SourceField
                 {
-                    Enabled = index.As<ElasticsearchContentIndexMetadata>().StoreSourceData,
+                    Enabled = metadata.StoreSourceData,
                     Excludes = [ContentIndexingConstants.DisplayTextAnalyzedKey],
                 },
                 Properties = [],
@@ -49,22 +48,11 @@ public sealed class ElasticsearchContentIndexEntityHandler : IndexEntityHandlerB
             },
         };
 
-        PopulateTypeMapping(map.Mapping, index.As<ElasticsearchContentIndexMetadata>().StoreSourceData);
+        PopulateTypeMapping(map.Mapping, metadata.StoreSourceData);
 
         metadata.IndexMappings = map;
 
         index.Put(metadata);
-
-        var contentMetadata = index.As<ElasticsearchContentIndexMetadata>();
-
-        var storeSourceData = data[nameof(contentMetadata.StoreSourceData)]?.GetValue<bool>();
-
-        if (storeSourceData.HasValue)
-        {
-            contentMetadata.StoreSourceData = storeSourceData.Value;
-        }
-
-        index.Put(contentMetadata);
 
         return Task.CompletedTask;
     }

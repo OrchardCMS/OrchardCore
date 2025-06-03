@@ -130,33 +130,29 @@ internal sealed class IndexingMigrations : DataMigration
 
                 index.Put(metadata);
 
-                var contentMetadata = index.As<ElasticsearchContentIndexMetadata>();
+                var elasticsearchMetadata = index.As<ElasticsearchIndexMetadata>();
 
-                var storeSourceData = indexObject.Value[nameof(contentMetadata.StoreSourceData)]?.GetValue<bool>();
+                var storeSourceData = indexObject.Value[nameof(elasticsearchMetadata.StoreSourceData)]?.GetValue<bool>();
 
                 if (storeSourceData.HasValue)
                 {
-                    contentMetadata.StoreSourceData = storeSourceData.Value;
+                    elasticsearchMetadata.StoreSourceData = storeSourceData.Value;
                 }
 
-                index.Put(contentMetadata);
-
-                var azureMetadata = index.As<ElasticsearchIndexMetadata>();
-
-                if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
+                if (string.IsNullOrEmpty(elasticsearchMetadata.AnalyzerName))
                 {
-                    azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
+                    elasticsearchMetadata.AnalyzerName = indexObject.Value[nameof(elasticsearchMetadata.AnalyzerName)]?.GetValue<string>();
                 }
 
                 var mapping = await indexDocumentManager.GetIndexMappingsAsync(indexFullName);
 
-                azureMetadata.IndexMappings = new ElasticsearchIndexMap
+                elasticsearchMetadata.IndexMappings = new ElasticsearchIndexMap
                 {
                     KeyFieldName = ContentIndexingConstants.ContentItemIdKey,
                     Mapping = mapping,
                 };
 
-                index.Put(azureMetadata);
+                index.Put(elasticsearchMetadata);
 
                 var queryMetadata = index.As<ElasticsearchDefaultQueryMetadata>();
                 if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
@@ -166,7 +162,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {
-                    queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
+                    queryMetadata.QueryAnalyzerName = elasticsearchMetadata.AnalyzerName;
                 }
 
                 queryMetadata.DefaultQuery = indexObject.Value[nameof(queryMetadata.DefaultQuery)]?.GetValue<string>();

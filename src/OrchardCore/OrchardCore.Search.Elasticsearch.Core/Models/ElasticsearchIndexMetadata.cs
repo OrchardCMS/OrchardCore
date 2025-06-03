@@ -6,6 +6,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
 public sealed class ElasticsearchIndexMetadata
 {
+    public bool StoreSourceData { get; set; } = true;
+
     public string AnalyzerName { get; set; }
 
     [JsonConverter(typeof(ElasticsearchIndexMapConverter))]

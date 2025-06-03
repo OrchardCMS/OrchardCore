@@ -48,6 +48,7 @@ internal sealed class LuceneIndexEntityDisplayDriver : DisplayDriver<IndexEntity
         {
             var metadata = index.As<LuceneIndexMetadata>();
 
+            model.StoreSourceData = metadata.StoreSourceData;
             model.AnalyzerName = metadata.AnalyzerName ?? LuceneConstants.DefaultAnalyzer;
             model.Analyzers = _luceneAnalyzerManager.GetAnalyzers().Select(x => new SelectListItem(x.Name, x.Name));
         }).Location("Content:5");
@@ -99,6 +100,7 @@ internal sealed class LuceneIndexEntityDisplayDriver : DisplayDriver<IndexEntity
 
         var metadata = index.As<LuceneIndexMetadata>();
 
+        metadata.StoreSourceData = model.StoreSourceData;
         metadata.AnalyzerName = model.AnalyzerName;
 
         if (string.IsNullOrEmpty(metadata.AnalyzerName))

@@ -17,7 +17,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
 public sealed class ElasticsearchQuerySource : IQuerySource
 {
-    public const string SourceName = "Elasticsearch";
+    public const string SourceName = ElasticsearchConstants.ProviderName;
 
     private readonly ElasticsearchQueryService _queryService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -61,7 +61,7 @@ public sealed class ElasticsearchQuerySource : IQuerySource
             return elasticQueryResults;
         }
 
-        var index = await _indexEntityStore.FindByNameAndProviderAsync(ElasticsearchConstants.ProviderName, metadata.Index);
+        var index = await _indexEntityStore.FindByNameAndProviderAsync(metadata.Index, ElasticsearchConstants.ProviderName);
 
         if (index is null)
         {

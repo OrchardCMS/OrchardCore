@@ -5,6 +5,7 @@ using Json.Path;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Indexing;
+using OrchardCore.Indexing.Core;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -26,7 +27,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
         _indexManager = indexManager;
     }
 
-    public string Name => "Elasticsearch";
+    public string Name { get; } = ElasticsearchConstants.ProviderName;
 
     public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
     {
@@ -42,16 +43,16 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
             return [];
         }
 
-        var index = await _indexEntityStore.FindByNameAndProviderAsync(ElasticsearchConstants.ProviderName, fieldSettings.Index);
+        var index = await _indexEntityStore.FindByNameAndProviderAsync(fieldSettings.Index, ElasticsearchConstants.ProviderName);
 
-        if (index is null || !await _indexManager.ExistsAsync(index.IndexFullName))
+        if (index is null || index.Type != IndexingConstants.ContentsIndexSource || !await _indexManager.ExistsAsync(index.IndexFullName))
         {
             return [];
         }
 
         var results = new List<ContentPickerResult>();
 
-        await _indexManager.SearchAsync(index, async elasticClient =>
+        await _indexManager.SearchAsync(index, async client =>
         {
             SearchResponse<JsonObject> searchResponse = null;
             var elasticTopDocs = new ElasticsearchResult();
@@ -60,7 +61,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
 
             if (string.IsNullOrWhiteSpace(searchContext.Query))
             {
-                searchResponse = await elasticClient.SearchAsync<JsonObject>(s => s
+                searchResponse = await client.SearchAsync<JsonObject>(s => s
                     .Index(index.IndexFullName)
                     .Query(q => q
                         .Bool(b => b
@@ -76,7 +77,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
             }
             else
             {
-                searchResponse = await elasticClient.SearchAsync<JsonObject>(s => s
+                searchResponse = await client.SearchAsync<JsonObject>(s => s
                     .Index(index.IndexFullName)
                     .Query(q => q
                         .Bool(b => b

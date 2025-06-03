@@ -16,38 +16,41 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers;
 
 public sealed class ElasticsearchIndexEntityHandler : IndexEntityHandlerBase
 {
-    private static readonly JsonWriterOptions _writerOptions = new JsonWriterOptions
+    private static readonly JsonWriterOptions _writerOptions = new()
     {
         SkipValidation = true,
     };
 
-    private readonly ElasticsearchClient _elasticsearchClient;
+    private readonly ElasticsearchClient _client;
+
     internal readonly IStringLocalizer S;
 
     public ElasticsearchIndexEntityHandler(
-        ElasticsearchClient elasticsearchClient,
+        ElasticsearchClient client,
         IStringLocalizer<ElasticsearchIndexEntityHandler> stringLocalizer)
     {
-        _elasticsearchClient = elasticsearchClient;
+        _client = client;
         S = stringLocalizer;
     }
 
     public override Task ValidatingAsync(ValidatingContext<IndexEntity> context)
     {
-        if (string.Equals(ElasticsearchConstants.ProviderName, context.Model.ProviderName, StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(ElasticsearchConstants.ProviderName, context.Model.ProviderName, StringComparison.OrdinalIgnoreCase))
         {
-            // When the provider is AzureAI, "regardless of the type" we need to validate the index mappings.
-            var metadata = context.Model.As<ElasticsearchIndexMetadata>();
+            return Task.CompletedTask;
+        }
 
-            if (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any())
-            {
-                context.Result.Fail(new ValidationResult(S["At least one mapping property is required."]));
-            }
+        // When the provider is 'Elasticsearch', "regardless of the type" we need to validate the index mappings.
+        var metadata = context.Model.As<ElasticsearchIndexMetadata>();
 
-            if (string.IsNullOrEmpty(metadata.IndexMappings.KeyFieldName))
-            {
-                context.Result.Fail(new ValidationResult(S["The '{0}' is required.", nameof(ElasticsearchIndexMap.KeyFieldName)]));
-            }
+        if (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any())
+        {
+            context.Result.Fail(new ValidationResult(S["At least one mapping property is required."]));
+        }
+
+        if (string.IsNullOrEmpty(metadata.IndexMappings.KeyFieldName))
+        {
+            context.Result.Fail(new ValidationResult(S["The '{0}' is required.", nameof(ElasticsearchIndexMap.KeyFieldName)]));
         }
 
         return Task.CompletedTask;
@@ -58,7 +61,7 @@ public sealed class ElasticsearchIndexEntityHandler : IndexEntityHandlerBase
 
     private Task PopulateAsync(IndexEntity index, JsonNode data)
     {
-        if (string.Equals(ElasticsearchConstants.ProviderName, index.ProviderName, StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(ElasticsearchConstants.ProviderName, index.ProviderName, StringComparison.OrdinalIgnoreCase))
         {
             return Task.CompletedTask;
         }
@@ -78,7 +81,28 @@ public sealed class ElasticsearchIndexEntityHandler : IndexEntityHandlerBase
             }
             mappingStream.Position = 0;
 
-            metadata.IndexMappings.Mapping = _elasticsearchClient.RequestResponseSerializer.Deserialize<TypeMapping>(mappingStream);
+            metadata.IndexMappings.Mapping = _client.RequestResponseSerializer.Deserialize<TypeMapping>(mappingStream);
+        }
+
+        var analyzerName = data[nameof(metadata.AnalyzerName)]?.GetValue<string>();
+
+        if (!string.IsNullOrEmpty(analyzerName))
+        {
+            metadata.AnalyzerName = analyzerName;
+        }
+
+        var storeSourceData = data[nameof(metadata.StoreSourceData)]?.GetValue<bool>();
+
+        if (storeSourceData.HasValue)
+        {
+            metadata.StoreSourceData = storeSourceData.Value;
+        }
+
+        var indexMapping = data[nameof(metadata.IndexMappings)]?.AsObject();
+
+        if (indexMapping is not null && indexMapping.Count > 0)
+        {
+            metadata.IndexMappings = indexMapping.ToObject<ElasticsearchIndexMap>();
         }
 
         index.Put(metadata);

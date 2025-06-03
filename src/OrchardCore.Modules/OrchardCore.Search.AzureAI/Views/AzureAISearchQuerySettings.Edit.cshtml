@@ -5,14 +5,16 @@
     return;
 }
 
+<h4 class="mt-4">@T["Default Query Settings"]</h4>
+
 <div class="mb-3" asp-validation-class-for="QueryAnalyzerName">
-    <label asp-for="QueryAnalyzerName" class="form-label">@T["Default Query Analyzer"]</label>
+    <label asp-for="QueryAnalyzerName" class="form-label">@T["Query analyzer"]</label>
     <select asp-for="QueryAnalyzerName" asp-items="Model.Analyzers" class="form-select"></select>
     <span asp-validation-for="QueryAnalyzerName" class="text-danger"></span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="DefaultSearchFields">
-    <label asp-for="DefaultSearchFields" class="form-label">@T["Default query field names"]</label>
+    <label asp-for="DefaultSearchFields" class="form-label">@T["Query field names"]</label>
     <div>
         <ul class="list-group">
             @for (int i = 0; i < Model.DefaultSearchFields.Length; i++)

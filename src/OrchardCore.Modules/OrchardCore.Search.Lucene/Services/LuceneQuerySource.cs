@@ -9,8 +9,8 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
+using OrchardCore.Lucene.Core;
 using OrchardCore.Queries;
-using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Models;
 using OrchardCore.Search.Lucene.Services;
 using YesSql;
@@ -20,9 +20,9 @@ namespace OrchardCore.Search.Lucene;
 
 public sealed class LuceneQuerySource : IQuerySource
 {
-    public const string SourceName = "Lucene";
+    public const string SourceName = LuceneConstants.ProviderName;
 
-    private readonly LuceneIndexManager _luceneIndexManager;
+    private readonly ILuceneIndexStore _luceneIndexStore;
     private readonly IIndexEntityStore _indexStore;
     private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
     private readonly ILuceneQueryService _queryService;
@@ -32,7 +32,7 @@ public sealed class LuceneQuerySource : IQuerySource
     private readonly TemplateOptions _templateOptions;
 
     public LuceneQuerySource(
-        LuceneIndexManager luceneIndexManager,
+        ILuceneIndexStore luceneIndexStore,
         IIndexEntityStore indexStore,
         LuceneAnalyzerManager luceneAnalyzerManager,
         ILuceneQueryService queryService,
@@ -41,7 +41,7 @@ public sealed class LuceneQuerySource : IQuerySource
         JavaScriptEncoder javaScriptEncoder,
         IOptions<TemplateOptions> templateOptions)
     {
-        _luceneIndexManager = luceneIndexManager;
+        _luceneIndexStore = luceneIndexStore;
         _indexStore = indexStore;
         _luceneAnalyzerManager = luceneAnalyzerManager;
         _queryService = queryService;
@@ -56,7 +56,7 @@ public sealed class LuceneQuerySource : IQuerySource
 
     public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
     {
-        var luceneQueryResults = new LuceneQueryResults()
+        var result = new LuceneQueryResults()
         {
             Items = [],
         };
@@ -67,10 +67,10 @@ public sealed class LuceneQuerySource : IQuerySource
 
         if (index is null)
         {
-            return luceneQueryResults;
+            return result;
         }
 
-        await _luceneIndexManager.SearchAsync(index, async searcher =>
+        await _luceneIndexStore.SearchAsync(index, async searcher =>
         {
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
@@ -82,12 +82,12 @@ public sealed class LuceneQuerySource : IQuerySource
 
             var context = new LuceneQueryContext(searcher, queryMetadata.DefaultVersion, analyzer);
             var docs = await _queryService.SearchAsync(context, parameterizedQuery);
-            luceneQueryResults.Count = docs.Count;
+            result.Count = docs.Count;
 
             if (query.ReturnContentItems)
             {
                 // We always return an empty collection if the bottom lines queries have no results.
-                luceneQueryResults.Items = [];
+                result.Items = [];
 
                 // Load corresponding content item versions.
                 var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("ContentItemVersionId")).ToArray();
@@ -98,7 +98,7 @@ public sealed class LuceneQuerySource : IQuerySource
                 {
                     var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
                     var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);
-                    luceneQueryResults.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
+                    result.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
                 }
             }
             else
@@ -111,10 +111,10 @@ public sealed class LuceneQuerySource : IQuerySource
                         KeyValuePair.Create(x.Name, (JsonNode)JsonValue.Create(x.GetStringValue())))));
                 }
 
-                luceneQueryResults.Items = results;
+                result.Items = results;
             }
         });
 
-        return luceneQueryResults;
+        return result;
     }
 }

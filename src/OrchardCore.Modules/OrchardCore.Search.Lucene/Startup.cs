@@ -18,7 +18,6 @@ using OrchardCore.Queries;
 using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Recipes;
-using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Lucene.Core.Handlers;
 using OrchardCore.Search.Lucene.DataMigrations;
 using OrchardCore.Search.Lucene.Deployment;
@@ -56,6 +55,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<IQueryHandler, LuceneQueryHandler>();
 
         services.AddDisplayDriver<IndexEntity, LuceneIndexEntityDisplayDriver>();
+
+        services.AddIndexEntityHandler<LuceneIndexEntityHandler>();
     }
 }
 
@@ -82,7 +83,6 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDisplayDriver<IndexEntity, LuceneContentIndexEntityDisplayDriver>();
         services.AddDataMigration<IndexingMigrations>();
 
         services

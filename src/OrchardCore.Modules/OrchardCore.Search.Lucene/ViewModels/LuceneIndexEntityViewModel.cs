@@ -9,4 +9,5 @@ public class LuceneIndexEntityViewModel
 
     [BindNever]
     public IEnumerable<SelectListItem> Analyzers { get; set; }
+    public bool StoreSourceData { get; internal set; }
 }

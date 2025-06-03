@@ -1,43 +1,46 @@
 using Lucene.Net.Search;
+using OrchardCore.Entities;
 using OrchardCore.Indexing;
+using OrchardCore.Lucene.Core;
+using OrchardCore.Search.Lucene.Models;
 
 namespace OrchardCore.Search.Lucene.Services;
 
 public class LuceneSearchQueryService : ILuceneSearchQueryService
 {
     private readonly IIndexEntityStore _indexEntityStore;
-    private readonly LuceneIndexManager _luceneIndexManager;
-
-    private static readonly HashSet<string> _idSet = new(["ContentItemId"]);
+    private readonly ILuceneIndexStore _store;
 
     public LuceneSearchQueryService(
         IIndexEntityStore indexEntityStore,
-        LuceneIndexManager luceneIndexManager)
+        ILuceneIndexStore store)
     {
         _indexEntityStore = indexEntityStore;
-        _luceneIndexManager = luceneIndexManager;
+        _store = store;
     }
 
     public async Task<IList<string>> ExecuteQueryAsync(Query query, string indexName, int start, int end)
     {
-        var contentItemIds = new List<string>();
+        var documentIds = new List<string>();
 
         if (string.IsNullOrWhiteSpace(indexName))
         {
-            return contentItemIds;
+            return documentIds;
         }
 
-        var index = await _indexEntityStore.FindByNameAndProviderAsync(LuceneConstants.ProviderName, indexName);
+        var index = await _indexEntityStore.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
 
         if (index is null)
         {
-            return contentItemIds;
+            return documentIds;
         }
 
-        await _luceneIndexManager.SearchAsync(index, searcher =>
+        await _store.SearchAsync(index, searcher =>
         {
             if (end > 0)
             {
+                var metadata = index.As<LuceneIndexMetadata>();
+                var idSets = new HashSet<string>() { metadata.IndexMappings.KeyFieldName };
                 var collector = TopScoreDocCollector.Create(end, true);
 
                 searcher.Search(query, collector);
@@ -45,14 +48,14 @@ public class LuceneSearchQueryService : ILuceneSearchQueryService
 
                 foreach (var hit in hits.ScoreDocs)
                 {
-                    var d = searcher.Doc(hit.Doc, _idSet);
-                    contentItemIds.Add(d.GetField("ContentItemId").GetStringValue());
+                    var d = searcher.Doc(hit.Doc, idSets);
+                    documentIds.Add(d.GetField(metadata.IndexMappings.KeyFieldName).GetStringValue());
                 }
             }
 
             return Task.CompletedTask;
         });
 
-        return contentItemIds;
+        return documentIds;
     }
 }

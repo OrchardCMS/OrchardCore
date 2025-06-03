@@ -1,6 +1,5 @@
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
-using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Microsoft.CodeAnalysis;
@@ -170,8 +169,6 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             return false;
         }
 
-        var contentMetadata = index.As<LuceneContentIndexMetadata>();
-
         try
         {
             await _indexStore.WriteAsync(index, writer =>
@@ -180,7 +177,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
                 foreach (var indexDocument in documents)
                 {
-                    writer.UpdateDocument(new Term(metadata.IndexMappings.KeyFieldName, indexDocument.Id), CreateLuceneDocument(indexDocument, contentMetadata.StoreSourceData));
+                    writer.UpdateDocument(new Term(metadata.IndexMappings.KeyFieldName, indexDocument.Id), CreateLuceneDocument(indexDocument, metadata.StoreSourceData));
                 }
 
                 writer.Commit();
@@ -226,9 +223,6 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
     public IContentIndexSettings GetContentIndexSettings()
          => new LuceneContentIndexSettings();
-
-    public Task SearchAsync(IndexEntity index, Func<IndexSearcher, Task> searcher)
-        => _indexStore.SearchAsync(index, searcher);
 
     private Document CreateLuceneDocument(DocumentIndexBase document, bool storeSourceData)
     {

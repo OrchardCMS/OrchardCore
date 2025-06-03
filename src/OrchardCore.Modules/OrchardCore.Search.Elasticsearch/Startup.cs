@@ -94,7 +94,6 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDisplayDriver<IndexEntity, ElasticsearchContentIndexEntityDisplayDriver>();
         services.AddDataMigration<IndexingMigrations>();
 
         services

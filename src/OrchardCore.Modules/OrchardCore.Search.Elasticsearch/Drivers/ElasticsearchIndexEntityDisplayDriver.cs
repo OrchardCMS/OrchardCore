@@ -47,6 +47,7 @@ internal sealed class ElasticsearchIndexEntityDisplayDriver : DisplayDriver<Inde
         {
             var metadata = index.As<ElasticsearchIndexMetadata>();
 
+            model.StoreSourceData = metadata.StoreSourceData;
             model.AnalyzerName = metadata.AnalyzerName ?? ElasticsearchConstants.DefaultAnalyzer;
             model.Analyzers = _elasticsearchOptions.Analyzers.Select(x => new SelectListItem(x.Key, x.Key));
         }).Location("Content:5");
@@ -99,6 +100,7 @@ internal sealed class ElasticsearchIndexEntityDisplayDriver : DisplayDriver<Inde
 
         var metadata = index.As<ElasticsearchIndexMetadata>();
 
+        metadata.StoreSourceData = model.StoreSourceData;
         metadata.AnalyzerName = model.AnalyzerName;
 
         if (string.IsNullOrEmpty(metadata.AnalyzerName))

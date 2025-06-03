@@ -5,6 +5,8 @@ namespace OrchardCore.Search.Elasticsearch.ViewModels;
 
 public class ElasticsearchIndexEntityViewModel
 {
+    public bool StoreSourceData { get; set; }
+
     public string AnalyzerName { get; set; }
 
     [BindNever]

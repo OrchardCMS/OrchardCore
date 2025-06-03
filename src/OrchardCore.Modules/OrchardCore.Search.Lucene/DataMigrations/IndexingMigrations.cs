@@ -127,22 +127,18 @@ internal sealed class IndexingMigrations : DataMigration
 
                 index.Put(metadata);
 
-                var contentMetadata = index.As<LuceneContentIndexMetadata>();
-
-                var storeSourceData = indexObject.Value[nameof(contentMetadata.StoreSourceData)]?.GetValue<bool>();
-
-                if (storeSourceData.HasValue)
-                {
-                    contentMetadata.StoreSourceData = storeSourceData.Value;
-                }
-
-                index.Put(contentMetadata);
-
                 var azureMetadata = index.As<LuceneIndexMetadata>();
 
                 if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
                 {
                     azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
+                }
+
+                var storeSourceData = indexObject.Value[nameof(azureMetadata.StoreSourceData)]?.GetValue<bool>();
+
+                if (storeSourceData.HasValue)
+                {
+                    azureMetadata.StoreSourceData = storeSourceData.Value;
                 }
 
                 index.Put(azureMetadata);

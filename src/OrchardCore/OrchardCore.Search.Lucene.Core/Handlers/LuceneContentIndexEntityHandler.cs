@@ -90,18 +90,14 @@ public sealed class LuceneContentIndexEntityHandler : IndexEntityHandlerBase
             LuceneMetadata.AnalyzerName = analyzerName;
         }
 
-        index.Put(LuceneMetadata);
-
-        var contentMetadata = index.As<LuceneContentIndexMetadata>();
-
-        var storeSourceData = data[nameof(contentMetadata.StoreSourceData)]?.GetValue<bool>();
+        var storeSourceData = data[nameof(LuceneMetadata.StoreSourceData)]?.GetValue<bool>();
 
         if (storeSourceData.HasValue)
         {
-            contentMetadata.StoreSourceData = storeSourceData.Value;
+            LuceneMetadata.StoreSourceData = storeSourceData.Value;
         }
 
-        index.Put(contentMetadata);
+        index.Put(LuceneMetadata);
     }
 
     private static bool CanHandle(IndexEntity index)

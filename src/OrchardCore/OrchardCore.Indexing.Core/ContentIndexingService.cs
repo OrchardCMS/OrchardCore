@@ -47,7 +47,7 @@ public sealed class ContentIndexingService
 
     public async Task ProcessContentItemsForAllIndexesAsync()
     {
-        await ProcessContentItemsAsync(await _indexStore.GetAllAsync());
+        await ProcessContentItemsAsync((await _indexStore.GetAllAsync()).Where(x => x.Type == IndexingConstants.ContentsIndexSource));
     }
 
     public async Task ProcessContentItemsAsync(IEnumerable<IndexEntity> indexes)
@@ -77,6 +77,12 @@ public sealed class ContentIndexingService
             // Find the lowest task id to process.
             foreach (var index in indexes)
             {
+                if (index.Type != IndexingConstants.ContentsIndexSource)
+                {
+                    // Skip indexes that are not content indexes.
+                    continue;
+                }
+
                 if (!_inProgressIndexes.Add(index.Id))
                 {
                     // If the index is already being processed, skip it.
@@ -103,6 +109,11 @@ public sealed class ContentIndexingService
         finally
         {
             _semaphore.Release();
+        }
+
+        if (indexableIndexes.Count == 0)
+        {
+            return;
         }
 
         var tasks = new List<IndexingTask>();

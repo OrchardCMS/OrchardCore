@@ -9,20 +9,20 @@ namespace OrchardCore.Search.Lucene.Services;
 
 public class LuceneSearchService : ISearchService
 {
-    private readonly LuceneIndexManager _luceneIndexManager;
-    private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
-    private readonly ILuceneSearchQueryService _luceneSearchQueryService;
+    private readonly LuceneIndexManager _indexManager;
+    private readonly LuceneAnalyzerManager _analyzerManager;
+    private readonly ILuceneSearchQueryService _searchQueryService;
     private readonly ILogger _logger;
 
     public LuceneSearchService(
-        LuceneIndexManager luceneIndexManager,
-        LuceneAnalyzerManager luceneAnalyzerManager,
-        ILuceneSearchQueryService luceneSearchQueryService,
+        LuceneIndexManager indexManager,
+        LuceneAnalyzerManager analyzerManager,
+        ILuceneSearchQueryService searchQueryService,
         ILogger<LuceneSearchService> logger)
     {
-        _luceneIndexManager = luceneIndexManager;
-        _luceneAnalyzerManager = luceneAnalyzerManager;
-        _luceneSearchQueryService = luceneSearchQueryService;
+        _indexManager = indexManager;
+        _analyzerManager = analyzerManager;
+        _searchQueryService = searchQueryService;
         _logger = logger;
     }
 
@@ -30,7 +30,7 @@ public class LuceneSearchService : ISearchService
     {
         var result = new SearchResult();
 
-        if (index == null || !await _luceneIndexManager.ExistsAsync(index.IndexFullName))
+        if (index == null || !await _indexManager.ExistsAsync(index.IndexFullName))
         {
             _logger.LogWarning("Lucene: Couldn't execute search. Lucene has not been configured yet.");
 
@@ -47,13 +47,13 @@ public class LuceneSearchService : ISearchService
         }
         var metadata = index.As<LuceneIndexMetadata>();
 
-        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(metadata.AnalyzerName);
+        var analyzer = _analyzerManager.CreateAnalyzer(metadata.AnalyzerName);
         var queryParser = new MultiFieldQueryParser(queryMetadata.DefaultVersion, queryMetadata.DefaultSearchFields, analyzer);
 
         try
         {
             var query = queryParser.Parse(term);
-            result.ContentItemIds = await _luceneSearchQueryService.ExecuteQueryAsync(query, index.IndexName, start, size);
+            result.ContentItemIds = await _searchQueryService.ExecuteQueryAsync(query, index.IndexName, start, size);
             result.Success = true;
         }
         catch (ParseException e)
