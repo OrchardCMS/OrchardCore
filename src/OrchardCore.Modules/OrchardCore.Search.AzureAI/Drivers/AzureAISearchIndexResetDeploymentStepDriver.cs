@@ -10,26 +10,30 @@ namespace OrchardCore.Search.AzureAI.Drivers;
 public sealed class AzureAISearchIndexResetDeploymentStepDriver
     : DisplayDriver<DeploymentStep, AzureAISearchIndexResetDeploymentStep>
 {
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexEntityStore _store;
 
-    public AzureAISearchIndexResetDeploymentStepDriver(IIndexEntityStore indexEntityStore)
+    public AzureAISearchIndexResetDeploymentStepDriver(IIndexEntityStore store)
     {
-        _indexEntityStore = indexEntityStore;
+        _store = store;
     }
 
     public override Task<IDisplayResult> DisplayAsync(AzureAISearchIndexResetDeploymentStep step, BuildDisplayContext context)
-        => CombineAsync(
+    {
+        return CombineAsync(
             View("AzureAISearchIndexResetDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
             View("AzureAISearchIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
+    }
 
     public override IDisplayResult Edit(AzureAISearchIndexResetDeploymentStep step, BuildEditorContext context)
-        => Initialize<AzureAISearchIndexResetDeploymentStepViewModel>("AzureAISearchIndexResetDeploymentStep_Fields_Edit", async model =>
+    {
+        return Initialize<AzureAISearchIndexResetDeploymentStepViewModel>("AzureAISearchIndexResetDeploymentStep_Fields_Edit", async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
-            model.AllIndexNames = (await _indexEntityStore.GetAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _store.GetAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
+    }
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexResetDeploymentStep step, UpdateEditorContext context)
     {

@@ -8,11 +8,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
 public sealed class ElasticIndexResetDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticsearchIndexResetDeploymentStep>
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexEntityStore _store;
 
-    public ElasticIndexResetDeploymentStepDriver(IIndexEntityStore indexStore)
+    public ElasticIndexResetDeploymentStepDriver(IIndexEntityStore store)
     {
-        _indexStore = indexStore;
+        _store = store;
     }
 
     public override Task<IDisplayResult> DisplayAsync(ElasticsearchIndexResetDeploymentStep step, BuildDisplayContext context)
@@ -30,7 +30,7 @@ public sealed class ElasticIndexResetDeploymentStepDriver : DisplayDriver<Deploy
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
-            model.AllIndexNames = (await _indexStore.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _store.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 

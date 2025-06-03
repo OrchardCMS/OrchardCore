@@ -9,26 +9,30 @@ namespace OrchardCore.Indexing.Deployments;
 public sealed class RebuildIndexEntityDeploymentStepDriver
     : DisplayDriver<DeploymentStep, RebuildIndexEntityDeploymentStep>
 {
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexEntityStore _store;
 
-    public RebuildIndexEntityDeploymentStepDriver(IIndexEntityStore indexEntityStore)
+    public RebuildIndexEntityDeploymentStepDriver(IIndexEntityStore store)
     {
-        _indexEntityStore = indexEntityStore;
+        _store = store;
     }
 
     public override Task<IDisplayResult> DisplayAsync(RebuildIndexEntityDeploymentStep step, BuildDisplayContext context)
-        => CombineAsync(
+    {
+        return CombineAsync(
             View("RebuildIndexEntityDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
             View("RebuildIndexEntityDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
+    }
 
     public override IDisplayResult Edit(RebuildIndexEntityDeploymentStep step, BuildEditorContext context)
-        => Initialize<RebuildIndexEntityDeploymentStepViewModel>("RebuildIndexEntityDeploymentStep_Fields_Edit", async model =>
+    {
+        return Initialize<RebuildIndexEntityDeploymentStepViewModel>("RebuildIndexEntityDeploymentStep_Fields_Edit", async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indexes;
-            model.AllIndexNames = (await _indexEntityStore.GetAllAsync()).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _store.GetAllAsync()).Select(x => x.IndexName).ToArray();
         }).Location("Content");
+    }
 
     public override async Task<IDisplayResult> UpdateAsync(RebuildIndexEntityDeploymentStep step, UpdateEditorContext context)
     {

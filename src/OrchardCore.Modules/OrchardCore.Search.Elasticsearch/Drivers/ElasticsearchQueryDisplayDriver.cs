@@ -13,15 +13,15 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexEntityStore _store;
 
     internal readonly IStringLocalizer S;
 
     public ElasticsearchQueryDisplayDriver(
-        IIndexEntityStore indexStore,
+        IIndexEntityStore store,
         IStringLocalizer<ElasticsearchQueryDisplayDriver> stringLocalizer)
     {
-        _indexStore = indexStore;
+        _store = store;
         S = stringLocalizer;
     }
 
@@ -52,7 +52,7 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
             model.Query = metadata.Template;
             model.Index = metadata.Index;
             model.ReturnContentItems = query.ReturnContentItems;
-            model.Indices = (await _indexStore.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.Indices = (await _store.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
 
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(metadata.Template))

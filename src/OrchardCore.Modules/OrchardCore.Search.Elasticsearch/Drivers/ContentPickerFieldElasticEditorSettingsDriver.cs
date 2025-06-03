@@ -9,11 +9,11 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexEntityStore _store;
 
-    public ContentPickerFieldElasticEditorSettingsDriver(IIndexEntityStore indexStore)
+    public ContentPickerFieldElasticEditorSettingsDriver(IIndexEntityStore store)
     {
-        _indexStore = indexStore;
+        _store = store;
     }
 
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
@@ -24,7 +24,7 @@ public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartF
 
             model.Index = settings.Index;
 
-            model.Indices = (await _indexStore.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.Indices = (await _store.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Editor");
     }
 

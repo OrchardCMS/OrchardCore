@@ -9,7 +9,7 @@ namespace OrchardCore.Search.Lucene;
 /// This class persists the indexing state, a cursor, on the filesystem alongside the index itself.
 /// This state has to be on the filesystem as each node has its own local storage for the index.
 /// </summary>
-public class LuceneIndexingState : ILuceneIndexingState
+public sealed class LuceneIndexingState : ILuceneIndexingState
 {
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly string _stateFileName;

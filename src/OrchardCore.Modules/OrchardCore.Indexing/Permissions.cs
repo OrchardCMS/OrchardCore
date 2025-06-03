@@ -10,19 +10,18 @@ public sealed class Permissions : IPermissionProvider
         IndexingPermissions.ManageIndexes,
     ];
 
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexEntityStore _store;
 
-    public Permissions(IIndexEntityStore indexEntityStore)
+    public Permissions(IIndexEntityStore store)
     {
-        _indexEntityStore = indexEntityStore;
+        _store = store;
     }
-
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
         var result = new List<Permission>();
 
-        foreach (var index in await _indexEntityStore.GetAllAsync())
+        foreach (var index in await _store.GetAllAsync())
         {
             result.Add(IndexingPermissions.CreateDynamicPermission(index));
         }
