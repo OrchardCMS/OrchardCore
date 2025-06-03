@@ -4,7 +4,7 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public class Elasticsearch1ClientFactory
+public class ElasticsearchClientFactory
 {
     public static ElasticsearchClient Create(ElasticsearchConnectionOptions configuration)
     {
