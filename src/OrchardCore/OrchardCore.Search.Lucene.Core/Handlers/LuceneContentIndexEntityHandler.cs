@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Entities;
@@ -8,6 +9,7 @@ using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
+using OrchardCore.Modules;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Models;
 
@@ -16,10 +18,17 @@ namespace OrchardCore.Search.Lucene.Core.Handlers;
 public sealed class LuceneContentIndexEntityHandler : IndexEntityHandlerBase
 {
     private readonly IContentManager _contentManager;
+    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
+    private readonly ILogger _logger;
 
-    public LuceneContentIndexEntityHandler(IContentManager contentManager)
+    public LuceneContentIndexEntityHandler(
+        IContentManager contentManager,
+        IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
+        ILogger<LuceneContentIndexEntityHandler> logger)
     {
         _contentManager = contentManager;
+        _contentItemIndexHandlers = contentItemIndexHandlers;
+        _logger = logger;
     }
 
     public override Task InitializingAsync(InitializingContext<IndexEntity> context)
@@ -120,6 +129,8 @@ public sealed class LuceneContentIndexEntityHandler : IndexEntityHandlerBase
 
             var document = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
             var buildIndexContext = new BuildIndexContext(document, contentItem, [contentType], new LuceneContentIndexSettings());
+
+            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
             foreach (var entry in document.Entries)
             {
