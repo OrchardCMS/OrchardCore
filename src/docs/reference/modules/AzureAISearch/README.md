@@ -23,32 +23,27 @@ Alternatively, you can configure the Azure Search AI service for all your tenant
 }
 ```
 
-Then navigate to `Search` > `Indexing` > `Azure AI Indices` to add an index.
+Then navigate to `Search` > `Indexes` to add an index.
 
 ![image](images/management.gif)
 
 ## Custom Sources  
 
-As of version 3, Azure AI Search supports multiple index sources. When the **Contents** feature is enabled, the `Contents` source is automatically added, allowing you to create indexes based on content types.  
+To create a custom source, you'll need to implement the `IIndexManager`, `IDocumentIndexManager` and `IIndexNameProvider` interfaces and register them as following
 
-If you need to create an index for data that doesn't originate from Orchard's content items, you can do so by registering a custom index source. This gives you full control over where the data comes from and how it is mapped to your index fields.  
-
-For example, let's define a custom source called **CustomSource**:  
+To register a new source, you can add the following code to your `Startup.cs` file:
 
 ```csharp
-services.Configure<AzureAISearchOptions>(options =>
+services.AddIndexingSource<CustomSourceAzureAISearchIndexManager, CustomSourceAzureAISearchDocumentIndexManager, CustomSourceAzureAISearchIndexNameProvider>("AzureAISearch", "CustomSource", o =>
 {
-    options.AddIndexSource("CustomSource", o =>
-    {
-        o.DisplayName = S["Custom Source"];
-        o.Description = S["Create an index based on custom data."];
-    });
+    o.DisplayName = S["Custom Source in Azure AI Search"];
+    o.Description = S["Create a Azure AI Search index based on custom source."];
 });
-```  
+```
 
-Next, you need to implement the `IAzureAISearchIndexSettingsHandler` interface. In the `CreatingAsync` and `UpdatingAsync` methods, populate or update the `context.Settings.IndexMappings` to define the index fields and their types. You may use `AzureAISearchIndexSettingsHandlerBase` to simplify your implementation. 
+Next, you need to implement the `IIndexEntityHandler` interface. In the `CreatingAsync` and `UpdatingAsync` methods, populate or update the `context.Model.Put(new AzureAISearchIndexMetadata() { IndexMappings = new ElasticsearchIndexMap() })` to define the index fields and their types. You may use `IndexEntityHandlerBase` to simplify your implementation. 
 
-If you want the UI to capture custom data related to your source, implement `DisplayDriver<AzureAISearchIndexSettings>`.  
+If you want the UI to capture custom data related to your source, implement `DisplayDriver<IndexEntity>`.  
 
 ## Recipes 
 
@@ -164,7 +159,7 @@ note !!!
 
 When the Search module is enabled along with Azure AI Search, you'll be able to use run the frontend site search against your Azure AI Search indices.
 
-To configure the frontend site search settings, navigate to `Settings` >> `Search`. Select the default index to use.
+To configure the frontend site search settings, navigate to `Settings` >> `Search` >> `Site Search`. Select the default index to use.
 
 ### Using the Search Feature to Perform Full-Text Search
 ![image](images/frontend-search.gif)
