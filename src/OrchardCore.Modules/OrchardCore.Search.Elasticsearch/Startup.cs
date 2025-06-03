@@ -46,7 +46,7 @@ public sealed class Startup : StartupBase
         {
             var options = sp.GetRequiredService<IOptions<ElasticsearchConnectionOptions>>().Value;
 
-            return ElasticsearchClientFactory.Create(options);
+            return Elasticsearch1ClientFactory.Create(options);
         });
 
         services.Configure<ElasticsearchOptions>(options =>
