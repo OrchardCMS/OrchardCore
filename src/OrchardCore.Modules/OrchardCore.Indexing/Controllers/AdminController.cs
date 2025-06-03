@@ -12,7 +12,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Indexing.ViewModels;
+using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 
@@ -57,7 +57,7 @@ public sealed class AdminController : Controller
 
     [Admin("indexing", "IndexingIndex")]
     public async Task<IActionResult> Index(
-        ModelOptions options,
+        IndexingEntityOptions options,
         PagerParameters pagerParameters,
         [FromServices] IOptions<PagerOptions> pagerOptions,
         [FromServices] IShapeFactory shapeFactory)
@@ -83,7 +83,7 @@ public sealed class AdminController : Controller
             routeData.Values.TryAdd(_optionsSearch, options.Search);
         }
 
-        var viewModel = new ListSourceModelEntryViewModel<IndexEntity, IndexEntityKey>
+        var viewModel = new ListSourcedEntitiesViewModel<IndexEntityKey, ModelEntry<IndexEntity>, IndexingEntityOptions>
         {
             Models = [],
             Options = options,
@@ -104,7 +104,9 @@ public sealed class AdminController : Controller
 
         viewModel.Options.BulkActions =
         [
-            new SelectListItem(S["Delete"], nameof(ModelAction.Remove)),
+            new SelectListItem(S["Delete"], nameof(IndexingEntityAction.Remove)),
+            new SelectListItem(S["Reset"], nameof(IndexingEntityAction.Reset)),
+            new SelectListItem(S["Rebuild"], nameof(IndexingEntityAction.Rebuild)),
         ];
 
         return View(viewModel);
@@ -114,7 +116,7 @@ public sealed class AdminController : Controller
     [ActionName(nameof(Index))]
     [FormValueRequired("submit.Filter")]
     [Admin("indexing", "IndexingIndex")]
-    public ActionResult IndexFilterPost(ListModelViewModel model)
+    public ActionResult IndexFilterPost(ListEntitiesViewModel model)
     {
         return RedirectToAction(nameof(Index), new RouteValueDictionary
         {
@@ -415,13 +417,12 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        await _indexEntityManager.ResetAsync(index);
-
-        await _indexEntityManager.UpdateAsync(index);
-
         if (await indexManager.RebuildAsync(index))
         {
+            await _indexEntityManager.ResetAsync(index);
+            await _indexEntityManager.UpdateAsync(index);
             await _indexEntityManager.SynchronizeAsync(index);
+
             await _notifier.SuccessAsync(H["An index has been rebuilt successfully. The synchronizing process was triggered in the background."]);
         }
         else
@@ -436,7 +437,7 @@ public sealed class AdminController : Controller
     [ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]
     [Admin("indexing", "IndexingIndex")]
-    public async Task<ActionResult> IndexPost(ModelOptions options, IEnumerable<string> itemIds)
+    public async Task<ActionResult> IndexPost(IndexingEntityOptions options, IEnumerable<string> itemIds)
     {
         if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
         {
@@ -449,10 +450,10 @@ public sealed class AdminController : Controller
 
             switch (options.BulkAction)
             {
-                case ModelAction.None:
+                case IndexingEntityAction.None:
                     break;
-                case ModelAction.Remove:
-                    var counter = 0;
+                case IndexingEntityAction.Remove:
+                    var removeCounter = 0;
                     foreach (var id in itemIds)
                     {
                         var index = await _indexEntityManager.FindByIdAsync(id);
@@ -482,17 +483,90 @@ public sealed class AdminController : Controller
 
                         if (await _indexEntityManager.DeleteAsync(index))
                         {
-                            counter++;
+                            removeCounter++;
                         }
                     }
 
-                    if (counter == 0)
+                    if (removeCounter == 0)
                     {
                         await _notifier.WarningAsync(H["No index were removed."]);
                     }
                     else
                     {
-                        await _notifier.SuccessAsync(H.Plural(counter, "1 index has been removed successfully.", "{0} indexes have been removed successfully."));
+                        await _notifier.SuccessAsync(H.Plural(removeCounter, "1 index has been removed successfully.", "{0} indexes have been removed successfully."));
+                    }
+                    break;
+
+                case IndexingEntityAction.Reset:
+                    var resetCounter = 0;
+
+                    foreach (var id in itemIds)
+                    {
+                        var index = await _indexEntityManager.FindByIdAsync(id);
+
+                        if (index == null)
+                        {
+                            continue;
+                        }
+
+                        await _indexEntityManager.ResetAsync(index);
+                        await _indexEntityManager.UpdateAsync(index);
+                        await _indexEntityManager.SynchronizeAsync(index);
+
+                        resetCounter++;
+                    }
+
+                    if (resetCounter == 0)
+                    {
+                        await _notifier.WarningAsync(H["No index were reset."]);
+                    }
+                    else
+                    {
+                        await _notifier.SuccessAsync(H.Plural(resetCounter, "1 index has been reset successfully.", "{0} indexes have been reset successfully."));
+                    }
+                    break;
+
+                case IndexingEntityAction.Rebuild:
+                    var rebuildCounter = 0;
+                    foreach (var id in itemIds)
+                    {
+                        var index = await _indexEntityManager.FindByIdAsync(id);
+
+                        if (index == null)
+                        {
+                            continue;
+                        }
+
+                        if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+                        {
+                            indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+                            indexManagers.Add(index.ProviderName, indexManager);
+                        }
+
+                        if (indexManager is null)
+                        {
+                            continue;
+                        }
+
+                        if (!await indexManager.RebuildAsync(index))
+                        {
+                            continue;
+                        }
+
+                        rebuildCounter++;
+
+                        await _indexEntityManager.ResetAsync(index);
+                        await _indexEntityManager.UpdateAsync(index);
+                        await _indexEntityManager.SynchronizeAsync(index);
+                    }
+
+                    if (rebuildCounter == 0)
+                    {
+                        await _notifier.WarningAsync(H["No index were rebuilt."]);
+                    }
+                    else
+                    {
+                        await _notifier.SuccessAsync(H.Plural(rebuildCounter, "1 index has been rebuilt successfully.", "{0} indexes have been rebuilt successfully."));
                     }
                     break;
                 default:

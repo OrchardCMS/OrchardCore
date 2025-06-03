@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace OrchardCore.Indexing.Models;
+namespace OrchardCore.Infrastructure.Entities;
 
 public class ModelOptions<TOptions>
 {

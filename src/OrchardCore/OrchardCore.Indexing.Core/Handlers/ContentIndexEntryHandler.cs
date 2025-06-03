@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Infrastructure.Entities;
 
 namespace OrchardCore.Indexing.Core.Handlers;
 

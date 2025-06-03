@@ -88,7 +88,4 @@ public abstract class ContentHandlerBase : IContentHandler
 
     public virtual Task GetContentItemAspectAsync(ContentItemAspectContext context)
         => Task.CompletedTask;
-
-    public virtual Task ImportCompletedAsync(ImportedContentsContext context)
-        => Task.CompletedTask;
 }

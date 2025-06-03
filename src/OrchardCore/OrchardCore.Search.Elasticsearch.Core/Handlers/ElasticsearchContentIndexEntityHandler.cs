@@ -6,6 +6,7 @@ using OrchardCore.Entities;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Search.Elasticsearch.Core.Mappings;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Models;

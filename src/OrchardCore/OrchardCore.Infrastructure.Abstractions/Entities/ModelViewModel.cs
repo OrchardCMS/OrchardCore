@@ -1,4 +1,4 @@
-namespace OrchardCore.Indexing.ViewModels;
+namespace OrchardCore.Infrastructure.Entities;
 
 public class ModelViewModel
 {

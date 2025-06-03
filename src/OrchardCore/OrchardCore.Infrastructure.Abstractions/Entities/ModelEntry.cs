@@ -1,4 +1,4 @@
-namespace OrchardCore.Indexing.Models;
+namespace OrchardCore.Infrastructure.Entities;
 
 public class ModelEntry<T>
 {

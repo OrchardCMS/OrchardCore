@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Indexing;
+namespace OrchardCore.Infrastructure.Entities;
 
 public class ValidationResultDetails
 {

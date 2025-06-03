@@ -1,4 +1,4 @@
-namespace OrchardCore.Indexing.Models;
+namespace OrchardCore.Infrastructure.Entities;
 
 public abstract class HandlerContextBase<T>
 {

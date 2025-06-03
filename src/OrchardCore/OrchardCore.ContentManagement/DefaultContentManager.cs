@@ -32,6 +32,7 @@ public class DefaultContentManager : IContentManager
     private readonly IContentItemIdGenerator _idGenerator;
     private readonly IClock _clock;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+
     protected readonly IStringLocalizer S;
 
     public DefaultContentManager(
@@ -784,10 +785,6 @@ public class DefaultContentManager : IContentManager
             skip += _importBatchSize;
             batchedContentItems = contentItems.Skip(skip).Take(_importBatchSize);
         }
-
-        var importedContext = new ImportedContentsContext(importedContentItems, contentItems);
-
-        await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportCompletedAsync(context), importedContext, _logger);
     }
 
     public async Task UpdateAsync(ContentItem contentItem)

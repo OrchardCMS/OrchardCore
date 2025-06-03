@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-namespace OrchardCore.Indexing.Models;
+namespace OrchardCore.Infrastructure.Entities;
 
 public sealed class InitializingContext<T> : HandlerContextBase<T>
 {

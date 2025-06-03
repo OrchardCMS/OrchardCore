@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Handlers;

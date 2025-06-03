@@ -1,4 +1,5 @@
 using OrchardCore.Indexing.Models;
+using OrchardCore.Infrastructure.Entities;
 
 namespace OrchardCore.Indexing;
 

@@ -7,6 +7,7 @@ using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Models;
 

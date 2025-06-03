@@ -10,6 +10,7 @@ using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
 using static OrchardCore.Indexing.DocumentIndexBase;

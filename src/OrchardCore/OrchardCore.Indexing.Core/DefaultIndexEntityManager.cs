@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Abstractions.Indexing;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core;

@@ -1,9 +1,9 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.DisplayManagement
 @using OrchardCore.Indexing.Models
-@using OrchardCore.Indexing.ViewModels
+@using OrchardCore.Infrastructure.Entities
 
-@model ListSourceModelEntryViewModel<IndexEntity, IndexEntityKey>
+@model ListSourcedEntitiesViewModel<IndexEntityKey, ModelEntry<IndexEntity>, IndexingEntityOptions>
 
 <zone Name="Title" Entry>
     <h1>@RenderTitleSegments(T["Indexes"])</h1>

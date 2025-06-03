@@ -1,6 +1,4 @@
-using OrchardCore.Indexing.Models;
-
-namespace OrchardCore.Indexing.Core;
+namespace OrchardCore.Infrastructure.Entities;
 
 public abstract class ModelHandlerBase<T> : IModelHandler<T>
 {

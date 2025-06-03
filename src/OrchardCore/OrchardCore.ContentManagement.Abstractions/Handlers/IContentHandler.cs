@@ -59,6 +59,4 @@ public interface IContentHandler
     Task CloningAsync(CloneContentContext context);
 
     Task ClonedAsync(CloneContentContext context);
-
-    Task ImportCompletedAsync(ImportedContentsContext context);
 }
