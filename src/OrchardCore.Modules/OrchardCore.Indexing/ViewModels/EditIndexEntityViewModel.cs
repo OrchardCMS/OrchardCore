@@ -6,7 +6,7 @@ public class EditIndexEntityViewModel
 {
     public string IndexName { get; set; }
 
-    public string DisplayText { get; set; }
+    public string Name { get; set; }
 
     [BindNever]
     public bool IsNew { get; set; }

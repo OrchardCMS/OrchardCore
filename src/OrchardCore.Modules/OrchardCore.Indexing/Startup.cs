@@ -16,6 +16,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Indexing.Core;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Indexing;
 
@@ -28,6 +29,7 @@ public sealed class Startup : StartupBase
 
         services.AddNavigationProvider<AdminMenu>();
         services.AddDisplayDriver<IndexEntity, IndexEntityDisplayDriver>();
+        services.AddPermissionProvider<IndexingPermissionsProvider>();
     }
 }
 
@@ -50,7 +52,7 @@ public sealed class RecipesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddRecipeExecutionStep<IndexEntityStep>();
+        services.AddRecipeExecutionStep<IndexingEntityStep>();
         services.AddRecipeExecutionStep<ResetIndexEntityStep>();
         services.AddRecipeExecutionStep<RebuildIndexEntityStep>();
     }

@@ -166,12 +166,13 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
                         writer.IsClosing = true;
                         writer.Dispose();
+                        _timestamps.AddOrUpdate(index.IndexFullName, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
 
                         return Task.CompletedTask;
                     }
 
-                    _writers.AddOrUpdate(index.IndexFullName, writer, (key, oldValue) => writer);
                     _timestamps.AddOrUpdate(index.IndexFullName, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
+                    _writers.AddOrUpdate(index.IndexFullName, writer, (key, oldValue) => writer);
                 }
             }
         }

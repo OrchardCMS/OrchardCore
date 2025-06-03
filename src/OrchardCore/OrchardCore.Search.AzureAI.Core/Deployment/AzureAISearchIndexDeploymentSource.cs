@@ -63,7 +63,7 @@ public sealed class AzureAISearchIndexDeploymentSource
             {
                 { "ProviderName", AzureAISearchConstants.ProviderName },
                 { "Type", index.Type },
-                { "DisplayText", index.DisplayText },
+                { "Name", index.Name },
                 { "AnalyzerName", indexMetadata.AnalyzerName },
                 { "QueryAnalyzerName", index.As<AzureAISearchDefaultQueryMetadata>().QueryAnalyzerName },
                 { "IndexMappings", JArray.FromObject(indexMetadata.IndexMappings ?? []) },

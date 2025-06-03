@@ -39,7 +39,14 @@ public class LuceneSearchService : ISearchService
 
         var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
 
-        if (queryMetadata.DefaultSearchFields == null || queryMetadata.DefaultSearchFields.Length == 0)
+        var defaultSearchFields = queryMetadata.DefaultSearchFields;
+
+        if (defaultSearchFields is null || defaultSearchFields.Length == 0)
+        {
+            defaultSearchFields = index.As<LuceneIndexMetadata>().IndexMappings?.Fields;
+        }
+
+        if (defaultSearchFields == null || defaultSearchFields.Length == 0)
         {
             _logger.LogWarning("Lucene: Couldn't execute search. No search provider settings was defined.");
 
@@ -48,7 +55,7 @@ public class LuceneSearchService : ISearchService
         var metadata = index.As<LuceneIndexMetadata>();
 
         var analyzer = _analyzerManager.CreateAnalyzer(metadata.AnalyzerName);
-        var queryParser = new MultiFieldQueryParser(queryMetadata.DefaultVersion, queryMetadata.DefaultSearchFields, analyzer);
+        var queryParser = new MultiFieldQueryParser(queryMetadata.DefaultVersion, defaultSearchFields, analyzer);
 
         try
         {

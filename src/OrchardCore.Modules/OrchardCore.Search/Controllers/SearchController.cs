@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Indexing;
+using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -59,17 +60,23 @@ public sealed class SearchController : Controller
         _logger = logger;
     }
 
-    [Route("search/{indexId?}")]
-    public async Task<IActionResult> Search(string indexId, string terms, PagerSlimParameters pagerParameters)
+    [Route("search/{indexName?}")]
+    public async Task<IActionResult> Search(string indexName, string terms, PagerSlimParameters pagerParameters)
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var searchSettings = siteSettings.As<SearchSettings>();
 
         IndexEntity index = null;
 
-        if (string.IsNullOrWhiteSpace(indexId) && !string.IsNullOrEmpty(searchSettings.DefaultIndexId))
+        var hasIndexName = !string.IsNullOrWhiteSpace(indexName);
+
+        if (!hasIndexName)
         {
-            index = await _indexEntityStore.FindByIdAsync(searchSettings.DefaultIndexId);
+            // Try to find the default index configured in site search settings.
+            if (!string.IsNullOrEmpty(searchSettings.DefaultIndexId))
+            {
+                index = await _indexEntityStore.FindByIdAsync(searchSettings.DefaultIndexId);
+            }
 
             if (index is null)
             {
@@ -80,7 +87,7 @@ public sealed class SearchController : Controller
         }
         else
         {
-            index = await _indexEntityStore.FindByIdAsync(indexId);
+            index = await _indexEntityStore.FindByNameAsync(indexName);
         }
 
         if (index is null)
@@ -88,7 +95,7 @@ public sealed class SearchController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, SearchPermissions.QuerySearchIndex, index))
+        if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.QuerySearchIndex, index))
         {
             return this.ChallengeOrForbid();
         }
@@ -106,13 +113,13 @@ public sealed class SearchController : Controller
         {
             return View(new SearchIndexViewModel()
             {
-                IndexId = index.Id,
+                IndexName = index.Name,
                 PageTitle = searchSettings.PageTitle,
                 SearchForm = new SearchFormViewModel()
                 {
                     Terms = terms,
                     Placeholder = searchSettings.Placeholder,
-                    Index = index.Id,
+                    IndexName = index.Name,
                 },
             });
         }
@@ -151,17 +158,17 @@ public sealed class SearchController : Controller
 
             return View(new SearchIndexViewModel()
             {
-                IndexId = index.Id,
+                IndexName = index.Name,
                 PageTitle = searchSettings.PageTitle,
                 SearchForm = new SearchFormViewModel()
                 {
                     Terms = terms,
                     Placeholder = searchSettings.Placeholder,
-                    Index = index.Id,
+                    IndexName = index.Name,
                 },
                 SearchResults = new SearchResultsViewModel()
                 {
-                    IndexId = index.Id,
+                    IndexName = index.Name,
                     ContentItems = [],
                 },
             });
@@ -206,18 +213,18 @@ public sealed class SearchController : Controller
 
         var shape = new SearchIndexViewModel()
         {
-            IndexId = index.Id,
+            IndexName = index.Name,
             PageTitle = searchSettings.PageTitle,
             Terms = terms,
             SearchForm = new SearchFormViewModel()
             {
                 Terms = terms,
                 Placeholder = searchSettings.Placeholder,
-                Index = index.Id,
+                IndexName = index.Name,
             },
             SearchResults = new SearchResultsViewModel()
             {
-                IndexId = index.Id,
+                IndexName = index.Name,
                 ContentItems = containedItems.OrderBy(x => searchResult.ContentItemIds.IndexOf(x.ContentItemId))
                 .Take(pager.PageSize)
                 .ToList(),
@@ -226,7 +233,7 @@ public sealed class SearchController : Controller
             Pager = await _shapeFactory.PagerSlimAsync(pager, new Dictionary<string, string>()
             {
                 { nameof(terms), terms },
-                { nameof(indexId), index.Id },
+                { nameof(indexName), index.Name },
             }),
         };
 

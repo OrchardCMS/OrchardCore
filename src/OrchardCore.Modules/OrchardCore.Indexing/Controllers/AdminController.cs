@@ -191,13 +191,13 @@ public sealed class AdminController : Controller
 
         var validate = await _indexEntityManager.ValidateAsync(index);
 
-        if (!validate.Succeeded)
+        if (!validate.Succeeded && ModelState.IsValid)
         {
             foreach (var error in validate.Errors)
             {
                 foreach (var memberName in error.MemberNames)
                 {
-                    ModelState.AddModelError(memberName, error.ErrorMessage);
+                    ModelState.TryAddModelError(memberName, error.ErrorMessage);
                 }
             }
         }
@@ -253,7 +253,7 @@ public sealed class AdminController : Controller
 
         var model = new ModelViewModel
         {
-            DisplayName = index.DisplayText,
+            DisplayName = index.Name,
             Editor = await _displayManager.BuildEditorAsync(index, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 
@@ -282,7 +282,7 @@ public sealed class AdminController : Controller
 
         var model = new ModelViewModel
         {
-            DisplayName = mutableProfile.DisplayText,
+            DisplayName = mutableProfile.Name,
             Editor = await _displayManager.UpdateEditorAsync(mutableProfile, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 

@@ -21,14 +21,6 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddPermissionProvider<Permissions>();
-    }
-}
-
-[RequireFeatures("OrchardCore.Indexing")]
-public sealed class IndexingStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
         services.AddNavigationProvider<AdminMenu>();
         services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
     }

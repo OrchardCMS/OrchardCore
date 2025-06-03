@@ -44,7 +44,7 @@ public sealed class IndexEntityDeploymentSource : DeploymentSourceBase<IndexEnti
                 { "Id", index.Id },
                 { "ProviderName", index.ProviderName },
                 { "Type", index.Type },
-                { "DisplayText", index.DisplayText },
+                { "DisplayText", index.Name },
                 { "CreatedUtc", index.CreatedUtc },
                 { "OwnerId", index.OwnerId },
                 { "Author", index.Author },

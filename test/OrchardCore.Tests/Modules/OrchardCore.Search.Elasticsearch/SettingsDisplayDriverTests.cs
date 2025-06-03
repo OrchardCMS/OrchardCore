@@ -85,7 +85,7 @@ public partial class SettingsDisplayDriverTests
                     IndexFullName = "idx1",
                     ProviderName = "elasticsearch",
                     Type = "Content",
-                    DisplayText = "Test Index",
+                    Name = "Test Index",
                 },
                 new IndexEntity
                 {
@@ -94,7 +94,7 @@ public partial class SettingsDisplayDriverTests
                     IndexFullName = "idx2",
                     ProviderName = "elasticsearch",
                     Type = "Content",
-                    DisplayText = "Test Index",
+                    Name = "Test Index",
                 },
                 new IndexEntity
                 {
@@ -103,7 +103,7 @@ public partial class SettingsDisplayDriverTests
                     IndexFullName = "testIndex",
                     ProviderName = "elasticsearch",
                     Type = "Content",
-                    DisplayText = "Test Index",
+                    Name = "Test Index",
                 },
             };
 

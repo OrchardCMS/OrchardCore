@@ -10,9 +10,10 @@
 </div>
 
 <div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="DisplayText" class="@Orchard.GetLabelClasses()">@T["Display Text"]</label>
+    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
     <div class="@Orchard.GetEndClasses()">
-        <input asp-for="DisplayText" class="form-control" />
-        <span asp-validation-for="DisplayText" class="text-danger"></span>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+        <span class="hint">@T["A unique name for the index."]</span>
     </div>
 </div>

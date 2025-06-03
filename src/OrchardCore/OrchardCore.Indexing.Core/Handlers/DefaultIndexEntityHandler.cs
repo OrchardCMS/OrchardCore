@@ -13,6 +13,7 @@ namespace OrchardCore.Indexing.Core.Handlers;
 
 internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
 {
+    private readonly IIndexEntityStore _indexEntityStore;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IServiceProvider _serviceProvider;
     private readonly IndexingOptions _indexingOptions;
@@ -21,12 +22,14 @@ internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
     internal readonly IStringLocalizer S;
 
     public DefaultIndexEntityHandler(
+        IIndexEntityStore indexEntityStore,
         IHttpContextAccessor httpContextAccessor,
         IServiceProvider serviceProvider,
         IOptions<IndexingOptions> indexingOptions,
         IClock clock,
         IStringLocalizer<DefaultIndexEntityHandler> stringLocalizer)
     {
+        _indexEntityStore = indexEntityStore;
         _httpContextAccessor = httpContextAccessor;
         _serviceProvider = serviceProvider;
         _indexingOptions = indexingOptions.Value;
@@ -40,11 +43,11 @@ internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
     public override Task UpdatingAsync(UpdatingContext<IndexEntity> context)
         => PopulateAsync(context.Model, context.Data);
 
-    public override Task ValidatingAsync(ValidatingContext<IndexEntity> context)
+    public override async Task ValidatingAsync(ValidatingContext<IndexEntity> context)
     {
-        if (string.IsNullOrWhiteSpace(context.Model.DisplayText))
+        if (string.IsNullOrWhiteSpace(context.Model.Name))
         {
-            context.Result.Fail(new ValidationResult(S["Index display-text is required."], [nameof(IndexEntity.DisplayText)]));
+            context.Result.Fail(new ValidationResult(S["Index name is required."], [nameof(IndexEntity.Name)]));
         }
 
         var hasIndexName = !string.IsNullOrWhiteSpace(context.Model.IndexName);
@@ -52,6 +55,15 @@ internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
         if (!hasIndexName)
         {
             context.Result.Fail(new ValidationResult(S["The index name is required."]));
+        }
+        else
+        {
+            var existing = await _indexEntityStore.FindByNameAsync(context.Model.Name);
+
+            if (existing is not null && existing.Id != context.Model.Id)
+            {
+                context.Result.Fail(new ValidationResult(S["There is already another index with the same name."], [nameof(IndexEntity.Name)]));
+            }
         }
 
         if (string.IsNullOrWhiteSpace(context.Model.IndexFullName))
@@ -98,8 +110,6 @@ internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
                 }
             }
         }
-
-        return Task.CompletedTask;
     }
 
     public override Task CreatingAsync(CreatingContext<IndexEntity> context)
@@ -130,11 +140,11 @@ internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
 
     private Task PopulateAsync(IndexEntity index, JsonNode data)
     {
-        var displayText = data[nameof(index.DisplayText)]?.GetValue<string>()?.Trim();
+        var name = data[nameof(index.Name)]?.GetValue<string>()?.Trim();
 
-        if (!string.IsNullOrEmpty(displayText))
+        if (!string.IsNullOrEmpty(name))
         {
-            index.DisplayText = displayText;
+            index.Name = name;
         }
 
         var indexName = data[nameof(index.IndexName)]?.GetValue<string>()?.Trim();
@@ -165,9 +175,9 @@ internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
             index.Properties = properties.Clone();
         }
 
-        if (string.IsNullOrWhiteSpace(index.DisplayText))
+        if (string.IsNullOrWhiteSpace(index.Name))
         {
-            index.DisplayText = index.IndexName;
+            index.Name = index.IndexName;
         }
 
         SetIndexFullName(index);
@@ -183,6 +193,7 @@ internal sealed class DefaultIndexEntityHandler : IndexEntityHandlerBase
         }
 
         var nameProvider = _serviceProvider.GetKeyedService<IIndexNameProvider>(index.ProviderName);
+
         if (nameProvider is not null)
         {
             // Set the full name of the index.

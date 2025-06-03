@@ -16,7 +16,7 @@ public class SearchResultsViewModel : ShapeViewModel
     {
     }
 
-    public string IndexId { get; set; }
+    public string IndexName { get; set; }
 
     [BindNever]
     public IEnumerable<ContentItem> ContentItems { get; set; }

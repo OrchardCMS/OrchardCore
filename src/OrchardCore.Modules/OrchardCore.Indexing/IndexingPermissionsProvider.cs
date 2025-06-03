@@ -3,7 +3,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Indexing;
 
-public sealed class Permissions : IPermissionProvider
+public sealed class IndexingPermissionsProvider : IPermissionProvider
 {
     private readonly IEnumerable<Permission> _allPermissions =
     [
@@ -12,21 +12,26 @@ public sealed class Permissions : IPermissionProvider
 
     private readonly IIndexEntityStore _store;
 
-    public Permissions(IIndexEntityStore store)
+    public IndexingPermissionsProvider(IIndexEntityStore store)
     {
         _store = store;
     }
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var result = new List<Permission>();
+        var indexes = await _store.GetAllAsync();
+
+        var permissions = new List<Permission>(indexes.Count() + 1)
+        {
+            IndexingPermissions.ManageIndexes,
+        };
 
         foreach (var index in await _store.GetAllAsync())
         {
-            result.Add(IndexingPermissions.CreateDynamicPermission(index));
+            permissions.Add(IndexingPermissions.CreateDynamicPermission(index));
         }
 
-        return result;
+        return permissions;
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>

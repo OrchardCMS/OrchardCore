@@ -47,6 +47,15 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
         return null;
     }
 
+    public async ValueTask<IndexEntity> FindByNameAsync(string name)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        var document = await _documentManager.GetOrCreateImmutableAsync();
+
+        return document.Records.Values.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+    }
+
     public async ValueTask<IndexEntity> FindByNameAndProviderAsync(string indexName, string providerName)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
@@ -109,6 +118,11 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
             throw new InvalidOperationException("There is already another index with the same name.");
         }
 
+        if (document.Records.Values.Any(x => x.Name.Equals(record.Name, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new InvalidOperationException("There is already another index with the same name.");
+        }
+
         if (string.IsNullOrEmpty(record.Id))
         {
             record.Id = IdGenerator.GenerateId();
@@ -126,8 +140,14 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
         var document = await _documentManager.GetOrCreateMutableAsync();
 
         if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase) &&
-        x.ProviderName.Equals(record.ProviderName, StringComparison.OrdinalIgnoreCase) &&
-        x.Id != record.Id))
+            x.ProviderName.Equals(record.ProviderName, StringComparison.OrdinalIgnoreCase) &&
+            x.Id != record.Id))
+        {
+            throw new InvalidOperationException("There is already another index with the same name.");
+        }
+
+        if (document.Records.Values.Any(x => x.Name.Equals(record.Name, StringComparison.OrdinalIgnoreCase) &&
+            x.Id != record.Id))
         {
             throw new InvalidOperationException("There is already another index with the same name.");
         }
@@ -166,12 +186,12 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
     {
         if (!string.IsNullOrEmpty(context.Name))
         {
-            records = records.Where(x => context.Name.Contains(x.DisplayText, StringComparison.OrdinalIgnoreCase));
+            records = records.Where(x => context.Name.Contains(x.Name, StringComparison.OrdinalIgnoreCase));
         }
 
         if (context.Sorted)
         {
-            records = records.OrderBy(x => x.DisplayText);
+            records = records.OrderBy(x => x.Name);
         }
 
         return records;

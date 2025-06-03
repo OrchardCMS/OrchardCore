@@ -56,6 +56,21 @@ public sealed class DefaultIndexEntityManager : IIndexEntityManager
         return null;
     }
 
+    public async ValueTask<IndexEntity> FindByNameAsync(string name)
+    {
+        var model = await _store.FindByNameAsync(name);
+
+        if (model is not null)
+        {
+            await LoadAsync(model);
+
+            return model;
+        }
+
+        return null;
+    }
+
+
     public async ValueTask<IndexEntity> FindByNameAndProviderAsync(string indexName, string providerName)
     {
         var model = await _store.FindByNameAndProviderAsync(indexName, providerName);
@@ -187,7 +202,7 @@ public sealed class DefaultIndexEntityManager : IIndexEntityManager
         return models;
     }
 
-    public async Task SynchronizeAsync(IndexEntity index)
+    public async ValueTask SynchronizeAsync(IndexEntity index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -195,7 +210,7 @@ public sealed class DefaultIndexEntityManager : IIndexEntityManager
         await _handlers.InvokeAsync((handler, ctx) => handler.SynchronizedAsync(ctx), synchronizedContext, _logger);
     }
 
-    public async Task ResetAsync(IndexEntity index)
+    public async ValueTask ResetAsync(IndexEntity index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -203,7 +218,7 @@ public sealed class DefaultIndexEntityManager : IIndexEntityManager
         await _handlers.InvokeAsync((handler, ctx) => handler.ResetAsync(ctx), validatingContext, _logger);
     }
 
-    private async Task LoadAsync(IndexEntity index)
+    private async ValueTask LoadAsync(IndexEntity index)
     {
         var loadedContext = new LoadedContext<IndexEntity>(index);
 

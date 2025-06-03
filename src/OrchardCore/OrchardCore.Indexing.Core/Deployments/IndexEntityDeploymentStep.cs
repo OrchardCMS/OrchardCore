@@ -7,7 +7,7 @@ public sealed class IndexEntityDeploymentStep : DeploymentStep
 {
     public IndexEntityDeploymentStep()
     {
-        Name = IndexEntityStep.StepKey;
+        Name = IndexingEntityStep.StepKey;
     }
 
     public bool IncludeAll { get; set; }

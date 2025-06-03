@@ -84,7 +84,7 @@ public partial class SettingsDisplayDriverTests
                     IndexFullName = "idx1",
                     ProviderName = "Lucene",
                     Type = "Content",
-                    DisplayText = "Test Index",
+                    Name = "Test Index",
                 },
                 new IndexEntity
                 {
@@ -93,7 +93,7 @@ public partial class SettingsDisplayDriverTests
                     IndexFullName = "idx2",
                     ProviderName = "Lucene",
                     Type = "Content",
-                    DisplayText = "Test Index",
+                    Name = "Test Index",
                 },
                 new IndexEntity
                 {
@@ -102,7 +102,7 @@ public partial class SettingsDisplayDriverTests
                     IndexFullName = "testIndex",
                     ProviderName = "Lucene",
                     Type = "Content",
-                    DisplayText = "Test Index",
+                    Name = "Test Index",
                 },
             };
 

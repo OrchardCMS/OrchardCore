@@ -113,7 +113,19 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                 var index = await indexManager.NewAsync(AzureAISearchConstants.ProviderName, source ?? IndexingConstants.ContentsIndexSource);
                 index.IndexName = indexName;
                 index.IndexFullName = indexNamingProvider.GetFullIndexName(indexName);
-                index.DisplayText = indexName;
+                index.Name = indexName;
+
+                var counter = 1;
+
+                while (await indexManager.FindByNameAsync(index.Name) is not null)
+                {
+                    index.Name = $"{indexName}{counter++}";
+
+                    if (counter > 50)
+                    {
+                        throw new InvalidOperationException($"Unable to create a unique index name for '{indexName}' after 50 attempts.");
+                    }
+                }
 
                 var id = indexObject.Value["Id"]?.GetValue<string>();
 

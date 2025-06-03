@@ -24,7 +24,7 @@ public sealed class IndexingAuthorizationHandler : AuthorizationHandler<Permissi
             return;
         }
 
-        if (context.Resource is not IndexEntity index)
+        if (context.Resource is not IndexEntity index || requirement.Permission != IndexingPermissions.QuerySearchIndex)
         {
             return;
         }

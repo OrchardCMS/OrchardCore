@@ -7,7 +7,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Indexing.Core.Recipes;
 
-public sealed class IndexEntityStep : NamedRecipeStepHandler
+public sealed class IndexingEntityStep : NamedRecipeStepHandler
 {
     public const string StepKey = "Indexing";
 
@@ -16,10 +16,10 @@ public sealed class IndexEntityStep : NamedRecipeStepHandler
 
     internal readonly IStringLocalizer S;
 
-    public IndexEntityStep(
+    public IndexingEntityStep(
         IIndexEntityManager indexEntityManager,
         IOptions<IndexingOptions> indexingOptions,
-        IStringLocalizer<IndexEntityStep> stringLocalizer)
+        IStringLocalizer<IndexingEntityStep> stringLocalizer)
         : base(StepKey)
     {
         _indexEntityManager = indexEntityManager;
@@ -41,6 +41,16 @@ public sealed class IndexEntityStep : NamedRecipeStepHandler
             if (!string.IsNullOrEmpty(id))
             {
                 index = await _indexEntityManager.FindByIdAsync(id);
+            }
+
+            if (index is null)
+            {
+                var name = token[nameof(index.Name)]?.GetValue<string>();
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    index = await _indexEntityManager.FindByNameAsync(name);
+                }
             }
 
             if (index is not null)

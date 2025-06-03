@@ -96,7 +96,7 @@ public sealed class AdminController : Controller
         }
 
         model.Indexes = (await _indexEntityStore.GetAsync(LuceneConstants.ProviderName))
-            .Select(x => new SelectListItem(x.DisplayText, x.Id))
+            .Select(x => new SelectListItem(x.Name, x.Id))
             .OrderBy(x => x.Text);
 
         return View(model);
@@ -113,7 +113,7 @@ public sealed class AdminController : Controller
 
         model.MatchAllQuery = GetMatchAllQuery();
         model.Indexes = (await _indexEntityStore.GetAsync(LuceneConstants.ProviderName))
-            .Select(x => new SelectListItem(x.DisplayText, x.Id))
+            .Select(x => new SelectListItem(x.Name, x.Id))
             .OrderBy(x => x.Text);
 
         if (!ModelState.IsValid)

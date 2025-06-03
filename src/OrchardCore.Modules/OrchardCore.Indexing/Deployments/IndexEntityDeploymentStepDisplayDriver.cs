@@ -37,7 +37,7 @@ internal sealed class IndexEntityDeploymentStepDisplayDriver : DisplayDriver<Dep
         return Initialize<IndexEntityDeploymentStepViewModel>("IndexEntityDeploymentStep_Fields_Edit", async model =>
         {
             model.IncludeAll = step.IncludeAll;
-            model.Indexes = (await _store.GetAllAsync()).Select(x => new SelectListItem(x.DisplayText, x.Id)
+            model.Indexes = (await _store.GetAllAsync()).Select(x => new SelectListItem(x.Name, x.Id)
             {
                 Selected = step.IndexeIds?.Contains(x.IndexName) ?? false,
             }).OrderBy(x => x.Text)

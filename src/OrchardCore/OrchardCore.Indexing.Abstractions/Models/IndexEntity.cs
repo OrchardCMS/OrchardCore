@@ -11,10 +11,17 @@ public sealed class IndexEntity : Entity
 
     public string Type { get; set; }
 
-    public string DisplayText { get; set; }
+    /// <summary>
+    /// A unique name for the index.
+    /// </summary>
+    public string Name { get; set; }
 
     public string IndexName { get; set; }
 
+    /// <summary>
+    /// This is the index name that is used by the provider which may contains
+    /// prefixes like tenant name or predefined constant.
+    /// </summary>
     public string IndexFullName { get; set; }
 
     public DateTime CreatedUtc { get; set; }
@@ -30,7 +37,7 @@ public sealed class IndexEntity : Entity
             Id = Id,
             ProviderName = ProviderName,
             Type = Type,
-            DisplayText = DisplayText,
+            Name = Name,
             IndexName = IndexName,
             IndexFullName = IndexFullName,
             CreatedUtc = CreatedUtc,

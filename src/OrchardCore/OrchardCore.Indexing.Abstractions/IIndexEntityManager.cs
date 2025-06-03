@@ -130,7 +130,7 @@ public interface IIndexEntityManager
     /// <returns>
     /// A <see cref="Task"/> that represents the asynchronous operation.
     /// </returns>
-    Task SynchronizeAsync(IndexEntity index);
+    ValueTask SynchronizeAsync(IndexEntity index);
 
     /// <summary>
     /// Asynchronously resets the specified index entity.
@@ -139,5 +139,12 @@ public interface IIndexEntityManager
     /// <returns>
     /// A <see cref="Task"/> that represents the asynchronous operation.
     /// </returns>
-    Task ResetAsync(IndexEntity index);
+    ValueTask ResetAsync(IndexEntity index);
+
+    /// <summary>
+    /// Asynchronously retrieves a model by its unique name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    ValueTask<IndexEntity> FindByNameAsync(string name);
 }

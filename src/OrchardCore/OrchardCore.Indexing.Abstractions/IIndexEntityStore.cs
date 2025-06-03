@@ -99,4 +99,15 @@ public interface IIndexEntityStore
     /// <param name="type"></param>
     /// <returns></returns>
     ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName, string type);
+
+    /// <summary>
+    /// Retrieves an existing <see cref="IndexEntity"/> by its unique display name.
+    /// </summary>
+    /// <returns>
+    /// The <see cref="IndexEntity"/> if found; otherwise, <c>null</c>.
+    /// </returns>
+    /// <remarks>
+    /// Used to ensure that no other index entity exists with the same display name.
+    /// </remarks>
+    ValueTask<IndexEntity> FindByNameAsync(string name);
 }

@@ -90,7 +90,19 @@ internal sealed class IndexingMigrations : DataMigration
                 var index = await indexManager.NewAsync(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource);
                 index.IndexName = indexName;
                 index.IndexFullName = indexFullName;
-                index.DisplayText = indexName;
+                index.Name = indexName;
+
+                var counter = 1;
+
+                while (await indexManager.FindByNameAsync(index.Name) is not null)
+                {
+                    index.Name = $"{indexName}{counter++}";
+
+                    if (counter > 50)
+                    {
+                        throw new InvalidOperationException($"Unable to create a unique index name for '{indexName}' after 50 attempts.");
+                    }
+                }
 
                 var metadata = index.As<ContentIndexMetadata>();
 

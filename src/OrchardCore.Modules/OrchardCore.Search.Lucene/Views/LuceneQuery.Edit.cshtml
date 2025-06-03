@@ -26,7 +26,7 @@
 <div class="mb-3">
     <label asp-for="Query" class="form-label">@T["Query"]</label>
     <textarea asp-for="Query" rows="12" class="form-control"></textarea>
-    <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
+    <span class="hint">@T["The search query uses the Lucene format. Some documentation can be found <a target=\"_blank\" href=\"{0}\">here</a>.", "https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html"]</span>
 </div>
 
 <script at="Foot">

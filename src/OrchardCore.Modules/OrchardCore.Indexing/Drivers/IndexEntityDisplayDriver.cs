@@ -46,7 +46,7 @@ internal sealed class IndexEntityDisplayDriver : DisplayDriver<IndexEntity>
     {
         return Initialize<EditIndexEntityViewModel>("IndexEntityFields_Edit", model =>
         {
-            model.DisplayText = index.DisplayText;
+            model.Name = index.Name;
             model.IndexName = index.IndexName;
             model.IsNew = context.IsNew;
         }).Location("Content:1");
@@ -84,12 +84,21 @@ internal sealed class IndexEntityDisplayDriver : DisplayDriver<IndexEntity>
             index.IndexName = model.IndexName;
         }
 
-        if (string.IsNullOrEmpty(model.DisplayText))
+        if (string.IsNullOrEmpty(model.Name))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.DisplayText), S["The display-text is required field."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["The name is required field."]);
+        }
+        else
+        {
+            var existing = await _indexEntityStore.FindByNameAsync(model.Name);
+
+            if (existing is not null && existing.Id != index.Id)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["There is already another index with the same name."]);
+            }
         }
 
-        index.DisplayText = model.DisplayText;
+        index.Name = model.Name;
 
         return Edit(index, context);
     }

@@ -98,6 +98,13 @@ public sealed class LuceneContentIndexEntityHandler : IndexEntityHandlerBase
         }
 
         index.Put(LuceneMetadata);
+
+        var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
+
+        if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
+        {
+            queryMetadata.DefaultSearchFields = [ContentIndexingConstants.FullTextKey];
+        }
     }
 
     private static bool CanHandle(IndexEntity index)
@@ -112,6 +119,7 @@ public sealed class LuceneContentIndexEntityHandler : IndexEntityHandlerBase
         {
             ContentIndexingConstants.ContentItemIdKey,
             ContentIndexingConstants.ContentItemVersionIdKey,
+            ContentIndexingConstants.FullTextKey,
         };
 
         if (metadata.IndexedContentTypes is null || metadata.IndexedContentTypes.Length == 0)
