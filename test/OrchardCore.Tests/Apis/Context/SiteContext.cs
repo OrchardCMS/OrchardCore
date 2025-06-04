@@ -126,7 +126,7 @@ public class SiteContext : IDisposable
         });
     }
 
-    public async Task ResetLuceneIndexiesAsync(string indexName)
+    public async Task ResetLuceneIndexesAsync(string indexName)
     {
         await UsingTenantScopeAsync(async scope =>
         {
