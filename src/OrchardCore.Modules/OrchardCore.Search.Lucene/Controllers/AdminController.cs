@@ -26,7 +26,7 @@ namespace OrchardCore.Search.Lucene.Controllers;
 public sealed class AdminController : Controller
 {
     private readonly LuceneIndexManager _indexManager;
-    private readonly ILuceneIndexStore _luceneIndexStore;
+    private readonly ILuceneIndexStore _indexStore;
     private readonly IAuthorizationService _authorizationService;
     private readonly LuceneAnalyzerManager _analyzerManager;
     private readonly ILuceneQueryService _queryService;
@@ -42,7 +42,7 @@ public sealed class AdminController : Controller
     public AdminController(
         IIndexEntityStore indexEntityStore,
         LuceneIndexManager indexManager,
-        ILuceneIndexStore luceneIndexStore,
+        ILuceneIndexStore indexStore,
         IAuthorizationService authorizationService,
         LuceneAnalyzerManager analyzerManager,
         ILuceneQueryService queryService,
@@ -54,7 +54,7 @@ public sealed class AdminController : Controller
         IOptions<TemplateOptions> templateOptions)
     {
         _indexManager = indexManager;
-        _luceneIndexStore = luceneIndexStore;
+        _indexStore = indexStore;
         _authorizationService = authorizationService;
         _analyzerManager = analyzerManager;
         _queryService = queryService;
@@ -160,7 +160,7 @@ public sealed class AdminController : Controller
 
         try
         {
-            await _luceneIndexStore.SearchAsync(index, async searcher =>
+            await _indexStore.SearchAsync(index, async searcher =>
             {
                 var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
                 var analyzer = _analyzerManager.CreateAnalyzer(index.As<LuceneIndexMetadata>().AnalyzerName);

@@ -21,7 +21,6 @@ using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch;
 
-[Admin("elasticsearch/{action}/{id?}", "Elasticsearch.{action}")]
 public sealed class AdminController : Controller
 {
     private readonly IIndexEntityStore _indexEntityStore;
