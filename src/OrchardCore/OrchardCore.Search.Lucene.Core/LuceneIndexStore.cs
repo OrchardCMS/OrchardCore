@@ -166,7 +166,6 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
                         writer.IsClosing = true;
                         writer.Dispose();
-                        _timestamps.AddOrUpdate(index.IndexFullName, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
 
                         return Task.CompletedTask;
                     }
@@ -186,7 +185,16 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
             return Task.CompletedTask;
         }
 
-        action?.Invoke(writer);
+        if (action is not null)
+        {
+            action.Invoke(writer);
+
+            if (_indexPools.TryRemove(index.IndexFullName, out var pool))
+            {
+                pool.MakeDirty();
+                pool.Release();
+            }
+        }
 
         _timestamps.AddOrUpdate(index.IndexFullName, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
 
