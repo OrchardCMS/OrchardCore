@@ -1,42 +1,58 @@
 # Indexing (`OrchardCore.Indexing`)
 
-The `Indexing` module provides services to index content items. It does so by storing an append-only log of content item entries, and providing a service to query this list with a cursor-like interface. An entry can be either an `Update` or a `Deletion` task. This list of tasks can also be seen as an event store for content items.
+The `Indexing` module provides a flexible and extensible infrastructure for indexing data in Orchard Core. It is designed to support various types of data and multiple index providers such as Azure AI Search, Elasticsearch, and Lucene.
 
-Other modules can then store their own cursor location for this list, and check for updates and deletions of content items and do custom operations based on these changes.
+It exposes a provider-agnostic model that allows developers to define custom indexing sources and integrate them into a unified UI. This UI, introduced in version 3, is available in the admin dashboard under **Search** > **Indexes**, and allows users to create, update, reset, rebuild, and delete indexes.
 
-As of version 3, the `Indexing` module also provide a user interface for all index providers modules like Azure AI Search, Elasticsearch, and Lucene. This user interface is available in the admin panel and allows users to manage their indexes, including creating, updating, and deleting indexes. The UI can be found in `Search` > `Indexes`.
+The module is agnostic of specific data types—it does not assume that the indexed content is based on Orchard Core content items.
 
-#### Multi-Source Indexing  
+## Indexing Content Items
 
-You can extend the indexing feature by adding your own indexing source. This allows you to create a custom index provider that can be used to index content items from a specific source. The custom source can be anything, such as a database, an external API, or any other data source.
+Although the `Indexing` module is generic, it includes built-in support for indexing Orchard Core content items.
 
-To create a custom source, you'll need to implement the `IIndexManager`, `IIndexDocumentManager` and `IIndexNameProvider` interfaces and register them as following
+Content indexing works by recording an **append-only log of content item tasks**, where each task represents either an `Update` or a `Deletion`. This log acts as a change history and can be queried using a **cursor-based interface**. This enables other modules to store their own cursor positions and react to content item changes—effectively using the log as an event stream.
 
-To register a new source, you can add the following code to your `Startup.cs` file:
+This approach decouples indexing consumers from the content system, allowing modules to process updates at their own pace and apply custom logic for search, analytics, or other purposes.
+
+note !!!
+     Content item indexing is implemented as a consumer of the core `Indexing` infrastructure, not a requirement of it.
+
+## Multi-Source Indexing
+
+The `Indexing` module can be extended to index data from arbitrary sources, such as external APIs, relational databases, or custom data stores.
+
+To define a custom index source, implement the following interfaces:
+
+- `IIndexManager`
+- `IIndexDocumentManager`
+- `IIndexNameProvider`
+
+Then register your custom source in your module's `Startup.cs`:
 
 ```csharp
-// Currently we support AzureAISearch, Elasticsearch, and Lucene providers.
-services.AddIndexingSource<CustomSourceIndexManager, CustomSourceDocumentManager, CustomSourceIndexNameProvider>("ProviderName", "CustomSource", o =>
-{
-    o.DisplayName = S["Custom Source in Provider"];
-    o.Description = S["Create a Provider index based on custom source."];
-});
+// Supported providers include 'AzureAISearch', 'Elasticsearch', and 'Lucene'.
+services.AddIndexingSource<CustomSourceIndexManager, CustomSourceDocumentManager, CustomSourceIndexNameProvider>(
+    "ProviderName", // e.g., "AzureAISearch", "Lucene", "Elasticsearch"
+    "CustomSource", // Unique source name
+    o =>
+    {
+        o.DisplayName = S["Custom Source in Provider"];
+        o.Description = S["Creates a provider index based on a custom data source."];
+    });
 ```
 
-Should you need to add custom metadata to the index, you can do so by adding a display driver that is derived by `DisplayDriver<IndexEntity>`.
+To provide additional configuration or metadata through the admin UI, implement a display driver by deriving from `DisplayDriver<IndexEntity>`.
 
-You may also implement `IIndexEntityHandler` to hook into multiple stages of the index entity lifecycle. This allows you to perform custom operations when the index entity is created, updated, or deleted.
+You can also implement `IIndexEntityHandler` to respond to lifecycle events during indexing—such as when an entity is created, updated, or deleted.
+
+note !!!
+     If you are implementing a custom provider, use the `Content` type to index content items. This ensures compatibility with the built-in content indexing infrastructure, enabling automatic indexing of content items and providing the necessary UI to configure content types and related settings.
 
 ## Recipes
 
-The following recipes are available in the `Indexing` module:
+The following deployment recipes are available with the `Indexing` module:
 
-  - `Indexing` allows you to create or update an index.
-  - `ResetIndexing` allows you to reset an index.
-  - `RebuildIndexing` allows you to rebuild an index.
-    
-## Videos
-
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6jJH9ntqi_A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IYKEeYxeNck" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+- `Indexing`: Creates or updates an index.
+- `ResetIndexing`: Resets an index to its initial state.
+- `RebuildIndexing`: Rebuilds an index from scratch.
+- 
