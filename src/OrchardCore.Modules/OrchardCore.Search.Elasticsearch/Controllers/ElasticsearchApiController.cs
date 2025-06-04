@@ -2,7 +2,6 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Entities;
-using OrchardCore.Indexing;
 using OrchardCore.Queries;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
@@ -15,16 +14,13 @@ namespace OrchardCore.Search.Elasticsearch;
 [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
 public sealed class ElasticsearchApiController : ControllerBase
 {
-    private readonly IIndexEntityStore _store;
     private readonly IAuthorizationService _authorizationService;
     private readonly IQueryManager _queryManager;
 
     public ElasticsearchApiController(
-        IIndexEntityStore store,
         IAuthorizationService authorizationService,
         IQueryManager queryManager)
     {
-        _store = store;
         _authorizationService = authorizationService;
         _queryManager = queryManager;
     }
