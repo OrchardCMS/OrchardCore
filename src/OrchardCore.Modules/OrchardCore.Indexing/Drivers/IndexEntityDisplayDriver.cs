@@ -66,7 +66,7 @@ internal sealed class IndexEntityDisplayDriver : DisplayDriver<IndexEntity>
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["The index name is a required field."]);
             }
-            else if (await _indexEntityStore.FindByNameAndProviderAsync(model.IndexName, index.ProviderName) is not null)
+            else if (await _indexEntityStore.FindByIndexNameAndProviderAsync(model.IndexName, index.ProviderName) is not null)
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["There is already another index with the same name."]);
             }

@@ -29,7 +29,7 @@ public sealed class AzureAISearchIndexDeploymentSource
 
     protected override async Task ProcessAsync(AzureAISearchIndexDeploymentStep step, DeploymentPlanResult result)
     {
-        var indexes = await _indexStore.GetAsync(AzureAISearchConstants.ProviderName);
+        var indexes = await _indexStore.GetByProviderAsync(AzureAISearchConstants.ProviderName);
 
         var data = new JsonArray();
 

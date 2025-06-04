@@ -56,7 +56,7 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
         return document.Records.Values.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
-    public async ValueTask<IndexEntity> FindByNameAndProviderAsync(string indexName, string providerName)
+    public async ValueTask<IndexEntity> FindByIndexNameAndProviderAsync(string indexName, string providerName)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
         ArgumentException.ThrowIfNullOrEmpty(providerName);
@@ -64,10 +64,19 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
         var document = await _documentManager.GetOrCreateImmutableAsync();
 
         return document.Records.Values.FirstOrDefault(x => string.Equals(x.IndexName, indexName, StringComparison.OrdinalIgnoreCase) &&
-        string.Equals(x.ProviderName, providerName, StringComparison.OrdinalIgnoreCase));
+            string.Equals(x.ProviderName, providerName, StringComparison.OrdinalIgnoreCase));
     }
 
-    public async ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName)
+    public async ValueTask<IEnumerable<IndexEntity>> GetByTypeAsync(string type)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(type);
+
+        var document = await _documentManager.GetOrCreateImmutableAsync();
+
+        return document.Records.Values.Where(x => x.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public async ValueTask<IEnumerable<IndexEntity>> GetByProviderAsync(string providerName)
     {
         ArgumentException.ThrowIfNullOrEmpty(providerName);
 
@@ -87,7 +96,7 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
     }
 
     public async ValueTask<PageResult<IndexEntity>> PageAsync<TQuery>(int page, int pageSize, TQuery context)
-            where TQuery : QueryContext
+        where TQuery : QueryContext
     {
         var records = await LocateInstancesAsync(context);
 
@@ -103,6 +112,7 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
     public async ValueTask<IEnumerable<IndexEntity>> GetAllAsync()
     {
         var document = await _documentManager.GetOrCreateImmutableAsync();
+
         return document.Records.Values;
     }
 
@@ -163,9 +173,7 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
     }
 
     public ValueTask SaveChangesAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
+        => ValueTask.CompletedTask;
 
     private async ValueTask<IEnumerable<IndexEntity>> LocateInstancesAsync(QueryContext context)
     {
@@ -179,6 +187,7 @@ public sealed class DefaultIndexEntityStore : IIndexEntityStore
         var records = document.Records.Values.AsEnumerable();
 
         records = GetSortable(context, records);
+
         return records;
     }
 

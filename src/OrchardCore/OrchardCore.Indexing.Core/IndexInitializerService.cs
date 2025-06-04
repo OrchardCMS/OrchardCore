@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Removing;
-using OrchardCore.Indexing;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core;

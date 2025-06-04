@@ -24,7 +24,7 @@ public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartF
 
             model.Index = settings.Index;
 
-            model.Indices = (await _store.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.Indices = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Editor");
     }
 

@@ -24,7 +24,7 @@ public interface IIndexEntityStore
     /// A <see cref="ValueTask{TResult}"/> representing the asynchronous operation.
     /// The result is the <see cref="IndexEntity"/> if found, or <c>null</c> if no matching model exists in the store.
     /// </returns>
-    ValueTask<IndexEntity> FindByNameAndProviderAsync(string indexName, string providerName);
+    ValueTask<IndexEntity> FindByIndexNameAndProviderAsync(string indexName, string providerName);
 
     /// <summary>
     /// Asynchronously retrieves all models from the store.
@@ -90,7 +90,14 @@ public interface IIndexEntityStore
     /// </summary>
     /// <param name="providerName"></param>
     /// <returns></returns>
-    ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName);
+    ValueTask<IEnumerable<IndexEntity>> GetByProviderAsync(string providerName);
+
+    /// <summary>
+    /// Asynchronously finds data sources by the given type.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    ValueTask<IEnumerable<IndexEntity>> GetByTypeAsync(string type);
 
     /// <summary>
     /// Asynchronously finds data sources by the given provider-name and type.

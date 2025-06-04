@@ -30,7 +30,7 @@ public sealed class LuceneIndexRebuildDeploymentStepDriver : DisplayDriver<Deplo
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
-            model.AllIndexNames = (await _indexStore.GetAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 

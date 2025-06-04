@@ -47,7 +47,7 @@ public sealed class ContentIndexingService
 
     public async Task ProcessContentItemsForAllIndexesAsync()
     {
-        await ProcessContentItemsAsync((await _indexStore.GetAllAsync()).Where(x => x.Type == IndexingConstants.ContentsIndexSource));
+        await ProcessContentItemsAsync((await _indexStore.GetByTypeAsync(IndexingConstants.ContentsIndexSource)));
     }
 
     public async Task ProcessContentItemsAsync(IEnumerable<IndexEntity> indexes)

@@ -30,8 +30,8 @@ public sealed class LuceneIndexRebuildStep : NamedRecipeStepHandler
         if (model.IncludeAll || model.Indices.Length > 0)
         {
             var indexes = model.IncludeAll
-            ? (await _indexEntityManager.GetAsync(LuceneConstants.ProviderName))
-            : (await _indexEntityManager.GetAsync(LuceneConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
+            ? (await _indexEntityManager.GetByProviderAsync(LuceneConstants.ProviderName))
+            : (await _indexEntityManager.GetByProviderAsync(LuceneConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
 
             var indexManagers = new Dictionary<string, IIndexManager>();
 

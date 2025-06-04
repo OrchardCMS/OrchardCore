@@ -30,7 +30,7 @@ public sealed class ElasticIndexDeploymentStepDriver : DisplayDriver<DeploymentS
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
-            model.AllIndexNames = (await _store.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 

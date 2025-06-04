@@ -43,7 +43,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
             return [];
         }
 
-        var index = await _indexEntityStore.FindByNameAndProviderAsync(fieldSettings.Index, ElasticsearchConstants.ProviderName);
+        var index = await _indexEntityStore.FindByIndexNameAndProviderAsync(fieldSettings.Index, ElasticsearchConstants.ProviderName);
 
         if (index is null || index.Type != IndexingConstants.ContentsIndexSource || !await _indexManager.ExistsAsync(index.IndexFullName))
         {

@@ -34,8 +34,8 @@ public sealed class AzureAISearchIndexResetStep : NamedRecipeStepHandler
             var indexEntityManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
 
             var indexes = model.IncludeAll
-            ? await indexEntityManager.GetAsync(AzureAISearchConstants.ProviderName)
-            : (await indexEntityManager.GetAsync(AzureAISearchConstants.ProviderName))
+            ? await indexEntityManager.GetByProviderAsync(AzureAISearchConstants.ProviderName)
+            : (await indexEntityManager.GetByProviderAsync(AzureAISearchConstants.ProviderName))
                 .Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
 
             foreach (var index in indexes)

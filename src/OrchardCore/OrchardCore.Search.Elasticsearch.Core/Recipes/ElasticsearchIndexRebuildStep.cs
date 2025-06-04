@@ -31,8 +31,8 @@ public sealed class ElasticsearchIndexRebuildStep : NamedRecipeStepHandler
         if (model != null && (model.IncludeAll || model.Indices.Length > 0))
         {
             var indexes = model.IncludeAll
-            ? (await _indexEntityManager.GetAsync(ElasticsearchConstants.ProviderName))
-            : (await _indexEntityManager.GetAsync(ElasticsearchConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
+            ? (await _indexEntityManager.GetByProviderAsync(ElasticsearchConstants.ProviderName))
+            : (await _indexEntityManager.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
 
             var indexManagers = new Dictionary<string, IIndexManager>();
 

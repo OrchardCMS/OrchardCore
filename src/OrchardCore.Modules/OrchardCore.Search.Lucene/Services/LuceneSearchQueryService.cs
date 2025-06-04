@@ -28,7 +28,7 @@ public class LuceneSearchQueryService : ILuceneSearchQueryService
             return documentIds;
         }
 
-        var index = await _indexEntityStore.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
+        var index = await _indexEntityStore.FindByIndexNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
 
         if (index is null)
         {

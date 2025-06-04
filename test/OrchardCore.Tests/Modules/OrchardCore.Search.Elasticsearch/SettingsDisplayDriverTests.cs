@@ -109,7 +109,7 @@ public partial class SettingsDisplayDriverTests
 
             var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
             var storeMock = new Mock<IIndexEntityStore>();
-            storeMock.Setup(x => x.GetAsync(It.IsAny<string>()))
+            storeMock.Setup(x => x.GetByProviderAsync(It.IsAny<string>()))
                 .ReturnsAsync(indexes);
 
             // Act

@@ -110,7 +110,7 @@ public interface IIndexEntityManager
     /// A <see cref="IEnumerable{IndexEntity}"/> representing the asynchronous operation.
     /// The result is a collection of models associated with the given source.
     /// </returns>
-    ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName);
+    ValueTask<IEnumerable<IndexEntity>> GetByProviderAsync(string providerName);
 
     /// <summary>
     /// Asynchronously retrieves all models associated with the specified source.

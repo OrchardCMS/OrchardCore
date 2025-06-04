@@ -99,7 +99,7 @@ public sealed class AdminController : Controller
         {
             MatchAllQuery = GetMatchAllQuery(),
             DecodedQuery = GetDecodedMatchAllQuery(),
-            Indexes = (await _indexEntityStore.GetAsync(LuceneConstants.ProviderName))
+            Indexes = (await _indexEntityStore.GetByProviderAsync(LuceneConstants.ProviderName))
                 .Select(x => new SelectListItem(x.Name, x.Id))
                 .OrderBy(x => x.Text),
         };
@@ -119,7 +119,7 @@ public sealed class AdminController : Controller
         }
 
         model.MatchAllQuery = GetMatchAllQuery();
-        model.Indexes = (await _indexEntityStore.GetAsync(LuceneConstants.ProviderName))
+        model.Indexes = (await _indexEntityStore.GetByProviderAsync(LuceneConstants.ProviderName))
             .Select(x => new SelectListItem(x.Name, x.Id))
             .OrderBy(x => x.Text);
 

@@ -73,7 +73,7 @@ public sealed class DefaultIndexEntityManager : IIndexEntityManager
 
     public async ValueTask<IndexEntity> FindByNameAndProviderAsync(string indexName, string providerName)
     {
-        var model = await _store.FindByNameAndProviderAsync(indexName, providerName);
+        var model = await _store.FindByIndexNameAndProviderAsync(indexName, providerName);
 
         if (model is not null)
         {
@@ -85,9 +85,9 @@ public sealed class DefaultIndexEntityManager : IIndexEntityManager
         return null;
     }
 
-    public async ValueTask<IEnumerable<IndexEntity>> GetAsync(string providerName)
+    public async ValueTask<IEnumerable<IndexEntity>> GetByProviderAsync(string providerName)
     {
-        var models = await _store.GetAsync(providerName);
+        var models = await _store.GetByProviderAsync(providerName);
 
         foreach (var model in models)
         {

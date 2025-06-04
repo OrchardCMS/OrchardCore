@@ -54,7 +54,7 @@ public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
             model.Query = metadata.Template;
             model.Index = metadata.Index;
             model.ReturnContentItems = query.ReturnContentItems;
-            model.Indexes = (await _indexStore.GetAsync(LuceneConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
+            model.Indexes = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
 
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(metadata.Template))

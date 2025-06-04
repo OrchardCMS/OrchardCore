@@ -29,7 +29,7 @@ public sealed class AzureAISearchIndexDeploymentStepDriver : DisplayDriver<Deplo
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
-            model.AllIndexNames = (await _store.GetAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _store.GetByProviderAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 

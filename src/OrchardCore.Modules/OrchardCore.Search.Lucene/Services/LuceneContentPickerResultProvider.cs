@@ -42,7 +42,7 @@ public class LuceneContentPickerResultProvider : IContentPickerResultProvider
             return [];
         }
 
-        var index = await _indexStore.FindByNameAndProviderAsync(fieldSettings.Index, LuceneConstants.ProviderName);
+        var index = await _indexStore.FindByIndexNameAndProviderAsync(fieldSettings.Index, LuceneConstants.ProviderName);
 
         if (index is null || index.Type != IndexingConstants.ContentsIndexSource || !await _luceneIndexManager.ExistsAsync(index.IndexFullName))
         {

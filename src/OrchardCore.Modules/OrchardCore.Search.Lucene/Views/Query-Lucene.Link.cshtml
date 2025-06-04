@@ -4,7 +4,7 @@
 @inject IIndexEntityStore IndexStore
 
 @{
-    var disabled = !(await IndexStore.GetAsync(LuceneConstants.ProviderName)).Any();
+    var disabled = !(await IndexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Any();
 }
 <div class="col">
     <div class="card h-100">

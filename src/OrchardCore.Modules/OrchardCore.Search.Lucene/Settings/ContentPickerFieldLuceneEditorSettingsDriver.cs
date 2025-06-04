@@ -22,7 +22,7 @@ public sealed class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFi
             var settings = partFieldDefinition.GetSettings<ContentPickerFieldLuceneEditorSettings>();
 
             model.Index = settings.Index;
-            model.Indices = (await _indexEntityStore.GetAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.Indices = (await _indexEntityStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Editor");
     }
 

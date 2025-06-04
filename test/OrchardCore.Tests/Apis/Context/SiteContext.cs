@@ -138,6 +138,7 @@ public class SiteContext : IDisposable
 
             await entityManager.ResetAsync(index);
             await entityManager.UpdateAsync(index);
+
             // Instead of calling SynchronizeAsync which triggers the indexing in a background process,
             // directly call and await the indexing process.
             await contentIndexingService.ProcessContentItemsForAllIndexesAsync();
