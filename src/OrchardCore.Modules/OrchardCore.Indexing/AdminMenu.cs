@@ -8,8 +8,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(
-        IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
         S = stringLocalizer;
     }

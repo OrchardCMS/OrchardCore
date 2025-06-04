@@ -124,22 +124,22 @@ public sealed class AdminController : Controller
         });
     }
 
-    [Admin("indexing/create/{source}/{type}", "IndexingCreate")]
-    public async Task<ActionResult> Create(string source, string type)
+    [Admin("indexing/create/{providerName}/{type}", "IndexingCreate")]
+    public async Task<ActionResult> Create(string providerName, string type)
     {
         if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
         {
             return Forbid();
         }
 
-        if (!_indexingOptions.Sources.TryGetValue(new IndexEntityKey(source, type), out var service))
+        if (!_indexingOptions.Sources.TryGetValue(new IndexEntityKey(providerName, type), out var service))
         {
-            await _notifier.ErrorAsync(H["Unable to find a provider named '{0}' with the type '{1}'.", source, type]);
+            await _notifier.ErrorAsync(H["Unable to find a provider named '{0}' with the type '{1}'.", providerName, type]);
 
             return RedirectToAction(nameof(Index));
         }
 
-        var index = await _indexEntityManager.NewAsync(source, type);
+        var index = await _indexEntityManager.NewAsync(providerName, type);
 
         if (index == null)
         {
@@ -159,22 +159,22 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [ActionName(nameof(Create))]
-    [Admin("indexing/create/{source}/{type}", "IndexingCreate")]
-    public async Task<ActionResult> CreatePost(string source, string type)
+    [Admin("indexing/create/{providerName}/{type}", "IndexingCreate")]
+    public async Task<ActionResult> CreatePost(string providerName, string type)
     {
         if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
         {
             return Forbid();
         }
 
-        if (!_indexingOptions.Sources.TryGetValue(new IndexEntityKey(source, type), out var service))
+        if (!_indexingOptions.Sources.TryGetValue(new IndexEntityKey(providerName, type), out var service))
         {
-            await _notifier.ErrorAsync(H["Unable to find a provider with the name '{0}'.", source]);
+            await _notifier.ErrorAsync(H["Unable to find a provider with the name '{0}'.", providerName]);
 
             return RedirectToAction(nameof(Index));
         }
 
-        var index = await _indexEntityManager.NewAsync(source, type);
+        var index = await _indexEntityManager.NewAsync(providerName, type);
 
         if (index == null)
         {
@@ -288,13 +288,13 @@ public sealed class AdminController : Controller
 
         var validate = await _indexEntityManager.ValidateAsync(index);
 
-        if (!validate.Succeeded)
+        if (!validate.Succeeded && ModelState.IsValid)
         {
             foreach (var error in validate.Errors)
             {
                 foreach (var memberName in error.MemberNames)
                 {
-                    ModelState.AddModelError(memberName, error.ErrorMessage);
+                    ModelState.TryAddModelError(memberName, error.ErrorMessage);
                 }
             }
         }

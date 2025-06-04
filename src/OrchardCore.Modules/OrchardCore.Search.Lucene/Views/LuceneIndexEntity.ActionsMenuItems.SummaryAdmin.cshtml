@@ -3,8 +3,8 @@
 
 @model ShapeViewModel<IndexEntity>
 
-<a asp-action="Query"
-   asp-route-id="@Model.Value.Id"
+<a asp-action="QueryIndex"
+   asp-route-indexName="@Model.Value.Name"
    asp-action="Query"
    asp-controller="Admin"
    asp-area="OrchardCore.Search.Lucene"

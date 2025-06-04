@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -40,7 +41,7 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
 
     public override IDisplayResult Edit(Query query, BuildEditorContext context)
     {
-        if (query.Source != ElasticsearchQuerySource.SourceName)
+        if (query.Source != ElasticsearchConstants.ProviderName)
         {
             return null;
         }
@@ -52,7 +53,7 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
             model.Query = metadata.Template;
             model.Index = metadata.Index;
             model.ReturnContentItems = query.ReturnContentItems;
-            model.Indices = (await _store.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.Indexes = (await _store.GetAsync(ElasticsearchConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
 
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(metadata.Template))

@@ -5,10 +5,16 @@
 @{
     var query = Model.Query as Query;
     var metadata = query.As<LuceneQueryMetadata>();
-    var base64Query = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(metadata.Template ?? string.Empty));
+
+    string base64Query = null;
+
+    if (!string.IsNullOrEmpty(metadata.Template))
+    {
+        base64Query = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(metadata.Template));
+    }
 }
 
-<a asp-action="Query"
+<a asp-action="QueryIndex"
    asp-controller="Admin"
    asp-area="OrchardCore.Search.Lucene"
    asp-route-query="@base64Query"

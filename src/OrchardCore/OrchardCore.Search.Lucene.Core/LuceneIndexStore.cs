@@ -25,7 +25,6 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
 
     private readonly object _synLock = new();
-
     private readonly object _lock = new();
 
     private readonly string _rootPath;

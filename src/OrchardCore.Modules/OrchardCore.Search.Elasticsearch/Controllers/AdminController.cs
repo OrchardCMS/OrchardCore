@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -62,7 +63,7 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
     }
 
-    [Admin("elasticsearch/IndexInfo/{id}", "Elasticsearch.IndexInfo")]
+    [Admin("elasticsearch/indexinfo/{id}", "Elasticsearch.IndexInfo")]
     public async Task<IActionResult> IndexInfo(string id)
     {
         var index = await _indexEntityStore.FindByIdAsync(id);
@@ -83,8 +84,28 @@ public sealed class AdminController : Controller
         });
     }
 
-    [Admin("elasticsearch/Query/{id?}", "Elasticsearch.Query")]
-    public async Task<IActionResult> Query(string id, string query = null)
+    [Admin("Elasticsearch/query/{indexName}", "Elasticsearch.Query")]
+    public async Task<IActionResult> QueryIndex(string indexName, string query = null, string parameters = null)
+    {
+        var index = await _indexEntityStore.FindByNameAsync(indexName);
+
+        if (index is null)
+        {
+            return NotFound();
+        }
+
+        return await Query(new AdminQueryViewModel()
+        {
+            Id = index.Id,
+            DecodedQuery = string.IsNullOrWhiteSpace(query)
+                ? null
+                : Base64.FromUTF8Base64String(query),
+            Parameters = parameters,
+        });
+    }
+
+    [Admin("Elasticsearch/query", "Elasticsearch.RunQuery")]
+    public async Task<IActionResult> Query()
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
@@ -96,36 +117,20 @@ public sealed class AdminController : Controller
             return NotConfigured();
         }
 
-        var matchAllQuery = GetMatchAllQuery();
-
-        if (string.IsNullOrEmpty(query))
-        {
-            query = matchAllQuery;
-        }
-
         var model = new AdminQueryViewModel
         {
-            Id = id,
-            MatchAllQuery = matchAllQuery,
-            DecodedQuery = string.IsNullOrWhiteSpace(query)
-                ? string.Empty
-                : Base64.FromUTF8Base64String(query),
+            MatchAllQuery = GetMatchAllQuery(),
+            DecodedQuery = GetDecodedMatchAllQuery(),
+            Indexes = (await _indexEntityStore.GetAsync(ElasticsearchConstants.ProviderName))
+                .Select(x => new SelectListItem(x.Name, x.Id))
+                .OrderBy(x => x.Text),
         };
-
-        if (!string.IsNullOrEmpty(id))
-        {
-            return await Query(model);
-        }
-
-        model.Indexes = (await _indexEntityStore.GetAsync(ElasticsearchConstants.ProviderName))
-            .Select(x => new SelectListItem(x.Name, x.Id))
-            .OrderBy(x => x.Text);
 
         return View(model);
     }
 
     [HttpPost]
-    [Admin("elasticsearch/Query/{id}", "Elasticsearch.Query")]
+    [Admin("Elasticsearch/query", "Elasticsearch.RunQuery")]
     public async Task<IActionResult> Query(AdminQueryViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
@@ -145,7 +150,7 @@ public sealed class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
-            return View(model);
+            return View("Query", model);
         }
 
         var index = await _indexEntityStore.FindByIdAsync(model.Id);
@@ -170,6 +175,11 @@ public sealed class AdminController : Controller
             model.Parameters = "{ }";
         }
 
+        if (string.IsNullOrEmpty(model.DecodedQuery))
+        {
+            model.DecodedQuery = GetDecodedMatchAllQuery();
+        }
+
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
@@ -179,13 +189,16 @@ public sealed class AdminController : Controller
 
         try
         {
-            var results = await _elasticQueryService.SearchAsync(index, tokenizedContent);
-
-            if (results != null)
+            if (!string.IsNullOrEmpty(tokenizedContent))
             {
-                model.Documents = results.TopDocs;
-                model.Fields = results.Fields;
-                model.Count = results.Count;
+                var results = await _elasticQueryService.SearchAsync(index, tokenizedContent);
+
+                if (results != null)
+                {
+                    model.Documents = results.TopDocs;
+                    model.Fields = results.Fields;
+                    model.Count = results.Count;
+                }
             }
         }
         catch (Exception e)
@@ -197,21 +210,27 @@ public sealed class AdminController : Controller
         stopwatch.Stop();
         model.Elapsed = stopwatch.Elapsed;
 
-        return View(model);
+        // Keep the view name here since QueryIndex calls this method directly.
+        // Otherwise the view name would be "QueryIndex" instead of "Query" which will be incorrect.
+        return View("Query", model);
     }
 
     private static string GetMatchAllQuery()
     {
-        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(GetDecodedMatchAllQuery()));
+    }
+
+    private static string GetDecodedMatchAllQuery()
+    {
+        return
             """
             {
-            
               "query": {
                 "match_all": { }
               },
               "size": 10
             }
-            """));
+            """;
     }
 
     private ViewResult NotConfigured()
