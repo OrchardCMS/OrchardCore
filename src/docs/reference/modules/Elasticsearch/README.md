@@ -169,6 +169,11 @@ Here is an example for creating a Elasticsearch query from a Queries recipe step
   ]
 }
 ```
+## Indexing custom data
+
+The `Elasticsearch` module allows you to store any data in Elasticsearch, not just content items. You can create custom indices and store data in them using the `Indexing` module's APIs. For example, you can store Users data in a custom index named `Users`.
+
+
 
 ## Web APIs
 

@@ -20,7 +20,7 @@ namespace OrchardCore.Search.AzureAI.Handlers;
 public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandlerBase
 {
     private readonly IContentManager _contentManager;
-    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
+    private readonly IEnumerable<IDocumentIndexHandler> _contentItemIndexHandlers;
     private readonly IEnumerable<IAzureAISearchFieldIndexEvents> _fieldIndexEvents;
     private readonly ILogger _logger;
 
@@ -28,7 +28,7 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
 
     public AzureAISearchContentIndexProfileHandler(
         IContentManager contentManager,
-        IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
+        IEnumerable<IDocumentIndexHandler> contentItemIndexHandlers,
         IEnumerable<IAzureAISearchFieldIndexEvents> fieldIndexEvents,
         ILogger<AzureAISearchContentIndexProfileHandler> logger,
         IStringLocalizer<AzureAISearchContentIndexProfileHandler> stringLocalizer)
@@ -157,7 +157,7 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
             var contentItem = await _contentManager.NewAsync(contentType);
 
             var document = new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
-            var buildIndexContext = new BuildIndexContext(document, contentItem, [contentType], new AzureAISearchContentIndexSettings());
+            var buildIndexContext = new BuildDocumentIndexContext(document, contentItem, [contentType], new AzureAISearchContentIndexSettings());
             await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
             foreach (var entry in document.Entries)

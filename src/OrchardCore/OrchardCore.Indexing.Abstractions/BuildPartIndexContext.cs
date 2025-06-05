@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Indexing;
 
-public class BuildPartIndexContext : BuildIndexContext
+public class BuildPartIndexContext : BuildDocumentIndexContext
 {
     public BuildPartIndexContext(
         ContentItemDocumentIndex documentIndex,

@@ -31,7 +31,7 @@ Then register your custom source in your module's `Startup.cs`:
 
 ```csharp
 // Supported providers include 'AzureAISearch', 'Elasticsearch', and 'Lucene'.
-services.AddIndexingSource<CustomSourceIndexManager, CustomSourceDocumentManager, CustomSourceIndexNameProvider>(
+services.AddIndexingSource<CustomSourceIndexManager, CustomSourceDocumentIndexManager, CustomSourceIndexNameProvider>(
     "ProviderName", // e.g., "AzureAISearch", "Lucene", "Elasticsearch"
     "CustomSource", // Unique source name
     o =>

@@ -5,11 +5,16 @@ using OrchardCore.Lists.Models;
 
 namespace OrchardCore.Lists.Indexes;
 
-public class ContainedPartContentIndexHandler : IContentItemIndexHandler
+public class ContainedPartContentIndexHandler : IDocumentIndexHandler
 {
-    public Task BuildIndexAsync(BuildIndexContext context)
+    public Task BuildIndexAsync(BuildDocumentIndexContext context)
     {
-        var parent = context.ContentItem.As<ContainedPart>();
+        if (context.Record is not ContentItem contentItem)
+        {
+            return Task.CompletedTask;
+        }
+
+        var parent = contentItem.As<ContainedPart>();
 
         if (parent == null)
         {

@@ -5,7 +5,7 @@
 @inject IOptions<IndexingOptions> AIOptions
 
 @{
-    IndexProfileKey key = Model.IndexEntityKey;
+    IndexProfileKey key = Model.IndexProfileKey;
 
     if (!AIOptions.Value.Sources.TryGetValue(key, out var service))
     {

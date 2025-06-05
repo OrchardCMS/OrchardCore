@@ -116,9 +116,9 @@
                     <div class="row row-cols-1 row-cols-md-3 g-2">
                         @foreach (var source in Model.Sources)
                         {
-                            IShape shape = await New.IndexEntity_Link(ProviderName: source.ProviderName, Type: source.Type, IndexEntityKey: source);
-                            shape.Metadata.Alternates.Add($"IndexEntity_Link__{source.ProviderName}");
-                            shape.Metadata.Alternates.Add($"IndexEntity_Link__{source.ProviderName}__{source.Type}");
+                            IShape shape = await New.IndexProfile_Link(ProviderName: source.ProviderName, Type: source.Type, IndexProfileKey: source);
+                            shape.Metadata.Alternates.Add($"IndexProfile_Link__{source.ProviderName}");
+                            shape.Metadata.Alternates.Add($"IndexProfile_Link__{source.ProviderName}__{source.Type}");
 
                             @await DisplayAsync(shape)
                         }

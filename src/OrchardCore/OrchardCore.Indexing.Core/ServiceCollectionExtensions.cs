@@ -94,10 +94,10 @@ public static class ServiceCollectionExtensions
        where TNamingProvider : class, IIndexNameProvider
     {
         services.TryAddScoped<TManager>();
-        services.AddKeyedScoped<IIndexManager>(providerName, (sp, key) => sp.GetRequiredService<TManager>());
+        services.TryAddKeyedScoped<IIndexManager>(providerName, (sp, key) => sp.GetRequiredService<TManager>());
         services.TryAddScoped<TDocumentManager>();
-        services.AddKeyedScoped<IDocumentIndexManager>(providerName, (sp, key) => sp.GetRequiredService<TDocumentManager>());
-        services.AddKeyedScoped<IIndexNameProvider, TNamingProvider>(providerName);
+        services.TryAddKeyedScoped<IDocumentIndexManager>(providerName, (sp, key) => sp.GetRequiredService<TDocumentManager>());
+        services.TryAddKeyedScoped<IIndexNameProvider, TNamingProvider>(providerName);
 
         return services;
     }

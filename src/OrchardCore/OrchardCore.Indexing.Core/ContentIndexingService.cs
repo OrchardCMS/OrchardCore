@@ -21,7 +21,7 @@ public sealed class ContentIndexingService
     private readonly IStore _store;
     private readonly IContentManager _contentManager;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
+    private readonly IEnumerable<IDocumentIndexHandler> _contentItemIndexHandlers;
     private readonly ILogger _logger;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
@@ -33,7 +33,7 @@ public sealed class ContentIndexingService
         IStore store,
         IContentManager contentManager,
         IServiceProvider serviceProvider,
-        IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
+        IEnumerable<IDocumentIndexHandler> contentItemIndexHandlers,
         ILogger<ContentIndexingService> logger)
     {
         _indexingTaskManager = indexingTaskManager;
@@ -167,7 +167,7 @@ public sealed class ContentIndexingService
             var latestContentItems = new Dictionary<string, ContentItem>();
 
             // Group all DocumentIndex by index to batch update them.
-            var updatedDocumentsByIndex = indexableIndexes.ToDictionary(x => x.Id, b => new List<ContentItemDocumentIndex>());
+            var updatedDocumentsByIndex = indexableIndexes.ToDictionary(x => x.Id, b => new List<DocumentIndex>());
 
             if (publishedContentTypes.Count > 0)
             {
@@ -231,17 +231,17 @@ public sealed class ContentIndexingService
                         continue;
                     }
 
-                    var buildIndexContext = new BuildIndexContext(new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], indexManager.GetContentIndexSettings());
+                    var buildIndexContext = new BuildDocumentIndexContext(new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], indexManager.GetContentIndexSettings());
 
                     await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
                     // Ignore if the culture is not indexed in this index.
                     if (!anyCulture)
                     {
-                        if (!cultureAspects.TryGetValue(buildIndexContext.ContentItem.ContentItemVersionId ?? buildIndexContext.ContentItem.ContentItemId, out var cultureAspect))
+                        if (!cultureAspects.TryGetValue(contentItem.ContentItemVersionId ?? contentItem.ContentItemId, out var cultureAspect) && buildIndexContext.Record is ContentItem record)
                         {
-                            cultureAspect = await _contentManager.PopulateAspectAsync<CultureAspect>(buildIndexContext.ContentItem);
-                            cultureAspects[buildIndexContext.ContentItem.ContentItemVersionId ?? buildIndexContext.ContentItem.ContentItemId] = cultureAspect;
+                            cultureAspect = await _contentManager.PopulateAspectAsync<CultureAspect>(record);
+                            cultureAspects[record.ContentItemVersionId ?? record.ContentItemId] = cultureAspect;
                         }
 
                         if (cultureAspect.Culture?.Name != metadata.Culture)

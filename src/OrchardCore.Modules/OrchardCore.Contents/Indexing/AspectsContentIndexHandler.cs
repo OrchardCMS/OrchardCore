@@ -5,7 +5,7 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Contents.Indexing;
 
-public class AspectsContentIndexHandler : IContentItemIndexHandler
+public class AspectsContentIndexHandler : IDocumentIndexHandler
 {
     private readonly IContentManager _contentManager;
 
@@ -14,9 +14,14 @@ public class AspectsContentIndexHandler : IContentItemIndexHandler
         _contentManager = contentManager;
     }
 
-    public async Task BuildIndexAsync(BuildIndexContext context)
+    public async Task BuildIndexAsync(BuildDocumentIndexContext context)
     {
-        var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
+        if (context.Record is not ContentItem contentItem)
+        {
+            return;
+        }
+
+        var body = await _contentManager.PopulateAspectAsync(contentItem, new BodyAspect());
 
         if (body != null && body.Body != null)
         {
@@ -28,19 +33,19 @@ public class AspectsContentIndexHandler : IContentItemIndexHandler
 
         context.DocumentIndex.Set(
             ContentIndexingConstants.DisplayTextAnalyzedKey,
-            context.ContentItem.DisplayText,
+            contentItem.DisplayText,
             DocumentIndexOptions.Sanitize);
 
         // We need to store because of ContentPickerResultProvider(s)
         context.DocumentIndex.Set(
             ContentIndexingConstants.DisplayTextKey + ContentIndexingConstants.KeywordKey,
-            context.ContentItem.DisplayText,
+            contentItem.DisplayText,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         // We need to store because of ContentPickerResultProvider(s)
         context.DocumentIndex.Set(
             ContentIndexingConstants.DisplayTextNormalizedKey,
-            context.ContentItem.DisplayText?.ReplaceDiacritics().ToLower(),
+            contentItem.DisplayText?.ReplaceDiacritics().ToLower(),
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
     }
 }

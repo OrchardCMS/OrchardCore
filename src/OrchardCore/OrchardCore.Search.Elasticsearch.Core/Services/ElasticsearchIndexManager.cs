@@ -310,9 +310,9 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             TopDocs = [],
         };
 
-        if (await ExistsAsync(context.Index.IndexFullName))
+        if (await ExistsAsync(context.IndexProfile.IndexFullName))
         {
-            var searchRequest = new SearchRequest(context.Index.IndexFullName)
+            var searchRequest = new SearchRequest(context.IndexProfile.IndexFullName)
             {
                 Query = context.Query,
                 From = context.From,
@@ -338,10 +338,10 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             }
             else
             {
-                ProcessSuccessfulSearchResponse(elasticTopDocs, searchResponse);
+                ProcessSuccessfulSearchResponse(context.IndexProfile, elasticTopDocs, searchResponse);
             }
 
-            _timestamps[context.Index.IndexFullName] = _clock.UtcNow;
+            _timestamps[context.IndexProfile.IndexFullName] = _clock.UtcNow;
         }
 
         return elasticTopDocs;
@@ -363,9 +363,9 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         }
     }
 
-    internal async Task<ElasticsearchResult> SearchAsync(IndexProfile index, string query)
+    internal async Task<ElasticsearchResult> SearchAsync(IndexProfile indexProfile, string query)
     {
-        ArgumentNullException.ThrowIfNull(index);
+        ArgumentNullException.ThrowIfNull(indexProfile);
         ArgumentException.ThrowIfNullOrEmpty(query);
 
         var elasticTopDocs = new ElasticsearchResult()
@@ -373,10 +373,10 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             TopDocs = [],
         };
 
-        if (await ExistsAsync(index.IndexFullName))
+        if (await ExistsAsync(indexProfile.IndexFullName))
         {
             var response = await _elasticClient.Transport
-                .RequestAsync<SearchResponse<JsonObject>>(Elastic.Transport.HttpMethod.GET, $"{index.IndexFullName}/_search", postData: PostData.String(query));
+                .RequestAsync<SearchResponse<JsonObject>>(Elastic.Transport.HttpMethod.GET, $"{indexProfile.IndexFullName}/_search", postData: PostData.String(query));
 
             if (!response.IsValidResponse)
             {
@@ -391,10 +391,10 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             }
             else
             {
-                ProcessSuccessfulSearchResponse(elasticTopDocs, response);
+                ProcessSuccessfulSearchResponse(indexProfile, elasticTopDocs, response);
             }
 
-            _timestamps[index.IndexFullName] = _clock.UtcNow;
+            _timestamps[indexProfile.IndexFullName] = _clock.UtcNow;
         }
 
         return elasticTopDocs;
@@ -493,10 +493,11 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         return analyzer;
     }
 
-    private static void ProcessSuccessfulSearchResponse(ElasticsearchResult elasticTopDocs, SearchResponse<JsonObject> searchResponse)
+    private static void ProcessSuccessfulSearchResponse(IndexProfile indexProfile, ElasticsearchResult elasticTopDocs, SearchResponse<JsonObject> searchResponse)
     {
         elasticTopDocs.Count = searchResponse.Hits.Count;
 
+        var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
         var documents = searchResponse.Documents.GetEnumerator();
         var hits = searchResponse.Hits.GetEnumerator();
 
@@ -519,7 +520,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
             var topDoc = new JsonObject
             {
-                { nameof(ContentItem.ContentItemId), hit.Id },
+                { metadata.IndexMappings.KeyFieldName, hit.Id },
             };
 
             elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(topDoc)

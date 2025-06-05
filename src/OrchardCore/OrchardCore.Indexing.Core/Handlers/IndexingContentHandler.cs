@@ -110,15 +110,15 @@ public class IndexingContentHandler : ContentHandlerBase
 
         var indexStore = services.GetRequiredService<IIndexProfileStore>();
 
-        var indexes = await indexStore.GetAllAsync();
+        var indexProfiles = await indexStore.GetByTypeAsync(IndexingConstants.ContentsIndexSource);
 
-        if (!indexes.Any())
+        if (!indexProfiles.Any())
         {
             return;
         }
 
         var contentManager = services.GetRequiredService<IContentManager>();
-        var contentItemIndexHandlers = services.GetServices<IContentItemIndexHandler>();
+        var contentItemIndexHandlers = services.GetServices<IDocumentIndexHandler>();
 
         var logger = services.GetRequiredService<ILogger<IndexingContentHandler>>();
 
@@ -128,18 +128,18 @@ public class IndexingContentHandler : ContentHandlerBase
 
         var cultureAspects = new Dictionary<string, CultureAspect>();
 
-        foreach (var index in indexes)
+        foreach (var indexProfile in indexProfiles)
         {
-            var metadata = index.As<ContentIndexMetadata>();
-            var documentIndexManager = services.GetKeyedService<IDocumentIndexManager>(index.ProviderName);
-            var contentTypes = metadata.IndexedContentTypes.ToHashSet();
+            var documentIndexManager = services.GetKeyedService<IDocumentIndexManager>(indexProfile.ProviderName);
             if (documentIndexManager == null)
             {
-                logger.LogWarning("No document index manager found for provider '{ProviderName}'.", index.ProviderName);
+                logger.LogWarning("No document index manager found for provider '{ProviderName}'.", indexProfile.ProviderName);
 
                 continue;
             }
 
+            var metadata = indexProfile.As<ContentIndexMetadata>();
+            var contentTypes = metadata.IndexedContentTypes.ToHashSet();
             var documents = new List<ContentItemDocumentIndex>();
             var anyCulture = string.IsNullOrEmpty(metadata.Culture) || metadata.Culture == "any";
 
@@ -176,7 +176,7 @@ public class IndexingContentHandler : ContentHandlerBase
 
                 var document = new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
 
-                var buildIndexContext = new BuildIndexContext(document, contentItem, [contentItem.ContentType], documentIndexManager.GetContentIndexSettings());
+                var buildIndexContext = new BuildDocumentIndexContext(document, contentItem, [contentItem.ContentType], documentIndexManager.GetContentIndexSettings());
 
                 await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
@@ -184,16 +184,16 @@ public class IndexingContentHandler : ContentHandlerBase
             }
 
             // Delete all of the documents that we'll be updating in this scope.
-            await documentIndexManager.DeleteDocumentsAsync(index, contentItems.Select(x => x.ContentItemId));
+            await documentIndexManager.DeleteDocumentsAsync(indexProfile, contentItems.Select(x => x.ContentItemId));
 
             if (documents.Count > 0)
             {
                 // Update all of the documents that were updated in this scope.
-                await documentIndexManager.AddOrUpdateDocumentsAsync(index, documents);
+                await documentIndexManager.AddOrUpdateDocumentsAsync(indexProfile, documents);
             }
 
             // At the end of the indexing, we remove the documents that were removed in the same scope.
-            await documentIndexManager.DeleteDocumentsAsync(index, removedIds);
+            await documentIndexManager.DeleteDocumentsAsync(indexProfile, removedIds);
         }
     }
 }

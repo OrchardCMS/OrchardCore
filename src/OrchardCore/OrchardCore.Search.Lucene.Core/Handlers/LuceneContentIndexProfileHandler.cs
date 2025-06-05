@@ -18,12 +18,12 @@ namespace OrchardCore.Search.Lucene.Core.Handlers;
 public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
 {
     private readonly IContentManager _contentManager;
-    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
+    private readonly IEnumerable<IDocumentIndexHandler> _contentItemIndexHandlers;
     private readonly ILogger _logger;
 
     public LuceneContentIndexProfileHandler(
         IContentManager contentManager,
-        IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
+        IEnumerable<IDocumentIndexHandler> contentItemIndexHandlers,
         ILogger<LuceneContentIndexProfileHandler> logger)
     {
         _contentManager = contentManager;
@@ -132,7 +132,7 @@ public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
             var contentItem = await _contentManager.NewAsync(contentType);
 
             var document = new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
-            var buildIndexContext = new BuildIndexContext(document, contentItem, [contentType], new LuceneContentIndexSettings());
+            var buildIndexContext = new BuildDocumentIndexContext(document, contentItem, [contentType], new LuceneContentIndexSettings());
 
             await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
