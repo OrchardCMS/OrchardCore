@@ -71,13 +71,27 @@ public sealed class LuceneIndexingState : ILuceneIndexingState
             return;
         }
 
-        if (!File.Exists(_stateFileName))
+        await _semaphore.WaitAsync();
+
+        try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_stateFileName));
+            if (_stateDocument is not null)
+            {
+                return;
+            }
 
-            await File.WriteAllTextAsync(_stateFileName, new JsonObject().ToJsonString(JOptions.Indented));
+            if (!File.Exists(_stateFileName))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(_stateFileName));
+
+                await File.WriteAllTextAsync(_stateFileName, new JsonObject().ToJsonString(JOptions.Indented));
+            }
+
+            _stateDocument = JObject.Parse(await File.ReadAllTextAsync(_stateFileName));
         }
-
-        _stateDocument = JObject.Parse(await File.ReadAllTextAsync(_stateFileName));
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 }
