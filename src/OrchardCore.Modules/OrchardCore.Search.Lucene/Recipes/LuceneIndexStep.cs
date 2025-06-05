@@ -12,12 +12,12 @@ namespace OrchardCore.Search.Lucene.Recipes;
 /// </summary>
 public sealed class LuceneIndexStep : NamedRecipeStepHandler
 {
-    private readonly IIndexEntityManager _indexManager;
+    private readonly IIndexProfileManager _indexManager;
     private readonly ILogger _logger;
     private readonly LuceneIndexManager _luceneIndexManager;
 
     public LuceneIndexStep(
-        IIndexEntityManager indexManager,
+        IIndexProfileManager indexManager,
         LuceneIndexManager luceneIndexManager,
         ILogger<LuceneIndexStep> logger
         ) : base("lucene-index")

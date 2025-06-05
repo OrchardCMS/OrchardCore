@@ -9,9 +9,9 @@ namespace OrchardCore.Search.AzureAI.Drivers;
 
 public sealed class AzureAISearchIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, AzureAISearchIndexDeploymentStep>
 {
-    private readonly IIndexEntityStore _store;
+    private readonly IIndexProfileStore _store;
 
-    public AzureAISearchIndexDeploymentStepDriver(IIndexEntityStore store)
+    public AzureAISearchIndexDeploymentStepDriver(IIndexProfileStore store)
     {
         _store = store;
     }

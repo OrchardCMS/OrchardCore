@@ -65,9 +65,9 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<ElasticsearchQueryMigrations>();
         services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();
 
-        services.AddDisplayDriver<IndexEntity, ElasticsearchIndexEntityDisplayDriver>();
+        services.AddDisplayDriver<IndexProfile, ElasticsearchIndexProfileDisplayDriver>();
 
-        services.AddIndexEntityHandler<ElasticsearchIndexEntityHandler>();
+        services.AddIndexProfileHandler<ElasticsearchIndexProfileHandler>();
     }
 }
 
@@ -97,7 +97,7 @@ public sealed class ContentsStartup : StartupBase
         services.AddDataMigration<IndexingMigrations>();
 
         services
-            .AddIndexEntityHandler<ElasticsearchContentIndexEntityHandler>()
+            .AddIndexProfileHandler<ElasticsearchContentIndexProfileHandler>()
             .AddIndexingSource<ElasticsearchIndexManager, ElasticsearchDocumentIndexManager, ElasticsearchIndexNameProvider, ElasticsearchConnectionOptions>(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
             {
                 o.DisplayName = S["Content in Elasticsearch"];

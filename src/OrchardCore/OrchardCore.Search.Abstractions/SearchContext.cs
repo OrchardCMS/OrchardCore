@@ -4,7 +4,7 @@ namespace OrchardCore.Search.Abstractions;
 
 public class SearchContext
 {
-    public IndexEntity Index { get; set; }
+    public IndexProfile Index { get; set; }
 
     public string Terms { get; set; }
 

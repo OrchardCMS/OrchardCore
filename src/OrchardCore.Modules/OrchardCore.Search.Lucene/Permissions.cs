@@ -5,7 +5,7 @@ namespace OrchardCore.Search.Lucene;
 
 public sealed class Permissions : IPermissionProvider
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _indexStore;
 
     [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.ManageLuceneIndexes'.")]
     public static readonly Permission ManageLuceneIndexes = LuceneSearchPermissions.ManageLuceneIndexes;
@@ -13,7 +13,7 @@ public sealed class Permissions : IPermissionProvider
     [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.QueryLuceneApi'.")]
     public static readonly Permission QueryLuceneApi = LuceneSearchPermissions.QueryLuceneApi;
 
-    public Permissions(IIndexEntityStore indexStore)
+    public Permissions(IIndexProfileStore indexStore)
     {
         _indexStore = indexStore;
     }

@@ -2,7 +2,7 @@
 @using OrchardCore.Indexing
 @using OrchardCore.Search.Elasticsearch
 @using OrchardCore.Search.Elasticsearch.Core.Services
-@inject IIndexEntityStore IndexStore
+@inject IIndexProfileStore IndexStore
 
 @{
     var disabled = !(await IndexStore.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Any();

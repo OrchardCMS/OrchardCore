@@ -2,12 +2,12 @@ namespace OrchardCore.Indexing.Models;
 
 public class IndexRebuildContext
 {
-    public IndexEntity Index { get; }
+    public IndexProfile IndexProfile { get; }
 
-    public IndexRebuildContext(IndexEntity index)
+    public IndexRebuildContext(IndexProfile indexProfile)
     {
-        ArgumentNullException.ThrowIfNull(index);
+        ArgumentNullException.ThrowIfNull(indexProfile);
 
-        Index = index;
+        IndexProfile = indexProfile;
     }
 }

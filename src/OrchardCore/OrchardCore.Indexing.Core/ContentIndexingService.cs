@@ -17,7 +17,7 @@ public sealed class ContentIndexingService
     private const int _batchSize = 100;
 
     private readonly IIndexingTaskManager _indexingTaskManager;
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _indexStore;
     private readonly IStore _store;
     private readonly IContentManager _contentManager;
     private readonly IServiceProvider _serviceProvider;
@@ -29,7 +29,7 @@ public sealed class ContentIndexingService
 
     public ContentIndexingService(
         IIndexingTaskManager indexingTaskManager,
-        IIndexEntityStore indexStore,
+        IIndexProfileStore indexStore,
         IStore store,
         IContentManager contentManager,
         IServiceProvider serviceProvider,
@@ -50,7 +50,7 @@ public sealed class ContentIndexingService
         await ProcessContentItemsAsync((await _indexStore.GetByTypeAsync(IndexingConstants.ContentsIndexSource)));
     }
 
-    public async Task ProcessContentItemsAsync(IEnumerable<IndexEntity> indexes)
+    public async Task ProcessContentItemsAsync(IEnumerable<IndexProfile> indexes)
     {
         ArgumentNullException.ThrowIfNull(indexes);
 
@@ -64,7 +64,7 @@ public sealed class ContentIndexingService
         // This is not guaranteed to be thread-safe, but it should be sufficient for the current use case.
         await _semaphore.WaitAsync();
 
-        var indexableIndexes = new List<IndexEntity>();
+        var indexableIndexes = new List<IndexProfile>();
 
         var tracker = new Dictionary<string, IndexingPosition>();
 
@@ -167,7 +167,7 @@ public sealed class ContentIndexingService
             var latestContentItems = new Dictionary<string, ContentItem>();
 
             // Group all DocumentIndex by index to batch update them.
-            var updatedDocumentsByIndex = indexableIndexes.ToDictionary(x => x.Id, b => new List<DocumentIndex>());
+            var updatedDocumentsByIndex = indexableIndexes.ToDictionary(x => x.Id, b => new List<ContentItemDocumentIndex>());
 
             if (publishedContentTypes.Count > 0)
             {
@@ -231,7 +231,7 @@ public sealed class ContentIndexingService
                         continue;
                     }
 
-                    var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], indexManager.GetContentIndexSettings());
+                    var buildIndexContext = new BuildIndexContext(new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], indexManager.GetContentIndexSettings());
 
                     await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
@@ -272,7 +272,7 @@ public sealed class ContentIndexingService
                 await indexManager.DeleteDocumentsAsync(index, deletedDocumentIds);
 
                 // Upload documents to the index.
-                if (await indexManager.MergeOrUploadDocumentsAsync(index, indexEntry.Value))
+                if (await indexManager.AddOrUpdateDocumentsAsync(index, indexEntry.Value))
                 {
                     // We know none of the previous batches failed to update this index.
                     await indexManager.SetLastTaskIdAsync(index, lastTaskId);
@@ -288,7 +288,7 @@ public sealed class ContentIndexingService
 
     private sealed class IndexingPosition
     {
-        public IndexEntity Index { get; set; }
+        public IndexProfile Index { get; set; }
 
         public long LastTaskId { get; set; }
     }

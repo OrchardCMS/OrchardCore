@@ -54,9 +54,9 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<LuceneQueryMigrations>();
         services.AddScoped<IQueryHandler, LuceneQueryHandler>();
 
-        services.AddDisplayDriver<IndexEntity, LuceneIndexEntityDisplayDriver>();
+        services.AddDisplayDriver<IndexProfile, LuceneIndexProfileDisplayDriver>();
 
-        services.AddIndexEntityHandler<LuceneIndexEntityHandler>();
+        services.AddIndexProfileHandler<LuceneIndexProfileHandler>();
     }
 }
 
@@ -86,7 +86,7 @@ public sealed class ContentsStartup : StartupBase
         services.AddDataMigration<IndexingMigrations>();
 
         services
-            .AddIndexEntityHandler<LuceneContentIndexEntityHandler>()
+            .AddIndexProfileHandler<LuceneContentIndexProfileHandler>()
             .AddIndexingSource<LuceneIndexManager, LuceneIndexManager, LuceneIndexNameProvider>(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
             {
                 o.DisplayName = S["Content in Lucene"];

@@ -113,7 +113,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     /// </para>
     /// </summary>
     /// <returns><see cref="bool"/>.</returns>
-    public async Task<bool> CreateAsync(IndexEntity index)
+    public async Task<bool> CreateAsync(IndexProfile index)
     {
         if (await ExistsAsync(index.IndexFullName))
         {
@@ -194,7 +194,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         return _elasticClient.RequestResponseSerializer.SerializeToString(info);
     }
 
-    public async Task<bool> DeleteAsync(IndexEntity index)
+    public async Task<bool> DeleteAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -225,7 +225,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         return response.Acknowledged;
     }
 
-    public async Task<bool> RebuildAsync(IndexEntity index)
+    public async Task<bool> RebuildAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -350,7 +350,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     /// <summary>
     /// Returns results from a search made with NEST Fluent DSL query.
     /// </summary>
-    public async Task SearchAsync(IndexEntity index, Func<ElasticsearchClient, Task> elasticClient)
+    public async Task SearchAsync(IndexProfile index, Func<ElasticsearchClient, Task> elasticClient)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(elasticClient);
@@ -363,7 +363,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         }
     }
 
-    internal async Task<ElasticsearchResult> SearchAsync(IndexEntity index, string query)
+    internal async Task<ElasticsearchResult> SearchAsync(IndexProfile index, string query)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentException.ThrowIfNullOrEmpty(query);
@@ -400,7 +400,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         return elasticTopDocs;
     }
 
-    private CreateIndexRequest GetCreateIndexRequest(IndexEntity index)
+    private CreateIndexRequest GetCreateIndexRequest(IndexProfile index)
     {
         var indexSettings = new IndexSettings
         {

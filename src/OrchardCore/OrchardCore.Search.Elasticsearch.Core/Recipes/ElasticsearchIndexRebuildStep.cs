@@ -12,15 +12,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// </summary>
 public sealed class ElasticsearchIndexRebuildStep : NamedRecipeStepHandler
 {
-    private readonly IIndexEntityManager _indexEntityManager;
+    private readonly IIndexProfileManager _indexProfileManager;
     private readonly IServiceProvider _serviceProvider;
 
     public ElasticsearchIndexRebuildStep(
-        IIndexEntityManager indexEntityManager,
+        IIndexProfileManager indexProfileManager,
         IServiceProvider serviceProvider)
         : base("elastic-index-rebuild")
     {
-        _indexEntityManager = indexEntityManager;
+        _indexProfileManager = indexProfileManager;
         _serviceProvider = serviceProvider;
     }
 
@@ -31,8 +31,8 @@ public sealed class ElasticsearchIndexRebuildStep : NamedRecipeStepHandler
         if (model != null && (model.IncludeAll || model.Indices.Length > 0))
         {
             var indexes = model.IncludeAll
-            ? (await _indexEntityManager.GetByProviderAsync(ElasticsearchConstants.ProviderName))
-            : (await _indexEntityManager.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
+            ? (await _indexProfileManager.GetByProviderAsync(ElasticsearchConstants.ProviderName))
+            : (await _indexProfileManager.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
 
             var indexManagers = new Dictionary<string, IIndexManager>();
 
@@ -49,8 +49,8 @@ public sealed class ElasticsearchIndexRebuildStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                await _indexEntityManager.ResetAsync(index);
-                await _indexEntityManager.UpdateAsync(index);
+                await _indexProfileManager.ResetAsync(index);
+                await _indexProfileManager.UpdateAsync(index);
 
                 if (!await indexManager.ExistsAsync(index.IndexFullName))
                 {
@@ -61,7 +61,7 @@ public sealed class ElasticsearchIndexRebuildStep : NamedRecipeStepHandler
                     await indexManager.RebuildAsync(index);
                 }
 
-                await _indexEntityManager.SynchronizeAsync(index);
+                await _indexProfileManager.SynchronizeAsync(index);
             }
         }
     }

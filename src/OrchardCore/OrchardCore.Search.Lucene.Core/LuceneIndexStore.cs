@@ -69,7 +69,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
         }
     }
 
-    public Task<bool> RemoveAsync(IndexEntity index)
+    public Task<bool> RemoveAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -106,7 +106,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
         return Task.FromResult(removed);
     }
 
-    public async Task SearchAsync(IndexEntity index, Func<IndexSearcher, Task> searcher)
+    public async Task SearchAsync(IndexProfile index, Func<IndexSearcher, Task> searcher)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(searcher);
@@ -125,13 +125,13 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
         _timestamps.AddOrUpdate(index.Id, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
     }
 
-    public Task WriteAndClose(IndexEntity index)
+    public Task WriteAndClose(IndexProfile index)
         => WriteAsync(index, null, true);
 
-    public Task WriteAsync(IndexEntity index, Action<IndexWriter> action)
+    public Task WriteAsync(IndexProfile index, Action<IndexWriter> action)
         => WriteAsync(index, action, false);
 
-    private Task WriteAsync(IndexEntity index, Action<IndexWriter> action, bool close)
+    private Task WriteAsync(IndexProfile index, Action<IndexWriter> action, bool close)
     {
         if (!_writers.TryGetValue(index.Id, out var writer))
         {
@@ -158,6 +158,8 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                         if (action is not null)
                         {
                             action.Invoke(writer);
+
+                            writer.Commit();
 
                             if (_indexPools.TryRemove(index.Id, out var pool))
                             {
@@ -192,7 +194,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
         if (action is not null)
         {
             action.Invoke(writer);
-
+            writer.Commit();
             if (_indexPools.TryRemove(index.Id, out var pool))
             {
                 pool.MakeDirty();
@@ -205,7 +207,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
         return Task.CompletedTask;
     }
 
-    private IndexReaderPool.IndexReaderLease GetReader(IndexEntity index)
+    private IndexReaderPool.IndexReaderLease GetReader(IndexProfile index)
     {
         var pool = _indexPools.GetOrAdd(index.Id, n =>
         {

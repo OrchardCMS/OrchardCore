@@ -10,9 +10,9 @@ public sealed class IndexingPermissionsProvider : IPermissionProvider
         IndexingPermissions.ManageIndexes,
     ];
 
-    private readonly IIndexEntityStore _store;
+    private readonly IIndexProfileStore _store;
 
-    public IndexingPermissionsProvider(IIndexEntityStore store)
+    public IndexingPermissionsProvider(IIndexProfileStore store)
     {
         _store = store;
     }

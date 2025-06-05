@@ -11,9 +11,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddIndexingCore(this IServiceCollection services)
     {
-        services.TryAddScoped<IIndexEntityManager, DefaultIndexEntityManager>();
-        services.TryAddScoped<IIndexEntityStore, DefaultIndexEntityStore>();
-        services.AddIndexEntityHandler<DefaultIndexEntityHandler>();
+        services.TryAddScoped<IIndexProfileManager, DefaultIndexProfileManager>();
+        services.TryAddScoped<IIndexProfileStore, DefaultIndexProfileStore>();
+        services.AddIndexProfileHandler<DefaultIndexProfileHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IAuthorizationHandler, IndexingAuthorizationHandler>());
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IModularTenantEvents, IndexInitializerService>());
 
@@ -102,10 +102,10 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddIndexEntityHandler<THandler>(this IServiceCollection services)
-        where THandler : class, IIndexEntityHandler
+    public static IServiceCollection AddIndexProfileHandler<THandler>(this IServiceCollection services)
+        where THandler : class, IIndexProfileHandler
     {
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexEntityHandler, THandler>());
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IIndexProfileHandler, THandler>());
 
         return services;
     }

@@ -4,5 +4,5 @@ namespace OrchardCore.Search.Abstractions;
 
 public interface ISearchService
 {
-    Task<SearchResult> SearchAsync(IndexEntity index, string term, int start, int size);
+    Task<SearchResult> SearchAsync(IndexProfile index, string term, int start, int size);
 }

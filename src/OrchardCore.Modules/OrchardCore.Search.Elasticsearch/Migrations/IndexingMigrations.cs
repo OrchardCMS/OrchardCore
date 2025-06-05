@@ -69,7 +69,7 @@ internal sealed class IndexingMigrations : DataMigration
                 return;
             }
 
-            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
+            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
             var indexNamingProvider = scope.ServiceProvider.GetKeyedService<IIndexNameProvider>(ElasticsearchConstants.ProviderName);
             var indexDocumentManager = scope.ServiceProvider.GetRequiredService<ElasticsearchDocumentIndexManager>();
 
@@ -200,7 +200,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 if (indexName == defaultSearchIndexName && defaultSearchProvider == "Elasticsearch")
                 {
-                    site.Properties["SearchSettings"]["DefaultIndexId"] = index.Id;
+                    site.Properties["SearchSettings"]["DefaultIndexProfileId"] = index.Id;
                     saveSiteSettings = true;
                 }
             }

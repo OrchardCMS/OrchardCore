@@ -25,7 +25,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
         _logger = logger;
     }
 
-    public async Task<bool> DeleteAllDocumentsAsync(IndexEntity index)
+    public async Task<bool> DeleteAllDocumentsAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -50,7 +50,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
         return response.IsValidResponse;
     }
 
-    public async Task<bool> DeleteDocumentsAsync(IndexEntity index, IEnumerable<string> ids)
+    public async Task<bool> DeleteDocumentsAsync(IndexProfile index, IEnumerable<string> ids)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(ids);
@@ -93,7 +93,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
     public IContentIndexSettings GetContentIndexSettings()
          => new ElasticContentIndexSettings();
 
-    public async Task<long> GetLastTaskIdAsync(IndexEntity index)
+    public async Task<long> GetLastTaskIdAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -112,7 +112,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
         return Convert.ToInt64(lastTaskId);
     }
 
-    public async Task<bool> MergeOrUploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndexBase> documents)
+    public async Task<bool> AddOrUpdateDocumentsAsync(IndexProfile index, IEnumerable<DocumentIndex> documents)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(documents);
@@ -175,11 +175,11 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
         return response.Indices[indexFullName].Mappings;
     }
 
-    private static Dictionary<string, object> CreateElasticDocument(DocumentIndexBase documentIndex)
+    private static Dictionary<string, object> CreateElasticDocument(DocumentIndex documentIndex)
     {
         var entries = new Dictionary<string, object>();
 
-        if (documentIndex is DocumentIndex doc)
+        if (documentIndex is ContentItemDocumentIndex doc)
         {
             entries.Add(ContentIndexingConstants.ContentItemIdKey, doc.ContentItemId);
             entries.Add(ContentIndexingConstants.ContentItemVersionIdKey, doc.ContentItemVersionId);
@@ -189,14 +189,14 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
         {
             switch (entry.Type)
             {
-                case DocumentIndexBase.Types.Boolean:
+                case DocumentIndex.Types.Boolean:
                     if (entry.Value is bool boolValue)
                     {
                         AddValue(entries, entry.Name, boolValue);
                     }
                     break;
 
-                case DocumentIndexBase.Types.DateTime:
+                case DocumentIndex.Types.DateTime:
 
                     if (entry.Value is DateTimeOffset offsetValue)
                     {
@@ -209,7 +209,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 
                     break;
 
-                case DocumentIndexBase.Types.Integer:
+                case DocumentIndex.Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
                         AddValue(entries, entry.Name, value);
@@ -217,14 +217,14 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 
                     break;
 
-                case DocumentIndexBase.Types.Number:
+                case DocumentIndex.Types.Number:
                     if (entry.Value != null)
                     {
                         AddValue(entries, entry.Name, Convert.ToDouble(entry.Value));
                     }
                     break;
 
-                case DocumentIndexBase.Types.Text:
+                case DocumentIndex.Types.Text:
                     if (entry.Value != null)
                     {
                         var stringValue = Convert.ToString(entry.Value);
@@ -235,8 +235,8 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
                         }
                     }
                     break;
-                case DocumentIndexBase.Types.GeoPoint:
-                    if (entry.Value is DocumentIndexBase.GeoPoint point)
+                case DocumentIndex.Types.GeoPoint:
+                    if (entry.Value is DocumentIndex.GeoPoint point)
                     {
                         AddValue(entries, entry.Name, GeoLocation.LatitudeLongitude(new LatLonGeoLocation
                         {
@@ -279,7 +279,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
         entries[key] = values;
     }
 
-    public async Task SetLastTaskIdAsync(IndexEntity index, long lastTaskId)
+    public async Task SetLastTaskIdAsync(IndexProfile index, long lastTaskId)
     {
         ArgumentNullException.ThrowIfNull(index);
 

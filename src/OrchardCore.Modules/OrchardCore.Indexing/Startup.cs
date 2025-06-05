@@ -29,7 +29,7 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
 
         services.AddNavigationProvider<AdminMenu>();
-        services.AddDisplayDriver<IndexEntity, IndexEntityDisplayDriver>();
+        services.AddDisplayDriver<IndexProfile, IndexProfileDisplayDriver>();
         services.AddPermissionProvider<IndexingPermissionsProvider>();
     }
 }
@@ -44,8 +44,8 @@ public sealed class ContentStartup : StartupBase
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IContentHandler, IndexingContentHandler>());
         services.AddScoped<IContentHandler, CreateIndexingTaskContentHandler>();
         services.TryAddScoped<ContentIndexingService>();
-        services.AddIndexEntityHandler<ContentIndexEntryHandler>();
-        services.AddDisplayDriver<IndexEntity, ContentIndexEntityDisplayDriver>();
+        services.AddIndexProfileHandler<ContentIndexProfileHandler>();
+        services.AddDisplayDriver<IndexProfile, ContentIndexProfileDisplayDriver>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IModularTenantEvents, ContentIndexInitializerService>());
     }
 }
@@ -55,9 +55,9 @@ public sealed class RecipesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddRecipeExecutionStep<IndexingEntityStep>();
-        services.AddRecipeExecutionStep<ResetIndexEntityStep>();
-        services.AddRecipeExecutionStep<RebuildIndexEntityStep>();
+        services.AddRecipeExecutionStep<IndexingProfileStep>();
+        services.AddRecipeExecutionStep<ResetIndexProfileStep>();
+        services.AddRecipeExecutionStep<RebuildIndexProfileStep>();
     }
 }
 
@@ -66,9 +66,9 @@ public sealed class DeploymentsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<IndexEntityDeploymentSource, IndexEntityDeploymentStep, IndexEntityDeploymentStepDisplayDriver>();
-        services.AddDeployment<RebuildIndexEntityDeploymentSource, RebuildIndexEntityDeploymentStep, RebuildIndexEntityDeploymentStepDriver>();
-        services.AddDeployment<ResetIndexEntityDeploymentSource, ResetIndexEntityDeploymentStep, ResetIndexEntityDeploymentStepDriver>();
+        services.AddDeployment<IndexProfileDeploymentSource, IndexProfileDeploymentStep, IndexProfileDeploymentStepDisplayDriver>();
+        services.AddDeployment<RebuildIndexProfileDeploymentSource, RebuildIndexProfileDeploymentStep, RebuildIndexProfileDeploymentStepDriver>();
+        services.AddDeployment<ResetIndexProfileDeploymentSource, ResetIndexProfileDeploymentStep, ResetIndexProfileDeploymentStepDriver>();
     }
 }
 

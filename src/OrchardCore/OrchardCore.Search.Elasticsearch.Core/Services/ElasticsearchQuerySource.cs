@@ -21,7 +21,7 @@ public sealed class ElasticsearchQuerySource : IQuerySource
 
     private readonly ElasticsearchQueryService _queryService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexProfileStore _indexProfileStore;
     private readonly ISession _session;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly TemplateOptions _templateOptions;
@@ -29,14 +29,14 @@ public sealed class ElasticsearchQuerySource : IQuerySource
     public ElasticsearchQuerySource(
         ElasticsearchQueryService queryService,
         ILiquidTemplateManager liquidTemplateManager,
-        IIndexEntityStore indexEntityStore,
+        IIndexProfileStore indexProfileStore,
         ISession session,
         JavaScriptEncoder javaScriptEncoder,
         IOptions<TemplateOptions> templateOptions)
     {
         _queryService = queryService;
         _liquidTemplateManager = liquidTemplateManager;
-        _indexEntityStore = indexEntityStore;
+        _indexProfileStore = indexProfileStore;
         _session = session;
         _javaScriptEncoder = javaScriptEncoder;
         _templateOptions = templateOptions.Value;
@@ -61,7 +61,7 @@ public sealed class ElasticsearchQuerySource : IQuerySource
             return elasticQueryResults;
         }
 
-        var index = await _indexEntityStore.FindByIndexNameAndProviderAsync(metadata.Index, ElasticsearchConstants.ProviderName);
+        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync(metadata.Index, ElasticsearchConstants.ProviderName);
 
         if (index is null)
         {

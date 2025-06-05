@@ -15,12 +15,12 @@ public static class IndexingPermissions
 
     private static readonly ConcurrentDictionary<string, Permission> _permissions = [];
 
-    public static Permission CreateDynamicPermission(IndexEntity index)
+    public static Permission CreateDynamicPermission(IndexProfile indexProfile)
     {
-        ArgumentNullException.ThrowIfNull(index);
+        ArgumentNullException.ThrowIfNull(indexProfile);
 
-        return _permissions.GetOrAdd(index.Id, indexId => new Permission(
-            string.Format(_indexPermissionTemplate.Name, index.Name),
-            string.Format(_indexPermissionTemplate.Description, index.Name), _indexPermissionTemplate.ImpliedBy));
+        return _permissions.GetOrAdd(indexProfile.Id, indexId => new Permission(
+            string.Format(_indexPermissionTemplate.Name, indexProfile.Name),
+            string.Format(_indexPermissionTemplate.Description, indexProfile.Name), _indexPermissionTemplate.ImpliedBy));
     }
 }

@@ -10,11 +10,11 @@ namespace OrchardCore.Search.AzureAI.Drivers;
 public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
     : DisplayDriver<DeploymentStep, AzureAISearchIndexRebuildDeploymentStep>
 {
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexProfileStore _indexProfileStore;
 
-    public AzureAISearchIndexRebuildDeploymentStepDriver(IIndexEntityStore indexEntityStore)
+    public AzureAISearchIndexRebuildDeploymentStepDriver(IIndexProfileStore indexProfileStore)
     {
-        _indexEntityStore = indexEntityStore;
+        _indexProfileStore = indexProfileStore;
     }
 
     public override Task<IDisplayResult> DisplayAsync(AzureAISearchIndexRebuildDeploymentStep step, BuildDisplayContext context)
@@ -28,7 +28,7 @@ public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
-            model.AllIndexNames = (await _indexEntityStore.GetByProviderAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexProfileStore.GetByProviderAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexRebuildDeploymentStep step, UpdateEditorContext context)

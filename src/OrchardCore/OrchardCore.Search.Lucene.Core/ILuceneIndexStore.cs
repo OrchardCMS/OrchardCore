@@ -8,11 +8,11 @@ public interface ILuceneIndexStore
 {
     Task<bool> ExistsAsync(string indexFullName);
 
-    Task<bool> RemoveAsync(IndexEntity index);
+    Task<bool> RemoveAsync(IndexProfile index);
 
-    Task SearchAsync(IndexEntity index, Func<IndexSearcher, Task> searcher);
+    Task SearchAsync(IndexProfile index, Func<IndexSearcher, Task> searcher);
 
-    Task WriteAndClose(IndexEntity index);
+    Task WriteAndClose(IndexProfile index);
 
-    Task WriteAsync(IndexEntity index, Action<IndexWriter> action);
+    Task WriteAsync(IndexProfile index, Action<IndexWriter> action);
 }

@@ -41,9 +41,9 @@ services.AddIndexingSource<CustomSourceIndexManager, CustomSourceDocumentManager
     });
 ```
 
-To provide additional configuration or metadata through the admin UI, implement a display driver by deriving from `DisplayDriver<IndexEntity>`.
+To provide additional configuration or metadata through the admin UI, implement a display driver by deriving from `DisplayDriver<IndexProfile>`.
 
-You can also implement `IIndexEntityHandler` to respond to lifecycle events during indexing—such as when an entity is created, updated, or deleted.
+You can also implement `IIndexProfileHandler` to respond to lifecycle events during indexing—such as when an entity is created, updated, or deleted.
 
 note !!!
      If you are implementing a custom provider, use the `Content` type to index content items. This ensures compatibility with the built-in content indexing infrastructure, enabling automatic indexing of content items and providing the necessary UI to configure content types and related settings.
@@ -52,7 +52,6 @@ note !!!
 
 The following deployment recipes are available with the `Indexing` module:
 
-- `Indexing`: Creates or updates an index.
-- `ResetIndexing`: Resets an index to its initial state.
-- `RebuildIndexing`: Rebuilds an index from scratch.
-- 
+- `IndexProfile`: Creates or updates an index.
+- `ResetIndexProfile`: Resets an index to its initial state.
+- `RebuildIndexProfile`: Rebuilds an index from scratch.

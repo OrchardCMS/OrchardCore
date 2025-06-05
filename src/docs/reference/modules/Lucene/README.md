@@ -120,7 +120,7 @@ Here is a sample step:
 ```
 
 note !!!
-     It's recommended to use the `Indexing` recipe step instead as the `LuceneIndexSettings` step is obsolete. 
+     It's recommended to use the `IndexProfile` recipe step instead as the `LuceneIndexSettings` step is obsolete. 
 
 
 ### Reset Lucene Index Step
@@ -157,7 +157,7 @@ To reset all indices:
 ```
 
 note !!!
-     It's recommended to use the `ResetIndexing` recipe step instead as the `lucene-index-reset` step is obsolete. 
+     It's recommended to use the `ResetIndexProfile` recipe step instead as the `lucene-index-reset` step is obsolete. 
 
 ### Rebuild Lucene Index Step
 
@@ -192,7 +192,7 @@ To rebuild all indices:
 ```
 
 note !!!
-     It's recommended to use the `RebuildIndexing` recipe step instead as the `lucene-index-rebuild` step is obsolete. 
+     It's recommended to use the `RebuildIndexProfile` recipe step instead as the `lucene-index-rebuild` step is obsolete. 
 
 ### Query Filters
 

@@ -5,9 +5,9 @@ namespace OrchardCore.Search.Elasticsearch;
 
 public sealed class PermissionProvider : IPermissionProvider
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _indexStore;
 
-    public PermissionProvider(IIndexEntityStore indexStore)
+    public PermissionProvider(IIndexProfileStore indexStore)
     {
         _indexStore = indexStore;
     }

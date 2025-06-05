@@ -8,9 +8,9 @@ namespace OrchardCore.Search.Lucene.Deployment;
 
 public sealed class LuceneIndexResetDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexResetDeploymentStep>
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _indexStore;
 
-    public LuceneIndexResetDeploymentStepDriver(IIndexEntityStore indexStore)
+    public LuceneIndexResetDeploymentStepDriver(IIndexProfileStore indexStore)
     {
         _indexStore = indexStore;
     }

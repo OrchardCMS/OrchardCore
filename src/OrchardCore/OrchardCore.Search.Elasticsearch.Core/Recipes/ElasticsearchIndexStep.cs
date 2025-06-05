@@ -13,12 +13,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// </summary>
 public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
 {
-    private readonly IIndexEntityManager _indexEntityManager;
+    private readonly IIndexProfileManager _indexProfileManager;
     private readonly ElasticsearchIndexManager _elasticIndexManager;
     private readonly ILogger _logger;
 
     public ElasticsearchIndexStep(
-        IIndexEntityManager indexEntityManager,
+        IIndexProfileManager indexProfileManager,
         ElasticsearchIndexManager elasticIndexManager,
         ILogger<ElasticsearchIndexStep> logger
         )
@@ -26,7 +26,7 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
     {
         _elasticIndexManager = elasticIndexManager;
         _logger = logger;
-        _indexEntityManager = indexEntityManager;
+        _indexProfileManager = indexProfileManager;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -46,16 +46,16 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                var index = await _indexEntityManager.FindByNameAndProviderAsync(indexName, ElasticsearchConstants.ProviderName);
+                var index = await _indexProfileManager.FindByNameAndProviderAsync(indexName, ElasticsearchConstants.ProviderName);
 
                 if (index is null)
                 {
                     var data = item.Value;
                     data[nameof(index.IndexName)] = indexName;
 
-                    index = await _indexEntityManager.NewAsync(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, data);
+                    index = await _indexProfileManager.NewAsync(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, data);
 
-                    var validationResult = await _indexEntityManager.ValidateAsync(index);
+                    var validationResult = await _indexProfileManager.ValidateAsync(index);
 
                     if (!validationResult.Succeeded)
                     {
@@ -67,7 +67,7 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
                         continue;
                     }
 
-                    await _indexEntityManager.CreateAsync(index);
+                    await _indexProfileManager.CreateAsync(index);
                 }
 
                 var exists = await _elasticIndexManager.ExistsAsync(index.IndexFullName);
@@ -79,7 +79,7 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
 
                 if (exists)
                 {
-                    await _indexEntityManager.SynchronizeAsync(index);
+                    await _indexProfileManager.SynchronizeAsync(index);
                 }
             }
         }

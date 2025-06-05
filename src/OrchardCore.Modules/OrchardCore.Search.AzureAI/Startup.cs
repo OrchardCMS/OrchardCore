@@ -30,7 +30,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddIndexEntityHandler<AzureAISearchIndexHandler>();
+        services.AddIndexProfileHandler<AzureAISearchIndexHandler>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddAzureAISearchServices();
         services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
@@ -69,10 +69,10 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDisplayDriver<IndexEntity, AzureAISearchIndexEntityDisplayDriver>();
+        services.AddDisplayDriver<IndexProfile, AzureAISearchIndexProfileDisplayDriver>();
 
         services
-            .AddIndexEntityHandler<AzureAISearchContentIndexEntityHandler>()
+            .AddIndexProfileHandler<AzureAISearchContentIndexProfileHandler>()
             .AddIndexingSource<AzureAISearchIndexManager, AzureAISearchDocumentIndexManager, AzureAISearchIndexNameProvider, AzureAISearchDefaultOptions>(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
             {
                 o.DisplayName = S["Content in Azure AI Search"];

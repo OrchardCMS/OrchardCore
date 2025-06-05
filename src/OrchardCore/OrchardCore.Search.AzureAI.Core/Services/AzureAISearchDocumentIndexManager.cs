@@ -7,7 +7,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
-using static OrchardCore.Indexing.DocumentIndexBase;
+using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
@@ -15,13 +15,13 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 {
     private readonly AzureAIClientFactory _clientFactory;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _indexStore;
     private readonly ILogger _logger;
 
     public AzureAISearchDocumentIndexManager(
         AzureAIClientFactory clientFactory,
         IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
-        IIndexEntityStore indexStore,
+        IIndexProfileStore indexStore,
         ILogger<AzureAISearchDocumentIndexManager> logger)
     {
         _clientFactory = clientFactory;
@@ -74,7 +74,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         return searchResult.Value.TotalCount ?? counter;
     }
 
-    public async Task<bool> DeleteDocumentsAsync(IndexEntity index, IEnumerable<string> documentIds)
+    public async Task<bool> DeleteDocumentsAsync(IndexProfile index, IEnumerable<string> documentIds)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(documentIds);
@@ -102,7 +102,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         return false;
     }
 
-    public async Task<bool> DeleteAllDocumentsAsync(IndexEntity index)
+    public async Task<bool> DeleteAllDocumentsAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -137,7 +137,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         return await DeleteDocumentsAsync(index, documentIds);
     }
 
-    public async Task<bool> MergeOrUploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndexBase> indexDocuments)
+    public async Task<bool> AddOrUpdateDocumentsAsync(IndexProfile index, IEnumerable<DocumentIndex> indexDocuments)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(indexDocuments);
@@ -175,7 +175,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         return false;
     }
 
-    public async Task UploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndex> indexDocuments)
+    public async Task UploadDocumentsAsync(IndexProfile index, IEnumerable<ContentItemDocumentIndex> indexDocuments)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(indexDocuments);
@@ -203,14 +203,14 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         }
     }
 
-    public Task<long> GetLastTaskIdAsync(IndexEntity index)
+    public Task<long> GetLastTaskIdAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
         return Task.FromResult(index.As<ContentIndexingMetadata>().LastTaskId);
     }
 
-    public async Task SetLastTaskIdAsync(IndexEntity index, long lastTaskId)
+    public async Task SetLastTaskIdAsync(IndexProfile index, long lastTaskId)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -225,7 +225,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
     public IContentIndexSettings GetContentIndexSettings()
         => new AzureAISearchContentIndexSettings();
 
-    private static string GetKeyFieldNameOrThrow(IndexEntity index)
+    private static string GetKeyFieldNameOrThrow(IndexProfile index)
     {
         var keyName = index.As<AzureAISearchIndexMetadata>().IndexMappings.FirstOrDefault(x => x.IsKey)?.AzureFieldKey;
 
@@ -237,7 +237,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         return keyName;
     }
 
-    private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndexBase> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
+    private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
     {
         foreach (var indexDocument in indexDocuments)
         {
@@ -245,11 +245,11 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         }
     }
 
-    private static SearchDocument CreateSearchDocument(DocumentIndexBase documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
+    private static SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
     {
         var doc = new SearchDocument();
 
-        if (documentIndex is DocumentIndex index)
+        if (documentIndex is ContentItemDocumentIndex index)
         {
             doc.Add(ContentIndexingConstants.ContentItemIdKey, index.ContentItemId);
             doc.Add(ContentIndexingConstants.ContentItemVersionIdKey, index.ContentItemVersionId);
@@ -271,7 +271,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 
             switch (entry.Type)
             {
-                case DocumentIndexBase.Types.Boolean:
+                case DocumentIndex.Types.Boolean:
                     if (entry.Value is bool boolValue)
                     {
                         doc.TryAdd(map.AzureFieldKey, boolValue);

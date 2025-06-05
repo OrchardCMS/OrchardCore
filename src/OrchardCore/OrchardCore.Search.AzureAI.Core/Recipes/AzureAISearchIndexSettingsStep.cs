@@ -12,16 +12,16 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
 {
     public const string Name = "azureai-index-create";
 
-    private readonly IIndexEntityManager _indexEntityManager;
+    private readonly IIndexProfileManager _indexProfileManager;
 
     internal readonly IStringLocalizer S;
 
     public AzureAISearchIndexSettingsStep(
-        IIndexEntityManager indexEntityManager,
+        IIndexProfileManager indexProfileManager,
         IStringLocalizer<AzureAISearchIndexSettingsStep> stringLocalizer)
         : base(Name)
     {
-        _indexEntityManager = indexEntityManager;
+        _indexProfileManager = indexProfileManager;
         S = stringLocalizer;
     }
 
@@ -34,27 +34,27 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
 
         foreach (var token in tokens)
         {
-            IndexEntity index = null;
+            IndexProfile index = null;
 
             var id = token[nameof(index.Id)]?.GetValue<string>();
 
             if (!string.IsNullOrEmpty(id))
             {
-                index = await _indexEntityManager.FindByIdAsync(id);
+                index = await _indexProfileManager.FindByIdAsync(id);
             }
 
             if (index is not null)
             {
-                await _indexEntityManager.UpdateAsync(index, token);
+                await _indexProfileManager.UpdateAsync(index, token);
             }
             else
             {
                 var type = token[nameof(index.Type)]?.GetValue<string>() ?? IndexingConstants.ContentsIndexSource;
 
-                index = await _indexEntityManager.NewAsync(AzureAISearchConstants.ProviderName, type, token);
+                index = await _indexProfileManager.NewAsync(AzureAISearchConstants.ProviderName, type, token);
             }
 
-            var validationResult = await _indexEntityManager.ValidateAsync(index);
+            var validationResult = await _indexProfileManager.ValidateAsync(index);
 
             if (!validationResult.Succeeded)
             {
@@ -66,7 +66,7 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
                 continue;
             }
 
-            await _indexEntityManager.CreateAsync(index);
+            await _indexProfileManager.CreateAsync(index);
         }
     }
 }

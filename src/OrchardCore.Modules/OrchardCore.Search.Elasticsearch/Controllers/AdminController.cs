@@ -23,7 +23,7 @@ namespace OrchardCore.Search.Elasticsearch;
 
 public sealed class AdminController : Controller
 {
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexProfileStore _indexProfileStore;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly ElasticsearchIndexManager _elasticIndexManager;
@@ -37,7 +37,7 @@ public sealed class AdminController : Controller
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
-        IIndexEntityStore indexEntityStore,
+        IIndexProfileStore indexProfileStore,
         ILiquidTemplateManager liquidTemplateManager,
         IAuthorizationService authorizationService,
         ElasticsearchIndexManager elasticIndexManager,
@@ -49,7 +49,7 @@ public sealed class AdminController : Controller
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
-        _indexEntityStore = indexEntityStore;
+        _indexProfileStore = indexProfileStore;
         _liquidTemplateManager = liquidTemplateManager;
         _authorizationService = authorizationService;
         _elasticIndexManager = elasticIndexManager;
@@ -62,10 +62,10 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
     }
 
-    [Admin("elasticsearch/indexinfo/{id}", "Elasticsearch.IndexInfo")]
+    [Admin("Elasticsearch/indexinfo/{id}", "Elasticsearch.IndexInfo")]
     public async Task<IActionResult> IndexInfo(string id)
     {
-        var index = await _indexEntityStore.FindByIdAsync(id);
+        var index = await _indexProfileStore.FindByIdAsync(id);
 
         if (index is null)
         {
@@ -86,7 +86,7 @@ public sealed class AdminController : Controller
     [Admin("Elasticsearch/query/{indexName}", "Elasticsearch.Query")]
     public async Task<IActionResult> QueryIndex(string indexName, string query = null, string parameters = null)
     {
-        var index = await _indexEntityStore.FindByNameAsync(indexName);
+        var index = await _indexProfileStore.FindByNameAsync(indexName);
 
         if (index is null)
         {
@@ -120,7 +120,7 @@ public sealed class AdminController : Controller
         {
             MatchAllQuery = GetMatchAllQuery(),
             DecodedQuery = GetDecodedMatchAllQuery(),
-            Indexes = (await _indexEntityStore.GetByProviderAsync(ElasticsearchConstants.ProviderName))
+            Indexes = (await _indexProfileStore.GetByProviderAsync(ElasticsearchConstants.ProviderName))
                 .Select(x => new SelectListItem(x.Name, x.Id))
                 .OrderBy(x => x.Text),
         };
@@ -143,7 +143,7 @@ public sealed class AdminController : Controller
         }
 
         model.MatchAllQuery = GetMatchAllQuery();
-        model.Indexes = (await _indexEntityStore.GetByProviderAsync(ElasticsearchConstants.ProviderName))
+        model.Indexes = (await _indexProfileStore.GetByProviderAsync(ElasticsearchConstants.ProviderName))
             .Select(x => new SelectListItem(x.Name, x.Id))
             .OrderBy(x => x.Text);
 
@@ -152,7 +152,7 @@ public sealed class AdminController : Controller
             return View("Query", model);
         }
 
-        var index = await _indexEntityStore.FindByIdAsync(model.Id);
+        var index = await _indexProfileStore.FindByIdAsync(model.Id);
 
         if (index is null)
         {

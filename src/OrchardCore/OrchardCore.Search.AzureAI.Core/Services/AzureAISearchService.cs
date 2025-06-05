@@ -26,7 +26,7 @@ public sealed class AzureAISearchService : ISearchService
         _azureAIOptions = azureAIOptions.Value;
     }
 
-    public async Task<SearchResult> SearchAsync(IndexEntity index, string term, int start, int size)
+    public async Task<SearchResult> SearchAsync(IndexProfile index, string term, int start, int size)
     {
         ArgumentNullException.ThrowIfNull(index);
 

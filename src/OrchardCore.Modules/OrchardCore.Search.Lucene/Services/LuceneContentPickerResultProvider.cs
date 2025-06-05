@@ -10,12 +10,12 @@ namespace OrchardCore.Search.Lucene.Services;
 
 public class LuceneContentPickerResultProvider : IContentPickerResultProvider
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _indexStore;
     private readonly LuceneIndexManager _luceneIndexManager;
     private readonly ILuceneIndexStore _luceneIndexStore;
 
     public LuceneContentPickerResultProvider(
-        IIndexEntityStore indexStore,
+        IIndexProfileStore indexStore,
         LuceneIndexManager luceneIndexManager,
         ILuceneIndexStore luceneIndexStore)
     {

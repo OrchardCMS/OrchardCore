@@ -9,7 +9,7 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
 
-public sealed class AzureAISearchIndexHandler : IndexEntityHandlerBase
+public sealed class AzureAISearchIndexHandler : IndexProfileHandlerBase
 {
 
     private readonly IStringLocalizer S;
@@ -19,10 +19,10 @@ public sealed class AzureAISearchIndexHandler : IndexEntityHandlerBase
         S = stringLocalizer;
     }
 
-    public override Task InitializingAsync(InitializingContext<IndexEntity> context)
+    public override Task InitializingAsync(InitializingContext<IndexProfile> context)
         => PopulateAsync(context.Model, context.Data);
 
-    private static Task PopulateAsync(IndexEntity index, JsonNode data)
+    private static Task PopulateAsync(IndexProfile index, JsonNode data)
     {
         var metadata = index.As<AzureAISearchIndexMetadata>();
 
@@ -52,7 +52,7 @@ public sealed class AzureAISearchIndexHandler : IndexEntityHandlerBase
         return Task.CompletedTask;
     }
 
-    public override Task ValidatingAsync(ValidatingContext<IndexEntity> context)
+    public override Task ValidatingAsync(ValidatingContext<IndexProfile> context)
     {
         if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(context.Model.IndexName, out var indexName) || indexName != context.Model.IndexName)
         {

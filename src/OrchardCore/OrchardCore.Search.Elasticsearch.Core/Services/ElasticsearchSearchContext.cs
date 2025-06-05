@@ -7,7 +7,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
 public class ElasticsearchSearchContext
 {
-    public IndexEntity Index { get; }
+    public IndexProfile Index { get; }
 
     public Query Query { get; }
 
@@ -23,7 +23,7 @@ public class ElasticsearchSearchContext
 
     public ICollection<FieldAndFormat> Fields { get; set; }
 
-    public ElasticsearchSearchContext(IndexEntity index, Query query)
+    public ElasticsearchSearchContext(IndexProfile index, Query query)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(query);

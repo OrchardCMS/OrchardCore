@@ -76,9 +76,9 @@ public partial class SettingsDisplayDriverTests
                 Indices = ["idx1", "idx2", "testIndex"],
             };
 
-            var indexes = new List<IndexEntity>
+            var indexes = new List<IndexProfile>
             {
-                new IndexEntity
+                new IndexProfile
                 {
                     Id = "idx1",
                     IndexName = "idx1",
@@ -87,7 +87,7 @@ public partial class SettingsDisplayDriverTests
                     Type = "Content",
                     Name = "Test Index",
                 },
-                new IndexEntity
+                new IndexProfile
                 {
                     Id = "idx2",
                     IndexName = "idx2",
@@ -96,7 +96,7 @@ public partial class SettingsDisplayDriverTests
                     Type = "Content",
                     Name = "Test Index",
                 },
-                new IndexEntity
+                new IndexProfile
                 {
                     Id = "testIndex",
                     IndexName = "testIndex",
@@ -108,7 +108,7 @@ public partial class SettingsDisplayDriverTests
             };
 
             var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
-            var storeMock = new Mock<IIndexEntityStore>();
+            var storeMock = new Mock<IIndexProfileStore>();
             storeMock.Setup(x => x.GetByProviderAsync(It.IsAny<string>()))
                 .ReturnsAsync(indexes);
 

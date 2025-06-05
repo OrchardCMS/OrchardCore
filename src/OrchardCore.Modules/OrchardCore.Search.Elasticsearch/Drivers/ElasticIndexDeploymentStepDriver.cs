@@ -8,9 +8,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
 public sealed class ElasticIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticsearchIndexDeploymentStep>
 {
-    private readonly IIndexEntityStore _store;
+    private readonly IIndexProfileStore _store;
 
-    public ElasticIndexDeploymentStepDriver(IIndexEntityStore store)
+    public ElasticIndexDeploymentStepDriver(IIndexProfileStore store)
     {
         _store = store;
     }

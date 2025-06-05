@@ -5,16 +5,15 @@ namespace OrchardCore.Indexing;
 
 public interface IDocumentIndexManager
 {
-    Task<bool> MergeOrUploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndexBase> documents);
+    Task<bool> AddOrUpdateDocumentsAsync(IndexProfile indexProfile, IEnumerable<DocumentIndex> documents);
 
-    Task<bool> DeleteDocumentsAsync(IndexEntity index, IEnumerable<string> documentIds);
+    Task<bool> DeleteDocumentsAsync(IndexProfile indexProfile, IEnumerable<string> documentIds);
 
-    Task<bool> DeleteAllDocumentsAsync(IndexEntity index);
+    Task<bool> DeleteAllDocumentsAsync(IndexProfile indexProfile);
 
-    Task<long> GetLastTaskIdAsync(IndexEntity index);
+    Task<long> GetLastTaskIdAsync(IndexProfile indexProfile);
 
-    Task SetLastTaskIdAsync(IndexEntity index, long lastTaskId);
+    Task SetLastTaskIdAsync(IndexProfile indexProfile, long lastTaskId);
 
-    // TODO, remove this from here.
     IContentIndexSettings GetContentIndexSettings();
 }

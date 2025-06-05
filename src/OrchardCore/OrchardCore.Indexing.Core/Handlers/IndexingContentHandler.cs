@@ -108,7 +108,7 @@ public class IndexingContentHandler : ContentHandlerBase
 
         var services = scope.ServiceProvider;
 
-        var indexStore = services.GetRequiredService<IIndexEntityStore>();
+        var indexStore = services.GetRequiredService<IIndexProfileStore>();
 
         var indexes = await indexStore.GetAllAsync();
 
@@ -140,7 +140,7 @@ public class IndexingContentHandler : ContentHandlerBase
                 continue;
             }
 
-            var documents = new List<DocumentIndex>();
+            var documents = new List<ContentItemDocumentIndex>();
             var anyCulture = string.IsNullOrEmpty(metadata.Culture) || metadata.Culture == "any";
 
             foreach (var contentItem in contentItems)
@@ -174,7 +174,7 @@ public class IndexingContentHandler : ContentHandlerBase
                     continue;
                 }
 
-                var document = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
+                var document = new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
 
                 var buildIndexContext = new BuildIndexContext(document, contentItem, [contentItem.ContentType], documentIndexManager.GetContentIndexSettings());
 
@@ -189,7 +189,7 @@ public class IndexingContentHandler : ContentHandlerBase
             if (documents.Count > 0)
             {
                 // Update all of the documents that were updated in this scope.
-                await documentIndexManager.MergeOrUploadDocumentsAsync(index, documents);
+                await documentIndexManager.AddOrUpdateDocumentsAsync(index, documents);
             }
 
             // At the end of the indexing, we remove the documents that were removed in the same scope.

@@ -13,13 +13,13 @@ namespace OrchardCore.Search.AzureAI.Deployment;
 public sealed class AzureAISearchIndexDeploymentSource
     : DeploymentSourceBase<AzureAISearchIndexDeploymentStep>
 {
-    private readonly IIndexEntityStore _indexStore;
-    private readonly IEnumerable<IIndexEntityHandler> _handlers;
+    private readonly IIndexProfileStore _indexStore;
+    private readonly IEnumerable<IIndexProfileHandler> _handlers;
     private readonly ILogger _logger;
 
     public AzureAISearchIndexDeploymentSource(
-        IIndexEntityStore indexStore,
-        IEnumerable<IIndexEntityHandler> handlers,
+        IIndexProfileStore indexStore,
+        IEnumerable<IIndexProfileHandler> handlers,
         ILogger<AzureAISearchIndexDeploymentSource> logger)
     {
         _indexStore = indexStore;
@@ -73,7 +73,7 @@ public sealed class AzureAISearchIndexDeploymentSource
                 { "Properties", index.Properties?.DeepClone() },
             };
 
-            var exportingContext = new IndexEntityExportingContext(index, indexInfo);
+            var exportingContext = new IndexProfileExportingContext(index, indexInfo);
 
             await _handlers.InvokeAsync((handler, context) => handler.ExportingAsync(context), exportingContext, _logger);
 

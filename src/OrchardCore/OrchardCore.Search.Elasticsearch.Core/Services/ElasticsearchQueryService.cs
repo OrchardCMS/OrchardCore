@@ -74,7 +74,7 @@ public class ElasticsearchQueryService
         return contentItemIds;
     }
 
-    public Task<ElasticsearchResult> SearchAsync(IndexEntity index, string query)
+    public Task<ElasticsearchResult> SearchAsync(IndexProfile index, string query)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentException.ThrowIfNullOrEmpty(query);

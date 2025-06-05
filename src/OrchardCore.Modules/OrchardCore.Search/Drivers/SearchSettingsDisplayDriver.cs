@@ -18,17 +18,17 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexProfileStore _indexProfileStore;
 
     public SearchSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IIndexEntityStore indexEntityStore
+        IIndexProfileStore indexProfileStore
         )
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _indexEntityStore = indexEntityStore;
+        _indexProfileStore = indexProfileStore;
     }
 
     protected override string SettingsGroupId
@@ -45,10 +45,10 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
 
         return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", async model =>
         {
-            model.DefaultIndexId = settings.DefaultIndexId;
+            model.DefaultIndexId = settings.DefaultIndexProfileId;
             model.Placeholder = settings.Placeholder;
             model.PageTitle = settings.PageTitle;
-            model.Indexes = (await _indexEntityStore.GetAllAsync())
+            model.Indexes = (await _indexProfileStore.GetAllAsync())
                 .Select(index => new SelectListItem(index.Name, index.Id))
                 .ToArray();
         }).Location("Content:2")
@@ -68,7 +68,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        section.DefaultIndexId = model.DefaultIndexId;
+        section.DefaultIndexProfileId = model.DefaultIndexId;
         section.Placeholder = model.Placeholder;
         section.PageTitle = model.PageTitle;
 

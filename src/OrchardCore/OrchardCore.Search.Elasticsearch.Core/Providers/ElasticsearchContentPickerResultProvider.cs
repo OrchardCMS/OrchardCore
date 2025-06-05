@@ -13,17 +13,17 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers;
 
 public class ElasticsearchContentPickerResultProvider : IContentPickerResultProvider
 {
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexProfileStore _indexProfileStore;
     private readonly ElasticsearchIndexManager _indexManager;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
 
     public ElasticsearchContentPickerResultProvider(
-        IIndexEntityStore indexEntityStore,
+        IIndexProfileStore indexProfileStore,
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         ElasticsearchIndexManager indexManager)
     {
         _elasticConnectionOptions = elasticConnectionOptions.Value;
-        _indexEntityStore = indexEntityStore;
+        _indexProfileStore = indexProfileStore;
         _indexManager = indexManager;
     }
 
@@ -43,7 +43,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
             return [];
         }
 
-        var index = await _indexEntityStore.FindByIndexNameAndProviderAsync(fieldSettings.Index, ElasticsearchConstants.ProviderName);
+        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync(fieldSettings.Index, ElasticsearchConstants.ProviderName);
 
         if (index is null || index.Type != IndexingConstants.ContentsIndexSource || !await _indexManager.ExistsAsync(index.IndexFullName))
         {

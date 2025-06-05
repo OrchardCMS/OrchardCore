@@ -80,7 +80,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                 return;
             }
 
-            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
+            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
             var indexNamingProvider = scope.ServiceProvider.GetKeyedService<IIndexNameProvider>(AzureAISearchConstants.ProviderName);
 
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
@@ -223,7 +223,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 if (indexName == defaultSearchIndexName && defaultSearchProvider == "Azure AI Search")
                 {
-                    site.Properties["SearchSettings"]["DefaultIndexId"] = index.Id;
+                    site.Properties["SearchSettings"]["DefaultIndexProfileId"] = index.Id;
                     saveSiteSettings = true;
                 }
             }

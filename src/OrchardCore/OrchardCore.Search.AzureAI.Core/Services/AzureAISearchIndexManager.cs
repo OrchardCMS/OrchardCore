@@ -6,7 +6,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
-using static OrchardCore.Indexing.DocumentIndexBase;
+using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
@@ -31,7 +31,7 @@ public class AzureAISearchIndexManager : IIndexManager
         _indexEvents = indexEvents;
     }
 
-    public async Task<bool> CreateAsync(IndexEntity index)
+    public async Task<bool> CreateAsync(IndexProfile index)
     {
         if (await ExistsAsync(index.IndexFullName))
         {
@@ -90,7 +90,7 @@ public class AzureAISearchIndexManager : IIndexManager
         return null;
     }
 
-    public async Task<bool> DeleteAsync(IndexEntity index)
+    public async Task<bool> DeleteAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -121,7 +121,7 @@ public class AzureAISearchIndexManager : IIndexManager
         return false;
     }
 
-    public async Task<bool> RebuildAsync(IndexEntity index)
+    public async Task<bool> RebuildAsync(IndexProfile index)
     {
         try
         {
@@ -152,7 +152,7 @@ public class AzureAISearchIndexManager : IIndexManager
         return false;
     }
 
-    private static SearchIndex GetSearchIndex(IndexEntity index)
+    private static SearchIndex GetSearchIndex(IndexProfile index)
     {
         var searchFields = new List<SearchField>();
 

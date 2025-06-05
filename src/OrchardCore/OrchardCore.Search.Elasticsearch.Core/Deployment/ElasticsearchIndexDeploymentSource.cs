@@ -8,9 +8,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 public sealed class ElasticsearchIndexDeploymentSource
     : DeploymentSourceBase<ElasticsearchIndexDeploymentStep>
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _indexStore;
 
-    public ElasticsearchIndexDeploymentSource(IIndexEntityStore indexStore)
+    public ElasticsearchIndexDeploymentSource(IIndexProfileStore indexStore)
     {
         _indexStore = indexStore;
     }
@@ -28,7 +28,7 @@ public sealed class ElasticsearchIndexDeploymentSource
         {
             if (indicesToAdd.Contains(index.IndexName))
             {
-                var indexSettingsDict = new Dictionary<string, IndexEntity>
+                var indexSettingsDict = new Dictionary<string, IndexProfile>
                 {
                     { index.IndexName, index },
                 };

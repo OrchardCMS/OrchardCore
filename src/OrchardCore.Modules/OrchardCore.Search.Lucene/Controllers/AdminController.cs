@@ -31,7 +31,7 @@ public sealed class AdminController : Controller
     private readonly LuceneAnalyzerManager _analyzerManager;
     private readonly ILuceneQueryService _queryService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexProfileStore _indexProfileStore;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ILogger _logger;
     private readonly IOptions<TemplateOptions> _templateOptions;
@@ -40,7 +40,7 @@ public sealed class AdminController : Controller
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
-        IIndexEntityStore indexEntityStore,
+        IIndexProfileStore indexProfileStore,
         LuceneIndexManager indexManager,
         ILuceneIndexStore indexStore,
         IAuthorizationService authorizationService,
@@ -59,7 +59,7 @@ public sealed class AdminController : Controller
         _analyzerManager = analyzerManager;
         _queryService = queryService;
         _liquidTemplateManager = liquidTemplateManager;
-        _indexEntityStore = indexEntityStore;
+        _indexProfileStore = indexProfileStore;
         _javaScriptEncoder = javaScriptEncoder;
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -70,7 +70,7 @@ public sealed class AdminController : Controller
     [Admin("Lucene/query/{indexName}", "LuceneQuery")]
     public async Task<IActionResult> QueryIndex(string indexName, string query = null, string parameters = null)
     {
-        var index = await _indexEntityStore.FindByNameAsync(indexName);
+        var index = await _indexProfileStore.FindByNameAsync(indexName);
 
         if (index is null)
         {
@@ -99,7 +99,7 @@ public sealed class AdminController : Controller
         {
             MatchAllQuery = GetMatchAllQuery(),
             DecodedQuery = GetDecodedMatchAllQuery(),
-            Indexes = (await _indexEntityStore.GetByProviderAsync(LuceneConstants.ProviderName))
+            Indexes = (await _indexProfileStore.GetByProviderAsync(LuceneConstants.ProviderName))
                 .Select(x => new SelectListItem(x.Name, x.Id))
                 .OrderBy(x => x.Text),
         };
@@ -119,7 +119,7 @@ public sealed class AdminController : Controller
         }
 
         model.MatchAllQuery = GetMatchAllQuery();
-        model.Indexes = (await _indexEntityStore.GetByProviderAsync(LuceneConstants.ProviderName))
+        model.Indexes = (await _indexProfileStore.GetByProviderAsync(LuceneConstants.ProviderName))
             .Select(x => new SelectListItem(x.Name, x.Id))
             .OrderBy(x => x.Text);
 
@@ -128,7 +128,7 @@ public sealed class AdminController : Controller
             return View("Query", model);
         }
 
-        var index = await _indexEntityStore.FindByIdAsync(model.Id);
+        var index = await _indexProfileStore.FindByIdAsync(model.Id);
 
         if (index is null)
         {

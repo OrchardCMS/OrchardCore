@@ -130,7 +130,7 @@ public class SiteContext : IDisposable
     {
         await UsingTenantScopeAsync(async scope =>
         {
-            var entityManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
+            var entityManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
             var indexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
             var contentIndexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
 

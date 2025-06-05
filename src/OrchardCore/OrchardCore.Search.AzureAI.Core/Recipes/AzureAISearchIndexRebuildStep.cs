@@ -31,20 +31,20 @@ public sealed class AzureAISearchIndexRebuildStep : NamedRecipeStepHandler
 
         await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
         {
-            var indexEntityManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
+            var indexProfileManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
             var indexManager = scope.ServiceProvider.GetKeyedService<IIndexManager>(AzureAISearchConstants.ProviderName);
 
-            var indexes = model.IncludeAll
-            ? await indexEntityManager.GetByProviderAsync(AzureAISearchConstants.ProviderName)
-            : (await indexEntityManager.GetByProviderAsync(AzureAISearchConstants.ProviderName))
+            var indexProfiles = model.IncludeAll
+            ? await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName)
+            : (await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName))
                 .Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
 
-            foreach (var index in indexes)
+            foreach (var indexProfile in indexProfiles)
             {
-                await indexEntityManager.ResetAsync(index);
-                await indexEntityManager.UpdateAsync(index);
-                await indexManager.RebuildAsync(index);
-                await indexEntityManager.SynchronizeAsync(index);
+                await indexProfileManager.ResetAsync(indexProfile);
+                await indexProfileManager.UpdateAsync(indexProfile);
+                await indexManager.RebuildAsync(indexProfile);
+                await indexProfileManager.SynchronizeAsync(indexProfile);
             }
         });
     }

@@ -14,12 +14,12 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
 {
-    private readonly IIndexEntityStore _store;
+    private readonly IIndexProfileStore _store;
 
     internal readonly IStringLocalizer S;
 
     public ElasticsearchQueryDisplayDriver(
-        IIndexEntityStore store,
+        IIndexProfileStore store,
         IStringLocalizer<ElasticsearchQueryDisplayDriver> stringLocalizer)
     {
         _store = store;

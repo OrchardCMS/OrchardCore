@@ -31,18 +31,18 @@ public sealed class AzureAISearchIndexResetStep : NamedRecipeStepHandler
 
         await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
         {
-            var indexEntityManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
+            var indexProfileManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
 
             var indexes = model.IncludeAll
-            ? await indexEntityManager.GetByProviderAsync(AzureAISearchConstants.ProviderName)
-            : (await indexEntityManager.GetByProviderAsync(AzureAISearchConstants.ProviderName))
+            ? await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName)
+            : (await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName))
                 .Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
 
             foreach (var index in indexes)
             {
-                await indexEntityManager.ResetAsync(index);
-                await indexEntityManager.UpdateAsync(index);
-                await indexEntityManager.SynchronizeAsync(index);
+                await indexProfileManager.ResetAsync(index);
+                await indexProfileManager.UpdateAsync(index);
+                await indexProfileManager.SynchronizeAsync(index);
             }
         });
     }

@@ -9,9 +9,9 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
 {
-    private readonly IIndexEntityStore _store;
+    private readonly IIndexProfileStore _store;
 
-    public ContentPickerFieldElasticEditorSettingsDriver(IIndexEntityStore store)
+    public ContentPickerFieldElasticEditorSettingsDriver(IIndexProfileStore store)
     {
         _store = store;
     }

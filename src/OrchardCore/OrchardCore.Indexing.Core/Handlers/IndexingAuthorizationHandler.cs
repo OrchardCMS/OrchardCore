@@ -24,14 +24,14 @@ public sealed class IndexingAuthorizationHandler : AuthorizationHandler<Permissi
             return;
         }
 
-        if (context.Resource is not IndexEntity index || requirement.Permission != IndexingPermissions.QuerySearchIndex)
+        if (context.Resource is not IndexProfile indexProfile || requirement.Permission != IndexingPermissions.QuerySearchIndex)
         {
             return;
         }
 
         _authorizationService ??= _serviceProvider?.GetService<IAuthorizationService>();
 
-        var permission = IndexingPermissions.CreateDynamicPermission(index);
+        var permission = IndexingPermissions.CreateDynamicPermission(indexProfile);
 
         if (await _authorizationService.AuthorizeAsync(context.User, permission))
         {

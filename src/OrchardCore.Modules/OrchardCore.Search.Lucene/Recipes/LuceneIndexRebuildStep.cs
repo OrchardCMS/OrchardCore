@@ -11,15 +11,15 @@ namespace OrchardCore.Search.Lucene.Recipes;
 /// </summary>
 public sealed class LuceneIndexRebuildStep : NamedRecipeStepHandler
 {
-    private readonly IIndexEntityManager _indexEntityManager;
+    private readonly IIndexProfileManager _indexProfileManager;
     private readonly IServiceProvider _serviceProvider;
 
     public LuceneIndexRebuildStep(
-        IIndexEntityManager indexEntityManager,
+        IIndexProfileManager indexProfileManager,
         IServiceProvider serviceProvider)
         : base("lucene-index-rebuild")
     {
-        _indexEntityManager = indexEntityManager;
+        _indexProfileManager = indexProfileManager;
         _serviceProvider = serviceProvider;
     }
 
@@ -30,8 +30,8 @@ public sealed class LuceneIndexRebuildStep : NamedRecipeStepHandler
         if (model.IncludeAll || model.Indices.Length > 0)
         {
             var indexes = model.IncludeAll
-            ? (await _indexEntityManager.GetByProviderAsync(LuceneConstants.ProviderName))
-            : (await _indexEntityManager.GetByProviderAsync(LuceneConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
+            ? (await _indexProfileManager.GetByProviderAsync(LuceneConstants.ProviderName))
+            : (await _indexProfileManager.GetByProviderAsync(LuceneConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
 
             var indexManagers = new Dictionary<string, IIndexManager>();
 
@@ -48,8 +48,8 @@ public sealed class LuceneIndexRebuildStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                await _indexEntityManager.ResetAsync(index);
-                await _indexEntityManager.UpdateAsync(index);
+                await _indexProfileManager.ResetAsync(index);
+                await _indexProfileManager.UpdateAsync(index);
 
                 if (!await indexManager.ExistsAsync(index.IndexFullName))
                 {
@@ -60,7 +60,7 @@ public sealed class LuceneIndexRebuildStep : NamedRecipeStepHandler
                     await indexManager.RebuildAsync(index);
                 }
 
-                await _indexEntityManager.SynchronizeAsync(index);
+                await _indexProfileManager.SynchronizeAsync(index);
             }
         }
     }

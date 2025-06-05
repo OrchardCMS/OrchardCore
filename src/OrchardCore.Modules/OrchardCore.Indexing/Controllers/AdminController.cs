@@ -24,9 +24,9 @@ public sealed class AdminController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IIndexEntityManager _indexEntityManager;
+    private readonly IIndexProfileManager _indexProfileManager;
     private readonly IndexingOptions _indexingOptions;
-    private readonly IDisplayManager<IndexEntity> _displayManager;
+    private readonly IDisplayManager<IndexProfile> _displayManager;
     private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
 
@@ -36,8 +36,8 @@ public sealed class AdminController : Controller
     public AdminController(
         IAuthorizationService authorizationService,
         IUpdateModelAccessor updateModelAccessor,
-        IIndexEntityManager indexManager,
-        IDisplayManager<IndexEntity> displayManager,
+        IIndexProfileManager indexProfileManager,
+        IDisplayManager<IndexProfile> displayManager,
         IOptions<IndexingOptions> indexingOptions,
         IServiceProvider serviceProvider,
         INotifier notifier,
@@ -46,7 +46,7 @@ public sealed class AdminController : Controller
     {
         _authorizationService = authorizationService;
         _updateModelAccessor = updateModelAccessor;
-        _indexEntityManager = indexManager;
+        _indexProfileManager = indexProfileManager;
         _displayManager = displayManager;
         _serviceProvider = serviceProvider;
         _indexingOptions = indexingOptions.Value;
@@ -69,7 +69,7 @@ public sealed class AdminController : Controller
 
         var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
-        var result = await _indexEntityManager.PageAsync(pager.Page, pager.PageSize, new QueryContext
+        var result = await _indexProfileManager.PageAsync(pager.Page, pager.PageSize, new QueryContext
         {
             Sorted = true,
             Name = options.Search,
@@ -83,7 +83,7 @@ public sealed class AdminController : Controller
             routeData.Values.TryAdd(_optionsSearch, options.Search);
         }
 
-        var viewModel = new ListSourcedEntitiesViewModel<IndexEntityKey, ModelEntry<IndexEntity>, IndexingEntityOptions>
+        var viewModel = new ListSourcedEntitiesViewModel<IndexProfileKey, ModelEntry<IndexProfile>, IndexingEntityOptions>
         {
             Models = [],
             Options = options,
@@ -95,7 +95,7 @@ public sealed class AdminController : Controller
 
         foreach (var record in result.Models)
         {
-            viewModel.Models.Add(new ModelEntry<IndexEntity>
+            viewModel.Models.Add(new ModelEntry<IndexProfile>
             {
                 Model = record,
                 Shape = await _displayManager.BuildDisplayAsync(record, _updateModelAccessor.ModelUpdater, "SummaryAdmin"),
@@ -132,14 +132,14 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!_indexingOptions.Sources.TryGetValue(new IndexEntityKey(providerName, type), out var service))
+        if (!_indexingOptions.Sources.TryGetValue(new IndexProfileKey(providerName, type), out var service))
         {
             await _notifier.ErrorAsync(H["Unable to find a provider named '{0}' with the type '{1}'.", providerName, type]);
 
             return RedirectToAction(nameof(Index));
         }
 
-        var index = await _indexEntityManager.NewAsync(providerName, type);
+        var index = await _indexProfileManager.NewAsync(providerName, type);
 
         if (index == null)
         {
@@ -167,14 +167,14 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!_indexingOptions.Sources.TryGetValue(new IndexEntityKey(providerName, type), out var service))
+        if (!_indexingOptions.Sources.TryGetValue(new IndexProfileKey(providerName, type), out var service))
         {
             await _notifier.ErrorAsync(H["Unable to find a provider with the name '{0}'.", providerName]);
 
             return RedirectToAction(nameof(Index));
         }
 
-        var index = await _indexEntityManager.NewAsync(providerName, type);
+        var index = await _indexProfileManager.NewAsync(providerName, type);
 
         if (index == null)
         {
@@ -189,7 +189,7 @@ public sealed class AdminController : Controller
             Editor = await _displayManager.UpdateEditorAsync(index, _updateModelAccessor.ModelUpdater, isNew: true),
         };
 
-        var validate = await _indexEntityManager.ValidateAsync(index);
+        var validate = await _indexProfileManager.ValidateAsync(index);
 
         if (!validate.Succeeded && ModelState.IsValid)
         {
@@ -214,19 +214,19 @@ public sealed class AdminController : Controller
             }
 
             // Before creating the index in the provider, we need to create it locally to ensure all the properties are set.
-            await _indexEntityManager.CreateAsync(index);
+            await _indexProfileManager.CreateAsync(index);
 
             if (!await indexManager.CreateAsync(index))
             {
                 // Delete the index locally if we failed to create it in the provider.
-                await _indexEntityManager.DeleteAsync(index);
+                await _indexProfileManager.DeleteAsync(index);
 
                 await _notifier.ErrorAsync(H["Unable to create the index for the provider '{0}'.", index.ProviderName]);
 
                 return View(model);
             }
 
-            await _indexEntityManager.SynchronizeAsync(index);
+            await _indexProfileManager.SynchronizeAsync(index);
 
             await _notifier.SuccessAsync(H["An index has been created successfully. The synchronizing process was triggered in the background."]);
 
@@ -244,7 +244,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexEntityManager.FindByIdAsync(id);
+        var index = await _indexProfileManager.FindByIdAsync(id);
 
         if (index == null)
         {
@@ -270,7 +270,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexEntityManager.FindByIdAsync(id);
+        var index = await _indexProfileManager.FindByIdAsync(id);
 
         if (index == null)
         {
@@ -286,7 +286,7 @@ public sealed class AdminController : Controller
             Editor = await _displayManager.UpdateEditorAsync(mutableProfile, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 
-        var validate = await _indexEntityManager.ValidateAsync(index);
+        var validate = await _indexProfileManager.ValidateAsync(index);
 
         if (!validate.Succeeded && ModelState.IsValid)
         {
@@ -301,7 +301,7 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            await _indexEntityManager.UpdateAsync(mutableProfile);
+            await _indexProfileManager.UpdateAsync(mutableProfile);
 
             await _notifier.SuccessAsync(H["An index has been updated successfully."]);
 
@@ -320,7 +320,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexEntityManager.FindByIdAsync(id);
+        var index = await _indexProfileManager.FindByIdAsync(id);
 
         if (index == null)
         {
@@ -332,7 +332,7 @@ public sealed class AdminController : Controller
         if (force)
         {
             await indexManager?.DeleteAsync(index);
-            await _indexEntityManager.DeleteAsync(index);
+            await _indexProfileManager.DeleteAsync(index);
 
             await _notifier.SuccessAsync(H["The index was removed successfully."]);
 
@@ -355,7 +355,7 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        if (await _indexEntityManager.DeleteAsync(index))
+        if (await _indexProfileManager.DeleteAsync(index))
         {
             await _notifier.SuccessAsync(H["The index was removed successfully."]);
         }
@@ -376,16 +376,16 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexEntityManager.FindByIdAsync(id);
+        var index = await _indexProfileManager.FindByIdAsync(id);
 
         if (index == null)
         {
             return NotFound();
         }
 
-        await _indexEntityManager.ResetAsync(index);
-        await _indexEntityManager.UpdateAsync(index);
-        await _indexEntityManager.SynchronizeAsync(index);
+        await _indexProfileManager.ResetAsync(index);
+        await _indexProfileManager.UpdateAsync(index);
+        await _indexProfileManager.SynchronizeAsync(index);
 
         await _notifier.SuccessAsync(H["An index has been reset successfully. The synchronizing process was triggered in the background."]);
 
@@ -401,7 +401,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexEntityManager.FindByIdAsync(id);
+        var index = await _indexProfileManager.FindByIdAsync(id);
 
         if (index == null)
         {
@@ -419,9 +419,9 @@ public sealed class AdminController : Controller
 
         if (await indexManager.RebuildAsync(index))
         {
-            await _indexEntityManager.ResetAsync(index);
-            await _indexEntityManager.UpdateAsync(index);
-            await _indexEntityManager.SynchronizeAsync(index);
+            await _indexProfileManager.ResetAsync(index);
+            await _indexProfileManager.UpdateAsync(index);
+            await _indexProfileManager.SynchronizeAsync(index);
 
             await _notifier.SuccessAsync(H["An index has been rebuilt successfully. The synchronizing process was triggered in the background."]);
         }
@@ -456,7 +456,7 @@ public sealed class AdminController : Controller
                     var removeCounter = 0;
                     foreach (var id in itemIds)
                     {
-                        var index = await _indexEntityManager.FindByIdAsync(id);
+                        var index = await _indexProfileManager.FindByIdAsync(id);
 
                         if (index == null)
                         {
@@ -481,7 +481,7 @@ public sealed class AdminController : Controller
                             continue;
                         }
 
-                        if (await _indexEntityManager.DeleteAsync(index))
+                        if (await _indexProfileManager.DeleteAsync(index))
                         {
                             removeCounter++;
                         }
@@ -502,16 +502,16 @@ public sealed class AdminController : Controller
 
                     foreach (var id in itemIds)
                     {
-                        var index = await _indexEntityManager.FindByIdAsync(id);
+                        var index = await _indexProfileManager.FindByIdAsync(id);
 
                         if (index == null)
                         {
                             continue;
                         }
 
-                        await _indexEntityManager.ResetAsync(index);
-                        await _indexEntityManager.UpdateAsync(index);
-                        await _indexEntityManager.SynchronizeAsync(index);
+                        await _indexProfileManager.ResetAsync(index);
+                        await _indexProfileManager.UpdateAsync(index);
+                        await _indexProfileManager.SynchronizeAsync(index);
 
                         resetCounter++;
                     }
@@ -530,7 +530,7 @@ public sealed class AdminController : Controller
                     var rebuildCounter = 0;
                     foreach (var id in itemIds)
                     {
-                        var index = await _indexEntityManager.FindByIdAsync(id);
+                        var index = await _indexProfileManager.FindByIdAsync(id);
 
                         if (index == null)
                         {
@@ -555,9 +555,9 @@ public sealed class AdminController : Controller
 
                         rebuildCounter++;
 
-                        await _indexEntityManager.ResetAsync(index);
-                        await _indexEntityManager.UpdateAsync(index);
-                        await _indexEntityManager.SynchronizeAsync(index);
+                        await _indexProfileManager.ResetAsync(index);
+                        await _indexProfileManager.UpdateAsync(index);
+                        await _indexProfileManager.SynchronizeAsync(index);
                     }
 
                     if (rebuildCounter == 0)

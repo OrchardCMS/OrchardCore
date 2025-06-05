@@ -5,11 +5,11 @@ namespace OrchardCore.Indexing;
 
 public interface IIndexManager
 {
-    Task<bool> CreateAsync(IndexEntity index);
+    Task<bool> CreateAsync(IndexProfile indexProfile);
 
-    Task<bool> RebuildAsync(IndexEntity index);
+    Task<bool> RebuildAsync(IndexProfile indexProfile);
 
-    Task<bool> DeleteAsync(IndexEntity index);
+    Task<bool> DeleteAsync(IndexProfile indexProfile);
 
     Task<bool> ExistsAsync(string indexFullName);
 }

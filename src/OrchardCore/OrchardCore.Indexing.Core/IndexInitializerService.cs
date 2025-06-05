@@ -6,20 +6,20 @@ namespace OrchardCore.Indexing.Core;
 
 public sealed class IndexInitializerService : ModularTenantEvents
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _store;
     private readonly IServiceProvider _serviceProvider;
 
     public IndexInitializerService(
-        IIndexEntityStore indexEntityStore,
+        IIndexProfileStore store,
         IServiceProvider serviceProvider)
     {
-        _indexStore = indexEntityStore;
+        _store = store;
         _serviceProvider = serviceProvider;
     }
 
     public override async Task RemovingAsync(ShellRemovingContext context)
     {
-        var indexes = await _indexStore.GetAllAsync();
+        var indexes = await _store.GetAllAsync();
 
         var indexManagers = new Dictionary<string, IIndexManager>();
 

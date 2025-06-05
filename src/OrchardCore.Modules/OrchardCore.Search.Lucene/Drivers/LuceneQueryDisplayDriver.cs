@@ -13,13 +13,13 @@ namespace OrchardCore.Search.Lucene.Drivers;
 
 public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _indexStore;
 
     internal readonly IStringLocalizer S;
 
     public LuceneQueryDisplayDriver(
         IStringLocalizer<LuceneQueryDisplayDriver> stringLocalizer,
-        IIndexEntityStore indexStore)
+        IIndexProfileStore indexStore)
     {
         _indexStore = indexStore;
         S = stringLocalizer;

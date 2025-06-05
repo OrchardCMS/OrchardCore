@@ -5,9 +5,9 @@ namespace OrchardCore.Indexing.Core;
 
 public sealed class IndexingOptions
 {
-    private readonly Dictionary<IndexEntityKey, IndexingOptionsEntry> _sources = new(IndexEntityKeyComparer.Instance);
+    private readonly Dictionary<IndexProfileKey, IndexingOptionsEntry> _sources = new(IndexProfileKeyComparer.Instance);
 
-    public IReadOnlyDictionary<IndexEntityKey, IndexingOptionsEntry> Sources
+    public IReadOnlyDictionary<IndexProfileKey, IndexingOptionsEntry> Sources
         => _sources;
 
     public void AddIndexingSource(string providerName, string type, Action<IndexingOptionsEntry> configure = null)
@@ -15,7 +15,7 @@ public sealed class IndexingOptions
         ArgumentException.ThrowIfNullOrEmpty(providerName);
         ArgumentException.ThrowIfNullOrEmpty(type);
 
-        var key = new IndexEntityKey(providerName, type);
+        var key = new IndexProfileKey(providerName, type);
 
         if (!_sources.TryGetValue(key, out var entry))
         {
@@ -38,7 +38,7 @@ public sealed class IndexingOptions
 
 public sealed class IndexingOptionsEntry
 {
-    public IndexingOptionsEntry(IndexEntityKey key)
+    public IndexingOptionsEntry(IndexProfileKey key)
     {
         ProviderName = key.ProviderName;
         Type = key.Type;
@@ -53,17 +53,17 @@ public sealed class IndexingOptionsEntry
     public LocalizedString Description { get; set; }
 }
 
-public sealed class IndexEntityKeyComparer : IEqualityComparer<IndexEntityKey>
+public sealed class IndexProfileKeyComparer : IEqualityComparer<IndexProfileKey>
 {
-    public static readonly IndexEntityKeyComparer Instance = new();
+    public static readonly IndexProfileKeyComparer Instance = new();
 
-    public bool Equals(IndexEntityKey x, IndexEntityKey y)
+    public bool Equals(IndexProfileKey x, IndexProfileKey y)
     {
         return string.Equals(x.ProviderName, y.ProviderName, StringComparison.OrdinalIgnoreCase) &&
             string.Equals(x.Type, y.Type, StringComparison.OrdinalIgnoreCase);
     }
 
-    public int GetHashCode(IndexEntityKey obj)
+    public int GetHashCode(IndexProfileKey obj)
         => HashCode.Combine(
             StringComparer.OrdinalIgnoreCase.GetHashCode(obj.ProviderName),
             StringComparer.OrdinalIgnoreCase.GetHashCode(obj.Type)

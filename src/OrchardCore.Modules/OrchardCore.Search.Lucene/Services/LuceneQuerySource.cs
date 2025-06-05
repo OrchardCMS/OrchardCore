@@ -23,7 +23,7 @@ public sealed class LuceneQuerySource : IQuerySource
     public const string SourceName = LuceneConstants.ProviderName;
 
     private readonly ILuceneIndexStore _luceneIndexStore;
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _indexStore;
     private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
     private readonly ILuceneQueryService _queryService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -33,7 +33,7 @@ public sealed class LuceneQuerySource : IQuerySource
 
     public LuceneQuerySource(
         ILuceneIndexStore luceneIndexStore,
-        IIndexEntityStore indexStore,
+        IIndexProfileStore indexStore,
         LuceneAnalyzerManager luceneAnalyzerManager,
         ILuceneQueryService queryService,
         ILiquidTemplateManager liquidTemplateManager,

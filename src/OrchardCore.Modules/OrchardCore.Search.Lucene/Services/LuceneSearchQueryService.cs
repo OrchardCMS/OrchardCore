@@ -8,14 +8,14 @@ namespace OrchardCore.Search.Lucene.Services;
 
 public class LuceneSearchQueryService : ILuceneSearchQueryService
 {
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexProfileStore _indexProfileStore;
     private readonly ILuceneIndexStore _store;
 
     public LuceneSearchQueryService(
-        IIndexEntityStore indexEntityStore,
+        IIndexProfileStore indexProfileStore,
         ILuceneIndexStore store)
     {
-        _indexEntityStore = indexEntityStore;
+        _indexProfileStore = indexProfileStore;
         _store = store;
     }
 
@@ -28,7 +28,7 @@ public class LuceneSearchQueryService : ILuceneSearchQueryService
             return documentIds;
         }
 
-        var index = await _indexEntityStore.FindByIndexNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
+        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
 
         if (index is null)
         {

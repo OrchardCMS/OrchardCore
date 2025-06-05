@@ -10,7 +10,6 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
 {
     private readonly ShellSettings _shellSettings;
 
-
     public ContentIndexInitializerService(ShellSettings shellSettings)
     {
         _shellSettings = shellSettings;
@@ -25,12 +24,12 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
 
         await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("indexing-initialize", async scope =>
         {
-            var indexStore = scope.ServiceProvider.GetRequiredService<IIndexEntityStore>();
+            var indexStore = scope.ServiceProvider.GetRequiredService<IIndexProfileStore>();
             var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
 
             var indexes = await indexStore.GetAllAsync();
 
-            var createdIndexes = new List<IndexEntity>();
+            var createdIndexes = new List<IndexProfile>();
 
             var indexManagers = new Dictionary<string, IIndexManager>();
 

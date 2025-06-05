@@ -54,7 +54,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         _grid = new GeohashPrefixTree(_ctx, maxLevels);
     }
 
-    public async Task<bool> CreateAsync(IndexEntity index)
+    public async Task<bool> CreateAsync(IndexProfile index)
     {
         if (await ExistsAsync(index.IndexFullName))
         {
@@ -81,7 +81,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         return true;
     }
 
-    public async Task<bool> RebuildAsync(IndexEntity index)
+    public async Task<bool> RebuildAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -110,7 +110,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         return true;
     }
 
-    public async Task<bool> DeleteAsync(IndexEntity index)
+    public async Task<bool> DeleteAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -137,7 +137,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     public Task<bool> ExistsAsync(string indexFullName)
         => _indexStore.ExistsAsync(indexFullName);
 
-    public async Task<bool> DeleteDocumentsAsync(IndexEntity index, IEnumerable<string> documentIds)
+    public async Task<bool> DeleteDocumentsAsync(IndexProfile index, IEnumerable<string> documentIds)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(documentIds);
@@ -152,14 +152,12 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             var metadata = index.As<LuceneIndexMetadata>();
 
             writer.DeleteDocuments(documentIds.Select(id => new Term(metadata.IndexMappings.KeyFieldName, id)).ToArray());
-
-            writer.Commit();
         });
 
         return true;
     }
 
-    public async Task<bool> MergeOrUploadDocumentsAsync(IndexEntity index, IEnumerable<DocumentIndexBase> documents)
+    public async Task<bool> AddOrUpdateDocumentsAsync(IndexProfile index, IEnumerable<DocumentIndex> documents)
     {
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(documents);
@@ -179,8 +177,6 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
                 {
                     writer.UpdateDocument(new Term(metadata.IndexMappings.KeyFieldName, indexDocument.Id), CreateLuceneDocument(indexDocument, metadata.StoreSourceData));
                 }
-
-                writer.Commit();
             });
         }
         catch (Exception ex)
@@ -193,7 +189,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         return true;
     }
 
-    public async Task<bool> DeleteAllDocumentsAsync(IndexEntity index)
+    public async Task<bool> DeleteAllDocumentsAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
@@ -215,20 +211,20 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         return true;
     }
 
-    public Task<long> GetLastTaskIdAsync(IndexEntity index)
+    public Task<long> GetLastTaskIdAsync(IndexProfile index)
         => _indexingState.GetLastTaskIdAsync(index.IndexFullName);
 
-    public Task SetLastTaskIdAsync(IndexEntity index, long lastTaskId)
+    public Task SetLastTaskIdAsync(IndexProfile index, long lastTaskId)
         => _indexingState.SetLastTaskIdAsync(index.IndexFullName, lastTaskId);
 
     public IContentIndexSettings GetContentIndexSettings()
          => new LuceneContentIndexSettings();
 
-    private Document CreateLuceneDocument(DocumentIndexBase document, bool storeSourceData)
+    private Document CreateLuceneDocument(DocumentIndex document, bool storeSourceData)
     {
         var doc = new Document();
 
-        if (document is DocumentIndex documentIndex)
+        if (document is ContentItemDocumentIndex documentIndex)
         {
             // Always store the content item id and version id.
             // These fields need to be indexed as a StringField because it needs to be searchable for the writer.DeleteDocuments method.
@@ -247,12 +243,12 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         foreach (var entry in document.Entries)
         {
             var store = entry.Options.HasFlag(DocumentIndexOptions.Store)
-                        ? Field.Store.YES
-                        : Field.Store.NO;
+                ? Field.Store.YES
+                : Field.Store.NO;
 
             switch (entry.Type)
             {
-                case DocumentIndexBase.Types.Boolean:
+                case DocumentIndex.Types.Boolean:
                     // Store "true"/"false" for boolean.
                     doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
 
@@ -262,7 +258,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
                     }
                     break;
 
-                case DocumentIndexBase.Types.DateTime:
+                case DocumentIndex.Types.DateTime:
                     if (entry.Value != null)
                     {
                         if (entry.Value is DateTimeOffset)
@@ -292,7 +288,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
                     }
                     break;
 
-                case DocumentIndexBase.Types.Integer:
+                case DocumentIndex.Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
                         doc.Add(new Int64Field(entry.Name, value, store));
@@ -309,7 +305,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
                     break;
 
-                case DocumentIndexBase.Types.Number:
+                case DocumentIndex.Types.Number:
                     if (entry.Value != null)
                     {
                         doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
@@ -325,7 +321,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
                     }
                     break;
 
-                case DocumentIndexBase.Types.Text:
+                case DocumentIndex.Types.Text:
                     if (entry.Value != null && !string.IsNullOrEmpty(Convert.ToString(entry.Value)))
                     {
                         var stringValue = Convert.ToString(entry.Value);
@@ -365,10 +361,10 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
                     }
                     break;
 
-                case DocumentIndexBase.Types.GeoPoint:
+                case DocumentIndex.Types.GeoPoint:
                     var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
 
-                    if (entry.Value != null && entry.Value is DocumentIndexBase.GeoPoint point)
+                    if (entry.Value != null && entry.Value is DocumentIndex.GeoPoint point)
                     {
                         var geoPoint = _ctx.MakePoint((double)point.Longitude, (double)point.Latitude);
                         foreach (var field in strategy.CreateIndexableFields(geoPoint))

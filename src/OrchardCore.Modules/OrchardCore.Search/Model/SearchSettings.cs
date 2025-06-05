@@ -2,9 +2,9 @@ namespace OrchardCore.Search.Models;
 
 public class SearchSettings
 {
-    public string DefaultIndexId { get; set; }
+    public string DefaultIndexProfileId { get; set; }
 
-    [Obsolete("This property is no longer used. Instead use DefaultIndexId property to set the IndexEntityId.")]
+    [Obsolete("This property is no longer used. Instead use DefaultIndexId property to set the IndexProfile.Id.")]
     public string ProviderName { get; set; }
 
     public string Placeholder { get; set; }

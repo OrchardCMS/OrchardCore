@@ -1,7 +1,7 @@
 @model dynamic
 @using OrchardCore.Indexing
 @using OrchardCore.Search.Lucene
-@inject IIndexEntityStore IndexStore
+@inject IIndexProfileStore IndexStore
 
 @{
     var disabled = !(await IndexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Any();

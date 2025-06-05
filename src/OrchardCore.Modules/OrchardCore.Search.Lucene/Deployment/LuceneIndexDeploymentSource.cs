@@ -8,9 +8,9 @@ namespace OrchardCore.Search.Lucene.Deployment;
 public sealed class LuceneIndexDeploymentSource
     : DeploymentSourceBase<LuceneIndexDeploymentStep>
 {
-    private readonly IIndexEntityStore _indexStore;
+    private readonly IIndexProfileStore _indexStore;
 
-    public LuceneIndexDeploymentSource(IIndexEntityStore indexStore)
+    public LuceneIndexDeploymentSource(IIndexProfileStore indexStore)
     {
         _indexStore = indexStore;
     }
@@ -28,7 +28,7 @@ public sealed class LuceneIndexDeploymentSource
         {
             if (indicesToAdd.Contains(index.IndexName))
             {
-                var indexSettingsDict = new Dictionary<string, IndexEntity>
+                var indexSettingsDict = new Dictionary<string, IndexProfile>
                 {
                     { index.IndexName, index },
                 };

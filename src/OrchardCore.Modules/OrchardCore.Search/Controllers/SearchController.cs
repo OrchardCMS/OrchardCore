@@ -31,7 +31,7 @@ public sealed class SearchController : Controller
     private readonly IEnumerable<ISearchHandler> _searchHandlers;
     private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
-    private readonly IIndexEntityStore _indexEntityStore;
+    private readonly IIndexProfileStore _indexProfileStore;
 
     internal readonly IHtmlLocalizer H;
 
@@ -42,7 +42,7 @@ public sealed class SearchController : Controller
         IServiceProvider serviceProvider,
         INotifier notifier,
         IHtmlLocalizer<SearchController> htmlLocalizer,
-        IIndexEntityStore indexEntityStore,
+        IIndexProfileStore indexProfileStore,
         IEnumerable<ISearchHandler> searchHandlers,
         IShapeFactory shapeFactory,
         ILogger<SearchController> logger
@@ -54,7 +54,7 @@ public sealed class SearchController : Controller
         _serviceProvider = serviceProvider;
         _notifier = notifier;
         H = htmlLocalizer;
-        _indexEntityStore = indexEntityStore;
+        _indexProfileStore = indexProfileStore;
         _searchHandlers = searchHandlers;
         _shapeFactory = shapeFactory;
         _logger = logger;
@@ -66,16 +66,16 @@ public sealed class SearchController : Controller
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var searchSettings = siteSettings.As<SearchSettings>();
 
-        IndexEntity index = null;
+        IndexProfile index = null;
 
         var hasIndexName = !string.IsNullOrWhiteSpace(indexName);
 
         if (!hasIndexName)
         {
             // Try to find the default index configured in site search settings.
-            if (!string.IsNullOrEmpty(searchSettings.DefaultIndexId))
+            if (!string.IsNullOrEmpty(searchSettings.DefaultIndexProfileId))
             {
-                index = await _indexEntityStore.FindByIdAsync(searchSettings.DefaultIndexId);
+                index = await _indexProfileStore.FindByIdAsync(searchSettings.DefaultIndexProfileId);
             }
 
             if (index is null)
@@ -87,7 +87,7 @@ public sealed class SearchController : Controller
         }
         else
         {
-            index = await _indexEntityStore.FindByNameAsync(indexName);
+            index = await _indexProfileStore.FindByNameAsync(indexName);
         }
 
         if (index is null)

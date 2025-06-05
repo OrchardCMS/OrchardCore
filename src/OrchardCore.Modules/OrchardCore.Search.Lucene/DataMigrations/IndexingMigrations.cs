@@ -67,7 +67,7 @@ internal sealed class IndexingMigrations : DataMigration
                 return;
             }
 
-            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexEntityManager>();
+            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
             var indexNamingProvider = scope.ServiceProvider.GetKeyedService<IIndexNameProvider>(LuceneConstants.ProviderName);
             var indexDocumentManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
 
@@ -177,7 +177,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 if (indexName == defaultSearchIndexName && defaultSearchProvider == "Lucene")
                 {
-                    site.Properties["SearchSettings"]["DefaultIndexId"] = index.Id;
+                    site.Properties["SearchSettings"]["DefaultIndexProfileId"] = index.Id;
                     saveSiteSettings = true;
                 }
             }
