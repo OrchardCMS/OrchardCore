@@ -126,15 +126,6 @@ public sealed class DeploymentStartup : StartupBase
     }
 }
 
-[Feature("OrchardCore.Search.Elasticsearch.Worker")]
-public sealed class ElasticWorkerStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
-    }
-}
-
 [Feature("OrchardCore.Search.Elasticsearch.ContentPicker")]
 public sealed class ElasticContentPickerStartup : StartupBase
 {

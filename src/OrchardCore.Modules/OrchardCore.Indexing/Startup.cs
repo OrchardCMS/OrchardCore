@@ -9,6 +9,7 @@ using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Deployments;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Core.Recipes;
+using OrchardCore.Indexing.DataMigrations;
 using OrchardCore.Indexing.Deployments;
 using OrchardCore.Indexing.Drivers;
 using OrchardCore.Indexing.Models;
@@ -47,6 +48,7 @@ public sealed class ContentStartup : StartupBase
         services.AddIndexProfileHandler<ContentIndexProfileHandler>();
         services.AddDisplayDriver<IndexProfile, ContentIndexProfileDisplayDriver>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IModularTenantEvents, ContentIndexInitializerService>());
+        services.AddDataMigration<WorkerFeatureMigrations>();
     }
 }
 
@@ -77,6 +79,6 @@ public sealed class WorkerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
+        services.AddSingleton<IBackgroundTask, ContentIndexingBackgroundTask>();
     }
 }

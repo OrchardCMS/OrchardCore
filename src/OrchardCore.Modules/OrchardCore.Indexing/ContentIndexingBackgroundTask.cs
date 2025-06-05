@@ -13,7 +13,7 @@ namespace OrchardCore.Search.Indexing.Core;
     Description = "Periodically synchronizes and updates all modified content items in the search indexes to ensure search results remain current.",
     LockTimeout = 1000,
     LockExpiration = 300000)]
-public sealed class IndexingBackgroundTask : IBackgroundTask
+public sealed class ContentIndexingBackgroundTask : IBackgroundTask
 {
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
