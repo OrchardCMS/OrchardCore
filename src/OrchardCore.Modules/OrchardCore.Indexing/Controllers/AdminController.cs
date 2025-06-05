@@ -331,7 +331,7 @@ public sealed class AdminController : Controller
 
         if (force)
         {
-            await indexManager?.DeleteAsync(index.IndexFullName);
+            await indexManager?.DeleteAsync(index);
             await _indexEntityManager.DeleteAsync(index);
 
             await _notifier.SuccessAsync(H["The index was removed successfully."]);
@@ -348,7 +348,7 @@ public sealed class AdminController : Controller
 
         var exists = await indexManager.ExistsAsync(index.IndexFullName);
 
-        if (exists && !await indexManager.DeleteAsync(index.IndexFullName))
+        if (exists && !await indexManager.DeleteAsync(index))
         {
             await _notifier.ErrorAsync(H["Unable to delete the index for the provider {0}.", index.ProviderName]);
 
@@ -476,7 +476,7 @@ public sealed class AdminController : Controller
 
                         var exists = await indexManager.ExistsAsync(index.IndexFullName);
 
-                        if (exists && !await indexManager.DeleteAsync(index.IndexFullName))
+                        if (exists && !await indexManager.DeleteAsync(index))
                         {
                             continue;
                         }

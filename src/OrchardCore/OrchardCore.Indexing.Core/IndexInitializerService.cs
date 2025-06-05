@@ -38,7 +38,7 @@ public sealed class IndexInitializerService : ModularTenantEvents
 
             if (await indexManager.ExistsAsync(index.IndexFullName))
             {
-                await indexManager.DeleteAsync(index.IndexFullName);
+                await indexManager.DeleteAsync(index);
             }
         }
     }

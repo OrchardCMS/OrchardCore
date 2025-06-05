@@ -90,16 +90,18 @@ public class AzureAISearchIndexManager : IIndexManager
         return null;
     }
 
-    public async Task<bool> DeleteAsync(string indexFullName)
+    public async Task<bool> DeleteAsync(IndexEntity index)
     {
-        if (!await ExistsAsync(indexFullName))
+        ArgumentNullException.ThrowIfNull(index);
+
+        if (!await ExistsAsync(index.IndexFullName))
         {
             return false;
         }
 
         try
         {
-            var context = new IndexRemoveContext(indexFullName);
+            var context = new IndexRemoveContext(index.IndexFullName);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
 

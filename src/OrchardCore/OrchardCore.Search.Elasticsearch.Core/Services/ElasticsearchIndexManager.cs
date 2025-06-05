@@ -194,15 +194,15 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         return _elasticClient.RequestResponseSerializer.SerializeToString(info);
     }
 
-    public async Task<bool> DeleteAsync(string indexFullName)
+    public async Task<bool> DeleteAsync(IndexEntity index)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
+        ArgumentNullException.ThrowIfNull(index);
 
-        var context = new IndexRemoveContext(indexFullName);
+        var context = new IndexRemoveContext(index.IndexFullName);
 
         await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
 
-        var request = new DeleteIndexRequest(indexFullName);
+        var request = new DeleteIndexRequest(index.IndexFullName);
 
         var response = await _elasticClient.Indices.DeleteAsync(request);
 

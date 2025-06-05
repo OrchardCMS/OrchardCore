@@ -91,7 +91,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         if (await ExistsAsync(index.IndexFullName))
         {
-            await _indexStore.RemoveAsync(index.IndexFullName);
+            await _indexStore.RemoveAsync(index);
         }
 
         try
@@ -110,21 +110,21 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         return true;
     }
 
-    public async Task<bool> DeleteAsync(string indexFullName)
+    public async Task<bool> DeleteAsync(IndexEntity index)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexFullName);
+        ArgumentNullException.ThrowIfNull(index);
 
-        var context = new IndexRemoveContext(indexFullName);
+        var context = new IndexRemoveContext(index.IndexFullName);
 
         await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
 
         try
         {
-            await _indexStore.RemoveAsync(indexFullName);
+            await _indexStore.RemoveAsync(index);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error removing index: {IndexFullName}", indexFullName);
+            _logger.LogError(ex, "Error removing index: {IndexFullName}", index.IndexFullName);
 
             return false;
         }

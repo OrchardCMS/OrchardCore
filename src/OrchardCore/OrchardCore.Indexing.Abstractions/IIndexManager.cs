@@ -9,7 +9,7 @@ public interface IIndexManager
 
     Task<bool> RebuildAsync(IndexEntity index);
 
-    Task<bool> DeleteAsync(string indexFullName);
+    Task<bool> DeleteAsync(IndexEntity index);
 
     Task<bool> ExistsAsync(string indexFullName);
 }
