@@ -1,0 +1,11 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Indexing.Models
+
+@model ShapeViewModel<OrchardCore.Indexing.Models.IndexProfile>
+
+<a asp-action="QueryIndex"
+   asp-route-indexName="@Model.Value.Name"
+   asp-action="Query"
+   asp-controller="Admin"
+   asp-area="OrchardCore.Search.Lucene"
+   class="dropdown-item btn-sm">@T["Query Index"]</a>

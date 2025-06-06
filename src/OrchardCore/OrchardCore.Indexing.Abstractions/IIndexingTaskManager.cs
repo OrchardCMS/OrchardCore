@@ -1,4 +1,4 @@
-using OrchardCore.ContentManagement;
+using OrchardCore.Indexing.Models;
 
 namespace OrchardCore.Indexing;
 
@@ -11,10 +11,10 @@ public interface IIndexingTaskManager
     /// <summary>
     /// Returns a page of <see cref="IndexingTask"/>.
     /// </summary>
-    Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count);
+    Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count, string category);
 
     /// <summary>
     /// Creates a new <see cref="IndexingTask"/>.
     /// </summary>
-    Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type);
+    Task CreateTaskAsync(CreateIndexingTaskContext task);
 }

@@ -1,0 +1,33 @@
+@using Microsoft.Extensions.Options
+@using OrchardCore.Indexing.Core
+@using OrchardCore.Indexing.Models
+
+@inject IOptions<IndexingOptions> AIOptions
+
+@{
+    IndexProfileKey key = Model.IndexProfileKey;
+
+    if (!AIOptions.Value.Sources.TryGetValue(key, out var service))
+    {
+        return;
+    }
+}
+
+<div class="col">
+    <div class="card h-100">
+        <div class="card-body">
+            <h4>@(service.DisplayName)</h4>
+            <p class="hint">@(service.Description)</p>
+
+        </div>
+
+        <div class="card-footer text-muted text-sm-end">
+            <a class="btn btn-primary btn-sm"
+               asp-route-action="Create"
+               asp-route-controller="Admin"
+               asp-route-providerName="@key.ProviderName"
+               asp-route-type="@key.Type">@T["Add"]</a>
+        </div>
+
+    </div>
+</div>

@@ -26,8 +26,8 @@ public class LuceneQueryService : ILuceneQueryService
         var fromProperty = queryObj["from"];
         var sizeProperty = queryObj["size"];
 
-        var size = sizeProperty.ValueOrDefault<int>(10);
-        var from = fromProperty.ValueOrDefault<int>(0);
+        var size = sizeProperty.ValueOrDefault(10);
+        var from = fromProperty.ValueOrDefault(0);
 
         string sortField = null;
         string sortOrder = null;

@@ -3,6 +3,8 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Indexing;
+using OrchardCore.Indexing.Core;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene;
 
@@ -124,17 +126,22 @@ public class SiteContext : IDisposable
         });
     }
 
-    public async Task ResetLuceneIndiciesAsync(string indexName)
+    public async Task ResetLuceneIndexesAsync(string indexName)
     {
         await UsingTenantScopeAsync(async scope =>
         {
-            var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
-            var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
+            var entityManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
+            var indexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
+            var contentIndexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
 
-            var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
+            var index = await entityManager.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
 
-            luceneIndexingService.ResetIndexAsync(indexName);
-            await luceneIndexingService.ProcessContentItemsAsync(indexName);
+            await entityManager.ResetAsync(index);
+            await entityManager.UpdateAsync(index);
+
+            // Instead of calling SynchronizeAsync which triggers the indexing in a background process,
+            // directly call and await the indexing process.
+            await contentIndexingService.ProcessRecordsForAllIndexesAsync();
         });
     }
 

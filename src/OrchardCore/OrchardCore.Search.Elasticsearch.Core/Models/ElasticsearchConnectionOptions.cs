@@ -1,6 +1,8 @@
+using OrchardCore.Indexing;
+
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
-public class ElasticsearchConnectionOptions
+public class ElasticsearchConnectionOptions : ISearchProviderOptions
 {
     /// <summary>
     /// The server url.
@@ -31,6 +33,16 @@ public class ElasticsearchConnectionOptions
     /// The server Password.
     /// </summary>
     public string Password { get; set; }
+
+    /// <summary>
+    /// Enable the Http Compression.
+    /// </summary>
+    public bool EnableHttpCompression { get; set; } = true;
+
+    /// <summary>
+    /// Enable the debug mode.
+    /// </summary>
+    public bool EnableDebugMode { get; set; }
 
     /// <summary>
     /// The server Certificate Fingerprint.

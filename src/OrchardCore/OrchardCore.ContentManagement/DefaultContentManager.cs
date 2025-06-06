@@ -32,6 +32,7 @@ public class DefaultContentManager : IContentManager
     private readonly IContentItemIdGenerator _idGenerator;
     private readonly IClock _clock;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+
     protected readonly IStringLocalizer S;
 
     public DefaultContentManager(
@@ -644,9 +645,7 @@ public class DefaultContentManager : IContentManager
     }
 
     public Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion)
-    {
-        return UpdateContentItemVersionAsync(updatingVersion, updatedVersion, null);
-    }
+        => UpdateContentItemVersionAsync(updatingVersion, updatedVersion, null);
 
     public async Task ImportAsync(IEnumerable<ContentItem> contentItems)
     {
@@ -655,6 +654,8 @@ public class DefaultContentManager : IContentManager
         var skip = 0;
 
         var importedVersionIds = new HashSet<string>();
+
+        var importedContentItems = new List<ContentItem>();
 
         var batchedContentItems = contentItems.Take(_importBatchSize);
 
@@ -721,6 +722,8 @@ public class DefaultContentManager : IContentManager
                     // Imported handlers will only be fired if the validation has been successful.
                     // Consumers should implement validated handlers to alter the success of that operation.
                     await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
+
+                    importedContentItems.Add(importingItem);
                 }
                 else
                 {
@@ -774,6 +777,8 @@ public class DefaultContentManager : IContentManager
                     // Imported handlers will only be fired if the validation has been successful.
                     // Consumers should implement validated handlers to alter the success of that operation.
                     await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
+
+                    importedContentItems.Add(importingItem);
                 }
             }
 
@@ -989,20 +994,18 @@ public class DefaultContentManager : IContentManager
         var context = new CreateContentContext(contentItem);
         await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
 
+        var result = await ValidateAsync(contentItem);
+        if (!result.Succeeded)
+        {
+            return result;
+        }
+
         // The content item should be placed in the session store so that further calls
         // to ContentManager.Get by a scoped index provider will resolve the imported item correctly.
         await _session.SaveAsync(contentItem);
         _contentManagerSession.Store(contentItem);
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
-
-        await UpdateAsync(contentItem);
-
-        var result = await ValidateAsync(contentItem);
-        if (!result.Succeeded)
-        {
-            return result;
-        }
 
         if (contentItem.Published)
         {

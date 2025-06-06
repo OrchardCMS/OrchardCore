@@ -2,13 +2,14 @@ using OrchardCore.Contents.Indexing;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
+[Obsolete("This class should be removed")]
 public class ElasticSettings
 {
     public const string CustomSearchType = "custom";
 
     public const string QueryStringSearchType = "query_string";
 
-    public static readonly string[] FullTextField = [IndexingConstants.FullTextKey];
+    public static readonly string[] FullTextField = [ContentIndexingConstants.FullTextKey];
 
     public string SearchIndex { get; set; }
 

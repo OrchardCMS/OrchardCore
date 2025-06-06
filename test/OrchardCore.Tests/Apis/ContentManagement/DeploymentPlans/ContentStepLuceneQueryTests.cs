@@ -34,6 +34,10 @@ public class ContentStepLuceneQueryTests
 
         await context.PostRecipeAsync(recipe);
 
+        // Indexing of the content item happens in the background and may not be immediate available,
+        // so we wait a bit.
+        await Task.Delay(2000, TestContext.Current.CancellationToken);
+
         // Test
         var result = await context
             .GraphQLClient

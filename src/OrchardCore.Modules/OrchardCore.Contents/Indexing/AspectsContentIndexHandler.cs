@@ -5,7 +5,7 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Contents.Indexing;
 
-public class AspectsContentIndexHandler : IContentItemIndexHandler
+public class AspectsContentIndexHandler : IDocumentIndexHandler
 {
     private readonly IContentManager _contentManager;
 
@@ -14,33 +14,38 @@ public class AspectsContentIndexHandler : IContentItemIndexHandler
         _contentManager = contentManager;
     }
 
-    public async Task BuildIndexAsync(BuildIndexContext context)
+    public async Task BuildIndexAsync(BuildDocumentIndexContext context)
     {
-        var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
+        if (context.Record is not ContentItem contentItem)
+        {
+            return;
+        }
+
+        var body = await _contentManager.PopulateAspectAsync(contentItem, new BodyAspect());
 
         if (body != null && body.Body != null)
         {
             context.DocumentIndex.Set(
-                IndexingConstants.BodyAspectBodyKey,
+                ContentIndexingConstants.BodyAspectBodyKey,
                 body.Body,
                 DocumentIndexOptions.Sanitize);
         }
 
         context.DocumentIndex.Set(
-            IndexingConstants.DisplayTextAnalyzedKey,
-            context.ContentItem.DisplayText,
+            ContentIndexingConstants.DisplayTextAnalyzedKey,
+            contentItem.DisplayText,
             DocumentIndexOptions.Sanitize);
 
         // We need to store because of ContentPickerResultProvider(s)
         context.DocumentIndex.Set(
-            IndexingConstants.DisplayTextKey + IndexingConstants.KeywordKey,
-            context.ContentItem.DisplayText,
+            ContentIndexingConstants.DisplayTextKey + ContentIndexingConstants.KeywordKey,
+            contentItem.DisplayText,
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
         // We need to store because of ContentPickerResultProvider(s)
         context.DocumentIndex.Set(
-            IndexingConstants.DisplayTextNormalizedKey,
-            context.ContentItem.DisplayText?.ReplaceDiacritics().ToLower(),
+            ContentIndexingConstants.DisplayTextNormalizedKey,
+            contentItem.DisplayText?.ReplaceDiacritics().ToLower(),
             DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
     }
 }

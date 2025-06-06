@@ -1,5 +1,5 @@
 using OrchardCore.Indexing;
-using static OrchardCore.Indexing.DocumentIndexBase;
+using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.Search.AzureAI.Models;
 

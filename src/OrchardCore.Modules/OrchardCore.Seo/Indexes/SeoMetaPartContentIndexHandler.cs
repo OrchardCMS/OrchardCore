@@ -4,15 +4,20 @@ using OrchardCore.Seo.Models;
 
 namespace OrchardCore.Seo.Indexes;
 
-public class SeoMetaPartContentIndexHandler : IContentItemIndexHandler
+public class SeoMetaPartContentIndexHandler : IDocumentIndexHandler
 {
     public const string PageTitleKey = "Content.ContentItem.SeoMetaPart.PageTitle";
     public const string MetaDescriptionKey = "Content.ContentItem.SeoMetaPart.MetaDescription";
     public const string MetaKeywordsKey = "Content.ContentItem.SeoMetaPart.MetaKeywords";
 
-    public Task BuildIndexAsync(BuildIndexContext context)
+    public Task BuildIndexAsync(BuildDocumentIndexContext context)
     {
-        var parent = context.ContentItem.As<SeoMetaPart>();
+        if (context.Record is not ContentItem contentItem)
+        {
+            return Task.CompletedTask;
+        }
+
+        var parent = contentItem.As<SeoMetaPart>();
 
         if (parent == null)
         {

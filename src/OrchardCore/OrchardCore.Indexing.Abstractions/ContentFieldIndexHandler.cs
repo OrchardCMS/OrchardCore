@@ -13,7 +13,7 @@ public abstract class ContentFieldIndexHandler<TField> : IContentFieldIndexHandl
         ContentPart contentPart,
         ContentTypePartDefinition typePartDefinition,
         ContentPartFieldDefinition partFieldDefinition,
-        BuildIndexContext context,
+        BuildDocumentIndexContext context,
         IContentIndexSettings settings)
     {
         if (contentPart == null)
@@ -43,9 +43,13 @@ public abstract class ContentFieldIndexHandler<TField> : IContentFieldIndexHandl
                 keys.Add($"{typePartDefinition.Name}.{partFieldDefinition.Name}");
             }
 
-            var buildFieldIndexContext = new BuildFieldIndexContext(context.DocumentIndex, context.ContentItem, keys, contentPart, typePartDefinition, partFieldDefinition, settings);
+            if (context.DocumentIndex is ContentItemDocumentIndex contentItemIndex && context.Record is ContentItem contentItem)
+            {
+                var buildFieldIndexContext = new BuildFieldIndexContext(contentItemIndex, contentItem, keys, contentPart, typePartDefinition, partFieldDefinition, settings);
 
-            return BuildIndexAsync(field, buildFieldIndexContext);
+                return BuildIndexAsync(field, buildFieldIndexContext);
+            }
+
         }
 
         return Task.CompletedTask;
