@@ -9,6 +9,8 @@ on:
 
 jobs:
   comment-issue-on-triage:
+    # To enable this workflow on a fork, comment out:
+    if: github.repository == 'OrchardCMS/OrchardCore'
     runs-on: ubuntu-24.04
     permissions:
       issues: write
