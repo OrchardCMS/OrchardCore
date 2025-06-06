@@ -151,7 +151,7 @@ public sealed class ContentIndexingService
         while (tasks.Count <= _batchSize)
         {
             // Load the next batch of tasks.
-            tasks = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, _batchSize)).ToList();
+            tasks = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, _batchSize, IndexingConstants.ContentsIndexSource)).ToList();
 
             if (tasks.Count == 0)
             {
@@ -160,7 +160,7 @@ public sealed class ContentIndexingService
 
             var updatedContentItemIds = tasks
                 .Where(x => x.Type == IndexingTaskTypes.Update)
-                .Select(x => x.ContentItemId)
+                .Select(x => x.RecordId)
                 .ToArray();
 
             var publishedContentItems = new Dictionary<string, ContentItem>();
@@ -215,12 +215,12 @@ public sealed class ContentIndexingService
 
                     ContentItem contentItem = null;
 
-                    if (metadata.IndexLatest && latestContentItems.TryGetValue(task.ContentItemId, out var latestContentItem) && metadata.IndexedContentTypes.Contains(latestContentItem.ContentType))
+                    if (metadata.IndexLatest && latestContentItems.TryGetValue(task.RecordId, out var latestContentItem) && metadata.IndexedContentTypes.Contains(latestContentItem.ContentType))
                     {
                         contentItem = latestContentItem;
                     }
 
-                    if (contentItem is null && publishedContentItems.TryGetValue(task.ContentItemId, out var publishedContentItem) && metadata.IndexedContentTypes.Contains(publishedContentItem.ContentType))
+                    if (contentItem is null && publishedContentItems.TryGetValue(task.RecordId, out var publishedContentItem) && metadata.IndexedContentTypes.Contains(publishedContentItem.ContentType))
                     {
                         contentItem = publishedContentItem;
                     }
