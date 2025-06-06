@@ -195,12 +195,13 @@ The following tools are known to be working with the above settings. Be sure to 
 - [S3Mock](https://github.com/adobe/S3Mock) with Docker:
 
 ```
-docker run -p 9444:9090 -t adobe/s3mock
+docker run -p 9444:9090 -t adobe/s3mock:latest
 ```
-- [LocalS3](https://github.com/Robothy/local-s3) with Docker but only up until Orchard Core 2.1.x unless [this issue](https://github.com/Robothy/local-s3/issues/186) is fixed:
+
+- [LocalS3](https://github.com/Robothy/local-s3) with Docker:
 
 ```
-docker run -d -e MODE=IN_MEMORY -p 9444:80 luofuxiang/local-s3
+docker run -d -e MODE=IN_MEMORY -p 9444:80 luofuxiang/local-s3:latest
 ```
 
 ### Media Cache
