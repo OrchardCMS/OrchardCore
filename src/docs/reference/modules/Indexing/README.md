@@ -1,57 +1,74 @@
 # Indexing (`OrchardCore.Indexing`)
 
-The `Indexing` module provides a flexible and extensible infrastructure for indexing data in Orchard Core. It is designed to support various types of data and multiple index providers such as Azure AI Search, Elasticsearch, and Lucene.
+The `Indexing` module provides a flexible and extensible infrastructure for indexing any kind of data in Orchard Core. It supports multiple index providers—including Lucene, Elasticsearch, and Azure AI Search—and is designed to be fully agnostic of specific data types.
 
-It exposes a provider-agnostic model that allows developers to define custom indexing sources and integrate them into a unified UI. This UI, introduced in version 3, is available in the admin dashboard under **Search** > **Indexes**, and allows users to create, update, reset, rebuild, and delete indexes.
+At its core, the module maintains an **append-only log of indexing tasks**, where each task represents either an `Update` or a `Deletion`. This log forms a chronological record of changes that can be queried using a **cursor-based interface**. This design allows consumers to track changes independently and implement custom behavior, such as syncing to external systems, rebuilding search indexes, or reacting to specific data events.
 
-The module is agnostic of specific data types—it does not assume that the indexed content is based on Orchard Core content items.
+Although often used to index content items, the system is **not limited to content**—you can index any kind of document, such as user records, products, or data from external APIs.
+
+note !!!
+     Content item indexing is implemented as a consumer of the core `Indexing` infrastructure. It is optional and does not constrain the indexing module to Orchard Core content items.
+
+## Indexing UI
+
+Starting with Orchard Core version 3, the module provides a unified user interface under **Search** > **Indexes** in the admin dashboard. This UI supports the creation, configuration, and lifecycle management of indexes. You can:
+
+* Create and configure index profiles
+* Reset or rebuild existing indexes
+* View provider-specific options
+* Configure which data types to index (for example, content types, if applicable)
 
 ## Indexing Content Items
 
-Although the `Indexing` module is generic, it includes built-in support for indexing Orchard Core content items.
+While the infrastructure is generic, the module includes built-in support for Orchard Core content items via the `Content` category.
 
-Content indexing works by recording an **append-only log of content item tasks**, where each task represents either an `Update` or a `Deletion`. This log acts as a change history and can be queried using a **cursor-based interface**. This enables other modules to store their own cursor positions and react to content item changes—effectively using the log as an event stream.
+When enabled, content item indexing uses the append-only task log to track changes. Each entry in the log indicates an update or deletion of a content item. Other modules can consume this log using their own cursor positions, enabling them to:
 
-This approach decouples indexing consumers from the content system, allowing modules to process updates at their own pace and apply custom logic for search, analytics, or other purposes.
+* Process changes at their own pace
+* Implement custom search pipelines
+* Integrate with analytics, auditing, or event-driven workflows
 
-note !!!
-     Content item indexing is implemented as a consumer of the core `Indexing` infrastructure, not a requirement of it.
+This event-log-style system encourages loose coupling between the indexing infrastructure and content consumers.
 
-## Multi-Source Indexing
+## Indexing Other Data (Custom Sources)
 
-The `Indexing` module can be extended to index data from arbitrary sources, such as external APIs, relational databases, or custom data stores.
+The indexing system supports **custom data sources** out of the box. You can index data from:
 
-To define a custom index source, implement the following interfaces:
+* External services (e.g., REST APIs)
+* Relational or NoSQL databases
+* In-memory structures or domain-specific objects
 
-- `IIndexManager`
-- `IIndexDocumentManager`
-- `IIndexNameProvider`
+To define a custom source, implement the following interfaces:
 
-Then register your custom source in your module's `Startup.cs`:
+* `IIndexManager`: Controls how indexing tasks are managed.
+* `IIndexDocumentManager`: Converts entities into indexable documents.
+* `IIndexNameProvider`: Provides names for index profiles.
+
+Then, register your custom source in `Startup.cs`:
 
 ```csharp
-// Supported providers include 'AzureAISearch', 'Elasticsearch', and 'Lucene'.
 services.AddIndexingSource<CustomSourceIndexManager, CustomSourceDocumentIndexManager, CustomSourceIndexNameProvider>(
-    "ProviderName", // e.g., "AzureAISearch", "Lucene", "Elasticsearch"
-    "CustomSource", // Unique source name
+    "ProviderName", // e.g., "Lucene", "Elasticsearch", "AzureAISearch"
+    "CustomCategory", // Unique source category name
     o =>
     {
         o.DisplayName = S["Custom Source in Provider"];
-        o.Description = S["Creates a provider index based on a custom data source."];
+        o.Description = S["Creates an index for a custom data source using the selected provider."];
     });
 ```
 
-To provide additional configuration or metadata through the admin UI, implement a display driver by deriving from `DisplayDriver<IndexProfile>`.
+If you need UI integration, you can:
 
-You can also implement `IIndexProfileHandler` to respond to lifecycle events during indexing—such as when an entity is created, updated, or deleted.
+* Create a custom display driver by inheriting from `DisplayDriver<IndexProfile>` to provide configuration screens
+* Implement `IIndexProfileHandler` to react to lifecycle events like index creation, update, or deletion
 
 note !!!
-     If you are implementing a custom provider, use the `Content` type to index content items. This ensures compatibility with the built-in content indexing infrastructure, enabling automatic indexing of content items and providing the necessary UI to configure content types and related settings.
+     To index Orchard Core content items, use the built-in `Content` category. This ensures full compatibility with the content indexing UI and configuration experience.
 
 ## Recipes
 
-The following deployment recipes are available with the `Indexing` module:
+The `Indexing` module supports deployment via recipes with the following steps:
 
-- `IndexProfile`: Creates or updates an index.
-- `ResetIndexProfile`: Resets an index to its initial state.
-- `RebuildIndexProfile`: Rebuilds an index from scratch.
+* `IndexProfile`: Creates or updates an index configuration
+* `ResetIndexProfile`: Resets an index to its initial (empty) state
+* `RebuildIndexProfile`: Triggers a full rebuild of the index based on its source data
