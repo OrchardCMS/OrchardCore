@@ -11,7 +11,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps;
 /// <summary>
 /// This recipe step creates content definitions.
 /// </summary>
-public sealed class ContentDefinitionStep : NamedRecipeStepHandler
+public sealed class ContentDefinitionStep : NamedRecipeStepHandler<ContentDefinitionStepModel>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -94,11 +94,11 @@ public sealed class ContentDefinitionStep : NamedRecipeStepHandler
             }
         });
     }
+}
 
-    private sealed class ContentDefinitionStepModel
-    {
-        public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = [];
+public sealed class ContentDefinitionStepModel
+{
+    public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = [];
 
-        public ContentPartDefinitionRecord[] ContentParts { get; set; } = [];
-    }
+    public ContentPartDefinitionRecord[] ContentParts { get; set; } = [];
 }
