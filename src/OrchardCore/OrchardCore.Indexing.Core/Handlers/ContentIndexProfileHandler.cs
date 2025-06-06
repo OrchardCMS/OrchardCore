@@ -108,7 +108,7 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
         return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-indexing", context.IndexProfile, async (scope, index) =>
         {
             var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
-            await indexingService.ProcessContentItemsAsync([index]);
+            await indexingService.ProcessRecordsAsync([index]);
         });
     }
 

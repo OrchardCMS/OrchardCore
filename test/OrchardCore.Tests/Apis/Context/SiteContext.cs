@@ -141,7 +141,7 @@ public class SiteContext : IDisposable
 
             // Instead of calling SynchronizeAsync which triggers the indexing in a background process,
             // directly call and await the indexing process.
-            await contentIndexingService.ProcessContentItemsForAllIndexesAsync();
+            await contentIndexingService.ProcessRecordsForAllIndexesAsync();
         });
     }
 

@@ -19,6 +19,6 @@ public sealed class ContentIndexingBackgroundTask : IBackgroundTask
     {
         var indexingService = serviceProvider.GetRequiredService<ContentIndexingService>();
 
-        return indexingService.ProcessContentItemsForAllIndexesAsync();
+        return indexingService.ProcessRecordsForAllIndexesAsync();
     }
 }

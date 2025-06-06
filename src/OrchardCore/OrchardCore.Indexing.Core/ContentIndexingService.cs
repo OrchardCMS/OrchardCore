@@ -1,129 +1,57 @@
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Core.Models;
-using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
 
 namespace OrchardCore.Indexing.Core;
 
-public sealed class ContentIndexingService
+public sealed class ContentIndexingService : NamedIndexingService
 {
-    private const int _batchSize = 100;
-
-    private readonly IIndexingTaskManager _indexingTaskManager;
-    private readonly IIndexProfileStore _indexStore;
     private readonly IStore _store;
     private readonly IContentManager _contentManager;
-    private readonly IServiceProvider _serviceProvider;
     private readonly IEnumerable<IDocumentIndexHandler> _contentItemIndexHandlers;
     private readonly ILogger _logger;
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
 
-    private readonly HashSet<string> _inProgressIndexes = [];
+    private ISession _readonlySession;
+    private Dictionary<string, CultureAspect> _cultureAspects;
+    private HashSet<string> _latestContentTypes;
+    private HashSet<string> _publishedContentTypes;
+    private Dictionary<string, ContentItem> _publishedContentItems;
+    private Dictionary<string, ContentItem> _latestContentItems;
 
     public ContentIndexingService(
         IIndexingTaskManager indexingTaskManager,
-        IIndexProfileStore indexStore,
+        IIndexProfileStore indexProfileStore,
         IStore store,
         IContentManager contentManager,
         IServiceProvider serviceProvider,
         IEnumerable<IDocumentIndexHandler> contentItemIndexHandlers,
         ILogger<ContentIndexingService> logger)
+        : base(IndexingConstants.ContentsIndexSource, indexProfileStore, indexingTaskManager, serviceProvider)
     {
-        _indexingTaskManager = indexingTaskManager;
-        _indexStore = indexStore;
         _store = store;
         _contentManager = contentManager;
-        _serviceProvider = serviceProvider;
         _contentItemIndexHandlers = contentItemIndexHandlers;
         _logger = logger;
     }
 
-    public async Task ProcessContentItemsForAllIndexesAsync()
+    protected override async Task BeforeProcessingTasksAsync(IEnumerable<IndexingTask> tasks, IEnumerable<IndexProfileEntryContext> contexts)
     {
-        await ProcessContentItemsAsync((await _indexStore.GetByTypeAsync(IndexingConstants.ContentsIndexSource)));
-    }
+        _readonlySession ??= _store.CreateSession(withTracking: false);
+        _cultureAspects = new Dictionary<string, CultureAspect>();
 
-    public async Task ProcessContentItemsAsync(IEnumerable<IndexProfile> indexes)
-    {
-        ArgumentNullException.ThrowIfNull(indexes);
+        _latestContentTypes = new HashSet<string>();
+        _publishedContentTypes = new HashSet<string>();
 
-        if (!indexes.Any())
+        foreach (var context in contexts)
         {
-            return;
-        }
-
-        // This service could be called multiple times during the same request,
-        // so we need to ensure that we only process each index once at a time.
-        // This is not guaranteed to be thread-safe, but it should be sufficient for the current use case.
-        await _semaphore.WaitAsync();
-
-        var indexableIndexes = new List<IndexProfile>();
-
-        var tracker = new Dictionary<string, IndexingPosition>();
-
-        var documentIndexManagers = new Dictionary<string, IDocumentIndexManager>();
-
-        var lastTaskId = long.MaxValue;
-
-        try
-        {
-            // Find the lowest task id to process.
-            foreach (var index in indexes)
-            {
-                if (index.Type != IndexingConstants.ContentsIndexSource)
-                {
-                    // Skip indexes that are not content indexes.
-                    continue;
-                }
-
-                if (!_inProgressIndexes.Add(index.Id))
-                {
-                    // If the index is already being processed, skip it.
-                    continue;
-                }
-
-                indexableIndexes.Add(index);
-
-                if (!documentIndexManagers.TryGetValue(index.ProviderName, out var documentIndexManager))
-                {
-                    documentIndexManager = _serviceProvider.GetRequiredKeyedService<IDocumentIndexManager>(index.ProviderName);
-                    documentIndexManagers.Add(index.ProviderName, documentIndexManager);
-                }
-
-                var taskId = await documentIndexManager.GetLastTaskIdAsync(index);
-                lastTaskId = Math.Min(lastTaskId, taskId);
-                tracker.Add(index.Id, new IndexingPosition
-                {
-                    Index = index,
-                    LastTaskId = taskId,
-                });
-            }
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
-
-        if (indexableIndexes.Count == 0)
-        {
-            return;
-        }
-
-        var tasks = new List<IndexingTask>();
-
-        var latestContentTypes = new HashSet<string>();
-        var publishedContentTypes = new HashSet<string>();
-
-        foreach (var index in indexableIndexes)
-        {
-            var metadata = index.As<ContentIndexMetadata>();
+            var metadata = context.IndexProfile.As<ContentIndexMetadata>();
 
             if (metadata.IndexedContentTypes is null || metadata.IndexedContentTypes.Length == 0)
             {
@@ -134,162 +62,90 @@ public sealed class ContentIndexingService
             {
                 foreach (var contentType in metadata.IndexedContentTypes)
                 {
-                    latestContentTypes.Add(contentType);
+                    _latestContentTypes.Add(contentType);
                 }
             }
             else
             {
                 foreach (var contentType in metadata.IndexedContentTypes)
                 {
-                    publishedContentTypes.Add(contentType);
+                    _publishedContentTypes.Add(contentType);
                 }
             }
         }
 
-        var readOnlySession = _store.CreateSession(withTracking: false);
+        var updatedContentItemIds = tasks
+            .Where(x => x.Type == IndexingTaskTypes.Update)
+            .Select(x => x.RecordId)
+            .ToArray();
 
-        while (tasks.Count <= _batchSize)
+        _publishedContentItems = [];
+        _latestContentItems = [];
+
+        if (_publishedContentTypes.Count > 0)
         {
-            // Load the next batch of tasks.
-            tasks = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, _batchSize, IndexingConstants.ContentsIndexSource)).ToList();
+            var contentItems = await _readonlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(_publishedContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds))
+                .ListAsync();
 
-            if (tasks.Count == 0)
-            {
-                break;
-            }
-
-            var updatedContentItemIds = tasks
-                .Where(x => x.Type == IndexingTaskTypes.Update)
-                .Select(x => x.RecordId)
-                .ToArray();
-
-            var publishedContentItems = new Dictionary<string, ContentItem>();
-            var latestContentItems = new Dictionary<string, ContentItem>();
-
-            // Group all DocumentIndex by index to batch update them.
-            var updatedDocumentsByIndex = indexableIndexes.ToDictionary(x => x.Id, b => new List<DocumentIndex>());
-
-            if (publishedContentTypes.Count > 0)
-            {
-                var contentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(publishedContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds))
-                    .ListAsync();
-
-                publishedContentItems = contentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
-            }
-
-            if (latestContentTypes.Count > 0)
-            {
-                var contentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(latestContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds))
-                    .ListAsync();
-
-                latestContentItems = contentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
-            }
-
-            var cultureAspects = new Dictionary<string, CultureAspect>();
-
-            // Update the document from the index if its lastIndexId is smaller than the current task id.
-            foreach (var index in indexableIndexes)
-            {
-                if (!tracker.TryGetValue(index.Id, out var indexPosition))
-                {
-                    continue;
-                }
-
-                var metadata = index.As<ContentIndexMetadata>();
-                var anyCulture = string.IsNullOrEmpty(metadata.Culture) || metadata.Culture == "any";
-
-                foreach (var task in tasks)
-                {
-                    if (task.Id < indexPosition.LastTaskId)
-                    {
-                        continue;
-                    }
-
-                    if (task.Type != IndexingTaskTypes.Update)
-                    {
-                        continue;
-                    }
-
-                    // Handle the updated documents.
-                    var indexManager = documentIndexManagers[index.ProviderName];
-
-                    ContentItem contentItem = null;
-
-                    if (metadata.IndexLatest && latestContentItems.TryGetValue(task.RecordId, out var latestContentItem) && metadata.IndexedContentTypes.Contains(latestContentItem.ContentType))
-                    {
-                        contentItem = latestContentItem;
-                    }
-
-                    if (contentItem is null && publishedContentItems.TryGetValue(task.RecordId, out var publishedContentItem) && metadata.IndexedContentTypes.Contains(publishedContentItem.ContentType))
-                    {
-                        contentItem = publishedContentItem;
-                    }
-
-                    // We index only if we actually found a content item in the database.
-                    if (contentItem is null)
-                    {
-                        continue;
-                    }
-
-                    var buildIndexContext = new BuildDocumentIndexContext(new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], indexManager.GetContentIndexSettings());
-
-                    await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
-
-                    // Ignore if the culture is not indexed in this index.
-                    if (!anyCulture)
-                    {
-                        if (!cultureAspects.TryGetValue(contentItem.ContentItemVersionId ?? contentItem.ContentItemId, out var cultureAspect) && buildIndexContext.Record is ContentItem record)
-                        {
-                            cultureAspect = await _contentManager.PopulateAspectAsync<CultureAspect>(record);
-                            cultureAspects[record.ContentItemVersionId ?? record.ContentItemId] = cultureAspect;
-                        }
-
-                        if (cultureAspect.Culture?.Name != metadata.Culture)
-                        {
-                            continue;
-                        }
-                    }
-
-                    updatedDocumentsByIndex[index.Id].Add(buildIndexContext.DocumentIndex);
-                }
-            }
-
-            lastTaskId = tasks.Last().Id;
-
-            foreach (var indexEntry in updatedDocumentsByIndex)
-            {
-                if (indexEntry.Value.Count == 0)
-                {
-                    continue;
-                }
-
-                var index = tracker[indexEntry.Key].Index;
-                var indexManager = documentIndexManagers[index.ProviderName];
-
-                // Delete all the deleted documents from the index.
-                var deletedDocumentIds = indexEntry.Value.Select(x => x.Id);
-
-                await indexManager.DeleteDocumentsAsync(index, deletedDocumentIds);
-
-                // Upload documents to the index.
-                if (await indexManager.AddOrUpdateDocumentsAsync(index, indexEntry.Value))
-                {
-                    // We know none of the previous batches failed to update this index.
-                    await indexManager.SetLastTaskIdAsync(index, lastTaskId);
-                }
-            }
+            _publishedContentItems = contentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
         }
 
-        foreach (var index in indexableIndexes)
+        if (_latestContentTypes.Count > 0)
         {
-            _inProgressIndexes.Remove(index.Id);
+            var contentItems = await _readonlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(_latestContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds))
+                .ListAsync();
+
+            _latestContentItems = contentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
         }
     }
 
-    private sealed class IndexingPosition
+    protected override async Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, IndexingTask task)
     {
-        public IndexProfile Index { get; set; }
+        if (task.Type != IndexingTaskTypes.Update)
+        {
+            return null;
+        }
 
-        public long LastTaskId { get; set; }
+        var metadata = entry.IndexProfile.As<ContentIndexMetadata>();
+        var anyCulture = string.IsNullOrEmpty(metadata.Culture) || metadata.Culture == "any";
+
+        ContentItem contentItem = null;
+
+        if (metadata.IndexLatest && _latestContentItems.TryGetValue(task.RecordId, out var latestContentItem) && metadata.IndexedContentTypes.Contains(latestContentItem.ContentType))
+        {
+            contentItem = latestContentItem;
+        }
+
+        if (contentItem is null && _publishedContentItems.TryGetValue(task.RecordId, out var publishedContentItem) && metadata.IndexedContentTypes.Contains(publishedContentItem.ContentType))
+        {
+            contentItem = publishedContentItem;
+        }
+
+        // We index only if we actually found a content item in the database.
+        if (contentItem is null)
+        {
+            return null;
+        }
+
+        var buildIndexContext = new BuildDocumentIndexContext(new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], entry.DocumentIndexManager.GetContentIndexSettings());
+
+        await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
+
+        // Ignore if the culture is not indexed in this index.
+        if (!anyCulture)
+        {
+            if (!_cultureAspects.TryGetValue(contentItem.ContentItemVersionId ?? contentItem.ContentItemId, out var cultureAspect) && buildIndexContext.Record is ContentItem record)
+            {
+                cultureAspect = await _contentManager.PopulateAspectAsync<CultureAspect>(record);
+                _cultureAspects[record.ContentItemVersionId ?? record.ContentItemId] = cultureAspect;
+            }
+
+            if (cultureAspect.Culture?.Name != metadata.Culture)
+            {
+                return null;
+            }
+        }
+
+        return buildIndexContext;
     }
 }

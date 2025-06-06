@@ -56,7 +56,7 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
 
             if (createdIndexes.Count > 0)
             {
-                await indexingService.ProcessContentItemsAsync(createdIndexes);
+                await indexingService.ProcessRecordsAsync(createdIndexes);
             }
         });
     }
