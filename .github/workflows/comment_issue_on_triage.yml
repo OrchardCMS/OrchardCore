@@ -9,13 +9,11 @@ on:
 
 jobs:
   comment-issue-on-triage:
-    # To enable this workflow on a fork, comment out:
-    if: github.repository == 'OrchardCMS/OrchardCore'
     runs-on: ubuntu-24.04
     permissions:
       issues: write
     # Despite the trigger being called "issues", this would still run for setting the milestone of PRs too.
-    if: github.event.issue.pull_request == null && github.event.issue.state == 'open'
+    if: github.repository == 'OrchardCMS/OrchardCore' && github.event.issue.pull_request == null && github.event.issue.state == 'open'
     steps:
       - name: Add Comment
         run: gh issue comment "$NUMBER" --body "$BODY"
