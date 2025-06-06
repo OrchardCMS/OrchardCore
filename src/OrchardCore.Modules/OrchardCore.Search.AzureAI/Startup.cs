@@ -9,11 +9,11 @@ using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Search.AzureAI.Core;
 using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Migrations;
-using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Recipes;
 using OrchardCore.Search.AzureAI.Services;
 
@@ -73,7 +73,7 @@ public sealed class ContentsStartup : StartupBase
 
         services
             .AddIndexProfileHandler<AzureAISearchContentIndexProfileHandler>()
-            .AddIndexingSource<AzureAISearchIndexManager, AzureAISearchDocumentIndexManager, AzureAISearchIndexNameProvider, AzureAISearchDefaultOptions>(AzureAISearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
+            .AddAzureAISearchIndexingSource(IndexingConstants.ContentsIndexSource, o =>
             {
                 o.DisplayName = S["Content in Azure AI Search"];
                 o.Description = S["Create an Azure AI Search index based on site contents."];

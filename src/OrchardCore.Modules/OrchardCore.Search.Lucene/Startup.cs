@@ -86,7 +86,7 @@ public sealed class ContentsStartup : StartupBase
 
         services
             .AddIndexProfileHandler<LuceneContentIndexProfileHandler>()
-            .AddIndexingSource<LuceneIndexManager, LuceneIndexManager, LuceneIndexNameProvider>(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
+            .AddLuceneIndexingSource(IndexingConstants.ContentsIndexSource, o =>
             {
                 o.DisplayName = S["Content in Lucene"];
                 o.Description = S["Create an Lucene index based on site contents."];

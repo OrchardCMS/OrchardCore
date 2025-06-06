@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
@@ -98,7 +97,7 @@ public sealed class ContentsStartup : StartupBase
 
         services
             .AddIndexProfileHandler<ElasticsearchContentIndexProfileHandler>()
-            .AddIndexingSource<ElasticsearchIndexManager, ElasticsearchDocumentIndexManager, ElasticsearchIndexNameProvider, ElasticsearchConnectionOptions>(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, o =>
+            .AddElasticsearchIndexingSource(IndexingConstants.ContentsIndexSource, o =>
             {
                 o.DisplayName = S["Content in Elasticsearch"];
                 o.Description = S["Create an Elasticsearch index based on site contents."];

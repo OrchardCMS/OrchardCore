@@ -90,6 +90,20 @@ If you are running on Azure App Services or if you are using Elasticsearch, then
 The Lucene module provides a management UI and APIs for querying Lucene data using Elasticsearch Queries.
 See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
+## Indexing custom data
+
+The indexing module supports multiple sources for indexing. This allows you to create indexes based on different data sources, such as content items or custom data.
+
+To register a new source, you can add the following code to your `Startup.cs` file:
+
+```csharp
+services.AddLuceneIndexingSource("CustomSource", o =>
+{
+    o.DisplayName = S["Custom Source in Provider"];
+    o.Description = S["Create a Provider index based on custom source."];
+});
+```
+
 ## Recipe step
 
 Lucene indices can be created during recipe execution using the `LuceneIndexSettings` step.  
@@ -121,7 +135,6 @@ Here is a sample step:
 
 note !!!
      It's recommended to use the `IndexProfile` recipe step instead as the `LuceneIndexSettings` step is obsolete. 
-
 
 ### Reset Lucene Index Step
 

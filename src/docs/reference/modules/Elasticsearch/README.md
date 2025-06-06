@@ -169,11 +169,20 @@ Here is an example for creating a Elasticsearch query from a Queries recipe step
   ]
 }
 ```
+
 ## Indexing custom data
 
-The `Elasticsearch` module allows you to store any data in Elasticsearch, not just content items. You can create custom indices and store data in them using the `Indexing` module's APIs. For example, you can store Users data in a custom index named `Users`.
+The indexing module supports multiple sources for indexing. This allows you to create indexes based on different data sources, such as content items or custom data.
 
+To register a new source, you can add the following code to your `Startup.cs` file:
 
+```csharp
+services.AddElasticsearchIndexingSource("CustomSource", o =>
+{
+    o.DisplayName = S["Custom Source in Provider"];
+    o.Description = S["Create a Provider index based on custom source."];
+});
+```
 
 ## Web APIs
 

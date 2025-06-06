@@ -27,17 +27,17 @@ Then navigate to `Search` > `Indexes` to add an index.
 
 ![image](images/management.gif)
 
-## Custom Sources  
+## Indexing custom data
 
-To create a custom source, you'll need to implement the `IIndexManager`, `IDocumentIndexManager` and `IIndexNameProvider` interfaces and register them as following
+The indexing module supports multiple sources for indexing. This allows you to create indexes based on different data sources, such as content items or custom data.
 
 To register a new source, you can add the following code to your `Startup.cs` file:
 
 ```csharp
-services.AddIndexingSource<CustomSourceAzureAISearchIndexManager, CustomSourceAzureAISearchDocumentIndexManager, CustomSourceAzureAISearchIndexNameProvider>("AzureAISearch", "CustomSource", o =>
+services.AddAzureAISearchIndexingSource("CustomSource", o =>
 {
-    o.DisplayName = S["Custom Source in Azure AI Search"];
-    o.Description = S["Create a Azure AI Search index based on custom source."];
+    o.DisplayName = S["Custom Source in Provider"];
+    o.Description = S["Create a Provider index based on custom source."];
 });
 ```
 
