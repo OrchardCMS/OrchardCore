@@ -4,9 +4,9 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public class ElasticsearchClientFactory
+public sealed class ElasticsearchClientFactory : IElasticsearchClientFactory
 {
-    public static ElasticsearchClient Create(ElasticsearchConnectionOptions configuration)
+    public ElasticsearchClient Create(ElasticsearchConnectionOptions configuration)
     {
         var basicAuthentication = new BasicAuthentication(configuration.Username, configuration.Password);
 

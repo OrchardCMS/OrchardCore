@@ -41,11 +41,13 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<ElasticsearchConnectionOptions>, ElasticsearchConnectionOptionsConfigurations>();
+        services.AddTransient<IElasticsearchClientFactory, ElasticsearchClientFactory>();
         services.AddSingleton((sp) =>
         {
+            var factory = sp.GetRequiredService<IElasticsearchClientFactory>();
             var options = sp.GetRequiredService<IOptions<ElasticsearchConnectionOptions>>().Value;
 
-            return ElasticsearchClientFactory.Create(options);
+            return factory.Create(options);
         });
 
         services.Configure<ElasticsearchOptions>(options =>
