@@ -12,7 +12,7 @@ Elasticsearch uses a mmapfs directory by default to store its indices. The defau
 
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html>
 
-For Docker with WSL2, you will need to persist this setting by using a .wslconfig file.
+For Docker with WSL2, you will need to persist this setting by using a `.wslconfig` file.
 
 In your Windows `%userprofile%` directory (typically `C:\Users\<username>`) create or edit the file `.wslconfig` with the following:
 
@@ -28,24 +28,27 @@ Then exit any WSL instance, `wsl --shutdown`, and restart.
 vm.max_map_count = 262144
 ```
 
-Elasticsearch Docker Compose file (check the current Elasticsearch version in the file if you need to run a specific version): [docker-compose.yml](docker-compose.yml)
+Elasticsearch Docker Compose file (check the current Elasticsearch version in the file if you need to run a specific version): [docker-compose.yml](`docker-compose.yml`).
 
-- Copy this file in a folder named Elasticsearch somewhere safe.
-- Open up a Terminal or Command Shell in this folder.
-- Execute `docker-compose up` to deploy Elasticsearch containers.
+1. Copy this file in a folder named Elasticsearch somewhere safe.
+2. Open up a Terminal or Command Shell in this folder.
+3. Execute `docker-compose up` to deploy Elasticsearch containers.
 
-Advice: don't remove this file from its folder if you want to remove all their containers at once later on in Docker desktop.
+!!! tip
+    Don't remove this file from its folder if you want to remove all their containers at once later on in Docker desktop.
 
 You should get this result in Docker Desktop app:
 
 ![Elasticsearch docker containers](images/elasticsearch-docker.png)
 
+!!! failure
+    If you've done this previously with an older `elasticsearch` Docker image, you might get errors similar to "The index [.geoip_databases/Zgrk5UXCRhmCFz98BImAHg] created in version [7.17.5] with current compatibility version [7.17.5] must be marked as read-only using the setting [index.blocks.write] set to [true] before upgrading to 9.0.0." While you can do what the error message says, if you just use the Elasticsearch instance for local development, instead, we recommend you to just remove the volume where it stores its data and start over. `docker volume ls` will show you which volumes exist, and you can then run `docker volume rm elasticsearchdocker_data01` or similar to remove the volumes used by Elasticsearch.
+
 ### Set up Elasticsearch in Orchard Core
 
-- Add Elastic Connection in the shell configuration (OrchardCore.Cms.Web `appsettings.json` file). [See Elasticsearch Configurations](#elasticsearch-configuration).
-
-- Start an Orchard Core instance with VS Code debugger
-- Go to Orchard Core features, Enable Elasticsearch.
+1. Add Elastic Connection in the shell configuration (OrchardCore.Cms.Web `appsettings.json` file). [See Elasticsearch Configuration](#elasticsearch-configuration).
+2. Start an Orchard Core instance with your IDE or the .NET CLI.
+3. Go to Orchard Core features, Enable Elasticsearch.
 
 ## Recipe step
 
@@ -57,12 +60,12 @@ Here is a sample step:
   "steps":[
     {
       "name":"ElasticIndexSettings",
-      "Indices":[
+      "Indices": [
         {
-          "Search":{
-            "AnalyzerName":"standardanalyzer",
-            "IndexLatest":false,
-            "IndexedContentTypes":[
+          "Search": {
+            "AnalyzerName": "standardanalyzer",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
               "Article",
               "BlogPost"
             ]
@@ -177,6 +180,7 @@ Here is an example for creating a Elasticsearch query from a Queries recipe step
         "Template": "...", // json encoded query template
         "ReturnContentItems": true
     }
+  ]
 }
 ```
 
@@ -216,19 +220,23 @@ See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.
 The Elasticsearch module connection configuration can be set globally in the `appsettings.json` file or per tenant.
 
 ```json
-"OrchardCore_Elasticsearch": {
-  "ConnectionType": "SingleNodeConnectionPool",
-  "Url": "http://localhost",
-  "Ports": [ 9200 ],
-  "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc=",
-  "Username": "admin",
-  "Password": "admin",
-  "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
-  "EnableApiVersioningHeader": false,
-  "IndexPrefix": "",
-  "Analyzers": {
-    "standard": {
-      "type": "standard"
+{
+  "OrchardCore_Elasticsearch": {
+    "ConnectionType": "SingleNodeConnectionPool",
+    "Url": "http://localhost",
+    "Ports": [
+      9200
+    ],
+    "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc=",
+    "Username": "admin",
+    "Password": "admin",
+    "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
+    "EnableApiVersioningHeader": false,
+    "IndexPrefix": "",
+    "Analyzers": {
+      "standard": {
+        "type": "standard"
+      }
     }
   }
 }
@@ -246,13 +254,15 @@ The connection types documentation and examples can be found at this url:
 As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../Configuration/README.md) file
 
 ```json
-"OrchardCore_Elasticsearch": {
-  "Analyzers": {
-    "standard": {
-      "type": "standard"
-    },
-    "stop": {
-      "type": "stop"
+{
+  "OrchardCore_Elasticsearch": {
+    "Analyzers": {
+      "standard": {
+        "type": "standard"
+      },
+      "stop": {
+        "type": "stop"
+      }
     }
   }
 }
@@ -261,30 +271,32 @@ As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/refe
 At the same time, you may define custom analyzers using the [appsettings.json](../Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`.
 
 ```json
-"OrchardCore_Elasticsearch": {
-  "Analyzers": {
-    "standard": {
-      "type": "standard"
-    },
-    "stop": {
-      "type": "stop",
-      "stopwords": [
-         "a", 
-         "the", 
-         "and",
-         "or" 
-       ]
-    },
-    "english_analyzer": {
-      "type": "custom",
-      "tokenizer": "standard",
-      "filter": [
-        "lowercase",
-        "stop"
-      ],
-      "char_filter": [
-        "html_strip"
-      ]
+{
+  "OrchardCore_Elasticsearch": {
+    "Analyzers": {
+      "standard": {
+        "type": "standard"
+      },
+      "stop": {
+        "type": "stop",
+        "stopwords": [
+          "a",
+          "the",
+          "and",
+          "or"
+        ]
+      },
+      "english_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "stop"
+        ],
+        "char_filter": [
+          "html_strip"
+        ]
+      }
     }
   }
 }
@@ -297,20 +309,22 @@ As of version 2.1, you can define custom [token filters](https://www.elastic.co/
 For instance, to create a token filter named `english_stop`, you can include the following configuration in your `appsettings.json` file:
 
 ```json
-"OrchardCore_Elasticsearch": {
-  "TokenFilters": {
-    "english_stop": {
-      "type": "stop",
-      "stopwords": "_english_"
-    }
-  },
-  "Analyzers": {
-    "my_new_analyzer": {
-      "type": "custom",
-      "tokenizer": "standard",
-      "filter": [
-        "english_stop"
-      ]
+{
+  "OrchardCore_Elasticsearch": {
+    "TokenFilters": {
+      "english_stop": {
+        "type": "stop",
+        "stopwords": "_english_"
+      }
+    },
+    "Analyzers": {
+      "my_new_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "english_stop"
+        ]
+      }
     }
   }
 }

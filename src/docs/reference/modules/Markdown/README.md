@@ -138,9 +138,11 @@ To disable sanitization:
 The following configuration values are used by default and can be customized:
 
 ```json
-    "OrchardCore_Markdown": {
-      "Extensions": "nohtml+advanced"
-    }
+{
+  "OrchardCore_Markdown": {
+    "Extensions": "nohtml+advanced"
+  }
+}
 ```
 
 The supported extensions described as following:
@@ -175,7 +177,7 @@ The supported extensions described as following:
 | `yaml`              | Parses a YAML format into the MarkdownDocument                                                 |
 | `nonascii-noescape` | Disables URI escape with % characters for non-US-ASCII characters                              |
 | `autolinks`         | Enable autolinks from text `http://`, `https://`, `ftp://`, `mailto:`, `www.xxx.yyy`           |
-| `globalization`     | Adds support for right-to-left content by adding appropriate html attribtues                   |
+| `globalization`     | Adds support for right-to-left content by adding appropriate html attributes                   |
 
 ## Markdown Pipeline
 

@@ -94,7 +94,7 @@ A sample of OpenID Connect Settings recipe step:
       "AllowRefreshTokenFlow": false,
       "AllowImplicitFlow": false,
       "RequireProofKeyForCodeExchange": false,
-      "RequirePushedAuthorizationRequests": false,
+      "RequirePushedAuthorizationRequests": false
 }
 ```
 
@@ -145,7 +145,7 @@ A sample of OpenID Connect App recipe step:
       "AllowRefreshTokenFlow": false,
       "AllowImplicitFlow": false,
       "RequireProofKeyForCodeExchange": false,
-      "RequirePushedAuthorizationRequests": false,
+      "RequirePushedAuthorizationRequests": false
 }
 ```
 

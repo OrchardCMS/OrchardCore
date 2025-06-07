@@ -192,16 +192,15 @@ For emulators, you'll need to configure a `ServiceURL`. Instead of the default [
 
 The following tools are known to be working with the above settings. Be sure to explore further configuration of these tools, the commands below are just provided for your convenience as a general recommendation.
 
-- [LocalS3](https://github.com/Robothy/local-s3) with Docker:
-
-```
-docker run -d -e MODE=IN_MEMORY -p 9444:80 luofuxiang/local-s3
-```
-
 - [S3Mock](https://github.com/adobe/S3Mock) with Docker:
 
 ```
 docker run -p 9444:9090 -t adobe/s3mock
+```
+- [LocalS3](https://github.com/Robothy/local-s3) with Docker but only up until Orchard Core 2.1.x unless [this issue](https://github.com/Robothy/local-s3/issues/186) is fixed:
+
+```
+docker run -d -e MODE=IN_MEMORY -p 9444:80 luofuxiang/local-s3
 ```
 
 ### Media Cache
@@ -252,7 +251,7 @@ The following configuration values are used by default and can be customized:
       "CreateBucket": true,
       "RemoveBucket": true, // Whether the 'Bucket' is deleted if the tenant is removed, false by default.
       "BucketName": "imagesharp" // Set the bucket's name (mandatory).
-    },
+    }
   }
 }
 ```

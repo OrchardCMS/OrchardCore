@@ -154,6 +154,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
                 var contentPartShape = shapeResult.Shape;
 
+                if (contentPartShape == null)
+                {
+                    // Part is explicitly hidden in placement.
+                    continue;
+                }
+
                 // Make the ContentPart property available on the shape
                 contentPartShape.Properties[partTypeName] = part.Content;
                 contentPartShape.Properties["ContentItem"] = part.ContentItem;

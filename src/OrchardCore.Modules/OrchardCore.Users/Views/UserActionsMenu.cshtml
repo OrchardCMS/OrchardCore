@@ -14,15 +14,22 @@
 @if (canEdit)
 {
     <li>
-        @if (isCurrentUser)
-        {
-            <a asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath" class="dropdown-item">@T["Change password"]</a>
-        }
-        else
-        {
-            <a asp-action="EditPassword" asp-route-id="@Model.User.UserId" class="dropdown-item">@T["Change password"]</a>
-        }
+        <a asp-action="EditPassword" asp-route-id="@Model.User.UserId" class="dropdown-item">@T["Change password"]</a>
     </li>
+    
+    if (Model.User.IsEnabled)
+    {
+        <li>
+            <a asp-action="Disable" asp-route-id="@Model.User.UserId" class="dropdown-item" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Disable user"]" data-message="@T["Are you sure you want to disable this user?"]">@T["Disable"]</a>
+        </li>
+    }
+    else
+    {
+        <li>
+            <a asp-action="Enable" asp-route-id="@Model.User.UserId" class="dropdown-item" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Enable user"]" data-message="@T["Are you sure you want to enable this user?"]">@T["Enable"]</a>
+        </li>
+    }
+    
     if (isLockedOut)
     {
         <li>

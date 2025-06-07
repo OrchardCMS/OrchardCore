@@ -130,9 +130,6 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<User, UserDisplayDriver>();
         services.AddDisplayDriver<User, UserInformationDisplayDriver>();
         services.AddDisplayDriver<User, UserButtonsDisplayDriver>();
-
-        services.AddScoped<IThemeSelector, UsersThemeSelector>();
-
         services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
 
         services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
@@ -282,6 +279,15 @@ public sealed class EmailStartup : StartupBase
     {
         services.AddScoped<UserEmailService>();
         services.AddScoped<IRegistrationFormEvents, EmailConfirmationRegistrationFormEvents>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Admin")]
+public sealed class AdminStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IThemeSelector, UsersThemeSelector>();
     }
 }
 

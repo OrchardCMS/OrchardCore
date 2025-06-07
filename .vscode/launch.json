@@ -86,7 +86,7 @@
     },
     {
       "name": "Asset Bundler Tool Debug",
-      "program": "${workspaceFolder}/.scripts/assets-build-tool/build.mjs",
+      "program": "${workspaceFolder}/.scripts/assets-manager/build.mjs",
       "request": "launch",
       "skipFiles": ["<node_internals>/**"],
       "type": "node"

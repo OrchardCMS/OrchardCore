@@ -25,19 +25,13 @@ public sealed class LuceneIndexStep : NamedRecipeStepHandler
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (context.Step["Indices"] is not JsonArray jsonArray)
-        {
-            return;
-        }
+        var settings = context.GetIndexSettings<LuceneIndexSettings>();
 
-        foreach (var index in jsonArray)
+        foreach (var setting in settings)
         {
-            var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>().FirstOrDefault();
-
-            if (!_luceneIndexManager.Exists(luceneIndexSettings.Key))
+            if (!_luceneIndexManager.Exists(setting.IndexName))
             {
-                luceneIndexSettings.Value.IndexName = luceneIndexSettings.Key;
-                await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings.Value);
+                await _luceneIndexingService.CreateIndexAsync(setting);
             }
         }
     }
