@@ -8,13 +8,19 @@ public class ElasticsearchClientFactory
 {
     public static ElasticsearchClient Create(ElasticsearchConnectionOptions configuration)
     {
+        var basicAuthentication = new BasicAuthentication(configuration.Username, configuration.Password);
+
         var settings = configuration.ConnectionType switch
         {
-            ElasticsearchConnectionType.CloudConnectionPool => new ElasticsearchClientSettings(configuration.CloudId, new BasicAuthentication(configuration.Username, configuration.Password)),
-            ElasticsearchConnectionType.StaticConnectionPool => new ElasticsearchClientSettings(new StaticNodePool(GetNodeUris(configuration))),
-            ElasticsearchConnectionType.SniffingConnectionPool => new ElasticsearchClientSettings(new SniffingNodePool(GetNodeUris(configuration))),
-            ElasticsearchConnectionType.StickyConnectionPool => new ElasticsearchClientSettings(new StickyNodePool(GetNodeUris(configuration))),
-            _ => new ElasticsearchClientSettings(GetNodeUris(configuration).FirstOrDefault()),
+            ElasticsearchConnectionType.CloudConnectionPool => new ElasticsearchClientSettings(configuration.CloudId, basicAuthentication),
+            ElasticsearchConnectionType.StaticConnectionPool => new ElasticsearchClientSettings(new StaticNodePool(GetNodeUris(configuration)))
+                .Authentication(basicAuthentication),
+            ElasticsearchConnectionType.SniffingConnectionPool => new ElasticsearchClientSettings(new SniffingNodePool(GetNodeUris(configuration)))
+                .Authentication(basicAuthentication),
+            ElasticsearchConnectionType.StickyConnectionPool => new ElasticsearchClientSettings(new StickyNodePool(GetNodeUris(configuration)))
+                .Authentication(basicAuthentication),
+            _ => new ElasticsearchClientSettings(GetNodeUris(configuration).FirstOrDefault())
+                .Authentication(basicAuthentication),
         };
 
         if (!string.IsNullOrWhiteSpace(configuration.CertificateFingerprint))
