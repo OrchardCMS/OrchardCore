@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
@@ -10,6 +11,7 @@ internal sealed class SitemapValuesAddressScheme : IShellRouteValuesAddressSchem
 {
     private readonly SitemapEntries _entries;
     private readonly SitemapsOptions _options;
+    private readonly ConcurrentDictionary<RouteEndpointKey, RouteEndpoint[]> _endpointCache = new();
 
     public SitemapValuesAddressScheme(SitemapEntries entries, IOptions<SitemapsOptions> options)
     {
@@ -31,7 +33,17 @@ internal sealed class SitemapValuesAddressScheme : IShellRouteValuesAddressSchem
             return [];
         }
 
-        (var found, var path) = _entries.TryGetPathBySitemapIdAsync(sitemapId).GetAwaiter().GetResult();
+        var task = _entries.TryGetPathBySitemapIdAsync(sitemapId);
+
+        bool found;
+        string path;
+
+        if (!task.IsCompletedSuccessfully)
+        {
+            task.GetAwaiter().GetResult(); // Wait for the task to complete if it hasn't already.
+        }
+
+        (found, path) = task.Result;
 
         if (!found)
         {
@@ -58,16 +70,25 @@ internal sealed class SitemapValuesAddressScheme : IShellRouteValuesAddressSchem
                 }
             }
 
-            var endpoint = new RouteEndpoint
-            (
-                c => null,
-                RoutePatternFactory.Parse(path, routeValues, null),
-                0,
-                null,
-                null
-            );
+            // RouteEndpoint instances are cached as the internal ASP.NET DefaultLinkGenerator caches them by reference (as a key)
+            // c.f. https://github.com/OrchardCMS/OrchardCore/issues/17984
 
-            return [endpoint];
+            return _endpointCache.GetOrAdd
+            (
+                new RouteEndpointKey(path, routeValues),
+                static key => {
+                    var endpoint = new RouteEndpoint
+                    (
+                        c => null,
+                        RoutePatternFactory.Parse(key.Path, key.RouteValues, null),
+                        0,
+                        null,
+                        null
+                    );
+
+                    return [endpoint];
+                }
+            );
         }
 
         return [];
