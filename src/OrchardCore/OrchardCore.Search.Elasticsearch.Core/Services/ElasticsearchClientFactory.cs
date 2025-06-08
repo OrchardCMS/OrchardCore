@@ -1,3 +1,4 @@
+using System.Text;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -8,19 +9,25 @@ public sealed class ElasticsearchClientFactory : IElasticsearchClientFactory
 {
     public ElasticsearchClient Create(ElasticsearchConnectionOptions configuration)
     {
-        var basicAuthentication = new BasicAuthentication(configuration.Username, configuration.Password);
+        AuthorizationHeader authentication = configuration.AuthenticationType switch
+        {
+            ElasticsearchAuthenticationType.ApiKey => new ApiKey(configuration.ApiKey),
+            ElasticsearchAuthenticationType.Base64ApiKey => new Base64ApiKey(configuration.Base64ApiKey),
+            ElasticsearchAuthenticationType.KeyIdAndKey => new Base64ApiKey(Convert.ToBase64String(Encoding.UTF8.GetBytes($"{configuration.KeyId}:{configuration.Key}"))),
+            _ => new BasicAuthentication(configuration.Username, configuration.Password),
+        };
 
         var settings = configuration.ConnectionType switch
         {
-            ElasticsearchConnectionType.CloudConnectionPool => new ElasticsearchClientSettings(configuration.CloudId, basicAuthentication),
+            ElasticsearchConnectionType.CloudConnectionPool => new ElasticsearchClientSettings(configuration.CloudId, authentication),
             ElasticsearchConnectionType.StaticConnectionPool => new ElasticsearchClientSettings(new StaticNodePool(GetNodeUris(configuration)))
-                .Authentication(basicAuthentication),
+                .Authentication(authentication),
             ElasticsearchConnectionType.SniffingConnectionPool => new ElasticsearchClientSettings(new SniffingNodePool(GetNodeUris(configuration)))
-                .Authentication(basicAuthentication),
+                .Authentication(authentication),
             ElasticsearchConnectionType.StickyConnectionPool => new ElasticsearchClientSettings(new StickyNodePool(GetNodeUris(configuration)))
-                .Authentication(basicAuthentication),
+                .Authentication(authentication),
             _ => new ElasticsearchClientSettings(GetNodeUris(configuration).FirstOrDefault())
-                .Authentication(basicAuthentication),
+                .Authentication(authentication),
         };
 
         if (!string.IsNullOrWhiteSpace(configuration.CertificateFingerprint))

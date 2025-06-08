@@ -227,9 +227,14 @@ The Elasticsearch module connection configuration can be set globally in the `ap
     "Ports": [
       9200
     ],
-    "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc=",
-    "Username": "admin",
-    "Password": "admin",
+    "AuthenticationType":"Basic", // Supported values are:'Basic', 'ApiKey', 'Base64ApiKey' or 'KeyIdAndKey'
+    "ApiKey": "", // Required when using ApiKey authentication type
+    "Base64ApiKey": "", // Required when using Base64ApiKey authentication type
+    "CloudId": "The cloud id", // Required when using CloudConnectionPool connection type
+    "Username": "admin", // Required  using Basic authentication types
+    "Password": "admin", // Required  using Basic authentication types
+    "KeyId": "The key id", // Required  using KeyIdAndKey authentication types
+    "Key": "The key", // Required  using KeyIdAndKey authentication types
     "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
     "EnableDebugMode": false,
     "EnableHttpCompression": true,
