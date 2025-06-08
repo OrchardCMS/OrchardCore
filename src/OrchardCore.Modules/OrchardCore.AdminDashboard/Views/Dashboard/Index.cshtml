@@ -32,7 +32,7 @@
 
 @if (Model.CanManageDashboard || Model.Dashboards.Length > 0)
 {
-    <zone Name="Title"><h1 class="float-start">@RenderTitleSegments(T["Dashboard"])</h1></zone>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Dashboard"])</h1></zone>
     <div class="clearfix"></div>
 
     @if (Model.Dashboards.Length > 0)
