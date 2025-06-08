@@ -5,12 +5,12 @@ namespace OrchardCore.Search.ViewModels;
 
 public class SearchSettingsViewModel
 {
-    public string ProviderName { get; set; }
+    public string DefaultIndexId { get; set; }
 
     public string Placeholder { get; set; }
 
     public string PageTitle { get; set; }
 
     [BindNever]
-    public IList<SelectListItem> SearchServices { get; set; }
+    public IList<SelectListItem> Indexes { get; set; }
 }

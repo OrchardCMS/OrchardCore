@@ -9,5 +9,5 @@ namespace OrchardCore.Indexing;
 /// </summary>
 public interface IContentFieldIndexHandler
 {
-    Task BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, BuildIndexContext context, IContentIndexSettings settings);
+    Task BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, BuildDocumentIndexContext context, IContentIndexSettings settings);
 }

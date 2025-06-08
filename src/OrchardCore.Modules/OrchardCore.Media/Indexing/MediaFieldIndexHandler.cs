@@ -35,8 +35,8 @@ public class MediaFieldIndexHandler : ContentFieldIndexHandler<MediaField>
         {
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key + MediaTextKeySuffix, IndexingConstants.NullValue, options);
-                context.DocumentIndex.Set(key + FileTextKeySuffix, IndexingConstants.NullValue, options);
+                context.DocumentIndex.Set(key + MediaTextKeySuffix, ContentIndexingConstants.NullValue, options);
+                context.DocumentIndex.Set(key + FileTextKeySuffix, ContentIndexingConstants.NullValue, options);
             }
 
             return;
@@ -55,7 +55,7 @@ public class MediaFieldIndexHandler : ContentFieldIndexHandler<MediaField>
                 }
                 else
                 {
-                    context.DocumentIndex.Set(key + MediaTextKeySuffix, IndexingConstants.NullValue, options);
+                    context.DocumentIndex.Set(key + MediaTextKeySuffix, ContentIndexingConstants.NullValue, options);
                 }
             }
         }

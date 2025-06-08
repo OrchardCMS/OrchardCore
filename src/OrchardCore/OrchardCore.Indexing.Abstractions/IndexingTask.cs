@@ -6,7 +6,7 @@ public enum IndexingTaskTypes
     Delete = 1,
 }
 
-public class IndexingTask
+public sealed class IndexingTask
 {
     /// <summary>
     /// The unique identifier of the <see cref="IndexingTask"/>.
@@ -14,9 +14,14 @@ public class IndexingTask
     public long Id { get; set; }
 
     /// <summary>
-    /// The id of the content item that is represented by the <see cref="IndexingTask"/> instance.
+    /// The id of the record that is represented by the <see cref="IndexingTask"/> instance.
     /// </summary>
-    public string ContentItemId { get; set; }
+    public string RecordId { get; set; }
+
+    /// <summary>
+    /// The category to which this record belongs.
+    /// </summary>
+    public string Category { get; set; }
 
     /// <summary>
     /// The <see cref="DateTime"/> value the task was created.
