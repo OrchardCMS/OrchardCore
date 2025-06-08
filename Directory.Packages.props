@@ -64,7 +64,7 @@
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
     <PackageVersion Include="xunit.v3" Version="2.0.2" />
-    <PackageVersion Include="xunit.analyzers" Version="1.21.0" />
+    <PackageVersion Include="xunit.analyzers" Version="1.22.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.0" />
     <PackageVersion Include="YesSql" Version="5.3.0" />
     <PackageVersion Include="YesSql.Abstractions" Version="5.3.0" />
