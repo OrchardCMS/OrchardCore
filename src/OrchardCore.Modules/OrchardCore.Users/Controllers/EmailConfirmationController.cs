@@ -80,7 +80,6 @@ public sealed class EmailConfirmationController : Controller
 
     [Authorize]
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> SendVerificationEmail(string id = null, string returnUrl = null)
     {
         var currentUserId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);

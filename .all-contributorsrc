@@ -3340,6 +3340,42 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "mg-i-roc-maz",
+      "name": "Rocco Mazzeo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/116784643?v=4",
+      "profile": "https://github.com/mg-i-roc-maz",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "amrali21",
+      "name": "amrali21",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18468966?v=4",
+      "profile": "http://amrmoneer21.me/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "rwxzig",
+      "name": "Zig",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42944941?v=4",
+      "profile": "https://github.com/rwxzig",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "JackTelford",
+      "name": "Jack Telford",
+      "avatar_url": "https://avatars.githubusercontent.com/u/142545189?v=4",
+      "profile": "https://rdicorp.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
