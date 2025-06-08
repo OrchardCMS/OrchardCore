@@ -33,13 +33,13 @@ A sample of a roles configuration step:
             "Roles": [
                 {
                     "Name": "Journalist",
-                    "Description" "Journalist Role",
+                    "Description": "Journalist Role",
                     "PermissionBehavior": "Replace",
                     "Permissions": ["PublishContent", "EditContent"]
                 },
                 {
                     "Name": "Subscriber",
-                    "Description" "Subscriber Role",
+                    "Description": "Subscriber Role",
                     "PermissionBehavior": "Replace",
                     "Permissions": []
                 }

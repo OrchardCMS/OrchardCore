@@ -1,4 +1,5 @@
 using System.Text;
+using Amazon;
 using Amazon.S3;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -31,6 +32,8 @@ public sealed class Startup : Modules.StartupBase
         ILogger<Startup> logger)
         => (_configuration, _logger)
             = (configuration, logger);
+
+    static Startup() => AWSConfigs.InitializeCollections = true;
 
     public override void ConfigureServices(IServiceCollection services)
     {

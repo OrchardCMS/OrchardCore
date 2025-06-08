@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -42,7 +43,7 @@ public class AzureAISearchIndexSettingsService
     public async Task<IEnumerable<AzureAISearchIndexSettings>> GetSettingsAsync()
         => (await GetDocumentAsync()).IndexSettings.Values;
 
-    public async Task<AzureAISearchIndexSettings> GetAsync(string id)
+    public async Task<AzureAISearchIndexSettings> FindByIdAsync(string id)
     {
         ArgumentException.ThrowIfNullOrEmpty(id);
 
@@ -56,13 +57,26 @@ public class AzureAISearchIndexSettingsService
         return null;
     }
 
+    public async Task<AzureAISearchIndexSettings> FindByNameAsync(string name)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        var document = await GetDocumentAsync();
+
+        return document.IndexSettings.Values.FirstOrDefault(x => x.IndexName == name);
+    }
+
+    [Obsolete("This method will be removed in future release. Instead use FindByIdAsync or FindByNameAsync")]
+    public Task<AzureAISearchIndexSettings> GetAsync(string name)
+        => FindByNameAsync(name);
+
     public async Task CreateAsync(AzureAISearchIndexSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
         var document = await LoadDocumentAsync();
 
-        if (document.IndexSettings.Values.Any(x => x.IndexName == settings.IndexName && x.Source == settings.Source && x.Id != settings.Id))
+        if (document.IndexSettings.Values.Any(x => x.IndexName == settings.IndexName && x.Id != settings.Id))
         {
             throw new InvalidOperationException("Another index with the same name already exists.");
         }
@@ -87,7 +101,7 @@ public class AzureAISearchIndexSettingsService
 
         var document = await LoadDocumentAsync();
 
-        if (document.IndexSettings.Values.Any(x => x.IndexName == settings.IndexName && x.Source == settings.Source && x.Id != settings.Id))
+        if (document.IndexSettings.Values.Any(x => x.IndexName == settings.IndexName && x.Id != settings.Id))
         {
             throw new InvalidOperationException("Another index with the same name already exists.");
         }
@@ -112,6 +126,41 @@ public class AzureAISearchIndexSettingsService
         await _handlers.InvokeAsync((handler, ctx) => handler.SynchronizedAsync(ctx), synchronizedContext, _logger);
     }
 
+    public async Task<bool> DeleteByIdAsync(string id)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(id);
+
+        var document = await LoadDocumentAsync();
+
+        if (document.IndexSettings.Remove(id))
+        {
+            await DocumentManager.UpdateAsync(document);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public async Task<bool> DeleteByNameAsync(string name)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        var document = await LoadDocumentAsync();
+
+        var index = document.IndexSettings.Values.FirstOrDefault(x => x.IndexName == name);
+
+        if (index is not null && document.IndexSettings.Remove(index.Id))
+        {
+            await DocumentManager.UpdateAsync(document);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    [Obsolete("This method will be removed in future release. Instead use DeleteByIdAsync or DeleteByNameAsync")]
     public async Task DeleteAsync(string id)
     {
         ArgumentException.ThrowIfNullOrEmpty(id);

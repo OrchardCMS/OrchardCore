@@ -22,11 +22,13 @@
             groupName: 'Minor Dependency Versions',
             matchUpdateTypes: ['minor'],
         },
+
         // Disable certain updates.
         {
             // The .NET 8 versions of these packages need to stay on 8.x. We maintain a separate reference to the 
             // .NET 9 versions in Directory.Packages.props, only active when building for .NET 9.
             matchPackageNames: [
+                'AspNet.Security.OAuth.GitHub',
                 '/^Microsoft\\.AspNetCore.*$/',
                 '/^Microsoft\\.Extensions.*$/',
                 'Serilog.AspNetCore',
@@ -49,6 +51,13 @@
             ],
             enabled: false,
         },
+        {
+            // See the the comment in global.json on why this is disabled.
+            groupName: 'global.json',
+            matchFileNames: ['global.json'],
+            enabled: false,
+        },
+
         // Groups of packages that we want to update together.
         {
             groupName: 'Azure.Communication packages',
@@ -109,9 +118,10 @@
     ],
     // With GitHub Actions, concurrency is not really an issue.
     prHourlyLimit: 0,
-    // We only need updates once a week.
+    // Between 0:00 and 6:00 UTC on Sundays. Large time window to ensure that Renovate runs at least once then:
+    // https://docs.renovatebot.com/configuration-options/#schedule.
     schedule: [
-        'before 5am on Sunday',
+        '* 0-6 * * 7',
     ],
     addLabels: ['dependencies'],
 }

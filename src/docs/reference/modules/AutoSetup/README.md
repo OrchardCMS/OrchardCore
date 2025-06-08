@@ -4,42 +4,44 @@ The auto-setup module allows to automatically install the application/tenants on
 
 ## JSON Configuration Parameters
 
-Auto-Setup parameters are defined in appsettings.json. Example excerpt:
+Auto-Setup parameters are defined in `appsettings.json`. Example excerpt:
 
 ```json
-"OrchardCore": {
+{
+  "OrchardCore": {
     "OrchardCore_AutoSetup": {
-        "AutoSetupPath": "",
-        "Tenants": [
-            {
-                "ShellName": "Default",
-                "SiteName": "AutoSetup Example",
-                "SiteTimeZone": "Europe/Amsterdam",
-                "AdminUsername": "admin",
-                "AdminEmail": "info@orchardproject.net",
-                "AdminPassword": "OrchardCoreRules1!",
-                "DatabaseProvider": "Sqlite",
-                "DatabaseConnectionString": "",
-                "DatabaseTablePrefix": "",
-                "RecipeName": "SaaS"
-            },
-            {
-                "ShellName": "AutoSetupTenant",
-                "SiteName": "AutoSetup Tenant",
-                "SiteTimeZone": "Europe/Amsterdam",
-                "AdminUsername": "tenantadmin",
-                "AdminEmail": "tenant@orchardproject.net",
-                "AdminPassword": "OrchardCoreRules1!",
-                "DatabaseProvider": "Sqlite",
-                "DatabaseConnectionString": "",
-                "DatabaseTablePrefix": "tenant",
-                "RecipeName": "Agency",
-                "RequestUrlHost": "",
-                "RequestUrlPrefix": "tenant",
-                "FeatureProfile": "my-profile"
-            }
-        ]
+      "AutoSetupPath": "",
+      "Tenants": [
+        {
+          "ShellName": "Default",
+          "SiteName": "AutoSetup Example",
+          "SiteTimeZone": "Europe/Amsterdam",
+          "AdminUsername": "admin",
+          "AdminEmail": "info@orchardproject.net",
+          "AdminPassword": "OrchardCoreRules1!",
+          "DatabaseProvider": "Sqlite",
+          "DatabaseConnectionString": "",
+          "DatabaseTablePrefix": "",
+          "RecipeName": "SaaS"
+        },
+        {
+          "ShellName": "AutoSetupTenant",
+          "SiteName": "AutoSetup Tenant",
+          "SiteTimeZone": "Europe/Amsterdam",
+          "AdminUsername": "tenantadmin",
+          "AdminEmail": "tenant@orchardproject.net",
+          "AdminPassword": "OrchardCoreRules1!",
+          "DatabaseProvider": "Sqlite",
+          "DatabaseConnectionString": "",
+          "DatabaseTablePrefix": "tenant",
+          "RecipeName": "Agency",
+          "RequestUrlHost": "",
+          "RequestUrlPrefix": "tenant",
+          "FeatureProfile": "my-profile"
+        }
+      ]
     }
+  }
 }
 ```
 

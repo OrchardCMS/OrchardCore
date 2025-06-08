@@ -1,33 +1,46 @@
 # Content Fields (`OrchardCore.ContentFields`)
 
-This module provides common content fields.  
-Some fields are available in their specific module.
+This module provides common content fields for capturing data in Orchard Core. Fields are typically added to a content part, which is then added to a content type. 
+
+!!! note
+    While the UI allows adding fields directly to content types, behind the scenes it creates a content part with the same name as the content type and attaches the fields to it.
+
+Fields support multiple editors — different UIs for data input. For example, a TextField can have editors like `Email`, `TextArea`, or `Tel`. Editors can be configured in the field settings.
 
 ## Available Fields
 
-| Name                                | Properties                                                     |
-|-------------------------------------|----------------------------------------------------------------|
-| `BooleanField`                      | `bool Value`                                                   |
-| `ContentPickerField`                | `string[] ContentItemIds`                                      |
-| `DateField`                         | `DateTime? Value`                                              |
-| `DateTimeField`                     | `DateTime? Value`                                              |
-| `HtmlField`                         | `string Html`                                                  |
-| `LinkField`                         | `string Url, string Text`                                      |
-| `LocalizationSetContentPickerField` | `string[] LocalizationSets`                                    |
-| `MarkdownField`                     | `string Markdown`                                              |
-| `MediaField`                        | `string[] Paths`                                               |
-| `MultiTextField`                    | `string[] Values`                                              |
-| `NumericField`                      | `decimal? Value`                                               |
-| `GeoPointField`                     | `decimal Latitude, decimal Longitude`                          |
-| `TaxonomyField`                     | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
-| `TextField`                         | `string Text`                                                  |
-| `TimeField`                         | `TimeSpan? Value`                                              |
-| `UserPickerField`                   | `string[] UserIds`                                             |
-| `YoutubeField`                      | `string EmbeddedAddress, string RawAddress`                    |
+| Name                                | Properties                                                     | Available Editors |
+|-------------------------------------|----------------------------------------------------------------|-------------------|
+| `BooleanField`                      | `bool Value`                                                   | (Standard "empty"), `Switch`|
+| `ContentPickerField`                | `string[] ContentItemIds`                                      | (Standard "empty")           |
+| `DateField`                         | `DateTime? Value`                                              | (Standard "empty"), `Localized`        |
+| `DateTimeField`                     | `DateTime? Value`                                              | (Standard "empty")    |
+| `HtmlField`                         | `string Html`                                                  | (Standard "empty"), `Monaco`, `Multiline`, `Trumbowyg`, `Wysiwyg` |
+| `LinkField`                         | `string Url, string Text`                                      | (Standard "empty")           |
+| `LocalizationSetContentPickerField` | `string[] LocalizationSets`                                    | (Standard "empty")           |
+| `MarkdownField`                     | `string Markdown`                                              | (Standard "empty"), `Wysiwyg`     |
+| `MediaField`                        | `string[] Paths`                                               | (Standard "empty"), `Attached`       |
+| `MultiTextField`                    | `string[] Values`                                              | (Standard "empty"), `CheckboxList`, `Picker`           |
+| `NumericField`                      | `decimal? Value`                                               | (Standard "empty"), `Range`, `Select`, `Slider`, `Spinner`       |
+| `GeoPointField`                     | `decimal Latitude, decimal Longitude`                          | (Standard "empty"), `Leaflet`         |
+| `TaxonomyField`                     | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` | (Standard "empty"), `Tags`         |
+| `TextField`                         | `string Text`                                                  | (Standard "empty"), `CodeMirror`, `Color`, `Email`, `Header`, `IconPicker`, `Monaco`, `PredefinedList`, `Tel` , `TextArea` , `Url` |
+| `TimeField`                         | `TimeSpan? Value`                                              | (Standard "empty")        |
+| `UserPickerField`                   | `string[] UserIds`                                             | (Standard "empty"), `UserNames`      |
+| `YoutubeField`                      | `string EmbeddedAddress, string RawAddress`                    | (Standard "empty")          |
 
 !!! note
-    Each field is rendered by a corresponding `Shape Type` that is using its own a Display view model.  
-    Ex: `BooleanField` is rendered by a shape type called `BooleanField` with a `DisplayBooleanFieldViewModel`.
+    Each field is rendered by a corresponding `Shape Type` that uses its own Display view model.  
+    Example: `BooleanField` uses shape type `BooleanField` with `DisplayBooleanFieldViewModel`.
+
+## Editors and Display Modes
+
+Fields support different editors for input and display modes for output:
+
+- **Editors**: Control how data is entered (e.g., WYSIWYG for HTML, DatePicker for dates)
+- **Display Modes**: Control how data is rendered (e.g., different formatting for dates)
+
+You can create custom editors and display modes by following the patterns in the "Creating Custom Fields" section.
 
 ## Usage
 
@@ -147,10 +160,10 @@ Field used to display a link.
 
 #### `LinkFieldViewModel`
 
-| Property | Description                             |
-|----------|-----------------------------------------|
-| Url      | A valid URI for the href                |
-| Text     | The text to display                     |
+| Property | Description                                                                                                           |
+|----------|-----------------------------------------------------------------------------------------------------------------------|
+| Url      | A valid URI for the href                                                                                              |
+| Text     | The text to display                                                                                                   |
 | Target   | The target attribute for the anchor tag, [Target](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target) |
 
 !!! Note: By default the http and https are the only URIs permitted. In order to use other URIs like mailto and tel you must configure the [HTML Sanitizer](../Sanitizer/README.md). 
@@ -210,7 +223,7 @@ per set based on the request culture, if no culture is specified.
     }
     ```
 
-### `UserPicker Field`
+### `UserPickerField`
 
 The User Picker field allows you to relate users to a content item.
 
@@ -395,6 +408,382 @@ and register `MyCustomTextFieldDisplayDriver` to resolve for only the custom edi
     When registering a custom display mode or editor driver you must alter the registrations for existing drivers.
     You should also take a dependency in your modules `Manifest.cs` on the module that the fields reside in.
     This will make your modules `Startup.cs` run later, and allow your registrations to override the original modules.
+
+## Recipes
+
+Example recipe snippet for creating fields:
+
+```json
+{
+  "steps": [
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Person",
+          "DisplayName": "Person",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true
+            },
+            "FullTextAspectSettings": {
+              "IncludeFullTextTemplate": false,
+              "IncludeBodyAspect": true,
+              "IncludeDisplayText": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Person",
+              "Name": "Person",
+              "Settings": {}
+            },
+            {
+              "PartName": "BiographyPart",
+              "Name": "BiographyPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "FriendsPart",
+              "Name": "FriendsPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                }
+              }
+            },
+            {
+              "PartName": "PersonPart",
+              "Name": "PersonPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "ArticlesPart",
+              "Name": "ArticlesPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "3"
+                }
+              }
+            },
+            {
+              "PartName": "FamilyInfo",
+              "Name": "FamilyInfo",
+              "Settings": {}
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "PersonPart",
+          "Settings": {
+            "ContentPartSettings": {
+              "Attachable": true,
+              "Reusable": false
+            }
+          },
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "FirstName",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "First Name"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "LastName",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Last Name"
+                },
+                "AzureAISearchContentIndexSettings": {
+                  "Included": false
+                },
+                "TextFieldSettings": {
+                  "Required": true
+                }
+              }
+            },
+            {
+              "FieldName": "DateField",
+              "Name": "DateOfBirth",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Date of Birth"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Phone",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Phone",
+                  "Editor": "Tel"
+                },
+                "TextFieldSettings": {
+                  "Required": false
+                },
+                "AzureAISearchContentIndexSettings": {
+                  "Included": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "BiographyPart",
+          "Settings": {
+            "ContentPartSettings": {
+              "Attachable": true,
+              "Reusable": false
+            }
+          },
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Biography",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Biography",
+                  "Editor": "TextArea",
+                  "Position": "0"
+                },
+                "AzureAISearchContentIndexSettings": {
+                  "Included": false
+                },
+                "TextFieldSettings": {
+                  "Required": false
+                }
+              }
+            },
+            {
+              "FieldName": "LinkField",
+              "Name": "LinkedInProfile",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "LinkedIn Profile"
+                }
+              }
+            },
+            {
+              "FieldName": "LinkField",
+              "Name": "GithubProfile",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Github Profile"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Email",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Email",
+                  "Editor": "Email"
+                },
+                "AzureAISearchContentIndexSettings": {
+                  "Included": false
+                },
+                "TextFieldSettings": {
+                  "Required": false
+                }
+              }
+            },
+            {
+              "FieldName": "MultiTextField",
+              "Name": "FavoriteSports",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Favorite Sports",
+                  "Editor": "CheckboxList"
+                },
+                "MultiTextFieldSettings": {
+                  "Required": false,
+                  "Options": [
+                    {
+                      "name": "Soccer",
+                      "value": "soccer",
+                      "default": false
+                    },
+                    {
+                      "name": "Basketball",
+                      "value": "basketball",
+                      "default": false
+                    },
+                    {
+                      "name": "Hockey",
+                      "value": "hockey",
+                      "default": false
+                    }
+                  ]
+                },
+                "AzureAISearchContentIndexSettings": {
+                  "Included": false
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "FavoriteColor",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Favorite Color",
+                  "Editor": "Color"
+                },
+                "TextFieldSettings": {
+                  "Required": false
+                },
+                "AzureAISearchContentIndexSettings": {
+                  "Included": false
+                },
+                "TextFieldPredefinedListEditorSettings": {
+                  "Options": [
+                    {
+                      "name": "Soccer",
+                      "value": "Soccer"
+                    },
+                    {
+                      "name": "Basketball",
+                      "value": "Basketball"
+                    },
+                    {
+                      "name": "Hockey",
+                      "value": "Hockey"
+                    },
+                    {
+                      "name": "Football",
+                      "value": "Football"
+                    }
+                  ],
+                  "Editor": 1
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Website",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Website",
+                  "Editor": "Url"
+                },
+                "TextFieldSettings": {
+                  "Required": false
+                },
+                "AzureAISearchContentIndexSettings": {
+                  "Included": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "FriendsPart",
+          "Settings": {
+            "ContentPartSettings": {
+              "Attachable": true,
+              "Reusable": false
+            }
+          },
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "UserPickerField",
+              "Name": "Friends",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Friends"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "ArticlesPart",
+          "Settings": {
+            "ContentPartSettings": {
+              "Attachable": true,
+              "Reusable": false
+            }
+          },
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "ContentPickerField",
+              "Name": "FavoriteArticles",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Favorite Articles"
+                },
+                "ContentPickerFieldSettings": {
+                  "Required": true,
+                  "Multiple": true,
+                  "DisplayAllContentTypes": false,
+                  "DisplayedContentTypes": [
+                    "Article"
+                  ],
+                  "DisplayedStereotypes": [],
+                  "TitlePattern": "{{ Model.ContentItem | display_text }}"
+                },
+                "AzureAISearchContentIndexSettings": {
+                  "Included": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "FamilyInfo",
+          "Settings": {
+            "ContentPartSettings": {
+              "Attachable": true,
+              "Reusable": false
+            }
+          },
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "NumericField",
+              "Name": "NumberOfDependents",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Number of dependents",
+                  "Editor": "Slider"
+                },
+                "NumericFieldSettings": {
+                  "Required": false,
+                  "Scale": 0,
+                  "Minimum": 0,
+                  "Maximum": 10,
+                  "DefaultValue": "0"
+                },
+                "AzureAISearchContentIndexSettings": {
+                  "Included": false
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
 
 ## Videos
 

@@ -42,7 +42,7 @@ The cookie can be set during recipes using the settings step. Here is a sample s
   "ContentRequestCultureProvider": {
       "SetCookie": true
   }
-},
+}
 ```
 
 ## Liquid filters

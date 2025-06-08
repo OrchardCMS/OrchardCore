@@ -39,10 +39,10 @@ Currently you can filter shapes by:
 ```json
 {
   "ContentPart": [{
-  "place":"SomeZone"
+  "place":"SomeZone",
   "differentiator":"GalleryPart"
   }],
-  "GalleryPart": [{...}], //this wont work unless you registered a driver for the part
+  "GalleryPart": [{...}] //this wont work unless you registered a driver for the part
 }
 ```
 
@@ -75,7 +75,7 @@ Placement information consists of:
       "wrappers": [ "TextField_Title" ],
       "shape": "AnotherShape"
     }
-  ],
+  ]
 }
 ```
 
@@ -225,7 +225,7 @@ We also specify that the `Content` column will take 9 columns, of the default 12
 
 !!! note
     By default the columns will break responsively at the `md` breakpoint, and a modifier will be parsed to `col-md-9`.
-    If you want to change the breakpoint, you could also specifiy `Content_lg-9`, which is parsed to `col-lg-9`.
+    If you want to change the breakpoint, you could also specify `Content_lg-9`, which is parsed to `col-lg-9`.
 
 ### Dynamic part placement
 
