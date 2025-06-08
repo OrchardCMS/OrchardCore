@@ -1,7 +1,7 @@
 version: '2.2'
 services:
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.2
     container_name: es01
     environment:
       - node.name=es01
@@ -25,7 +25,7 @@ services:
     networks:
       - elastic
   es02:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.2
     container_name: es02
     environment:
       - node.name=es02
@@ -48,7 +48,7 @@ services:
       - elastic
   kibana:
     container_name: kibana
-    image: docker.elastic.co/kibana/kibana:9.0.1
+    image: docker.elastic.co/kibana/kibana:9.0.2
     environment:
       ELASTICSEARCH_HOSTS: '["http://es01:9200","http://es02:9200"]'
       # Disable security features in Kibana
