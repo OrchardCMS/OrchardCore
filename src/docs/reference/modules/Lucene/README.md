@@ -1,10 +1,10 @@
 # Lucene (`OrchardCore.Search.Lucene`)
 
-The Lucene module allows you to manage Lucene indices.
+The Lucene module allows you to manage Lucene indexes.
 
 ## Recipe step
 
-Lucene indices can be created during recipe execution using the `lucene-index` step.  
+Lucene indexes can be created during recipe execution using the `lucene-index` step.  
 Here is a sample step:
 
 ```json
@@ -28,6 +28,9 @@ Here is a sample step:
   ]
 }
 ```
+
+note !!!
+     It's recommended to use the `Indexing` recipe step instead as the `lucene-index` step is obsolete. 
 
 ### Queries recipe step
 
@@ -87,9 +90,23 @@ If you are running on Azure App Services or if you are using Elasticsearch, then
 The Lucene module provides a management UI and APIs for querying Lucene data using Elasticsearch Queries.
 See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
+## Indexing custom data
+
+The indexing module supports multiple sources for indexing. This allows you to create indexes based on different data sources, such as content items or custom data.
+
+To register a new source, you can add the following code to your `Startup.cs` file:
+
+```csharp
+services.AddLuceneIndexingSource("CustomSource", o =>
+{
+    o.DisplayName = S["Custom Source in Provider"];
+    o.Description = S["Create a Provider index based on custom source."];
+});
+```
+
 ## Recipe step
 
-Lucene indices can be created during recipe execution using the `ElasticIndexSettings` step.  
+Lucene indices can be created during recipe execution using the `LuceneIndexSettings` step.  
 Here is a sample step:
 
 ```json
@@ -116,27 +133,8 @@ Here is a sample step:
 }
 ```
 
-## Lucene settings recipe step
-
-Here is an example for setting default search settings:
-
-```json
-{
-  "steps":[
-    {
-      // Create the search settings.
-      "name":"Settings",
-      "LuceneSettings":{
-        "SearchIndex":"search",
-        "DefaultSearchFields":[
-          "Content.ContentItem.FullText"
-        ],
-        "AllowLuceneQueriesInSearch":false
-      }
-    }
-  ]
-}
-```
+note !!!
+     It's recommended to use the `IndexProfile` recipe step instead as the `LuceneIndexSettings` step is obsolete. 
 
 ### Reset Lucene Index Step
 
@@ -171,6 +169,9 @@ To reset all indices:
 }
 ```
 
+note !!!
+     It's recommended to use the `ResetIndexProfile` recipe step instead as the `lucene-index-reset` step is obsolete. 
+
 ### Rebuild Lucene Index Step
 
 This Rebuild Index Step rebuilds an Lucene index.
@@ -202,6 +203,9 @@ To rebuild all indices:
   ]
 }
 ```
+
+note !!!
+     It's recommended to use the `RebuildIndexProfile` recipe step instead as the `lucene-index-rebuild` step is obsolete. 
 
 ### Query Filters
 

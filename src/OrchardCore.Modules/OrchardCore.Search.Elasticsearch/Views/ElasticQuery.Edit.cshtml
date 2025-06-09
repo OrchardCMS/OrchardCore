@@ -6,11 +6,8 @@
 
 <div class="mb-3">
     <label asp-for="Index" class="form-label">@T["Index"]</label>
-    <select asp-for="Index" class="form-select">
-        @foreach (var index in Model.Indices)
-        {
-            <option value="@index">@index</option>
-        }
+    <select asp-for="Index" class="form-select" asp-items="Model.Indexes">
+        <option value="">@T["Select an index"]</option>
     </select>
     <span class="hint">@T["The Elasticsearch index to search on"]</span>
 </div>
@@ -31,6 +28,6 @@
 
 <script at="Foot">
     $(function () {
-        var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
     });
 </script>

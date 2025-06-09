@@ -4,5 +4,5 @@ namespace OrchardCore.Search.AzureAI;
 
 public static class AzureAISearchPermissions
 {
-    public static readonly Permission ManageAzureAISearchIndexes = new("ManageAzureAISearchIndexes", "Manage Azure AI Search Indexes");
+    public static readonly Permission ManageAzureAISearchISettings = new("ManageAzureAISearchISettings", "Manage Azure AI Search Settings");
 }

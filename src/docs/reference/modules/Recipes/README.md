@@ -12,18 +12,18 @@ A recipe is a `.recipe.json` file placed in a Recipes folder within your module 
 
 ### Key Properties
 
-| Property         | Type     | Description                                                                 |
-|------------------|----------|-----------------------------------------------------------------------------|
-| `name`           | string   | The unique internal name of the recipe. Used for identifying the recipe in code, including when executing it from other recipes. |
-| `displayName`    | string   | The friendly name shown in the admin UI or during setup.                      |
-| `description`    | string   | A short description of what the recipe does. Displayed in the admin and setup UIs.    |
-| `author`         | string   | The name of the recipe creator or organization.                            |
-| `website`        | string   | URL to the website or documentation for the recipe.                        |
-| `version`        | string   | Semantic version (e.g., `1.0.0`) representing the recipe version.           |
-| `issetuprecipe`  | boolean  | Indicates if this recipe should be available during tenant setup.          |
-| `tags`           | array    | Keywords for categorizing the recipe in the UI (e.g., `["blog", "theme"]`). |
-| `variables`      | object   | Key-value pairs to define reusable values throughout the recipe.           |
-| `steps`          | array    | An ordered list of step objects that define the actions the recipe will perform. Each step has a `name` and step-specific parameters. |
+| Property        | Type    | Description                                                                                                                           |
+|-----------------|---------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `name`          | string  | The unique internal name of the recipe. Used for identifying the recipe in code, including when executing it from other recipes.      |
+| `displayName`   | string  | The friendly name shown in the admin UI or during setup.                                                                              |
+| `description`   | string  | A short description of what the recipe does. Displayed in the admin and setup UIs.                                                    |
+| `author`        | string  | The name of the recipe creator or organization.                                                                                       |
+| `website`       | string  | URL to the website or documentation for the recipe.                                                                                   |
+| `version`       | string  | Semantic version (e.g., `1.0.0`) representing the recipe version.                                                                     |
+| `issetuprecipe` | boolean | Indicates if this recipe should be available during tenant setup.                                                                     |
+| `tags`          | array   | Keywords for categorizing the recipe in the UI (e.g., `["blog", "theme"]`).                                                           |
+| `variables`     | object  | Key-value pairs to define reusable values throughout the recipe.                                                                      |
+| `steps`         | array   | An ordered list of step objects that define the actions the recipe will perform. Each step has a `name` and step-specific parameters. |
 
 ### Example:
 
@@ -54,17 +54,17 @@ A recipe is a `.recipe.json` file placed in a Recipes folder within your module 
 
 These helpers allow dynamic expressions inside recipe values using a special syntax.
 
-| Helper         | Example Usage                                          | Description                                                                 |
-|----------------|--------------------------------------------------------|-----------------------------------------------------------------------------|
-| `js`           | `"ContentItemId": "[js:variables('homePageId')]"`      | Evaluates a JavaScript expression. Common for referencing `variables`.      |
-| `file`         | `"Content": "[file:text('Snippets/homepage.liquid')]"` | Loads content from an external file. Often used for Liquid templates.       |
-| `env`          | `"value": "[env:MyEnvironmentVariable]"`               | Injects values from environment variables.                                  |
-| `appsettings`  | `"value": "[appsettings:OrchardCore:SiteName]"`        | Reads configuration from `appsettings.json`.                                |
-| `localization` | `"value": "[localization:WelcomeTitle]"`               | Retrieves localized strings by key.                                         |
-| `uuid`         | `"Id": "[js:uuid()]"`                                  | Generates a new unique identifier (UUID/GUID).                              |
-| `base64`       | `"data": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]"`                                  | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64.                              |
-| `html`         | `"html": "[js:html('&lt;p&gt;Hello &amp; welcome&lt;/p&gt;')]"`                                  | Decodes the specified string from HTML encoding..                              |
-| `gzip`         | `"data": "[js:gzip('data')]"`                                  | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings.                              |
+| Helper         | Example Usage                                                                       | Description                                                                                                            |
+|----------------|-------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| `js`           | `"ContentItemId": "[js:variables('homePageId')]"`                                   | Evaluates a JavaScript expression. Common for referencing `variables`.                                                 |
+| `file`         | `"Content": "[file:text('Snippets/homepage.liquid')]"`                              | Loads content from an external file. Often used for Liquid templates.                                                  |
+| `env`          | `"value": "[env:MyEnvironmentVariable]"`                                            | Injects values from environment variables.                                                                             |
+| `appsettings`  | `"value": "[appsettings:OrchardCore:SiteName]"`                                     | Reads configuration from `appsettings.json`.                                                                           |
+| `localization` | `"value": "[localization:WelcomeTitle]"`                                            | Retrieves localized strings by key.                                                                                    |
+| `uuid`         | `"Id": "[js:uuid()]"`                                                               | Generates a new unique identifier (UUID/GUID).                                                                         |
+| `base64`       | `"data": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]"` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64.   |
+| `html`         | `"html": "[js:html('&lt;p&gt;Hello &amp; welcome&lt;/p&gt;')]"`                     | Decodes the specified string from HTML encoding..                                                                      |
+| `gzip`         | `"data": "[js:gzip('data')]"`                                                       | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
 
 ---
 

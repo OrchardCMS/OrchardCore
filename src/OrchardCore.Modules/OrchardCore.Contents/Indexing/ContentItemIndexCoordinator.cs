@@ -9,7 +9,7 @@ namespace OrchardCore.Contents.Indexing;
 /// <summary>
 /// Enumerates all parts and fields of content item to extract indexed properties.
 /// </summary>
-public class ContentItemIndexCoordinator : IContentItemIndexHandler
+public class ContentItemIndexCoordinator : IDocumentIndexHandler
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
@@ -31,9 +31,14 @@ public class ContentItemIndexCoordinator : IContentItemIndexHandler
         _logger = logger;
     }
 
-    public async Task BuildIndexAsync(BuildIndexContext context)
+    public async Task BuildIndexAsync(BuildDocumentIndexContext context)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+        if (context.Record is not ContentItem contentItem)
+        {
+            return;
+        }
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
         if (contentTypeDefinition == null)
         {
@@ -45,7 +50,7 @@ public class ContentItemIndexCoordinator : IContentItemIndexHandler
             var partName = contentTypePartDefinition.Name;
             var partTypeName = contentTypePartDefinition.PartDefinition.Name;
             var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
-            var part = (ContentPart)context.ContentItem.Get(partActivator.Type, partName);
+            var part = (ContentPart)contentItem.Get(partActivator.Type, partName);
 
             var contentTypePartDefinitionMethod = contentTypePartDefinition.GetType().GetMethod("GetSettings");
             var contentTypePartDefinitionGeneric = contentTypePartDefinitionMethod.MakeGenericMethod(context.Settings.GetType());

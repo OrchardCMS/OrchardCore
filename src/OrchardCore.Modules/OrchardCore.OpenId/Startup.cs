@@ -32,7 +32,6 @@ using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId;
 
@@ -66,10 +65,7 @@ public sealed class ClientStartup : StartupBase
         services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
 
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Scoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>(),
-        });
+        services.AddSiteDisplayDriver<OpenIdClientSettingsDisplayDriver>();
 
         services.AddRecipeExecutionStep<OpenIdClientSettingsStep>();
         // Register the options initializers required by the OpenID Connect client handler.
@@ -104,11 +100,12 @@ public sealed class ServerStartup : StartupBase
         services.AddDataMigration<DefaultScopesMigration>();
         services.AddDataMigration<PushedAuthorizationRequestsMigration>();
 
+        services.AddDisplayDriver<OpenIdServerSettings, OpenIdServerSettingsDisplayDriver>();
+
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
         services.TryAddEnumerable(new[]
         {
             ServiceDescriptor.Scoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>(),
-            ServiceDescriptor.Scoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>(),
             ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
         });
 
@@ -224,10 +221,7 @@ public sealed class ValidationStartup : StartupBase
         services.TryAddSingleton<IOpenIdValidationService, OpenIdValidationService>();
 
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
-        });
+        services.AddDisplayDriver<OpenIdValidationSettings, OpenIdValidationSettingsDisplayDriver>();
 
         services.AddRecipeExecutionStep<OpenIdValidationSettingsStep>();
 
