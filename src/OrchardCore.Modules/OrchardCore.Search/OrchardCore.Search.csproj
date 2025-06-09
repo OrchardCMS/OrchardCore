@@ -32,8 +32,4 @@
     <ProjectReference Include="..\OrchardCore.Deployment\OrchardCore.Deployment.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
-
 </Project>

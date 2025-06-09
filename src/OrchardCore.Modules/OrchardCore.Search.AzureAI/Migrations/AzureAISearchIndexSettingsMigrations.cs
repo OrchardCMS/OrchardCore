@@ -121,10 +121,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 if (properties is not null && properties.Count > 0)
                 {
-                    foreach (var property in properties)
-                    {
-                        index.Properties[property.Key] = property.Value.DeepClone();
-                    }
+                    index.Properties = properties.Clone();
                 }
 
                 while (await indexManager.FindByNameAsync(index.Name) is not null)
