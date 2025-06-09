@@ -45,6 +45,9 @@ public class ElasticsearchService : ISearchService
         _logger = logger;
     }
 
+    public string Name
+        => ElasticsearchConstants.ProviderName;
+
     public async Task<SearchResult> SearchAsync(IndexProfile index, string term, int start, int pageSize)
     {
         ArgumentNullException.ThrowIfNull(index);
