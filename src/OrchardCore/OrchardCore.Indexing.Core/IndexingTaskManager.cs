@@ -15,7 +15,7 @@ namespace OrchardCore.Indexing.Services;
 /// that multiple calls to <see cref="CreateTaskAsync"/> can be done without incurring
 /// a SQL query on every single one.
 /// </summary>
-public class IndexingTaskManager : IIndexingTaskManager
+public sealed class IndexingTaskManager : IIndexingTaskManager
 {
     private const int _batchSize = 100;
 
@@ -103,7 +103,7 @@ public class IndexingTaskManager : IIndexingTaskManager
         }
     }
 
-    private async Task FlushAsync(ShellScope scope, IEnumerable<IndexingTask> tasks)
+    private async Task FlushAsync(ShellScope scope, List<IndexingTask> tasks)
     {
         var localQueue = new List<IndexingTask>(tasks);
 
@@ -160,9 +160,9 @@ public class IndexingTaskManager : IIndexingTaskManager
 
                 while (true)
                 {
-                    var pageOfIds = taskGroup.Value.Skip(lapsCounter++ * _batchSize).Take(_batchSize);
+                    var pageOfIds = taskGroup.Value.Skip(lapsCounter++ * _batchSize).Take(_batchSize).ToArray();
 
-                    if (!pageOfIds.Any())
+                    if (pageOfIds.Length == 0)
                     {
                         break;
                     }
