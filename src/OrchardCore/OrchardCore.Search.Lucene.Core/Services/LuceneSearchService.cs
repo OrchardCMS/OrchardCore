@@ -26,6 +26,9 @@ public class LuceneSearchService : ISearchService
         _logger = logger;
     }
 
+    public string Name
+        => LuceneConstants.ProviderName;
+
     public async Task<SearchResult> SearchAsync(IndexProfile index, string term, int start, int size)
     {
         var result = new SearchResult();

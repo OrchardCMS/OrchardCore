@@ -41,7 +41,7 @@ services.AddAzureAISearchIndexingSource("CustomSource", o =>
 });
 ```
 
-Next, you need to implement the `IIndexEntityHandler` interface. In the `CreatingAsync` and `UpdatingAsync` methods, populate or update the `context.Model.Put(new AzureAISearchIndexMetadata() { IndexMappings = new ElasticsearchIndexMap() })` to define the index fields and their types. You may use `IndexEntityHandlerBase` to simplify your implementation. 
+Next, you need to implement the `IIndexProfileHandler` interface. In the `CreatingAsync` and `UpdatingAsync` methods, populate or update the `context.Model.Put(new AzureAISearchIndexMetadata() { IndexMappings = new ElasticsearchIndexMap() })` to define the index fields and their types. You may use `IndexProfileHandlerBase` to simplify your implementation. 
 
 If you want the UI to capture custom data related to your source, implement `DisplayDriver<IndexEntity>`.  
 

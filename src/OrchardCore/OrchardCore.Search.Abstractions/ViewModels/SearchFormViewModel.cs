@@ -17,7 +17,7 @@ public class SearchFormViewModel : ShapeViewModel
 
     public string Terms { get; set; }
 
-    public string IndexName { get; set; }
+    public string Index { get; set; }
 
     [BindNever]
     public string Placeholder { get; set; }
