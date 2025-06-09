@@ -39,17 +39,7 @@ internal sealed class AutorouteValuesAddressScheme : IShellRouteValuesAddressSch
             return [];
         }
 
-        var task = _entries.TryGetEntryByContentItemIdAsync(contentItemId);
-
-        bool found;
-        AutorouteEntry autorouteEntry;
-
-        if (!task.IsCompletedSuccessfully)
-        {
-            task.GetAwaiter().GetResult(); // Wait for the task to complete if it hasn't already.
-        }
-
-        (found, autorouteEntry) = task.Result;
+        var (found, autorouteEntry) = _entries.TryGetEntryByContentItemIdAsync(contentItemId).GetAwaiter().GetResult();
 
         if (!found)
         {
@@ -85,7 +75,8 @@ internal sealed class AutorouteValuesAddressScheme : IShellRouteValuesAddressSch
             return _endpointCache.GetOrAdd
             (
                 new RouteEndpointKey(autorouteEntry.Path, routeValues),
-                static key => {
+                static key =>
+                {
                     var endpoint = new RouteEndpoint
                     (
                         c => null,
@@ -98,7 +89,7 @@ internal sealed class AutorouteValuesAddressScheme : IShellRouteValuesAddressSch
                     return [endpoint];
                 }
             );
-            
+
         }
 
         return [];
@@ -116,6 +107,4 @@ internal sealed class AutorouteValuesAddressScheme : IShellRouteValuesAddressSch
 
         return true;
     }
-
-    
 }

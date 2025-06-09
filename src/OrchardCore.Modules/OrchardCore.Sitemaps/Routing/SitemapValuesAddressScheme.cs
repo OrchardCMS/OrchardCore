@@ -33,17 +33,7 @@ internal sealed class SitemapValuesAddressScheme : IShellRouteValuesAddressSchem
             return [];
         }
 
-        var task = _entries.TryGetPathBySitemapIdAsync(sitemapId);
-
-        bool found;
-        string path;
-
-        if (!task.IsCompletedSuccessfully)
-        {
-            task.GetAwaiter().GetResult(); // Wait for the task to complete if it hasn't already.
-        }
-
-        (found, path) = task.Result;
+        var (found, path) = _entries.TryGetPathBySitemapIdAsync(sitemapId).GetAwaiter().GetResult();
 
         if (!found)
         {
