@@ -47,7 +47,9 @@ internal sealed class HomeRouteValuesAddressScheme : IShellRouteValuesAddressSch
 
             var endpointKey = new RouteEndpointKey(string.Empty, routeValues);
 
-            if (_cachedEndpointKey == null || !_cachedEndpointKey.Equals(endpointKey))
+            var cachedEndpointKey = _cachedEndpointKey;
+
+            if (!cachedEndpointKey.Equals(endpointKey))
             {
                 _cachedEndpoint =
                 [
