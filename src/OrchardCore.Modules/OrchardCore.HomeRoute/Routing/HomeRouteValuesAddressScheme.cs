@@ -9,6 +9,7 @@ namespace OrchardCore.HomeRoute.Routing;
 internal sealed class HomeRouteValuesAddressScheme : IShellRouteValuesAddressScheme
 {
     private readonly ISiteService _siteService;
+
     private RouteEndpoint[] _cachedEndpoint;
     private RouteEndpointKey _cachedEndpointKey;
 

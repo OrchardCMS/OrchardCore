@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace OrchardCore.Routing;
 
-public sealed class RouteEndpointKey : IEquatable<RouteEndpointKey>
+public readonly struct RouteEndpointKey : IEquatable<RouteEndpointKey>
 {
     public string Path { get; }
     public RouteValueDictionary RouteValues { get; }
@@ -14,15 +14,13 @@ public sealed class RouteEndpointKey : IEquatable<RouteEndpointKey>
         RouteValues = new RouteValueDictionary(routeValues);
     }
 
-    public override bool Equals(object obj) => Equals(obj as RouteEndpointKey);
+    public override bool Equals(object obj)
+    {
+        return obj is RouteEndpointKey && Equals((RouteEndpointKey)obj);
+    }
 
     public bool Equals(RouteEndpointKey other)
     {
-        if (other is null)
-        {
-            return false;
-        }
-
         if (!string.Equals(Path, other.Path, StringComparison.OrdinalIgnoreCase))
         {
             return false;
@@ -45,6 +43,7 @@ public sealed class RouteEndpointKey : IEquatable<RouteEndpointKey>
                 return false;
             }
         }
+
         return true;
     }
 
@@ -57,6 +56,16 @@ public sealed class RouteEndpointKey : IEquatable<RouteEndpointKey>
                 StringComparer.OrdinalIgnoreCase.GetHashCode(kvp.Key),
                 kvp.Value?.GetHashCode() ?? 0);
         }
+
         return hash;
+    }
+    public static bool operator ==(RouteEndpointKey left, RouteEndpointKey right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(RouteEndpointKey left, RouteEndpointKey right)
+    {
+        return !(left == right);
     }
 }
