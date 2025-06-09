@@ -160,6 +160,7 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
 
                 while (true)
                 {
+                    // The ids has to be an implementation of IList<T> to be compatible with Dapper's In operator.
                     var pageOfIds = taskGroup.Value.Skip(lapsCounter++ * _batchSize).Take(_batchSize).ToArray();
 
                     if (pageOfIds.Length == 0)
