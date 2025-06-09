@@ -17,6 +17,11 @@ public static class WebHostBuilderExtensions
             .UseNLog()
             .ConfigureAppConfiguration((context, _) =>
             {
+                if (LogManager.Configuration is null)
+                {
+                    return;
+                }
+
                 var environment = context.HostingEnvironment;
                 var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
                 
@@ -24,10 +29,7 @@ public static class WebHostBuilderExtensions
                     ? Path.Combine(environment.ContentRootPath, ShellOptionConstants.DefaultAppDataPath) 
                     : appData;
 
-                if (LogManager.Configuration is not null)
-                {
-                    LogManager.Configuration.Variables["configDir"] = configDir;
-                }
+                LogManager.Configuration.Variables["configDir"] = configDir;
             });
     }
 }
