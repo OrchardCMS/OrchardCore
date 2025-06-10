@@ -151,10 +151,8 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 
                 return false;
             }
-            else
-            {
-                _logger.LogWarning("There were issues indexing a document using Elasticsearch");
-            }
+
+            _logger.LogWarning("There were issues indexing a document using Elasticsearch");
         }
 
         return totalBatchesProcessed == totalBatchesSucceeded;
