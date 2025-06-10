@@ -11,9 +11,9 @@ public static class EntityExtensions
     /// <param name="entity">The <see cref="IEntity"/>.</param>
     /// <typeparam name="T">The type of the property to extract.</typeparam>
     /// <returns>A new instance of the requested type if the property was not found.</returns>
-    public static T As<T>(this IEntity entity, JsonSerializerOptions options = null)
+    public static T As<T>(this IEntity entity)
         where T : new()
-        => entity.As<T>(typeof(T).Name, options);
+        => entity.As<T>(typeof(T).Name);
 
     /// <summary>
     /// Extracts the specified named property.
@@ -22,14 +22,14 @@ public static class EntityExtensions
     /// <param name="entity">The <see cref="IEntity"/>.</param>
     /// <param name="name">The name of the property to extract.</param>
     /// <returns>A new instance of the requested type if the property was not found.</returns>
-    public static T As<T>(this IEntity entity, string name, JsonSerializerOptions options = null)
+    public static T As<T>(this IEntity entity, string name)
         where T : new()
     {
         ArgumentNullException.ThrowIfNull(name);
 
         if (entity.Properties.TryGetPropertyValue(name, out var value))
         {
-            return value.Deserialize<T>(options ?? JOptions.Default);
+            return value.Deserialize<T>(JOptions.Default);
         }
 
         return new T();
@@ -53,22 +53,22 @@ public static class EntityExtensions
     public static bool Has(this IEntity entity, string name)
         => name != null && entity.Properties.ContainsKey(name);
 
-    public static IEntity Put<T>(this IEntity entity, T aspect, JsonSerializerOptions options = null)
+    public static IEntity Put<T>(this IEntity entity, T aspect)
         where T : new()
-        => entity.Put(typeof(T).Name, aspect, options);
+        => entity.Put(typeof(T).Name, aspect);
 
-    public static bool TryGet<T>(this IEntity entity, out T aspect, JsonSerializerOptions options = null)
+    public static bool TryGet<T>(this IEntity entity, out T aspect)
         where T : new()
-        => entity.TryGet(typeof(T).Name, out aspect, options);
+        => entity.TryGet(typeof(T).Name, out aspect);
 
-    public static bool TryGet<T>(this IEntity entity, string name, out T aspect, JsonSerializerOptions options = null)
+    public static bool TryGet<T>(this IEntity entity, string name, out T aspect)
         where T : new()
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
         if (entity.Properties.TryGetPropertyValue(name, out var value))
         {
-            aspect = value.ToObject<T>(options);
+            aspect = value.ToObject<T>();
 
             return true;
         }
@@ -78,11 +78,11 @@ public static class EntityExtensions
         return false;
     }
 
-    public static IEntity Put(this IEntity entity, string name, object value, JsonSerializerOptions options = null)
+    public static IEntity Put(this IEntity entity, string name, object value)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        entity.Properties[name] = JObject.FromObject(value, options);
+        entity.Properties[name] = JObject.FromObject(value);
 
         return entity;
     }
@@ -93,9 +93,9 @@ public static class EntityExtensions
     /// <param name="entity">The <see cref="IEntity"/>.</param>
     /// <param name="action">An action to apply on the aspect.</param>
     /// <returns>The current <see cref="IEntity"/> instance.</returns>
-    public static IEntity Alter<TAspect>(this IEntity entity, Action<TAspect> action, JsonSerializerOptions options = null)
+    public static IEntity Alter<TAspect>(this IEntity entity, Action<TAspect> action)
         where TAspect : new()
-        => entity.Alter(typeof(TAspect).Name, action, options);
+        => entity.Alter(typeof(TAspect).Name, action);
 
     /// <summary>
     /// Modifies or create an aspect.
@@ -104,7 +104,7 @@ public static class EntityExtensions
     /// <param name="name">The name of the aspect.</param>
     /// <param name="action">An action to apply on the aspect.</param>
     /// <returns>The current <see cref="IEntity"/> instance.</returns>
-    public static IEntity Alter<TAspect>(this IEntity entity, string name, Action<TAspect> action, JsonSerializerOptions options = null)
+    public static IEntity Alter<TAspect>(this IEntity entity, string name, Action<TAspect> action)
         where TAspect : new()
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
@@ -117,7 +117,7 @@ public static class EntityExtensions
         }
         else
         {
-            obj = value.Deserialize<TAspect>(options ?? JOptions.Default);
+            obj = value.Deserialize<TAspect>(JOptions.Default);
         }
 
         action?.Invoke(obj);
