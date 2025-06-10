@@ -101,9 +101,9 @@ public class SiteContext : IDisposable
         await shellScope.UsingAsync(execute, activateShell);
     }
 
-    public async Task RunRecipeAsync(string recipeName, string recipePath)
+    public Task RunRecipeAsync(string recipeName, string recipePath)
     {
-        await UsingTenantScopeAsync(async scope =>
+        return UsingTenantScopeAsync(async scope =>
         {
             var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
             var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
@@ -126,18 +126,18 @@ public class SiteContext : IDisposable
         });
     }
 
-    public async Task ResetLuceneIndexesAsync(string indexName)
+    public Task ResetLuceneIndexesAsync(string indexName)
     {
-        await UsingTenantScopeAsync(async scope =>
+        return UsingTenantScopeAsync(async scope =>
         {
-            var entityManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
+            var indexProfileManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
             var indexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
             var contentIndexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
 
-            var index = await entityManager.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
+            var index = await indexProfileManager.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
 
-            await entityManager.ResetAsync(index);
-            await entityManager.UpdateAsync(index);
+            await indexProfileManager.ResetAsync(index);
+            await indexProfileManager.UpdateAsync(index);
 
             // Instead of calling SynchronizeAsync which triggers the indexing in a background process,
             // directly call and await the indexing process.
