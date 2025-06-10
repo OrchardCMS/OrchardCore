@@ -9,6 +9,8 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 jobs:
   test:
+    # To enable this workflow on a fork, comment out:
+    if: github.repository == 'OrchardCMS/OrchardCore'
     runs-on: ubuntu-24.04
     name: Build, Test, Deploy
     steps:
