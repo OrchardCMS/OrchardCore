@@ -11,7 +11,6 @@ public class ShellContext : IDisposable, IAsyncDisposable
     private List<WeakReference<ShellContext>> _dependents;
     private readonly SemaphoreSlim _semaphore = new(1);
     private bool _disposed;
-
     private volatile int _refCount;
     private int _terminated;
     private bool _released;
@@ -122,7 +121,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
 
     private Task ReleaseFromLastScopeAsync() => ReleaseInternalAsync(ReleaseMode.FromLastScope);
 
-    internal Task ReleaseFromDependencyAsync() => ReleaseInternalAsync(ReleaseMode.FromDependency);
+    private Task ReleaseFromDependencyAsync() => ReleaseInternalAsync(ReleaseMode.FromDependency);
 
     private async Task ReleaseInternalAsync(ReleaseMode mode = ReleaseMode.Normal)
     {
@@ -255,7 +254,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
         do
         {
             current = _refCount;
-            if (current <= -1)
+            if (current < 0)
             {
                 throw new InvalidOperationException(
                    $"Can't resolve a scope on tenant '{Settings.Name}' as the shell context is already terminated");
@@ -268,6 +267,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
         {
             // If terminated, decrement back and throw
             Interlocked.Decrement(ref _refCount);
+
             throw new InvalidOperationException(
                $"Can't resolve a scope on tenant '{Settings.Name}' as the shell context is already terminated");
         }
