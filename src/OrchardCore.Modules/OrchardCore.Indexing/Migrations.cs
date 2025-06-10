@@ -30,11 +30,13 @@ public sealed class Migrations : DataMigration
 
     public async Task<int> UpdateFrom1Async()
     {
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table =>
-        {
-            table.RenameColumn("ContentItemId", "RecordId");
-            table.AddColumn<string>("Category", c => c.WithLength(50));
-        });
+        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
+            .AddColumn<string>("Category", c => c.WithLength(50))
+        );
+
+        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
+            .RenameColumn("ContentItemId", "RecordId")
+        );
 
         await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
             .DropIndex("IDX_IndexingTask_ContentItemId")
