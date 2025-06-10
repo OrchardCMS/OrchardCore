@@ -194,7 +194,7 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
 
         var nameProvider = _serviceProvider.GetKeyedService<IIndexNameProvider>(index.ProviderName);
 
-        if (nameProvider is not null)
+        if (nameProvider is not null && !string.IsNullOrEmpty(index.IndexName))
         {
             // Set the full name of the index.
             index.IndexFullName = nameProvider.GetFullIndexName(index.IndexName);
