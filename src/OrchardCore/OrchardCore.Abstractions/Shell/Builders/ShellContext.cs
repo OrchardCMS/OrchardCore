@@ -12,9 +12,9 @@ public class ShellContext : IDisposable, IAsyncDisposable
     private readonly SemaphoreSlim _semaphore = new(1);
     private bool _disposed;
 
-    internal volatile int _refCount;
-    internal volatile int _terminated;
-    internal bool _released;
+    private volatile int _refCount;
+    private int _terminated;
+    private bool _released;
 
     /// <summary>
     /// Initializes a new <see cref="ShellContext"/>.
@@ -50,6 +50,11 @@ public class ShellContext : IDisposable, IAsyncDisposable
     /// The Pipeline built for this shell.
     /// </summary>
     public IShellPipeline Pipeline { get; set; }
+
+    /// <summary>
+    /// Whether or not this shell context has been disposed.
+    /// </summary>
+    public bool IsDisposed => _disposed;
 
     /// <summary>
     /// PlaceHolder class used for shell lazy initialization.
@@ -115,11 +120,11 @@ public class ShellContext : IDisposable, IAsyncDisposable
     /// </summary>
     public Task ReleaseAsync() => ReleaseInternalAsync();
 
-    internal Task ReleaseFromLastScopeAsync() => ReleaseInternalAsync(ReleaseMode.FromLastScope);
+    private Task ReleaseFromLastScopeAsync() => ReleaseInternalAsync(ReleaseMode.FromLastScope);
 
     internal Task ReleaseFromDependencyAsync() => ReleaseInternalAsync(ReleaseMode.FromDependency);
 
-    internal async Task ReleaseInternalAsync(ReleaseMode mode = ReleaseMode.Normal)
+    private async Task ReleaseInternalAsync(ReleaseMode mode = ReleaseMode.Normal)
     {
         // A 'PlaceHolder' is always released.
         if (this is PlaceHolder)
@@ -234,6 +239,87 @@ public class ShellContext : IDisposable, IAsyncDisposable
         {
             _semaphore.Release();
         }
+    }
+
+    internal void AddRef()
+    {
+        // The service provider is null if we try to create
+        // a scope on a disabled shell or already disposed.
+        if (ServiceProvider is null)
+        {
+            throw new InvalidOperationException(
+               $"Can't resolve a scope on tenant '{Settings.Name}' as it is disabled or disposed");
+        }
+
+        int current;
+        do
+        {
+            current = _refCount;
+            if (current <= -1)
+            {
+                throw new InvalidOperationException(
+                   $"Can't resolve a scope on tenant '{Settings.Name}' as the shell context is already terminated");
+            }
+            // Try to increment _refCount only if it is not <= -1
+        }
+        while (Interlocked.CompareExchange(ref _refCount, current + 1, current) != current);
+
+        if (Interlocked.CompareExchange(ref _terminated, 0, 0) != 0)
+        {
+            // If terminated, decrement back and throw
+            Interlocked.Decrement(ref _refCount);
+            throw new InvalidOperationException(
+               $"Can't resolve a scope on tenant '{Settings.Name}' as the shell context is already terminated");
+        }
+    }
+
+    internal bool Release()
+    {
+        if (Interlocked.Decrement(ref _refCount) == 0)
+        {
+            if (Interlocked.CompareExchange(ref _terminated, 1, 1) == 1 &&
+                Interlocked.CompareExchange(ref _refCount, -1, 0) == 0)
+            {
+                // If the shell context is terminated, we can dispose it.
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    internal async Task<bool> TerminateShellContextAsync()
+    {
+        // Check if this is the last scope that is releasing the shell context.
+        if (Interlocked.CompareExchange(ref _refCount, 1, 1) != 1)
+        {
+            return false;
+        }
+
+        // A disabled shell still in use is released by its last scope.
+        if (Settings.IsDisabled())
+        {
+            await ReleaseFromLastScopeAsync();
+        }
+
+        if (!_released)
+        {
+            return false;
+        }
+
+        // If more than one scope is still using the shell context, we can't terminate it yet.
+        if (Interlocked.CompareExchange(ref _refCount, 1, 1) != 1)
+        {
+            return false;
+        }
+
+        // If a new last scope reached this point, ensure that the shell is terminated once.
+        if (Interlocked.CompareExchange(ref _terminated, 1, 0) >= 1)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public void Dispose()
