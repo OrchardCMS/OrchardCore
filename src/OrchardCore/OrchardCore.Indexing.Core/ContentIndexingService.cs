@@ -16,7 +16,6 @@ public sealed class ContentIndexingService : NamedIndexingService
     private readonly IStore _store;
     private readonly IContentManager _contentManager;
     private readonly IEnumerable<IDocumentIndexHandler> _contentItemIndexHandlers;
-    private readonly ILogger _logger;
 
     private ISession _readonlySession;
     private Dictionary<string, CultureAspect> _cultureAspects;
@@ -33,12 +32,16 @@ public sealed class ContentIndexingService : NamedIndexingService
         IServiceProvider serviceProvider,
         IEnumerable<IDocumentIndexHandler> contentItemIndexHandlers,
         ILogger<ContentIndexingService> logger)
-        : base(IndexingConstants.ContentsIndexSource, indexProfileStore, indexingTaskManager, serviceProvider)
+        : base(
+            IndexingConstants.ContentsIndexSource,
+            indexProfileStore,
+            indexingTaskManager,
+            serviceProvider,
+            logger)
     {
         _store = store;
         _contentManager = contentManager;
         _contentItemIndexHandlers = contentItemIndexHandlers;
-        _logger = logger;
     }
 
     protected override async Task BeforeProcessingTasksAsync(IEnumerable<IndexingTask> tasks, IEnumerable<IndexProfileEntryContext> contexts)
@@ -129,7 +132,7 @@ public sealed class ContentIndexingService : NamedIndexingService
 
         var buildIndexContext = new BuildDocumentIndexContext(new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], entry.DocumentIndexManager.GetContentIndexSettings());
 
-        await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
+        await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), Logger);
 
         // Ignore if the culture is not indexed in this index.
         if (!anyCulture)
