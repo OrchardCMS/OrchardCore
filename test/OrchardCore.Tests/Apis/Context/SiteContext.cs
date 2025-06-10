@@ -99,6 +99,8 @@ public class SiteContext : IDisposable
         var shellScope = await ShellHost.GetScopeAsync(TenantName);
         HttpContextAccessor.HttpContext = shellScope.ShellContext.CreateHttpContext();
         await shellScope.UsingAsync(execute, activateShell);
+
+        HttpContextAccessor.HttpContext = null;
     }
 
     public async Task RunRecipeAsync(string recipeName, string recipePath)

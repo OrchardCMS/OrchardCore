@@ -28,19 +28,9 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     public ShellScope(ShellContext shellContext)
     {
         // Prevent the context from being disposed until the end of the scope.
-        Interlocked.Increment(ref shellContext._refCount);
+        shellContext.AddRef();
+
         ShellContext = shellContext;
-
-        // The service provider is null if we try to create
-        // a scope on a disabled shell or already disposed.
-        if (shellContext.ServiceProvider is null)
-        {
-            // Keep the counter clean before failing.
-            Interlocked.Decrement(ref shellContext._refCount);
-
-            throw new InvalidOperationException(
-                $"Can't resolve a scope on tenant '{shellContext.Settings.Name}' as it is disabled or disposed");
-        }
 
         _serviceScope = shellContext.ServiceProvider.CreateAsyncScope();
         ServiceProvider = _serviceScope.ServiceProvider;
@@ -93,12 +83,10 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         var current = Current;
 
-        if (current == null)
+        if (current?._items == null)
         {
             return null;
         }
-
-        current._items ??= [];
 
         return current._items.TryGetValue(key, out var value) ? value : null;
     }
@@ -110,12 +98,10 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         var current = Current;
 
-        if (current == null)
+        if (current?._items == null)
         {
             return default;
         }
-
-        current._items ??= [];
 
         return current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
     }
@@ -133,7 +119,6 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         }
 
         current._items ??= [];
-
 
         if (!current._items.TryGetValue(key, out var value) || value is not T item)
         {
@@ -156,7 +141,6 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         }
 
         current._items ??= [];
-
 
         if (!current._items.TryGetValue(key, out var value) || value is not T item)
         {
@@ -315,7 +299,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Activate the shell, if not yet done, by calling the related tenant event handlers.
     /// </summary>
-    internal async Task ActivateShellInternalAsync()
+    private async Task ActivateShellInternalAsync()
     {
         if (ShellContext.IsActivated)
         {
@@ -457,7 +441,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// Invokes the registered delegates that should be executed before disposing this shell scope,
     /// triggers the deferred signals and executes the deferred tasks in their own isolated scope.
     /// </summary>
-    internal async Task BeforeDisposeAsync()
+    private async Task BeforeDisposeAsync()
     {
         if (_beforeDispose != null)
         {
@@ -528,48 +512,18 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// Terminates the shell, if released and in its last scope, by calling the related event handlers,
     /// and specifies if the shell context should be disposed consequently to this scope being disposed.
     /// </summary>
-    internal async Task TerminateShellInternalAsync()
+    private async Task TerminateShellInternalAsync()
     {
         _state |= ShellScopeStates.IsTerminating;
-
         if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
             return;
         }
 
-        _state |= ShellScopeStates.Terminated;
-
         // If the shell context is released and in its last shell scope, according to the ref counter value,
-        // the terminate event handlers are called, and the shell will be disposed at the end of this scope.
-
-        // Check if the decremented value of the ref counter reached 0.
-        if (Interlocked.Decrement(ref ShellContext._refCount) == 0)
+        // the terminate event handlers are called, and the shell will be disposed at the end of the last scope.
+        if (await ShellContext.TerminateShellContextAsync())
         {
-            // A disabled shell still in use is released by its last scope.
-            if (ShellContext.Settings.IsDisabled())
-            {
-                await ShellContext.ReleaseFromLastScopeAsync();
-            }
-
-            if (!ShellContext._released)
-            {
-                return;
-            }
-
-            // If released after the counter reached 0, a new last scope may have been created.
-            if (Interlocked.CompareExchange(ref ShellContext._refCount, 0, 0) != 0)
-            {
-                return;
-            }
-
-            // If a new last scope reached this point, ensure that the shell is terminated once.
-            if (Interlocked.Exchange(ref ShellContext._terminated, 1) == 1)
-            {
-                return;
-            }
-
-            _state |= ShellScopeStates.ShellTerminated;
-
             var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
             foreach (var tenantEvent in tenantEvents)
             {
@@ -594,7 +548,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
         _serviceScope.Dispose();
 
-        if (_state.HasFlag(ShellScopeStates.ShellTerminated))
+        if (ShellContext.Release())
         {
             ShellContext.Dispose();
         }
@@ -613,7 +567,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
         await _serviceScope.DisposeAsync();
 
-        if (_state.HasFlag(ShellScopeStates.ShellTerminated))
+        if (ShellContext.Release())
         {
             await ShellContext.DisposeAsync();
         }
@@ -621,14 +575,8 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         Terminate();
     }
 
-    private void Terminate()
+    private static void Terminate()
     {
-        if (!_state.HasFlag(ShellScopeStates.Terminated))
-        {
-            // Keep the counter clean if not yet decremented.
-            Interlocked.Decrement(ref ShellContext._refCount);
-        }
-
         var holder = _current.Value;
         if (holder is not null)
         {
@@ -655,9 +603,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     private enum ShellScopeStates : byte
     {
         ServiceScopeOnly = 1,
-        ShellTerminated = 2,
-        IsTerminating = 4,
-        Terminated = 8,
-        IsDisposed = 16,
+        IsTerminating = 2,
+        IsDisposed = 4,
     }
 }
