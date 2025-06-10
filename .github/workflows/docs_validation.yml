@@ -19,8 +19,6 @@ concurrency:
 
 jobs:
   validate-building-documentation:
-    # To enable this workflow on a fork, comment out:
-    if: github.repository == 'OrchardCMS/OrchardCore'
     name: Validating Building the Documentation
     runs-on: ubuntu-24.04
     steps:
