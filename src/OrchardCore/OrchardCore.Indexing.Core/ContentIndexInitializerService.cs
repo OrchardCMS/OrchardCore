@@ -15,14 +15,14 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
         _shellSettings = shellSettings;
     }
 
-    public override async Task ActivatedAsync()
+    public override Task ActivatedAsync()
     {
         if (!_shellSettings.IsRunning())
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("indexing-initialize", async scope =>
+        return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("indexing-initialize", async scope =>
         {
             var indexStore = scope.ServiceProvider.GetRequiredService<IIndexProfileStore>();
             var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
