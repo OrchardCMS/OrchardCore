@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- NuGet properties-->
+    <Title>Taxonimoes Core</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Core Implementation for Taxonomies module.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
+    <ProjectReference Include="..\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
+  </ItemGroup>
+
+</Project>
