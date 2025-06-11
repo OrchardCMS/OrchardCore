@@ -6,7 +6,7 @@
     <Description>
       $(OCCMSDescription)
 
-      Core Implementation for Taxonomies module.
+      Core Implementation for the Taxonomies module.
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
