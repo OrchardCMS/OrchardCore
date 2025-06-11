@@ -37,8 +37,9 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
             IndexProfile indexProfile = null;
 
             var id = token[nameof(indexProfile.Id)]?.GetValue<string>();
+            var hasId = !string.IsNullOrEmpty(id);
 
-            if (!string.IsNullOrEmpty(id))
+            if (hasId)
             {
                 indexProfile = await _indexProfileManager.FindByIdAsync(id);
             }
@@ -85,6 +86,11 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
                 }
 
                 indexProfile = await _indexProfileManager.NewAsync(providerName, type, token);
+
+                if (hasId)
+                {
+                    indexProfile.Id = id;
+                }
             }
 
             var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
