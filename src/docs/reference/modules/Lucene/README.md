@@ -146,6 +146,7 @@ Here is an example of how to create `Lucene` index profile using the `IndexProfi
       "indexes": [
 	    {
 		    "Name": "BlogPostsLucene",
+            "IndexName": "blogposts",
 		    "ProviderName": "Lucene",
 		    "Type": "Content",
 		    "Properties": {

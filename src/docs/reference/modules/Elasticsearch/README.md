@@ -92,6 +92,7 @@ Here is an example of how to create `Elasticsearch` index profile using the `Ind
       "indexes": [
 	    {
 		    "Name": "BlogPostsES",
+            "IndexName": "blogposts",
 		    "ProviderName": "Elasticsearch",
 		    "Type": "Content",
 		    "Properties": {

@@ -96,6 +96,7 @@ Here is an example of how to create `AzureAISearch` index profile using the `Ind
       "indexes": [
 	    {
 		    "Name": "BlogPostsAI",
+            "IndexName": "blogposts",
 		    "ProviderName": "AzureAISearch",
 		    "Type": "Content",
 		    "Properties": {

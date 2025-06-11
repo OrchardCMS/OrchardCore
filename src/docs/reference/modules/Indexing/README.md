@@ -79,6 +79,7 @@ Here is a sample step:
 	    {
 		    "Id": "The id",
 		    "Name": "UniqueName",
+            "IndexName": "blogposts",
 		    "ProviderName": "ProviderName",
 		    "Type": "Content",
 		    "Properties": {
