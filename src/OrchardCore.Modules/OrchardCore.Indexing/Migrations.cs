@@ -11,6 +11,13 @@ namespace OrchardCore.Indexing;
 
 public sealed class Migrations : DataMigration
 {
+    private readonly ISession _session;
+
+    public Migrations(ISession session)
+    {
+        _session = session;
+    }
+
     public async Task<int> CreateAsync()
     {
         await SchemaBuilder.CreateTableAsync("IndexingTask", table => table
@@ -38,6 +45,10 @@ public sealed class Migrations : DataMigration
             .DropIndex("IDX_IndexingTask_ContentItemId")
         );
 
+        // Flush the session to ensure the changes are saved to the database. Otherwise, if a step alter a table
+        // will not be visible to the next step.
+        await _session.FlushAsync();
+
         return 2;
     }
 
@@ -46,6 +57,10 @@ public sealed class Migrations : DataMigration
         await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
             .RenameColumn("ContentItemId", "RecordId")
         );
+
+        // Flush the session to ensure the changes are saved to the database. Otherwise, if a step alter a table
+        // will not be visible to the next step.
+        await _session.FlushAsync();
 
         return 3;
     }
