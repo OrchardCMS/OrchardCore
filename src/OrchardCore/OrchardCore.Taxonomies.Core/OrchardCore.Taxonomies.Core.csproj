@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- NuGet properties-->
-    <Title>Taxonimoes Core</Title>
+    <Title>OrchardCore Taxonomies Core</Title>
     <Description>
       $(OCCMSDescription)
 
