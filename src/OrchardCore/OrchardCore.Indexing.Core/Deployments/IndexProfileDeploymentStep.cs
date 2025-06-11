@@ -7,10 +7,10 @@ public sealed class IndexProfileDeploymentStep : DeploymentStep
 {
     public IndexProfileDeploymentStep()
     {
-        Name = IndexingProfileStep.StepKey;
+        Name = CreateOrUpdateIndexProfileStep.StepKey;
     }
 
     public bool IncludeAll { get; set; }
 
-    public string[] IndexeIds { get; set; }
+    public string[] IndexIds { get; set; }
 }
