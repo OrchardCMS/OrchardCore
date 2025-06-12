@@ -55,8 +55,8 @@ public sealed class RecipesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddRecipeExecutionStep<CreateOrUpdateIndexProfileStep>();
-        services.AddRecipeExecutionStep<ResetIndexProfileStep>();
-        services.AddRecipeExecutionStep<RebuildIndexProfileStep>();
+        services.AddRecipeExecutionStep<ResetIndexStep>();
+        services.AddRecipeExecutionStep<RebuildIndexStep>();
     }
 }
 
@@ -66,8 +66,8 @@ public sealed class DeploymentsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<IndexProfileDeploymentSource, IndexProfileDeploymentStep, IndexProfileDeploymentStepDisplayDriver>();
-        services.AddDeployment<RebuildIndexProfileDeploymentSource, RebuildIndexProfileDeploymentStep, RebuildIndexProfileDeploymentStepDriver>();
-        services.AddDeployment<ResetIndexProfileDeploymentSource, ResetIndexProfileDeploymentStep, ResetIndexProfileDeploymentStepDriver>();
+        services.AddDeployment<RebuildIndexDeploymentSource, RebuildIndexDeploymentStep, RebuildIndexDeploymentStepDriver>();
+        services.AddDeployment<ResetIndexDeploymentSource, ResetIndexDeploymentStep, ResetIndexDeploymentStepDriver>();
     }
 }
 

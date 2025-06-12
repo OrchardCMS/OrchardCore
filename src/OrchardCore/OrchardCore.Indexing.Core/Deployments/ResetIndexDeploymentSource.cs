@@ -4,20 +4,20 @@ using OrchardCore.Indexing.Core.Recipes;
 
 namespace OrchardCore.Indexing.Core.Deployments;
 
-public sealed class ResetIndexProfileDeploymentSource
-    : DeploymentSourceBase<ResetIndexProfileDeploymentStep>
+public sealed class ResetIndexDeploymentSource
+    : DeploymentSourceBase<ResetIndexDeploymentStep>
 {
-    protected override Task ProcessAsync(ResetIndexProfileDeploymentStep step, DeploymentPlanResult result)
+    protected override Task ProcessAsync(ResetIndexDeploymentStep step, DeploymentPlanResult result)
     {
         var indicesToReset = step.IncludeAll
             ? []
-            : step.Indexes;
+            : step.IndexNames ?? [];
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = ResetIndexProfileStep.Key,
+            ["name"] = ResetIndexStep.Key,
             ["includeAll"] = step.IncludeAll,
-            ["Indices"] = JArray.FromObject(indicesToReset),
+            ["indexNames"] = JArray.FromObject(indicesToReset),
         });
 
         return Task.CompletedTask;

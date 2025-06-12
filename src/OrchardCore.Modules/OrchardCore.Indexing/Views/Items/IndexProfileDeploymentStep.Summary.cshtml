@@ -5,17 +5,20 @@
 
 @model ShapeViewModel<IndexProfileDeploymentStep>
 
-<h5>@T["Indexes"]</h5>
+<h5>@T["Index Profiles"]</h5>
 
 @if (Model.Value.IncludeAll)
 {
-    <span class="badge text-bg-success">@T["All Indexes"]</span>
+    <span class="badge text-bg-success">@T["All index profiles"]</span>
 }
-else if (Model.Value.IndexIds?.Length > 0)
+else if (Model.Value.IndexNames?.Length > 0)
 {
-    <span class="badge text-bg-warning">@T.Plural(Model.Value.IndexIds.Length, "1 selected index.", "{0} selected indexes.", Model.Value.IndexIds.Length)</span>
+    foreach (var indexName in Model.Value.IndexNames)
+    {
+        <span class="badge ta-badge">@indexName</span>
+    }
 }
 else
 {
-    <span class="badge text-bg-warning">@T["No selected indexes."]</span>
+    <span class="badge text-bg-warning">@T["No selected index profiles."]</span>
 }

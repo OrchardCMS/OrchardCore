@@ -37,9 +37,9 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
         return Initialize<IndexProfileDeploymentStepViewModel>("IndexProfileDeploymentStep_Fields_Edit", async model =>
         {
             model.IncludeAll = step.IncludeAll;
-            model.Indexes = (await _store.GetAllAsync()).Select(x => new SelectListItem(x.Name, x.Id)
+            model.Indexes = (await _store.GetAllAsync()).Select(x => new SelectListItem(x.Name, x.Name)
             {
-                Selected = step.IndexIds?.Contains(x.IndexName) ?? false,
+                Selected = step.IndexNames?.Contains(x.Name) ?? false,
             }).OrderBy(x => x.Text)
             .ToArray();
         }).Location("Content");
@@ -49,14 +49,12 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
     {
         var model = new IndexProfileDeploymentStepViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix,
-            p => p.IncludeAll,
-            p => p.Indexes);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         if (model.IncludeAll)
         {
             step.IncludeAll = true;
-            step.IndexIds = [];
+            step.IndexNames = [];
         }
         else
         {
@@ -66,7 +64,7 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
             }
 
             step.IncludeAll = false;
-            step.IndexIds = model.Indexes.Where(x => x.Selected).Select(x => x.Value).ToArray();
+            step.IndexNames = model.Indexes.Where(x => x.Selected).Select(x => x.Value).ToArray();
         }
 
         return Edit(step, context);
