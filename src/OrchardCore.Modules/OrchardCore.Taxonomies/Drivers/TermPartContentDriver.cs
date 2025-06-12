@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
-using OrchardCore.Taxonomies.Indexing;
+using OrchardCore.Taxonomies.Core;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.ViewModels;
 using YesSql;
@@ -17,15 +17,18 @@ namespace OrchardCore.Taxonomies.Drivers;
 public sealed class TermPartContentDriver : ContentDisplayDriver
 {
     private readonly ISession _session;
+    private readonly IContentsTaxonomyListQueryService _contentsTaxonomyListQueryService;
     private readonly PagerOptions _pagerOptions;
     private readonly IContentManager _contentManager;
 
     public TermPartContentDriver(
         ISession session,
         IOptions<PagerOptions> pagerOptions,
+        IContentsTaxonomyListQueryService contentsTaxonomyListQueryService,
         IContentManager contentManager)
     {
         _session = session;
+        _contentsTaxonomyListQueryService = contentsTaxonomyListQueryService;
         _pagerOptions = pagerOptions.Value;
         _contentManager = contentManager;
     }
@@ -50,22 +53,17 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
 
     private async Task<IEnumerable<ContentItem>> QueryTermItemsAsync(TermPart termPart, PagerSlim pager)
     {
+        var query = await _contentsTaxonomyListQueryService.QueryAsync(termPart, pager);
+
+        var containedItems = await query.ListAsync();
+
+        if (!containedItems.Any())
+        {
+            return containedItems;
+        }
+
         if (pager.Before != null)
         {
-            var beforeValue = new DateTime(long.Parse(pager.Before));
-            var query = _session.Query<ContentItem>()
-                .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
-                .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null))
-                .OrderBy(x => x.CreatedUtc)
-                .Take(pager.PageSize + 1);
-
-            var containedItems = await query.ListAsync();
-
-            if (!containedItems.Any())
-            {
-                return containedItems;
-            }
-
             containedItems = containedItems.Reverse();
 
             // There is always an After as we clicked on Before.
@@ -80,22 +78,9 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
 
             return await _contentManager.LoadAsync(containedItems);
         }
-        else if (pager.After != null)
+
+        if (pager.After != null)
         {
-            var afterValue = new DateTime(long.Parse(pager.After));
-            var query = _session.Query<ContentItem>()
-                .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
-                .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue))
-                .OrderByDescending(x => x.CreatedUtc)
-                .Take(pager.PageSize + 1);
-
-            var containedItems = await query.ListAsync();
-
-            if (!containedItems.Any())
-            {
-                return containedItems;
-            }
-
             // There is always a Before page as we clicked on After.
             pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
             pager.After = null;
@@ -108,32 +93,17 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
 
             return await _contentManager.LoadAsync(containedItems);
         }
-        else
+
+        pager.Before = null;
+        pager.After = null;
+
+        if (containedItems.Count() == pager.PageSize + 1)
         {
-            var query = _session.Query<ContentItem>()
-                .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
-                .With<ContentItemIndex>(CreateContentIndexFilter(null, null))
-                .OrderByDescending(x => x.CreatedUtc)
-                .Take(pager.PageSize + 1);
-
-            var containedItems = await query.ListAsync();
-
-            if (!containedItems.Any())
-            {
-                return containedItems;
-            }
-
-            pager.Before = null;
-            pager.After = null;
-
-            if (containedItems.Count() == pager.PageSize + 1)
-            {
-                containedItems = containedItems.Take(pager.PageSize);
-                pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
-            }
-
-            return await _contentManager.LoadAsync(containedItems);
+            containedItems = containedItems.Take(pager.PageSize);
+            pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
         }
+
+        return await _contentManager.LoadAsync(containedItems);
     }
 
     private static async Task<PagerSlim> GetPagerAsync(IUpdateModel updater, int pageSize)
