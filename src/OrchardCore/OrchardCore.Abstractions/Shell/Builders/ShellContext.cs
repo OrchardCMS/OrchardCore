@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Builders;
 
@@ -289,12 +291,12 @@ public class ShellContext : IDisposable, IAsyncDisposable
         return false;
     }
 
-    internal async Task<bool> TerminateShellContextAsync()
+    internal async Task TerminateShellContextAsync(ShellScope scope)
     {
         // Check if this is the last scope that is releasing the shell context.
         if (Interlocked.CompareExchange(ref _refCount, 1, 1) != 1)
         {
-            return false;
+            return;
         }
 
         // A disabled shell still in use is released by its last scope.
@@ -305,22 +307,31 @@ public class ShellContext : IDisposable, IAsyncDisposable
 
         if (!_released)
         {
-            return false;
+            return;
         }
 
         // If more than one scope is still using the shell context, we can't terminate it yet.
         if (Interlocked.CompareExchange(ref _refCount, 1, 1) != 1)
         {
-            return false;
+            return;
         }
 
         // If a new last scope reached this point, ensure that the shell is terminated once.
         if (Interlocked.CompareExchange(ref _terminated, 1, 0) >= 1)
         {
-            return false;
+            return;
         }
 
-        return true;
+        var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+        foreach (var tenantEvent in tenantEvents)
+        {
+            await tenantEvent.TerminatingAsync();
+        }
+
+        foreach (var tenantEvent in tenantEvents.Reverse())
+        {
+            await tenantEvent.TerminatedAsync();
+        }
     }
 
     internal async Task ActivateAsync()
@@ -351,7 +362,19 @@ public class ShellContext : IDisposable, IAsyncDisposable
         _isActivating = true;
         try
         {
-            await ShellScope.ActivateShellAsync(this);
+            await new ShellScope(this).UsingAsync(async scope =>
+            {
+                var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+                foreach (var tenantEvent in tenantEvents)
+                {
+                    await tenantEvent.ActivatingAsync();
+                }
+
+                foreach (var tenantEvent in tenantEvents.Reverse())
+                {
+                    await tenantEvent.ActivatedAsync();
+                }
+            }, activateShell: false);
 
             IsActivated = true;
         }

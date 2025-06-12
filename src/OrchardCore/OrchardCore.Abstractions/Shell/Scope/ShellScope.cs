@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Scope;
 
@@ -315,23 +314,6 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         await ShellContext.ActivateAsync();
     }
 
-    internal static Task ActivateShellAsync(ShellContext context)
-    {
-        return new ShellScope(context).UsingAsync(async scope =>
-        {
-            var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-            foreach (var tenantEvent in tenantEvents)
-            {
-                await tenantEvent.ActivatingAsync();
-            }
-
-            foreach (var tenantEvent in tenantEvents.Reverse())
-            {
-                await tenantEvent.ActivatedAsync();
-            }
-        }, activateShell: false);
-    }
-
     /// <summary>
     /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
     /// </summary>
@@ -505,19 +487,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
         // If the shell context is released and in its last shell scope, according to the ref counter value,
         // the terminate event handlers are called, and the shell will be disposed at the end of the last scope.
-        if (await ShellContext.TerminateShellContextAsync())
-        {
-            var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
-            foreach (var tenantEvent in tenantEvents)
-            {
-                await tenantEvent.TerminatingAsync();
-            }
-
-            foreach (var tenantEvent in tenantEvents.Reverse())
-            {
-                await tenantEvent.TerminatedAsync();
-            }
-        }
+        await ShellContext.TerminateShellContextAsync(this);
     }
 
     public void Dispose()
