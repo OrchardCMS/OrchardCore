@@ -7,11 +7,11 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Indexing.Core.Recipes;
 
-public sealed class RebuildIndexProfileStep : NamedRecipeStepHandler
+public sealed class RebuildIndexStep : NamedRecipeStepHandler
 {
-    public const string Key = "RebuildIndexProfile";
+    public const string Key = "RebuildIndex";
 
-    public RebuildIndexProfileStep()
+    public RebuildIndexStep()
         : base(Key)
     {
     }
@@ -30,7 +30,7 @@ public sealed class RebuildIndexProfileStep : NamedRecipeStepHandler
             return;
         }
 
-        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("rebuild-index-profile", async scope =>
+        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("rebuild-index", async scope =>
         {
             var indexProfileManager = scope.ServiceProvider.GetService<IIndexProfileManager>();
 

@@ -7,7 +7,7 @@ public sealed class RebuildIndexProfileDeploymentStep : DeploymentStep
 {
     public RebuildIndexProfileDeploymentStep()
     {
-        Name = RebuildIndexProfileStep.Key;
+        Name = RebuildIndexStep.Key;
     }
 
     public bool IncludeAll { get; set; }

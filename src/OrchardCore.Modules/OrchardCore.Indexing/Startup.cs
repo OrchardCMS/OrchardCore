@@ -55,8 +55,8 @@ public sealed class RecipesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddRecipeExecutionStep<CreateOrUpdateIndexProfileStep>();
-        services.AddRecipeExecutionStep<ResetIndexProfileStep>();
-        services.AddRecipeExecutionStep<RebuildIndexProfileStep>();
+        services.AddRecipeExecutionStep<ResetIndexStep>();
+        services.AddRecipeExecutionStep<RebuildIndexStep>();
     }
 }
 

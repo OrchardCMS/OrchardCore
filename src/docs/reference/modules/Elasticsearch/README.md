@@ -155,7 +155,7 @@ To reset all indices:
 ```
 
 !!! note
-    It's recommended to use the `ResetIndexProfile` recipe step instead as the `elastic-index-reset` step is obsolete. 
+    It's recommended to use the `ResetIndex` recipe step instead as the `elastic-index-reset` step is obsolete. 
 
 ### Rebuild Elasticsearch Index Step
 
@@ -190,7 +190,7 @@ To rebuild all indices:
 ```
 
 !!! note
-    It's recommended to use the `RebuildIndexProfile` recipe step instead as the `elastic-index-rebuild` step is obsolete. 
+    It's recommended to use the `RebuildIndex` recipe step instead as the `elastic-index-rebuild` step is obsolete. 
 
 ### Queries recipe step
 

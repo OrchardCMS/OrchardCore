@@ -15,7 +15,7 @@ public sealed class RebuildIndexProfileDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = RebuildIndexProfileStep.Key,
+            ["name"] = RebuildIndexStep.Key,
             ["includeAll"] = step.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToRebuild),
         });

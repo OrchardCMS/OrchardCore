@@ -15,7 +15,7 @@ public sealed class ResetIndexProfileDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = ResetIndexProfileStep.Key,
+            ["name"] = ResetIndexStep.Key,
             ["includeAll"] = step.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToReset),
         });
