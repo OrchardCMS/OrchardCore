@@ -195,11 +195,11 @@ To obtain the correct URL for a resized asset use `AssetUrl` with the optional w
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop)`
 
-To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height, resizeMode, quality and format parameters, e.g.:
+To obtain the correct URL for a resized asset use `AssetUrl` with the optional `width`, `height`, `resizeMode`, `quality` and `format` parameters, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, quality: 50, format: Format.Jpg)`
 
-To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height, resizeMode and bgcolor, e.g.:
+To obtain the correct URL for a resized asset use `AssetUrl` with the optional `width`, `height`, `resizeMode` and `bgcolor`, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Pad, bgcolor: "white")`
 

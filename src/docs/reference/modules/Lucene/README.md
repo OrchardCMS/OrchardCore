@@ -15,7 +15,7 @@ Here is a sample step:
       "Indices": [
         {
           "Search": {
-            "AnalyzerName": "standardanalyzer",
+            "AnalyzerName": "standard",
             "IndexLatest": false,
             "IndexedContentTypes": [
               "Article",
@@ -29,8 +29,8 @@ Here is a sample step:
 }
 ```
 
-note !!!
-     It's recommended to use the `Indexing` recipe step instead as the `lucene-index` step is obsolete. 
+!!! note
+    It's recommended to use the `CreateOrUpdateIndexProfile` recipe step instead as the `lucene-index` step is obsolete. 
 
 ### Queries recipe step
 
@@ -133,8 +133,39 @@ Here is a sample step:
 }
 ```
 
-note !!!
-     It's recommended to use the `IndexProfile` recipe step instead as the `LuceneIndexSettings` step is obsolete. 
+!!! note
+    It's recommended to use the `CreateOrUpdateIndexProfile` recipe step instead as the `LuceneIndexSettings` step is obsolete. 
+
+Here is an example of how to create `Lucene` index profile using the `IndexProfile` for Content items.
+
+```json
+{
+  "steps":[
+    {
+      "name":"CreateOrUpdateIndexProfile",
+      "indexes": [
+	    {
+		    "Name": "BlogPostsLucene",
+            "IndexName": "blogposts",
+		    "ProviderName": "Lucene",
+		    "Type": "Content",
+		    "Properties": {
+			    "ContentIndexMetadata": {
+				    "IndexLatest": false,
+				    "IndexedContentTypes": ["BlogPosts"],
+				    "Culture": "any"
+			    },
+                "LuceneIndexMetadata": {
+                    "AnalyzerName": "standard",
+                    "StoreSourceData": true,
+                }
+		    }
+	    }
+      ]
+    }
+  ]
+}
+```
 
 ### Reset Lucene Index Step
 
@@ -169,8 +200,8 @@ To reset all indices:
 }
 ```
 
-note !!!
-     It's recommended to use the `ResetIndexProfile` recipe step instead as the `lucene-index-reset` step is obsolete. 
+!!! note
+    It's recommended to use the `ResetIndexProfile` recipe step instead as the `lucene-index-reset` step is obsolete. 
 
 ### Rebuild Lucene Index Step
 
@@ -204,8 +235,8 @@ To rebuild all indices:
 }
 ```
 
-note !!!
-     It's recommended to use the `RebuildIndexProfile` recipe step instead as the `lucene-index-rebuild` step is obsolete. 
+!!! note
+    It's recommended to use the `RebuildIndexProfile` recipe step instead as the `lucene-index-rebuild` step is obsolete. 
 
 ### Query Filters
 

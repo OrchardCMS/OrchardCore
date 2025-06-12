@@ -39,7 +39,7 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
             model.IncludeAll = step.IncludeAll;
             model.Indexes = (await _store.GetAllAsync()).Select(x => new SelectListItem(x.Name, x.Id)
             {
-                Selected = step.IndexeIds?.Contains(x.IndexName) ?? false,
+                Selected = step.IndexIds?.Contains(x.IndexName) ?? false,
             }).OrderBy(x => x.Text)
             .ToArray();
         }).Location("Content");
@@ -56,7 +56,7 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
         if (model.IncludeAll)
         {
             step.IncludeAll = true;
-            step.IndexeIds = [];
+            step.IndexIds = [];
         }
         else
         {
@@ -66,7 +66,7 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
             }
 
             step.IncludeAll = false;
-            step.IndexeIds = model.Indexes.Where(x => x.Selected).Select(x => x.Value).ToArray();
+            step.IndexIds = model.Indexes.Where(x => x.Selected).Select(x => x.Value).ToArray();
         }
 
         return Edit(step, context);
