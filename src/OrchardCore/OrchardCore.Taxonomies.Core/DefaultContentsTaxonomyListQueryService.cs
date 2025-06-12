@@ -31,7 +31,7 @@ public sealed class DefaultContentsTaxonomyListQueryService : IContentsTaxonomyL
         IQuery<ContentItem> query = _session.Query<ContentItem>()
             .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId);
 
-        await _contentTaxonomyListFilters.InvokeAsync(filter => filter.FilterAsync(query), _logger);
+        await _contentTaxonomyListFilters.InvokeAsync((filter, q, part) => filter.FilterAsync(q, part), query, termPart, _logger);
 
         if (pager.Before != null)
         {

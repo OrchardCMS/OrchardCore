@@ -18,6 +18,9 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Taxonomies.Core;
+using OrchardCore.Taxonomies.Core.Models;
+using OrchardCore.Taxonomies.Core.Services;
+using OrchardCore.Taxonomies.DataMigrations;
 using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.GraphQL;
@@ -77,6 +80,13 @@ public sealed class Startup : StartupBase
         services.AddContentPart<TermPart>();
         services.AddScoped<IContentHandler, TermPartContentHandler>();
         services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
+
+        services
+            .AddIndexProvider<SortedTaxonomyIndexProvider>()
+            .AddDataMigration<SortedTaxonomyIndexMigrations>()
+            .AddScoped<IContentTaxonomyListFilter, SortedTaxonomyListFilter>()
+            .AddContentPart<TaxonomySortPart>()
+            .UseDisplayDriver<TaxonomySortPartDisplayDriver>();
     }
 }
 
