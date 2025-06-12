@@ -45,7 +45,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
 
         return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", async model =>
         {
-            model.DefaultIndexId = settings.DefaultIndexProfileId;
+            model.DefaultIndexProfileName = settings.DefaultIndexProfileName;
             model.Placeholder = settings.Placeholder;
             model.PageTitle = settings.PageTitle;
             model.Indexes = (await _indexProfileStore.GetAllAsync())
@@ -68,7 +68,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        section.DefaultIndexProfileId = model.DefaultIndexId;
+        section.DefaultIndexProfileName = model.DefaultIndexProfileName;
         section.Placeholder = model.Placeholder;
         section.PageTitle = model.PageTitle;
 

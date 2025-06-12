@@ -2,12 +2,12 @@
 
 @if (Model.Indexes?.Count > 0)
 {
-    <div class="mb-3" asp-validation-class-for="DefaultIndexId">
-        <label asp-for="DefaultIndexId" class="form-label">@T["Default search index"]</label>
-        <select asp-for="DefaultIndexId" asp-items="Model.Indexes" class="form-select">
+    <div class="mb-3" asp-validation-class-for="DefaultIndexProfileName">
+        <label asp-for="DefaultIndexProfileName" class="form-label">@T["Default search index"]</label>
+        <select asp-for="DefaultIndexProfileName" asp-items="Model.Indexes" class="form-select">
             <option value="">@T["Select a default index"]</option>
         </select>
-        <span asp-validation-for="DefaultIndexId"></span>
+        <span asp-validation-for="DefaultIndexProfileName"></span>
         <span class="hint">@T["The default index to use for the search page."]</span>
     </div>
 
