@@ -12,7 +12,6 @@ internal static class ListQueryHelpers
     {
         return session.Query<ContentItem>()
                 .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
-                .OrderBy(o => o.Order)
                 .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
                 .CountAsync();
     }
@@ -22,6 +21,7 @@ internal static class ListQueryHelpers
         return session.Query<ContentItem>()
                 .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
                 .OrderBy(o => o.Order)
+                .ThenBy(o => o.Id)
                 .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
                 .ListAsync();
     }
