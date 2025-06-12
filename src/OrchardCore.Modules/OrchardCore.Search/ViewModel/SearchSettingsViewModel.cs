@@ -5,7 +5,7 @@ namespace OrchardCore.Search.ViewModels;
 
 public class SearchSettingsViewModel
 {
-    public string DefaultIndexId { get; set; }
+    public string DefaultIndexProfileName { get; set; }
 
     public string Placeholder { get; set; }
 

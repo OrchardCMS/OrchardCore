@@ -73,9 +73,9 @@ public sealed class SearchController : Controller
         if (!hasIndexName)
         {
             // Try to find the default index configured in site search settings.
-            if (!string.IsNullOrEmpty(searchSettings.DefaultIndexProfileId))
+            if (!string.IsNullOrEmpty(searchSettings.DefaultIndexProfileName))
             {
-                indexProfile = await _indexProfileStore.FindByIdAsync(searchSettings.DefaultIndexProfileId);
+                indexProfile = await _indexProfileStore.FindByNameAsync(searchSettings.DefaultIndexProfileName);
             }
 
             if (indexProfile is null)
