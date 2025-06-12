@@ -4,7 +4,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Core;
 
-public interface IContentTaxonomyListFilter
+public interface IContentsTaxonomyListFilter
 {
     Task FilterAsync(IQuery<ContentItem> query, TermPart termPart);
 }

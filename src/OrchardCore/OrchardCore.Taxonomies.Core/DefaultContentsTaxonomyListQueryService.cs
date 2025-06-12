@@ -13,12 +13,12 @@ namespace OrchardCore.Taxonomies.Core;
 public sealed class DefaultContentsTaxonomyListQueryService : IContentsTaxonomyListQueryService
 {
     private readonly ISession _session;
-    private readonly IEnumerable<IContentTaxonomyListFilter> _contentTaxonomyListFilters;
+    private readonly IEnumerable<IContentsTaxonomyListFilter> _contentTaxonomyListFilters;
     private readonly ILogger _logger;
 
     public DefaultContentsTaxonomyListQueryService(
         ISession session,
-        IEnumerable<IContentTaxonomyListFilter> contentTaxonomyListFilters,
+        IEnumerable<IContentsTaxonomyListFilter> contentTaxonomyListFilters,
         ILogger<DefaultContentsTaxonomyListQueryService> logger)
     {
         _session = session;
