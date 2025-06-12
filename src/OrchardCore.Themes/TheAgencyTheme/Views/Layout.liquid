@@ -25,10 +25,12 @@
             {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu", cache_context: "user.roles" %}
         </div>
     </nav>
-    {% render_section "Header", required: false %}
-	{% render_section "Messages", required: false %}
-    {% render_section "Content" %}
-    {% render_section "Footer", required: false %}
-    {% resources type: "FootScript" %}
+    <div data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-root-margin="75px 0px -25%" data-bs-smooth-scroll="true">
+        {% render_section "Header", required: false %}
+        {% render_section "Messages", required: false %}
+        {% render_section "Content" %}
+        {% render_section "Footer", required: false %}
+        {% resources type: "FootScript" %}
+    </div>
 </body>
 </html>
