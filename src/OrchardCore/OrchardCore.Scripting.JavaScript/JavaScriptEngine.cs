@@ -4,52 +4,28 @@ using Jint;
 using Jint.Runtime.Interop;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Options = Jint.Options;
 
 namespace OrchardCore.Scripting.JavaScript;
 
 public sealed class JavaScriptEngine : IScriptingEngine
 {
     private readonly IMemoryCache _memoryCache;
+    private readonly Options _jintOptions;
 
-    public JavaScriptEngine(IMemoryCache memoryCache)
+    public JavaScriptEngine(IMemoryCache memoryCache, IOptions<Options> jintOptions)
     {
         _memoryCache = memoryCache;
+        _jintOptions = jintOptions.Value;
     }
 
     public string Prefix => "js";
 
     public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
     {
-        var engine = new Engine(options =>
-        {
-            options.SetWrapObjectHandler(static (e, target, type) =>
-            {
-                if (target is JsonDynamicObject dynamicObject)
-                {
-                    return ObjectWrapper.Create(e, (JsonObject)dynamicObject, type);
-                }
-
-                if (target is JsonDynamicArray dynamicArray)
-                {
-                    return ObjectWrapper.Create(e, (JsonArray)dynamicArray, type);
-                }
-
-                if (target is JsonDynamicValue dynamicValue)
-                {
-                    return ObjectWrapper.Create(e, (JsonValue)dynamicValue, type);
-                }
-
-                if (target is StringValues stringValues)
-                {
-                    return ObjectWrapper.Create(e, stringValues.Count <= 1 ? stringValues.ToString() : stringValues.ToArray(), type);
-                }
-
-                return ObjectWrapper.Create(e, target, type);
-            });
-
-
-        });
+        var engine = new Engine(SetOptions(_jintOptions));
 
         foreach (var method in methods)
         {
@@ -76,5 +52,35 @@ public sealed class JavaScriptEngine : IScriptingEngine
         var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
 
         return result;
+    }
+
+    private static Options SetOptions(Options options)
+    {
+        options.SetWrapObjectHandler(static (e, target, type) =>
+        {
+            if (target is JsonDynamicObject dynamicObject)
+            {
+                return ObjectWrapper.Create(e, (JsonObject)dynamicObject, type);
+            }
+
+            if (target is JsonDynamicArray dynamicArray)
+            {
+                return ObjectWrapper.Create(e, (JsonArray)dynamicArray, type);
+            }
+
+            if (target is JsonDynamicValue dynamicValue)
+            {
+                return ObjectWrapper.Create(e, (JsonValue)dynamicValue, type);
+            }
+
+            if (target is StringValues stringValues)
+            {
+                return ObjectWrapper.Create(e, stringValues.Count <= 1 ? stringValues.ToString() : stringValues.ToArray(), type);
+            }
+
+            return ObjectWrapper.Create(e, target, type);
+        });
+
+        return options;
     }
 }
