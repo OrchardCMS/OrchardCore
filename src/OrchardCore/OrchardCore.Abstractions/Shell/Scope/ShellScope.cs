@@ -331,6 +331,8 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         // The tenant gets activated here.
         if (!ShellContext.IsActivated)
         {
+            ShellContext.IsActivated = true;
+
             await new ShellScope(ShellContext).UsingAsync(async scope =>
             {
                 var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
@@ -344,8 +346,6 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                     await tenantEvent.ActivatedAsync();
                 }
             }, activateShell: false);
-
-            ShellContext.IsActivated = true;
         }
     }
 
