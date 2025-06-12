@@ -14,6 +14,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
     private volatile int _refCount;
     private int _terminated;
     private bool _released;
+    private bool _isActivating;
 
     /// <summary>
     /// Initializes a new <see cref="ShellContext"/>.
@@ -43,7 +44,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
     /// <summary>
     /// Whether the shell is activated or not.
     /// </summary>
-    public bool IsActivated { get; set; }
+    public bool IsActivated { get; private set; }
 
     /// <summary>
     /// The Pipeline built for this shell.
@@ -320,6 +321,44 @@ public class ShellContext : IDisposable, IAsyncDisposable
         }
 
         return true;
+    }
+
+    internal async Task ActivateAsync()
+    {
+        // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
+        (var locker, var locked) = await this.TryAcquireShellActivateLockAsync();
+        if (!locked)
+        {
+            // The retry logic increases the delay between 2 attempts (max of 10s), so if there are too
+            // many concurrent requests, one may experience a timeout while waiting before a new retry.
+            if (IsActivated)
+            {
+                // Don't throw if the shell is activated.
+                return;
+            }
+
+            throw new TimeoutException($"Failed to acquire a lock before activating the tenant: {Settings.Name}");
+        }
+
+        await using var acquiredLock = locker;
+
+        if (IsActivated || _isActivating)
+        {
+            // If the shell is already activated or is currently activating, do nothing.
+            return;
+        }
+
+        _isActivating = true;
+        try
+        {
+            await ShellScope.ActivateShellAsync(this);
+
+            IsActivated = true;
+        }
+        finally
+        {
+            _isActivating = false;
+        }
     }
 
     public void Dispose()

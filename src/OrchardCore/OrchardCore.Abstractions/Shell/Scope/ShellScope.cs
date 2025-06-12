@@ -311,42 +311,25 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
             return;
         }
 
-        // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
-        (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
-        if (!locked)
+        // The tenant gets activated here.
+        await ShellContext.ActivateAsync();
+    }
+
+    internal static Task ActivateShellAsync(ShellContext context)
+    {
+        return new ShellScope(context).UsingAsync(async scope =>
         {
-            // The retry logic increases the delay between 2 attempts (max of 10s), so if there are too
-            // many concurrent requests, one may experience a timeout while waiting before a new retry.
-            if (ShellContext.IsActivated)
+            var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+            foreach (var tenantEvent in tenantEvents)
             {
-                // Don't throw if the shell is activated.
-                return;
+                await tenantEvent.ActivatingAsync();
             }
 
-            throw new TimeoutException($"Failed to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
-        }
-
-        await using var acquiredLock = locker;
-
-        // The tenant gets activated here.
-        if (!ShellContext.IsActivated)
-        {
-            ShellContext.IsActivated = true;
-
-            await new ShellScope(ShellContext).UsingAsync(async scope =>
+            foreach (var tenantEvent in tenantEvents.Reverse())
             {
-                var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-                foreach (var tenantEvent in tenantEvents)
-                {
-                    await tenantEvent.ActivatingAsync();
-                }
-
-                foreach (var tenantEvent in tenantEvents.Reverse())
-                {
-                    await tenantEvent.ActivatedAsync();
-                }
-            }, activateShell: false);
-        }
+                await tenantEvent.ActivatedAsync();
+            }
+        }, activateShell: false);
     }
 
     /// <summary>
