@@ -78,8 +78,48 @@ Here is a sample step:
   ]
 }
 ```
-note !!!
-     It's recommended to use the `IndexProfile` recipe step instead as the `ElasticIndexSettings` step is obsolete. 
+
+!!! note
+     It's recommended to use the `CreateOrUpdateIndexProfile` recipe step instead as the `ElasticIndexSettings` step is obsolete. 
+
+Here is an example of how to create `Elasticsearch` index profile using the `IndexProfile` for Content items.
+
+```json
+{
+  "steps":[
+    {
+      "name":"CreateOrUpdateIndexProfile",
+      "indexes": [
+	    {
+		    "Name": "BlogPostsES",
+            "IndexName": "blogposts",
+		    "ProviderName": "Elasticsearch",
+		    "Type": "Content",
+		    "Properties": {
+			    "ContentIndexMetadata": {
+				    "IndexLatest": false,
+				    "IndexedContentTypes": ["BlogPosts"],
+				    "Culture": "any"
+			    },
+                "ElasticsearchIndexMetadata": {
+                    "AnalyzerName": "standard",
+                    "StoreSourceData": true,
+                },
+                "ElasticsearchDefaultQueryMetadata": {
+                    "QueryAnalyzerName": "standard",
+                    "SearchType": "", // The search type can be "query_string", "custom", or empty for default search type.
+                    "DefaultQuery": "", // When using "custom" search type, this is the query to use.
+                    "DefaultSearchFields": [
+                        "Content.ContentItem.FullText"
+                    ]
+                }
+		    }
+	    }
+      ]
+    }
+  ]
+}
+```
 
 ### Reset Elasticsearch Index Step
 
@@ -114,8 +154,8 @@ To reset all indices:
 }
 ```
 
-note !!!
-     It's recommended to use the `ResetIndexProfile` recipe step instead as the `elastic-index-reset` step is obsolete. 
+!!! note
+    It's recommended to use the `ResetIndexProfile` recipe step instead as the `elastic-index-reset` step is obsolete. 
 
 ### Rebuild Elasticsearch Index Step
 
@@ -149,8 +189,8 @@ To rebuild all indices:
 }
 ```
 
-note !!!
-     It's recommended to use the `RebuildIndexProfile` recipe step instead as the `elastic-index-rebuild` step is obsolete. 
+!!! note
+    It's recommended to use the `RebuildIndexProfile` recipe step instead as the `elastic-index-rebuild` step is obsolete. 
 
 ### Queries recipe step
 

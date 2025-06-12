@@ -30,7 +30,7 @@ public sealed class IndexProfileDeploymentSource : DeploymentSourceBase<IndexPro
 
         var sourceIds = step.IncludeAll
             ? []
-            : step.IndexeIds ?? [];
+            : step.IndexIds ?? [];
 
         foreach (var index in indexes)
         {

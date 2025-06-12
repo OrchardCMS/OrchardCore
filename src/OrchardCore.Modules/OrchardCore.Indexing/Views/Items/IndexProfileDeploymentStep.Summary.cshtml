@@ -11,9 +11,9 @@
 {
     <span class="badge text-bg-success">@T["All Indexes"]</span>
 }
-else if (Model.Value.IndexeIds?.Length > 0)
+else if (Model.Value.IndexIds?.Length > 0)
 {
-    <span class="badge text-bg-warning">@T.Plural(Model.Value.IndexeIds.Length, "1 selected index.", "{0} selected indexes.", Model.Value.IndexeIds.Length)</span>
+    <span class="badge text-bg-warning">@T.Plural(Model.Value.IndexIds.Length, "1 selected index.", "{0} selected indexes.", Model.Value.IndexIds.Length)</span>
 }
 else
 {
