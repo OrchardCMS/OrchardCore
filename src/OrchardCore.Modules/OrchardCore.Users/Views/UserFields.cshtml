@@ -11,6 +11,12 @@
         <i class="fa-solid fa-envelope-open" aria-hidden="true"></i> @T["Unconfirmed"]
     </span>
 }
+@if (await UserManager.IsLockedOutAsync(Model.User))
+{
+    <span class="badge text-bg-danger ms-2" title="@T["The user is currently locked out."]">
+        <i class="fa-solid fa-lock" aria-hidden="true"></i> @T["Locked"]
+    </span>
+}
 @if (!Model.User.IsEnabled)
 {
     <span class="badge text-bg-danger ms-2" title="@T["Disabled"]">
