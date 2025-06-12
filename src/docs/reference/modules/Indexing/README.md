@@ -110,8 +110,8 @@ Existing entries in the index are preserved; new or updated items are added as n
   "steps":[
     {
       "name":"ResetIndex",
-      "IndexeIds":[
-        "IndexName1", // Here you can specify the index id or name to reset.
+      "indexNames":[
+        "IndexName1",
         "IndexName2"
       ]
     }
@@ -144,8 +144,8 @@ This operation deletes the existing index and rebuilds it from scratch. The re-i
   "steps":[
     {
       "name":"RebuildIndex",
-      "IndexeIds":[
-        "IndexName1", // Here you can specify the index id or name to reset.
+      "indexNames":[
+        "IndexName1",
         "IndexName2"
       ]
     }

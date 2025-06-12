@@ -12,5 +12,5 @@ public sealed class IndexProfileDeploymentStep : DeploymentStep
 
     public bool IncludeAll { get; set; }
 
-    public string[] IndexIds { get; set; }
+    public string[] IndexNames { get; set; }
 }

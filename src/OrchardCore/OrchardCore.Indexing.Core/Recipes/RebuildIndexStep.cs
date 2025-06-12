@@ -25,18 +25,18 @@ public sealed class RebuildIndexStep : NamedRecipeStepHandler
             return;
         }
 
-        if (!model.IncludeAll && (model.IndexIds == null || model.IndexIds.Length == 0))
+        if (!model.IncludeAll && (model.IndexNames == null || model.IndexNames.Length == 0))
         {
             return;
         }
 
-        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("rebuild-index", async scope =>
+        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("rebuild-indexes", async scope =>
         {
             var indexProfileManager = scope.ServiceProvider.GetService<IIndexProfileManager>();
 
             var indexes = model.IncludeAll
                 ? await indexProfileManager.GetAllAsync()
-                : (await indexProfileManager.GetAllAsync()).Where(x => model.IndexIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase) || model.IndexIds.Contains(x.Name, StringComparer.OrdinalIgnoreCase));
+                : (await indexProfileManager.GetAllAsync()).Where(x => model.IndexNames.Contains(x.Name, StringComparer.OrdinalIgnoreCase));
 
             Dictionary<string, IIndexManager> indexManagers = new();
 

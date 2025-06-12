@@ -28,13 +28,13 @@ public sealed class IndexProfileDeploymentSource : DeploymentSourceBase<IndexPro
 
         var indexObjects = new JsonArray();
 
-        var sourceIds = step.IncludeAll
+        var indexNames = step.IncludeAll
             ? []
-            : step.IndexIds ?? [];
+            : step.IndexNames ?? [];
 
         foreach (var index in indexes)
         {
-            if (sourceIds.Length > 0 && !sourceIds.Contains(index.Id))
+            if (indexNames.Length > 0 && !indexNames.Contains(index.Name))
             {
                 continue;
             }
@@ -42,9 +42,10 @@ public sealed class IndexProfileDeploymentSource : DeploymentSourceBase<IndexPro
             var indexInfo = new JsonObject()
             {
                 { "Id", index.Id },
+                { "IndexName", index.IndexName },
                 { "ProviderName", index.ProviderName },
                 { "Type", index.Type },
-                { "DisplayText", index.Name },
+                { "Name", index.Name },
                 { "CreatedUtc", index.CreatedUtc },
                 { "OwnerId", index.OwnerId },
                 { "Author", index.Author },
@@ -61,7 +62,7 @@ public sealed class IndexProfileDeploymentSource : DeploymentSourceBase<IndexPro
         result.Steps.Add(new JsonObject
         {
             ["name"] = step.Name,
-            ["Indexes"] = indexObjects,
+            ["indexes"] = indexObjects,
         });
     }
 }
