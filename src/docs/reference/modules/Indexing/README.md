@@ -109,9 +109,9 @@ Existing entries in the index are preserved; new or updated items are added as n
 {
   "steps":[
     {
-      "name":"ResetIndexProfile",
-      "IndexeIds":[
-        "IndexName1", // Here you can specify the index id or name to reset.
+      "name":"ResetIndex",
+      "indexNames":[
+        "IndexName1",
         "IndexName2"
       ]
     }
@@ -125,7 +125,7 @@ To reset all indices:
 {
   "steps":[
     {
-      "name":"ResetIndexProfile",
+      "name":"ResetIndex",
       "IncludeAll":true
     }
   ]
@@ -133,7 +133,7 @@ To reset all indices:
 ```
 
 
-### rebuild Index Profile Step
+### rebuild Index Step
 
 Rebuilds the indexing process from the beginning to update current content items.
 
@@ -143,9 +143,9 @@ This operation deletes the existing index and rebuilds it from scratch. The re-i
 {
   "steps":[
     {
-      "name":"RebuildIndexProfile",
-      "IndexeIds":[
-        "IndexName1", // Here you can specify the index id or name to reset.
+      "name":"RebuildIndex",
+      "indexNames":[
+        "IndexName1",
         "IndexName2"
       ]
     }
@@ -159,7 +159,7 @@ To reset all indices:
 {
   "steps":[
     {
-      "name":"RebuildIndexProfile",
+      "name":"RebuildIndex",
       "IncludeAll":true
     }
   ]

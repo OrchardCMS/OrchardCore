@@ -177,7 +177,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 if (indexName == defaultSearchIndexName && defaultSearchProvider == "Lucene")
                 {
-                    site.Properties["SearchSettings"]["DefaultIndexProfileId"] = index.Id;
+                    site.Properties["SearchSettings"]["DefaultIndexProfileName"] = index.Name;
                     saveSiteSettings = true;
                 }
             }

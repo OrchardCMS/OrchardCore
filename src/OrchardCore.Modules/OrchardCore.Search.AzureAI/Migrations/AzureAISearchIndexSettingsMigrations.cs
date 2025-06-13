@@ -230,7 +230,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 if (indexName == defaultSearchIndexName && defaultSearchProvider == "Azure AI Search")
                 {
-                    site.Properties["SearchSettings"]["DefaultIndexProfileId"] = index.Id;
+                    site.Properties["SearchSettings"]["DefaultIndexProfileName"] = index.Name;
                     saveSiteSettings = true;
                 }
             }

@@ -96,8 +96,6 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
                     return;
                 }
 
-                indexProfile = await _indexProfileManager.NewAsync(providerName, type, token);
-
                 var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
 
                 if (!validationResult.Succeeded)
