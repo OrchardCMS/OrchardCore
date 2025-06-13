@@ -1,3 +1,4 @@
+using Namotion.Reflection;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
@@ -101,6 +102,27 @@ public class SiteContext : IDisposable
         await shellScope.UsingAsync(execute, activateShell);
 
         HttpContextAccessor.HttpContext = null;
+    }
+
+    // Waits up to 2 seconds for all outstanding deferred tasks to complete by making sure no shell scope is
+    // currently executing.
+    public Task WaitForOutstandingDeferredTasksAsync(CancellationToken cancellationToken)
+    {
+        return UsingTenantScopeAsync(async scope =>
+        {
+            for (var i = 0; i < 200; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (scope.ShellContext.ActiveScopes <= 1)
+                {
+                    // If there is only one active scope (the current one), it means that all deferred tasks have completed.
+                    break;
+                }
+
+                await Task.Delay(10, cancellationToken);
+            }
+        });
     }
 
     public Task RunRecipeAsync(string recipeName, string recipePath)

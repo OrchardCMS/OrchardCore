@@ -36,7 +36,7 @@ public class ContentStepLuceneQueryTests
 
         // Indexing of the content item happens in the background and may not be immediate available,
         // so we wait a bit.
-        await Task.Delay(2000, TestContext.Current.CancellationToken);
+        await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
 
         // Test
         var result = await context
