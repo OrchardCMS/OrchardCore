@@ -36,7 +36,6 @@
         "url": "https://github.com/StartBootstrap/startbootstrap-agency.git"
     },
     "dependencies": {
-        "@popperjs/core": "2.11.6",
         "bootstrap": "5.2.3"
     },
     "devDependencies": {
