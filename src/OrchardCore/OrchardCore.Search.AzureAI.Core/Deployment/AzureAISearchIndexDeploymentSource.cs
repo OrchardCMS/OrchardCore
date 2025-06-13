@@ -58,7 +58,6 @@ public sealed class AzureAISearchIndexDeploymentSource
 
             var indexMetadata = index.As<AzureAISearchIndexMetadata>();
 
-            // indexMetadata.IndexMappings
             var indexInfo = new JsonObject()
             {
                 { "ProviderName", AzureAISearchConstants.ProviderName },
