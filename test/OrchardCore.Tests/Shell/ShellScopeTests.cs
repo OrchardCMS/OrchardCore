@@ -88,7 +88,7 @@ public class ShellScopeTests
         testTenantEvents.Verify(x => x.ActivatedAsync(), Times.Once);
     }
 
-    private class ShellScopeStartup
+    private sealed class ShellScopeStartup
     {
         private readonly SiteStartup _siteStartup = new SiteStartup();
 
