@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Builders;
 
@@ -14,6 +16,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
     private volatile int _refCount;
     private int _terminated;
     private bool _released;
+    private bool _isActivating;
 
     /// <summary>
     /// Initializes a new <see cref="ShellContext"/>.
@@ -43,7 +46,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
     /// <summary>
     /// Whether the shell is activated or not.
     /// </summary>
-    public bool IsActivated { get; set; }
+    public bool IsActivated { get; private set; }
 
     /// <summary>
     /// The Pipeline built for this shell.
@@ -288,12 +291,12 @@ public class ShellContext : IDisposable, IAsyncDisposable
         return false;
     }
 
-    internal async Task<bool> TerminateShellContextAsync()
+    internal async Task TerminateShellContextAsync(ShellScope scope)
     {
         // Check if this is the last scope that is releasing the shell context.
         if (Interlocked.CompareExchange(ref _refCount, 1, 1) != 1)
         {
-            return false;
+            return;
         }
 
         // A disabled shell still in use is released by its last scope.
@@ -304,22 +307,87 @@ public class ShellContext : IDisposable, IAsyncDisposable
 
         if (!_released)
         {
-            return false;
+            return;
         }
 
         // If more than one scope is still using the shell context, we can't terminate it yet.
         if (Interlocked.CompareExchange(ref _refCount, 1, 1) != 1)
         {
-            return false;
+            return;
         }
 
         // If a new last scope reached this point, ensure that the shell is terminated once.
         if (Interlocked.CompareExchange(ref _terminated, 1, 0) >= 1)
         {
-            return false;
+            return;
         }
 
-        return true;
+        var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+        foreach (var tenantEvent in tenantEvents)
+        {
+            await tenantEvent.TerminatingAsync();
+        }
+
+        foreach (var tenantEvent in tenantEvents.Reverse())
+        {
+            await tenantEvent.TerminatedAsync();
+        }
+    }
+
+    internal async Task ActivateAsync()
+    {
+        if (IsActivated || _isActivating)
+        {
+            // If the shell is already activated or is currently activating, do nothing.
+            return;
+        }
+
+        // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
+        (var locker, var locked) = await this.TryAcquireShellActivateLockAsync();
+        if (!locked)
+        {
+            // The retry logic increases the delay between 2 attempts (max of 10s), so if there are too
+            // many concurrent requests, one may experience a timeout while waiting before a new retry.
+            if (IsActivated)
+            {
+                // Don't throw if the shell is activated.
+                return;
+            }
+
+            throw new TimeoutException($"Failed to acquire a lock before activating the tenant: {Settings.Name}");
+        }
+
+        await using var acquiredLock = locker;
+
+        if (IsActivated || _isActivating)
+        {
+            // If the shell is already activated or is currently activating, do nothing.
+            return;
+        }
+
+        _isActivating = true;
+        try
+        {
+            await new ShellScope(this).UsingAsync(async scope =>
+            {
+                var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+                foreach (var tenantEvent in tenantEvents)
+                {
+                    await tenantEvent.ActivatingAsync();
+                }
+
+                foreach (var tenantEvent in tenantEvents.Reverse())
+                {
+                    await tenantEvent.ActivatedAsync();
+                }
+            }, activateShell: false);
+
+            IsActivated = true;
+        }
+        finally
+        {
+            _isActivating = false;
+        }
     }
 
     public void Dispose()

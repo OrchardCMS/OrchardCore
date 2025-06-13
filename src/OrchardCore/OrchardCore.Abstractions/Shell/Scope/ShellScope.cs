@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Scope;
 
@@ -301,52 +300,13 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     private async Task ActivateShellInternalAsync()
     {
-        if (ShellContext.IsActivated)
-        {
-            return;
-        }
-
         if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
             return;
         }
 
-        // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
-        (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
-        if (!locked)
-        {
-            // The retry logic increases the delay between 2 attempts (max of 10s), so if there are too
-            // many concurrent requests, one may experience a timeout while waiting before a new retry.
-            if (ShellContext.IsActivated)
-            {
-                // Don't throw if the shell is activated.
-                return;
-            }
-
-            throw new TimeoutException($"Failed to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
-        }
-
-        await using var acquiredLock = locker;
-
         // The tenant gets activated here.
-        if (!ShellContext.IsActivated)
-        {
-            await new ShellScope(ShellContext).UsingAsync(async scope =>
-            {
-                var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-                foreach (var tenantEvent in tenantEvents)
-                {
-                    await tenantEvent.ActivatingAsync();
-                }
-
-                foreach (var tenantEvent in tenantEvents.Reverse())
-                {
-                    await tenantEvent.ActivatedAsync();
-                }
-            }, activateShell: false);
-
-            ShellContext.IsActivated = true;
-        }
+        await ShellContext.ActivateAsync();
     }
 
     /// <summary>
@@ -522,19 +482,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
         // If the shell context is released and in its last shell scope, according to the ref counter value,
         // the terminate event handlers are called, and the shell will be disposed at the end of the last scope.
-        if (await ShellContext.TerminateShellContextAsync())
-        {
-            var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
-            foreach (var tenantEvent in tenantEvents)
-            {
-                await tenantEvent.TerminatingAsync();
-            }
-
-            foreach (var tenantEvent in tenantEvents.Reverse())
-            {
-                await tenantEvent.TerminatedAsync();
-            }
-        }
+        await ShellContext.TerminateShellContextAsync(this);
     }
 
     public void Dispose()
