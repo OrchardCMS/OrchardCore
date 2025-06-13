@@ -30,6 +30,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddIndexProfileHandler<AzureAISearchIndexProfileHandler>();
         services.AddIndexProfileHandler<AzureAISearchIndexHandler>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddAzureAISearchServices();

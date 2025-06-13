@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
@@ -24,7 +22,7 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
     private readonly IEnumerable<IAzureAISearchFieldIndexEvents> _fieldIndexEvents;
     private readonly ILogger _logger;
 
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public AzureAISearchContentIndexProfileHandler(
         IContentManager contentManager,
@@ -45,99 +43,6 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
 
     public override Task UpdatingAsync(UpdatingContext<IndexProfile> context)
         => SetMappingAsync(context.Model);
-
-    public override Task ValidatingAsync(ValidatingContext<IndexProfile> context)
-    {
-        if (string.Equals(AzureAISearchConstants.ProviderName, context.Model.ProviderName, StringComparison.OrdinalIgnoreCase))
-        {
-            // When the provider is AzureAI, "regardless of the type" we need to validate the index mappings.
-            var metadata = context.Model.As<AzureAISearchIndexMetadata>();
-
-            if (metadata.IndexMappings is null || metadata.IndexMappings.Count == 0)
-            {
-                context.Result.Fail(new ValidationResult(S["At least one mapping field is required."]));
-            }
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public override Task InitializingAsync(InitializingContext<IndexProfile> context)
-       => PopulateAsync(context.Model, context.Data);
-
-    private static Task PopulateAsync(IndexProfile index, JsonNode data)
-    {
-        if (!CanHandle(index))
-        {
-            return Task.CompletedTask;
-        }
-
-        var metadata = index.As<AzureAISearchIndexMetadata>();
-
-        // For backward compatibility, we look for 'AnalyzerName' and 'QueryAnalyzerName' in the data.
-        var analyzerName = data[nameof(metadata.AnalyzerName)]?.GetValue<string>();
-
-        if (!string.IsNullOrEmpty(analyzerName))
-        {
-            metadata.AnalyzerName = analyzerName;
-        }
-
-        var indexMappings = data[nameof(metadata.IndexMappings)]?.AsArray();
-
-        if (indexMappings is not null)
-        {
-            foreach (var indexMapping in indexMappings)
-            {
-                metadata.IndexMappings.Add(indexMapping.GetValue<AzureAISearchIndexMap>());
-            }
-        }
-
-        index.Put(metadata);
-
-        var queryMetadata = index.As<AzureAISearchDefaultQueryMetadata>();
-
-        var queryAnalyzerName = data[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
-
-        if (!string.IsNullOrEmpty(queryAnalyzerName))
-        {
-            queryMetadata.QueryAnalyzerName = queryAnalyzerName;
-        }
-
-        var defaultFields = data[nameof(queryMetadata.DefaultSearchFields)]?.AsArray();
-
-        if (defaultFields is not null && defaultFields.Count > 0)
-        {
-            var fields = new List<string>();
-
-            foreach (var field in defaultFields)
-            {
-                fields.Add(field.GetValue<string>());
-            }
-
-            queryMetadata.DefaultSearchFields = fields.ToArray();
-        }
-
-        index.Put(queryMetadata);
-
-
-        return Task.CompletedTask;
-    }
-
-    public override Task ExportingAsync(IndexProfileExportingContext context)
-    {
-        if (!CanHandle(context.IndexProfile))
-        {
-            return Task.CompletedTask;
-        }
-
-        var metadata = context.IndexProfile.As<AzureAISearchIndexMetadata>();
-
-        context.Data["AnalyzerName"] = metadata.AnalyzerName;
-        context.Data["QueryAnalyzerName"] = context.IndexProfile.As<AzureAISearchDefaultQueryMetadata>().QueryAnalyzerName;
-        context.Data["IndexMappings"] = JArray.FromObject(metadata.IndexMappings);
-
-        return Task.CompletedTask;
-    }
 
     private async Task SetMappingAsync(IndexProfile index)
     {
