@@ -11,8 +11,7 @@ namespace OrchardCore.Search.AzureAI.Handlers;
 
 public sealed class AzureAISearchIndexHandler : IndexProfileHandlerBase
 {
-
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public AzureAISearchIndexHandler(IStringLocalizer<AzureAISearchIndexHandler> stringLocalizer)
     {
@@ -24,6 +23,11 @@ public sealed class AzureAISearchIndexHandler : IndexProfileHandlerBase
 
     private static Task PopulateAsync(IndexProfile index, JsonNode data)
     {
+        if (!CanHandle(index))
+        {
+            return Task.CompletedTask;
+        }
+
         var metadata = index.As<AzureAISearchIndexMetadata>();
 
         var analyzerName = data[nameof(metadata.AnalyzerName)]?.GetValue<string>()?.Trim();
@@ -54,6 +58,11 @@ public sealed class AzureAISearchIndexHandler : IndexProfileHandlerBase
 
     public override Task ValidatingAsync(ValidatingContext<IndexProfile> context)
     {
+        if (!CanHandle(context.Model))
+        {
+            return Task.CompletedTask;
+        }
+
         if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(context.Model.IndexName, out var indexName) || indexName != context.Model.IndexName)
         {
             context.Result.Fail(new ValidationResult(S["The index name contains forbidden characters."]));
@@ -61,4 +70,7 @@ public sealed class AzureAISearchIndexHandler : IndexProfileHandlerBase
 
         return Task.CompletedTask;
     }
+
+    private static bool CanHandle(IndexProfile index)
+        => string.Equals(index.ProviderName, AzureAISearchConstants.ProviderName, StringComparison.OrdinalIgnoreCase);
 }

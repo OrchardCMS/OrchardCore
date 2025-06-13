@@ -48,7 +48,7 @@ public sealed class ElasticsearchIndexProfileHandler : IndexProfileHandlerBase
             context.Result.Fail(new ValidationResult(S["At least one mapping property is required."]));
         }
 
-        if (string.IsNullOrEmpty(metadata.IndexMappings.KeyFieldName))
+        if (string.IsNullOrEmpty(metadata.IndexMappings?.KeyFieldName))
         {
             context.Result.Fail(new ValidationResult(S["The '{0}' is required.", nameof(ElasticsearchIndexMap.KeyFieldName)]));
         }

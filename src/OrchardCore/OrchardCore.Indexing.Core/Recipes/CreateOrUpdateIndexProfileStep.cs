@@ -55,6 +55,18 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
 
             if (indexProfile is not null)
             {
+                var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
+
+                if (!validationResult.Succeeded)
+                {
+                    foreach (var error in validationResult.Errors)
+                    {
+                        context.Errors.Add(error.ErrorMessage);
+                    }
+
+                    continue;
+                }
+
                 await _indexProfileManager.UpdateAsync(indexProfile, token);
             }
             else
@@ -84,22 +96,20 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
                     return;
                 }
 
-                indexProfile = await _indexProfileManager.NewAsync(providerName, type, token);
-            }
+                var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
 
-            var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
-
-            if (!validationResult.Succeeded)
-            {
-                foreach (var error in validationResult.Errors)
+                if (!validationResult.Succeeded)
                 {
-                    context.Errors.Add(error.ErrorMessage);
+                    foreach (var error in validationResult.Errors)
+                    {
+                        context.Errors.Add(error.ErrorMessage);
+                    }
+
+                    continue;
                 }
 
-                continue;
+                await _indexProfileManager.CreateAsync(indexProfile);
             }
-
-            await _indexProfileManager.CreateAsync(indexProfile);
         }
     }
 

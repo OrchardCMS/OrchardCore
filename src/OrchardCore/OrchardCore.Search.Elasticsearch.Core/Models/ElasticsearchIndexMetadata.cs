@@ -4,6 +4,7 @@ using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
+[JsonConverter(typeof(ElasticsearchIndexMetadataConverter))]
 public sealed class ElasticsearchIndexMetadata
 {
     public bool StoreSourceData { get; set; } = true;
