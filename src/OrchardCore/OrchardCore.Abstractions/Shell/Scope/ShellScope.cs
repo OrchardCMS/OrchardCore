@@ -300,11 +300,6 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     private async Task ActivateShellInternalAsync()
     {
-        if (ShellContext.IsActivated)
-        {
-            return;
-        }
-
         if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
             return;

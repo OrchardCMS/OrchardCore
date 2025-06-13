@@ -1,5 +1,6 @@
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Modules;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Shell;
@@ -53,5 +54,77 @@ public class ShellScopeTests
         cts.Cancel();
 
         await t1;
+    }
+
+    // When tenant activation is called recursively, this test will be blocking forever. The timeout is
+    // set to 10 seconds to ensure that the test fails if the activation is not handled correctly.
+    [Fact(Timeout = 10000)]
+    public async Task TenantActivationIsNotInvokedRecursivelyTest()
+    {
+        var site = new OrchardTestFixture<ShellScopeStartup>();
+        var shellSettings = new ShellSettings()
+        {
+            Name = Guid.NewGuid().ToString("N"),
+            RequestUrlPrefix = "tenant1",
+        }
+        .AsUninitialized();
+
+        var shellHost = site.Services.GetRequiredService<IShellHost>();
+
+        await shellHost.InitializeAsync();
+        var shellContext = await shellHost.GetOrCreateShellContextAsync(shellSettings);
+
+        var outerScope = await shellHost.GetScopeAsync(shellSettings);
+
+        await outerScope.UsingAsync(async scope =>
+        {
+            // Simulate some work in the outer scope.
+            await Task.Delay(1);
+        }, activateShell: true);
+
+        var testTenantEvents = site.Services.GetRequiredService<Mock<IModularTenantEvents>>();
+
+        testTenantEvents.Verify(x => x.ActivatingAsync(), Times.Once);
+        testTenantEvents.Verify(x => x.ActivatedAsync(), Times.Once);
+    }
+
+    private class ShellScopeStartup
+    {
+        private readonly SiteStartup _siteStartup = new SiteStartup();
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            _siteStartup.ConfigureServices(services);
+
+            var inScope = false;
+            var tenantEvents = new Mock<IModularTenantEvents>();
+            tenantEvents.Setup(x => x.ActivatingAsync())
+                .Returns(async () =>
+                {
+                    if (inScope)
+                    {
+                        return;
+                    }
+
+                    inScope = true;
+                    await ShellScope.UsingChildScopeAsync(async innerScope =>
+                    {
+                        Assert.False(innerScope.ShellContext.IsActivated, "The shell context should not be activated yet");
+
+                        // Simulate some work in the inner scope.
+                        await Task.Delay(1);
+                    }, activateShell: true);
+
+                    inScope = false;
+                });
+
+            services.AddSingleton(tenantEvents);
+            services.AddSingleton(sp => tenantEvents.Object);
+        }
+
+        public void Configure(IApplicationBuilder app)
+        {
+            _siteStartup.Configure(app);
+        }
     }
 }

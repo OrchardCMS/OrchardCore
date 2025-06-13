@@ -336,6 +336,12 @@ public class ShellContext : IDisposable, IAsyncDisposable
 
     internal async Task ActivateAsync()
     {
+        if (IsActivated || _isActivating)
+        {
+            // If the shell is already activated or is currently activating, do nothing.
+            return;
+        }
+
         // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
         (var locker, var locked) = await this.TryAcquireShellActivateLockAsync();
         if (!locked)
