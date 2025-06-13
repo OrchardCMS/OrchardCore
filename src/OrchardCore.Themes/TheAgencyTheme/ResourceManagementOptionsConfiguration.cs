@@ -13,8 +13,8 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         _manifest
             .DefineScript("TheAgencyTheme-bootstrap-bundle")
-            .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.js")
-            .SetCdnIntegrity("sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO", "sha384-tcxuNjmU/dcp769u0TRMOD45CdtuScYrGA1/LBcwQA8Oex/WkXW5maQM1hIIbSvF")
+            .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.js")
+            .SetCdnIntegrity("sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4", "sha384-XiS4bdJMO1XiYPIXLsgOhyUz1yl/1UGgFR6cYBhKM92p4pUZ3GHMhTur8u8AdQ+o")
             .SetVersion("5.3.6");
 
         _manifest
