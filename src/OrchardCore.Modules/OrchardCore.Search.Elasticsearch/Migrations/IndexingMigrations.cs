@@ -200,7 +200,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 if (indexName == defaultSearchIndexName && defaultSearchProvider == "Elasticsearch")
                 {
-                    site.Properties["SearchSettings"]["DefaultIndexProfileId"] = index.Id;
+                    site.Properties["SearchSettings"]["DefaultIndexProfileName"] = index.Name;
                     saveSiteSettings = true;
                 }
             }

@@ -1,22 +1,22 @@
 @using OrchardCore.DisplayManagement.Views
 @using OrchardCore.Indexing.Core.Deployments
 
-@model ShapeViewModel<ResetIndexProfileDeploymentStep>
+@model ShapeViewModel<RebuildIndexDeploymentStep>
 
 @{
     var includeAll = Model.Value.IncludeAll;
-    var indexes = Model.Value.Indexes;
+    var indexNames = Model.Value.IndexNames;
 }
 
-<h5>@T["Reset Indexes"]</h5>
+<h5>@T["Rebuild Indexes"]</h5>
 
 @if (includeAll)
 {
-    <span class="badge text-bg-success">@T["All"]</span>
+    <span class="badge text-bg-success">@T["All indexes"]</span>
 }
-else if (indexes?.Length > 0)
+else if (indexNames?.Length > 0)
 {
-    foreach (var indexName in indexes)
+    foreach (var indexName in indexNames)
     {
         <span class="badge ta-badge">@indexName</span>
     }

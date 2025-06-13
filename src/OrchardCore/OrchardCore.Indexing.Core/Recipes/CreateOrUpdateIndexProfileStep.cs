@@ -7,19 +7,19 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Indexing.Core.Recipes;
 
-public sealed class IndexingProfileStep : NamedRecipeStepHandler
+public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
 {
-    public const string StepKey = "IndexingProfile";
+    public const string StepKey = "CreateOrUpdateIndexProfile";
 
     private readonly IIndexProfileManager _indexProfileManager;
     private readonly IndexingOptions _indexingOptions;
 
     internal readonly IStringLocalizer S;
 
-    public IndexingProfileStep(
+    public CreateOrUpdateIndexProfileStep(
         IIndexProfileManager indexProfileManager,
         IOptions<IndexingOptions> indexingOptions,
-        IStringLocalizer<IndexingProfileStep> stringLocalizer)
+        IStringLocalizer<CreateOrUpdateIndexProfileStep> stringLocalizer)
         : base(StepKey)
     {
         _indexProfileManager = indexProfileManager;

@@ -7,11 +7,11 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Indexing.Core.Recipes;
 
-public sealed class RebuildIndexProfileStep : NamedRecipeStepHandler
+public sealed class RebuildIndexStep : NamedRecipeStepHandler
 {
-    public const string Key = "RebuildIndexProfile";
+    public const string Key = "RebuildIndex";
 
-    public RebuildIndexProfileStep()
+    public RebuildIndexStep()
         : base(Key)
     {
     }
@@ -25,18 +25,18 @@ public sealed class RebuildIndexProfileStep : NamedRecipeStepHandler
             return;
         }
 
-        if (!model.IncludeAll && (model.IndexeIds == null || model.IndexeIds.Length == 0))
+        if (!model.IncludeAll && (model.IndexNames == null || model.IndexNames.Length == 0))
         {
             return;
         }
 
-        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("rebuild-index-profile", async scope =>
+        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("rebuild-indexes", async scope =>
         {
             var indexProfileManager = scope.ServiceProvider.GetService<IIndexProfileManager>();
 
             var indexes = model.IncludeAll
                 ? await indexProfileManager.GetAllAsync()
-                : (await indexProfileManager.GetAllAsync()).Where(x => model.IndexeIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase));
+                : (await indexProfileManager.GetAllAsync()).Where(x => model.IndexNames.Contains(x.Name, StringComparer.OrdinalIgnoreCase));
 
             Dictionary<string, IIndexManager> indexManagers = new();
 

@@ -3,11 +3,11 @@ using OrchardCore.Indexing.Core.Recipes;
 
 namespace OrchardCore.Indexing.Core.Deployments;
 
-public sealed class IndexProfileDeploymentStep : DeploymentStep
+public sealed class ResetIndexDeploymentStep : DeploymentStep
 {
-    public IndexProfileDeploymentStep()
+    public ResetIndexDeploymentStep()
     {
-        Name = CreateOrUpdateIndexProfileStep.StepKey;
+        Name = ResetIndexStep.Key;
     }
 
     public bool IncludeAll { get; set; }

@@ -6,8 +6,8 @@ At its core, the module maintains an **append-only log of indexing tasks**, wher
 
 Although often used to index content items, the system is **not limited to content**—you can index any kind of document, such as user records, products, or data from external APIs.
 
-note !!!
-     Content item indexing is implemented as a consumer of the core `Indexing` infrastructure. It is optional and does not constrain the indexing module to Orchard Core content items.
+!!! note
+    Content item indexing is implemented as a consumer of the core `Indexing` infrastructure. It is optional and does not constrain the indexing module to Orchard Core content items.
 
 ## Indexing UI
 
@@ -62,13 +62,106 @@ If you need UI integration, you can:
 * Create a custom display driver by inheriting from `DisplayDriver<IndexProfile>` to provide configuration screens
 * Implement `IIndexProfileHandler` to react to lifecycle events like index creation, update, or deletion
 
-note !!!
-     To index Orchard Core content items, use the built-in `Content` category. This ensures full compatibility with the content indexing UI and configuration experience.
+## Recipe steps
 
-## Recipes
+### Create Index Profile step
 
-The `Indexing` module supports deployment via recipes with the following steps:
+Index profile can be created during recipe execution using the `IndexProfile` step.
 
-* `IndexProfile`: Creates or updates an index configuration
-* `ResetIndexProfile`: Resets an index to its initial (empty) state
-* `RebuildIndexProfile`: Triggers a full rebuild of the index based on its source data
+Here is a sample step:
+
+```json
+{
+  "steps":[
+    {
+      "name":"CreateOrUpdateIndexProfile",
+      "indexes": [
+	    {
+		    "Id": "The id",
+		    "Name": "UniqueName",
+            "IndexName": "blogposts",
+		    "ProviderName": "ProviderName",
+		    "Type": "Content",
+		    "Properties": {
+			    "ContentIndexMetadata": {
+				    "IndexLatest": false,
+				    "IndexedContentTypes": ["BlogPosts"],
+				    "Culture": "any"
+			    }
+		    }
+	    }
+      ]
+    }
+  ]
+}
+```
+
+!!! note
+    To index Orchard Core content items, use the built-in `Content` category. This ensures full compatibility with the content indexing UI and configuration experience.
+
+### Reset Index Profile Step
+
+Restarts the indexing process from the beginning to update current content items.
+
+Existing entries in the index are preserved; new or updated items are added as needed. The re-indexing operation runs asynchronously in the background, ensuring the index is populated without blocking other operations.
+
+```json
+{
+  "steps":[
+    {
+      "name":"ResetIndex",
+      "indexNames":[
+        "IndexName1",
+        "IndexName2"
+      ]
+    }
+  ]
+}
+```
+
+To reset all indices:
+
+```json
+{
+  "steps":[
+    {
+      "name":"ResetIndex",
+      "IncludeAll":true
+    }
+  ]
+}
+```
+
+
+### rebuild Index Step
+
+Rebuilds the indexing process from the beginning to update current content items.
+
+This operation deletes the existing index and rebuilds it from scratch. The re-indexing process runs asynchronously in the background, ensuring the index is repopulated without blocking other operations.
+
+```json
+{
+  "steps":[
+    {
+      "name":"RebuildIndex",
+      "indexNames":[
+        "IndexName1",
+        "IndexName2"
+      ]
+    }
+  ]
+}
+```
+
+To reset all indices:
+
+```json
+{
+  "steps":[
+    {
+      "name":"RebuildIndex",
+      "IncludeAll":true
+    }
+  ]
+}
+```
