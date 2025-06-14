@@ -49,13 +49,6 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
         {
             context.Result.Fail(new ValidationResult(S["Index name is required."], [nameof(IndexProfile.Name)]));
         }
-
-        var hasIndexName = !string.IsNullOrWhiteSpace(context.Model.IndexName);
-
-        if (!hasIndexName)
-        {
-            context.Result.Fail(new ValidationResult(S["The index name is required."]));
-        }
         else
         {
             var existing = await _store.FindByNameAsync(context.Model.Name);
@@ -64,6 +57,13 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
             {
                 context.Result.Fail(new ValidationResult(S["There is already another index with the same name."], [nameof(IndexProfile.Name)]));
             }
+        }
+
+        var hasIndexName = !string.IsNullOrWhiteSpace(context.Model.IndexName);
+
+        if (!hasIndexName)
+        {
+            context.Result.Fail(new ValidationResult(S["The index name is required."], [nameof(IndexProfile.IndexName)]));
         }
 
         if (string.IsNullOrWhiteSpace(context.Model.IndexFullName))
@@ -172,7 +172,12 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
 
         if (properties != null)
         {
-            index.Properties = properties.Clone();
+            index.Properties ??= new JsonObject();
+
+            foreach (var property in properties)
+            {
+                index.Properties[property.Key] = property.Value.Clone();
+            }
         }
 
         if (string.IsNullOrWhiteSpace(index.Name))
