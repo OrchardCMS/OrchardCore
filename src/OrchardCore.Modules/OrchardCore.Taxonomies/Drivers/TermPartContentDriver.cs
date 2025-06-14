@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Routing;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -18,17 +19,20 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
 {
     private readonly IContentsTaxonomyListQueryService _contentsTaxonomyListQueryService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly AutorouteOptions _autorouteOptions;
     private readonly PagerOptions _pagerOptions;
     private readonly IContentManager _contentManager;
 
     public TermPartContentDriver(
         IOptions<PagerOptions> pagerOptions,
         IHttpContextAccessor httpContextAccessor,
+        IOptions<AutorouteOptions> autorouteOptions,
         IContentsTaxonomyListQueryService contentsTaxonomyListQueryService,
         IContentManager contentManager)
     {
         _contentsTaxonomyListQueryService = contentsTaxonomyListQueryService;
         _httpContextAccessor = httpContextAccessor;
+        _autorouteOptions = autorouteOptions.Value;
         _pagerOptions = pagerOptions.Value;
         _contentManager = contentManager;
     }
@@ -49,14 +53,14 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
             m.ContentItem = part.ContentItem;
             m.ContentItems = containedItems;
 
-            var routeValues = new RouteValueDictionary
-            {
-                ["contentItemId"] = part.ContentItem.ContentItemId,
-            };
+            var routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues);
 
-            if (_httpContextAccessor.HttpContext?.Request?.RouteValues is not null && _httpContextAccessor.HttpContext.Request.RouteValues.TryGetValue("jsonPath", out var jsonPath))
+            routeValues[_autorouteOptions.ContentItemIdKey] = part.ContentItem.ContentItemId;
+
+            if (_httpContextAccessor.HttpContext?.Request?.RouteValues is not null &&
+            _httpContextAccessor.HttpContext.Request.RouteValues.TryGetValue(_autorouteOptions.JsonPathKey, out var jsonPath))
             {
-                routeValues["jsonPath"] = jsonPath;
+                routeValues[_autorouteOptions.JsonPathKey] = jsonPath;
             }
 
             m.Pager = await context.ShapeFactory.PagerAsync(pager, totalItemCount, routeValues);
