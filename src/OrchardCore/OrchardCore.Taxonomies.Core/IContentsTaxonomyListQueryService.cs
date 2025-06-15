@@ -7,5 +7,5 @@ namespace OrchardCore.Taxonomies.Core;
 
 public interface IContentsTaxonomyListQueryService
 {
-    Task<IQuery<ContentItem>> QueryAsync(TermPart termPart, PagerSlim pager);
+    Task<IQuery<ContentItem>> QueryAsync(TermPart termPart, Pager pager);
 }
