@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.DisplayManagement.Shapes;
@@ -63,7 +62,7 @@ public class ContentTypePlacementNodeFilterProvider : ContentPlacementParseFilte
                 return (contentItem.ContentType ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || (GetStereotype(context) ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
             }
 
-            return contentItem.ContentType == ct || GetStereotype(context) == ct;
+            return string.Equals(contentItem.ContentType, ct, StringComparison.Ordinal) || GetStereotype(context) == ct;
         });
     }
 
@@ -73,27 +72,5 @@ public class ContentTypePlacementNodeFilterProvider : ContentPlacementParseFilte
         object stereotypeVal = null;
         shape?.Properties?.TryGetValue("Stereotype", out stereotypeVal);
         return stereotypeVal?.ToString();
-    }
-}
-
-public class ContentPlacementParseFilterProviderBase
-{
-    protected static bool HasContent(ShapePlacementContext context)
-    {
-        var shape = context.ZoneShape as Shape;
-        return shape != null && shape.TryGetProperty("ContentItem", out object contentItem) && contentItem != null;
-    }
-
-    protected static ContentItem GetContent(ShapePlacementContext context)
-    {
-        if (!HasContent(context))
-        {
-            return null;
-        }
-
-        var shape = context.ZoneShape as Shape;
-        shape.TryGetProperty("ContentItem", out ContentItem contentItem);
-
-        return contentItem;
     }
 }

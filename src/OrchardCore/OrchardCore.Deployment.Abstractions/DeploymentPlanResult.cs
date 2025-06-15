@@ -35,6 +35,6 @@ public class DeploymentPlanResult
         Recipe["steps"] = JArray.FromObject(Steps);
 
         // Add the recipe steps as its own file content
-        await FileBuilder.SetFileAsync("Recipe.json", Encoding.UTF8.GetBytes(Recipe.ToString()));
+        await FileBuilder.SetFileAsync("Recipe.json", Encoding.UTF8.GetBytes(Recipe.ToString())).ConfigureAwait(false);
     }
 }

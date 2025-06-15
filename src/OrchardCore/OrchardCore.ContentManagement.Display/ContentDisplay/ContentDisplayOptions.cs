@@ -106,7 +106,7 @@ public class ContentDisplayOptions
             throw new ArgumentException("The type must inherit from " + nameof(ContentField));
         }
 
-        var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
+        var option = _contentFields.Find(x => x.Type == contentFieldType);
         if (option == null)
         {
             option = new ContentFieldDisplayOption(contentFieldType);

@@ -20,7 +20,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
 
     public override IDisplayResult Edit(RewriteRule rule, BuildEditorContext context)
     {
-        if (rule.Source != UrlRedirectRuleSource.SourceName)
+        if (!string.Equals(rule.Source, UrlRedirectRuleSource.SourceName, StringComparison.Ordinal))
         {
             return null;
         }
@@ -54,7 +54,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
 
     public override async Task<IDisplayResult> UpdateAsync(RewriteRule rule, UpdateEditorContext context)
     {
-        if (rule.Source != UrlRedirectRuleSource.SourceName)
+        if (!string.Equals(rule.Source, UrlRedirectRuleSource.SourceName, StringComparison.Ordinal))
         {
             return null;
         }
@@ -66,7 +66,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
             m => m.SubstitutionPattern,
             m => m.IsCaseInsensitive,
             m => m.QueryStringPolicy,
-            m => m.RedirectType);
+            m => m.RedirectType).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(model.Pattern))
         {

@@ -31,7 +31,7 @@ public sealed class SchemaService : ISchemaFactory
 
         foreach (var builder in _schemaBuilders)
         {
-            if (_identifiers.TryGetValue(builder, out var identifier) && await builder.GetIdentifierAsync() != identifier)
+            if (_identifiers.TryGetValue(builder, out var identifier) && !string.Equals(await builder.GetIdentifierAsync().ConfigureAwait(false), identifier, StringComparison.Ordinal))
             {
                 hasChanged = true;
                 break;

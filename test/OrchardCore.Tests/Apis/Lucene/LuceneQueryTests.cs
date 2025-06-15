@@ -171,7 +171,6 @@ public class LuceneQueryTests
             Assert.Contains("Orchard", contentItems.ElementAt(2).DisplayText, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Orchard", contentItems.ElementAt(3).DisplayText, StringComparison.OrdinalIgnoreCase);
         }
-        ;
     }
 
     [Fact]

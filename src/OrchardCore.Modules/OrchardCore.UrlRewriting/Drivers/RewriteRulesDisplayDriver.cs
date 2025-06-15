@@ -47,7 +47,7 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         var model = new EditRewriteRuleViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix,
-            m => m.Name);
+            m => m.Name).ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(model.Name))
         {

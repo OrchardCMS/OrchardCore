@@ -10,5 +10,5 @@ public class RewriteRuleOptions
     public RewriteRuleAction BulkAction { get; set; }
 
     [BindNever]
-    public List<SelectListItem> BulkActions { get; set; }
+    public IList<SelectListItem> BulkActions { get; set; }
 }

@@ -37,11 +37,11 @@ public sealed class UrlRewritingStep : NamedRecipeStepHandler
 
             if (!string.IsNullOrEmpty(id))
             {
-                rule = await _rewriteRulesManager.FindByIdAsync(id);
+                rule = await _rewriteRulesManager.FindByIdAsync(id).ConfigureAwait(false);
 
                 if (rule != null)
                 {
-                    await _rewriteRulesManager.UpdateAsync(rule, token);
+                    await _rewriteRulesManager.UpdateAsync(rule, token).ConfigureAwait(false);
                 }
             }
 
@@ -56,7 +56,7 @@ public sealed class UrlRewritingStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                rule = await _rewriteRulesManager.NewAsync(sourceName, token);
+                rule = await _rewriteRulesManager.NewAsync(sourceName, token).ConfigureAwait(false);
 
                 if (rule == null)
                 {
@@ -66,7 +66,7 @@ public sealed class UrlRewritingStep : NamedRecipeStepHandler
                 }
             }
 
-            var validationResult = await _rewriteRulesManager.ValidateAsync(rule);
+            var validationResult = await _rewriteRulesManager.ValidateAsync(rule).ConfigureAwait(false);
 
             if (!validationResult.Succeeded)
             {
@@ -78,12 +78,12 @@ public sealed class UrlRewritingStep : NamedRecipeStepHandler
                 continue;
             }
 
-            await _rewriteRulesManager.SaveAsync(rule);
+            await _rewriteRulesManager.SaveAsync(rule).ConfigureAwait(false);
         }
     }
-}
 
-public sealed class UrlRewritingStepModel
-{
-    public JsonArray Rules { get; set; }
+    private sealed class UrlRewritingStepModel
+    {
+        public JsonArray Rules { get; set; }
+    }
 }

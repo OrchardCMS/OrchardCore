@@ -355,3 +355,9 @@ dotnet_diagnostic.SA1648.severity = none            # Inheritdoc should be used 
 dotnet_diagnostic.SA1649.severity = none            # File name should match first type name.
 dotnet_diagnostic.SA1650.severity = none            # Element documentation should be spelled correctly.
 dotnet_diagnostic.SA1651.severity = none            # Do not use placeholder elements.
+
+dotnet_diagnostic.MA0051.severity = suggestion      # MA0051 - Method is too long.
+dotnet_diagnostic.MA0048.severity = suggestion      # MA0048 - File name must match type name.
+dotnet_diagnostic.MA0026.severity = none      	    # MA0026 - Fix TODO comment
+dotnet_diagnostic.MA0015.severity = none      	    # MA0015 - Specify the parameter name in ArgumentException
+

@@ -4,15 +4,15 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public sealed class NavigationAdminMenu : AdminNavigationProvider
 {
     private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProviderCoordinator;
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(
+    public NavigationAdminMenu(
         AdminMenuNavigationProvidersCoordinator adminMenuNavigationProviderCoordinator,
-        IStringLocalizer<AdminMenu> stringLocalizer)
+        IStringLocalizer<NavigationAdminMenu> stringLocalizer)
     {
         _adminMenuNavigationProviderCoordinator = adminMenuNavigationProviderCoordinator;
         S = stringLocalizer;

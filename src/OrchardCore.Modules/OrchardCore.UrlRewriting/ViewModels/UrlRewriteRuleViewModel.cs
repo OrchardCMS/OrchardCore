@@ -17,5 +17,5 @@ public class UrlRewriteRuleViewModel
     public bool SkipFurtherRules { get; set; }
 
     [BindNever]
-    public List<SelectListItem> QueryStringPolicies { get; set; }
+    public IList<SelectListItem> QueryStringPolicies { get; set; }
 }

@@ -16,7 +16,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddPermissionProvider<Permissions>();
-        services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<NavigationAdminMenu>();
 
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddScoped<IAdminMenuPermissionService, AdminMenuPermissionService>();

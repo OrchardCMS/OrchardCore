@@ -17,8 +17,8 @@ public class UrlRedirectRuleViewModel
     public RedirectType RedirectType { get; set; }
 
     [BindNever]
-    public List<SelectListItem> RedirectTypes { get; set; }
+    public IList<SelectListItem> RedirectTypes { get; set; }
 
     [BindNever]
-    public List<SelectListItem> QueryStringPolicies { get; set; }
+    public IList<SelectListItem> QueryStringPolicies { get; set; }
 }

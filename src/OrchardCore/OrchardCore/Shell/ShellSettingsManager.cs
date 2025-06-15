@@ -75,7 +75,6 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
                 allSettings.Add(shellSettings);
             }
-            ;
 
             return allSettings;
         }

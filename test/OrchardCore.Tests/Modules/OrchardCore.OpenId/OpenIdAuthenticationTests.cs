@@ -63,21 +63,21 @@ public class OpenIdAuthenticationTests
         {
             var featureManager = scope.ServiceProvider.GetService<IShellFeaturesManager>();
 
-            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.Users"));
-            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Server"));
-            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Validation"));
-            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId"));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.Users").ConfigureAwait(false));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Server").ConfigureAwait(false));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Validation").ConfigureAwait(false));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId").ConfigureAwait(false));
 
             var httpClient = context.Client;
 
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
 
-            var applications = await session.Query<OpenIdApplication, OpenIdApplicationIndex>(OpenIdApplication.OpenIdCollection).ListAsync();
+            var applications = await session.Query<OpenIdApplication, OpenIdApplicationIndex>(OpenIdApplication.OpenIdCollection).ListAsync().ConfigureAwait(false);
 
             Assert.Single(applications);
 
             var application = applications.First();
-            Assert.True(application.ClientId == clientId);
+            Assert.Equal(application.ClientId, clientId);
             Assert.Contains(redirectUri, application.RedirectUris);
             Assert.Equal("implicit", application.ConsentType);
             Assert.Contains(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode, application.Permissions);
@@ -89,11 +89,11 @@ public class OpenIdAuthenticationTests
             Assert.Contains(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange, application.Requirements);
 
             // Visit the login page to get the AntiForgery token.
-            var loginGetRequest = await httpClient.GetAsync("Login", CancellationToken.None);
+            var loginGetRequest = await httpClient.GetAsync("Login", CancellationToken.None).ConfigureAwait(false);
 
-            var loginFormData = new Dictionary<string, string>
+            var loginFormData = new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(loginGetRequest) },
+                {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(loginGetRequest).ConfigureAwait(false) },
                 {$"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", "admin"},
                 {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", "Password01_"},
             };
@@ -103,14 +103,14 @@ public class OpenIdAuthenticationTests
             var loginPostRequest = HttpRequestHelper.CreatePostMessageWithCookies($"Login?ReturnUrl=/{shellSettings.RequestUrlPrefix}?loggedIn=true", loginFormData, loginGetRequest);
 
             // Login
-            var loginPostResponse = await httpClient.SendAsync(loginPostRequest, CancellationToken.None);
+            var loginPostResponse = await httpClient.SendAsync(loginPostRequest, CancellationToken.None).ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.Redirect, loginPostResponse.StatusCode);
 
             var loginRequestRedirectToLocation = loginPostResponse.Headers.Location?.ToString();
 
             Assert.NotEmpty(loginRequestRedirectToLocation);
-            Assert.Contains("loggedIn=true", loginRequestRedirectToLocation);
+            Assert.Contains("loggedIn=true", loginRequestRedirectToLocation, StringComparison.Ordinal);
 
             var cookies = CookiesHelper.ExtractCookies(loginPostResponse);
 
@@ -118,7 +118,7 @@ public class OpenIdAuthenticationTests
 
             var codeVerifier = GenerateCodeVerifier();
             var codeChallenge = GenerateCodeChallenge(codeVerifier);
-            var requestData = new Dictionary<string, string>
+            var requestData = new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 { "client_id", clientId },
                 { "response_type", "code" },
@@ -133,7 +133,7 @@ public class OpenIdAuthenticationTests
 
             Assert.True(authorizeRequestMessage.Headers.Contains("Cookie"), "Cookie header is missing from request.");
 
-            var authorizeResponse = await httpClient.SendAsync(authorizeRequestMessage, CancellationToken.None);
+            var authorizeResponse = await httpClient.SendAsync(authorizeRequestMessage, CancellationToken.None).ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.Redirect, authorizeResponse.StatusCode);
 
@@ -144,14 +144,14 @@ public class OpenIdAuthenticationTests
             var authorizationCodeRequestMessage = HttpRequestHelper.CreateGetMessage(authorizeRequestRedirectToLocation);
             CookiesHelper.AddCookiesToRequest(authorizationCodeRequestMessage, cookies);
 
-            var authorizationCodeResponse = await httpClient.SendAsync(authorizationCodeRequestMessage);
+            var authorizationCodeResponse = await httpClient.SendAsync(authorizationCodeRequestMessage).ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.Redirect, authorizationCodeResponse.StatusCode);
 
             var finalRedirect = authorizationCodeResponse.Headers.Location?.ToString();
 
             Assert.NotEmpty(finalRedirect);
-            Assert.StartsWith(redirectUri, finalRedirect);
+            Assert.StartsWith(redirectUri, finalRedirect, StringComparison.Ordinal);
 
             // Extract the authorization code from the query string.
             var queryParameters = HttpUtility.ParseQueryString(new Uri(finalRedirect).Query);
@@ -166,7 +166,7 @@ public class OpenIdAuthenticationTests
             var taskTwo = ExchangeCodeForTokenAsync(httpClient, authorizationCode, clientId, redirectUri, codeVerifier, tokens);
             var taskThree = ExchangeCodeForTokenAsync(httpClient, authorizationCode, clientId, redirectUri, codeVerifier, tokens);
 
-            await Task.WhenAll(taskOne, taskTwo, taskThree);
+            await Task.WhenAll(taskOne, taskTwo, taskThree).ConfigureAwait(false);
 
             Assert.Single(tokens);
         });
@@ -221,21 +221,21 @@ public class OpenIdAuthenticationTests
         {
             var featureManager = scope.ServiceProvider.GetService<IShellFeaturesManager>();
 
-            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.Users"));
-            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Server"));
-            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Validation"));
-            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId"));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.Users").ConfigureAwait(false));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Server").ConfigureAwait(false));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Validation").ConfigureAwait(false));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId").ConfigureAwait(false));
 
             var httpClient = context.Client;
 
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
 
-            var applications = await session.Query<OpenIdApplication, OpenIdApplicationIndex>(OpenIdApplication.OpenIdCollection).ListAsync();
+            var applications = await session.Query<OpenIdApplication, OpenIdApplicationIndex>(OpenIdApplication.OpenIdCollection).ListAsync().ConfigureAwait(false);
 
             Assert.Single(applications);
 
             var application = applications.First();
-            Assert.True(application.ClientId == clientId);
+            Assert.Equal(application.ClientId, clientId);
             Assert.Contains(redirectUri, application.RedirectUris);
             Assert.Equal("implicit", application.ConsentType);
             Assert.Contains(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode, application.Permissions);
@@ -249,11 +249,11 @@ public class OpenIdAuthenticationTests
             Assert.Contains(OpenIddictConstants.Requirements.Features.PushedAuthorizationRequests, application.Requirements);
 
             // Visit the login page to get the AntiForgery token.
-            var loginGetRequest = await httpClient.GetAsync("Login", CancellationToken.None);
+            var loginGetRequest = await httpClient.GetAsync("Login", CancellationToken.None).ConfigureAwait(false);
 
-            var loginFormData = new Dictionary<string, string>
+            var loginFormData = new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(loginGetRequest) },
+                {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(loginGetRequest).ConfigureAwait(false) },
                 {$"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", "admin"},
                 {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", "Password01_"},
             };
@@ -263,14 +263,14 @@ public class OpenIdAuthenticationTests
             var loginPostRequest = HttpRequestHelper.CreatePostMessageWithCookies($"Login?ReturnUrl=/{shellSettings.RequestUrlPrefix}?loggedIn=true", loginFormData, loginGetRequest);
 
             // Login
-            var loginPostResponse = await httpClient.SendAsync(loginPostRequest, CancellationToken.None);
+            var loginPostResponse = await httpClient.SendAsync(loginPostRequest, CancellationToken.None).ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.Redirect, loginPostResponse.StatusCode);
 
             var loginRequestRedirectToLocation = loginPostResponse.Headers.Location?.ToString();
 
             Assert.NotEmpty(loginRequestRedirectToLocation);
-            Assert.Contains("loggedIn=true", loginRequestRedirectToLocation);
+            Assert.Contains("loggedIn=true", loginRequestRedirectToLocation, StringComparison.Ordinal);
 
             var cookies = CookiesHelper.ExtractCookies(loginPostResponse);
 
@@ -279,10 +279,10 @@ public class OpenIdAuthenticationTests
             var codeVerifier = GenerateCodeVerifier();
             var codeChallenge = GenerateCodeChallenge(codeVerifier);
 
-            var requestData = new Dictionary<string, string>
+            var requestData = new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 { "client_id", clientId },
-                { "request_uri", await GetRequestUriAsync(httpClient, clientId, redirectUri, codeChallenge) },
+                { "request_uri", await GetRequestUriAsync(httpClient, clientId, redirectUri, codeChallenge).ConfigureAwait(false) },
             };
 
             var authorizeRequestMessage = HttpRequestHelper.CreatePostMessage("connect/authorize", requestData);
@@ -290,14 +290,14 @@ public class OpenIdAuthenticationTests
 
             Assert.True(authorizeRequestMessage.Headers.Contains("Cookie"), "Cookie header is missing from request.");
 
-            var authorizeResponse = await httpClient.SendAsync(authorizeRequestMessage, CancellationToken.None);
+            var authorizeResponse = await httpClient.SendAsync(authorizeRequestMessage, CancellationToken.None).ConfigureAwait(false);
 
             Assert.Equal(HttpStatusCode.Redirect, authorizeResponse.StatusCode);
 
             var finalRedirect = authorizeResponse.Headers.Location?.ToString();
 
             Assert.NotEmpty(finalRedirect);
-            Assert.StartsWith(redirectUri, finalRedirect);
+            Assert.StartsWith(redirectUri, finalRedirect, StringComparison.Ordinal);
 
             // Extract the authorization code from the query string.
             var queryParameters = HttpUtility.ParseQueryString(new Uri(finalRedirect).Query);
@@ -312,7 +312,7 @@ public class OpenIdAuthenticationTests
             var taskTwo = ExchangeCodeForTokenAsync(httpClient, authorizationCode, clientId, redirectUri, codeVerifier, tokens);
             var taskThree = ExchangeCodeForTokenAsync(httpClient, authorizationCode, clientId, redirectUri, codeVerifier, tokens);
 
-            await Task.WhenAll(taskOne, taskTwo, taskThree);
+            await Task.WhenAll(taskOne, taskTwo, taskThree).ConfigureAwait(false);
 
             Assert.Single(tokens);
         });
@@ -320,7 +320,7 @@ public class OpenIdAuthenticationTests
 
     private static async Task ExchangeCodeForTokenAsync(HttpClient httpClient, string authorizationCode, string clientId, string redirectUri, string codeVerifier, ConcurrentBag<string> tokens)
     {
-        var data = new Dictionary<string, string>()
+        var data = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             { "client_id", clientId },
             { "grant_type", "authorization_code" },
@@ -331,11 +331,11 @@ public class OpenIdAuthenticationTests
 
         var request = HttpRequestHelper.CreatePostMessage("connect/token", data);
 
-        var tokenResponse = await httpClient.SendAsync(request, CancellationToken.None);
+        var tokenResponse = await httpClient.SendAsync(request, CancellationToken.None).ConfigureAwait(false);
 
         if (tokenResponse.IsSuccessStatusCode)
         {
-            var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<JsonObject>();
+            var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<JsonObject>().ConfigureAwait(false);
 
             var accessToken = tokenResult["access_token"]?.ToString();
 
@@ -347,7 +347,7 @@ public class OpenIdAuthenticationTests
 
     private static async Task<string> GetRequestUriAsync(HttpClient httpClient, string clientId, string redirectUri, string codeChallenge)
     {
-        var data = new Dictionary<string, string>()
+        var data = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             { "client_id", clientId },
             { "response_type", "code" },
@@ -359,10 +359,10 @@ public class OpenIdAuthenticationTests
 
         var request = HttpRequestHelper.CreatePostMessage("connect/par", data);
 
-        var response = await httpClient.SendAsync(request, CancellationToken.None);
+        var response = await httpClient.SendAsync(request, CancellationToken.None).ConfigureAwait(false);
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadFromJsonAsync<JsonObject>();
+            var result = await response.Content.ReadFromJsonAsync<JsonObject>().ConfigureAwait(false);
             var value = result["request_uri"]?.ToString();
 
             Assert.NotEmpty(value);

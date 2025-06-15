@@ -31,12 +31,12 @@ public static class SortRulesEndpoint
             return TypedResults.BadRequest();
         }
 
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, UrlRewritingPermissions.ManageUrlRewritingRules))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, UrlRewritingPermissions.ManageUrlRewritingRules).ConfigureAwait(false))
         {
             return TypedResults.Forbid();
         }
 
-        await rewriteRulesManager.ResortOrderAsync(model.OldIndex.Value, model.NewIndex.Value);
+        await rewriteRulesManager.ResortOrderAsync(model.OldIndex.Value, model.NewIndex.Value).ConfigureAwait(false);
 
         return TypedResults.Ok();
     }

@@ -28,8 +28,8 @@ public class DeploymentPlanService : IDeploymentPlanService
         if (_deploymentPlans == null)
         {
             var deploymentPlanQuery = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
-            var deploymentPlans = await deploymentPlanQuery.ListAsync();
-            _deploymentPlans = deploymentPlans.ToDictionary(x => x.Name);
+            var deploymentPlans = await deploymentPlanQuery.ListAsync().ConfigureAwait(false);
+            _deploymentPlans = deploymentPlans.ToDictionary(x => x.Name, StringComparer.Ordinal);
         }
 
         return _deploymentPlans;
@@ -39,8 +39,8 @@ public class DeploymentPlanService : IDeploymentPlanService
     {
         var user = _httpContextAccessor.HttpContext.User;
 
-        var result = await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.ManageDeploymentPlan) &&
-                     await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.Export);
+        var result = await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.ManageDeploymentPlan).ConfigureAwait(false) &&
+                     await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.Export).ConfigureAwait(false);
 
         return result;
     }
@@ -49,28 +49,28 @@ public class DeploymentPlanService : IDeploymentPlanService
     {
         var user = _httpContextAccessor.HttpContext.User;
 
-        var result = await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.Export);
+        var result = await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.Export).ConfigureAwait(false);
 
         return result;
     }
 
     public async Task<IEnumerable<string>> GetAllDeploymentPlanNamesAsync()
     {
-        var deploymentPlans = await GetDeploymentPlans();
+        var deploymentPlans = await GetDeploymentPlans().ConfigureAwait(false);
 
         return deploymentPlans.Keys;
     }
 
     public async Task<IEnumerable<DeploymentPlan>> GetAllDeploymentPlansAsync()
     {
-        var deploymentPlans = await GetDeploymentPlans();
+        var deploymentPlans = await GetDeploymentPlans().ConfigureAwait(false);
 
         return deploymentPlans.Values;
     }
 
     public async Task<IEnumerable<DeploymentPlan>> GetDeploymentPlansAsync(params string[] deploymentPlanNames)
     {
-        var deploymentPlans = await GetDeploymentPlans();
+        var deploymentPlans = await GetDeploymentPlans().ConfigureAwait(false);
 
         return GetDeploymentPlans(deploymentPlans, deploymentPlanNames);
     }
@@ -91,7 +91,7 @@ public class DeploymentPlanService : IDeploymentPlanService
         var names = deploymentPlans.Select(x => x.Name);
 
         var existingDeploymentPlans = (await _session.Query<DeploymentPlan, DeploymentPlanIndex>(x => x.Name.IsIn(names))
-            .ListAsync())
+            .ListAsync().ConfigureAwait(false))
             .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 
         foreach (var deploymentPlan in deploymentPlans)
@@ -102,11 +102,11 @@ public class DeploymentPlanService : IDeploymentPlanService
                 existingDeploymentPlan.DeploymentSteps.Clear();
                 existingDeploymentPlan.DeploymentSteps.AddRange(deploymentPlan.DeploymentSteps);
 
-                await _session.SaveAsync(existingDeploymentPlan);
+                await _session.SaveAsync(existingDeploymentPlan).ConfigureAwait(false);
             }
             else
             {
-                await _session.SaveAsync(deploymentPlan);
+                await _session.SaveAsync(deploymentPlan).ConfigureAwait(false);
             }
         }
     }
