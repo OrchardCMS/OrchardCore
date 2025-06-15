@@ -21,14 +21,14 @@ public sealed class AzureAISearchIndexHandler : IndexProfileHandlerBase
     public override Task InitializingAsync(InitializingContext<IndexProfile> context)
         => PopulateAsync(context.Model, context.Data);
 
-    private static Task PopulateAsync(IndexProfile index, JsonNode data)
+    private static Task PopulateAsync(IndexProfile indexProfile, JsonNode data)
     {
-        if (!CanHandle(index))
+        if (!CanHandle(indexProfile))
         {
             return Task.CompletedTask;
         }
 
-        var metadata = index.As<AzureAISearchIndexMetadata>();
+        var metadata = indexProfile.As<AzureAISearchIndexMetadata>();
 
         var analyzerName = data[nameof(metadata.AnalyzerName)]?.GetValue<string>()?.Trim();
 
@@ -51,7 +51,7 @@ public sealed class AzureAISearchIndexHandler : IndexProfileHandlerBase
             }
         }
 
-        index.Put(metadata);
+        indexProfile.Put(metadata);
 
         return Task.CompletedTask;
     }
