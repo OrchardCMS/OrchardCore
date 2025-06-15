@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Transport;
-using Elastic.Transport.Extensions;
 using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Json;
@@ -54,13 +53,16 @@ public sealed class ElasticsearchIndexMapConverter : JsonConverter<Elasticsearch
     {
         writer.WriteStartObject();
 
-        // Write KeyFieldName using standard serialization
         writer.WriteString(nameof(ElasticsearchIndexMap.KeyFieldName), value.KeyFieldName);
 
-        // Write Mapping using Elasticsearch serializer.
         writer.WritePropertyName(nameof(ElasticsearchIndexMap.Mapping));
 
-        _elasticsearchSerializer.Serialize(value.Mapping, writer);
+        using var stream = new MemoryStream();
+        _elasticsearchSerializer.Serialize(value.Mapping, stream);
+        stream.Position = 0;
+
+        using var jsonDoc = JsonDocument.Parse(stream);
+        jsonDoc.RootElement.WriteTo(writer);
 
         writer.WriteEndObject();
     }

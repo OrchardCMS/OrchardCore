@@ -122,8 +122,12 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             return false;
         }
 
+        var totalBatchesProcessed = 0;
+        var totalBatchesSucceeded = 0;
+
         foreach (var batch in documents.PagesOf(2500))
         {
+            totalBatchesProcessed++;
             var response = await _client.BulkAsync(index.IndexFullName, descriptor =>
             {
                 descriptor.Refresh(Refresh.True);
@@ -134,20 +138,24 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
                 }
             });
 
-            if (!response.IsValidResponse)
+            if (response.IsValidResponse)
             {
-                if (response.TryGetOriginalException(out var ex))
-                {
-                    _logger.LogError(ex, "There were issues indexing a document using Elasticsearch");
-                }
-                else
-                {
-                    _logger.LogWarning("There were issues indexing a document using Elasticsearch");
-                }
+                totalBatchesSucceeded++;
+
+                continue;
             }
+
+            if (response.TryGetOriginalException(out var ex))
+            {
+                _logger.LogError(ex, "There were issues indexing a document using Elasticsearch");
+
+                return false;
+            }
+
+            _logger.LogWarning("There were issues indexing a document using Elasticsearch");
         }
 
-        return true;
+        return totalBatchesProcessed == totalBatchesSucceeded;
     }
 
     internal async Task<TypeMapping> GetIndexMappingsAsync(string indexFullName)

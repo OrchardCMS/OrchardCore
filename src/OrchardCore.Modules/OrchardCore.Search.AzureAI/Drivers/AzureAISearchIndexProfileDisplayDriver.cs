@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
-using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.ViewModels;
@@ -21,7 +20,7 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
     public override IDisplayResult Edit(IndexProfile indexProfile, BuildEditorContext context)
     {
-        if (indexProfile.ProviderName != AzureAISearchConstants.ProviderName || indexProfile.Type != IndexingConstants.ContentsIndexSource)
+        if (indexProfile.ProviderName != AzureAISearchConstants.ProviderName)
         {
             return null;
         }
@@ -62,7 +61,7 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
     public override async Task<IDisplayResult> UpdateAsync(IndexProfile indexProfile, UpdateEditorContext context)
     {
-        if (indexProfile.ProviderName != AzureAISearchConstants.ProviderName || indexProfile.Type != IndexingConstants.ContentsIndexSource)
+        if (indexProfile.ProviderName != AzureAISearchConstants.ProviderName)
         {
             return null;
         }

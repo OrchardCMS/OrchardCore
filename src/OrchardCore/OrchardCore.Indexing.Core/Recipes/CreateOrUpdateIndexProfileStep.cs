@@ -7,19 +7,19 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Indexing.Core.Recipes;
 
-public sealed class IndexingProfileStep : NamedRecipeStepHandler
+public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
 {
-    public const string StepKey = "IndexingProfile";
+    public const string StepKey = "CreateOrUpdateIndexProfile";
 
     private readonly IIndexProfileManager _indexProfileManager;
     private readonly IndexingOptions _indexingOptions;
 
     internal readonly IStringLocalizer S;
 
-    public IndexingProfileStep(
+    public CreateOrUpdateIndexProfileStep(
         IIndexProfileManager indexProfileManager,
         IOptions<IndexingOptions> indexingOptions,
-        IStringLocalizer<IndexingProfileStep> stringLocalizer)
+        IStringLocalizer<CreateOrUpdateIndexProfileStep> stringLocalizer)
         : base(StepKey)
     {
         _indexProfileManager = indexProfileManager;
@@ -55,6 +55,18 @@ public sealed class IndexingProfileStep : NamedRecipeStepHandler
 
             if (indexProfile is not null)
             {
+                var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
+
+                if (!validationResult.Succeeded)
+                {
+                    foreach (var error in validationResult.Errors)
+                    {
+                        context.Errors.Add(error.ErrorMessage);
+                    }
+
+                    continue;
+                }
+
                 await _indexProfileManager.UpdateAsync(indexProfile, token);
             }
             else
@@ -85,21 +97,21 @@ public sealed class IndexingProfileStep : NamedRecipeStepHandler
                 }
 
                 indexProfile = await _indexProfileManager.NewAsync(providerName, type, token);
-            }
 
-            var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
+                var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
 
-            if (!validationResult.Succeeded)
-            {
-                foreach (var error in validationResult.Errors)
+                if (!validationResult.Succeeded)
                 {
-                    context.Errors.Add(error.ErrorMessage);
+                    foreach (var error in validationResult.Errors)
+                    {
+                        context.Errors.Add(error.ErrorMessage);
+                    }
+
+                    continue;
                 }
 
-                continue;
+                await _indexProfileManager.CreateAsync(indexProfile);
             }
-
-            await _indexProfileManager.CreateAsync(indexProfile);
         }
     }
 

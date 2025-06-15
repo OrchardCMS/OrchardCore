@@ -25,23 +25,35 @@ public sealed class Migrations : DataMigration
             .CreateIndex("IDX_IndexingTask_RecordId_Category", "RecordId", "Category")
         );
 
-        return 2;
+        return 4;
     }
 
     public async Task<int> UpdateFrom1Async()
     {
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table =>
-        {
-            table.RenameColumn("ContentItemId", "RecordId");
-            table.AddColumn<string>("Category", c => c.WithLength(50));
-        });
+        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
+            .AddColumn<string>("Category", c => c.WithLength(50))
+        );
 
         await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
             .DropIndex("IDX_IndexingTask_ContentItemId")
         );
 
+        return 2;
+    }
+
+    public async Task<int> UpdateFrom2Async()
+    {
         await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-            .CreateIndex("IDX_IndexingTask_RecordId_Category", "RecordId", "Category")
+            .RenameColumn("ContentItemId", "RecordId")
+        );
+
+        return 3;
+    }
+
+    public async Task<int> UpdateFrom3Async()
+    {
+        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
+           .CreateIndex("IDX_IndexingTask_RecordId_Category", "RecordId", "Category")
         );
 
         ShellScope.AddDeferredTask(async scope =>
@@ -64,7 +76,10 @@ public sealed class Migrations : DataMigration
             try
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync(command, new { Category = IndexingConstants.ContentsIndexSource });
+                await connection.ExecuteAsync(command, new
+                {
+                    Category = IndexingConstants.ContentsIndexSource,
+                });
                 await connection.CloseAsync();
             }
             catch (Exception e)
@@ -75,6 +90,6 @@ public sealed class Migrations : DataMigration
             }
         });
 
-        return 2;
+        return 4;
     }
 }
