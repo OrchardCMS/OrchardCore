@@ -4,5 +4,5 @@ namespace OrchardCore.Queries.Core.Models;
 
 public sealed class QueriesDocument : Document
 {
-    public Dictionary<string, Query> Queries { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+    public IDictionary<string, Query> Queries { get; init; } = new Dictionary<string, Query>(StringComparer.OrdinalIgnoreCase);
 }

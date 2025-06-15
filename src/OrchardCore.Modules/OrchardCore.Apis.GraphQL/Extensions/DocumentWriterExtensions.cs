@@ -7,7 +7,7 @@ namespace OrchardCore.Apis.GraphQL;
 
 internal static class DocumentWriterExtensions
 {
-    public static async Task WriteErrorAsync(this IGraphQLSerializer graphQLSerializer, HttpContext context, string message, Exception e = null)
+    public static Task WriteErrorAsync(this IGraphQLSerializer graphQLSerializer, HttpContext context, string message, Exception e = null)
     {
         ArgumentNullException.ThrowIfNull(message);
 
@@ -28,6 +28,6 @@ internal static class DocumentWriterExtensions
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         context.Response.ContentType = MediaTypeNames.Application.Json;
 
-        await graphQLSerializer.WriteAsync(context.Response.Body, errorResult);
+        return graphQLSerializer.WriteAsync(context.Response.Body, errorResult);
     }
 }

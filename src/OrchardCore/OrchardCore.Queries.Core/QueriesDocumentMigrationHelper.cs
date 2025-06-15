@@ -34,8 +34,8 @@ public static class QueriesDocumentMigrationHelper
             sqlBuilder.Take("1");
 
             await using var connection = dbConnectionAccessor.CreateConnection();
-            await connection.OpenAsync();
-            var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString());
+            await connection.OpenAsync().ConfigureAwait(false);
+            var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString()).ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(jsonContent))
             {
@@ -53,12 +53,12 @@ public static class QueriesDocumentMigrationHelper
 
             foreach (var queryObject in queriesObject)
             {
-                if (queryObject.Value["Source"].GetValue<string>() != source)
+                if (!string.Equals(queryObject.Value["Source"].GetValue<string>(), source, StringComparison.Ordinal))
                 {
                     continue;
                 }
 
-                var query = await queryManager.NewAsync(source, queryObject.Value);
+                var query = await queryManager.NewAsync(source, queryObject.Value).ConfigureAwait(false);
 
                 if (query == null)
                 {
@@ -68,7 +68,7 @@ public static class QueriesDocumentMigrationHelper
                 queries.Add(query);
             }
 
-            await queryManager.SaveAsync(queries.ToArray());
+            await queryManager.SaveAsync(queries.ToArray()).ConfigureAwait(false);
         });
     }
 }
