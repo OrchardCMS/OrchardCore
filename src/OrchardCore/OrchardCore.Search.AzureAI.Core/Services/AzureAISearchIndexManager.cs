@@ -177,7 +177,9 @@ public sealed class AzureAISearchIndexManager : IIndexManager
             {
                 searchFields.Add(new SearchableField(indexMap.AzureFieldKey, collection: indexMap.IsCollection)
                 {
-                    AnalyzerName = metadata.AnalyzerName ?? AzureAISearchDefaultOptions.DefaultAnalyzer,
+                    AnalyzerName = !string.IsNullOrEmpty(metadata.AnalyzerName)
+                    ? metadata.AnalyzerName
+                    : AzureAISearchDefaultOptions.DefaultAnalyzer,
                     IsKey = indexMap.IsKey,
                     IsFilterable = indexMap.IsFilterable,
                     IsSortable = indexMap.IsSortable,
