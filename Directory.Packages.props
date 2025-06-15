@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.3.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.1.3" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.1.6" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.1" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.0.1" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.1" />
@@ -13,8 +13,8 @@
     <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.0" />
     <PackageVersion Include="Azure.Identity" Version="1.14.0" />
     <PackageVersion Include="Azure.Search.Documents" Version="11.6.0" />
-    <PackageVersion Include="Azure.Storage.Blobs" Version="12.24.0" />
-    <PackageVersion Include="BenchmarkDotNet" Version="0.15.0" />
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.24.1" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.1" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.17.4" />
@@ -27,7 +27,7 @@
     <PackageVersion Include="JsonPath.Net" Version="2.1.1" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
     <PackageVersion Include="Irony" Version="1.5.3" />
-    <PackageVersion Include="libphonenumber-csharp" Version="9.0.6" />
+    <PackageVersion Include="libphonenumber-csharp" Version="9.0.7" />
     <PackageVersion Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00017" />
@@ -47,19 +47,19 @@
     <PackageVersion Include="NJsonSchema" Version="11.3.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.5.0" />
     <PackageVersion Include="NodaTime" Version="3.2.2" />
-    <PackageVersion Include="OpenIddict.Core" Version="6.3.0" />
-    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.3.0" />
-    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="6.3.0" />
-    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="6.3.0" />
-    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="6.3.0" />
-    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="6.3.0" />
+    <PackageVersion Include="OpenIddict.Core" Version="6.4.0" />
+    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.4.0" />
+    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="6.4.0" />
+    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="6.4.0" />
+    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="6.4.0" />
+    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="6.4.0" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="2.1.0" />
     <PackageVersion Include="PdfPig" Version="0.1.10" />
     <PackageVersion Include="Shortcodes" Version="1.3.5" />
     <PackageVersion Include="SixLabors.ImageSharp.Web" Version="3.1.5" />
     <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="3.1.5" />
     <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.AWS" Version="3.1.5" />
-    <PackageVersion Include="StackExchange.Redis" Version="2.8.37" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.8.41" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
@@ -134,7 +134,7 @@
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.6" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.6" />
     <!-- dotnet/extensions repository -->
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.6.0" />
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
   </ItemGroup>
