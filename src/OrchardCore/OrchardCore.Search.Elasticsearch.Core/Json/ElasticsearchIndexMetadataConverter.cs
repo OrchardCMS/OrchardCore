@@ -25,11 +25,23 @@ internal sealed class ElasticsearchIndexMetadataConverter : JsonConverter<Elasti
         using var doc = JsonDocument.ParseValue(ref reader);
         var root = doc.RootElement;
 
-        return new ElasticsearchIndexMetadata
+        var metadata = new ElasticsearchIndexMetadata();
+
+        if (root.TryGetProperty(nameof(ElasticsearchIndexMetadata.StoreSourceData), out var storeSourceDataProperty))
         {
-            StoreSourceData = root.GetProperty(nameof(ElasticsearchIndexMetadata.StoreSourceData)).GetBoolean(),
-            AnalyzerName = root.GetProperty(nameof(ElasticsearchIndexMetadata.AnalyzerName)).GetString(),
-            IndexMappings = JsonSerializer.Deserialize<ElasticsearchIndexMap>(root.GetProperty(nameof(ElasticsearchIndexMetadata.IndexMappings)).GetRawText(), options),
-        };
+            metadata.StoreSourceData = storeSourceDataProperty.GetBoolean();
+        }
+
+        if (root.TryGetProperty(nameof(ElasticsearchIndexMetadata.AnalyzerName), out var analyzerNameProperty))
+        {
+            metadata.AnalyzerName = analyzerNameProperty.GetString();
+        }
+
+        if (root.TryGetProperty(nameof(ElasticsearchIndexMetadata.IndexMappings), out var indexMappingsProperty))
+        {
+            metadata.IndexMappings = JsonSerializer.Deserialize<ElasticsearchIndexMap>(indexMappingsProperty.GetRawText(), options);
+        }
+
+        return metadata;
     }
 }

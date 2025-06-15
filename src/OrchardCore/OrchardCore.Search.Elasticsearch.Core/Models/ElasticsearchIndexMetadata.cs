@@ -17,7 +17,7 @@ public sealed class ElasticsearchIndexMetadata
     public string GetAnalyzerName()
     {
         // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
-        return AnalyzerName == "standardanalyzer"
+        return AnalyzerName == "standardanalyzer" || string.IsNullOrEmpty(AnalyzerName)
             ? ElasticsearchConstants.DefaultAnalyzer
             : AnalyzerName;
     }

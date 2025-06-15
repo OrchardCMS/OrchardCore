@@ -2,6 +2,16 @@
 
 @model ShapeViewModel<IndexProfile>
 
+<a asp-action="Synchronize"
+   asp-route-id="@Model.Value.Id"
+   class="dropdown-item btn-sm"
+   data-title="@T["Synchronize Index"]"
+   data-message="@T["This will synchronize the indexing of content items. Continue?"]"
+   data-ok-text="@T["Yes"]"
+   data-cancel-text="@T["No"]"
+   data-ok-class="btn-primary"
+   data-url-af="UnsafeUrl">@T["Synchronize"]</a>
+
 <a asp-action="Reset"
    asp-route-id="@Model.Value.Id"
    class="dropdown-item btn-sm"

@@ -104,9 +104,10 @@ public sealed class AdminController : Controller
 
         viewModel.Options.BulkActions =
         [
-            new SelectListItem(S["Delete"], nameof(IndexingEntityAction.Remove)),
+            new SelectListItem(S["Synchronize"], nameof(IndexingEntityAction.Synchronize)),
             new SelectListItem(S["Reset"], nameof(IndexingEntityAction.Reset)),
             new SelectListItem(S["Rebuild"], nameof(IndexingEntityAction.Rebuild)),
+            new SelectListItem(S["Delete"], nameof(IndexingEntityAction.Remove)),
         ];
 
         return View(viewModel);
@@ -393,6 +394,29 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
+    [Admin("indexing/synchronize/{id}", "IndexingSynchronize")]
+    public async Task<IActionResult> Synchronize(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
+        {
+            return Forbid();
+        }
+
+        var index = await _indexProfileManager.FindByIdAsync(id);
+
+        if (index == null)
+        {
+            return NotFound();
+        }
+
+        await _indexProfileManager.SynchronizeAsync(index);
+
+        await _notifier.SuccessAsync(H["The synchronizing process was triggered in the background."]);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
     [Admin("indexing/rebuild/{id}", "IndexingRebuild")]
     public async Task<IActionResult> Rebuild(string id)
     {
@@ -526,6 +550,32 @@ public sealed class AdminController : Controller
                     }
                     break;
 
+                case IndexingEntityAction.Synchronize:
+                    var synchronizedCounter = 0;
+
+                    foreach (var id in itemIds)
+                    {
+                        var index = await _indexProfileManager.FindByIdAsync(id);
+
+                        if (index == null)
+                        {
+                            continue;
+                        }
+
+                        await _indexProfileManager.SynchronizeAsync(index);
+
+                        synchronizedCounter++;
+                    }
+
+                    if (synchronizedCounter == 0)
+                    {
+                        await _notifier.WarningAsync(H["No index were synchronized."]);
+                    }
+                    else
+                    {
+                        await _notifier.SuccessAsync(H.Plural(synchronizedCounter, "1 index has been synchronized successfully.", "{0} indexes have been synchronized successfully."));
+                    }
+                    break;
                 case IndexingEntityAction.Rebuild:
                     var rebuildCounter = 0;
                     foreach (var id in itemIds)
