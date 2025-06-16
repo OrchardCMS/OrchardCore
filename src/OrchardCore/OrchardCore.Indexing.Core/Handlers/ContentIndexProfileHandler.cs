@@ -15,6 +15,8 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
 {
     private readonly IServiceProvider _serviceProvider;
 
+    private readonly HashSet<string> _resetIndexIds = [];
+
     internal readonly IStringLocalizer S;
 
     public ContentIndexProfileHandler(
@@ -28,58 +30,9 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
     public override Task InitializingAsync(InitializingContext<IndexProfile> context)
         => PopulateAsync(context.Model, context.Data);
 
-    private static Task PopulateAsync(IndexProfile indexProfile, JsonNode data)
-    {
-        if (indexProfile.Type != IndexingConstants.ContentsIndexSource)
-        {
-            return Task.CompletedTask;
-        }
-
-        var metadata = indexProfile.As<ContentIndexMetadata>();
-
-        var indexLatest = data[nameof(metadata.IndexLatest)]?.GetValue<bool>();
-
-        if (indexLatest.HasValue)
-        {
-            metadata.IndexLatest = indexLatest.Value;
-        }
-
-        var culture = data[nameof(metadata.Culture)]?.GetValue<string>()?.Trim();
-
-        if (!string.IsNullOrEmpty(culture))
-        {
-            metadata.Culture = culture;
-        }
-
-        var indexContentTypes = data[nameof(metadata.IndexedContentTypes)]?.AsArray();
-
-        if (indexContentTypes is not null)
-        {
-            var items = new HashSet<string>();
-
-            foreach (var indexContentType in indexContentTypes)
-            {
-                var value = indexContentType.GetValue<string>();
-
-                if (!string.IsNullOrEmpty(value))
-                {
-                    items.Add(value);
-                }
-            }
-
-            metadata.IndexedContentTypes = items.ToArray();
-        }
-
-        indexProfile.Put(metadata);
-
-        return Task.CompletedTask;
-    }
-
-    private readonly HashSet<string> _resetIndexIds = [];
-
     public override async Task ResetAsync(IndexProfileResetContext context)
     {
-        if (context.IndexProfile.Type != IndexingConstants.ContentsIndexSource)
+        if (!string.Equals(IndexingConstants.ContentsIndexSource, context.IndexProfile.Type, StringComparison.Ordinal))
         {
             return;
         }
@@ -105,10 +58,11 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-indexing", context.IndexProfile, async (scope, index) =>
+        return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-indexing", context.IndexProfile, (scope, index) =>
         {
             var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
-            await indexingService.ProcessRecordsAsync([index]);
+            
+            return indexingService.ProcessRecordsAsync([index]);
         });
     }
 
@@ -149,6 +103,53 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
         {
             context.Result.Fail(new ValidationResult(S["At least one content type must be selected."]));
         }
+
+        return Task.CompletedTask;
+    }
+
+    private static Task PopulateAsync(IndexProfile indexProfile, JsonNode data)
+    {
+        if (!string.Equals(IndexingConstants.ContentsIndexSource, indexProfile.Type, StringComparison.Ordinal))
+        {
+            return Task.CompletedTask;
+        }
+
+        var metadata = indexProfile.As<ContentIndexMetadata>();
+
+        var indexLatest = data[nameof(metadata.IndexLatest)]?.GetValue<bool>();
+
+        if (indexLatest.HasValue)
+        {
+            metadata.IndexLatest = indexLatest.Value;
+        }
+
+        var culture = data[nameof(metadata.Culture)]?.GetValue<string>()?.Trim();
+
+        if (!string.IsNullOrEmpty(culture))
+        {
+            metadata.Culture = culture;
+        }
+
+        var indexContentTypes = data[nameof(metadata.IndexedContentTypes)]?.AsArray();
+
+        if (indexContentTypes is not null)
+        {
+            var items = new HashSet<string>();
+
+            foreach (var indexContentType in indexContentTypes)
+            {
+                var value = indexContentType.GetValue<string>();
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    items.Add(value);
+                }
+            }
+
+            metadata.IndexedContentTypes = items.ToArray();
+        }
+
+        indexProfile.Put(metadata);
 
         return Task.CompletedTask;
     }
