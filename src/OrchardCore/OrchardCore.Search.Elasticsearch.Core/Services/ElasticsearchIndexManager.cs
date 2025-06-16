@@ -400,7 +400,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         return elasticTopDocs;
     }
 
-    private CreateIndexRequest GetCreateIndexRequest(IndexProfile index)
+    private CreateIndexRequest GetCreateIndexRequest(IndexProfile indexProfile)
     {
         var indexSettings = new IndexSettings
         {
@@ -411,7 +411,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             },
         };
 
-        var metadata = index.As<ElasticsearchIndexMetadata>();
+        var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
 
         var analyzerName = metadata.GetAnalyzerName();
 
@@ -448,7 +448,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             throw new InvalidOperationException("Index mappings cannot be null.");
         }
 
-        var createIndexRequest = new CreateIndexRequest(index.IndexFullName)
+        var createIndexRequest = new CreateIndexRequest(indexProfile.IndexFullName)
         {
             Settings = indexSettings,
             Mappings = metadata.IndexMappings.Mapping ?? new TypeMapping(),
