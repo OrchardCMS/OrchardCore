@@ -9,10 +9,6 @@
   "categories": [ "default" ],
   "tags": [ "blog", "lucene" ],
 
-  "variables": {
-    "searchIndexProfileId": "[js:uuid()]"
-  },
-
   "steps": [
     {
       "name": "feature",
@@ -25,7 +21,7 @@
       "name": "CreateOrUpdateIndexProfile",
       "indexes": [
         {
-          "Id": "[js: variables('searchIndexProfileId')]",
+          "Id": "Search",
           "IndexName": "Search",
           "ProviderName": "Lucene",
           "Type": "Content",
@@ -103,7 +99,7 @@
       // Create the search settings.
       "name": "Settings",
       "SearchSettings": {
-        "DefaultIndexProfileName": "[js: variables('searchIndexProfileId')]"
+        "DefaultIndexProfileName": "Search"
       }
     },
     {

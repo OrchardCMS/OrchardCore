@@ -9,10 +9,6 @@
   "categories": [ "default" ],
   "tags": [ "blog", "Elasticsearch" ],
 
-  "variables": {
-    "searchIndexProfileId": "[js:uuid()]"
-  },
-
   "steps": [
     {
       "name": "feature",
@@ -25,7 +21,7 @@
       "name": "CreateOrUpdateIndexProfile",
       "indexes": [
         {
-          "Id": "[js: variables('searchIndexProfileId')]",
+          "Id": "search",
           "IndexName": "search",
           "ProviderName": "Elasticsearch",
           "Type": "Content",
@@ -163,7 +159,7 @@
       // Create the search settings.
       "name": "Settings",
       "SearchSettings": {
-        "DefaultIndexProfileName": "[js: variables('searchIndexProfileId')]"
+        "DefaultIndexProfileName": "search"
       }
     },
     {
