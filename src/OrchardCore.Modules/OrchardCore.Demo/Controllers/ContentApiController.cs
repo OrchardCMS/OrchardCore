@@ -63,7 +63,7 @@ public sealed class ContentApiController : ControllerBase
             return this.ChallengeOrForbid("Api");
         }
 
-        await _contentManager.CreateAsync(contentItem);
+        await _contentManager.CreateAsync(contentItem, VersionOptions.Published);
 
         return new ObjectResult(contentItem);
     }

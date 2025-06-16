@@ -62,7 +62,7 @@ public sealed class HomeController : Controller
         // "Alter" syntax
         contentItem.Alter<TestContentPartA>(x => x.Line = text);
 
-        await _contentManager.CreateAsync(contentItem);
+        await _contentManager.CreateAsync(contentItem, VersionOptions.Published);
 
         _logger.LogInformation("This is some log");
 

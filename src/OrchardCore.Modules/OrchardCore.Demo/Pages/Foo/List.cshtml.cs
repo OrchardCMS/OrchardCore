@@ -58,7 +58,7 @@ public class ListModel : PageModel
 
         // Dynamic syntax
         contentItem.Content.TestContentPartA.Line = Text;
-        await _contentManager.CreateAsync(contentItem);
+        await _contentManager.CreateAsync(contentItem, VersionOptions.Published);
 
         return RedirectToPage();
     }
