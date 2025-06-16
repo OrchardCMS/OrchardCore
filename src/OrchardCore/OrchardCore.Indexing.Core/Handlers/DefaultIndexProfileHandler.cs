@@ -174,10 +174,7 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
         {
             index.Properties ??= new JsonObject();
 
-            foreach (var property in properties)
-            {
-                index.Properties[property.Key] = property.Value.Clone();
-            }
+            index.Properties.Merge(properties);
         }
 
         if (string.IsNullOrWhiteSpace(index.Name))
