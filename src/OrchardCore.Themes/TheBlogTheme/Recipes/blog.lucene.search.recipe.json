@@ -18,49 +18,75 @@
       ]
     },
     {
-      // Create the indices before the content items so they are indexed automatically.
-      "name": "lucene-index",
-      "Indices": [
+      "name": "CreateOrUpdateIndexProfile",
+      "indexes": [
         {
-          "Search": {
-            "AnalyzerName": "standardanalyzer",
-            "IndexLatest": false,
-            "StoreSourceData": false,
-            "IndexedContentTypes": [
-              "Article",
-              "Blockquote",
-              "Blog",
-              "BlogPost",
-              "Button",
-              "Container",
-              "Form",
-              "ImageWidget",
-              "Image",
-              "Input",
-              "Label",
-              "LinkMenuItem",
-              "Menu",
-              "Page",
-              "Paragraph",
-              "RawHtml",
-              "Select",
-              "TextArea",
-              "Validation",
-              "ValidationSummary"
-            ]
-          }
+          "IndexName": "Search",
+          "ProviderName": "Lucene",
+          "Type": "Content",
+          "Name": "Search",
+          "Properties": {
+            "LuceneIndexMetadata": {
+              "StoreSourceData": false,
+              "AnalyzerName": "standardanalyzer"
+            },
+            "ContentIndexMetadata": {
+              "IndexLatest": false,
+              "IndexedContentTypes": [
+                "Article",
+                "Blockquote",
+                "Blog",
+                "BlogPost",
+                "Container",
+                "Image",
+                "LinkMenuItem",
+                "Menu",
+                "Page",
+                "Paragraph",
+                "RawHtml"
+              ],
+              "Culture": "any"
+            },
+            "LuceneIndexDefaultQueryMetadata": {
+              "DefaultVersion": "LUCENE_30",
+              "QueryAnalyzerName": "standardanalyzer",
+              "AllowLuceneQueries": false,
+              "DefaultSearchFields": [
+                "Content.ContentItem.FullText"
+              ]
+            }
+          },
+          "IndexLatest": false,
+          "Culture": "any",
+          "IndexedContentTypes": [
+            "Article",
+            "Blockquote",
+            "Blog",
+            "BlogPost",
+            "Container",
+            "Image",
+            "LinkMenuItem",
+            "Menu",
+            "Page",
+            "Paragraph",
+            "RawHtml"
+          ]
         }
       ]
     },
     {
       // Create the search settings.
       "name": "Settings",
-      "LuceneSettings": {
-        "SearchIndex": "Search",
-        "DefaultSearchFields": [
-          "Content.ContentItem.FullText"
-        ]
+      "SearchSettings": {
+        "DefaultIndexProfileName": "Search"
       }
+    },
+    {
+      "name": "RebuildIndex",
+      "includeAll": false,
+      "indexNames": [
+        "Search"
+      ]
     },
     {
       // Create the search index permissions.
@@ -71,15 +97,9 @@
           "Description": "Anonymous role",
           "Permissions": [
             "ViewContent",
-            "QueryLuceneSearchIndex"
+            "QueryIndex_Search"
           ]
         }
-      ]
-    },
-    {
-      "name": "lucene-index-rebuild",
-      "Indices": [
-        "Search"
       ]
     }
   ]
