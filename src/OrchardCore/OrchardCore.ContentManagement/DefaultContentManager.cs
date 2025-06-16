@@ -603,18 +603,11 @@ public class DefaultContentManager : IContentManager
         if (string.IsNullOrEmpty(contentItem.ContentItemVersionId))
         {
             contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
-            contentItem.Published = true;
-            contentItem.Latest = true;
         }
 
-        options ??= VersionOptions.Published;
-
-        // Draft flag on create is required for explicitly-published content items.
-        if (options.IsDraft)
-        {
-            contentItem.Published = false;
-            contentItem.Latest = true;
-        }
+        options ??= VersionOptions.Draft;
+        contentItem.Published = options.IsPublished;
+        contentItem.Latest = true;
 
         // Build a context with the initialized instance to create.
         var context = new CreateContentContext(contentItem);
