@@ -83,10 +83,7 @@ public class WorkflowManagerTests
     private static JavaScriptWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
     {
         var memoryCache = new MemoryCache(new MemoryCacheOptions());
-        var jintOptionsMock = new Mock<IOptions<Jint.Options>>();
-        jintOptionsMock.Setup(x => x.Value)
-            .Returns(new Jint.Options());
-        var javaScriptEngine = new JavaScriptEngine(memoryCache, jintOptionsMock.Object);
+        var javaScriptEngine = new JavaScriptEngine(memoryCache, Options.Create(new Jint.Options()));
         var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
         var globalMethodProviders = Array.Empty<IGlobalMethodProvider>();
         var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);
