@@ -33,35 +33,6 @@
               "IndexMappings": {
                 "KeyFieldName": "ContentItemId",
                 "Mapping": {
-                  "dynamic_templates": [
-                    {
-                      "*.Inherited": {
-                        "match_mapping_type": "string",
-                        "path_match": "*.Inherited",
-                        "mapping": {
-                          "type": "keyword"
-                        }
-                      }
-                    },
-                    {
-                      "*.Ids": {
-                        "match_mapping_type": "string",
-                        "path_match": "*.Ids",
-                        "mapping": {
-                          "type": "keyword"
-                        }
-                      }
-                    },
-                    {
-                      "*.Location": {
-                        "match_mapping_type": "object",
-                        "path_match": "*.Location",
-                        "mapping": {
-                          "type": "geo_point"
-                        }
-                      }
-                    }
-                  ],
                   "properties": {
                     "ContentItemId": {
                       "type": "keyword"

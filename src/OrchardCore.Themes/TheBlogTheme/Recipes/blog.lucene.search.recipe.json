@@ -30,26 +30,6 @@
             "LuceneIndexMetadata": {
               "StoreSourceData": false,
               "AnalyzerName": "standardanalyzer",
-              "IndexMappings": {
-                "KeyFieldName": "ContentItemId",
-                "Fields": [
-                  "ContentItemId",
-                  "ContentItemVersionId",
-                  "Content.ContentItem.FullText",
-                  "Content.BodyAspect.Body",
-                  "Content.ContentItem.DisplayText.Analyzed",
-                  "Content.ContentItem.DisplayText.keyword",
-                  "Content.ContentItem.DisplayText.Normalized",
-                  "Content.ContentItem.ContentType",
-                  "Content.ContentItem.CreatedUtc",
-                  "Content.ContentItem.Latest",
-                  "Content.ContentItem.Owner",
-                  "Content.ContentItem.Author",
-                  "Content.ContentItem.ModifiedUtc",
-                  "Content.ContentItem.Published",
-                  "Content.ContentItem.PublishedUtc"
-                ]
-              }
             },
             "ContentIndexMetadata": {
               "IndexLatest": false,
