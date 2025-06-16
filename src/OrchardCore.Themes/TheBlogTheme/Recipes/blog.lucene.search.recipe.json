@@ -9,6 +9,10 @@
   "categories": [ "default" ],
   "tags": [ "blog", "lucene" ],
 
+  "variables": {
+    "searchIndexProfileId": "[js:uuid()]"
+  },
+
   "steps": [
     {
       "name": "feature",
@@ -18,49 +22,96 @@
       ]
     },
     {
-      // Create the indices before the content items so they are indexed automatically.
-      "name": "lucene-index",
-      "Indices": [
+      "name": "CreateOrUpdateIndexProfile",
+      "indexes": [
         {
-          "Search": {
-            "AnalyzerName": "standardanalyzer",
-            "IndexLatest": false,
-            "StoreSourceData": false,
-            "IndexedContentTypes": [
-              "Article",
-              "Blockquote",
-              "Blog",
-              "BlogPost",
-              "Button",
-              "Container",
-              "Form",
-              "ImageWidget",
-              "Image",
-              "Input",
-              "Label",
-              "LinkMenuItem",
-              "Menu",
-              "Page",
-              "Paragraph",
-              "RawHtml",
-              "Select",
-              "TextArea",
-              "Validation",
-              "ValidationSummary"
-            ]
-          }
+          "Id": "[js: variables('searchIndexProfileId')]",
+          "IndexName": "Search",
+          "ProviderName": "Lucene",
+          "Type": "Content",
+          "Name": "Search",
+          "Properties": {
+            "LuceneIndexMetadata": {
+              "StoreSourceData": false,
+              "AnalyzerName": "standardanalyzer",
+              "IndexMappings": {
+                "KeyFieldName": "ContentItemId",
+                "Fields": [
+                  "ContentItemId",
+                  "ContentItemVersionId",
+                  "Content.ContentItem.FullText",
+                  "Content.BodyAspect.Body",
+                  "Content.ContentItem.DisplayText.Analyzed",
+                  "Content.ContentItem.DisplayText.keyword",
+                  "Content.ContentItem.DisplayText.Normalized",
+                  "Content.ContentItem.ContentType",
+                  "Content.ContentItem.CreatedUtc",
+                  "Content.ContentItem.Latest",
+                  "Content.ContentItem.Owner",
+                  "Content.ContentItem.Author",
+                  "Content.ContentItem.ModifiedUtc",
+                  "Content.ContentItem.Published",
+                  "Content.ContentItem.PublishedUtc"
+                ]
+              }
+            },
+            "ContentIndexMetadata": {
+              "IndexLatest": false,
+              "IndexedContentTypes": [
+                "Article",
+                "Blockquote",
+                "Blog",
+                "BlogPost",
+                "Container",
+                "Image",
+                "LinkMenuItem",
+                "Menu",
+                "Page",
+                "Paragraph",
+                "RawHtml"
+              ],
+              "Culture": "any"
+            },
+            "LuceneIndexDefaultQueryMetadata": {
+              "DefaultVersion": "LUCENE_30",
+              "QueryAnalyzerName": "standardanalyzer",
+              "AllowLuceneQueries": false,
+              "DefaultSearchFields": [
+                "Content.ContentItem.FullText"
+              ]
+            }
+          },
+          "IndexLatest": false,
+          "Culture": "any",
+          "IndexedContentTypes": [
+            "Article",
+            "Blockquote",
+            "Blog",
+            "BlogPost",
+            "Container",
+            "Image",
+            "LinkMenuItem",
+            "Menu",
+            "Page",
+            "Paragraph",
+            "RawHtml"
+          ]
         }
       ]
     },
     {
       // Create the search settings.
       "name": "Settings",
-      "LuceneSettings": {
-        "SearchIndex": "Search",
-        "DefaultSearchFields": [
-          "Content.ContentItem.FullText"
-        ]
+      "SearchSettings": {
+        "DefaultIndexProfileName": "[js: variables('searchIndexProfileId')]"
       }
+    },
+    {
+      "name": "RebuildIndex",
+      "includeAll": false,
+      "indexNames": [
+        "Search"
+      ]
     },
     {
       // Create the search index permissions.
@@ -71,15 +122,9 @@
           "Description": "Anonymous role",
           "Permissions": [
             "ViewContent",
-            "QueryLuceneSearchIndex"
+            "QueryIndex_Search"
           ]
         }
-      ]
-    },
-    {
-      "name": "lucene-index-rebuild",
-      "Indices": [
-        "Search"
       ]
     }
   ]

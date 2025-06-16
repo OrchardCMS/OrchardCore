@@ -12,6 +12,7 @@
   "variables": {
     "searchIndexProfileId": "[js:uuid()]"
   },
+
   "steps": [
     {
       "name": "feature",
