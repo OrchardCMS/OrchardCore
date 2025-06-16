@@ -9,11 +9,9 @@
     <span asp-validation-for="IndexName" class="text-danger"></span>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-        <span class="hint">@T["A unique name for the index."]</span>
-    </div>
+<div class="mb-3">
+    <label asp-for="Name" class="form-label">@T["Name"]</label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+    <span class="hint">@T["A unique name for the index."]</span>
 </div>
