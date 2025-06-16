@@ -38,7 +38,7 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
         S = stringLocalizer;
     }
 
-    public override Task CreatingAsync(CreatingContext<IndexProfile> context)
+    public override Task InitializingAsync(InitializingContext<IndexProfile> context)
         => SetMappingAsync(context.Model);
 
     public override Task UpdatingAsync(UpdatingContext<IndexProfile> context)

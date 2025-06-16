@@ -103,6 +103,25 @@ public class SiteContext : IDisposable
         HttpContextAccessor.HttpContext = null;
     }
 
+    // Waits up to 2 seconds for all outstanding deferred tasks to complete by making sure no shell scope is
+    // currently executing.
+    public Task WaitForOutstandingDeferredTasksAsync(CancellationToken cancellationToken)
+    {
+        return UsingTenantScopeAsync(async scope =>
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
+            while (!cts.Token.IsCancellationRequested &&
+            !cancellationToken.IsCancellationRequested &&
+            scope.ShellContext.ActiveScopes > 1)
+            {
+                // If there is only one active scope (the current one), it means that all deferred tasks have completed.
+
+                await Task.Delay(50, cancellationToken);
+            }
+        });
+    }
+
     public Task RunRecipeAsync(string recipeName, string recipePath)
     {
         return UsingTenantScopeAsync(async scope =>

@@ -56,7 +56,7 @@ public static class SqliteHelper
         return new SqliteConnectionStringBuilder
         {
             DataSource = string.IsNullOrEmpty(databaseFolder) ? databaseName : Path.Combine(databaseFolder, databaseName),
-            Cache = SqliteCacheMode.Shared,
+            Cache = SqliteCacheMode.Default,
             Pooling = sqliteOptions.UseConnectionPooling,
             Mode = sqliteOpenMode,
         };

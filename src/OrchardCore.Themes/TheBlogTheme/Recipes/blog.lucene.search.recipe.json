@@ -21,7 +21,6 @@
       "name": "CreateOrUpdateIndexProfile",
       "indexes": [
         {
-          "Id": "Search",
           "IndexName": "Search",
           "ProviderName": "Lucene",
           "Type": "Content",
@@ -29,7 +28,7 @@
           "Properties": {
             "LuceneIndexMetadata": {
               "StoreSourceData": false,
-              "AnalyzerName": "standardanalyzer",
+              "AnalyzerName": "standardanalyzer"
             },
             "ContentIndexMetadata": {
               "IndexLatest": false,

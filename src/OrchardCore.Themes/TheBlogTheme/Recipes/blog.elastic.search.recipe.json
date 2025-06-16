@@ -21,7 +21,6 @@
       "name": "CreateOrUpdateIndexProfile",
       "indexes": [
         {
-          "Id": "search",
           "IndexName": "search",
           "ProviderName": "Elasticsearch",
           "Type": "Content",
@@ -29,60 +28,7 @@
           "Properties": {
             "ElasticsearchIndexMetadata": {
               "StoreSourceData": true,
-              "AnalyzerName": "standard",
-              "IndexMappings": {
-                "KeyFieldName": "ContentItemId",
-                "Mapping": {
-                  "properties": {
-                    "ContentItemId": {
-                      "type": "keyword"
-                    },
-                    "ContentItemVersionId": {
-                      "type": "keyword"
-                    },
-                    "Content.ContentItem.Owner": {
-                      "type": "keyword"
-                    },
-                    "Content.ContentItem.FullText": {
-                      "type": "text"
-                    },
-                    "Content.ContentItem.ContainedPart": {
-                      "properties": {
-                        "Ids": {
-                          "type": "keyword"
-                        },
-                        "Order": {
-                          "type": "float"
-                        }
-                      },
-                      "type": "object"
-                    },
-                    "Content.ContentItem.DisplayText": {
-                      "properties": {
-                        "Analyzed": {
-                          "type": "text"
-                        },
-                        "Normalized": {
-                          "type": "keyword"
-                        },
-                        "Keyword": {
-                          "type": "keyword"
-                        }
-                      },
-                      "type": "object"
-                    },
-                    "Content.ContentItem.ContentType": {
-                      "type": "keyword"
-                    }
-                  },
-                  "_source": {
-                    "enabled": true,
-                    "excludes": [
-                      "Content.ContentItem.DisplayText.Analyzed"
-                    ]
-                  }
-                }
-              }
+              "AnalyzerName": "standard"
             },
             "ElasticsearchDefaultQueryMetadata": {
               "QueryAnalyzerName": "standard",
