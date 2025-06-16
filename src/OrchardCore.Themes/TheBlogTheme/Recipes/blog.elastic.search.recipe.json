@@ -12,7 +12,6 @@
   "variables": {
     "searchIndexProfileId": "[js:uuid()]"
   },
-
   "steps": [
     {
       "name": "feature",
@@ -22,123 +21,154 @@
       ]
     },
     {
-      // Create the indices before the content items so they are indexed automatically. These are not all the available
-      // settings, but the rest comes from the defaults.
-      "name": "ElasticIndexSettings",
-      "Indices": [
+      "name": "CreateOrUpdateIndexProfile",
+      "indexes": [
         {
-          "search": {
-            "Id": "[js: variables('searchIndexProfileId')]",
-            "ProviderName": "Elasticsearch",
-            "Type": "Content",
-            "Name": "search",
-            "IndexName": "search",
-            "IndexFullName": "default_search",
-            "Properties": {
-              "ElasticsearchIndexMetadata": {
-                "StoreSourceData": true,
-                "AnalyzerName": "standard",
-                "IndexMappings": {
-                  "KeyFieldName": "ContentItemId",
-                  "Mapping": {
-                    "properties": {
-                      "ContentItemId": {
-                        "type": "keyword"
-                      },
-                      "ContentItemVersionId": {
-                        "type": "keyword"
-                      },
-                      "Content.ContentItem.Owner": {
-                        "type": "keyword"
-                      },
-                      "Content.ContentItem.FullText": {
-                        "type": "text"
-                      },
-                      "Content.ContentItem.ContainedPart": {
-                        "properties": {
-                          "Ids": {
-                            "type": "keyword"
-                          },
-                          "Order": {
-                            "type": "float"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "Content.ContentItem.DisplayText": {
-                        "properties": {
-                          "Analyzed": {
-                            "type": "text"
-                          },
-                          "Normalized": {
-                            "type": "keyword"
-                          },
-                          "Keyword": {
-                            "type": "keyword"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "Content.ContentItem.ContentType": {
-                        "type": "keyword"
+          "Id": "[js: variables('searchIndexProfileId')]",
+          "IndexName": "search",
+          "ProviderName": "Elasticsearch",
+          "Type": "Content",
+          "Name": "search",
+          "Properties": {
+            "ElasticsearchIndexMetadata": {
+              "StoreSourceData": true,
+              "AnalyzerName": "standard",
+              "IndexMappings": {
+                "KeyFieldName": "ContentItemId",
+                "Mapping": {
+                  "dynamic_templates": [
+                    {
+                      "*.Inherited": {
+                        "match_mapping_type": "string",
+                        "path_match": "*.Inherited",
+                        "mapping": {
+                          "type": "keyword"
+                        }
                       }
                     },
-                    "_source": {
-                      "enabled": true,
-                      "excludes": [
-                        "Content.ContentItem.DisplayText.Analyzed"
-                      ]
+                    {
+                      "*.Ids": {
+                        "match_mapping_type": "string",
+                        "path_match": "*.Ids",
+                        "mapping": {
+                          "type": "keyword"
+                        }
+                      }
+                    },
+                    {
+                      "*.Location": {
+                        "match_mapping_type": "object",
+                        "path_match": "*.Location",
+                        "mapping": {
+                          "type": "geo_point"
+                        }
+                      }
                     }
+                  ],
+                  "properties": {
+                    "ContentItemId": {
+                      "type": "keyword"
+                    },
+                    "ContentItemVersionId": {
+                      "type": "keyword"
+                    },
+                    "Content.ContentItem.Owner": {
+                      "type": "keyword"
+                    },
+                    "Content.ContentItem.FullText": {
+                      "type": "text"
+                    },
+                    "Content.ContentItem.ContainedPart": {
+                      "properties": {
+                        "Ids": {
+                          "type": "keyword"
+                        },
+                        "Order": {
+                          "type": "float"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "Content.ContentItem.DisplayText": {
+                      "properties": {
+                        "Analyzed": {
+                          "type": "text"
+                        },
+                        "Normalized": {
+                          "type": "keyword"
+                        },
+                        "Keyword": {
+                          "type": "keyword"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "Content.ContentItem.ContentType": {
+                      "type": "keyword"
+                    }
+                  },
+                  "_source": {
+                    "enabled": true,
+                    "excludes": [
+                      "Content.ContentItem.DisplayText.Analyzed"
+                    ]
                   }
                 }
-              },
-              "ElasticsearchDefaultQueryMetadata": {
-                "QueryAnalyzerName": "standard",
-                "DefaultSearchFields": [
-                  "Content.ContentItem.FullText"
-                ]
-              },
-              "ContentIndexMetadata": {
-                "IndexLatest": false,
-                "IndexedContentTypes": [
-                  "Article",
-                  "Blockquote",
-                  "Blog",
-                  "BlogPost",
-                  "Container",
-                  "Image",
-                  "LinkMenuItem",
-                  "Menu",
-                  "Page",
-                  "Paragraph",
-                  "RawHtml"
-                ],
-                "Culture": "any"
               }
+            },
+            "ElasticsearchDefaultQueryMetadata": {
+              "QueryAnalyzerName": "standard",
+              "DefaultSearchFields": [
+                "Content.ContentItem.FullText"
+              ]
+            },
+            "ContentIndexMetadata": {
+              "IndexLatest": false,
+              "IndexedContentTypes": [
+                "Article",
+                "Blockquote",
+                "Blog",
+                "BlogPost",
+                "Container",
+                "Image",
+                "LinkMenuItem",
+                "Menu",
+                "Page",
+                "Paragraph",
+                "RawHtml"
+              ],
+              "Culture": "any"
             }
-          }
+          },
+          "IndexLatest": false,
+          "Culture": "any",
+          "IndexedContentTypes": [
+            "Article",
+            "Blockquote",
+            "Blog",
+            "BlogPost",
+            "Container",
+            "Image",
+            "LinkMenuItem",
+            "Menu",
+            "Page",
+            "Paragraph",
+            "RawHtml"
+          ]
         }
       ]
     },
     {
       // Create the search settings.
       "name": "Settings",
-      "ElasticSettings": {
-        "SearchIndex": "search",
-        "DefaultSearchFields": [
-          "Content.ContentItem.FullText"
-        ],
-        "SearchType": "",
-        "DefaultQuery": null,
-        "SyncWithLucene": true
-      },
       "SearchSettings": {
         "DefaultIndexProfileName": "[js: variables('searchIndexProfileId')]"
       }
     },
     {
-      "name": "elastic-index-rebuild",
-      "Indices": [
+      "name": "RebuildIndex",
+      "includeAll": false,
+      "indexNames": [
         "search"
       ]
     },
@@ -151,7 +181,7 @@
           "Description": "Anonymous role",
           "Permissions": [
             "ViewContent",
-            "QueryElasticsearchSearchIndex"
+            "QueryIndex_search"
           ]
         }
       ]
