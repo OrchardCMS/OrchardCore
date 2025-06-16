@@ -163,7 +163,7 @@
       // Create the search settings.
       "name": "Settings",
       "SearchSettings": {
-        "DefaultIndexProfileName": "[js: variables('searchIndexProfileId')]"
+        "DefaultIndexProfileName": "search"
       }
     },
     {
