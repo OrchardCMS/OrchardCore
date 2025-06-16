@@ -9,6 +9,10 @@
   "categories": [ "default" ],
   "tags": [ "blog", "Elasticsearch" ],
 
+  "variables": {
+    "searchIndexProfileId": "[js:uuid()]"
+  },
+
   "steps": [
     {
       "name": "feature",
@@ -18,35 +22,100 @@
       ]
     },
     {
-      // Create the indices before the content items so they are indexed automatically.
+      // Create the indices before the content items so they are indexed automatically. These are not all the available
+      // settings, but the rest comes from the defaults.
       "name": "ElasticIndexSettings",
       "Indices": [
         {
           "search": {
-            "AnalyzerName": "standardanalyzer",
-            "IndexLatest": false,
-            "IndexedContentTypes": [
-              "Article",
-              "Blockquote",
-              "Blog",
-              "BlogPost",
-              "Button",
-              "Container",
-              "Form",
-              "ImageWidget",
-              "Image",
-              "Input",
-              "Label",
-              "LinkMenuItem",
-              "Menu",
-              "Page",
-              "Paragraph",
-              "RawHtml",
-              "Select",
-              "TextArea",
-              "Validation",
-              "ValidationSummary"
-            ]
+            "Id": "[js: variables('searchIndexProfileId')]",
+            "ProviderName": "Elasticsearch",
+            "Type": "Content",
+            "Name": "search",
+            "IndexName": "search",
+            "IndexFullName": "default_search",
+            "Properties": {
+              "ElasticsearchIndexMetadata": {
+                "StoreSourceData": true,
+                "AnalyzerName": "standard",
+                "IndexMappings": {
+                  "KeyFieldName": "ContentItemId",
+                  "Mapping": {
+                    "properties": {
+                      "ContentItemId": {
+                        "type": "keyword"
+                      },
+                      "ContentItemVersionId": {
+                        "type": "keyword"
+                      },
+                      "Content.ContentItem.Owner": {
+                        "type": "keyword"
+                      },
+                      "Content.ContentItem.FullText": {
+                        "type": "text"
+                      },
+                      "Content.ContentItem.ContainedPart": {
+                        "properties": {
+                          "Ids": {
+                            "type": "keyword"
+                          },
+                          "Order": {
+                            "type": "float"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "Content.ContentItem.DisplayText": {
+                        "properties": {
+                          "Analyzed": {
+                            "type": "text"
+                          },
+                          "Normalized": {
+                            "type": "keyword"
+                          },
+                          "Keyword": {
+                            "type": "keyword"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "Content.ContentItem.ContentType": {
+                        "type": "keyword"
+                      }
+                    },
+                    "_source": {
+                      "enabled": true,
+                      "excludes": [
+                        "Content.ContentItem.DisplayText.Analyzed"
+                      ]
+                    }
+                  }
+                }
+              },
+              "ElasticsearchDefaultQueryMetadata": {
+                "QueryAnalyzerName": "standard",
+                "DefaultSearchFields": [
+                  "Content.ContentItem.FullText"
+                ]
+              },
+              "ContentIndexMetadata": {
+                "IndexLatest": false,
+                "IndexedContentTypes": [
+                  "Article",
+                  "Blockquote",
+                  "Blog",
+                  "BlogPost",
+                  "Container",
+                  "Image",
+                  "LinkMenuItem",
+                  "Menu",
+                  "Page",
+                  "Paragraph",
+                  "RawHtml"
+                ],
+                "Culture": "any"
+              }
+            }
           }
         }
       ]
@@ -62,6 +131,9 @@
         "SearchType": "",
         "DefaultQuery": null,
         "SyncWithLucene": true
+      },
+      "SearchSettings": {
+        "DefaultIndexProfileName": "[js: variables('searchIndexProfileId')]"
       }
     },
     {
