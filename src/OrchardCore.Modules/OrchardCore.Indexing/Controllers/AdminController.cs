@@ -140,9 +140,9 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var index = await _indexProfileManager.NewAsync(providerName, type);
+        var indexProfile = await _indexProfileManager.NewAsync(providerName, type);
 
-        if (index == null)
+        if (indexProfile == null)
         {
             await _notifier.ErrorAsync(H["Invalid provider or type."]);
 
@@ -152,7 +152,7 @@ public sealed class AdminController : Controller
         var model = new ModelViewModel
         {
             DisplayName = service.DisplayName,
-            Editor = await _displayManager.BuildEditorAsync(index, _updateModelAccessor.ModelUpdater, isNew: true),
+            Editor = await _displayManager.BuildEditorAsync(indexProfile, _updateModelAccessor.ModelUpdater, isNew: true),
         };
 
         return View(model);
@@ -175,9 +175,9 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var index = await _indexProfileManager.NewAsync(providerName, type);
+        var indexProfile = await _indexProfileManager.NewAsync(providerName, type);
 
-        if (index == null)
+        if (indexProfile == null)
         {
             await _notifier.ErrorAsync(H["Invalid provider or type."]);
 
@@ -187,10 +187,10 @@ public sealed class AdminController : Controller
         var model = new ModelViewModel
         {
             DisplayName = service.DisplayName,
-            Editor = await _displayManager.UpdateEditorAsync(index, _updateModelAccessor.ModelUpdater, isNew: true),
+            Editor = await _displayManager.UpdateEditorAsync(indexProfile, _updateModelAccessor.ModelUpdater, isNew: true),
         };
 
-        var validate = await _indexProfileManager.ValidateAsync(index);
+        var validate = await _indexProfileManager.ValidateAsync(indexProfile);
 
         if (!validate.Succeeded && ModelState.IsValid)
         {
@@ -205,29 +205,29 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+            var indexManager = _serviceProvider.GetKeyedService<IIndexManager>(indexProfile.ProviderName);
 
             if (indexManager is null)
             {
-                await _notifier.ErrorAsync(H["No index manager found to rebuild index for provider '{0}'.", index.ProviderName]);
+                await _notifier.ErrorAsync(H["No index manager found to rebuild index for provider '{0}'.", indexProfile.ProviderName]);
 
                 return RedirectToAction(nameof(Index));
             }
 
             // Before creating the index in the provider, we need to create it locally to ensure all the properties are set.
-            await _indexProfileManager.CreateAsync(index);
+            await _indexProfileManager.CreateAsync(indexProfile);
 
-            if (!await indexManager.CreateAsync(index))
+            if (!await indexManager.CreateAsync(indexProfile))
             {
                 // Delete the index locally if we failed to create it in the provider.
-                await _indexProfileManager.DeleteAsync(index);
+                await _indexProfileManager.DeleteAsync(indexProfile);
 
-                await _notifier.ErrorAsync(H["Unable to create the index for the provider '{0}'.", index.ProviderName]);
+                await _notifier.ErrorAsync(H["Unable to create the index for the provider '{0}'.", indexProfile.ProviderName]);
 
                 return View(model);
             }
 
-            await _indexProfileManager.SynchronizeAsync(index);
+            await _indexProfileManager.SynchronizeAsync(indexProfile);
 
             await _notifier.SuccessAsync(H["An index has been created successfully. The synchronizing process was triggered in the background."]);
 
@@ -245,17 +245,17 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexProfileManager.FindByIdAsync(id);
+        var indexProfile = await _indexProfileManager.FindByIdAsync(id);
 
-        if (index == null)
+        if (indexProfile == null)
         {
             return NotFound();
         }
 
         var model = new ModelViewModel
         {
-            DisplayName = index.Name,
-            Editor = await _displayManager.BuildEditorAsync(index, _updateModelAccessor.ModelUpdater, isNew: false),
+            DisplayName = indexProfile.Name,
+            Editor = await _displayManager.BuildEditorAsync(indexProfile, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 
         return View(model);
@@ -374,16 +374,16 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexProfileManager.FindByIdAsync(id);
+        var indexProfile = await _indexProfileManager.FindByIdAsync(id);
 
-        if (index == null)
+        if (indexProfile == null)
         {
             return NotFound();
         }
 
-        await _indexProfileManager.ResetAsync(index);
-        await _indexProfileManager.UpdateAsync(index);
-        await _indexProfileManager.SynchronizeAsync(index);
+        await _indexProfileManager.ResetAsync(indexProfile);
+        await _indexProfileManager.UpdateAsync(indexProfile);
+        await _indexProfileManager.SynchronizeAsync(indexProfile);
 
         await _notifier.SuccessAsync(H["An index has been reset successfully. The synchronizing process was triggered in the background."]);
 
@@ -399,14 +399,14 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexProfileManager.FindByIdAsync(id);
+        var indexProfile = await _indexProfileManager.FindByIdAsync(id);
 
-        if (index == null)
+        if (indexProfile == null)
         {
             return NotFound();
         }
 
-        await _indexProfileManager.SynchronizeAsync(index);
+        await _indexProfileManager.SynchronizeAsync(indexProfile);
 
         await _notifier.SuccessAsync(H["The synchronizing process was triggered in the background."]);
 
@@ -422,27 +422,27 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexProfileManager.FindByIdAsync(id);
+        var indexProfile = await _indexProfileManager.FindByIdAsync(id);
 
-        if (index == null)
+        if (indexProfile == null)
         {
             return NotFound();
         }
 
-        var indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+        var indexManager = _serviceProvider.GetKeyedService<IIndexManager>(indexProfile.ProviderName);
 
         if (indexManager is null)
         {
-            await _notifier.ErrorAsync(H["No index manager found to rebuild index for provider '{0}'.", index.ProviderName]);
+            await _notifier.ErrorAsync(H["No index manager found to rebuild index for provider '{0}'.", indexProfile.ProviderName]);
 
             return RedirectToAction(nameof(Index));
         }
 
-        if (await indexManager.RebuildAsync(index))
+        if (await indexManager.RebuildAsync(indexProfile))
         {
-            await _indexProfileManager.ResetAsync(index);
-            await _indexProfileManager.UpdateAsync(index);
-            await _indexProfileManager.SynchronizeAsync(index);
+            await _indexProfileManager.ResetAsync(indexProfile);
+            await _indexProfileManager.UpdateAsync(indexProfile);
+            await _indexProfileManager.SynchronizeAsync(indexProfile);
 
             await _notifier.SuccessAsync(H["An index has been rebuilt successfully. The synchronizing process was triggered in the background."]);
         }
@@ -477,17 +477,17 @@ public sealed class AdminController : Controller
                     var removeCounter = 0;
                     foreach (var id in itemIds)
                     {
-                        var index = await _indexProfileManager.FindByIdAsync(id);
+                        var indexProfile = await _indexProfileManager.FindByIdAsync(id);
 
-                        if (index == null)
+                        if (indexProfile == null)
                         {
                             continue;
                         }
 
-                        if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+                        if (!indexManagers.TryGetValue(indexProfile.ProviderName, out var indexManager))
                         {
-                            indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
-                            indexManagers.Add(index.ProviderName, indexManager);
+                            indexManager = _serviceProvider.GetKeyedService<IIndexManager>(indexProfile.ProviderName);
+                            indexManagers.Add(indexProfile.ProviderName, indexManager);
                         }
 
                         if (indexManager is null)
@@ -495,14 +495,14 @@ public sealed class AdminController : Controller
                             continue;
                         }
 
-                        var exists = await indexManager.ExistsAsync(index.IndexFullName);
+                        var exists = await indexManager.ExistsAsync(indexProfile.IndexFullName);
 
-                        if (exists && !await indexManager.DeleteAsync(index))
+                        if (exists && !await indexManager.DeleteAsync(indexProfile))
                         {
                             continue;
                         }
 
-                        if (await _indexProfileManager.DeleteAsync(index))
+                        if (await _indexProfileManager.DeleteAsync(indexProfile))
                         {
                             removeCounter++;
                         }
@@ -523,16 +523,16 @@ public sealed class AdminController : Controller
 
                     foreach (var id in itemIds)
                     {
-                        var index = await _indexProfileManager.FindByIdAsync(id);
+                        var indexProfile = await _indexProfileManager.FindByIdAsync(id);
 
-                        if (index == null)
+                        if (indexProfile == null)
                         {
                             continue;
                         }
 
-                        await _indexProfileManager.ResetAsync(index);
-                        await _indexProfileManager.UpdateAsync(index);
-                        await _indexProfileManager.SynchronizeAsync(index);
+                        await _indexProfileManager.ResetAsync(indexProfile);
+                        await _indexProfileManager.UpdateAsync(indexProfile);
+                        await _indexProfileManager.SynchronizeAsync(indexProfile);
 
                         resetCounter++;
                     }
@@ -577,17 +577,17 @@ public sealed class AdminController : Controller
                     var rebuildCounter = 0;
                     foreach (var id in itemIds)
                     {
-                        var index = await _indexProfileManager.FindByIdAsync(id);
+                        var indexProfile = await _indexProfileManager.FindByIdAsync(id);
 
-                        if (index == null)
+                        if (indexProfile == null)
                         {
                             continue;
                         }
 
-                        if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+                        if (!indexManagers.TryGetValue(indexProfile.ProviderName, out var indexManager))
                         {
-                            indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
-                            indexManagers.Add(index.ProviderName, indexManager);
+                            indexManager = _serviceProvider.GetKeyedService<IIndexManager>(indexProfile.ProviderName);
+                            indexManagers.Add(indexProfile.ProviderName, indexManager);
                         }
 
                         if (indexManager is null)
@@ -595,16 +595,16 @@ public sealed class AdminController : Controller
                             continue;
                         }
 
-                        if (!await indexManager.RebuildAsync(index))
+                        if (!await indexManager.RebuildAsync(indexProfile))
                         {
                             continue;
                         }
 
                         rebuildCounter++;
 
-                        await _indexProfileManager.ResetAsync(index);
-                        await _indexProfileManager.UpdateAsync(index);
-                        await _indexProfileManager.SynchronizeAsync(index);
+                        await _indexProfileManager.ResetAsync(indexProfile);
+                        await _indexProfileManager.UpdateAsync(indexProfile);
+                        await _indexProfileManager.SynchronizeAsync(indexProfile);
                     }
 
                     if (rebuildCounter == 0)
