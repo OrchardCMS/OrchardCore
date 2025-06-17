@@ -71,6 +71,11 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["There is already another index with the same name."]);
             }
 
+            if (hasIndexName && model.IndexName.Length > 255)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["The index name must be less than 255 characters."]);
+            }
+
             if (hasIndexName && !string.IsNullOrEmpty(indexProfile.ProviderName))
             {
                 var nameProvider = _serviceProvider.GetKeyedService<IIndexNameProvider>(indexProfile.ProviderName);
@@ -90,11 +95,18 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
         }
         else
         {
-            var existing = await _indexProfileStore.FindByNameAsync(model.Name);
-
-            if (existing is not null && existing.Id != indexProfile.Id)
+            if (model.Name.Length > 255)
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["There is already another index with the same name."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["The name must be less than 255 characters."]);
+            }
+            else
+            {
+                var existing = await _indexProfileStore.FindByNameAsync(model.Name);
+
+                if (existing is not null && existing.Id != indexProfile.Id)
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["There is already another index with the same name."]);
+                }
             }
         }
 

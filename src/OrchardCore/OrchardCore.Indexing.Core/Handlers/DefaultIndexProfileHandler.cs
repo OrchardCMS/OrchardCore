@@ -51,11 +51,18 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
         }
         else
         {
-            var existing = await _store.FindByNameAsync(context.Model.Name);
-
-            if (existing is not null && existing.Id != context.Model.Id)
+            if (context.Model.Name.Length > 255)
             {
-                context.Result.Fail(new ValidationResult(S["There is already another index with the same name."], [nameof(IndexProfile.Name)]));
+                context.Result.Fail(new ValidationResult(S["The index name cannot be longer than 255 characters."], [nameof(IndexProfile.Name)]));
+            }
+            else
+            {
+                var existing = await _store.FindByNameAsync(context.Model.Name);
+
+                if (existing is not null && existing.Id != context.Model.Id)
+                {
+                    context.Result.Fail(new ValidationResult(S["There is already another index with the same name."], [nameof(IndexProfile.Name)]));
+                }
             }
         }
 
@@ -64,6 +71,10 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
         if (!hasIndexName)
         {
             context.Result.Fail(new ValidationResult(S["The index name is required."], [nameof(IndexProfile.IndexName)]));
+        }
+        else if (context.Model.IndexName.Length > 255)
+        {
+            context.Result.Fail(new ValidationResult(S["The index name cannot be longer than 255 characters."], [nameof(IndexProfile.IndexName)]));
         }
 
         if (string.IsNullOrWhiteSpace(context.Model.IndexFullName))
