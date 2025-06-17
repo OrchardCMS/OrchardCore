@@ -271,23 +271,20 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexProfileManager.FindByIdAsync(id);
+        var indexProfile = await _indexProfileManager.FindByIdAsync(id);
 
-        if (index == null)
+        if (indexProfile == null)
         {
             return NotFound();
         }
 
-        // Clone the index to prevent modifying the original instance in the store.
-        var mutableProfile = index.Clone();
-
         var model = new ModelViewModel
         {
-            DisplayName = mutableProfile.Name,
-            Editor = await _displayManager.UpdateEditorAsync(mutableProfile, _updateModelAccessor.ModelUpdater, isNew: false),
+            DisplayName = indexProfile.Name,
+            Editor = await _displayManager.UpdateEditorAsync(indexProfile, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 
-        var validate = await _indexProfileManager.ValidateAsync(index);
+        var validate = await _indexProfileManager.ValidateAsync(indexProfile);
 
         if (!validate.Succeeded && ModelState.IsValid)
         {
@@ -302,7 +299,7 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            await _indexProfileManager.UpdateAsync(mutableProfile);
+            await _indexProfileManager.UpdateAsync(indexProfile);
 
             await _notifier.SuccessAsync(H["An index has been updated successfully."]);
 
@@ -321,19 +318,19 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var index = await _indexProfileManager.FindByIdAsync(id);
+        var indexProfile = await _indexProfileManager.FindByIdAsync(id);
 
-        if (index == null)
+        if (indexProfile == null)
         {
             return NotFound();
         }
 
-        var indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+        var indexManager = _serviceProvider.GetKeyedService<IIndexManager>(indexProfile.ProviderName);
 
         if (force)
         {
-            await indexManager?.DeleteAsync(index);
-            await _indexProfileManager.DeleteAsync(index);
+            await indexManager?.DeleteAsync(indexProfile);
+            await _indexProfileManager.DeleteAsync(indexProfile);
 
             await _notifier.SuccessAsync(H["The index was removed successfully."]);
 
@@ -342,21 +339,21 @@ public sealed class AdminController : Controller
 
         if (indexManager is null)
         {
-            await _notifier.ErrorAsync(H["No index manager found to rebuild index for provider '{0}'.", index.ProviderName]);
+            await _notifier.ErrorAsync(H["No index manager found to rebuild index for provider '{0}'.", indexProfile.ProviderName]);
 
             return RedirectToAction(nameof(Index));
         }
 
-        var exists = await indexManager.ExistsAsync(index.IndexFullName);
+        var exists = await indexManager.ExistsAsync(indexProfile.IndexFullName);
 
-        if (exists && !await indexManager.DeleteAsync(index))
+        if (exists && !await indexManager.DeleteAsync(indexProfile))
         {
-            await _notifier.ErrorAsync(H["Unable to delete the index for the provider {0}.", index.ProviderName]);
+            await _notifier.ErrorAsync(H["Unable to delete the index for the provider {0}.", indexProfile.ProviderName]);
 
             return RedirectToAction(nameof(Index));
         }
 
-        if (await _indexProfileManager.DeleteAsync(index))
+        if (await _indexProfileManager.DeleteAsync(indexProfile))
         {
             await _notifier.SuccessAsync(H["The index was removed successfully."]);
         }
