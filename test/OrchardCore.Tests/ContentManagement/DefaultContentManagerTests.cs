@@ -8,45 +8,68 @@ namespace OrchardCore.ContentManagement.Tests;
 
 public class DefaultContentManagerTests
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly static DefaultContentItemIdGenerator _contentItemIdGenerator = new DefaultContentItemIdGenerator(new DefaultIdGenerator());
 
-    public DefaultContentManagerTests()
-    {
-        var services = new ServiceCollection();
+    private readonly Mock<TestContentHandler>  _contentHandlerMock = new Mock<TestContentHandler>();
+    private readonly IEnumerable<IContentHandler> _contentHandlers;
 
-        services.AddSingleton<IContentItemIdGenerator, DefaultContentItemIdGenerator>();
-        services.AddSingleton<Entities.IIdGenerator, DefaultIdGenerator>();
-
-        _serviceProvider = services.BuildServiceProvider();
-    }
+    public DefaultContentManagerTests() => _contentHandlers = new List<IContentHandler>([_contentHandlerMock.Object]);
 
     [Fact]
     public async Task CreatingContentItem_ShouldNotBePublished_IfVersionNotSpecified()
     {
         // Arrange
-        var contentHandlerMock = new Mock<TestContentHandler>();
-
-        var contentManager = new DefaultContentManager(
-            Mock.Of<IContentDefinitionManager>(),
-            Mock.Of<IContentManagerSession>(),
-            new List<IContentHandler>([contentHandlerMock.Object]),
-            Mock.Of<YesSql.ISession>(),
-            _serviceProvider.GetService<IContentItemIdGenerator>(),
-            Mock.Of<ILogger<DefaultContentManager>>(),
-            Mock.Of<IClock>(),
-            Mock.Of<IUpdateModelAccessor>(),
-            Mock.Of<IStringLocalizer<DefaultContentManager>>());
-
+        var contentManager = CreateContentManager();
         var contentItem = new ContentItem();
 
         // Act
         await contentManager.CreateAsync(contentItem);
 
         // Assert
-        contentHandlerMock.Verify(h => h.CreatedAsync(It.IsAny<CreateContentContext>()), Times.Once);
-
-        contentHandlerMock.Verify(h => h.PublishedAsync(It.IsAny<PublishContentContext>()), Times.Never);
+        _contentHandlerMock.Verify(h => h.CreatedAsync(It.IsAny<CreateContentContext>()), Times.Once);
+        _contentHandlerMock.Verify(h => h.PublishedAsync(It.IsAny<PublishContentContext>()), Times.Never);
     }
+
+    [Fact]
+    public async Task CreatingContentItem_ShouldPublished_IfPublishedVersionOptionSpecified()
+    {
+        // Arrange
+        var contentManager = CreateContentManager();
+        var contentItem = new ContentItem();
+
+        // Act
+        await contentManager.CreateAsync(contentItem, VersionOptions.Published);
+
+        // Assert
+        _contentHandlerMock.Verify(h => h.CreatedAsync(It.IsAny<CreateContentContext>()), Times.Once);
+        _contentHandlerMock.Verify(h => h.PublishedAsync(It.IsAny<PublishContentContext>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreatingContentItem_ShouldBeDraft_IfDraftVersionOptionSpecified()
+    {
+        // Arrange
+        var contentManager = CreateContentManager();
+        var contentItem = new ContentItem();
+
+        // Act
+        await contentManager.CreateAsync(contentItem, VersionOptions.Draft);
+
+        // Assert
+        _contentHandlerMock.Verify(h => h.CreatedAsync(It.IsAny<CreateContentContext>()), Times.Once);
+        _contentHandlerMock.Verify(h => h.PublishedAsync(It.IsAny<PublishContentContext>()), Times.Never);
+    }
+
+    private DefaultContentManager CreateContentManager() => new DefaultContentManager(
+        Mock.Of<IContentDefinitionManager>(),
+        Mock.Of<IContentManagerSession>(),
+        _contentHandlers,
+        Mock.Of<YesSql.ISession>(),
+        _contentItemIdGenerator,
+        Mock.Of<ILogger<DefaultContentManager>>(),
+        Mock.Of<IClock>(),
+        Mock.Of<IUpdateModelAccessor>(),
+        Mock.Of<IStringLocalizer<DefaultContentManager>>());
 
     public class TestContentHandler : ContentHandlerBase;
 }
