@@ -6,10 +6,8 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentManagement.Tests;
 
-public class DefaultContentManagerTests : IDisposable
+public class DefaultContentManagerTests
 {
-    private static bool _created, _published;
-
     private readonly IServiceProvider _serviceProvider;
 
     public DefaultContentManagerTests()
@@ -19,8 +17,6 @@ public class DefaultContentManagerTests : IDisposable
         services.AddSingleton<IContentItemIdGenerator, DefaultContentItemIdGenerator>();
         services.AddSingleton<Entities.IIdGenerator, DefaultIdGenerator>();
 
-        services.AddScoped<IContentHandler, TestContentHandler>();
-
         _serviceProvider = services.BuildServiceProvider();
     }
 
@@ -28,10 +24,12 @@ public class DefaultContentManagerTests : IDisposable
     public async Task CreatingContentItem_ShouldNotBePublished_IfVersionNotSpecified()
     {
         // Arrange
+        var contentHandlerMock = new Mock<TestContentHandler>();
+
         var contentManager = new DefaultContentManager(
             Mock.Of<IContentDefinitionManager>(),
             Mock.Of<IContentManagerSession>(),
-            _serviceProvider.GetServices<IContentHandler>(),
+            new List<IContentHandler>([contentHandlerMock.Object]),
             Mock.Of<YesSql.ISession>(),
             _serviceProvider.GetService<IContentItemIdGenerator>(),
             Mock.Of<ILogger<DefaultContentManager>>(),
@@ -45,26 +43,10 @@ public class DefaultContentManagerTests : IDisposable
         await contentManager.CreateAsync(contentItem);
 
         // Assert
-        Assert.True(_created);
-        Assert.False(_published);
+        contentHandlerMock.Verify(h => h.CreatedAsync(It.IsAny<CreateContentContext>()), Times.Once);
+
+        contentHandlerMock.Verify(h => h.PublishedAsync(It.IsAny<PublishContentContext>()), Times.Never);
     }
 
-    public void Dispose() => _created = _published = false;
-
-    public class TestContentHandler : ContentHandlerBase
-    {
-        public override Task CreatedAsync(CreateContentContext context)
-        {
-            _created = true;
-
-            return Task.CompletedTask;
-        }
-
-        public override Task PublishedAsync(PublishContentContext context)
-        {
-            _published = true;
-
-            return Task.CompletedTask;
-        }
-    }
+    public class TestContentHandler : ContentHandlerBase;
 }
