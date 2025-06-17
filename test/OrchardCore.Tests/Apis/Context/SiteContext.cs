@@ -1,4 +1,3 @@
-using Namotion.Reflection;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
@@ -110,17 +109,15 @@ public class SiteContext : IDisposable
     {
         return UsingTenantScopeAsync(async scope =>
         {
-            for (var i = 0; i < 200; i++)
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
+            while (!cts.Token.IsCancellationRequested &&
+            !cancellationToken.IsCancellationRequested &&
+            scope.ShellContext.ActiveScopes > 1)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                // If there is only one active scope (the current one), it means that all deferred tasks have completed.
 
-                if (scope.ShellContext.ActiveScopes <= 1)
-                {
-                    // If there is only one active scope (the current one), it means that all deferred tasks have completed.
-                    break;
-                }
-
-                await Task.Delay(10, cancellationToken);
+                await Task.Delay(50, cancellationToken);
             }
         });
     }
