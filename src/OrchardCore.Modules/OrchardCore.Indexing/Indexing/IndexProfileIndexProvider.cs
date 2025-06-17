@@ -11,7 +11,7 @@ internal sealed class IndexProfileIndexProvider : IndexProvider<IndexProfile>
         context.For<IndexProfileIndex>()
             .Map(indexProfile =>
             {
-                var index = new IndexProfileIndex
+                return new IndexProfileIndex
                 {
                     IndexProfileId = indexProfile.Id,
                     Name = indexProfile.Name,
@@ -19,8 +19,6 @@ internal sealed class IndexProfileIndexProvider : IndexProvider<IndexProfile>
                     ProviderName = indexProfile.ProviderName,
                     Type = indexProfile.Type,
                 };
-
-                return index;
             });
     }
 }

@@ -16,12 +16,8 @@ internal sealed class IndexingMigrations : DataMigration
             .Column<string>("Type", c => c.WithLength(50))
         );
 
-        await SchemaBuilder.AlterTableAsync("IndexProfileIndex", table => table
+        await SchemaBuilder.AlterIndexTableAsync<IndexProfileIndex>(table => table
             .CreateIndex("IDX_IndexProfileIndex_DocumentId", "DocumentId", "Name")
-        );
-
-        await SchemaBuilder.AlterTableAsync("IndexProfileIndex", table => table
-            .CreateIndex("IDX_IndexProfileIndex_ProviderName_Type", "ProviderName", "Type")
         );
 
         return 1;
