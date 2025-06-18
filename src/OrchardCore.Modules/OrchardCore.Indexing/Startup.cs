@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -12,6 +13,7 @@ using OrchardCore.Indexing.Core.Recipes;
 using OrchardCore.Indexing.DataMigrations;
 using OrchardCore.Indexing.Deployments;
 using OrchardCore.Indexing.Drivers;
+using OrchardCore.Indexing.Indexing;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -31,6 +33,10 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddDisplayDriver<IndexProfile, IndexProfileDisplayDriver>();
         services.AddPermissionProvider<IndexingPermissionsProvider>();
+        services.AddDataMigration<PreviewIndexingMigrations>();
+
+        services.AddIndexProvider<IndexProfileIndexProvider>()
+            .AddDataMigration<IndexingMigrations>();
     }
 }
 

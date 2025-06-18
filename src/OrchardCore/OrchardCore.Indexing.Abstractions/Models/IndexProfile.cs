@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Indexing.Models;
@@ -29,21 +28,4 @@ public sealed class IndexProfile : Entity
     public string Author { get; set; }
 
     public string OwnerId { get; set; }
-
-    public IndexProfile Clone()
-    {
-        return new IndexProfile
-        {
-            Id = Id,
-            ProviderName = ProviderName,
-            Type = Type,
-            Name = Name,
-            IndexName = IndexName,
-            IndexFullName = IndexFullName,
-            CreatedUtc = CreatedUtc,
-            Author = Author,
-            OwnerId = OwnerId,
-            Properties = Properties.Clone(),
-        };
-    }
 }
