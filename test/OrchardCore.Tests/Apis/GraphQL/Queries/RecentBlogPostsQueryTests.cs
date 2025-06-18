@@ -26,7 +26,7 @@ public class RecentBlogPostsQueryTests
                     });
             });
 
-        // Indexing of the content item happens in the background and may not be immediate available,
+        // Indexing of the content item happens in the deferred-task and may not be immediate available,
         // so we wait until the indexing is done before querying.
         await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
 
