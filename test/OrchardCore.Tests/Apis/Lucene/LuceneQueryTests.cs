@@ -12,7 +12,7 @@ public class LuceneQueryTests
     [Fact]
     public async Task BoostingTitleShouldHaveTitlesContainingOrchardAppearFirst()
     {
-        using var context = new LuceneContext();
+        await using var context = new LuceneContext();
         await context.InitializeAsync();
 
         // Act
@@ -48,7 +48,7 @@ public class LuceneQueryTests
     [Fact]
     public async Task BoostingBodyShouldHaveTitlesNotContainingOrchardAppearFirst()
     {
-        using var context = new LuceneContext();
+        await using var context = new LuceneContext();
         await context.InitializeAsync();
 
         // Act
@@ -83,7 +83,7 @@ public class LuceneQueryTests
     [Fact]
     public async Task SimpleQueryWildcardHasResults()
     {
-        using var context = new LuceneContext();
+        await using var context = new LuceneContext();
         await context.InitializeAsync();
 
         // Act
@@ -122,7 +122,7 @@ public class LuceneQueryTests
     [Fact]
     public async Task TwoWildcardQueriesWithBoostHasResults()
     {
-        using (var context = new LuceneContext())
+        await using (var context = new LuceneContext())
         {
             await context.InitializeAsync();
 
@@ -177,7 +177,7 @@ public class LuceneQueryTests
     [Fact]
     public async Task LuceneQueryTemplateWithSpecialCharactersShouldNotThrowError()
     {
-        using var context = new LuceneContext();
+        await using var context = new LuceneContext();
         await context.InitializeAsync();
 
         // Act

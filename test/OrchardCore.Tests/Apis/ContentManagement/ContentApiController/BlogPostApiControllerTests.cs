@@ -14,7 +14,7 @@ public class BlogPostApiControllerTests
     [Fact]
     public async Task ShouldCreateDraftOfExistingContentItem()
     {
-        using var context = new BlogPostApiControllerContext();
+        await using var context = new BlogPostApiControllerContext();
 
         await context.InitializeAsync();
 
@@ -33,7 +33,7 @@ public class BlogPostApiControllerTests
     [Fact]
     public async Task ShouldCreateAndPublishExistingContentItem()
     {
-        using var context = new BlogPostApiControllerContext();
+        await using var context = new BlogPostApiControllerContext();
 
         // Setup
         await context.InitializeAsync();
@@ -53,7 +53,7 @@ public class BlogPostApiControllerTests
     [Fact]
     public async Task ShouldOnlyCreateTwoContentItemRecordsForExistingContentItem()
     {
-        using var context = new BlogPostApiControllerContext();
+        await using var context = new BlogPostApiControllerContext();
 
         // Setup
         await context.InitializeAsync();
@@ -78,7 +78,7 @@ public class BlogPostApiControllerTests
     [Fact]
     public async Task ShouldCreateDraftOfNewContentItem()
     {
-        using var context = new BlogPostApiControllerContext();
+        await using var context = new BlogPostApiControllerContext();
 
         // Setup
         var displayText = "some other blog post";
@@ -134,7 +134,7 @@ public class BlogPostApiControllerTests
     [Fact]
     public async Task ShouldCreateAndPublishNewContentItem()
     {
-        using var context = new BlogPostApiControllerContext();
+        await using var context = new BlogPostApiControllerContext();
 
         // Setup
         var displayText = "some other blog post";
@@ -191,7 +191,7 @@ public class BlogPostApiControllerTests
     [Fact]
     public async Task ShouldFailValidationWhenAutoroutePathIsNotUnique()
     {
-        using var context = new BlogPostApiControllerContext();
+        await using var context = new BlogPostApiControllerContext();
 
         // Setup
         await context.InitializeAsync();
@@ -253,7 +253,7 @@ public class BlogPostApiControllerTests
     [Fact]
     public async Task ShouldGenerateUniqueAutoroutePath()
     {
-        using var context = new BlogPostApiControllerContext();
+        await using var context = new BlogPostApiControllerContext();
 
         // Setup
         await context.InitializeAsync();

@@ -9,7 +9,7 @@ public class RecentBlogPostsQueryTests
     [Fact]
     public async Task ShouldListBlogPostWhenCallingAQuery()
     {
-        using var context = new BlogContext();
+        await using var context = new BlogContext();
         await context.InitializeAsync();
 
         var blogPostContentItemId = await context

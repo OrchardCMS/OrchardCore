@@ -10,10 +10,6 @@ public class BlogPostApiControllerContext : SiteContext
     public string CategoriesTaxonomyContentItemId { get; private set; }
     public string TagsTaxonomyContentItemId { get; private set; }
 
-    static BlogPostApiControllerContext()
-    {
-    }
-
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();

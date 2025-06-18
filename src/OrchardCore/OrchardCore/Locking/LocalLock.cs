@@ -160,7 +160,11 @@ public sealed class LocalLock : IDistributedLock, ILocalLock, IDisposable
 
     public void Dispose()
     {
-        var semaphores = _semaphores.Values.ToArray();
+        Semaphore[] semaphores;
+        lock (_semaphores)
+        {
+            semaphores = _semaphores.Values.ToArray();
+        }
 
         foreach (var semaphore in semaphores)
         {

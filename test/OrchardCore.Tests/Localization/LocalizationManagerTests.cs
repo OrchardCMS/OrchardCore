@@ -81,7 +81,7 @@ public class LocalizationManagerTests
     [InlineData("zh-CN", "你好！")]
     public async Task TestLocalizationRule(string culture, string expected)
     {
-        var context = new SiteContext();
+        await using var context = new SiteContext();
         await context.InitializeAsync();
 
         var recipeSteps = new JsonArray

@@ -10,7 +10,7 @@ public class ContentStepLuceneQueryTests
     [Fact]
     public async Task ShouldUpdateLuceneIndexesOnImport()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();

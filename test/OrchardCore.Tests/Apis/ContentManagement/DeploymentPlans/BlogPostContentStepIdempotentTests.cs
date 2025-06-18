@@ -10,7 +10,7 @@ public class BlogPostContentStepIdempotentTests
     [Fact]
     public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();
@@ -50,7 +50,7 @@ public class BlogPostContentStepIdempotentTests
     [Fact]
     public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();
