@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.BackgroundJobs;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
@@ -32,7 +31,7 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
 
         _initialized = true;
 
-        return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("indexing-initialize", async scope =>
+        ShellScope.AddDeferredTask(async scope =>
         {
             var indexStore = scope.ServiceProvider.GetRequiredService<IIndexProfileStore>();
             var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
@@ -69,5 +68,7 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
                 await indexingService.ProcessRecordsAsync(createdIndexIds);
             }
         });
+
+        return Task.CompletedTask;
     }
 }
