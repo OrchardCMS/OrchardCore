@@ -98,39 +98,17 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
         return await _session.Query<IndexProfile, IndexProfileIndex>().ListAsync();
     }
 
-    public async ValueTask CreateAsync(IndexProfile indexProfile)
+    public ValueTask CreateAsync(IndexProfile indexProfile)
+        => UpdateAsync(indexProfile);
+
+    public async ValueTask UpdateAsync(IndexProfile indexProfile)
     {
         ArgumentNullException.ThrowIfNull(indexProfile);
-
-        var exists = await _session.QueryIndex<IndexProfileIndex>()
-            .Where(x => x.IndexName == indexProfile.IndexName && x.ProviderName == indexProfile.ProviderName)
-            .FirstOrDefaultAsync();
-
-        if (exists is not null)
-        {
-            throw new InvalidOperationException("There is already another index with the same name.");
-        }
-
-        var existsByName = await _session.QueryIndex<IndexProfileIndex>()
-            .Where(x => x.Name == indexProfile.Name)
-            .FirstOrDefaultAsync();
-
-        if (existsByName is not null)
-        {
-            throw new InvalidOperationException("There is already another index with the same name.");
-        }
 
         if (string.IsNullOrEmpty(indexProfile.Id))
         {
             indexProfile.Id = IdGenerator.GenerateId();
         }
-
-        await _session.SaveAsync(indexProfile);
-    }
-
-    public async ValueTask UpdateAsync(IndexProfile indexProfile)
-    {
-        ArgumentNullException.ThrowIfNull(indexProfile);
 
         var exists = await _session.QueryIndex<IndexProfileIndex>()
             .Where(x => x.IndexName == indexProfile.IndexName && x.ProviderName == indexProfile.ProviderName && x.IndexProfileId != indexProfile.Id)
@@ -150,16 +128,11 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
             throw new InvalidOperationException("There is already another index with the same name.");
         }
 
-        if (string.IsNullOrEmpty(indexProfile.Id))
-        {
-            indexProfile.Id = IdGenerator.GenerateId();
-        }
-
-        await _session.SaveAsync(indexProfile);
+        await _session.SaveAsync(indexProfile, checkConcurrency: true);
     }
 
-    public async ValueTask SaveChangesAsync()
-        => await _session.FlushAsync();
+    public ValueTask SaveChangesAsync()
+        => ValueTask.CompletedTask;
 
     private IQuery<IndexProfile, IndexProfileIndex> BuildQuery(QueryContext context)
     {
@@ -172,7 +145,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
 
         if (!string.IsNullOrEmpty(context.Name))
         {
-            query = query.Where(x => context.Name.Contains(x.Name, StringComparison.OrdinalIgnoreCase));
+            query = query.Where(x => x.Name.Contains(context.Name));
         }
 
         if (context.Sorted)

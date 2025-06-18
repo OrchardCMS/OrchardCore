@@ -203,11 +203,12 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         var searchIndex = new SearchIndex(indexProfile.IndexFullName)
         {
             Fields = searchFields,
-            Suggesters =
-            {
-                new SearchSuggester("sg", suggesterFieldNames),
-            },
         };
+
+        if (suggesterFieldNames.Count > 0)
+        {
+            searchIndex.Suggesters.Add(new SearchSuggester("sg", suggesterFieldNames));
+        }
 
         return searchIndex;
     }
