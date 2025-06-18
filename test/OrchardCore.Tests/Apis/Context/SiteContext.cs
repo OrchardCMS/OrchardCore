@@ -1,4 +1,5 @@
 using OrchardCore.Apis.GraphQL.Client;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
@@ -12,6 +13,10 @@ namespace OrchardCore.Tests.Apis.Context;
 
 public class SiteContext : IDisposable
 {
+    private const int DeferredTasksTimeoutSeconds = 60;
+    private const int HttpBackgroundJobsTimeoutSeconds = 90;
+    private const int WaitDelayMilliseconds = 10;
+
     private static readonly TablePrefixGenerator _tablePrefixGenerator = new();
     public static OrchardTestFixture<SiteStartup> Site { get; }
     public static IShellHost ShellHost { get; private set; }
@@ -103,21 +108,44 @@ public class SiteContext : IDisposable
         HttpContextAccessor.HttpContext = null;
     }
 
-    // Waits up to 2 seconds for all outstanding deferred tasks to complete by making sure no shell scope is
+    // Waits up to 60 seconds for all outstanding deferred tasks to complete by making sure no shell scope is
     // currently executing.
     public Task WaitForOutstandingDeferredTasksAsync(CancellationToken cancellationToken)
     {
         return UsingTenantScopeAsync(async scope =>
         {
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(DeferredTasksTimeoutSeconds));
+
+            // If there is only one active scope (the current one), it means that all deferred tasks have completed.
+            while (!cts.Token.IsCancellationRequested &&
+                    scope.ShellContext.ActiveScopes > 1)
+            {
+                await Task.Delay(WaitDelayMilliseconds, cancellationToken);
+            }
+
+            if (cts.IsCancellationRequested)
+            {
+                throw new TimeoutException("Not all deferred tasks have completed within the expected time frame.");
+            }
+        });
+    }
+
+    // Waits up to 90 seconds for all outstanding HTTP background jobs.
+    public Task WaitForHttpBackgroundJobsAsync(CancellationToken cancellationToken)
+    {
+        return UsingTenantScopeAsync(async scope =>
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(HttpBackgroundJobsTimeoutSeconds));
 
             while (!cts.Token.IsCancellationRequested &&
-            !cancellationToken.IsCancellationRequested &&
-            scope.ShellContext.ActiveScopes > 1)
+                    HttpBackgroundJob.ActiveJobsCount > 0)
             {
-                // If there is only one active scope (the current one), it means that all deferred tasks have completed.
+                await Task.Delay(WaitDelayMilliseconds, cancellationToken);
+            }
 
-                await Task.Delay(50, cancellationToken);
+            if (cts.IsCancellationRequested)
+            {
+                throw new TimeoutException("Not all HTTP background jobs have completed within the expected time frame.");
             }
         });
     }
