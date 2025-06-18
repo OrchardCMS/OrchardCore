@@ -13,7 +13,7 @@ public sealed class Migrations : DataMigration
 {
     public async Task<int> CreateAsync()
     {
-        await SchemaBuilder.CreateTableAsync("igrate RecordIndexingTask", table => table
+        await SchemaBuilder.CreateTableAsync("RecordIndexingTask", table => table
            .Column<int>("Id", col => col.PrimaryKey().Identity())
            .Column<string>("RecordId", c => c.WithLength(26))
            .Column<string>("Category", c => c.WithLength(50))
