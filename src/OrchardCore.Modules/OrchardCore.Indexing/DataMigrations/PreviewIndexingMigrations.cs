@@ -37,14 +37,14 @@ internal sealed class PreviewIndexingMigrations : DataMigration
                 return;
             }
 
-            using var session = scope.ServiceProvider.GetRequiredService<IStore>().CreateSession();
+            var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
             foreach (var record in document.Records)
             {
                 await session.SaveAsync(record.Value);
             }
 
-            await session.SaveChangesAsync();
+            await session.FlushAsync();
         });
 
         return 1;
