@@ -6,8 +6,7 @@ builder.Host.UseNLogHost();
 
 builder.Services
     .AddOrchardCms()
-    .AddSetupFeatures("OrchardCore.AutoSetup")
-    .AddGlobalFeatures("OrchardCore.DataProtection.Azure");
+    .AddSetupFeatures("OrchardCore.AutoSetup");
 
 var app = builder.Build();
 
