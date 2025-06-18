@@ -29,7 +29,7 @@ public sealed class AdminController : Controller
     private readonly IDisplayManager<IndexProfile> _displayManager;
     private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
-    private readonly YesSql.ISession _session;
+
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
 
@@ -41,7 +41,6 @@ public sealed class AdminController : Controller
         IOptions<IndexingOptions> indexingOptions,
         IServiceProvider serviceProvider,
         INotifier notifier,
-        YesSql.ISession session,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
@@ -52,7 +51,6 @@ public sealed class AdminController : Controller
         _serviceProvider = serviceProvider;
         _indexingOptions = indexingOptions.Value;
         _notifier = notifier;
-        _session = session;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
