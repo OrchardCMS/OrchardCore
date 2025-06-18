@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Services;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core;
 
@@ -16,7 +17,7 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IIndexProfileStore, DefaultIndexProfileStore>();
         services.AddIndexProfileHandler<DefaultIndexProfileHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IAuthorizationHandler, IndexingAuthorizationHandler>());
-        // services.TryAddEnumerable(ServiceDescriptor.Scoped<IModularTenantEvents, IndexInitializerService>());
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IModularTenantEvents, IndexInitializerService>());
 
         return services;
     }
