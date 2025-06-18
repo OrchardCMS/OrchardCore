@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core;
@@ -39,7 +38,7 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
 
             var indexes = await indexStore.GetAllAsync();
 
-            var createdIndexes = new List<IndexProfile>();
+            var createdIndexIds = new List<string>();
 
             var indexManagers = new Dictionary<string, IIndexManager>();
 
@@ -61,12 +60,12 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
                     await indexManager.CreateAsync(index);
                 }
 
-                createdIndexes.Add(index);
+                createdIndexIds.Add(index.Id);
             }
 
-            if (createdIndexes.Count > 0)
+            if (createdIndexIds.Count > 0)
             {
-                await indexingService.ProcessRecordsAsync(createdIndexes);
+                await indexingService.ProcessRecordsAsync(createdIndexIds);
             }
         });
 

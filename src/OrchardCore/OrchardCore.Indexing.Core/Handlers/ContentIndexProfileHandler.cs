@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
@@ -58,12 +58,14 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-indexing", context.IndexProfile, (scope, index) =>
+        ShellScope.AddDeferredTask((scope) =>
         {
             var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
-            
-            return indexingService.ProcessRecordsAsync([index]);
+
+            return indexingService.ProcessRecordsAsync([context.IndexProfile.Id]);
         });
+
+        return Task.CompletedTask;
     }
 
     public override Task ExportingAsync(IndexProfileExportingContext context)
