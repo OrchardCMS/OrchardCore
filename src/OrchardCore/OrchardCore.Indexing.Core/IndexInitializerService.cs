@@ -28,12 +28,13 @@ public sealed class IndexInitializerService : ModularTenantEvents
             if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
             {
                 indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
-                indexManagers[index.ProviderName] = indexManager;
-            }
 
-            if (indexManager is null)
-            {
-                continue;
+                if (indexManager is null)
+                {
+                    continue;
+                }
+
+                indexManagers[index.ProviderName] = indexManager;
             }
 
             if (await indexManager.ExistsAsync(index.IndexFullName))
