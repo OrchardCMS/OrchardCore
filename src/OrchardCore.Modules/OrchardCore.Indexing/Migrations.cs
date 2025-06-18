@@ -13,47 +13,54 @@ public sealed class Migrations : DataMigration
 {
     public async Task<int> CreateAsync()
     {
-        await SchemaBuilder.CreateTableAsync("IndexingTask", table => table
-            .Column<int>("Id", col => col.PrimaryKey().Identity())
-            .Column<string>("RecordId", c => c.WithLength(26))
-            .Column<string>("Category", c => c.WithLength(50))
-            .Column<DateTime>("CreatedUtc", col => col.NotNull())
-            .Column<int>("Type")
+        await SchemaBuilder.CreateTableAsync("igrate RecordIndexingTask", table => table
+           .Column<int>("Id", col => col.PrimaryKey().Identity())
+           .Column<string>("RecordId", c => c.WithLength(26))
+           .Column<string>("Category", c => c.WithLength(50))
+           .Column<DateTime>("CreatedUtc", col => col.NotNull())
+           .Column<int>("Type")
+       );
+
+        await SchemaBuilder.AlterTableAsync("RecordIndexingTask", table => table
+            .CreateIndex("IDX_RecordIndexingTask_RecordId_Category", "RecordId", "Category")
         );
 
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-            .CreateIndex("IDX_IndexingTask_RecordId_Category", "RecordId", "Category")
-        );
-
-        return 4;
+        return 5;
     }
 
-    public async Task<int> UpdateFrom1Async()
+#pragma warning disable CA1822 // Mark members as static
+    public int UpdateFrom1()
+#pragma warning restore CA1822 // Mark members as static
     {
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-            .AddColumn<string>("Category", c => c.WithLength(50))
-        );
-
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-            .DropIndex("IDX_IndexingTask_ContentItemId")
-        );
-
         return 2;
     }
 
-    public async Task<int> UpdateFrom2Async()
+#pragma warning disable CA1822 // Mark members as static
+    public int UpdateFrom2()
+#pragma warning restore CA1822 // Mark members as static
     {
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-            .RenameColumn("ContentItemId", "RecordId")
-        );
-
         return 3;
     }
 
-    public async Task<int> UpdateFrom3Async()
+#pragma warning disable CA1822 // Mark members as static
+    public int UpdateFrom3()
+#pragma warning restore CA1822 // Mark members as static
     {
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-           .CreateIndex("IDX_IndexingTask_RecordId_Category", "RecordId", "Category")
+        return 4;
+    }
+
+    public async Task<int> UpdateFrom4Async()
+    {
+        await SchemaBuilder.CreateTableAsync("RecordIndexingTask", table => table
+           .Column<int>("Id", col => col.PrimaryKey().Identity())
+           .Column<string>("RecordId", c => c.WithLength(26))
+           .Column<string>("Category", c => c.WithLength(50))
+           .Column<DateTime>("CreatedUtc", col => col.NotNull())
+           .Column<int>("Type")
+       );
+
+        await SchemaBuilder.AlterTableAsync("RecordIndexingTask", table => table
+            .CreateIndex("IDX_RecordIndexingTask_RecordId_Category", "RecordId", "Category")
         );
 
         ShellScope.AddDeferredTask(async scope =>
@@ -64,22 +71,51 @@ public sealed class Migrations : DataMigration
             var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
             var dialect = store.Configuration.SqlDialect;
 
-            var table = $"{store.Configuration.TablePrefix}{nameof(IndexingTask)}";
+            var recordIndexingTaskTable = $"{store.Configuration.TablePrefix}{nameof(RecordIndexingTask)}";
             var logger = serviceProvider.GetService<ILogger<Migrations>>();
 
+            var quotedRecordIdName = dialect.QuoteForColumnName("RecordId");
             var quotedCategoryName = dialect.QuoteForColumnName("Category");
+            var quotedCreatedUtcName = dialect.QuoteForColumnName("CreatedUtc");
+            var quotedTypeName = dialect.QuoteForColumnName("Type");
+            var quotedContentItemIdName = dialect.QuoteForColumnName("ContentItemId");
+            var quotedIdName = dialect.QuoteForColumnName("Id");
 
-            var command = $"update {dialect.QuoteForTableName(table, store.Configuration.Schema)} set {quotedCategoryName} = @Category where {quotedCategoryName} is null;";
+            var indexingTaskTable = $"{store.Configuration.TablePrefix}IndexingTask";
+
+            var originalTableQuery =
+                $"""
+                insert into {recordIndexingTaskTable} ({quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName})
+                select {quotedContentItemIdName}, @Category, {quotedCreatedUtcName}, {quotedTypeName} from {indexingTaskTable} order by {quotedIdName} 
+                """;
 
             await using var connection = dbConnectionAccessor.CreateConnection();
 
             try
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync(command, new
+                try
                 {
-                    Category = IndexingConstants.ContentsIndexSource,
-                });
+                    await connection.ExecuteAsync(originalTableQuery, new
+                    {
+                        Category = IndexingConstants.ContentsIndexSource,
+                    });
+                }
+                catch
+                {
+                    // In the preview version, we attempted to rename the 'ContentItemId' column to 'RecordId' and add a 'Category' column to the 'IndexingTask' table.
+                    // However, for large tables, this could lead to timeouts. To avoid this, we opted to create a new table called 'RecordIndexingTask' and migrate the data.
+                    // If the previous SQL statement (in the try block) throws an exception, it's likely the renaming already succeeded for this tenant.
+                    // In that case, we assume the new column names exist and use them when populating the new table.
+                    var previewTableQuery =
+                    $"""
+                    insert into {recordIndexingTaskTable} ({quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName})
+                    select {quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName} from {indexingTaskTable} order by {quotedIdName} 
+                    """;
+
+                    await connection.ExecuteAsync(previewTableQuery);
+                }
+
                 await connection.CloseAsync();
             }
             catch (Exception e)
@@ -90,6 +126,6 @@ public sealed class Migrations : DataMigration
             }
         });
 
-        return 4;
+        return 5;
     }
 }

@@ -47,11 +47,12 @@ public static class ServiceCollectionExtensions
         if (!services.Any(d => d.ServiceType == typeof(TConfigure)))
         {
             services.AddTransient(typeof(TConfigure));
-            services.Initialize(async sp =>
+            services.Initialize(sp =>
             {
                 var options = sp.GetRequiredService<TOptions>();
                 var setup = sp.GetRequiredService<TConfigure>();
-                await setup.ConfigureAsync(options);
+
+                return setup.ConfigureAsync(options);
             });
         }
 
