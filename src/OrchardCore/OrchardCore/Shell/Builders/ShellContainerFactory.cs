@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
@@ -17,21 +18,29 @@ public class ShellContainerFactory : IShellContainerFactory
     private readonly IExtensionManager _extensionManager;
     private readonly IServiceProvider _serviceProvider;
     private readonly IServiceCollection _applicationServices;
+    private readonly ILogger _logger;
 
     public ShellContainerFactory(
         IHostEnvironment hostingEnvironment,
         IExtensionManager extensionManager,
         IServiceProvider serviceProvider,
-        IServiceCollection applicationServices)
+        IServiceCollection applicationServices,
+        ILogger<ShellContainerFactory> logger)
     {
         _hostingEnvironment = hostingEnvironment;
         _extensionManager = extensionManager;
         _applicationServices = applicationServices;
+        _logger = logger;
         _serviceProvider = serviceProvider;
     }
 
     public async Task<IServiceProvider> CreateContainerAsync(ShellSettings settings, ShellBlueprint blueprint)
     {
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Creating service provider container for tenant '{TenantName}'", settings.Name);
+        }
+
         var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
         tenantServiceCollection.AddSingleton(settings);
@@ -46,7 +55,6 @@ public class ShellContainerFactory : IShellContainerFactory
         tenantServiceCollection.AddSingleton(blueprint);
 
         // Execute IStartup registrations
-
         foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IStartup).IsAssignableFrom(t.Key)))
         {
             tenantServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
@@ -131,6 +139,11 @@ public class ShellContainerFactory : IShellContainerFactory
 
         var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
         PopulateTypeFeatureProvider(typeFeatureProvider, featureAwareServiceCollection);
+
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Done Creating service provider container for tenant '{TenantName}'", settings.Name);
+        }
 
         return shellServiceProvider;
     }
