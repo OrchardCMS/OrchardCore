@@ -97,6 +97,8 @@ public sealed class Migrations : DataMigration
                     await connection.ExecuteAsync(previewTableQuery);
                 }
 
+                // At this point, the 'RecordIndexingTask' table has been populated with the data from the 'IndexingTask' table.
+                // It's safe to drop the old 'IndexingTask' table now.
                 await connection.ExecuteAsync($"drop table {indexingTaskTable}");
                 await connection.CloseAsync();
             }
