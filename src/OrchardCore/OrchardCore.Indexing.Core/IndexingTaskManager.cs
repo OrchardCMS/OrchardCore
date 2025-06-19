@@ -87,7 +87,7 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
 
             // It is important to sort the tasks by Id to ensure that the tasks are processed in the order
             // they are created as the sql server does not guarantee ordering.
-            sqlBuilder.OrderBy($"{dialect.QuoteForColumnName("Id")}");
+            sqlBuilder.OrderBy(dialect.QuoteForColumnName("Id"));
 
             return await connection.QueryAsync<RecordIndexingTask>(sqlBuilder.ToSqlString(),
                 new
