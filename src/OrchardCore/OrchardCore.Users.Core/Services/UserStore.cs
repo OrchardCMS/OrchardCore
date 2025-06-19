@@ -88,7 +88,7 @@ public class UserStore :
         {
             var attempts = 10;
 
-            while (await _session.QueryIndex<UserIndex>(x => x.UserId == newUserId).CountAsync() != 0)
+            while (await _session.QueryIndex<UserIndex>(x => x.UserId == newUserId).CountAsync(cancellationToken) != 0)
             {
                 if (attempts-- == 0)
                 {
@@ -109,8 +109,8 @@ public class UserStore :
                 return IdentityResult.Failed();
             }
 
-            await _session.SaveAsync(user);
-            await _session.FlushAsync();
+            await _session.SaveAsync(user, cancellationToken: cancellationToken);
+            await _session.FlushAsync(cancellationToken);
             await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
         }
         catch (Exception e)
@@ -138,7 +138,7 @@ public class UserStore :
             }
 
             _session.Delete(user);
-            await _session.FlushAsync();
+            await _session.FlushAsync(cancellationToken);
             await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
         }
         catch (Exception e)
@@ -153,12 +153,12 @@ public class UserStore :
 
     public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default)
     {
-        return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync();
+        return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default)
     {
-        return await _session.Query<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefaultAsync();
+        return await _session.Query<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefaultAsync(cancellationToken);
     }
 
     public Task<string> GetNormalizedUserNameAsync(IUser user, CancellationToken cancellationToken = default)
@@ -230,8 +230,8 @@ public class UserStore :
                 return IdentityResult.Failed();
             }
 
-            await _session.SaveAsync(user);
-            await _session.FlushAsync();
+            await _session.SaveAsync(user, cancellationToken: cancellationToken);
+            await _session.FlushAsync(cancellationToken);
             await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
         }
         catch (Exception e)
@@ -366,7 +366,7 @@ public class UserStore :
 
     public async Task<IUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
     {
-        return await _session.Query<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefaultAsync();
+        return await _session.Query<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefaultAsync(cancellationToken);
     }
 
     public Task<string> GetNormalizedEmailAsync(IUser user, CancellationToken cancellationToken)
@@ -466,7 +466,7 @@ public class UserStore :
     {
         ArgumentException.ThrowIfNullOrEmpty(normalizedRoleName);
 
-        var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
+        var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync(cancellationToken);
         return users == null ? [] : users.ToList<IUser>();
     }
 
@@ -495,7 +495,7 @@ public class UserStore :
 
     public async Task<IUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
     {
-        return await _session.Query<User, UserByLoginInfoIndex>(u => u.LoginProvider == loginProvider && u.ProviderKey == providerKey).FirstOrDefaultAsync();
+        return await _session.Query<User, UserByLoginInfoIndex>(u => u.LoginProvider == loginProvider && u.ProviderKey == providerKey).FirstOrDefaultAsync(cancellationToken);
     }
 
     public Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user, CancellationToken cancellationToken)
@@ -603,7 +603,7 @@ public class UserStore :
     {
         ArgumentNullException.ThrowIfNull(claim);
 
-        var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync();
+        var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync(cancellationToken);
 
         return users.Cast<IUser>().ToList();
     }
