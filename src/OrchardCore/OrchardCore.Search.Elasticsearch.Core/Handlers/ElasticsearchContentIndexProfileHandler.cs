@@ -101,37 +101,28 @@ public sealed class ElasticsearchContentIndexProfileHandler : IndexProfileHandle
 
         mapping.DynamicTemplates ??= [];
 
-        if (!mapping.DynamicTemplates.Any(x => x.ContainsKey(_inheritedPostfixPattern)))
+        if (!mapping.DynamicTemplates.Any(x => x.Key.Equals(_inheritedPostfixPattern, StringComparison.Ordinal)))
         {
             var inheritedPostfix = DynamicTemplate.Mapping(new KeywordProperty());
             inheritedPostfix.PathMatch = [_inheritedPostfixPattern];
             inheritedPostfix.MatchMappingType = ["string"];
-            mapping.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
-            {
-                { _inheritedPostfixPattern, inheritedPostfix },
-            });
+            mapping.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_inheritedPostfixPattern, inheritedPostfix));
         }
 
-        if (!mapping.DynamicTemplates.Any(x => x.ContainsKey(_idsPostfixPattern)))
+        if (!mapping.DynamicTemplates.Any(x => x.Key.Equals(_idsPostfixPattern, StringComparison.Ordinal)))
         {
             var idsPostfix = DynamicTemplate.Mapping(new KeywordProperty());
             idsPostfix.PathMatch = [_idsPostfixPattern];
             idsPostfix.MatchMappingType = ["string"];
-            mapping.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
-            {
-                { _idsPostfixPattern, idsPostfix },
-            });
+            mapping.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_idsPostfixPattern, idsPostfix));
         }
 
-        if (!mapping.DynamicTemplates.Any(x => x.ContainsKey(_locationPostFixPattern)))
+        if (!mapping.DynamicTemplates.Any(x => x.Key.Equals(_locationPostFixPattern, StringComparison.Ordinal)))
         {
             var locationPostfix = DynamicTemplate.Mapping(new GeoPointProperty());
             locationPostfix.PathMatch = [_locationPostFixPattern];
             locationPostfix.MatchMappingType = ["object"];
-            mapping.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
-            {
-                { _locationPostFixPattern, locationPostfix },
-            });
+            mapping.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_locationPostFixPattern, locationPostfix));
         }
     }
 }
