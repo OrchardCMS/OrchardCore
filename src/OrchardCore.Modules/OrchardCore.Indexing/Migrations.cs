@@ -9,62 +9,43 @@ using YesSql;
 
 namespace OrchardCore.Indexing;
 
+[Obsolete("This migration will be removed in a future release, but must remain until all sites have been successfully migrated to Orchard Core 3.0.")]
 public sealed class Migrations : DataMigration
 {
-    public async Task<int> CreateAsync()
+#pragma warning disable CA1822 // Mark members as static
+    public int Create()
     {
-        await SchemaBuilder.CreateTableAsync("RecordIndexingTask", table => table
-           .Column<int>("Id", col => col.PrimaryKey().Identity())
-           .Column<string>("RecordId", c => c.WithLength(26))
-           .Column<string>("Category", c => c.WithLength(50))
-           .Column<DateTime>("CreatedUtc", col => col.NotNull())
-           .Column<int>("Type")
-       );
-
-        await SchemaBuilder.AlterTableAsync("RecordIndexingTask", table => table
-            .CreateIndex("IDX_RecordIndexingTask_RecordId_Category", "RecordId", "Category")
-        );
+        // This migration originally created the 'IndexingTask' table before Orchard Core 3.
+        // That table have since been deprecated and replaced by the new 'RecordIndexingTask' table.
+        // When this migration runs for the first time, no action is required.
+        // It is retained to allow migration of existing data from the old 'IndexingTask' table to the new 'RecordIndexingTask' table.
+        // This migration will be removed in a future version of Orchard Core.
 
         return 5;
     }
 
-#pragma warning disable CA1822 // Mark members as static
     public int UpdateFrom1()
-#pragma warning restore CA1822 // Mark members as static
     {
         return 2;
     }
 
-#pragma warning disable CA1822 // Mark members as static
     public int UpdateFrom2()
-#pragma warning restore CA1822 // Mark members as static
     {
         return 3;
     }
 
-#pragma warning disable CA1822 // Mark members as static
     public int UpdateFrom3()
-#pragma warning restore CA1822 // Mark members as static
     {
         return 4;
     }
+#pragma warning restore CA1822 // Mark members as static
 
-    public async Task<int> UpdateFrom4Async()
+    public int UpdateFrom4()
     {
-        await SchemaBuilder.CreateTableAsync("RecordIndexingTask", table => table
-           .Column<int>("Id", col => col.PrimaryKey().Identity())
-           .Column<string>("RecordId", c => c.WithLength(26))
-           .Column<string>("Category", c => c.WithLength(50))
-           .Column<DateTime>("CreatedUtc", col => col.NotNull())
-           .Column<int>("Type")
-       );
-
-        await SchemaBuilder.AlterTableAsync("RecordIndexingTask", table => table
-            .CreateIndex("IDX_RecordIndexingTask_RecordId_Category", "RecordId", "Category")
-        );
-
         ShellScope.AddDeferredTask(async scope =>
         {
+            // This logic must be deferred to ensure that other migrations create the necessary database tables first.
+
             var serviceProvider = scope.ServiceProvider;
 
             var store = serviceProvider.GetService<IStore>();
@@ -116,6 +97,7 @@ public sealed class Migrations : DataMigration
                     await connection.ExecuteAsync(previewTableQuery);
                 }
 
+                await connection.ExecuteAsync($"drop table {indexingTaskTable}");
                 await connection.CloseAsync();
             }
             catch (Exception e)
