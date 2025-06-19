@@ -53,8 +53,10 @@ public sealed class Migrations : DataMigration
             var dialect = store.Configuration.SqlDialect;
 
             var recordIndexingTaskTable = $"{store.Configuration.TablePrefix}{nameof(RecordIndexingTask)}";
+
             var logger = serviceProvider.GetService<ILogger<Migrations>>();
 
+            var quotedRecordIndexingTaskTable = dialect.QuoteForTableName(recordIndexingTaskTable, store.Configuration.Schema);
             var quotedRecordIdName = dialect.QuoteForColumnName("RecordId");
             var quotedCategoryName = dialect.QuoteForColumnName("Category");
             var quotedCreatedUtcName = dialect.QuoteForColumnName("CreatedUtc");
@@ -63,11 +65,12 @@ public sealed class Migrations : DataMigration
             var quotedIdName = dialect.QuoteForColumnName("Id");
 
             var indexingTaskTable = $"{store.Configuration.TablePrefix}IndexingTask";
+            var quotedIndexingTaskTable = dialect.QuoteForTableName(indexingTaskTable, store.Configuration.Schema);
 
             var originalTableQuery =
                 $"""
-                insert into {recordIndexingTaskTable} ({quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName})
-                select {quotedContentItemIdName}, @Category, {quotedCreatedUtcName}, {quotedTypeName} from {indexingTaskTable} order by {quotedIdName} 
+                insert into {quotedRecordIndexingTaskTable} ({quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName})
+                select {quotedContentItemIdName}, @Category, {quotedCreatedUtcName}, {quotedTypeName} from {quotedIndexingTaskTable} order by {quotedIdName} 
                 """;
 
             await using var connection = dbConnectionAccessor.CreateConnection();
@@ -90,8 +93,8 @@ public sealed class Migrations : DataMigration
                     // In that case, we assume the new column names exist and use them when populating the new table.
                     var previewTableQuery =
                     $"""
-                    insert into {recordIndexingTaskTable} ({quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName})
-                    select {quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName} from {indexingTaskTable} order by {quotedIdName} 
+                    insert into {quotedRecordIndexingTaskTable} ({quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName})
+                    select {quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName} from {quotedIndexingTaskTable} order by {quotedIdName} 
                     """;
 
                     await connection.ExecuteAsync(previewTableQuery);
@@ -99,7 +102,14 @@ public sealed class Migrations : DataMigration
 
                 // At this point, the 'RecordIndexingTask' table has been populated with the data from the 'IndexingTask' table.
                 // It's safe to drop the old 'IndexingTask' table now.
-                await connection.ExecuteAsync($"drop table {indexingTaskTable}");
+
+                var dropIndex = dialect.GetDropIndexString("IDX_IndexingTask_ContentItemId", indexingTaskTable, store.Configuration.Schema);
+
+                await connection.ExecuteAsync(dropIndex);
+
+                var dropTable = dialect.GetDropTableString(indexingTaskTable, store.Configuration.Schema);
+
+                await connection.ExecuteAsync(dropTable);
                 await connection.CloseAsync();
             }
             catch (Exception e)
