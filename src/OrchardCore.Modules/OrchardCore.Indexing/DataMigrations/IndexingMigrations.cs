@@ -9,11 +9,11 @@ internal sealed class IndexingMigrations : DataMigration
     public async Task<int> CreateAsync()
     {
         await SchemaBuilder.CreateMapIndexTableAsync<IndexProfileIndex>(table => table
-            .Column<string>("IndexProfileId", c => c.WithLength(26))
-            .Column<string>("Name", c => c.WithLength(255))
-            .Column<string>("IndexName", c => c.WithLength(255))
-            .Column<string>("ProviderName", c => c.WithLength(50))
-            .Column<string>("Type", c => c.WithLength(50))
+            .Column<string>("IndexProfileId", column => column.WithLength(26))
+            .Column<string>("Name", column => column.WithLength(255))
+            .Column<string>("IndexName", column => column.WithLength(255))
+            .Column<string>("ProviderName", column => column.WithLength(50))
+            .Column<string>("Type", column => column.WithLength(50))
         );
 
         await SchemaBuilder.AlterIndexTableAsync<IndexProfileIndex>(table => table

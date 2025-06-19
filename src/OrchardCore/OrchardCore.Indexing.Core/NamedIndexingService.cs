@@ -116,7 +116,7 @@ public abstract class NamedIndexingService
             return;
         }
 
-        var tasks = new List<IndexingTask>();
+        var tasks = new List<RecordIndexingTask>();
 
         while (tasks.Count <= _batchSize)
         {
@@ -177,9 +177,9 @@ public abstract class NamedIndexingService
         }
     }
 
-    protected abstract Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, IndexingTask task);
+    protected abstract Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, RecordIndexingTask task);
 
-    protected virtual Task BeforeProcessingTasksAsync(IEnumerable<IndexingTask> tasks, IEnumerable<IndexProfileEntryContext> contexts)
+    protected virtual Task BeforeProcessingTasksAsync(IEnumerable<RecordIndexingTask> tasks, IEnumerable<IndexProfileEntryContext> contexts)
         => Task.CompletedTask;
 
     public sealed class IndexProfileEntryContext

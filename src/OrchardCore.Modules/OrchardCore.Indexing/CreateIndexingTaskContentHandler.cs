@@ -36,7 +36,7 @@ public sealed class CreateIndexingTaskContentHandler : ContentHandlerBase
             return Task.CompletedTask;
         }
 
-        return _indexingTaskManager.CreateTaskAsync(new CreateIndexingTaskContext(context.ContentItem.ContentItemId, IndexingConstants.ContentsIndexSource, IndexingTaskTypes.Delete));
+        return _indexingTaskManager.CreateTaskAsync(new CreateIndexingTaskContext(context.ContentItem.ContentItemId, IndexingConstants.ContentsIndexSource, RecordIndexingTaskTypes.Delete));
     }
 
     private Task AddUpdateTaskAsync(ContentItem contentItem)
@@ -53,6 +53,6 @@ public sealed class CreateIndexingTaskContentHandler : ContentHandlerBase
             return Task.CompletedTask;
         }
 
-        return _indexingTaskManager.CreateTaskAsync(new CreateIndexingTaskContext(contentItem.ContentItemId, IndexingConstants.ContentsIndexSource, IndexingTaskTypes.Update));
+        return _indexingTaskManager.CreateTaskAsync(new CreateIndexingTaskContext(contentItem.ContentItemId, IndexingConstants.ContentsIndexSource, RecordIndexingTaskTypes.Update));
     }
 }

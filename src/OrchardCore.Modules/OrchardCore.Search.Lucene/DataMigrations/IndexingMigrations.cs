@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -20,29 +21,13 @@ namespace OrchardCore.Search.Lucene.DataMigrations;
 internal sealed class IndexingMigrations : DataMigration
 {
     private readonly ShellSettings _shellSettings;
-    private readonly IStore _store;
-    private readonly IDbConnectionAccessor _dbConnectionAccessor;
-    private readonly IIndexProfileManager _indexProfileManager;
-    private readonly ISiteService _siteService;
-    private readonly IIndexNameProvider _indexNameProvider;
 
-    public IndexingMigrations(
-        ShellSettings shellSettings,
-        IStore store,
-        IDbConnectionAccessor dbConnectionAccessor,
-        IIndexProfileManager indexProfileManager,
-        ISiteService siteService,
-        [FromKeyedServices(LuceneConstants.ProviderName)] IIndexNameProvider indexNameProvider)
+    public IndexingMigrations(ShellSettings shellSettings)
     {
         _shellSettings = shellSettings;
-        _store = store;
-        _dbConnectionAccessor = dbConnectionAccessor;
-        _indexProfileManager = indexProfileManager;
-        _siteService = siteService;
-        _indexNameProvider = indexNameProvider;
     }
 
-    public async Task<int> CreateAsync()
+    public int Create()
     {
         var stepNumber = 1;
 
@@ -51,149 +36,166 @@ internal sealed class IndexingMigrations : DataMigration
             return stepNumber;
         }
 
-        var documentTableName = _store.Configuration.TableNameConvention.GetDocumentTable();
-        var table = $"{_store.Configuration.TablePrefix}{documentTableName}";
-        var dialect = _store.Configuration.SqlDialect;
-        var quotedTableName = dialect.QuoteForTableName(table, _store.Configuration.Schema);
-        var quotedContentColumnName = dialect.QuoteForColumnName("Content");
-        var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
-
-        var sqlBuilder = new SqlBuilder(_store.Configuration.TablePrefix, _store.Configuration.SqlDialect);
-        sqlBuilder.AddSelector(quotedContentColumnName);
-        sqlBuilder.From(quotedTableName);
-        sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Search.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Search.Lucene' ");
-        sqlBuilder.Take("1");
-
-        await using var connection = _dbConnectionAccessor.CreateConnection();
-        await connection.OpenAsync();
-        var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString());
-
-        if (string.IsNullOrEmpty(jsonContent))
+        ShellScope.AddDeferredTask(async scope =>
         {
-            return stepNumber;
-        }
+            // This logic must be deferred to ensure that other migrations create the necessary database tables first.
 
-        var jsonObject = JsonNode.Parse(jsonContent);
+            var store = scope.ServiceProvider.GetRequiredService<IStore>();
+            var documentTableName = store.Configuration.TableNameConvention.GetDocumentTable();
+            var table = $"{store.Configuration.TablePrefix}{documentTableName}";
+            var dialect = store.Configuration.SqlDialect;
+            var quotedTableName = dialect.QuoteForTableName(table, store.Configuration.Schema);
+            var quotedContentColumnName = dialect.QuoteForColumnName("Content");
+            var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
 
-        if (jsonObject["LuceneIndexSettings"] is not JsonObject indexesObject)
-        {
-            return stepNumber;
-        }
+            var sqlBuilder = new SqlBuilder(store.Configuration.TablePrefix, store.Configuration.SqlDialect);
+            sqlBuilder.AddSelector(quotedContentColumnName);
+            sqlBuilder.From(quotedTableName);
+            sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Search.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Search.Lucene' ");
+            sqlBuilder.Take("1");
 
-        var site = await _siteService.GetSiteSettingsAsync();
+            var dbConnectionAccessor = scope.ServiceProvider.GetRequiredService<IDbConnectionAccessor>();
 
-        var defaultSearchProvider = site.Properties["SearchSettings"]?["ProviderName"]?.GetValue<string>();
-        var elasticSettings = site.Properties["LuceneSettings"] ?? new JsonObject();
+            await using var connection = dbConnectionAccessor.CreateConnection();
+            await connection.OpenAsync();
+            var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString());
 
-        var defaultSearchIndexName = elasticSettings["SearchIndex"]?.GetValue<string>();
-
-        foreach (var indexObject in indexesObject)
-        {
-            var indexName = indexObject.Key;
-
-            var indexFullName = _indexNameProvider.GetFullIndexName(indexName);
-
-            var indexProfile = await _indexProfileManager.NewAsync(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource);
-            indexProfile.IndexName = indexName;
-            indexProfile.IndexFullName = indexFullName;
-            indexProfile.Name = indexName;
-
-            var counter = 1;
-
-            while (await _indexProfileManager.FindByNameAsync(indexProfile.Name) is not null)
+            if (string.IsNullOrEmpty(jsonContent))
             {
-                indexProfile.Name = $"{indexName}{counter++}";
+                return;
+            }
 
-                if (counter > 50)
+            var jsonObject = JsonNode.Parse(jsonContent);
+
+            if (jsonObject["LuceneIndexSettings"] is not JsonObject indexesObject)
+            {
+                return;
+            }
+
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+            var site = await siteService.LoadSiteSettingsAsync();
+
+            var defaultSearchProvider = site.Properties["SearchSettings"]?["ProviderName"]?.GetValue<string>();
+            var elasticSettings = site.Properties["LuceneSettings"] ?? new JsonObject();
+
+            var defaultSearchIndexName = elasticSettings["SearchIndex"]?.GetValue<string>();
+
+            var indexProfileManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
+            var indexNameProvider = scope.ServiceProvider.GetRequiredKeyedService<IIndexNameProvider>(LuceneConstants.ProviderName);
+            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
+
+            foreach (var indexObject in indexesObject)
+            {
+                var indexName = indexObject.Key;
+
+                var indexFullName = indexNameProvider.GetFullIndexName(indexName);
+
+                var indexProfile = await indexProfileManager.NewAsync(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource);
+                indexProfile.IndexName = indexName;
+                indexProfile.IndexFullName = indexFullName;
+                indexProfile.Name = indexName;
+
+                var counter = 1;
+
+                while (await indexProfileManager.FindByNameAsync(indexProfile.Name) is not null)
                 {
-                    throw new InvalidOperationException($"Unable to create a unique index name for '{indexName}' after 50 attempts.");
-                }
-            }
+                    indexProfile.Name = $"{indexName}{counter++}";
 
-            var metadata = indexProfile.As<ContentIndexMetadata>();
-
-            if (string.IsNullOrEmpty(metadata.Culture))
-            {
-                metadata.Culture = indexObject.Value[nameof(metadata.Culture)]?.GetValue<string>();
-            }
-
-            var indexLatest = indexObject.Value[nameof(metadata.IndexLatest)]?.GetValue<bool>();
-
-            if (indexLatest.HasValue)
-            {
-                metadata.IndexLatest = indexLatest.Value;
-            }
-
-            var indexContentTypes = indexObject.Value[nameof(metadata.IndexedContentTypes)]?.AsArray();
-
-            if (indexContentTypes is not null)
-            {
-                var items = new HashSet<string>();
-
-                foreach (var indexContentType in indexContentTypes)
-                {
-                    var value = indexContentType.GetValue<string>();
-
-                    if (!string.IsNullOrEmpty(value))
+                    if (counter > 50)
                     {
-                        items.Add(value);
+                        throw new InvalidOperationException($"Unable to create a unique index name for '{indexName}' after 50 attempts.");
                     }
                 }
 
-                metadata.IndexedContentTypes = items.ToArray();
-            }
+                var metadata = indexProfile.As<ContentIndexMetadata>();
 
-            indexProfile.Put(metadata);
-
-            var azureMetadata = indexProfile.As<LuceneIndexMetadata>();
-
-            if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
-            {
-                azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
-            }
-
-            var storeSourceData = indexObject.Value[nameof(azureMetadata.StoreSourceData)]?.GetValue<bool>();
-
-            if (storeSourceData.HasValue)
-            {
-                azureMetadata.StoreSourceData = storeSourceData.Value;
-            }
-
-            indexProfile.Put(azureMetadata);
-
-            var queryMetadata = indexProfile.As<LuceneIndexDefaultQueryMetadata>();
-            if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
-            {
-                queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
-            }
-
-            if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
-            {
-                queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
-            }
-
-            if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
-            {
-                queryMetadata.DefaultSearchFields = [ContentIndexingConstants.FullTextKey];
-            }
-
-            indexProfile.Put(queryMetadata);
-
-            await _indexProfileManager.CreateAsync(indexProfile);
-
-            if (indexName == defaultSearchIndexName && defaultSearchProvider == "Lucene")
-            {
-                ShellScope.AddDeferredTask(async scope =>
+                if (string.IsNullOrEmpty(metadata.Culture))
                 {
-                    var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
-                    var site = await siteService.LoadSiteSettingsAsync();
+                    metadata.Culture = indexObject.Value[nameof(metadata.Culture)]?.GetValue<string>();
+                }
 
+                var indexLatest = indexObject.Value[nameof(metadata.IndexLatest)]?.GetValue<bool>();
+
+                if (indexLatest.HasValue)
+                {
+                    metadata.IndexLatest = indexLatest.Value;
+                }
+
+                var indexContentTypes = indexObject.Value[nameof(metadata.IndexedContentTypes)]?.AsArray();
+
+                if (indexContentTypes is not null)
+                {
+                    var items = new HashSet<string>();
+
+                    foreach (var indexContentType in indexContentTypes)
+                    {
+                        var value = indexContentType.GetValue<string>();
+
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            items.Add(value);
+                        }
+                    }
+
+                    metadata.IndexedContentTypes = items.ToArray();
+                }
+
+                indexProfile.Put(metadata);
+
+                var azureMetadata = indexProfile.As<LuceneIndexMetadata>();
+
+                if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
+                {
+                    azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
+                }
+
+                var storeSourceData = indexObject.Value[nameof(azureMetadata.StoreSourceData)]?.GetValue<bool>();
+
+                if (storeSourceData.HasValue)
+                {
+                    azureMetadata.StoreSourceData = storeSourceData.Value;
+                }
+
+                indexProfile.Put(azureMetadata);
+
+                var queryMetadata = indexProfile.As<LuceneIndexDefaultQueryMetadata>();
+                if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
+                {
+                    queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
+                }
+
+                if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
+                {
+                    queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
+                }
+
+                if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
+                {
+                    queryMetadata.DefaultSearchFields = [ContentIndexingConstants.FullTextKey];
+                }
+
+                indexProfile.Put(queryMetadata);
+
+                await indexProfileManager.CreateAsync(indexProfile);
+
+                if (indexName == defaultSearchIndexName && defaultSearchProvider == "Lucene")
+                {
                     site.Properties["SearchSettings"]["DefaultIndexProfileName"] = indexProfile.Name;
 
-                    await siteService.UpdateSiteSettingsAsync(site);
-                });
+                    try
+                    {
+                        await siteService.UpdateSiteSettingsAsync(site);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the error but do not throw, as this is not critical to the migration.
+                        var logger = scope.ServiceProvider.GetRequiredService<ILogger<IndexingMigrations>>();
+
+                        logger.LogError(ex, "An error occurred while updating the default search index profile name in site settings.");
+                    }
+                }
             }
-        }
+        });
 
         return stepNumber;
     }

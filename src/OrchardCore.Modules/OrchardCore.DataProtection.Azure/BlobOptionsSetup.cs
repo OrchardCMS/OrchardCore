@@ -32,6 +32,8 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
 
     public async ValueTask ConfigureAsync(BlobOptions options)
     {
+        _logger.LogDebug("Configuring BlobOptions in BlobOptionsSetup");
+
         _configuration.Bind("OrchardCore_DataProtection_Azure", options);
         await ConfigureContainerNameAsync(options);
         await ConfigureBlobNameAsync(options);
@@ -39,6 +41,8 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
 
     private async ValueTask ConfigureContainerNameAsync(BlobOptions options)
     {
+        _logger.LogDebug("Configuring BlobOptions.ContainerName in BlobOptionsSetup");
+
         try
         {
             // Use Fluid directly as the service provider has not been built.
@@ -52,6 +56,11 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
             // Container name must be lowercase.
             var containerName = (await template.RenderAsync(templateContext, NullEncoder.Default)).ToLower();
             options.ContainerName = containerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
+
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("BlobOptions.ContainerName was set to {ContainerName}", options.ContainerName);
+            }
         }
         catch (Exception e)
         {
@@ -78,9 +87,16 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
 
     private async ValueTask ConfigureBlobNameAsync(BlobOptions options)
     {
+        _logger.LogDebug("Configuring BlobOptions.BlobName in BlobOptionsSetup");
+
         if (string.IsNullOrEmpty(options.BlobName))
         {
             options.BlobName = $"{_shellOptions.ShellsContainerName}/{_shellSettings.Name}/DataProtectionKeys.xml";
+
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("BlobOptions.BlobName was set to {BlobName}", options.BlobName);
+            }
 
             return;
         }
@@ -97,6 +113,11 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
 
             var blobName = await template.RenderAsync(templateContext, NullEncoder.Default);
             options.BlobName = blobName.Replace("\r", string.Empty).Replace("\n", string.Empty);
+
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("BlobOptions.BlobName was set to {BlobName}", options.BlobName);
+            }
         }
         catch (Exception e)
         {
