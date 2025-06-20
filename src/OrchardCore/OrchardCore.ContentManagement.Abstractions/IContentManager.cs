@@ -27,6 +27,9 @@ public interface IContentManager
     /// </summary>
     /// <param name="contentItem">The content instance filled with all necessary data.</param>
     /// <param name="options">The version to create the item with.</param>
+    /// <remarks>
+    /// This method creates the content and then publishes implicitly, so in case you don't need to publish the content, you can set the <paramref name="options"/> to <see cref="VersionOptions.Draft"/>.
+    /// </remarks>
     Task CreateAsync(ContentItem contentItem, VersionOptions options = null);
 
     /// <summary>
