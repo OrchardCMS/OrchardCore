@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 
@@ -29,7 +30,6 @@ public sealed class Startup : StartupBase
         if (!string.IsNullOrWhiteSpace(connectionString))
         {
             services
-                .Configure<BlobOptions, BlobOptionsSetup>()
                 .AddDataProtection()
                 .PersistKeysToAzureBlobStorage(sp =>
                 {
@@ -40,11 +40,13 @@ public sealed class Startup : StartupBase
                         options.BlobName);
                 });
 
+            services.AddSingleton<IConfigureOptions<BlobOptions>, BlobOptionsConfiguration>();
+
             services.AddScoped<IModularTenantEvents, BlobModularTenantEvents>();
         }
         else
         {
-            _logger.LogCritical("No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
+            _logger.LogCritical("No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `OrchardCore:OrchardCore_DataProtection_Azure:ConnectionString`.");
         }
     }
 }
