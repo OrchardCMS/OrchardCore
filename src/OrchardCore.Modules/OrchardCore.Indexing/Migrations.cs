@@ -77,7 +77,6 @@ public sealed class Migrations : DataMigration
 
             try
             {
-                var previewIndexExists = false;
                 await connection.OpenAsync();
                 try
                 {
@@ -99,28 +98,8 @@ public sealed class Migrations : DataMigration
                     """;
 
                     await connection.ExecuteAsync(previewTableQuery);
-
-                    previewIndexExists = true;
                 }
 
-                // At this point, the 'RecordIndexingTask' table has been populated with the data from the 'IndexingTask' table.
-                // It's safe to drop the old 'IndexingTask' table now.
-
-                var dropIndex = dialect.GetDropIndexString("IDX_IndexingTask_ContentItemId", indexingTaskTable, store.Configuration.Schema);
-
-                await connection.ExecuteAsync(dropIndex);
-
-                if (previewIndexExists)
-                {
-                    // If the preview index was created, we need to drop it as well.
-                    var dropPreviewIndex = dialect.GetDropIndexString("IDX_IndexingTask_RecordId_Category", indexingTaskTable, store.Configuration.Schema);
-
-                    await connection.ExecuteAsync(dropPreviewIndex);
-                }
-
-                var dropTable = dialect.GetDropTableString(indexingTaskTable, store.Configuration.Schema);
-
-                await connection.ExecuteAsync(dropTable);
                 await connection.CloseAsync();
             }
             catch (Exception e)
