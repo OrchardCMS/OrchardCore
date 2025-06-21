@@ -14,7 +14,7 @@ public class ModuleProjectRazorFileProvider : IFileProvider
 {
     private static List<IFileProvider> _pageFileProviders;
     private static Dictionary<string, string> _roots;
-    private static readonly Lock _synLock = new();
+    private static readonly object _synLock = new();
 
     public ModuleProjectRazorFileProvider(IApplicationContext applicationContext)
     {

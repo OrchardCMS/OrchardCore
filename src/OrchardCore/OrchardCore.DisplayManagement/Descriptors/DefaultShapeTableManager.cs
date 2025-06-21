@@ -22,7 +22,7 @@ public class DefaultShapeTableManager : IShapeTableManager
     // create a unique list of these per tenant.
     private static readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new();
 
-    private static readonly Lock _syncLock = new();
+    private static readonly object _syncLock = new();
 
     // Singleton cache to hold a tenant's theme ShapeTable.
     private readonly IDictionary<string, ShapeTable> _shapeTableCache;

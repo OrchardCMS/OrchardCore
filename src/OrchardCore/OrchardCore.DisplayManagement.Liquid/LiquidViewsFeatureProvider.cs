@@ -16,7 +16,7 @@ public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeatu
     public static readonly string DefaultLiquidViewPath = '/' + DefaultLiquidViewName + LiquidViewTemplate.ViewExtension;
 
     private static List<string> _sharedPaths;
-    private static readonly Lock _synLock = new();
+    private static readonly object _synLock = new();
 
     public LiquidViewsFeatureProvider(IOptions<TemplateOptions> templateOptions)
     {

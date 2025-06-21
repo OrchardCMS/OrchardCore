@@ -16,7 +16,7 @@ public class SharedViewLocationExpanderProvider : IViewLocationExpanderProvider
     private const string PageCacheKey = "ModulePageSharedViewLocations";
     private static List<IExtensionInfo> _modulesWithPageSharedViews;
     private static List<IExtensionInfo> _modulesWithSharedViews;
-    private static readonly Lock _synLock = new();
+    private static readonly object _synLock = new();
 
     private readonly IExtensionManager _extensionManager;
     private readonly ShellDescriptor _shellDescriptor;

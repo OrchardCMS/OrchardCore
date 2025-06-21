@@ -17,7 +17,7 @@ public class ShellFeatureApplicationPart :
     ICompilationReferencesProvider
 {
     private static IEnumerable<string> _referencePaths;
-    private static readonly Lock _synLock = new();
+    private static readonly object _synLock = new();
     private ShellBlueprint _shellBlueprint;
     private IEnumerable<ITagHelpersProvider> _tagHelpers;
 
