@@ -38,27 +38,17 @@ public static class ServiceCollectionExtensions
     /// Registers an <see cref="IAsyncConfigureOptions{TOptions}"/> used to configure
     /// asynchronously a type of options just after a tenant container is created.
     /// </summary>
-    public static IServiceCollection Configure<TOptions, TConfigure>(this IServiceCollection services, ILogger logger = null)
+    public static IServiceCollection Configure<TOptions, TConfigure>(this IServiceCollection services)
         where TOptions : class, IAsyncOptions, new()
         where TConfigure : IAsyncConfigureOptions<TOptions>
     {
         if (!services.Any(d => d.ServiceType == typeof(TOptions)))
         {
-            if (logger is not null && logger.IsEnabled(LogLevel.Debug))
-            {
-                logger.LogDebug("Adding IAsyncOptions type '{OptionsType}' instance to the service collection.", typeof(TOptions).FullName);
-            }
-
             services.AddSingleton(new TOptions());
         }
 
         if (!services.Any(d => d.ServiceType == typeof(TConfigure)))
         {
-            if (logger is not null && logger.IsEnabled(LogLevel.Debug))
-            {
-                logger.LogDebug("Adding IAsyncConfigureOptions type '{ConfigureType}' instance to the service collection.", typeof(TConfigure).FullName);
-            }
-
             services.AddTransient(typeof(TConfigure));
             services.Initialize(sp =>
             {
