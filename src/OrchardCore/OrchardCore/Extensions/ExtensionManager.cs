@@ -28,7 +28,7 @@ public sealed class ExtensionManager : IExtensionManager
     private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures = new();
 
     private bool _isInitialized;
-    private readonly object _synLock = new();
+    private readonly Lock _synLock = new();
 
     public ExtensionManager(
         IServiceProvider serviceProvider,

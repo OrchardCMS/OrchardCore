@@ -24,8 +24,8 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
 
-    private readonly object _directoryLock = new();
-    private readonly object _lock = new();
+    private readonly System.Threading.Lock _directoryLock = new();
+    private readonly System.Threading.Lock _lock = new();
 
     private readonly string _rootPath;
     private readonly IClock _clock;
@@ -77,7 +77,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
         lock (_lock)
         {
-            if (_writers.TryRemove(index.Id, out var writer))
+            if (_writers.TryGetValue(index.Id, out var writer))
             {
                 writer.IsClosing = true;
                 writer.Dispose();
@@ -101,6 +101,8 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                 }
                 catch { }
             }
+
+            _writers.TryRemove(index.Id, out _);
         }
 
         return Task.FromResult(removed);

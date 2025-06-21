@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Http;
 internal sealed class ActiveHandlerTrackingEntry : IDisposable
 {
     private static readonly TimerCallback _timerCallback = (s) => ((ActiveHandlerTrackingEntry)s!).Timer_Tick();
-    private readonly object _lock;
+    private readonly Lock _lock;
     private bool _timerInitialized;
     private Timer _timer;
     private TimerCallback _callback;
@@ -31,7 +31,7 @@ internal sealed class ActiveHandlerTrackingEntry : IDisposable
         Scope = scope;
         Lifetime = lifetime;
 
-        _lock = new object();
+        _lock = new Lock();
     }
 
     public LifetimeTrackingHttpMessageHandler Handler { get; private set; }
