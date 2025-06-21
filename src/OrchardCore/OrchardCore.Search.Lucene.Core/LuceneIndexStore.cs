@@ -208,11 +208,15 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
         {
             var path = new DirectoryInfo(GetFullPath(index.IndexFullName));
 
-            var directory = FSDirectory.Open(path);
+            // Lucene is not thread safe on this call.
+            lock (_directoryLock)
+            {
+                var directory = FSDirectory.Open(path);
 
-            var reader = DirectoryReader.Open(directory);
+                var reader = DirectoryReader.Open(directory);
 
-            return new IndexReaderPool(reader);
+                return new IndexReaderPool(reader);
+            }
         });
 
         return pool.Acquire();
