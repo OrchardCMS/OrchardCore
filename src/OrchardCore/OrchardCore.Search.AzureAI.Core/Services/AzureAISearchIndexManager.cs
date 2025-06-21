@@ -10,7 +10,7 @@ using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAISearchIndexManager : IIndexManager
+public sealed class AzureAISearchIndexManager : IIndexManager
 {
     public const string OwnerKey = "Content__ContentItem__Owner";
     public const string AuthorKey = "Content__ContentItem__Author";
@@ -31,20 +31,20 @@ public class AzureAISearchIndexManager : IIndexManager
         _indexEvents = indexEvents;
     }
 
-    public async Task<bool> CreateAsync(IndexProfile index)
+    public async Task<bool> CreateAsync(IndexProfile indexProfile)
     {
-        if (await ExistsAsync(index.IndexFullName))
+        if (await ExistsAsync(indexProfile.IndexFullName))
         {
             return true;
         }
 
         try
         {
-            var context = new IndexCreateContext(index);
+            var context = new IndexCreateContext(indexProfile);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger);
 
-            var searchIndex = GetSearchIndex(index);
+            var searchIndex = GetSearchIndex(indexProfile);
 
             var client = _clientFactory.CreateSearchIndexClient();
 
@@ -90,18 +90,18 @@ public class AzureAISearchIndexManager : IIndexManager
         return null;
     }
 
-    public async Task<bool> DeleteAsync(IndexProfile index)
+    public async Task<bool> DeleteAsync(IndexProfile indexProfile)
     {
-        ArgumentNullException.ThrowIfNull(index);
+        ArgumentNullException.ThrowIfNull(indexProfile);
 
-        if (!await ExistsAsync(index.IndexFullName))
+        if (!await ExistsAsync(indexProfile.IndexFullName))
         {
             return false;
         }
 
         try
         {
-            var context = new IndexRemoveContext(index.IndexFullName);
+            var context = new IndexRemoveContext(indexProfile.IndexFullName);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
 
@@ -121,22 +121,22 @@ public class AzureAISearchIndexManager : IIndexManager
         return false;
     }
 
-    public async Task<bool> RebuildAsync(IndexProfile index)
+    public async Task<bool> RebuildAsync(IndexProfile indexProfile)
     {
         try
         {
-            var context = new IndexRebuildContext(index);
+            var context = new IndexRebuildContext(indexProfile);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            if (await ExistsAsync(index.IndexName))
+            if (await ExistsAsync(indexProfile.IndexName))
             {
-                await client.DeleteIndexAsync(index.IndexFullName);
+                await client.DeleteIndexAsync(indexProfile.IndexFullName);
             }
 
-            var searchIndex = GetSearchIndex(index);
+            var searchIndex = GetSearchIndex(indexProfile);
 
             await client.CreateIndexAsync(searchIndex);
 
@@ -152,12 +152,12 @@ public class AzureAISearchIndexManager : IIndexManager
         return false;
     }
 
-    private static SearchIndex GetSearchIndex(IndexProfile index)
+    private static SearchIndex GetSearchIndex(IndexProfile indexProfile)
     {
         var searchFields = new List<SearchField>();
 
         var suggesterFieldNames = new List<string>();
-        var metadata = index.As<AzureAISearchIndexMetadata>();
+        var metadata = indexProfile.As<AzureAISearchIndexMetadata>();
 
         foreach (var indexMap in metadata.IndexMappings)
         {
@@ -177,7 +177,9 @@ public class AzureAISearchIndexManager : IIndexManager
             {
                 searchFields.Add(new SearchableField(indexMap.AzureFieldKey, collection: indexMap.IsCollection)
                 {
-                    AnalyzerName = metadata.AnalyzerName,
+                    AnalyzerName = !string.IsNullOrEmpty(metadata.AnalyzerName)
+                    ? metadata.AnalyzerName
+                    : AzureAISearchDefaultOptions.DefaultAnalyzer,
                     IsKey = indexMap.IsKey,
                     IsFilterable = indexMap.IsFilterable,
                     IsSortable = indexMap.IsSortable,
@@ -198,14 +200,15 @@ public class AzureAISearchIndexManager : IIndexManager
             }
         }
 
-        var searchIndex = new SearchIndex(index.IndexFullName)
+        var searchIndex = new SearchIndex(indexProfile.IndexFullName)
         {
             Fields = searchFields,
-            Suggesters =
-            {
-                new SearchSuggester("sg", suggesterFieldNames),
-            },
         };
+
+        if (suggesterFieldNames.Count > 0)
+        {
+            searchIndex.Suggesters.Add(new SearchSuggester("sg", suggesterFieldNames));
+        }
 
         return searchIndex;
     }

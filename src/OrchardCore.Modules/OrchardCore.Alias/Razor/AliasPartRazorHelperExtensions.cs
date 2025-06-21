@@ -22,7 +22,7 @@ public static class AliasPartRazorHelperExtensions
             return null;
         }
 
-        // Provided for backwards compatability and avoiding confusion.
+        // Provided for backwards compatibility and avoiding confusion.
         if (alias.StartsWith("alias:", StringComparison.OrdinalIgnoreCase))
         {
             alias = alias[6..];

@@ -14,8 +14,7 @@ public sealed class AzureAISearchIndexProfileHandler : IndexProfileHandlerBase
 {
     internal readonly IStringLocalizer S;
 
-    public AzureAISearchIndexProfileHandler(
-        IStringLocalizer<AzureAISearchIndexProfileHandler> stringLocalizer)
+    public AzureAISearchIndexProfileHandler(IStringLocalizer<AzureAISearchIndexProfileHandler> stringLocalizer)
     {
         S = stringLocalizer;
     }

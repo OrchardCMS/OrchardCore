@@ -6,4 +6,5 @@ public enum IndexingEntityAction
     Remove,
     Reset,
     Rebuild,
+    Synchronize,
 }

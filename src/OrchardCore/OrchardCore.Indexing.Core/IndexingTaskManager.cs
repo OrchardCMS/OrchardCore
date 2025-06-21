@@ -24,7 +24,7 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
     private readonly IDbConnectionAccessor _dbConnectionAccessor;
     private readonly ILogger _logger;
 
-    private readonly List<IndexingTask> _tasksQueue = [];
+    private readonly List<RecordIndexingTask> _tasksQueue = [];
 
     public IndexingTaskManager(
         IClock clock,
@@ -42,7 +42,7 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        var indexingTask = new IndexingTask
+        var indexingTask = new RecordIndexingTask
         {
             CreatedUtc = _clock.UtcNow,
             RecordId = context.RecordId,
@@ -63,7 +63,7 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
         return Task.CompletedTask;
     }
 
-    public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count, string category)
+    public async Task<IEnumerable<RecordIndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count, string category)
     {
         await using var connection = _dbConnectionAccessor.CreateConnection();
         await connection.OpenAsync();
@@ -74,7 +74,7 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
             var sqlBuilder = dialect.CreateBuilder(_store.Configuration.TablePrefix);
 
             sqlBuilder.Select();
-            sqlBuilder.Table(nameof(IndexingTask), alias: null, _store.Configuration.Schema);
+            sqlBuilder.Table(nameof(RecordIndexingTask), alias: null, _store.Configuration.Schema);
             sqlBuilder.Selector("*");
 
             if (count > 0)
@@ -87,9 +87,9 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
 
             // It is important to sort the tasks by Id to ensure that the tasks are processed in the order
             // they are created as the sql server does not guarantee ordering.
-            sqlBuilder.OrderBy($"{dialect.QuoteForColumnName("Id")}");
+            sqlBuilder.OrderBy(dialect.QuoteForColumnName("Id"));
 
-            return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(),
+            return await connection.QueryAsync<RecordIndexingTask>(sqlBuilder.ToSqlString(),
                 new
                 {
                     Id = afterTaskId,
@@ -103,9 +103,9 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
         }
     }
 
-    private async Task FlushAsync(ShellScope scope, List<IndexingTask> tasks)
+    private async Task FlushAsync(ShellScope scope, List<RecordIndexingTask> tasks)
     {
-        var localQueue = new List<IndexingTask>(tasks);
+        var localQueue = new List<RecordIndexingTask>(tasks);
 
         var serviceProvider = scope.ServiceProvider;
 
@@ -137,7 +137,7 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
             }
         }
 
-        var table = $"{store.Configuration.TablePrefix}{nameof(IndexingTask)}";
+        var table = $"{store.Configuration.TablePrefix}{nameof(RecordIndexingTask)}";
 
         await using var connection = dbConnectionAccessor.CreateConnection();
         await connection.OpenAsync();

@@ -514,9 +514,9 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     private async Task TerminateShellInternalAsync()
     {
-        _state |= ShellScopeStates.IsTerminating;
         if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
+            _state |= ShellScopeStates.IsTerminating;
             return;
         }
 
@@ -535,6 +535,8 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                 await tenantEvent.TerminatedAsync();
             }
         }
+
+        _state |= ShellScopeStates.IsTerminating;
     }
 
     public void Dispose()

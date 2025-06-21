@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -23,6 +24,7 @@ internal sealed class IndexingMigrations : DataMigration
 {
     private readonly ShellSettings _shellSettings;
 
+
     public IndexingMigrations(ShellSettings shellSettings)
     {
         _shellSettings = shellSettings;
@@ -30,16 +32,18 @@ internal sealed class IndexingMigrations : DataMigration
 
     public int Create()
     {
+        var stepNumber = 1;
+
         if (_shellSettings.IsInitializing())
         {
-            return 1;
+            return stepNumber;
         }
 
         ShellScope.AddDeferredTask(async scope =>
         {
-            var store = scope.ServiceProvider.GetRequiredService<IStore>();
-            var dbConnectionAccessor = scope.ServiceProvider.GetRequiredService<IDbConnectionAccessor>();
+            // This logic must be deferred to ensure that other migrations create the necessary database tables first.
 
+            var store = scope.ServiceProvider.GetRequiredService<IStore>();
             var documentTableName = store.Configuration.TableNameConvention.GetDocumentTable();
             var table = $"{store.Configuration.TablePrefix}{documentTableName}";
             var dialect = store.Configuration.SqlDialect;
@@ -53,6 +57,7 @@ internal sealed class IndexingMigrations : DataMigration
             sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Search.Elasticsearch.Core.Models.ElasticIndexSettingsDocument, OrchardCore.Search.Elasticsearch.Core' ");
             sqlBuilder.Take("1");
 
+            var dbConnectionAccessor = scope.ServiceProvider.GetRequiredService<IDbConnectionAccessor>();
             await using var connection = dbConnectionAccessor.CreateConnection();
             await connection.OpenAsync();
             var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString());
@@ -69,37 +74,35 @@ internal sealed class IndexingMigrations : DataMigration
                 return;
             }
 
-            var indexManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
-            var indexNamingProvider = scope.ServiceProvider.GetKeyedService<IIndexNameProvider>(ElasticsearchConstants.ProviderName);
-            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<ElasticsearchDocumentIndexManager>();
-
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
             var site = await siteService.LoadSiteSettingsAsync();
 
             var defaultSearchProvider = site.Properties["SearchSettings"]?["ProviderName"]?.GetValue<string>();
             var elasticSettings = site.Properties["ElasticSettings"] ?? new JsonObject();
 
-            var saveSiteSettings = false;
-
             var defaultSearchIndexName = elasticSettings["SearchIndex"]?.GetValue<string>();
             var defaultSearchFields = GetDefaultSearchFields(elasticSettings);
+
+            var indexProfileManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
+            var indexNameProvider = scope.ServiceProvider.GetRequiredKeyedService<IIndexNameProvider>(ElasticsearchConstants.ProviderName);
+            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<ElasticsearchDocumentIndexManager>();
 
             foreach (var indexObject in indexesObject)
             {
                 var indexName = indexObject.Key;
 
-                var indexFullName = indexNamingProvider.GetFullIndexName(indexName);
+                var indexFullName = indexNameProvider.GetFullIndexName(indexName);
 
-                var index = await indexManager.NewAsync(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource);
-                index.IndexName = indexName;
-                index.IndexFullName = indexFullName;
-                index.Name = indexName;
+                var indexProfile = await indexProfileManager.NewAsync(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource);
+                indexProfile.IndexName = indexName;
+                indexProfile.IndexFullName = indexFullName;
+                indexProfile.Name = indexName;
 
                 var counter = 1;
 
-                while (await indexManager.FindByNameAsync(index.Name) is not null)
+                while (await indexProfileManager.FindByNameAsync(indexProfile.Name) is not null)
                 {
-                    index.Name = $"{indexName}{counter++}";
+                    indexProfile.Name = $"{indexName}{counter++}";
 
                     if (counter > 50)
                     {
@@ -107,7 +110,7 @@ internal sealed class IndexingMigrations : DataMigration
                     }
                 }
 
-                var metadata = index.As<ContentIndexMetadata>();
+                var metadata = indexProfile.As<ContentIndexMetadata>();
 
                 if (string.IsNullOrEmpty(metadata.Culture))
                 {
@@ -140,9 +143,9 @@ internal sealed class IndexingMigrations : DataMigration
                     metadata.IndexedContentTypes = items.ToArray();
                 }
 
-                index.Put(metadata);
+                indexProfile.Put(metadata);
 
-                var elasticsearchMetadata = index.As<ElasticsearchIndexMetadata>();
+                var elasticsearchMetadata = indexProfile.As<ElasticsearchIndexMetadata>();
 
                 var storeSourceData = indexObject.Value[nameof(elasticsearchMetadata.StoreSourceData)]?.GetValue<bool>();
 
@@ -164,9 +167,9 @@ internal sealed class IndexingMigrations : DataMigration
                     Mapping = mapping,
                 };
 
-                index.Put(elasticsearchMetadata);
+                indexProfile.Put(elasticsearchMetadata);
 
-                var queryMetadata = index.As<ElasticsearchDefaultQueryMetadata>();
+                var queryMetadata = indexProfile.As<ElasticsearchDefaultQueryMetadata>();
                 if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {
                     queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
@@ -194,24 +197,30 @@ internal sealed class IndexingMigrations : DataMigration
                     queryMetadata.SearchType = elasticSettings["SearchType"]?.GetValue<string>();
                 }
 
-                index.Put(queryMetadata);
+                indexProfile.Put(queryMetadata);
 
-                await indexManager.CreateAsync(index);
+                await indexProfileManager.CreateAsync(indexProfile);
 
                 if (indexName == defaultSearchIndexName && defaultSearchProvider == "Elasticsearch")
                 {
-                    site.Properties["SearchSettings"]["DefaultIndexProfileName"] = index.Name;
-                    saveSiteSettings = true;
-                }
-            }
+                    site.Properties["SearchSettings"]["DefaultIndexProfileName"] = indexProfile.Name;
 
-            if (saveSiteSettings)
-            {
-                await siteService.UpdateSiteSettingsAsync(site);
+                    try
+                    {
+                        await siteService.UpdateSiteSettingsAsync(site);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the error but do not throw, as this is not critical to the migration.
+                        var logger = scope.ServiceProvider.GetRequiredService<ILogger<IndexingMigrations>>();
+
+                        logger.LogError(ex, "An error occurred while updating the default search index profile name in site settings.");
+                    }
+                }
             }
         });
 
-        return 1;
+        return stepNumber;
     }
 
     private static string[] GetDefaultSearchFields(JsonNode settings)

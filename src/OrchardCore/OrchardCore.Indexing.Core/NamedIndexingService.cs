@@ -13,9 +13,6 @@ public abstract class NamedIndexingService
     private readonly IIndexingTaskManager _indexingTaskManager;
     private readonly IServiceProvider _serviceProvider;
 
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
-    private readonly HashSet<string> _inProgressIndexes = [];
-
     private const int _batchSize = 100;
 
     protected NamedIndexingService(
@@ -39,19 +36,24 @@ public abstract class NamedIndexingService
         await ProcessRecordsAsync(await _indexProfileStore.GetByTypeAsync(Name));
     }
 
-    public async Task ProcessRecordsAsync(IEnumerable<IndexProfile> indexProfiles)
+    public async Task ProcessRecordsAsync(IEnumerable<string> indexIds)
     {
-        ArgumentNullException.ThrowIfNull(indexProfiles);
+        ArgumentNullException.ThrowIfNull(indexIds);
 
-        if (!indexProfiles.Any())
+        if (!indexIds.Any())
         {
             return;
         }
 
-        // This service could be called multiple times during the same request,
-        // so we need to ensure that we only process each index once at a time.
-        // This is not guaranteed to be thread-safe, but it should be sufficient for the current use case.
-        await _semaphore.WaitAsync();
+        await ProcessRecordsAsync((await _indexProfileStore.GetByTypeAsync(Name)).Where(x => indexIds.Contains(x.Id)));
+    }
+
+    private async Task ProcessRecordsAsync(IEnumerable<IndexProfile> indexProfiles)
+    {
+        if (!indexProfiles.Any())
+        {
+            return;
+        }
 
         var tracker = new Dictionary<string, IndexProfileEntryContext>();
 
@@ -60,66 +62,53 @@ public abstract class NamedIndexingService
 
         var lastTaskId = long.MaxValue;
 
-        try
+        // Find the lowest task id to process.
+        foreach (var indexProfile in indexProfiles)
         {
-            // Find the lowest task id to process.
-            foreach (var indexProfile in indexProfiles)
+            if (indexProfile.Type != Name)
             {
-                if (indexProfile.Type != Name)
-                {
-                    // Skip indexes that are not content indexes.
-                    continue;
-                }
-
-                if (!_inProgressIndexes.Add(indexProfile.Id))
-                {
-                    // If the index is already being processed, skip it.
-                    continue;
-                }
-
-                if (!documentIndexManagers.TryGetValue(indexProfile.ProviderName, out var documentIndexManager))
-                {
-                    documentIndexManager = _serviceProvider.GetKeyedService<IDocumentIndexManager>(indexProfile.ProviderName);
-
-                    if (documentIndexManager is null)
-                    {
-                        Logger.LogWarning("Unable to find an implementation of {Implementation} for the provider '{ProviderName}'", nameof(IDocumentIndexManager), indexProfile.ProviderName);
-
-                        continue;
-                    }
-
-                    documentIndexManagers.Add(indexProfile.ProviderName, documentIndexManager);
-                }
-
-                if (!indexManagers.TryGetValue(indexProfile.ProviderName, out var indexManager))
-                {
-                    indexManager = _serviceProvider.GetKeyedService<IIndexManager>(indexProfile.ProviderName);
-
-                    if (indexManager is null)
-                    {
-                        Logger.LogWarning("Unable to find an implementation of {Implementation} for the provider '{ProviderName}'", nameof(IIndexManager), indexProfile.ProviderName);
-
-                        continue;
-                    }
-
-                    indexManagers.Add(indexProfile.ProviderName, indexManager);
-                }
-
-                if (!await indexManager.ExistsAsync(indexProfile.IndexFullName))
-                {
-                    Logger.LogWarning("The index '{IndexName}' does not exist for the provider '{ProviderName}'.", indexProfile.IndexName, indexProfile.ProviderName);
-
-                    continue;
-                }
-
-                var taskId = await documentIndexManager.GetLastTaskIdAsync(indexProfile);
-                lastTaskId = Math.Min(lastTaskId, taskId);
-                tracker.Add(indexProfile.Id, new IndexProfileEntryContext(indexProfile, documentIndexManager, taskId));
+                // Skip indexes that are not content indexes.
+                continue;
             }
-        }
-        finally
-        {
-            _semaphore.Release();
+
+            if (!documentIndexManagers.TryGetValue(indexProfile.ProviderName, out var documentIndexManager))
+            {
+                documentIndexManager = _serviceProvider.GetKeyedService<IDocumentIndexManager>(indexProfile.ProviderName);
+
+                if (documentIndexManager is null)
+                {
+                    Logger.LogWarning("Unable to find an implementation of {Implementation} for the provider '{ProviderName}'", nameof(IDocumentIndexManager), indexProfile.ProviderName);
+
+                    continue;
+                }
+
+                documentIndexManagers.Add(indexProfile.ProviderName, documentIndexManager);
+            }
+
+            if (!indexManagers.TryGetValue(indexProfile.ProviderName, out var indexManager))
+            {
+                indexManager = _serviceProvider.GetKeyedService<IIndexManager>(indexProfile.ProviderName);
+
+                if (indexManager is null)
+                {
+                    Logger.LogWarning("Unable to find an implementation of {Implementation} for the provider '{ProviderName}'", nameof(IIndexManager), indexProfile.ProviderName);
+
+                    continue;
+                }
+
+                indexManagers.Add(indexProfile.ProviderName, indexManager);
+            }
+
+            if (!await indexManager.ExistsAsync(indexProfile.IndexFullName))
+            {
+                Logger.LogWarning("The index '{IndexName}' does not exist for the provider '{ProviderName}'.", indexProfile.IndexName, indexProfile.ProviderName);
+
+                continue;
+            }
+
+            var taskId = await documentIndexManager.GetLastTaskIdAsync(indexProfile);
+            lastTaskId = Math.Min(lastTaskId, taskId);
+            tracker.Add(indexProfile.Id, new IndexProfileEntryContext(indexProfile, documentIndexManager, taskId));
         }
 
         if (tracker.Count == 0)
@@ -127,7 +116,7 @@ public abstract class NamedIndexingService
             return;
         }
 
-        var tasks = new List<IndexingTask>();
+        var tasks = new List<RecordIndexingTask>();
 
         while (tasks.Count <= _batchSize)
         {
@@ -186,16 +175,11 @@ public abstract class NamedIndexingService
                 }
             }
         }
-
-        foreach (var index in tracker.Values)
-        {
-            _inProgressIndexes.Remove(index.IndexProfile.Id);
-        }
     }
 
-    protected abstract Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, IndexingTask task);
+    protected abstract Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, RecordIndexingTask task);
 
-    protected virtual Task BeforeProcessingTasksAsync(IEnumerable<IndexingTask> tasks, IEnumerable<IndexProfileEntryContext> contexts)
+    protected virtual Task BeforeProcessingTasksAsync(IEnumerable<RecordIndexingTask> tasks, IEnumerable<IndexProfileEntryContext> contexts)
         => Task.CompletedTask;
 
     public sealed class IndexProfileEntryContext

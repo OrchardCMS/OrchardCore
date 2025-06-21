@@ -1,20 +1,20 @@
 namespace OrchardCore.Indexing;
 
-public enum IndexingTaskTypes
+public enum RecordIndexingTaskTypes
 {
     Update = 0,
     Delete = 1,
 }
 
-public sealed class IndexingTask
+public sealed class RecordIndexingTask
 {
     /// <summary>
-    /// The unique identifier of the <see cref="IndexingTask"/>.
+    /// The unique identifier of the <see cref="RecordIndexingTask"/>.
     /// </summary>
     public long Id { get; set; }
 
     /// <summary>
-    /// The id of the record that is represented by the <see cref="IndexingTask"/> instance.
+    /// The id of the record that is represented by the <see cref="RecordIndexingTask"/> instance.
     /// </summary>
     public string RecordId { get; set; }
 
@@ -31,5 +31,5 @@ public sealed class IndexingTask
     /// <summary>
     /// The type of task.
     /// </summary>
-    public IndexingTaskTypes Type { get; set; }
+    public RecordIndexingTaskTypes Type { get; set; }
 }

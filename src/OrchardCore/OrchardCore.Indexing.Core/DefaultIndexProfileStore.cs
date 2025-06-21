@@ -1,59 +1,44 @@
 using OrchardCore.Abstractions.Indexing;
-using OrchardCore.Documents;
+using OrchardCore.Indexing.Core.Indexes;
 using OrchardCore.Indexing.Models;
+using YesSql;
 
 namespace OrchardCore.Indexing.Core;
 
 public sealed class DefaultIndexProfileStore : IIndexProfileStore
 {
-    private readonly IDocumentManager<DictionaryDocument<IndexProfile>> _documentManager;
+    private readonly ISession _session;
 
-    public DefaultIndexProfileStore(IDocumentManager<DictionaryDocument<IndexProfile>> documentManager)
+    public DefaultIndexProfileStore(ISession session)
     {
-        _documentManager = documentManager;
+        _session = session;
     }
 
-    public async ValueTask<bool> DeleteAsync(IndexProfile indexProfile)
+    public ValueTask<bool> DeleteAsync(IndexProfile indexProfile)
     {
         ArgumentNullException.ThrowIfNull(indexProfile);
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        _session.Delete(indexProfile);
 
-        if (!document.Records.TryGetValue(indexProfile.Id, out var existingInstance))
-        {
-            return false;
-        }
-
-        var removed = document.Records.Remove(indexProfile.Id);
-
-        if (removed)
-        {
-            await _documentManager.UpdateAsync(document);
-        }
-        return removed;
+        return ValueTask.FromResult(true);
     }
 
     public async ValueTask<IndexProfile> FindByIdAsync(string id)
     {
         ArgumentException.ThrowIfNullOrEmpty(id);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
-
-        if (document.Records.TryGetValue(id, out var record))
-        {
-            return record;
-        }
-
-        return null;
+        return await _session.Query<IndexProfile, IndexProfileIndex>()
+            .Where(x => x.IndexProfileId == id)
+            .FirstOrDefaultAsync();
     }
 
     public async ValueTask<IndexProfile> FindByNameAsync(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
-
-        return document.Records.Values.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+        return await _session.Query<IndexProfile, IndexProfileIndex>()
+            .Where(x => x.Name == name)
+            .FirstOrDefaultAsync();
     }
 
     public async ValueTask<IndexProfile> FindByIndexNameAndProviderAsync(string indexName, string providerName)
@@ -61,28 +46,27 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
         ArgumentException.ThrowIfNullOrEmpty(indexName);
         ArgumentException.ThrowIfNullOrEmpty(providerName);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
-
-        return document.Records.Values.FirstOrDefault(x => string.Equals(x.IndexName, indexName, StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(x.ProviderName, providerName, StringComparison.OrdinalIgnoreCase));
+        return await _session.Query<IndexProfile, IndexProfileIndex>()
+            .Where(x => x.IndexName == indexName && x.ProviderName == providerName)
+            .FirstOrDefaultAsync();
     }
 
     public async ValueTask<IEnumerable<IndexProfile>> GetByTypeAsync(string type)
     {
         ArgumentException.ThrowIfNullOrEmpty(type);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
-
-        return document.Records.Values.Where(x => x.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
+        return await _session.Query<IndexProfile, IndexProfileIndex>()
+            .Where(x => x.Type == type)
+            .ListAsync();
     }
 
     public async ValueTask<IEnumerable<IndexProfile>> GetByProviderAsync(string providerName)
     {
         ArgumentException.ThrowIfNullOrEmpty(providerName);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
-
-        return document.Records.Values.Where(x => x.ProviderName.Equals(providerName, StringComparison.OrdinalIgnoreCase));
+        return await _session.Query<IndexProfile, IndexProfileIndex>()
+            .Where(x => x.ProviderName == providerName)
+            .ListAsync();
     }
 
     public async ValueTask<IEnumerable<IndexProfile>> GetAsync(string providerName, string type)
@@ -90,119 +74,85 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
         ArgumentException.ThrowIfNullOrEmpty(providerName);
         ArgumentException.ThrowIfNullOrEmpty(type);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
-
-        return document.Records.Values.Where(x => x.ProviderName.Equals(providerName, StringComparison.OrdinalIgnoreCase) && x.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
+        return await _session.Query<IndexProfile, IndexProfileIndex>()
+             .Where(x => x.ProviderName == providerName && x.Type == type)
+             .ListAsync();
     }
 
     public async ValueTask<PageResult<IndexProfile>> PageAsync<TQuery>(int page, int pageSize, TQuery context)
         where TQuery : QueryContext
     {
-        var records = await LocateInstancesAsync(context);
+        var records = BuildQuery(context);
 
         var skip = (page - 1) * pageSize;
 
         return new PageResult<IndexProfile>
         {
-            Count = records.Count(),
-            Models = records.Skip(skip).Take(pageSize).ToArray(),
+            Count = await records.CountAsync(),
+            Models = await records.Skip(skip).Take(pageSize).ListAsync(),
         };
     }
 
     public async ValueTask<IEnumerable<IndexProfile>> GetAllAsync()
     {
-        var document = await _documentManager.GetOrCreateImmutableAsync();
-
-        return document.Records.Values;
+        return await _session.Query<IndexProfile, IndexProfileIndex>().ListAsync();
     }
 
-    public async ValueTask CreateAsync(IndexProfile record)
+    public ValueTask CreateAsync(IndexProfile indexProfile)
+        => UpdateAsync(indexProfile);
+
+    public async ValueTask UpdateAsync(IndexProfile indexProfile)
     {
-        ArgumentNullException.ThrowIfNull(record);
+        ArgumentNullException.ThrowIfNull(indexProfile);
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        if (string.IsNullOrEmpty(indexProfile.Id))
+        {
+            indexProfile.Id = IdGenerator.GenerateId();
+        }
 
-        if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase) &&
-            x.ProviderName.Equals(record.ProviderName, StringComparison.OrdinalIgnoreCase)))
+        var exists = await _session.QueryIndex<IndexProfileIndex>()
+            .Where(x => x.IndexName == indexProfile.IndexName && x.ProviderName == indexProfile.ProviderName && x.IndexProfileId != indexProfile.Id)
+            .FirstOrDefaultAsync();
+
+        if (exists is not null)
         {
             throw new InvalidOperationException("There is already another index with the same name.");
         }
 
-        if (document.Records.Values.Any(x => x.Name.Equals(record.Name, StringComparison.OrdinalIgnoreCase)))
+        var existsByName = await _session.QueryIndex<IndexProfileIndex>()
+            .Where(x => x.Name == indexProfile.Name && x.IndexProfileId != indexProfile.Id)
+            .FirstOrDefaultAsync();
+
+        if (existsByName is not null)
         {
             throw new InvalidOperationException("There is already another index with the same name.");
         }
 
-        if (string.IsNullOrEmpty(record.Id))
-        {
-            record.Id = IdGenerator.GenerateId();
-        }
-
-        document.Records[record.Id] = record;
-
-        await _documentManager.UpdateAsync(document);
-    }
-
-    public async ValueTask UpdateAsync(IndexProfile record)
-    {
-        ArgumentNullException.ThrowIfNull(record);
-
-        var document = await _documentManager.GetOrCreateMutableAsync();
-
-        if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase) &&
-            x.ProviderName.Equals(record.ProviderName, StringComparison.OrdinalIgnoreCase) &&
-            x.Id != record.Id))
-        {
-            throw new InvalidOperationException("There is already another index with the same name.");
-        }
-
-        if (document.Records.Values.Any(x => x.Name.Equals(record.Name, StringComparison.OrdinalIgnoreCase) &&
-            x.Id != record.Id))
-        {
-            throw new InvalidOperationException("There is already another index with the same name.");
-        }
-
-        if (string.IsNullOrEmpty(record.Id))
-        {
-            record.Id = IdGenerator.GenerateId();
-        }
-
-        document.Records[record.Id] = record;
-
-        await _documentManager.UpdateAsync(document);
+        await _session.SaveAsync(indexProfile, checkConcurrency: true);
     }
 
     public ValueTask SaveChangesAsync()
         => ValueTask.CompletedTask;
 
-    private async ValueTask<IEnumerable<IndexProfile>> LocateInstancesAsync(QueryContext context)
+    private IQuery<IndexProfile, IndexProfileIndex> BuildQuery(QueryContext context)
     {
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var query = _session.Query<IndexProfile, IndexProfileIndex>();
 
         if (context == null)
         {
-            return document.Records.Values;
+            return query;
         }
 
-        var records = document.Records.Values.AsEnumerable();
-
-        records = GetSortable(context, records);
-
-        return records;
-    }
-
-    private static IEnumerable<IndexProfile> GetSortable(QueryContext context, IEnumerable<IndexProfile> records)
-    {
         if (!string.IsNullOrEmpty(context.Name))
         {
-            records = records.Where(x => context.Name.Contains(x.Name, StringComparison.OrdinalIgnoreCase));
+            query = query.Where(x => x.Name.Contains(context.Name));
         }
 
         if (context.Sorted)
         {
-            records = records.OrderBy(x => x.Name);
+            query = query.OrderBy(x => x.Name);
         }
 
-        return records;
+        return query;
     }
 }

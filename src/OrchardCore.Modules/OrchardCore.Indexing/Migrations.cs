@@ -9,87 +9,107 @@ using YesSql;
 
 namespace OrchardCore.Indexing;
 
+[Obsolete("This migration will be removed in a future release, but must remain until all sites have been successfully migrated to Orchard Core 3.0.")]
 public sealed class Migrations : DataMigration
 {
-    public async Task<int> CreateAsync()
+#pragma warning disable CA1822 // Mark members as static
+    public int Create()
     {
-        await SchemaBuilder.CreateTableAsync("IndexingTask", table => table
-            .Column<int>("Id", col => col.PrimaryKey().Identity())
-            .Column<string>("RecordId", c => c.WithLength(26))
-            .Column<string>("Category", c => c.WithLength(50))
-            .Column<DateTime>("CreatedUtc", col => col.NotNull())
-            .Column<int>("Type")
-        );
+        // This migration originally created the 'IndexingTask' table before Orchard Core 3.
+        // That table have since been deprecated and replaced by the new 'RecordIndexingTask' table.
+        // When this migration runs for the first time, no action is required.
+        // It is retained to allow migration of existing data from the old 'IndexingTask' table to the new 'RecordIndexingTask' table.
+        // This migration will be removed in a future version of Orchard Core.
 
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-            .CreateIndex("IDX_IndexingTask_RecordId_Category", "RecordId", "Category")
-        );
-
-        return 4;
+        return 5;
     }
 
-    public async Task<int> UpdateFrom1Async()
+    public int UpdateFrom1()
     {
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-            .AddColumn<string>("Category", c => c.WithLength(50))
-        );
-
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-            .DropIndex("IDX_IndexingTask_ContentItemId")
-        );
-
         return 2;
     }
 
-    public async Task<int> UpdateFrom2Async()
+    public int UpdateFrom2()
     {
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-            .RenameColumn("ContentItemId", "RecordId")
-        );
-
         return 3;
     }
 
-    public async Task<int> UpdateFrom3Async()
+    public int UpdateFrom3()
     {
-        await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
-           .CreateIndex("IDX_IndexingTask_RecordId_Category", "RecordId", "Category")
-        );
+        return 4;
+    }
+#pragma warning restore CA1822 // Mark members as static
 
+    public int UpdateFrom4()
+    {
         ShellScope.AddDeferredTask(async scope =>
         {
+            // This logic must be deferred to ensure that other migrations create the necessary database tables first.
+
             var serviceProvider = scope.ServiceProvider;
 
             var store = serviceProvider.GetService<IStore>();
             var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
             var dialect = store.Configuration.SqlDialect;
 
-            var table = $"{store.Configuration.TablePrefix}{nameof(IndexingTask)}";
+            var recordIndexingTaskTable = $"{store.Configuration.TablePrefix}{nameof(RecordIndexingTask)}";
+
             var logger = serviceProvider.GetService<ILogger<Migrations>>();
 
+            var quotedRecordIndexingTaskTable = dialect.QuoteForTableName(recordIndexingTaskTable, store.Configuration.Schema);
+            var quotedRecordIdName = dialect.QuoteForColumnName("RecordId");
             var quotedCategoryName = dialect.QuoteForColumnName("Category");
+            var quotedCreatedUtcName = dialect.QuoteForColumnName("CreatedUtc");
+            var quotedTypeName = dialect.QuoteForColumnName("Type");
+            var quotedContentItemIdName = dialect.QuoteForColumnName("ContentItemId");
+            var quotedIdName = dialect.QuoteForColumnName("Id");
 
-            var command = $"update {dialect.QuoteForTableName(table, store.Configuration.Schema)} set {quotedCategoryName} = @Category where {quotedCategoryName} is null;";
+            var indexingTaskTable = $"{store.Configuration.TablePrefix}IndexingTask";
+            var quotedIndexingTaskTable = dialect.QuoteForTableName(indexingTaskTable, store.Configuration.Schema);
+
+            var originalTableQuery =
+                $"""
+                insert into {quotedRecordIndexingTaskTable} ({quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName})
+                select {quotedContentItemIdName}, @Category, {quotedCreatedUtcName}, {quotedTypeName} from {quotedIndexingTaskTable} order by {quotedIdName} 
+                """;
 
             await using var connection = dbConnectionAccessor.CreateConnection();
 
             try
             {
                 await connection.OpenAsync();
-                await connection.ExecuteAsync(command, new
+                try
                 {
-                    Category = IndexingConstants.ContentsIndexSource,
-                });
+                    await connection.ExecuteAsync(originalTableQuery, new
+                    {
+                        Category = IndexingConstants.ContentsIndexSource,
+                    });
+                }
+                catch
+                {
+                    // In the preview version, we attempted to rename the 'ContentItemId' column to 'RecordId' and add a 'Category' column to the 'IndexingTask' table.
+                    // However, for large tables, this could lead to timeouts. To avoid this, we opted to create a new table called 'RecordIndexingTask' and migrate the data.
+                    // If the previous SQL statement (in the try block) throws an exception, it's likely the renaming already succeeded for this tenant.
+                    // In that case, we assume the new column names exist and use them when populating the new table.
+                    var previewTableQuery =
+                    $"""
+                    insert into {quotedRecordIndexingTaskTable} ({quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName})
+                    select {quotedRecordIdName}, {quotedCategoryName}, {quotedCreatedUtcName}, {quotedTypeName} from {quotedIndexingTaskTable} order by {quotedIdName} 
+                    """;
+
+                    await connection.ExecuteAsync(previewTableQuery);
+                }
+
                 await connection.CloseAsync();
             }
             catch (Exception e)
             {
-                logger.LogError(e, "An error occurred while updating indexing tasks Category to Content.");
+                logger.LogError(e, "An error occurred while migrating the data from 'IndexingTask' to 'RecordIndexingTask' table.");
 
                 throw;
             }
         });
 
-        return 4;
+        return 5;
     }
 }

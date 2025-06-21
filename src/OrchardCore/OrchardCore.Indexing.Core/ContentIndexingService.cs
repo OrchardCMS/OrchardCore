@@ -44,7 +44,7 @@ public sealed class ContentIndexingService : NamedIndexingService
         _contentItemIndexHandlers = contentItemIndexHandlers;
     }
 
-    protected override async Task BeforeProcessingTasksAsync(IEnumerable<IndexingTask> tasks, IEnumerable<IndexProfileEntryContext> contexts)
+    protected override async Task BeforeProcessingTasksAsync(IEnumerable<RecordIndexingTask> tasks, IEnumerable<IndexProfileEntryContext> contexts)
     {
         _readonlySession ??= _store.CreateSession(withTracking: false);
         _cultureAspects = new Dictionary<string, CultureAspect>();
@@ -78,7 +78,7 @@ public sealed class ContentIndexingService : NamedIndexingService
         }
 
         var updatedContentItemIds = tasks
-            .Where(x => x.Type == IndexingTaskTypes.Update)
+            .Where(x => x.Type == RecordIndexingTaskTypes.Update)
             .Select(x => x.RecordId)
             .ToArray();
 
@@ -102,9 +102,9 @@ public sealed class ContentIndexingService : NamedIndexingService
         }
     }
 
-    protected override async Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, IndexingTask task)
+    protected override async Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, RecordIndexingTask task)
     {
-        if (task.Type != IndexingTaskTypes.Update)
+        if (task.Type != RecordIndexingTaskTypes.Update)
         {
             return null;
         }
