@@ -23,7 +23,7 @@ public sealed class Migrations : DataMigration
             .Column<DateTime?>("LockoutEndUtc", c => c.Nullable())
             .Column<int>("AccessFailedCount", c => c.NotNull().WithDefault(0))
             .Column<string>("UserId")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
             .CreateIndex("IDX_UserIndex_DocumentId",
@@ -33,7 +33,7 @@ public sealed class Migrations : DataMigration
                 "NormalizedEmail",
                 "IsEnabled"
                 )
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
             .CreateIndex("IDX_UserIndex_Lockout",
@@ -42,40 +42,40 @@ public sealed class Migrations : DataMigration
                 "LockoutEndUtc",
                 "AccessFailedCount"
                 )
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.CreateReduceIndexTableAsync<UserByRoleNameIndex>(table => table
            .Column<string>("RoleName")
            .Column<int>("Count")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserByRoleNameIndex>(table => table
             .CreateIndex("IDX_UserByRoleNameIndex_RoleName",
                 "RoleName")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<UserByLoginInfoIndex>(table => table
             .Column<string>("LoginProvider")
-            .Column<string>("ProviderKey"));
+            .Column<string>("ProviderKey")).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserByLoginInfoIndex>(table => table
             .CreateIndex("IDX_UserByLoginInfoIndex_DocumentId",
                 "DocumentId",
                 "LoginProvider",
                 "ProviderKey")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<UserByClaimIndex>(table => table
            .Column<string>("ClaimType")
            .Column<string>("ClaimValue"),
-            null);
+            null).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserByClaimIndex>(table => table
             .CreateIndex("IDX_UserByClaimIndex_DocumentId",
                 "DocumentId",
                 "ClaimType",
                 "ClaimValue")
-        );
+        ).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 13;
@@ -86,7 +86,7 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.CreateMapIndexTableAsync<UserByLoginInfoIndex>(table => table
             .Column<string>("LoginProvider")
-            .Column<string>("ProviderKey"));
+            .Column<string>("ProviderKey")).ConfigureAwait(false);
 
         return 2;
     }
@@ -97,7 +97,7 @@ public sealed class Migrations : DataMigration
         await SchemaBuilder.CreateMapIndexTableAsync<UserByClaimIndex>(table => table
            .Column<string>("ClaimType")
            .Column<string>("ClaimValue"),
-            null);
+            null).ConfigureAwait(false);
 
         return 3;
     }
@@ -106,7 +106,7 @@ public sealed class Migrations : DataMigration
     public async Task<int> UpdateFrom3Async()
     {
         await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-            .AddColumn<bool>("IsEnabled", c => c.NotNull().WithDefault(true)));
+            .AddColumn<bool>("IsEnabled", c => c.NotNull().WithDefault(true))).ConfigureAwait(false);
 
         return 4;
     }
@@ -116,7 +116,7 @@ public sealed class Migrations : DataMigration
     public async Task<int> UpdateFrom4Async()
     {
         await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-            .AddColumn<string>("UserId"));
+            .AddColumn<string>("UserId")).ConfigureAwait(false);
 
         return 5;
     }
@@ -133,11 +133,11 @@ public sealed class Migrations : DataMigration
         ShellScope.AddDeferredTask(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
-            var users = await session.Query<User>().ListAsync();
+            var users = await session.Query<User>().ListAsync().ConfigureAwait(false);
             foreach (var user in users)
             {
                 user.UserId = user.UserName;
-                await session.SaveAsync(user);
+                await session.SaveAsync(user).ConfigureAwait(false);
             }
         });
 
@@ -163,12 +163,12 @@ public sealed class Migrations : DataMigration
         ShellScope.AddDeferredTask(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
-            var users = await session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains('@')).ListAsync();
+            var users = await session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains('@')).ListAsync().ConfigureAwait(false);
             foreach (var user in users)
             {
                 user.UserName = user.UserName.Replace('@', '+');
                 user.NormalizedUserName = user.NormalizedUserName.Replace('@', '+');
-                await session.SaveAsync(user);
+                await session.SaveAsync(user).ConfigureAwait(false);
             }
         });
 
@@ -185,21 +185,21 @@ public sealed class Migrations : DataMigration
                 "NormalizedUserName",
                 "NormalizedEmail",
                 "IsEnabled")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserByLoginInfoIndex>(table => table
             .CreateIndex("IDX_UserByLoginInfoIndex_DocumentId",
                 "DocumentId",
                 "LoginProvider",
                 "ProviderKey")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserByClaimIndex>(table => table
             .CreateIndex("IDX_UserByClaimIndex_DocumentId",
                 "DocumentId",
                 "ClaimType",
                 "ClaimValue")
-        );
+        ).ConfigureAwait(false);
 
         return 9;
     }
@@ -210,7 +210,7 @@ public sealed class Migrations : DataMigration
         await SchemaBuilder.AlterIndexTableAsync<UserByRoleNameIndex>(table => table
             .CreateIndex("IDX_UserByRoleNameIndex_RoleName",
                 "RoleName")
-        );
+        ).ConfigureAwait(false);
 
         return 10;
     }
@@ -218,13 +218,13 @@ public sealed class Migrations : DataMigration
     public async Task<int> UpdateFrom10Async()
     {
         await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-            .AddColumn<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false)));
+            .AddColumn<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false))).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-            .AddColumn<DateTime?>("LockoutEndUtc", c => c.Nullable()));
+            .AddColumn<DateTime?>("LockoutEndUtc", c => c.Nullable())).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-            .AddColumn<int>("AccessFailedCount", c => c.NotNull().WithDefault(0)));
+            .AddColumn<int>("AccessFailedCount", c => c.NotNull().WithDefault(0))).ConfigureAwait(false);
 
         return 11;
     }
@@ -238,7 +238,7 @@ public sealed class Migrations : DataMigration
                 "LockoutEndUtc",
                 "AccessFailedCount"
                 )
-        );
+        ).ConfigureAwait(false);
 
         return 12;
     }
@@ -258,8 +258,10 @@ public sealed class Migrations : DataMigration
 
             logger.LogDebug("Updating User Settings");
 
-            await using var connection = dbConnectionAccessor.CreateConnection();
-            await connection.OpenAsync();
+            var connection = dbConnectionAccessor.CreateConnection();
+            await using (connection.ConfigureAwait(false))
+            {
+                await connection.OpenAsync();
             await using var transaction = await connection.BeginTransactionAsync(session.Store.Configuration.IsolationLevel);
             var dialect = session.Store.Configuration.SqlDialect;
 
@@ -281,6 +283,7 @@ public sealed class Migrations : DataMigration
                 logger.LogError(e, "An error occurred while updating User Settings");
 
                 throw;
+            }
             }
         });
 

@@ -49,7 +49,7 @@ public class WorkflowFaultEvent : EventActivity
             return false;
         }
 
-        return await _scriptEvaluator.EvaluateAsync(ErrorFilter, workflowContext);
+        return await _scriptEvaluator.EvaluateAsync(ErrorFilter, workflowContext).ConfigureAwait(false);
     }
 
     private static string GetDefaultValue()

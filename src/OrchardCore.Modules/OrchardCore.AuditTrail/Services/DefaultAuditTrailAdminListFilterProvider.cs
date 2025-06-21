@@ -106,7 +106,7 @@ public sealed class DefaultAuditTrailAdminListFilterProvider : IAuditTrailAdminL
                     var context = (AuditTrailQueryContext)ctx;
                     var clock = context.ServiceProvider.GetRequiredService<IClock>();
                     var localClock = context.ServiceProvider.GetRequiredService<ILocalClock>();
-                    var userTimeZone = await localClock.GetLocalTimeZoneAsync();
+                    var userTimeZone = await localClock.GetLocalTimeZoneAsync().ConfigureAwait(false);
                     var parseContext = new DateTimeParseContext(CultureInfo.CurrentUICulture, clock, userTimeZone, new Scanner(val));
 
                     if (DateTimeParser.Parser.TryParse(parseContext, out var expression, out var parseError))

@@ -59,11 +59,11 @@ public class AttachedMediaFieldFileService
             return;
         }
 
-        await EnsureGlobalDirectoriesAsync();
+        await EnsureGlobalDirectoriesAsync().ConfigureAwait(false);
 
-        await RemoveTemporaryAsync(items);
+        await RemoveTemporaryAsync(items).ConfigureAwait(false);
 
-        await MoveNewFilesToContentItemDirAndUpdatePathsAsync(items, contentItem);
+        await MoveNewFilesToContentItemDirAndUpdatePathsAsync(items, contentItem).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -75,8 +75,8 @@ public class AttachedMediaFieldFileService
 
     private async Task EnsureGlobalDirectoriesAsync()
     {
-        await _fileStore.TryCreateDirectoryAsync(MediaFieldsFolder);
-        await _fileStore.TryCreateDirectoryAsync(MediaFieldsTempSubFolder);
+        await _fileStore.TryCreateDirectoryAsync(MediaFieldsFolder).ConfigureAwait(false);
+        await _fileStore.TryCreateDirectoryAsync(MediaFieldsTempSubFolder).ConfigureAwait(false);
     }
 
     // Files just uploaded and then immediately discarded.
@@ -84,7 +84,7 @@ public class AttachedMediaFieldFileService
     {
         foreach (var item in items.Where(i => i.IsRemoved && i.IsNew))
         {
-            await _fileStore.TryDeleteFileAsync(item.Path);
+            await _fileStore.TryDeleteFileAsync(item.Path).ConfigureAwait(false);
         }
     }
 
@@ -93,7 +93,7 @@ public class AttachedMediaFieldFileService
     {
         foreach (var item in items.Where(i => !i.IsRemoved && !string.IsNullOrEmpty(i.Path)))
         {
-            var fileInfo = await _fileStore.GetFileInfoAsync(item.Path);
+            var fileInfo = await _fileStore.GetFileInfoAsync(item.Path).ConfigureAwait(false);
 
             if (fileInfo == null)
             {
@@ -102,24 +102,24 @@ public class AttachedMediaFieldFileService
             }
 
             var targetDir = GetContentItemFolder(contentItem);
-            var finalFileName = (await GetFileHashAsync(item.Path)) + GetFileExtension(item.Path);
+            var finalFileName = (await GetFileHashAsync(item.Path).ConfigureAwait(false)) + GetFileExtension(item.Path);
             var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
 
-            await _fileStore.TryCreateDirectoryAsync(targetDir);
+            await _fileStore.TryCreateDirectoryAsync(targetDir).ConfigureAwait(false);
 
             // When there is a validation error before creating the content item we can end up with an empty folder
             // because the content item is different on each form submit . We need to remove that empty folder.
             var previousDirPath = fileInfo.DirectoryPath;
 
             // fileName is a hash of the file. We preserve disk space by reusing the file.
-            if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
+            if (await _fileStore.GetFileInfoAsync(finalFilePath).ConfigureAwait(false) == null)
             {
-                await _fileStore.MoveFileAsync(item.Path, finalFilePath);
+                await _fileStore.MoveFileAsync(item.Path, finalFilePath).ConfigureAwait(false);
             }
 
             item.Path = finalFilePath;
 
-            await DeleteDirIfEmptyAsync(previousDirPath);
+            await DeleteDirIfEmptyAsync(previousDirPath).ConfigureAwait(false);
         }
     }
 
@@ -130,9 +130,9 @@ public class AttachedMediaFieldFileService
 
     private async Task<string> GetFileHashAsync(string filePath)
     {
-        using var fs = await _fileStore.GetFileStreamAsync(filePath);
+        using var fs = await _fileStore.GetFileStreamAsync(filePath).ConfigureAwait(false);
         var hash = new XxHash32();
-        await hash.AppendAsync(fs);
+        await hash.AppendAsync(fs).ConfigureAwait(false);
         return Convert.ToHexString(hash.GetCurrentHash()).ToLowerInvariant();
     }
 
@@ -144,14 +144,14 @@ public class AttachedMediaFieldFileService
 
     private async Task DeleteDirIfEmptyAsync(string previousDirPath)
     {
-        if (await _fileStore.GetDirectoryInfoAsync(previousDirPath) == null)
+        if (await _fileStore.GetDirectoryInfoAsync(previousDirPath).ConfigureAwait(false) == null)
         {
             return;
         }
 
-        if (!(await _fileStore.GetDirectoryContentAsync(previousDirPath).AnyAsync()))
+        if (!(await _fileStore.GetDirectoryContentAsync(previousDirPath).AnyAsync().ConfigureAwait(false)))
         {
-            await _fileStore.TryDeleteDirectoryAsync(previousDirPath);
+            await _fileStore.TryDeleteDirectoryAsync(previousDirPath).ConfigureAwait(false);
         }
     }
 }

@@ -32,7 +32,7 @@ public sealed class Migrations : DataMigration
     {
         if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.Search.Lucene"))
         {
-            await UpgradeAsync();
+            await UpgradeAsync().ConfigureAwait(false);
         }
 
         // Shortcut other migration steps on new content definition schemas.
@@ -42,7 +42,7 @@ public sealed class Migrations : DataMigration
     // Upgrade an existing installation.
     private async Task UpgradeAsync()
     {
-        var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
+        var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync().ConfigureAwait(false);
 
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
@@ -85,11 +85,11 @@ public sealed class Migrations : DataMigration
                     }
 
                     partDefinition.Settings.Remove("ContentIndexSettings");
-                });
+                }).ConfigureAwait(false);
             }
         }
 
-        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
+        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync().ConfigureAwait(false);
 
         foreach (var partDefinition in partDefinitions)
         {
@@ -168,7 +168,7 @@ public sealed class Migrations : DataMigration
 
                     fieldDefinition.Settings.Remove("ContentIndexSettings");
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         // Defer this until after the subsequent migrations have succeeded as the schema has changed.
@@ -181,8 +181,10 @@ public sealed class Migrations : DataMigration
             var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
             var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
 
-            await using var connection = dbConnectionAccessor.CreateConnection();
-            await connection.OpenAsync();
+            var connection = dbConnectionAccessor.CreateConnection();
+            await using (connection.ConfigureAwait(false))
+            {
+                await connection.OpenAsync();
 
             using var transaction = await connection.BeginTransactionAsync(session.Store.Configuration.IsolationLevel);
             var dialect = session.Store.Configuration.SqlDialect;
@@ -227,6 +229,7 @@ public sealed class Migrations : DataMigration
                 logger.LogError(e, "An error occurred while updating Lucene indices settings and queries");
 
                 throw;
+            }
             }
         });
     }

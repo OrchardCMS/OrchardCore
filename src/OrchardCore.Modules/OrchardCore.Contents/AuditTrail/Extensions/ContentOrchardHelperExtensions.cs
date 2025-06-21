@@ -16,7 +16,7 @@ public static class ContentOrchardHelperExtensions
         var viewContext = viewContextAccessor.ViewContext;
         var helper = MakeHtmlHelper(viewContext, viewContext.ViewData);
         var contentManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<IContentManager>();
-        var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+        var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem).ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(linkText))
         {

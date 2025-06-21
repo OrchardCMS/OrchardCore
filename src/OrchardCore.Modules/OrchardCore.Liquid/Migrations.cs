@@ -17,7 +17,7 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("LiquidPart", builder => builder
             .Attachable()
-            .WithDescription("Provides a Liquid formatted body for your content item."));
+            .WithDescription("Provides a Liquid formatted body for your content item.")).ConfigureAwait(false);
 
         return 1;
     }

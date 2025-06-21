@@ -54,7 +54,7 @@ public sealed class UserService : IUserService
 
     public async Task<IUser> AuthenticateAsync(string usernameOrEmail, string password, Action<string, string> reportError)
     {
-        var disableLocalLogin = (await _siteService.GetSettingsAsync<LoginSettings>()).DisableLocalLogin;
+        var disableLocalLogin = (await _siteService.GetSettingsAsync<LoginSettings>().ConfigureAwait(false)).DisableLocalLogin;
 
         if (disableLocalLogin)
         {
@@ -74,14 +74,14 @@ public sealed class UserService : IUserService
             return null;
         }
 
-        var user = await GetUserAsync(usernameOrEmail);
+        var user = await GetUserAsync(usernameOrEmail).ConfigureAwait(false);
         if (user == null)
         {
             reportError(string.Empty, S["The specified username/password couple is invalid."]);
             return null;
         }
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
+        var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true).ConfigureAwait(false);
 
         if (result.IsLockedOut)
         {
@@ -126,7 +126,7 @@ public sealed class UserService : IUserService
         // Accounts can be created with no password.
         var identityResult = hasPassword
             ? await _userManager.CreateAsync(user, password)
-            : await _userManager.CreateAsync(user);
+.ConfigureAwait(false) : await _userManager.CreateAsync(user).ConfigureAwait(false);
 
         if (!identityResult.Succeeded)
         {
@@ -158,8 +158,8 @@ public sealed class UserService : IUserService
 
     public async Task<bool> ChangeEmailAsync(IUser user, string newEmail, Action<string, string> reportError)
     {
-        var token = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
-        var identityResult = await _userManager.ChangeEmailAsync(user, newEmail, token);
+        var token = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail).ConfigureAwait(false);
+        var identityResult = await _userManager.ChangeEmailAsync(user, newEmail, token).ConfigureAwait(false);
 
         if (!identityResult.Succeeded)
         {
@@ -171,7 +171,7 @@ public sealed class UserService : IUserService
 
     public async Task<bool> ChangePasswordAsync(IUser user, string currentPassword, string newPassword, Action<string, string> reportError)
     {
-        var identityResult = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        var identityResult = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword).ConfigureAwait(false);
 
         if (!identityResult.Succeeded)
         {
@@ -198,7 +198,7 @@ public sealed class UserService : IUserService
             return null;
         }
 
-        var user = await GetUserAsync(userId);
+        var user = await GetUserAsync(userId).ConfigureAwait(false);
 
         if (user == null)
         {
@@ -207,7 +207,7 @@ public sealed class UserService : IUserService
 
         if (user is User u)
         {
-            u.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            u.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
         }
 
         return user;
@@ -239,14 +239,14 @@ public sealed class UserService : IUserService
             return result;
         }
 
-        var user = await GetUserAsync(usernameOrEmail) as User;
+        var user = await GetUserAsync(usernameOrEmail).ConfigureAwait(false) as User;
 
         if (user == null)
         {
             return false;
         }
 
-        var identityResult = await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
+        var identityResult = await _userManager.ResetPasswordAsync(user, resetToken, newPassword).ConfigureAwait(false);
 
         if (!identityResult.Succeeded)
         {
@@ -257,7 +257,7 @@ public sealed class UserService : IUserService
         {
             var context = new PasswordRecoveryContext(user);
 
-            await _passwordRecoveryFormEvents.InvokeAsync((handler, context) => handler.PasswordResetAsync(context), context, _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync((handler, context) => handler.PasswordResetAsync(context), context, _logger).ConfigureAwait(false);
         }
 
         return identityResult.Succeeded;
@@ -275,11 +275,11 @@ public sealed class UserService : IUserService
 
     public async Task<IUser> GetUserAsync(string usernameOrEmail)
     {
-        var user = await _userManager.FindByNameAsync(usernameOrEmail);
+        var user = await _userManager.FindByNameAsync(usernameOrEmail).ConfigureAwait(false);
 
         if (user is null && _identityOptions.User.RequireUniqueEmail)
         {
-            user = await _userManager.FindByEmailAsync(usernameOrEmail);
+            user = await _userManager.FindByEmailAsync(usernameOrEmail).ConfigureAwait(false);
         }
 
         return user;
@@ -346,7 +346,7 @@ public sealed class UserService : IUserService
 
     public async Task<IUser> RegisterAsync(RegisterUserForm model, Action<string, string> reportError)
     {
-        await _registrationFormEvents.InvokeAsync((e, report) => e.RegistrationValidationAsync((key, message) => report(key, message)), reportError, _logger);
+        await _registrationFormEvents.InvokeAsync((e, report) => e.RegistrationValidationAsync((key, message) => report(key, message)), reportError, _logger).ConfigureAwait(false);
 
         var user = await CreateUserAsync(new User
         {
@@ -354,7 +354,7 @@ public sealed class UserService : IUserService
             Email = model.Email,
             EmailConfirmed = !_registrationOptions.UsersMustValidateEmail,
             IsEnabled = !_registrationOptions.UsersAreModerated,
-        }, model.Password, reportError);
+        }, model.Password, reportError).ConfigureAwait(false);
 
         if (user == null)
         {
@@ -363,14 +363,14 @@ public sealed class UserService : IUserService
 
         var context = new UserRegisteringContext(user);
 
-        await _registrationFormEvents.InvokeAsync((e, ctx) => e.RegisteringAsync(ctx), context, _logger);
+        await _registrationFormEvents.InvokeAsync((e, ctx) => e.RegisteringAsync(ctx), context, _logger).ConfigureAwait(false);
 
         if (!context.CancelSignIn)
         {
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            await _signInManager.SignInAsync(user, isPersistent: false).ConfigureAwait(false);
         }
 
-        await _registrationFormEvents.InvokeAsync((e, user) => e.RegisteredAsync(user), user, _logger);
+        await _registrationFormEvents.InvokeAsync((e, user) => e.RegisteredAsync(user), user, _logger).ConfigureAwait(false);
 
         return user;
     }
@@ -390,12 +390,12 @@ public sealed class UserService : IUserService
             u.IsEnabled = true;
         }
 
-        var result = await _userManager.UpdateAsync(user);
+        var result = await _userManager.UpdateAsync(user).ConfigureAwait(false);
 
         if (result.Succeeded)
         {
             var userContext = new UserContext(user);
-            await _handlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger);
+            await _handlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger).ConfigureAwait(false);
         }
 
         return result.Succeeded;
@@ -406,7 +406,7 @@ public sealed class UserService : IUserService
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
+        var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator).ConfigureAwait(false))
             .Cast<User>()
             .Where(user => user.IsEnabled)
             .Take(2)
@@ -427,12 +427,12 @@ public sealed class UserService : IUserService
             u.IsEnabled = false;
         }
 
-        var result = await _userManager.UpdateAsync(user);
+        var result = await _userManager.UpdateAsync(user).ConfigureAwait(false);
 
         if (result.Succeeded)
         {
             var userContext = new UserContext(user);
-            await _handlers.InvokeAsync((handler, context) => handler.DisabledAsync(context), userContext, _logger);
+            await _handlers.InvokeAsync((handler, context) => handler.DisabledAsync(context), userContext, _logger).ConfigureAwait(false);
         }
 
         return result.Succeeded;

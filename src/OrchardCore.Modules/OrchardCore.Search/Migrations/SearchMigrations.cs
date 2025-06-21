@@ -16,14 +16,14 @@ public sealed class SearchMigrations : DataMigration
         await _contentDefinitionManager.AlterPartDefinitionAsync("SearchFormPart", part => part
             .WithDisplayName("Search Form Part")
             .Attachable()
-        );
+        ).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("SearchForm", type => type
             .Stereotype("Widget")
             .DisplayedAs("Search Form")
             .WithDescription("Provides a search form")
             .WithPart("SearchFormPart")
-        );
+        ).ConfigureAwait(false);
 
         return 1;
     }

@@ -19,7 +19,7 @@ public class TwitterSigninService : ITwitterSigninService
 
     public async Task<TwitterSigninSettings> LoadSettingsAsync()
     {
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         return container.As<TwitterSigninSettings>();
     }
 
@@ -27,12 +27,12 @@ public class TwitterSigninService : ITwitterSigninService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         container.Alter<TwitterSigninSettings>(aspect =>
         {
             aspect.CallbackPath = settings.CallbackPath;
         });
 
-        await _siteService.UpdateSiteSettingsAsync(container);
+        await _siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
     }
 }

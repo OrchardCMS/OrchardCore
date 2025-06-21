@@ -44,7 +44,7 @@ public class DateTimeFieldIndexProvider : ContentFieldIndexProvider
                 _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                 // Search for DateTimeField
-                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
 
                 // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
                 if (contentTypeDefinition == null)

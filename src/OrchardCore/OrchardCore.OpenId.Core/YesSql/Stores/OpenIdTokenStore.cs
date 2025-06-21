@@ -30,7 +30,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TToken>(collection: OpenIdCollection).CountAsync();
+        return await _session.Query<TToken>(collection: OpenIdCollection).CountAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -44,8 +44,8 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _session.SaveAsync(token, collection: OpenIdCollection);
-        await _session.FlushAsync();
+        await _session.SaveAsync(token, collection: OpenIdCollection).ConfigureAwait(false);
+        await _session.FlushAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -56,7 +56,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(token, collection: OpenIdCollection);
-        await _session.FlushAsync();
+        await _session.FlushAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -129,7 +129,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TToken, OpenIdTokenIndex>(index => index.ReferenceId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
+        return await _session.Query<TToken, OpenIdTokenIndex>(index => index.ReferenceId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -139,7 +139,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TToken, OpenIdTokenIndex>(index => index.TokenId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
+        return await _session.Query<TToken, OpenIdTokenIndex>(index => index.TokenId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -149,7 +149,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.GetAsync<TToken>(long.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
+        return await _session.GetAsync<TToken>(long.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -341,7 +341,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
                          token.AuthorizationId.IsNotIn<OpenIdAuthorizationIndex>(
                             authorization => authorization.AuthorizationId,
                             authorization => authorization.Status == Statuses.Valid) ||
-                         token.ExpirationDate < DateTime.UtcNow), collection: OpenIdCollection).Take(100).ListAsync()).ToList();
+                         token.ExpirationDate < DateTime.UtcNow), collection: OpenIdCollection).Take(100).ListAsync().ConfigureAwait(false)).ToList();
 
             if (tokens.Count is 0)
             {
@@ -355,7 +355,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
             try
             {
-                await _session.FlushAsync();
+                await _session.FlushAsync().ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -420,7 +420,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(query, collection: OpenIdCollection).ListAsync()).ToList();
+        var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(query, collection: OpenIdCollection).ListAsync().ConfigureAwait(false)).ToList();
         if (tokens.Count is 0)
         {
             return 0;
@@ -432,10 +432,10 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
             token.Status = Statuses.Revoked;
 
-            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection);
+            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection).ConfigureAwait(false);
         }
 
-        await _session.SaveChangesAsync();
+        await _session.SaveChangesAsync().ConfigureAwait(false);
 
         return tokens.Count;
     }
@@ -452,7 +452,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
         cancellationToken.ThrowIfCancellationRequested();
 
         var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(
-            token => token.ApplicationId == identifier, collection: OpenIdCollection).ListAsync()).ToList();
+            token => token.ApplicationId == identifier, collection: OpenIdCollection).ListAsync().ConfigureAwait(false)).ToList();
 
         if (tokens.Count is 0)
         {
@@ -465,10 +465,10 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
             token.Status = Statuses.Revoked;
 
-            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection);
+            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection).ConfigureAwait(false);
         }
 
-        await _session.SaveChangesAsync();
+        await _session.SaveChangesAsync().ConfigureAwait(false);
 
         return tokens.Count;
     }
@@ -485,7 +485,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
         cancellationToken.ThrowIfCancellationRequested();
 
         var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(
-            token => token.AuthorizationId == identifier, collection: OpenIdCollection).ListAsync()).ToList();
+            token => token.AuthorizationId == identifier, collection: OpenIdCollection).ListAsync().ConfigureAwait(false)).ToList();
 
         if (tokens.Count is 0)
         {
@@ -498,10 +498,10 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
             token.Status = Statuses.Revoked;
 
-            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection);
+            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection).ConfigureAwait(false);
         }
 
-        await _session.FlushAsync();
+        await _session.FlushAsync().ConfigureAwait(false);
 
         return tokens.Count;
     }
@@ -517,7 +517,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
         cancellationToken.ThrowIfCancellationRequested();
 
         var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(
-            token => token.Subject == subject, collection: OpenIdCollection).ListAsync()).ToList();
+            token => token.Subject == subject, collection: OpenIdCollection).ListAsync().ConfigureAwait(false)).ToList();
 
         if (tokens.Count is 0)
         {
@@ -530,10 +530,10 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
             token.Status = Statuses.Revoked;
 
-            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection);
+            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection).ConfigureAwait(false);
         }
 
-        await _session.SaveChangesAsync();
+        await _session.SaveChangesAsync().ConfigureAwait(false);
 
         return tokens.Count;
     }
@@ -676,11 +676,11 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _session.SaveAsync(token, checkConcurrency: true, collection: OpenIdCollection);
+        await _session.SaveAsync(token, checkConcurrency: true, collection: OpenIdCollection).ConfigureAwait(false);
 
         try
         {
-            await _session.FlushAsync();
+            await _session.FlushAsync().ConfigureAwait(false);
         }
         catch (ConcurrencyException exception)
         {

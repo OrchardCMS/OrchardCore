@@ -44,16 +44,16 @@ public sealed class LuceneIndexStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                var index = await _indexManager.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
+                var index = await _indexManager.FindByNameAndProviderAsync(indexName, LuceneConstants.ProviderName).ConfigureAwait(false);
 
                 if (index is null)
                 {
                     var data = item.Value;
                     data[nameof(index.IndexName)] = indexName;
 
-                    index = await _indexManager.NewAsync(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource, data);
+                    index = await _indexManager.NewAsync(LuceneConstants.ProviderName, IndexingConstants.ContentsIndexSource, data).ConfigureAwait(false);
 
-                    var validationResult = await _indexManager.ValidateAsync(index);
+                    var validationResult = await _indexManager.ValidateAsync(index).ConfigureAwait(false);
 
                     if (!validationResult.Succeeded)
                     {
@@ -65,19 +65,19 @@ public sealed class LuceneIndexStep : NamedRecipeStepHandler
                         continue;
                     }
 
-                    await _indexManager.CreateAsync(index);
+                    await _indexManager.CreateAsync(index).ConfigureAwait(false);
                 }
 
-                var exists = await _luceneIndexManager.ExistsAsync(index.IndexFullName);
+                var exists = await _luceneIndexManager.ExistsAsync(index.IndexFullName).ConfigureAwait(false);
 
                 if (!exists)
                 {
-                    exists = await _luceneIndexManager.CreateAsync(index);
+                    exists = await _luceneIndexManager.CreateAsync(index).ConfigureAwait(false);
                 }
 
                 if (exists)
                 {
-                    await _indexManager.SynchronizeAsync(index);
+                    await _indexManager.SynchronizeAsync(index).ConfigureAwait(false);
                 }
             }
         }

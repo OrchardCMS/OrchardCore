@@ -20,7 +20,7 @@ public class PlacementProvider : IShapePlacementProvider
 
     public async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context)
     {
-        var placements = await _placementsManager.ListShapePlacementsAsync();
+        var placements = await _placementsManager.ListShapePlacementsAsync().ConfigureAwait(false);
         return new PlacementInfoResolver(placements, _placementNodeFilterProviders);
     }
 

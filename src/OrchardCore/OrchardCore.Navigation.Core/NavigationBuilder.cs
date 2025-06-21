@@ -18,7 +18,7 @@ public class NavigationBuilder
         childBuilder.Caption(caption);
         childBuilder.Position(position);
         childBuilder.Priority(priority);
-        await itemBuilder(childBuilder);
+        await itemBuilder(childBuilder).ConfigureAwait(false);
         Contained.AddRange(childBuilder.Build());
 
         if (classes != null)

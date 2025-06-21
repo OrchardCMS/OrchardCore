@@ -32,7 +32,7 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
     public override async Task<IDisplayResult> EditAsync(ISite site, AzureADSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication).ConfigureAwait(false))
         {
             return null;
         }
@@ -54,14 +54,14 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureADSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new AzureADSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.DisplayName = model.DisplayName;
         settings.AppId = model.AppId;
@@ -71,6 +71,6 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

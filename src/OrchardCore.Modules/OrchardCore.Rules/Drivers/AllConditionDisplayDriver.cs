@@ -32,7 +32,7 @@ public sealed class AllConditionDisplayDriver : DisplayDriver<Condition, AllCond
 
     public override async Task<IDisplayResult> UpdateAsync(AllConditionGroup condition, UpdateEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.DisplayText);
+        await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.DisplayText).ConfigureAwait(false);
 
         return Edit(condition, context);
     }

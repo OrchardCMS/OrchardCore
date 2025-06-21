@@ -40,21 +40,21 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
 
             if (!string.IsNullOrEmpty(id))
             {
-                index = await _indexProfileManager.FindByIdAsync(id);
+                index = await _indexProfileManager.FindByIdAsync(id).ConfigureAwait(false);
             }
 
             if (index is not null)
             {
-                await _indexProfileManager.UpdateAsync(index, token);
+                await _indexProfileManager.UpdateAsync(index, token).ConfigureAwait(false);
             }
             else
             {
                 var type = token[nameof(index.Type)]?.GetValue<string>() ?? IndexingConstants.ContentsIndexSource;
 
-                index = await _indexProfileManager.NewAsync(AzureAISearchConstants.ProviderName, type, token);
+                index = await _indexProfileManager.NewAsync(AzureAISearchConstants.ProviderName, type, token).ConfigureAwait(false);
             }
 
-            var validationResult = await _indexProfileManager.ValidateAsync(index);
+            var validationResult = await _indexProfileManager.ValidateAsync(index).ConfigureAwait(false);
 
             if (!validationResult.Succeeded)
             {
@@ -66,7 +66,7 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
                 continue;
             }
 
-            await _indexProfileManager.CreateAsync(index);
+            await _indexProfileManager.CreateAsync(index).ConfigureAwait(false);
         }
     }
 }

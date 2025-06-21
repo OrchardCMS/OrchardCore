@@ -37,7 +37,7 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
         return Initialize<IndexProfileDeploymentStepViewModel>("IndexProfileDeploymentStep_Fields_Edit", async model =>
         {
             model.IncludeAll = step.IncludeAll;
-            model.Indexes = (await _store.GetAllAsync()).Select(x => new SelectListItem(x.Name, x.Name)
+            model.Indexes = (await _store.GetAllAsync().ConfigureAwait(false)).Select(x => new SelectListItem(x.Name, x.Name)
             {
                 Selected = step.IndexNames?.Contains(x.Name) ?? false,
             }).OrderBy(x => x.Text)
@@ -49,7 +49,7 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
     {
         var model = new IndexProfileDeploymentStepViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (model.IncludeAll)
         {

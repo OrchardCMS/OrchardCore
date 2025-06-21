@@ -51,16 +51,16 @@ public class AssignUserRoleTask : TaskActivity<AssignUserRoleTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null);
-        var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext, null);
+        var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null).ConfigureAwait(false);
+        var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext, null).ConfigureAwait(false);
 
-        var user = (User)await _userService.GetUserAsync(userName);
+        var user = (User)await _userService.GetUserAsync(userName).ConfigureAwait(false);
 
         if (user != null)
         {
             if (!user.RoleNames.Contains(roleName))
             {
-                await _userManager.AddToRoleAsync(user, roleName);
+                await _userManager.AddToRoleAsync(user, roleName).ConfigureAwait(false);
             }
 
             return Outcomes("Done");

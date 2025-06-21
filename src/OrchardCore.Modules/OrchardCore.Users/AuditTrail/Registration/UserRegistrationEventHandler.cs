@@ -26,7 +26,7 @@ public class UserRegistrationEventHandler : RegistrationFormEventsBase
     {
         var userName = user.UserName;
 
-        var userId = await _userManager.GetUserIdAsync(user);
+        var userId = await _userManager.GetUserIdAsync(user).ConfigureAwait(false);
 
         var userEvent = new AuditTrailUserEvent
         {
@@ -43,6 +43,6 @@ public class UserRegistrationEventHandler : RegistrationFormEventsBase
                 userId,
                 userName,
                 userEvent
-            ));
+            )).ConfigureAwait(false);
     }
 }

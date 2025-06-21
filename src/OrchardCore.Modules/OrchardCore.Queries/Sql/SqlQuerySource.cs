@@ -57,7 +57,7 @@ public sealed class SqlQuerySource : IQuerySource
         };
 
         var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(metadata.Template, NullEncoder.Default,
-            parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions)))).ConfigureAwait(false);
 
         var configuration = _session.Store.Configuration;
 
@@ -75,9 +75,10 @@ public sealed class SqlQuerySource : IQuerySource
             return sqlQueryResults;
         }
 
-        await using var connection = _dbConnectionAccessor.CreateConnection();
-
-        await connection.OpenAsync();
+        var connection = _dbConnectionAccessor.CreateConnection();
+        await using (connection.ConfigureAwait(false))
+        {
+            await connection.OpenAsync();
 
         await using var transaction = await connection.BeginTransactionAsync(configuration.IsolationLevel);
 
@@ -135,5 +136,6 @@ public sealed class SqlQuerySource : IQuerySource
         }
 
         return sqlQueryResults;
+        }
     }
 }

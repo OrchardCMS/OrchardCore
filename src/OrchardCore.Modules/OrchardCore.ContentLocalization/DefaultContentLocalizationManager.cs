@@ -66,7 +66,7 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
 
     public async Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture)
     {
-        var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+        var supportedCultures = await _localizationService.GetSupportedCulturesAsync().ConfigureAwait(false);
         if (!supportedCultures.Any(c => string.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
         {
             throw new InvalidOperationException("Cannot localize an unsupported culture");
@@ -77,12 +77,12 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
         {
             // If the source content item is not yet localized, define its defaults.
             localizationPart.LocalizationSet = _iidGenerator.GenerateUniqueId();
-            localizationPart.Culture = await _localizationService.GetDefaultCultureAsync();
-            await _session.SaveAsync(content);
+            localizationPart.Culture = await _localizationService.GetDefaultCultureAsync().ConfigureAwait(false);
+            await _session.SaveAsync(content).ConfigureAwait(false);
         }
         else
         {
-            var existingContent = await GetContentItemAsync(localizationPart.LocalizationSet, targetCulture);
+            var existingContent = await GetContentItemAsync(localizationPart.LocalizationSet, targetCulture).ConfigureAwait(false);
 
             if (existingContent != null)
             {
@@ -92,7 +92,7 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
         }
 
         // Cloning the content item.
-        var cloned = await _contentManager.CloneAsync(content);
+        var cloned = await _contentManager.CloneAsync(content).ConfigureAwait(false);
         var clonedPart = cloned.As<LocalizationPart>();
         clonedPart.Culture = targetCulture;
         clonedPart.LocalizationSet = localizationPart.LocalizationSet;
@@ -100,8 +100,8 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
 
         var context = new LocalizationContentContext(cloned, content, localizationPart.LocalizationSet, targetCulture);
 
-        await Handlers.InvokeAsync((handler, context) => handler.LocalizingAsync(context), context, _logger);
-        await ReversedHandlers.InvokeAsync((handler, context) => handler.LocalizedAsync(context), context, _logger);
+        await Handlers.InvokeAsync((handler, context) => handler.LocalizingAsync(context), context, _logger).ConfigureAwait(false);
+        await ReversedHandlers.InvokeAsync((handler, context) => handler.LocalizedAsync(context), context, _logger).ConfigureAwait(false);
 
         return cloned;
     }
@@ -109,10 +109,10 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
     public async Task<IDictionary<string, ContentItem>> DeduplicateContentItemsAsync(IEnumerable<ContentItem> contentItems)
     {
         var contentItemIds = contentItems.Select(c => c.ContentItemId);
-        var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId.IsIn(contentItemIds)).ListAsync();
+        var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId.IsIn(contentItemIds)).ListAsync().ConfigureAwait(false);
 
         var currentCulture = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name.ToLowerInvariant();
-        var defaultCulture = (await _localizationService.GetDefaultCultureAsync()).ToLowerInvariant();
+        var defaultCulture = (await _localizationService.GetDefaultCultureAsync().ConfigureAwait(false)).ToLowerInvariant();
         var cleanedIndexValues = GetSingleContentItemIdPerSet(indexValues, currentCulture, defaultCulture);
 
         var dictionary = new Dictionary<string, ContentItem>();
@@ -126,10 +126,10 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
 
     public async Task<IDictionary<string, string>> GetFirstItemIdForSetsAsync(IEnumerable<string> localizationSets)
     {
-        var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets)).ListAsync();
+        var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets)).ListAsync().ConfigureAwait(false);
 
         var currentCulture = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name.ToLowerInvariant();
-        var defaultCulture = (await _localizationService.GetDefaultCultureAsync()).ToLowerInvariant();
+        var defaultCulture = (await _localizationService.GetDefaultCultureAsync().ConfigureAwait(false)).ToLowerInvariant();
         var dictionary = new Dictionary<string, string>();
         var cleanedIndexValues = GetSingleContentItemIdPerSet(indexValues, currentCulture, defaultCulture);
 

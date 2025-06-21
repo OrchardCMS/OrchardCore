@@ -31,7 +31,7 @@ public static class LiquidRazorHelperExtensions
         var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
         var htmlEncoder = serviceProvider.GetRequiredService<HtmlEncoder>();
 
-        var result = await liquidTemplateManager.RenderHtmlContentAsync(liquid, htmlEncoder, model);
+        var result = await liquidTemplateManager.RenderHtmlContentAsync(liquid, htmlEncoder, model).ConfigureAwait(false);
         return result;
     }
 }

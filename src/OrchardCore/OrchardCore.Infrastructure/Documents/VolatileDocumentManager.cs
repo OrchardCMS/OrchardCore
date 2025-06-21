@@ -40,11 +40,11 @@ public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IV
         {
             try
             {
-                _ = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+                _ = await _distributedCache.GetStringAsync(_options.CacheIdKey).ConfigureAwait(false);
             }
             catch
             {
-                await DocumentStore.CancelAsync();
+                await DocumentStore.CancelAsync().ConfigureAwait(false);
 
                 _logger.LogError("Can't update the '{DocumentName}' if not able to access the distributed cache", typeof(TDocument).Name);
 
@@ -74,16 +74,17 @@ public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IV
             (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
                 _options.CacheKey + "_LOCK",
                 TimeSpan.FromMilliseconds(_options.LockTimeout),
-                TimeSpan.FromMilliseconds(_options.LockExpiration));
+                TimeSpan.FromMilliseconds(_options.LockExpiration)).ConfigureAwait(false);
 
             if (!locked)
             {
                 return;
             }
 
-            await using var acquiredLock = locker;
-
-            TDocument document = null;
+            var acquiredLock = locker;
+            await using (acquiredLock.ConfigureAwait(false))
+            {
+                TDocument document = null;
             foreach (var d in delegates.UpdateDelegateAsync.GetInvocationList())
             {
                 document = await ((UpdateDelegate)d)();
@@ -105,6 +106,7 @@ public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IV
                 {
                     await ((AfterUpdateDelegate)d)(document);
                 }
+            }
             }
         });
     }

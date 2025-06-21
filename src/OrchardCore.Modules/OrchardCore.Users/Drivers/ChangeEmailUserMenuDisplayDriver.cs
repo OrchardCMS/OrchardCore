@@ -17,7 +17,7 @@ public sealed class ChangeEmailUserMenuDisplayDriver : DisplayDriver<UserMenu>
     public override IDisplayResult Display(UserMenu model, BuildDisplayContext context)
     {
         return View("UserMenuItems__ChangeEmail", model)
-            .RenderWhen(async () => (await _siteService.GetSettingsAsync<ChangeEmailSettings>()).AllowChangeEmail)
+            .RenderWhen(async () => (await _siteService.GetSettingsAsync<ChangeEmailSettings>().ConfigureAwait(false)).AllowChangeEmail)
             .Location("Detail", "Content:20")
             .Location("DetailAdmin", "Content:20")
             .Differentiator("ChangeEmail");

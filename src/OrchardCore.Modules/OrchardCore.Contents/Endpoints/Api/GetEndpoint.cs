@@ -28,19 +28,19 @@ public static class GetEndpoint
         HttpContext httpContext,
         IOptions<DocumentJsonSerializerOptions> options)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi).ConfigureAwait(false))
         {
             return httpContext.ChallengeOrForbid("Api");
         }
 
-        var contentItem = await contentManager.GetAsync(contentItemId);
+        var contentItem = await contentManager.GetAsync(contentItemId).ConfigureAwait(false);
 
         if (contentItem == null)
         {
             return TypedResults.NotFound();
         }
 
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.ViewContent, contentItem))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.ViewContent, contentItem).ConfigureAwait(false))
         {
             return httpContext.ChallengeOrForbid("Api");
         }

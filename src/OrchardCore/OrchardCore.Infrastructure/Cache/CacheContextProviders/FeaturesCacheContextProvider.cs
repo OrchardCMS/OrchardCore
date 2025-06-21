@@ -19,7 +19,7 @@ public class FeaturesCacheContextProvider : ICacheContextProvider
         if (contexts.Any(ctx => string.Equals(ctx, "features", StringComparison.OrdinalIgnoreCase)))
         {
             // Add a hash of the enabled features.
-            var hash = await _featureHash.GetFeatureHashAsync();
+            var hash = await _featureHash.GetFeatureHashAsync().ConfigureAwait(false);
             entries.Add(new CacheContextEntry("features", hash.ToString(CultureInfo.InvariantCulture)));
         }
         else
@@ -27,7 +27,7 @@ public class FeaturesCacheContextProvider : ICacheContextProvider
             foreach (var context in contexts.Where(ctx => ctx.StartsWith(FeaturesPrefix, StringComparison.OrdinalIgnoreCase)))
             {
                 var featureName = context[FeaturesPrefix.Length..];
-                var hash = await _featureHash.GetFeatureHashAsync(featureName);
+                var hash = await _featureHash.GetFeatureHashAsync(featureName).ConfigureAwait(false);
 
                 entries.Add(new CacheContextEntry("features", hash.ToString(CultureInfo.InvariantCulture)));
             }

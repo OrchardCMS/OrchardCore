@@ -45,7 +45,7 @@ public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
         {
             try
             {
-                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType).ConfigureAwait(false);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart", StringComparison.Ordinal));
                 var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
@@ -65,7 +65,7 @@ public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
                     };
 
                     html = await _liquidTemplateManager.RenderStringAsync(html, _htmlEncoder, model,
-                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }).ConfigureAwait(false);
                 }
 
                 html = await _shortcodeService.ProcessAsync(html,
@@ -73,7 +73,7 @@ public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
                     {
                         ["ContentItem"] = part.ContentItem,
                         ["TypePartDefinition"] = contentTypePartDefinition,
-                    });
+                    }).ConfigureAwait(false);
 
                 if (settings.SanitizeHtml)
                 {

@@ -16,7 +16,7 @@ public sealed class FacebookLoginDeploymentSource
 
     protected override async Task ProcessAsync(FacebookLoginDeploymentStep step, DeploymentPlanResult result)
     {
-        var settings = await _facebookService.GetSettingsAsync();
+        var settings = await _facebookService.GetSettingsAsync().ConfigureAwait(false);
 
         // The 'name' property should match the related recipe step name.
         var jObject = new JsonObject { ["name"] = "FacebookCoreSettings" };

@@ -25,7 +25,7 @@ public class SitemapTypeBuilder : SitemapTypeBuilderBase<Sitemap>
         {
             foreach (var sourceBuilder in _sitemapSourceBuilders)
             {
-                await sourceBuilder.BuildAsync(source, context);
+                await sourceBuilder.BuildAsync(source, context).ConfigureAwait(false);
             }
         }
     }

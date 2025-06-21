@@ -19,7 +19,7 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
 
     public async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context)
     {
-        var theme = await _themeManager.GetThemeAsync();
+        var theme = await _themeManager.GetThemeAsync().ConfigureAwait(false);
 
         // If there is no active theme, do nothing
         if (theme == null)
@@ -27,7 +27,7 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
             return null;
         }
 
-        var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme.Id);
+        var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme.Id).ConfigureAwait(false);
 
         return new ShapeTablePlacementResolver(shapeTable);
     }

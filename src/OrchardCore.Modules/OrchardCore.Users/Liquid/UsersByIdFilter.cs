@@ -33,13 +33,13 @@ public class UsersByIdFilter : ILiquidFilter
                     }
                 }
 
-                var cachedUsers = await _session.GetAsync<User>(items.Keys.ToArray());
+                var cachedUsers = await _session.GetAsync<User>(items.Keys.ToArray()).ConfigureAwait(false);
 
                 var cachedUserIds = cachedUsers.Select(x => x.UserId).ToHashSet();
 
                 var missingUserIds = items.Values.Where(userId => !cachedUserIds.Contains(userId)).ToList();
 
-                var missingUsers = await _session.Query<User, UserIndex>(x => x.UserId.IsIn(missingUserIds)).ListAsync();
+                var missingUsers = await _session.Query<User, UserIndex>(x => x.UserId.IsIn(missingUserIds)).ListAsync().ConfigureAwait(false);
 
                 return FluidValue.Create(missingUsers.Concat(cachedUsers).ToList(), ctx.Options);
             }

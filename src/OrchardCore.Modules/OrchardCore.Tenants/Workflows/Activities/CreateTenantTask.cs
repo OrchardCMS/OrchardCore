@@ -92,7 +92,7 @@ public class CreateTenantTask : TenantTask
             return Outcomes("Failed");
         }
 
-        var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
+        var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null).ConfigureAwait(false))?.Trim();
 
         if (string.IsNullOrEmpty(tenantName))
         {
@@ -104,15 +104,15 @@ public class CreateTenantTask : TenantTask
             return Outcomes("Failed");
         }
 
-        var description = (await ExpressionEvaluator.EvaluateAsync(Description, workflowContext, null))?.Trim();
-        var requestUrlPrefix = (await ExpressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext, null))?.Trim();
-        var requestUrlHost = (await ExpressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext, null))?.Trim();
-        var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
-        var connectionString = (await ExpressionEvaluator.EvaluateAsync(ConnectionString, workflowContext, null))?.Trim();
-        var tablePrefix = (await ExpressionEvaluator.EvaluateAsync(TablePrefix, workflowContext, null))?.Trim();
-        var schema = (await ExpressionEvaluator.EvaluateAsync(Schema, workflowContext, null))?.Trim();
-        var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
-        var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null))?.Trim();
+        var description = (await ExpressionEvaluator.EvaluateAsync(Description, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var requestUrlPrefix = (await ExpressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var requestUrlHost = (await ExpressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var connectionString = (await ExpressionEvaluator.EvaluateAsync(ConnectionString, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var tablePrefix = (await ExpressionEvaluator.EvaluateAsync(TablePrefix, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var schema = (await ExpressionEvaluator.EvaluateAsync(Schema, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null).ConfigureAwait(false))?.Trim();
 
         // Creates a default shell settings based on the configuration.
         using var shellSettings = ShellSettingsManager
@@ -171,7 +171,7 @@ public class CreateTenantTask : TenantTask
 
         shellSettings["Secret"] = Guid.NewGuid().ToString();
 
-        await ShellHost.UpdateShellSettingsAsync(shellSettings);
+        await ShellHost.UpdateShellSettingsAsync(shellSettings).ConfigureAwait(false);
         var reloadedSettings = ShellHost.GetSettings(shellSettings.Name);
 
         workflowContext.LastResult = reloadedSettings;

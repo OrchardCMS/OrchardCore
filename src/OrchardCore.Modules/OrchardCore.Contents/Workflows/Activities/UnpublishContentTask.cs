@@ -30,7 +30,7 @@ public class UnpublishContentTask : ContentTask
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var content = (await GetContentAsync(workflowContext))
+        var content = (await GetContentAsync(workflowContext).ConfigureAwait(false))
             ?? throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' failed to retrieve the content item.");
 
         if (string.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
@@ -38,7 +38,7 @@ public class UnpublishContentTask : ContentTask
             return Outcomes("Noop");
         }
 
-        var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Latest);
+        var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Latest).ConfigureAwait(false);
 
         if (contentItem == null)
         {
@@ -55,7 +55,7 @@ public class UnpublishContentTask : ContentTask
             throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' can't unpublish the content item as it is executed inline from a starting '{nameof(ContentUnpublishedEvent)}' of the same content type, which would result in an infinitive loop.");
         }
 
-        await ContentManager.UnpublishAsync(contentItem);
+        await ContentManager.UnpublishAsync(contentItem).ConfigureAwait(false);
 
         return Outcomes("Unpublished");
     }

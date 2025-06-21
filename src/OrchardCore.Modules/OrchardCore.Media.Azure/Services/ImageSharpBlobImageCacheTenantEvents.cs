@@ -43,7 +43,7 @@ internal sealed class ImageSharpBlobImageCacheTenantEvents : ModularTenantEvents
         try
         {
             var blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
-            var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+            var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).ConfigureAwait(false);
 
             _logger.LogDebug("Azure Media ImageSharp Image Cache container {ContainerName} created.", _options.ContainerName);
         }
@@ -64,7 +64,7 @@ internal sealed class ImageSharpBlobImageCacheTenantEvents : ModularTenantEvents
         try
         {
             var blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
-            var response = await blobContainer.DeleteIfExistsAsync();
+            var response = await blobContainer.DeleteIfExistsAsync().ConfigureAwait(false);
             if (!response.Value)
             {
                 _logger.LogError("Unable to remove the Azure Media ImageSharp Image Cache Container {ContainerName}.", _options.ContainerName);

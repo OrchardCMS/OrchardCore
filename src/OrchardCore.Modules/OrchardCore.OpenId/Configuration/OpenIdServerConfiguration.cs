@@ -231,9 +231,9 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
 
     private async Task<OpenIdServerSettings> GetServerSettingsAsync()
     {
-        var settings = await _serverService.GetSettingsAsync();
+        var settings = await _serverService.GetSettingsAsync().ConfigureAwait(false);
 
-        var result = await _serverService.ValidateSettingsAsync(settings);
+        var result = await _serverService.ValidateSettingsAsync(settings).ConfigureAwait(false);
 
         if (result.Any(result => result != ValidationResult.Success))
         {

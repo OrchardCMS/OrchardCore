@@ -95,14 +95,14 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
         }
 
         var userName = GetPropertyFromContextOrForm(workflowContext, "UserName") ?? email.Replace('@', '+');
-        var user = await CreateUserAsync(userName, email);
+        var user = await CreateUserAsync(userName, email).ConfigureAwait(false);
 
         if (user == null)
         {
             return Outcomes("Done", "Invalid");
         }
 
-        if (SendConfirmationEmail && !await SendConfirmationEmailAsync(user, workflowContext, email))
+        if (SendConfirmationEmail && !await SendConfirmationEmailAsync(user, workflowContext, email).ConfigureAwait(false))
         {
             return Outcomes("Done", "Invalid");
         }
@@ -129,7 +129,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
             UserName = userName,
             Email = email,
             IsEnabled = !RequireModeration,
-        }, null, errors.Add);
+        }, null, errors.Add).ConfigureAwait(false);
 
         if (errors.Count > 0)
         {
@@ -149,18 +149,18 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
 
     private async Task<bool> SendConfirmationEmailAsync(User user, WorkflowExecutionContext context, string email)
     {
-        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
 
         var uri = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail", "Registration",
             new { area = UserConstants.Features.Users, userId = user.UserId, code });
 
         context.Properties["EmailConfirmationUrl"] = uri;
 
-        var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, context, null);
+        var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, context, null).ConfigureAwait(false);
 
-        var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, context, _htmlEncoder);
+        var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, context, _htmlEncoder).ConfigureAwait(false);
 
-        var result = await _emailService.SendAsync(email, subject, body);
+        var result = await _emailService.SendAsync(email, subject, body).ConfigureAwait(false);
 
         if (!result.Succeeded)
         {

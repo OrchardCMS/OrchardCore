@@ -29,7 +29,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageServerSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageServerSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -70,7 +70,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
             model.RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange;
             model.RequirePushedAuthorizationRequests = settings.RequirePushedAuthorizationRequests;
 
-            foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
+            foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync().ConfigureAwait(false))
             {
                 model.AvailableCertificates.Add(new CertificateInfo
                 {
@@ -93,13 +93,13 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageServerSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageServerSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new OpenIdServerSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.AccessTokenFormat = model.AccessTokenFormat;
         settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
@@ -140,6 +140,6 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
         settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
         settings.RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests;
 
-        return await EditAsync(settings, context);
+        return await EditAsync(settings, context).ConfigureAwait(false);
     }
 }

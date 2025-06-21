@@ -23,7 +23,7 @@ public class ContainerFilter : ILiquidFilter
 
         if (containerId != null)
         {
-            var container = await _contentManager.GetAsync(containerId);
+            var container = await _contentManager.GetAsync(containerId).ConfigureAwait(false);
 
             if (container != null)
             {

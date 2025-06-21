@@ -60,24 +60,24 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         var context = _httpContextAccessor.HttpContext;
 
-        var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+        var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false);
         var listableContentTypes = contentTypeDefinitions.Where(ctd => ctd.IsListable());
         await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
         {
             content.AddClass("content").Id("content");
             await content.AddAsync(S["Content Items"], "before", async contentItems =>
             {
-                if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.ListContent, listableContentTypes, _contentManager))
+                if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.ListContent, listableContentTypes, _contentManager).ConfigureAwait(false))
                 {
                     contentItems.Permission(CommonPermissions.ListContent);
                 }
 
                 contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), _routeValues);
                 contentItems.LocalNav();
-            });
-        }, priority: 1);
+            }).ConfigureAwait(false);
+        }, priority: 1).ConfigureAwait(false);
 
-        var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
+        var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>().ConfigureAwait(false);
 
         if (adminSettings.DisplayNewMenu)
         {
@@ -90,8 +90,8 @@ public sealed class AdminMenu : AdminNavigationProvider
                     newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
                     foreach (var contentTypeDefinition in creatableContentTypes)
                     {
-                        var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
-                        var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
+                        var ci = await _contentManager.NewAsync(contentTypeDefinition.Name).ConfigureAwait(false);
+                        var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci).ConfigureAwait(false);
                         var createRouteValues = cim.CreateRouteValues;
                         createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, string.Empty, _adminListRouteValues));
 
@@ -103,7 +103,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                                 );
                         }
                     }
-                });
+                }).ConfigureAwait(false);
             }
         }
     }

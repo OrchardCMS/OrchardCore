@@ -40,10 +40,10 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
         {
             return Initialize<TermPartViewModel>("TermPart", async m =>
             {
-                var pager = await GetPagerAsync(context.Updater, _pagerOptions.GetPageSize());
+                var pager = await GetPagerAsync(context.Updater, _pagerOptions.GetPageSize()).ConfigureAwait(false);
                 m.TaxonomyContentItemId = part.TaxonomyContentItemId;
                 m.ContentItem = part.ContentItem;
-                m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();
+                m.ContentItems = (await QueryTermItemsAsync(part, pager).ConfigureAwait(false)).ToArray();
                 m.Pager = await context.New.PagerSlim(pager);
             }).Location(OrchardCoreConstants.DisplayType.Detail, "Content:5");
         }
@@ -53,9 +53,9 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
 
     private async Task<IEnumerable<ContentItem>> QueryTermItemsAsync(TermPart termPart, PagerSlim pager)
     {
-        var query = await _contentsTaxonomyListQueryService.QueryAsync(termPart, pager);
+        var query = await _contentsTaxonomyListQueryService.QueryAsync(termPart, pager).ConfigureAwait(false);
 
-        var containedItems = await query.ListAsync();
+        var containedItems = await query.ListAsync().ConfigureAwait(false);
 
         if (!containedItems.Any())
         {
@@ -76,7 +76,7 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
                 pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
             }
 
-            return await _contentManager.LoadAsync(containedItems);
+            return await _contentManager.LoadAsync(containedItems).ConfigureAwait(false);
         }
 
         if (pager.After != null)
@@ -91,7 +91,7 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
                 pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
             }
 
-            return await _contentManager.LoadAsync(containedItems);
+            return await _contentManager.LoadAsync(containedItems).ConfigureAwait(false);
         }
 
         pager.Before = null;
@@ -103,13 +103,13 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
             pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
         }
 
-        return await _contentManager.LoadAsync(containedItems);
+        return await _contentManager.LoadAsync(containedItems).ConfigureAwait(false);
     }
 
     private static async Task<PagerSlim> GetPagerAsync(IUpdateModel updater, int pageSize)
     {
         var pagerParameters = new PagerSlimParameters();
-        await updater.TryUpdateModelAsync(pagerParameters);
+        await updater.TryUpdateModelAsync(pagerParameters).ConfigureAwait(false);
 
         var pager = new PagerSlim(pagerParameters, pageSize);
 

@@ -25,7 +25,7 @@ public sealed class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefini
     {
         var model = new WidgetsListPartSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Zones);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Zones).ConfigureAwait(false);
 
         context.Builder.WithSettings(new WidgetsListPartSettings { Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries) });
 

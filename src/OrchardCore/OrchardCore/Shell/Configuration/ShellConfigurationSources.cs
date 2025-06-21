@@ -37,7 +37,7 @@ public class ShellConfigurationSources : IShellConfigurationSources
         if (File.Exists(appsettings))
         {
             using var streamReader = File.OpenRead(appsettings);
-            configData = await JsonConfigurationParser.ParseAsync(streamReader);
+            configData = await JsonConfigurationParser.ParseAsync(streamReader).ConfigureAwait(false);
         }
         else
         {
@@ -59,7 +59,7 @@ public class ShellConfigurationSources : IShellConfigurationSources
         Directory.CreateDirectory(tenantFolder);
 
         using var streamWriter = File.Create(appsettings);
-        await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JOptions.Indented);
+        await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JOptions.Indented).ConfigureAwait(false);
     }
 
     public Task RemoveAsync(string tenant)

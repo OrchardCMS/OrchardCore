@@ -17,9 +17,9 @@ public partial class AntiForgeryHelper
     {
         ArgumentNullException.ThrowIfNull(response);
 
-        var raw = await response.Content.ReadAsStringAsync();
+        var raw = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        return await Task.FromResult(ExtractAntiForgeryToken(raw));
+        return await Task.FromResult(ExtractAntiForgeryToken(raw)).ConfigureAwait(false);
     }
 
     [GeneratedRegex(@"\<input name=""__RequestVerificationToken"" type=""hidden"" value=""([^""]+)"" \/\>")]

@@ -161,11 +161,11 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var headersText = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
+        var headersText = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder).ConfigureAwait(false);
         var headers = ParseHeaders(headersText);
 
         var httpMethod = HttpMethod;
-        var url = await _expressionEvaluator.EvaluateAsync(Url, workflowContext, _urlEncoder);
+        var url = await _expressionEvaluator.EvaluateAsync(Url, workflowContext, _urlEncoder).ConfigureAwait(false);
         var request = new HttpRequestMessage(new HttpMethod(httpMethod), url);
         foreach (var header in headers)
         {
@@ -174,14 +174,14 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
 
         if (HttpMethods.IsPatch(httpMethod) || HttpMethods.IsPost(httpMethod) || HttpMethods.IsPut(httpMethod))
         {
-            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null);
-            var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder);
+            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null).ConfigureAwait(false);
+            var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder).ConfigureAwait(false);
             request.Content = new StringContent(body, Encoding.UTF8, contentType);
         }
 
         var httpClient = _httpClientFactory.CreateClient();
 
-        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead).ConfigureAwait(false);
 
         var responseCodes = ParseResponseCodes(HttpResponseCodes);
 
@@ -189,7 +189,7 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
 
         workflowContext.LastResult = new
         {
-            Body = await response.Content.ReadAsStringAsync(),
+            Body = await response.Content.ReadAsStringAsync().ConfigureAwait(false),
             Headers = response.Headers.ToDictionary(x => x.Key),
             response.StatusCode,
             response.ReasonPhrase,

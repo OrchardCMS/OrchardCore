@@ -11,7 +11,7 @@ public class ShortcodeTemplatesDescriptorProvider : IShortcodeDescriptorProvider
 
     public async Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync()
     {
-        var document = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
+        var document = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync().ConfigureAwait(false);
 
         return document.ShortcodeTemplates.Select(kvp =>
             new ShortcodeDescriptor

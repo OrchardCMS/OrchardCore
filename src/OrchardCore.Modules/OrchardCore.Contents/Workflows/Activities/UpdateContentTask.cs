@@ -69,7 +69,7 @@ public class UpdateContentTask : ContentTask
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var contentItemId = (await GetContentItemIdAsync(workflowContext))
+        var contentItemId = (await GetContentItemIdAsync(workflowContext).ConfigureAwait(false))
             ?? throw new InvalidOperationException($"The {nameof(UpdateContentTask)} failed to evaluate the 'ContentItemId'.");
 
         var inlineEventOfSameContentItemId = string.Equals(InlineEvent.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase);
@@ -91,7 +91,7 @@ public class UpdateContentTask : ContentTask
 
         if (!inlineEventOfSameContentItemId)
         {
-            contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
+            contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired).ConfigureAwait(false);
         }
         else
         {
@@ -123,16 +123,16 @@ public class UpdateContentTask : ContentTask
 
         if (!string.IsNullOrWhiteSpace(ContentProperties.Expression))
         {
-            var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext, _javaScriptEncoder);
+            var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext, _javaScriptEncoder).ConfigureAwait(false);
             contentItem.Merge(JsonNode.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
         }
 
         if (!inlineEventOfSameContentItemId)
         {
-            await ContentManager.UpdateAsync(contentItem);
+            await ContentManager.UpdateAsync(contentItem).ConfigureAwait(false);
         }
 
-        var result = await ContentManager.ValidateAsync(contentItem);
+        var result = await ContentManager.ValidateAsync(contentItem).ConfigureAwait(false);
 
         if (result.Succeeded)
         {
@@ -140,11 +140,11 @@ public class UpdateContentTask : ContentTask
             {
                 if (Publish)
                 {
-                    await ContentManager.PublishAsync(contentItem);
+                    await ContentManager.PublishAsync(contentItem).ConfigureAwait(false);
                 }
                 else
                 {
-                    await ContentManager.SaveDraftAsync(contentItem);
+                    await ContentManager.SaveDraftAsync(contentItem).ConfigureAwait(false);
                 }
             }
 

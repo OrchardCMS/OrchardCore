@@ -32,7 +32,7 @@ public sealed class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<Twitt
     public override async Task<IDisplayResult> EditAsync(ISite site, TwitterSigninSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin).ConfigureAwait(false))
         {
             return null;
         }
@@ -50,19 +50,19 @@ public sealed class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<Twitt
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSigninSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new TwitterSigninSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.CallbackPath = model.CallbackPath;
         settings.SaveTokens = model.SaveTokens;
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

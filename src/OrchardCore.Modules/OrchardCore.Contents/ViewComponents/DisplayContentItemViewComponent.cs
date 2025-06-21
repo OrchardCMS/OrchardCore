@@ -27,7 +27,7 @@ public class DisplayContentItemViewComponent : ViewComponent
 
         if (contentItemId != null)
         {
-            contentItem = await _contentManager.GetAsync(contentItemId);
+            contentItem = await _contentManager.GetAsync(contentItemId).ConfigureAwait(false);
         }
 
         if (contentItem == null)
@@ -35,7 +35,7 @@ public class DisplayContentItemViewComponent : ViewComponent
             throw new ArgumentException("Content item not found");
         }
 
-        var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _modelUpdaterAccessor.ModelUpdater, displayType);
+        var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _modelUpdaterAccessor.ModelUpdater, displayType).ConfigureAwait(false);
 
         return View(model);
     }

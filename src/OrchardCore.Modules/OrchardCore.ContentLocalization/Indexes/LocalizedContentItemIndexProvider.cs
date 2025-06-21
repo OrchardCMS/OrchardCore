@@ -48,7 +48,7 @@ public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvi
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             // Search for this part.
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
             if (!contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(LocalizationPart)))
             {
                 context.ContentItem.Remove<LocalizationPart>();

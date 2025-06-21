@@ -52,7 +52,7 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
             if (!settings.SanitizeHtml)
             {
                 model.Html = await _liquidTemplateManager.RenderStringAsync(field.Html, _htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) }).ConfigureAwait(false);
             }
 
             model.Html = await _shortcodeService.ProcessAsync(model.Html,
@@ -60,7 +60,7 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
                 {
                     ["ContentItem"] = field.ContentItem,
                     ["PartFieldDefinition"] = context.PartFieldDefinition,
-                });
+                }).ConfigureAwait(false);
 
         })
         .Location("Detail", "Content")
@@ -83,7 +83,7 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
         var viewModel = new EditHtmlFieldViewModel();
 
         var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
         {

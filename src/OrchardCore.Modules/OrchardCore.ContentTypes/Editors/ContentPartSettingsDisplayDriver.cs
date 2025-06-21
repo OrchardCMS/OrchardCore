@@ -26,7 +26,7 @@ public sealed class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisp
     {
         var model = new ContentPartSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         context.Builder.Attachable(model.Attachable);
         context.Builder.Reusable(model.Reusable);

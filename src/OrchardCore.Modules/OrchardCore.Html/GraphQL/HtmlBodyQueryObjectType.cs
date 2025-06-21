@@ -32,7 +32,7 @@ public class HtmlBodyQueryObjectType : ObjectGraphType<HtmlBodyPart>
         var shortcodeService = ctx.RequestServices.GetRequiredService<IShortcodeService>();
         var contentDefinitionManager = ctx.RequestServices.GetRequiredService<IContentDefinitionManager>();
 
-        var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
+        var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType).ConfigureAwait(false);
         var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart", StringComparison.Ordinal));
         var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
@@ -49,7 +49,7 @@ public class HtmlBodyQueryObjectType : ObjectGraphType<HtmlBodyPart>
             var liquidTemplateManager = ctx.RequestServices.GetRequiredService<ILiquidTemplateManager>();
             var htmlEncoder = ctx.RequestServices.GetService<HtmlEncoder>();
 
-            html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model, new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+            html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model, new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) }).ConfigureAwait(false);
         }
 
         return await shortcodeService.ProcessAsync(html,
@@ -57,6 +57,6 @@ public class HtmlBodyQueryObjectType : ObjectGraphType<HtmlBodyPart>
             {
                 ["ContentItem"] = ctx.Source.ContentItem,
                 ["TypePartDefinition"] = contentTypePartDefinition,
-            });
+            }).ConfigureAwait(false);
     }
 }

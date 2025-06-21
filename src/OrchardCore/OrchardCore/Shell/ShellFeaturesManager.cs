@@ -32,7 +32,7 @@ public class ShellFeaturesManager : IShellFeaturesManager
             var isFeatureValid = true;
             foreach (var validator in _featureValidators)
             {
-                isFeatureValid = await validator.IsFeatureValidAsync(feature.Id);
+                isFeatureValid = await validator.IsFeatureValidAsync(feature.Id).ConfigureAwait(false);
                 // When a feature is marked as invalid it cannot be reintroduced.
                 if (!isFeatureValid)
                 {

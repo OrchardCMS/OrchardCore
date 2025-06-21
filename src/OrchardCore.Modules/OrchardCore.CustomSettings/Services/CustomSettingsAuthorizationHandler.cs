@@ -35,7 +35,7 @@ public sealed class CustomSettingsAuthorizationHandler : AuthorizationHandler<Pe
         // Lazy load to prevent circular dependencies
         var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
 
-        if (await authorizationService.AuthorizeAsync(context.User, new Permission(Permissions.CreatePermissionName(context.Resource.ToString()))))
+        if (await authorizationService.AuthorizeAsync(context.User, new Permission(Permissions.CreatePermissionName(context.Resource.ToString()))).ConfigureAwait(false))
         {
             context.Succeed(requirement);
         }

@@ -43,7 +43,7 @@ public class TwitterClient
 
             var content = new FormUrlEncodedContent(parameters);
             var uri = new Uri("/1.1/statuses/update.json", UriKind.Relative);
-            var response = await _client.PostAsync(uri, content);
+            var response = await _client.PostAsync(uri, content).ConfigureAwait(false);
             return response;
         }
         catch (HttpRequestException ex)

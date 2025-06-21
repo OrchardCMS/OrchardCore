@@ -21,8 +21,8 @@ public class CommonFeedItemBuilder : IFeedItemBuilder
         foreach (var feedItem in context.Response.Items.OfType<FeedItem<ContentItem>>())
         {
             var contentItem = feedItem.Item;
-            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-            var bodyAspect = await _contentManager.PopulateAspectAsync<BodyAspect>(contentItem);
+            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem).ConfigureAwait(false);
+            var bodyAspect = await _contentManager.PopulateAspectAsync<BodyAspect>(contentItem).ConfigureAwait(false);
             var routes = contentItemMetadata.DisplayRouteValues;
 
             // author is intentionally left empty as it could result in unwanted spam

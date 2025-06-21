@@ -78,7 +78,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         var userName = user.UserName;
         _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
 
-        var userId = await _userManager.GetUserIdAsync(user);
+        var userId = await _userManager.GetUserIdAsync(user).ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(userIdActual))
         {
@@ -106,7 +106,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
                 userEvent
             );
 
-        await _auditTrailManager.RecordEventAsync(context);
+        await _auditTrailManager.RecordEventAsync(context).ConfigureAwait(false);
     }
 
     #region Unused login events

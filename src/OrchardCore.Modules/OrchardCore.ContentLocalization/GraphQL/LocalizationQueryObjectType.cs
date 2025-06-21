@@ -32,11 +32,11 @@ public class LocalizationQueryObjectType : ObjectGraphType<LocalizationPart>
 
         if (culture != null)
         {
-            var contentItem = await contentLocalizationManager.GetContentItemAsync(context.Source.LocalizationSet, culture);
+            var contentItem = await contentLocalizationManager.GetContentItemAsync(context.Source.LocalizationSet, culture).ConfigureAwait(false);
 
             return contentItem != null ? new[] { contentItem } : [];
         }
 
-        return await contentLocalizationManager.GetItemsForSetAsync(context.Source.LocalizationSet);
+        return await contentLocalizationManager.GetItemsForSetAsync(context.Source.LocalizationSet).ConfigureAwait(false);
     }
 }

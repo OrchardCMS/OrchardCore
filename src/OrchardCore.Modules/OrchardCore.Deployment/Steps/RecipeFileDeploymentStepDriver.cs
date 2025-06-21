@@ -42,7 +42,7 @@ public sealed class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentSte
             x => x.Version,
             x => x.IsSetupRecipe,
             x => x.Categories,
-            x => x.Tags);
+            x => x.Tags).ConfigureAwait(false);
 
         return Edit(step, context);
     }

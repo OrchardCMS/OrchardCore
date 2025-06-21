@@ -86,7 +86,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
             try
             {
                 // Wait for the current idle time on each loop.
-                if (!await TryWaitAsync(idleTime, stoppingToken))
+                if (!await TryWaitAsync(idleTime, stoppingToken).ConfigureAwait(false))
                 {
                     break;
                 }
@@ -109,13 +109,13 @@ internal sealed class DistributedShellHostedService : BackgroundService
 
                     // Load the settings of the default tenant that may have been setup by another instance.
                     using var loadedDefaultSettings = (await _shellSettingsManager
-                        .LoadSettingsAsync(ShellSettings.DefaultShellName))
+                        .LoadSettingsAsync(ShellSettings.DefaultShellName).ConfigureAwait(false))
                         .AsDisposable();
 
                     if (loadedDefaultSettings.IsRunning())
                     {
                         // If the default tenant has been setup by another instance, reload it locally.
-                        await _shellHost.ReloadShellContextAsync(defaultContext.Settings, eventSource: false);
+                        await _shellHost.ReloadShellContextAsync(defaultContext.Settings, eventSource: false).ConfigureAwait(false);
                     }
 
                     continue;
@@ -128,7 +128,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
                 }
 
                 // Get or create a new distributed context if the default tenant has changed.
-                var context = await GetOrCreateDistributedContextAsync(defaultContext);
+                var context = await GetOrCreateDistributedContextAsync(defaultContext).ConfigureAwait(false);
 
                 // If the required distributed features are not enabled, nothing to do.
                 var distributedCache = context?.DistributedCache;
@@ -141,7 +141,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
                 string shellChangedId;
                 try
                 {
-                    shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey, CancellationToken.None);
+                    shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey, CancellationToken.None).ConfigureAwait(false);
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
@@ -163,7 +163,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
                 string shellCountChangedId;
                 try
                 {
-                    shellCountChangedId = await distributedCache.GetStringAsync(ShellCountChangedIdKey, CancellationToken.None);
+                    shellCountChangedId = await distributedCache.GetStringAsync(ShellCountChangedIdKey, CancellationToken.None).ConfigureAwait(false);
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
@@ -179,7 +179,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
                 // Check if at least one tenant has been created or removed.
                 if (shellCountChangedId is not null && _shellCountChangedId != shellCountChangedId)
                 {
-                    var sharedTenants = await _shellSettingsManager.LoadSettingsNamesAsync();
+                    var sharedTenants = await _shellSettingsManager.LoadSettingsNamesAsync().ConfigureAwait(false);
                     var loadedTenants = loadedSettings.Select(s => s.Name);
 
                     // Retrieve all new created tenants that are not already loaded.
@@ -189,7 +189,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
                     foreach (var tenant in tenantsToCreate)
                     {
                         loadedSettings.Add((await _shellSettingsManager
-                            .LoadSettingsAsync(tenant))
+                            .LoadSettingsAsync(tenant).ConfigureAwait(false))
                             .AsDisposable());
                     }
 
@@ -208,17 +208,17 @@ internal sealed class DistributedShellHostedService : BackgroundService
                     using var disposable = tenantsToCreate.Contains(settings.Name) ? settings : null;
 
                     // Wait for the min idle time after the max busy time.
-                    if (!await TryWaitAfterBusyTime(stoppingToken))
+                    if (!await TryWaitAfterBusyTime(stoppingToken).ConfigureAwait(false))
                     {
                         break;
                     }
 
                     var semaphore = _semaphores.GetOrAdd(settings.Name, name => new SemaphoreSlim(1));
-                    await semaphore.WaitAsync(CancellationToken.None);
+                    await semaphore.WaitAsync(CancellationToken.None).ConfigureAwait(false);
                     try
                     {
                         // Try to retrieve the release identifier of this tenant from the distributed cache.
-                        var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name), CancellationToken.None);
+                        var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name), CancellationToken.None).ConfigureAwait(false);
                         if (releaseId is not null && !tenantsToCreate.Contains(settings.Name))
                         {
                             // Check if the release identifier of this tenant has changed.
@@ -229,12 +229,12 @@ internal sealed class DistributedShellHostedService : BackgroundService
                                 identifier.ReleaseId = releaseId;
 
                                 // Keep in sync this tenant by releasing it locally.
-                                await _shellHost.ReleaseShellContextAsync(settings, eventSource: false);
+                                await _shellHost.ReleaseShellContextAsync(settings, eventSource: false).ConfigureAwait(false);
                             }
                         }
 
                         // Try to retrieve the reload identifier of this tenant from the distributed cache.
-                        var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name), CancellationToken.None);
+                        var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name), CancellationToken.None).ConfigureAwait(false);
                         if (reloadId is not null)
                         {
                             // Check if the reload identifier of this tenant has changed.
@@ -251,7 +251,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
                                 }
 
                                 // Keep in sync this tenant by reloading it locally.
-                                await _shellHost.ReloadShellContextAsync(settings, eventSource: false);
+                                await _shellHost.ReloadShellContextAsync(settings, eventSource: false).ConfigureAwait(false);
                             }
                         }
 
@@ -262,7 +262,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
                             if (settings.IsRemovable())
                             {
                                 // Keep in sync this tenant by removing its local (non shared) resources.
-                                var removingContext = await _shellRemovingManager.RemoveAsync(settings, localResourcesOnly: true);
+                                var removingContext = await _shellRemovingManager.RemoveAsync(settings, localResourcesOnly: true).ConfigureAwait(false);
                                 if (removingContext.FailedOnLockTimeout)
                                 {
                                     // If it only failed to acquire a lock, let it retry on the next loop.
@@ -271,7 +271,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
                                 else
                                 {
                                     // Otherwise, keep in sync this tenant by removing the shell locally.
-                                    await _shellHost.RemoveShellContextAsync(settings, eventSource: false);
+                                    await _shellHost.RemoveShellContextAsync(settings, eventSource: false).ConfigureAwait(false);
 
                                     // Cleanup local dictionaries.
                                     _identifiers.TryRemove(settings.Name, out _);
@@ -314,7 +314,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
 
         if (_context is not null)
         {
-            await _context.ReleaseAsync();
+            await _context.ReleaseAsync().ConfigureAwait(false);
         }
 
         _context = null;
@@ -339,7 +339,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
 
         // Load a first isolated configuration before the default context is initialized.
         var defaultSettings = (await _shellSettingsManager
-            .LoadSettingsAsync(ShellSettings.DefaultShellName))
+            .LoadSettingsAsync(ShellSettings.DefaultShellName).ConfigureAwait(false))
             .AsDisposable();
 
         // If there is no default tenant or it is not running, nothing to do.
@@ -350,7 +350,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         }
 
         // Create a distributed context based on the first loaded isolated configuration.
-        var context = _context = (await CreateDistributedContextAsync(defaultSettings))
+        var context = _context = (await CreateDistributedContextAsync(defaultSettings).ConfigureAwait(false))
             ?.WithoutSharedSettings();
 
         if (context is null)
@@ -369,15 +369,15 @@ internal sealed class DistributedShellHostedService : BackgroundService
         try
         {
             // Retrieve the tenant global identifiers from the distributed cache.
-            var shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
-            var shellCountChangedId = await distributedCache.GetStringAsync(ShellCountChangedIdKey);
+            var shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey).ConfigureAwait(false);
+            var shellCountChangedId = await distributedCache.GetStringAsync(ShellCountChangedIdKey).ConfigureAwait(false);
 
             // Retrieve the names of all the tenants.
-            var names = await _shellSettingsManager.LoadSettingsNamesAsync();
+            var names = await _shellSettingsManager.LoadSettingsNamesAsync().ConfigureAwait(false);
             foreach (var name in names)
             {
                 // Retrieve the release identifier of this tenant from the distributed cache.
-                var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(name));
+                var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(name)).ConfigureAwait(false);
                 if (releaseId is not null)
                 {
                     // Initialize the release identifier of this tenant in the local collection.
@@ -386,7 +386,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
                 }
 
                 // Retrieve the reload identifier of this tenant from the distributed cache.
-                var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(name));
+                var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(name)).ConfigureAwait(false);
                 if (reloadId is not null)
                 {
                     // Initialize the reload identifier of this tenant in the local collection.
@@ -423,17 +423,21 @@ internal sealed class DistributedShellHostedService : BackgroundService
         }
 
         // Acquire the distributed context or create a new one if not yet built.
-        await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+        var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
-        // If the required distributed features are not enabled, nothing to do.
-        var distributedCache = context?.DistributedCache;
+        // Acquire the distributed context or create a new one if not yet built.
+        await using (context.ConfigureAwait(false))
+        {
+
+            // If the required distributed features are not enabled, nothing to do.
+            var distributedCache = context?.DistributedCache;
         if (distributedCache is null)
         {
             return;
         }
 
         var semaphore = _semaphores.GetOrAdd(name, name => new SemaphoreSlim(1));
-        await semaphore.WaitAsync();
+        await semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             // Update this tenant in the local collection with a new release identifier.
@@ -441,10 +445,10 @@ internal sealed class DistributedShellHostedService : BackgroundService
             identifier.ReleaseId = IdGenerator.GenerateId();
 
             // Update the release identifier of this tenant in the distributed cache.
-            await distributedCache.SetStringAsync(ReleaseIdKey(name), identifier.ReleaseId);
+            await distributedCache.SetStringAsync(ReleaseIdKey(name), identifier.ReleaseId).ConfigureAwait(false);
 
             // Also update the global identifier specifying that a tenant has changed.
-            await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReleaseId);
+            await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReleaseId).ConfigureAwait(false);
         }
         catch (Exception ex) when (!ex.IsFatal())
         {
@@ -453,6 +457,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         finally
         {
             semaphore.Release();
+        }
         }
     }
 
@@ -474,10 +479,14 @@ internal sealed class DistributedShellHostedService : BackgroundService
         }
 
         // Acquire the distributed context or create a new one if not yet built.
-        await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+        var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
-        // If the context still uses the first isolated configuration.
-        if (context is not null && !context.Context.SharedSettings)
+        // Acquire the distributed context or create a new one if not yet built.
+        await using (context.ConfigureAwait(false))
+        {
+
+            // If the context still uses the first isolated configuration.
+            if (context is not null && !context.Context.SharedSettings)
         {
             // Reset the serial number so that a new context will be built.
             context.Context.Blueprint.Descriptor.SerialNumber = 0;
@@ -491,7 +500,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         }
 
         var semaphore = _semaphores.GetOrAdd(name, name => new SemaphoreSlim(1));
-        await semaphore.WaitAsync();
+        await semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             // Update this tenant in the local collection with a new reload identifier.
@@ -499,17 +508,17 @@ internal sealed class DistributedShellHostedService : BackgroundService
             identifier.ReloadId = IdGenerator.GenerateId();
 
             // Update the reload identifier of this tenant in the distributed cache.
-            await distributedCache.SetStringAsync(ReloadIdKey(name), identifier.ReloadId);
+            await distributedCache.SetStringAsync(ReloadIdKey(name), identifier.ReloadId).ConfigureAwait(false);
 
             // Check if it is a new created tenant that has not been already loaded.
             if (!name.IsDefaultShellName() && !_shellHost.TryGetSettings(name, out _))
             {
                 // Also update the global identifier specifying that a tenant has been created.
-                await distributedCache.SetStringAsync(ShellCountChangedIdKey, identifier.ReloadId);
+                await distributedCache.SetStringAsync(ShellCountChangedIdKey, identifier.ReloadId).ConfigureAwait(false);
             }
 
             // Also update the global identifier specifying that a tenant has changed.
-            await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReloadId);
+            await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReloadId).ConfigureAwait(false);
         }
         catch (Exception ex) when (!ex.IsFatal())
         {
@@ -518,6 +527,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         finally
         {
             semaphore.Release();
+        }
         }
     }
 
@@ -540,26 +550,30 @@ internal sealed class DistributedShellHostedService : BackgroundService
         }
 
         // Acquire the distributed context or create a new one if not yet built.
-        await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+        var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
-        // If the required distributed features are not enabled, nothing to do.
-        var distributedCache = context?.DistributedCache;
+        // Acquire the distributed context or create a new one if not yet built.
+        await using (context.ConfigureAwait(false))
+        {
+
+            // If the required distributed features are not enabled, nothing to do.
+            var distributedCache = context?.DistributedCache;
         if (distributedCache is null)
         {
             return;
         }
 
         var semaphore = _semaphores.GetOrAdd(name, name => new SemaphoreSlim(1));
-        await semaphore.WaitAsync();
+        await semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             var removedId = IdGenerator.GenerateId();
 
             // Also update the global identifier specifying that a tenant has been removed.
-            await distributedCache.SetStringAsync(ShellCountChangedIdKey, removedId);
+            await distributedCache.SetStringAsync(ShellCountChangedIdKey, removedId).ConfigureAwait(false);
 
             // Also update the global identifier specifying that a tenant has changed.
-            await distributedCache.SetStringAsync(ShellChangedIdKey, removedId);
+            await distributedCache.SetStringAsync(ShellChangedIdKey, removedId).ConfigureAwait(false);
         }
         catch (Exception ex) when (!ex.IsFatal())
         {
@@ -568,6 +582,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         finally
         {
             semaphore.Release();
+        }
         }
     }
 
@@ -585,7 +600,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
             var previousContext = _context;
 
             // Reuse or create a new context based on the default tenant.
-            _context = await ReuseOrCreateDistributedContextAsync(defaultContext);
+            _context = await ReuseOrCreateDistributedContextAsync(defaultContext).ConfigureAwait(false);
 
             // Cache the default context.
             _defaultContextUtcTicks = defaultContext.UtcTicks;
@@ -594,7 +609,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
             if (_context != previousContext && previousContext is not null)
             {
                 // Release the previous one.
-                await previousContext.ReleaseAsync();
+                await previousContext.ReleaseAsync().ConfigureAwait(false);
             }
         }
 
@@ -610,7 +625,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         if (_context is null)
         {
             // Create a new context based on the default context.
-            return await CreateDistributedContextAsync(defaultContext);
+            return await CreateDistributedContextAsync(defaultContext).ConfigureAwait(false);
         }
 
         // Check if the default context is still the placeholder pre-created on first loading.
@@ -621,7 +636,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         }
 
         // Get the default tenant descriptor.
-        var descriptor = await GetDefaultShellDescriptorAsync(defaultContext);
+        var descriptor = await GetDefaultShellDescriptorAsync(defaultContext).ConfigureAwait(false);
 
         // If no descriptor.
         if (descriptor is null)
@@ -635,7 +650,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
             !_context.Context.Settings.HasConfiguration())
         {
             // Creates a new context based on the default settings and descriptor.
-            return await CreateDistributedContextAsync(defaultContext.Settings, descriptor);
+            return await CreateDistributedContextAsync(defaultContext.Settings, descriptor).ConfigureAwait(false);
         }
 
         // Reuse the current context.
@@ -664,7 +679,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
     private async Task<DistributedContext> CreateDistributedContextAsync(ShellContext defaultContext)
     {
         // Get the default tenant descriptor.
-        var descriptor = await GetDefaultShellDescriptorAsync(defaultContext);
+        var descriptor = await GetDefaultShellDescriptorAsync(defaultContext).ConfigureAwait(false);
 
         // If no descriptor.
         if (descriptor is null)
@@ -674,7 +689,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         }
 
         // Creates a new context based on the default settings and descriptor.
-        return await CreateDistributedContextAsync(defaultContext.Settings, descriptor);
+        return await CreateDistributedContextAsync(defaultContext.Settings, descriptor).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -683,7 +698,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
     private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings defaultSettings)
     {
         // Get the default tenant descriptor.
-        var descriptor = await GetDefaultShellDescriptorAsync(defaultSettings);
+        var descriptor = await GetDefaultShellDescriptorAsync(defaultSettings).ConfigureAwait(false);
 
         // If no descriptor.
         if (descriptor is null)
@@ -693,7 +708,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         }
 
         // Creates a new context based on the default settings and descriptor.
-        return await CreateDistributedContextAsync(defaultSettings, descriptor);
+        return await CreateDistributedContextAsync(defaultSettings, descriptor).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -757,7 +772,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         try
         {
             // Get the descriptor from the store and check if the distributed feature is enabled.
-            var descriptor = await _shellContextFactory.GetShellDescriptorAsync(defaultSettings);
+            var descriptor = await _shellContextFactory.GetShellDescriptorAsync(defaultSettings).ConfigureAwait(false);
             if (descriptor?.Features.Any(feature => feature.Id == DistributedFeatureId) ?? false)
             {
                 return descriptor;
@@ -797,7 +812,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
     {
         if (DateTime.UtcNow - _busyStartTime > _maxBusyTime)
         {
-            if (!await TryWaitAsync(_minIdleTime, stoppingToken))
+            if (!await TryWaitAsync(_minIdleTime, stoppingToken).ConfigureAwait(false))
             {
                 return false;
             }
@@ -815,7 +830,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
     {
         try
         {
-            await Task.Delay(delay, stoppingToken);
+            await Task.Delay(delay, stoppingToken).ConfigureAwait(false);
             return true;
         }
         catch (TaskCanceledException)

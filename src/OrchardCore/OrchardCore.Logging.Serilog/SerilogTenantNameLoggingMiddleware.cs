@@ -18,7 +18,7 @@ public class SerilogTenantNameLoggingMiddleware
         var tenantName = ShellScope.Context?.Settings.Name ?? "None";
         using (LogContext.PushProperty("TenantName", tenantName))
         {
-            await _next.Invoke(context);
+            await _next.Invoke(context).ConfigureAwait(false);
         }
     }
 }

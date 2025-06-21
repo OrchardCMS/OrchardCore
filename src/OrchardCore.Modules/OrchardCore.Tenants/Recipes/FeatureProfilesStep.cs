@@ -28,7 +28,7 @@ public sealed class FeatureProfilesStep : NamedRecipeStepHandler
                 var name = property.Key;
                 var value = property.Value.ToObject<FeatureProfile>();
 
-                await _featureProfilesManager.UpdateFeatureProfileAsync(name, value);
+                await _featureProfilesManager.UpdateFeatureProfileAsync(name, value).ConfigureAwait(false);
             }
         }
     }

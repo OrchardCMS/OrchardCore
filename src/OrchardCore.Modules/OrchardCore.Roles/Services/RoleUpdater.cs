@@ -65,7 +65,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         }
 
         var updated = false;
-        var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
+        var rolesDocument = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
         foreach (var provider in providers)
         {
             var stereotypes = provider.GetDefaultStereotypes();
@@ -89,7 +89,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
         if (updated)
         {
-            await _documentManager.UpdateAsync(rolesDocument);
+            await _documentManager.UpdateAsync(rolesDocument).ConfigureAwait(false);
         }
     }
 
@@ -109,7 +109,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         }
 
         var updated = false;
-        var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
+        var rolesDocument = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
         foreach (var role in rolesDocument.Roles)
         {
             if (!rolesDocument.MissingFeaturesByRole.TryGetValue(role.RoleName, out var missingFeatures) ||
@@ -126,13 +126,13 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
         if (updated)
         {
-            await _documentManager.UpdateAsync(rolesDocument);
+            await _documentManager.UpdateAsync(rolesDocument).ConfigureAwait(false);
         }
     }
 
     private async Task UpdateRoleForInstalledFeaturesAsync(string roleName)
     {
-        var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
+        var rolesDocument = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
         var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, roleName, StringComparison.OrdinalIgnoreCase));
         if (role == null)
         {
@@ -146,12 +146,12 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
             .ToArray();
 
         // And defining at least one 'IPermissionProvider'.
-        rolesDocument.MissingFeaturesByRole[roleName] = (await _extensionManager.LoadFeaturesAsync(missingFeatures))
+        rolesDocument.MissingFeaturesByRole[roleName] = (await _extensionManager.LoadFeaturesAsync(missingFeatures).ConfigureAwait(false))
             .Where(entry => _typeFeatureProvider.GetTypesForFeature(entry).Any(type => type.IsAssignableTo(typeof(IPermissionProvider))))
             .Select(entry => entry.Id)
             .ToList();
 
-        await _documentManager.UpdateAsync(rolesDocument);
+        await _documentManager.UpdateAsync(rolesDocument).ConfigureAwait(false);
 
         var stereotypes = _permissionProviders
             .SelectMany(provider => provider.GetDefaultStereotypes())
@@ -171,11 +171,11 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
     private async Task RemoveRoleForMissingFeaturesAsync(string roleName)
     {
-        var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
+        var rolesDocument = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
         if (rolesDocument.MissingFeaturesByRole.TryGetValue(roleName, out _))
         {
             rolesDocument.MissingFeaturesByRole.Remove(roleName);
-            await _documentManager.UpdateAsync(rolesDocument);
+            await _documentManager.UpdateAsync(rolesDocument).ConfigureAwait(false);
         }
     }
 

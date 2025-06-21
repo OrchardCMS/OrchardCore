@@ -23,7 +23,7 @@ public sealed class SitemapPartDisplayDriver : ContentPartDisplayDriver<SitemapP
             t => t.OverrideSitemapConfig,
             t => t.ChangeFrequency,
             t => t.Exclude,
-            t => t.Priority);
+            t => t.Priority).ConfigureAwait(false);
 
         model.OverrideSitemapConfig = viewModel.OverrideSitemapConfig;
         model.ChangeFrequency = viewModel.ChangeFrequency;

@@ -22,14 +22,14 @@ public class SiteService : ISiteService
     /// </summary>
     // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
     public async Task<ISite> LoadSiteSettingsAsync()
-        => await _documentManager.GetOrCreateMutableAsync(GetDefaultSettingsAsync);
+        => await _documentManager.GetOrCreateMutableAsync(GetDefaultSettingsAsync).ConfigureAwait(false);
 
     /// <summary>
     /// Gets the site settings from the cache for sharing and that should not be updated.
     /// </summary>
     // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
     public async Task<ISite> GetSiteSettingsAsync()
-        => await _documentManager.GetOrCreateImmutableAsync(GetDefaultSettingsAsync);
+        => await _documentManager.GetOrCreateImmutableAsync(GetDefaultSettingsAsync).ConfigureAwait(false);
 
     /// <summary>
     /// Updates the store with the provided site settings and then updates the cache.
@@ -41,7 +41,7 @@ public class SiteService : ISiteService
             return;
         }
 
-        await _documentManager.UpdateAsync(siteSettings, _ => GetSiteSettingsAsync());
+        await _documentManager.UpdateAsync(siteSettings, _ => GetSiteSettingsAsync()).ConfigureAwait(false);
 
         // Clear the internal cache to ensure that any other lookup against
         // this document will load the new values until the site is reloaded.

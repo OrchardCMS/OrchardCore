@@ -47,7 +47,7 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
             return;
         }
 
-        _contentType = await _contentDefinitionManager.GetTypeDefinitionAsync(_node.ContentType);
+        _contentType = await _contentDefinitionManager.GetTypeDefinitionAsync(_node.ContentType).ConfigureAwait(false);
 
         if (_node.AddContentTypeAsParent)
         {
@@ -61,12 +61,12 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
                 AddPrefixToClasses(_node.IconForParentLink).ForEach(c => listTypeMenu.AddClass(c));
                 listTypeMenu.Permission(ContentTypePermissionsHelper.CreateDynamicPermission(
                     ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name], _contentType));
-                await AddContentItemsAsync(listTypeMenu);
-            });
+                await AddContentItemsAsync(listTypeMenu).ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
         else
         {
-            await AddContentItemsAsync(builder);
+            await AddContentItemsAsync(builder).ConfigureAwait(false);
         }
 
         // Add external children.
@@ -75,7 +75,7 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
             try
             {
                 var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childNode.GetType().Name);
-                await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders);
+                await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -86,9 +86,9 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
 
     private async Task AddContentItemsAsync(NavigationBuilder listTypeMenu)
     {
-        foreach (var ci in await GetContentItemsAsync())
+        foreach (var ci in await GetContentItemsAsync().ConfigureAwait(false))
         {
-            var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
+            var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci).ConfigureAwait(false);
 
             if (cim.AdminRouteValues.Count > 0 && ci.DisplayText != null)
             {
@@ -113,7 +113,7 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
         return (await _session.Query<ContentItem, ContentItemIndex>()
             .With<ContentItemIndex>(x => x.Latest && x.ContentType == _node.ContentType)
             .Take(MaxItemsInNode)
-            .ListAsync())
+            .ListAsync().ConfigureAwait(false))
             .OrderBy(x => x.DisplayText)
             .ToList();
     }

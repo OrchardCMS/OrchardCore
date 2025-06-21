@@ -18,7 +18,7 @@ public class AdminThemeService : IAdminThemeService
 
     public async Task<IExtensionInfo> GetAdminThemeAsync()
     {
-        var currentThemeName = await GetAdminThemeNameAsync();
+        var currentThemeName = await GetAdminThemeNameAsync().ConfigureAwait(false);
         if (string.IsNullOrEmpty(currentThemeName))
         {
             return null;
@@ -29,14 +29,14 @@ public class AdminThemeService : IAdminThemeService
 
     public async Task SetAdminThemeAsync(string themeName)
     {
-        var site = await _siteService.LoadSiteSettingsAsync();
+        var site = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         site.Properties["CurrentAdminThemeName"] = themeName;
-        await _siteService.UpdateSiteSettingsAsync(site);
+        await _siteService.UpdateSiteSettingsAsync(site).ConfigureAwait(false);
     }
 
     public async Task<string> GetAdminThemeNameAsync()
     {
-        var site = await _siteService.GetSiteSettingsAsync();
+        var site = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
         return (string)site.Properties["CurrentAdminThemeName"];
     }
 }

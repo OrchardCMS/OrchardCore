@@ -24,7 +24,7 @@ public class FeatureHash : IFeatureHash
         }
 
         // Calculate a hash of all enabled features' id
-        var enabledFeatures = await _featureManager.GetEnabledFeaturesAsync();
+        var enabledFeatures = await _featureManager.GetEnabledFeaturesAsync().ConfigureAwait(false);
 
         var hashCode = new HashCode();
         foreach (var feature in enabledFeatures)
@@ -45,7 +45,7 @@ public class FeatureHash : IFeatureHash
 
         if (!_memoryCache.TryGetValue<bool>(cacheKey, out var enabled))
         {
-            var enabledFeatures = await _featureManager.GetEnabledFeaturesAsync();
+            var enabledFeatures = await _featureManager.GetEnabledFeaturesAsync().ConfigureAwait(false);
 
             enabled = enabledFeatures.Any(x => x.Id.Equals(featureId, StringComparison.Ordinal));
 

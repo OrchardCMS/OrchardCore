@@ -66,7 +66,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
 
         if (!_isVolatile)
         {
-            document = await DocumentStore.GetOrCreateMutableAsync(factoryAsync);
+            document = await DocumentStore.GetOrCreateMutableAsync(factoryAsync).ConfigureAwait(false);
 
             if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
             {
@@ -83,8 +83,8 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
             else
             {
                 document = await GetFromDistributedCacheAsync()
-                    ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
-                    ?? new TDocument();
+.ConfigureAwait(false) ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
+.ConfigureAwait(false) ?? new TDocument();
 
                 ShellScope.Set(typeof(TDocument), document);
             }
@@ -114,7 +114,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
         try
         {
             // May call an async IO if using a distributed cache.
-            document = await GetInternalAsync(failover);
+            document = await GetInternalAsync(failover).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -138,18 +138,18 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
 
             if (!_isVolatile)
             {
-                (cacheable, document) = await DocumentStore.GetOrCreateImmutableAsync(factoryAsync);
+                (cacheable, document) = await DocumentStore.GetOrCreateImmutableAsync(factoryAsync).ConfigureAwait(false);
             }
             else
             {
                 document = await (factoryAsync?.Invoke()
                     ?? Task.FromResult((TDocument)null))
-                    ?? new TDocument();
+.ConfigureAwait(false) ?? new TDocument();
             }
 
             if (cacheable)
             {
-                await SetInternalAsync(document, failover);
+                await SetInternalAsync(document, failover).ConfigureAwait(false);
             }
         }
 
@@ -162,11 +162,11 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
         {
             try
             {
-                _ = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+                _ = await _distributedCache.GetStringAsync(_options.CacheIdKey).ConfigureAwait(false);
             }
             catch
             {
-                await DocumentStore.CancelAsync();
+                await DocumentStore.CancelAsync().ConfigureAwait(false);
 
                 _logger.LogError("Can't update the '{DocumentName}' if not able to access the distributed cache", typeof(TDocument).Name);
 
@@ -186,14 +186,14 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
             await DocumentStore.UpdateAsync(document, async document =>
             {
                 // A non volatile document can be invalidated.
-                await InvalidateInternalAsync(document);
+                await InvalidateInternalAsync(document).ConfigureAwait(false);
 
                 if (afterUpdateAsync != null)
                 {
-                    await afterUpdateAsync(document);
+                    await afterUpdateAsync(document).ConfigureAwait(false);
                 }
             },
-            _options.CheckConcurrency.Value);
+            _options.CheckConcurrency.Value).ConfigureAwait(false);
 
             return;
         }
@@ -205,11 +205,11 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
         DocumentStore.AfterCommitSuccess<TDocument>(async () =>
         {
             // A volatile document can't be invalidated.
-            await SetInternalAsync(document);
+            await SetInternalAsync(document).ConfigureAwait(false);
 
             if (afterUpdateAsync is not null)
             {
-                await afterUpdateAsync(document);
+                await afterUpdateAsync(document).ConfigureAwait(false);
             }
         });
 
@@ -232,7 +232,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
                 }
 
                 return _distributedCache.GetStringAsync(_options.CacheIdKey);
-            });
+            }).ConfigureAwait(false);
         }
         else
         {
@@ -261,7 +261,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
 
                 if (_isDistributed && _options.SlidingExpiration.HasValue)
                 {
-                    await _distributedCache.RefreshAsync(_options.CacheKey);
+                    await _distributedCache.RefreshAsync(_options.CacheKey).ConfigureAwait(false);
                 }
 
                 return document;
@@ -278,7 +278,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
             return null;
         }
 
-        document = await GetFromDistributedCacheAsync();
+        document = await GetFromDistributedCacheAsync().ConfigureAwait(false);
 
         if (document is null)
         {
@@ -309,7 +309,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
 
         if (!failover)
         {
-            await UpdateDistributedCacheAsync(document);
+            await UpdateDistributedCacheAsync(document).ConfigureAwait(false);
         }
 
         _memoryCache.Set(_options.CacheKey, document, new MemoryCacheEntryOptions()
@@ -339,11 +339,11 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
         // Consistency: We may have been the last to update the cache but not with the last stored document.
         if (!_isVolatile && _options.CheckConsistency.Value)
         {
-            (_, var stored) = await DocumentStore.GetOrCreateImmutableAsync<TDocument>();
+            (_, var stored) = await DocumentStore.GetOrCreateImmutableAsync<TDocument>().ConfigureAwait(false);
 
             if (stored.Identifier != document.Identifier)
             {
-                await InvalidateInternalAsync(document);
+                await InvalidateInternalAsync(document).ConfigureAwait(false);
             }
         }
     }
@@ -354,7 +354,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
     {
         if (_isDistributed)
         {
-            await _distributedCache.RemoveAsync(_options.CacheIdKey);
+            await _distributedCache.RemoveAsync(_options.CacheIdKey).ConfigureAwait(false);
         }
         _memoryCache.Remove(_options.CacheIdKey);
     }
@@ -365,11 +365,11 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
 
         if (_isDistributed)
         {
-            data = await _distributedCache.GetAsync(_options.CacheKey);
+            data = await _distributedCache.GetAsync(_options.CacheKey).ConfigureAwait(false);
         }
         else if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached))
         {
-            data = await _options.Serializer.SerializeAsync(cached);
+            data = await _options.Serializer.SerializeAsync(cached).ConfigureAwait(false);
         }
 
         if (data == null)
@@ -377,16 +377,16 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
             return null;
         }
 
-        return await _options.Serializer.DeserializeAsync<TDocument>(data);
+        return await _options.Serializer.DeserializeAsync<TDocument>(data).ConfigureAwait(false);
     }
 
     private async Task UpdateDistributedCacheAsync(TDocument document)
     {
         if (_isDistributed)
         {
-            var data = await _options.Serializer.SerializeAsync(document, _options.CompressThreshold);
-            await _distributedCache.SetAsync(_options.CacheKey, data, _options);
-            await _distributedCache.SetStringAsync(_options.CacheIdKey, document.Identifier ?? "NULL", _options);
+            var data = await _options.Serializer.SerializeAsync(document, _options.CompressThreshold).ConfigureAwait(false);
+            await _distributedCache.SetAsync(_options.CacheKey, data, _options).ConfigureAwait(false);
+            await _distributedCache.SetStringAsync(_options.CacheIdKey, document.Identifier ?? "NULL", _options).ConfigureAwait(false);
         }
         else
         {

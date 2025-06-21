@@ -46,7 +46,7 @@ public sealed class ReCaptchaService
     public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
         => !string.IsNullOrWhiteSpace(reCaptchaResponse)
             && _reCaptchaSettings.ConfigurationExists()
-            && await VerifyAsync(reCaptchaResponse);
+            && await VerifyAsync(reCaptchaResponse).ConfigureAwait(false);
 
     /// <summary>
     /// Validates the captcha that is in the Form of the current request.
@@ -70,7 +70,7 @@ public sealed class ReCaptchaService
             reCaptchaResponse = _httpContextAccessor.HttpContext.Request.Form[Constants.ReCaptchaServerResponseHeaderName].ToString();
         }
 
-        var isValid = await VerifyCaptchaResponseAsync(reCaptchaResponse);
+        var isValid = await VerifyCaptchaResponseAsync(reCaptchaResponse).ConfigureAwait(false);
 
         if (!isValid)
         {
@@ -96,9 +96,9 @@ public sealed class ReCaptchaService
             });
 
             var httpClient = _httpClientFactory.CreateClient(nameof(ReCaptchaService));
-            var response = await httpClient.PostAsync(_verifyHost, content);
+            var response = await httpClient.PostAsync(_verifyHost, content).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<ReCaptchaResponse>(_jsonSerializerOptions);
+            var result = await response.Content.ReadFromJsonAsync<ReCaptchaResponse>(_jsonSerializerOptions).ConfigureAwait(false);
 
             return result.Success;
         }

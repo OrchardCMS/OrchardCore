@@ -41,14 +41,14 @@ public class ContentCulturePickerService : IContentCulturePickerService
         if (url == "/")
         {
             // get contentItemId from homeroute
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
             contentItemId = siteSettings.HomeRoute["contentItemId"]?.ToString();
         }
         else
         {
             // Try to get from autorouteEntries.
             // This should not consider contained items, so will redirect to the parent item.
-            (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(url.Value);
+            (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(url.Value).ConfigureAwait(false);
 
             if (found)
             {
@@ -66,11 +66,11 @@ public class ContentCulturePickerService : IContentCulturePickerService
 
     public async Task<LocalizationEntry> GetLocalizationFromRouteAsync(PathString url)
     {
-        var contentItemId = await GetContentItemIdFromRouteAsync(url);
+        var contentItemId = await GetContentItemIdFromRouteAsync(url).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(contentItemId))
         {
-            (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId);
+            (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId).ConfigureAwait(false);
 
             if (found)
             {
@@ -83,15 +83,15 @@ public class ContentCulturePickerService : IContentCulturePickerService
 
     public async Task<IEnumerable<LocalizationEntry>> GetLocalizationsFromRouteAsync(PathString url)
     {
-        var contentItemId = await GetContentItemIdFromRouteAsync(url);
+        var contentItemId = await GetContentItemIdFromRouteAsync(url).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(contentItemId))
         {
-            (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId);
+            (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId).ConfigureAwait(false);
 
             if (found)
             {
-                return await _localizationEntries.GetLocalizationsAsync(localization.LocalizationSet);
+                return await _localizationEntries.GetLocalizationsAsync(localization.LocalizationSet).ConfigureAwait(false);
             }
         }
 

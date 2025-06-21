@@ -28,7 +28,7 @@ public sealed class PlacementStep : NamedRecipeStepHandler
                 var name = property.Key;
                 var value = property.Value.ToObject<PlacementNode[]>();
 
-                await _placementsManager.UpdateShapePlacementsAsync(name, value);
+                await _placementsManager.UpdateShapePlacementsAsync(name, value).ConfigureAwait(false);
             }
         }
     }

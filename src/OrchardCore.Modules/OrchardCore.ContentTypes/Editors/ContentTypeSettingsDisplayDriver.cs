@@ -39,7 +39,7 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
             model.Securable = settings.Securable;
             model.Stereotype = settings.Stereotype;
             model.Description = settings.Description;
-            model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
+            model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype).ConfigureAwait(false);
         }).Location("Content:5");
     }
 
@@ -47,7 +47,7 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
     {
         var model = new ContentTypeSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var stereotype = model.Stereotype?.Trim();
         context.Builder.WithDescription(model.Description);
@@ -58,7 +58,7 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
             context.Updater.ModelState.AddModelError(nameof(ContentTypeSettingsViewModel.Stereotype), S["The stereotype should be alphanumeric."]);
         }
 
-        var options = await GetOptionsAsync(contentTypeDefinition, stereotype);
+        var options = await GetOptionsAsync(contentTypeDefinition, stereotype).ConfigureAwait(false);
 
         Apply(context, model, options);
 
@@ -109,7 +109,7 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
             options = stereotypesOptions;
         }
 
-        options.Stereotypes = await _stereotypeService.GetStereotypesAsync();
+        options.Stereotypes = await _stereotypeService.GetStereotypesAsync().ConfigureAwait(false);
 
         return options;
     }

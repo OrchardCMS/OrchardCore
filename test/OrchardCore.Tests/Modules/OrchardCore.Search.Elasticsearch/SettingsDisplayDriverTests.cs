@@ -113,7 +113,7 @@ public partial class SettingsDisplayDriverTests
                 .ReturnsAsync(indexes);
 
             // Act
-            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldElasticEditorSettingsDriver(storeMock.Object));
+            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldElasticEditorSettingsDriver(storeMock.Object)).ConfigureAwait(false);
             var shape = (ContentPickerFieldElasticEditorSettings)shapeResult.Shape;
 
             // Assert

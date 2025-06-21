@@ -42,7 +42,7 @@ public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSe
     public override async Task<IDisplayResult> EditAsync(ISite site, FacebookSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp).ConfigureAwait(false))
         {
             return null;
         }
@@ -77,13 +77,13 @@ public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSe
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new FacebookSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.AppId = model.AppId;
         settings.FBInit = model.FBInit;
@@ -103,6 +103,6 @@ public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSe
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

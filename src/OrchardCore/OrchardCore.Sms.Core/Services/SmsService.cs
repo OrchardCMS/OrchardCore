@@ -19,13 +19,13 @@ public class SmsService : ISmsService
 
     public async Task<SmsResult> SendAsync(SmsMessage message)
     {
-        _provider ??= await _smsProviderResolver.GetAsync();
+        _provider ??= await _smsProviderResolver.GetAsync().ConfigureAwait(false);
 
         if (_provider is null)
         {
             return SmsResult.Failed(S["SMS settings must be configured before an SMS message can be sent."]);
         }
 
-        return await _provider.SendAsync(message);
+        return await _provider.SendAsync(message).ConfigureAwait(false);
     }
 }

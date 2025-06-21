@@ -61,7 +61,7 @@ public class FullTextFilter : ILiquidFilter
                 return NilValue.Instance;
             }
 
-            var fullTextAspect = await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem);
+            var fullTextAspect = await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem).ConfigureAwait(false);
 
             // Remove empty strings as display text is often unused in contained content items.
             return new ArrayValue(fullTextAspect.Segments.Where(x => !string.IsNullOrEmpty(x)).Select(x => new StringValue(x)).ToArray());

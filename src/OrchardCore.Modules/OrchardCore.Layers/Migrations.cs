@@ -10,13 +10,13 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.CreateMapIndexTableAsync<LayerMetadataIndex>(table => table
            .Column<string>("Zone", c => c.WithLength(64))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table
             .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
             "DocumentId",
             "Zone")
-        );
+        ).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 3;
@@ -29,7 +29,7 @@ public sealed class Migrations : DataMigration
             .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
             "DocumentId",
             "Zone")
-        );
+        ).ConfigureAwait(false);
 
         // Migration was cleaned up in version 2.0.
         // Jump to step 3 during create.

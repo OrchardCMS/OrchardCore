@@ -9,7 +9,7 @@ public static class JArray
     /// <summary>
     /// Loads a JSON array from the provided stream.
     /// </summary>
-    public static async Task<JsonArray?> LoadAsync(Stream utf8Json) => (await JNode.LoadAsync(utf8Json))?.AsArray();
+    public static async Task<JsonArray?> LoadAsync(Stream utf8Json) => (await JNode.LoadAsync(utf8Json).ConfigureAwait(false))?.AsArray();
 
     /// <summary>
     /// Loads a JSON array from the provided stream.
@@ -19,7 +19,7 @@ public static class JArray
         JsonNodeOptions? nodeOptions = null,
         JsonDocumentOptions documentOptions = default,
         CancellationToken cancellationToken = default)
-        => (await JNode.LoadAsync(utf8Json, nodeOptions, documentOptions, cancellationToken))?.AsArray();
+        => (await JNode.LoadAsync(utf8Json, nodeOptions, documentOptions, cancellationToken).ConfigureAwait(false))?.AsArray();
 
     /// <summary>
     /// Loads a JSON array from the provided reader.

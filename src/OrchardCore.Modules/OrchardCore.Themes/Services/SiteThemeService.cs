@@ -18,7 +18,7 @@ public class SiteThemeService : ISiteThemeService
 
     public async Task<IExtensionInfo> GetSiteThemeAsync()
     {
-        var currentThemeName = await GetSiteThemeNameAsync();
+        var currentThemeName = await GetSiteThemeNameAsync().ConfigureAwait(false);
         if (string.IsNullOrEmpty(currentThemeName))
         {
             return null;
@@ -29,14 +29,14 @@ public class SiteThemeService : ISiteThemeService
 
     public async Task SetSiteThemeAsync(string themeName)
     {
-        var site = await _siteService.LoadSiteSettingsAsync();
+        var site = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         site.Properties["CurrentThemeName"] = themeName;
-        await _siteService.UpdateSiteSettingsAsync(site);
+        await _siteService.UpdateSiteSettingsAsync(site).ConfigureAwait(false);
     }
 
     public async Task<string> GetSiteThemeNameAsync()
     {
-        var site = await _siteService.GetSiteSettingsAsync();
+        var site = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
 
         return (string)site.Properties["CurrentThemeName"];
     }

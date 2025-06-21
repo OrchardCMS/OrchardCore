@@ -24,7 +24,7 @@ public sealed class TextFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
     {
         var model = new TextFieldSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         context.Builder.WithSettings(model);
 

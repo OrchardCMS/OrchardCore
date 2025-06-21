@@ -69,7 +69,7 @@ public class LiquidTemplateManager : ILiquidTemplateManager
 
         var htmlContentWriter = new ViewBufferTextWriterContent();
 
-        await result.RenderAsync(htmlContentWriter, encoder, context, model);
+        await result.RenderAsync(htmlContentWriter, encoder, context, model).ConfigureAwait(false);
 
         return htmlContentWriter;
     }

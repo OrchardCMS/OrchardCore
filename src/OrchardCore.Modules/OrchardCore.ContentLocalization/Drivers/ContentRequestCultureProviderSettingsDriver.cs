@@ -30,7 +30,7 @@ public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDri
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, ContentLocalizationPermissions.ManageContentCulturePicker))
+        if (!await _authorizationService.AuthorizeAsync(user, ContentLocalizationPermissions.ManageContentCulturePicker).ConfigureAwait(false))
         {
             return null;
         }
@@ -46,13 +46,13 @@ public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDri
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, ContentLocalizationPermissions.ManageContentCulturePicker))
+        if (!await _authorizationService.AuthorizeAsync(user, ContentLocalizationPermissions.ManageContentCulturePicker).ConfigureAwait(false))
         {
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        await context.Updater.TryUpdateModelAsync(settings, Prefix).ConfigureAwait(false);
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

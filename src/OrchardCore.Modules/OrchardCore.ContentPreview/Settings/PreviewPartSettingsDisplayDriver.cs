@@ -39,7 +39,7 @@ public sealed class PreviewPartSettingsDisplayDriver : ContentTypePartDefinition
         var model = new PreviewPartSettingsViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix,
-            m => m.Pattern);
+            m => m.Pattern).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
         {

@@ -133,15 +133,15 @@ public class EmailTask : TaskActivity<EmailTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var author = await _expressionEvaluator.EvaluateAsync(Author, workflowContext, null);
-        var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext, null);
-        var replyTo = await _expressionEvaluator.EvaluateAsync(ReplyTo, workflowContext, null);
-        var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext, null);
-        var cc = await _expressionEvaluator.EvaluateAsync(Cc, workflowContext, null);
-        var bcc = await _expressionEvaluator.EvaluateAsync(Bcc, workflowContext, null);
-        var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null);
-        var textBody = await _expressionEvaluator.EvaluateAsync(TextBody, workflowContext, null);
-        var htmlBody = await _expressionEvaluator.EvaluateAsync(HtmlBody, workflowContext, _htmlEncoder);
+        var author = await _expressionEvaluator.EvaluateAsync(Author, workflowContext, null).ConfigureAwait(false);
+        var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext, null).ConfigureAwait(false);
+        var replyTo = await _expressionEvaluator.EvaluateAsync(ReplyTo, workflowContext, null).ConfigureAwait(false);
+        var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext, null).ConfigureAwait(false);
+        var cc = await _expressionEvaluator.EvaluateAsync(Cc, workflowContext, null).ConfigureAwait(false);
+        var bcc = await _expressionEvaluator.EvaluateAsync(Bcc, workflowContext, null).ConfigureAwait(false);
+        var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null).ConfigureAwait(false);
+        var textBody = await _expressionEvaluator.EvaluateAsync(TextBody, workflowContext, null).ConfigureAwait(false);
+        var htmlBody = await _expressionEvaluator.EvaluateAsync(HtmlBody, workflowContext, _htmlEncoder).ConfigureAwait(false);
 
         var message = new MailMessage
         {
@@ -176,7 +176,7 @@ public class EmailTask : TaskActivity<EmailTask>
             message.Sender = sender.Trim();
         }
 
-        var result = await _emailService.SendAsync(message);
+        var result = await _emailService.SendAsync(message).ConfigureAwait(false);
         workflowContext.LastResult = result;
 
         if (!result.Succeeded)

@@ -51,7 +51,7 @@ public class DefaultShapeTableManager : IShapeTableManager
             return shapeTable;
         }
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out shapeTable))
@@ -59,7 +59,7 @@ public class DefaultShapeTableManager : IShapeTableManager
                 return shapeTable;
             }
 
-            return await BuildShapeTableAsync(themeId);
+            return await BuildShapeTableAsync(themeId).ConfigureAwait(false);
         }
         finally
         {
@@ -96,7 +96,7 @@ public class DefaultShapeTableManager : IShapeTableManager
             var strategyFeature = typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
             var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
-            await bindingStrategy.DiscoverAsync(builder);
+            await bindingStrategy.DiscoverAsync(builder).ConfigureAwait(false);
             var builtAlterations = builder.BuildAlterations();
 
             BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
@@ -111,7 +111,7 @@ public class DefaultShapeTableManager : IShapeTableManager
             }
         }
 
-        var enabledAndOrderedFeatureIds = (await shellFeaturesManager.GetEnabledFeaturesAsync())
+        var enabledAndOrderedFeatureIds = (await shellFeaturesManager.GetEnabledFeaturesAsync().ConfigureAwait(false))
             .Select(f => f.Id)
             .ToList();
 

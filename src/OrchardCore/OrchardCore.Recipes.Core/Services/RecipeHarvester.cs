@@ -43,7 +43,7 @@ public class RecipeHarvester : IRecipeHarvester
 
         foreach (var recipeFile in recipeFiles)
         {
-            var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(path, recipeFile, _hostingEnvironment.ContentRootFileProvider);
+            var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(path, recipeFile, _hostingEnvironment.ContentRootFileProvider).ConfigureAwait(false);
 
             if (recipeDescriptor == null)
             {

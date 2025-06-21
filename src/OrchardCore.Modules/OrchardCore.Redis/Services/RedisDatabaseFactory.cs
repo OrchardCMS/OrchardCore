@@ -40,7 +40,7 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
                     _logger.LogDebug("Creating a new instance of '{Name}'. A single instance per configuration should be created across tenants. Total instances prior creating is '{Count}'.", nameof(ConnectionMultiplexer), _factories.Count);
                 }
 
-                return (await ConnectionMultiplexer.ConnectAsync(options.ConfigurationOptions)).GetDatabase();
+                return (await ConnectionMultiplexer.ConnectAsync(options.ConfigurationOptions).ConfigureAwait(false)).GetDatabase();
             }
             catch (Exception e)
             {

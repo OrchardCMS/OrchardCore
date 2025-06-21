@@ -22,7 +22,7 @@ public sealed class ContentDeploymentSource
         // TODO: Batch and create separate content files in the result.
         var data = new JsonArray();
 
-        foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(step.ContentTypes)).ListAsync())
+        foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(step.ContentTypes)).ListAsync().ConfigureAwait(false))
         {
             var objectData = JObject.FromObject(contentItem);
 

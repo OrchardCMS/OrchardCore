@@ -26,7 +26,7 @@ public sealed class Permissions : IPermissionProvider
             LuceneSearchPermissions.QueryLuceneApi,
         };
 
-        var indexes = await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName);
+        var indexes = await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName).ConfigureAwait(false);
 
         foreach (var index in indexes)
         {

@@ -36,7 +36,7 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
     {
-        var contentTypeDefinitions = await GetContentTypeDefinitionsAsync();
+        var contentTypeDefinitions = await GetContentTypeDefinitionsAsync().ConfigureAwait(false);
         if (!contentTypeDefinitions.Any())
         {
             return null;
@@ -50,8 +50,8 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
             results.Add(Initialize<CustomUserSettingsEditViewModel>("CustomUserSettings", async model =>
                 {
                     var isNew = false;
-                    var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
-                    model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
+                    var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true).ConfigureAwait(false);
+                    model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix).ConfigureAwait(false);
                 })
                 .Location($"Content:10#{contentTypeDefinition.DisplayName}")
                 .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
@@ -64,26 +64,26 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
     {
         var userClaim = _httpContextAccessor.HttpContext.User;
-        var contentTypeDefinitions = await GetContentTypeDefinitionsAsync();
+        var contentTypeDefinitions = await GetContentTypeDefinitionsAsync().ConfigureAwait(false);
 
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
-            if (!await _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition)))
+            if (!await _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition)).ConfigureAwait(false))
             {
                 continue;
             }
 
             var isNew = false;
-            var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
-            await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
+            var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true).ConfigureAwait(false);
+            await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix).ConfigureAwait(false);
             user.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
         }
 
-        return await EditAsync(user, context);
+        return await EditAsync(user, context).ConfigureAwait(false);
     }
 
     private async Task<IEnumerable<ContentTypeDefinition>> GetContentTypeDefinitionsAsync()
-        => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+        => (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             .Where(x => x.GetStereotype() == "CustomUserSettings");
 
     private async Task<ContentItem> GetUserSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)
@@ -96,12 +96,12 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
             var existing = property.ToObject<ContentItem>();
 
             // Create a new item to take into account the current type definition.
-            contentItem = await _contentManager.NewAsync(existing.ContentType);
+            contentItem = await _contentManager.NewAsync(existing.ContentType).ConfigureAwait(false);
             contentItem.Merge(existing);
         }
         else
         {
-            contentItem = await _contentManager.NewAsync(settingsType.Name);
+            contentItem = await _contentManager.NewAsync(settingsType.Name).ConfigureAwait(false);
             isNew?.Invoke();
         }
 

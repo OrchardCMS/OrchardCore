@@ -68,7 +68,7 @@ public class AuditTrailManager : IAuditTrailManager
         }
 
         var descriptor = DescribeEvent(context.Name, context.Category);
-        if (descriptor == null || !await IsEventEnabledAsync(descriptor))
+        if (descriptor == null || !await IsEventEnabledAsync(descriptor).ConfigureAwait(false))
         {
             return;
         }
@@ -82,7 +82,7 @@ public class AuditTrailManager : IAuditTrailManager
             context.AuditTrailEventItem
         );
 
-        await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), createContext, _logger);
+        await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), createContext, _logger).ConfigureAwait(false);
 
         var auditTrailEvent = new AuditTrailEvent
         {
@@ -95,15 +95,15 @@ public class AuditTrailManager : IAuditTrailManager
             NormalizedUserName = string.IsNullOrEmpty(createContext.UserName) ? "" : _keyNormalizer.NormalizeName(createContext.UserName),
             ClientIpAddress = string.IsNullOrEmpty(createContext.ClientIpAddress)
                 ? await GetClientIpAddressAsync()
-                : createContext.ClientIpAddress,
+.ConfigureAwait(false) : createContext.ClientIpAddress,
             CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow,
         };
 
         auditTrailEvent.Put(createContext.AuditTrailEventItem);
 
-        await _auditTrailEventHandlers.InvokeAsync((handler, context, auditTrailEvent) => handler.AlterAsync(context, auditTrailEvent), createContext, auditTrailEvent, _logger);
+        await _auditTrailEventHandlers.InvokeAsync((handler, context, auditTrailEvent) => handler.AlterAsync(context, auditTrailEvent), createContext, auditTrailEvent, _logger).ConfigureAwait(false);
 
-        await _session.SaveAsync(auditTrailEvent, AuditTrailEvent.Collection);
+        await _session.SaveAsync(auditTrailEvent, AuditTrailEvent.Collection).ConfigureAwait(false);
     }
     public Task<AuditTrailEvent> GetEventAsync(string eventId) =>
         _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
@@ -116,7 +116,7 @@ public class AuditTrailManager : IAuditTrailManager
 
         var events = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.CreatedUtc <= dateThreshold)
-            .ListAsync();
+            .ListAsync().ConfigureAwait(false);
 
         var deletedEvents = 0;
         foreach (var auditTrailEvent in events)
@@ -155,17 +155,17 @@ public class AuditTrailManager : IAuditTrailManager
 
     private async Task<string> GetClientIpAddressAsync()
     {
-        var settings = await GetAuditTrailSettingsAsync();
+        var settings = await GetAuditTrailSettingsAsync().ConfigureAwait(false);
         if (!settings.ClientIpAddressAllowed)
         {
             return null;
         }
 
-        return (await _clientIPAddressAccessor.GetIPAddressAsync())?.ToString();
+        return (await _clientIPAddressAccessor.GetIPAddressAsync().ConfigureAwait(false))?.ToString();
     }
 
     private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>
-        (await _siteService.GetSiteSettingsAsync()).As<AuditTrailSettings>();
+        (await _siteService.GetSiteSettingsAsync().ConfigureAwait(false)).As<AuditTrailSettings>();
 
     private async Task<bool> IsEventEnabledAsync(AuditTrailEventDescriptor descriptor)
     {
@@ -174,7 +174,7 @@ public class AuditTrailManager : IAuditTrailManager
             return true;
         }
 
-        var settings = await GetAuditTrailSettingsAsync();
+        var settings = await GetAuditTrailSettingsAsync().ConfigureAwait(false);
 
         var eventSettings = settings.Categories
             .FirstOrDefault(category => category.Name == descriptor.Category)?.Events

@@ -35,7 +35,7 @@ public class ListQueryObjectType : ObjectGraphType<ListPart>
                 var dataLoader = accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>("ContainedPublishedContentItems",
                    x => LoadPublishedContentItemsForListAsync(x, session, g.GetArgument<int>("skip"), g.GetArgument<int>("first")));
 
-                return await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId).GetResultAsync();
+                return await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId).GetResultAsync().ConfigureAwait(false);
             });
     }
 
@@ -52,7 +52,7 @@ public class ListQueryObjectType : ObjectGraphType<ListPart>
                                  .OrderBy(o => o.Order)
                                  .Skip(skip)
                                  .Take(count)
-                                 .ListAsync();
+                                 .ListAsync().ConfigureAwait(false);
 
         return query.ToLookup(k => k.As<ContainedPart>().ListContentItemId);
     }

@@ -54,7 +54,7 @@ public class ConsoleLogFilter : ILiquidFilter
         }
         else
         {
-            sb.Append((await MiscFilters.Json(input, arguments, context)).ToStringValue());
+            sb.Append((await MiscFilters.Json(input, arguments, context).ConfigureAwait(false)).ToStringValue());
         }
 
         sb.Append(")</script>");

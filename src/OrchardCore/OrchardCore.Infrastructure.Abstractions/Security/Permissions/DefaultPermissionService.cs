@@ -18,7 +18,7 @@ public sealed class DefaultPermissionService : IPermissionService
 
         if (_permissions is null)
         {
-            await LoadPermissionsAsync();
+            await LoadPermissionsAsync().ConfigureAwait(false);
         }
 
         if (_permissions.TryGetValue(name, out var permission))
@@ -33,7 +33,7 @@ public sealed class DefaultPermissionService : IPermissionService
     {
         if (_permissions == null)
         {
-            await LoadPermissionsAsync();
+            await LoadPermissionsAsync().ConfigureAwait(false);
         }
 
         return _permissions.Values;
@@ -45,7 +45,7 @@ public sealed class DefaultPermissionService : IPermissionService
 
         foreach (var permissionProvider in _permissionProviders)
         {
-            var permissions = await permissionProvider.GetPermissionsAsync();
+            var permissions = await permissionProvider.GetPermissionsAsync().ConfigureAwait(false);
 
             foreach (var permission in permissions)
             {

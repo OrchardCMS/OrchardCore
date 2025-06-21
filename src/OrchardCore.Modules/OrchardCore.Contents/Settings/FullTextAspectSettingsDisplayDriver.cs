@@ -44,7 +44,7 @@ public sealed class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionD
             m => m.IncludeFullTextTemplate,
             m => m.FullTextTemplate,
             m => m.IncludeDisplayText,
-            m => m.IncludeBodyAspect);
+            m => m.IncludeBodyAspect).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(model.FullTextTemplate) && !_templateManager.Validate(model.FullTextTemplate, out var errors))
         {

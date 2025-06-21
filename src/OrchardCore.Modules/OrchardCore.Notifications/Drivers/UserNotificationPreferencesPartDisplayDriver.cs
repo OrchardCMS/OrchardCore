@@ -54,7 +54,7 @@ public sealed class UserNotificationPreferencesPartDisplayDriver : SectionDispla
     {
         var model = new UserNotificationViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var sortedMethods = new List<string>(model.SortedMethods ?? []);
 
@@ -82,6 +82,6 @@ public sealed class UserNotificationPreferencesPartDisplayDriver : SectionDispla
             .Select(provider => provider.Method)
             .ToArray();
 
-        return await EditAsync(user, part, context);
+        return await EditAsync(user, part, context).ConfigureAwait(false);
     }
 }

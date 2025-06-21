@@ -58,7 +58,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, LocalizationPermissions.ManageCultures))
+        if (!await _authorizationService.AuthorizeAsync(user, LocalizationPermissions.ManageCultures).ConfigureAwait(false))
         {
             return null;
         }
@@ -91,14 +91,14 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, LocalizationPermissions.ManageCultures))
+        if (!await _authorizationService.AuthorizeAsync(user, LocalizationPermissions.ManageCultures).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new LocalizationSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var supportedCulture = JConvert.DeserializeObject<string[]>(model.SupportedCultures);
         if (supportedCulture.Length == 0)
@@ -123,10 +123,10 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
             // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture.
             using (CultureScope.Create(settings.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
             {
-                await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
+                await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]).ConfigureAwait(false);
             }
         }
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

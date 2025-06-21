@@ -41,7 +41,7 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
     public override async Task<IDisplayResult> EditAsync(ISite site, GoogleAuthenticationSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication).ConfigureAwait(false))
         {
             return null;
         }
@@ -79,13 +79,13 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleAuthenticationSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new GoogleAuthenticationSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.ClientID = model.ClientID;
         settings.CallbackPath = model.CallbackPath;
@@ -100,6 +100,6 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

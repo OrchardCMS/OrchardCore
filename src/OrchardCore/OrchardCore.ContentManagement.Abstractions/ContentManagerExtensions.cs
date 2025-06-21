@@ -18,7 +18,7 @@ public static class ContentManagerExtensions
         }
 
         return content.ContentItem.IsPublished() ||
-            (await contentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Published) != null);
+            (await contentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Published).ConfigureAwait(false) != null);
     }
 
     public static Task<ContentItemMetadata> GetContentItemMetadataAsync(this IContentManager contentManager, IContent content)
@@ -44,21 +44,21 @@ public static class ContentManagerExtensions
     {
         ArgumentNullException.ThrowIfNull(contentItems);
 
-        await foreach (var contentItem in contentItems)
+        await foreach (var contentItem in contentItems.ConfigureAwait(false))
         {
-            yield return await contentManager.LoadAsync(contentItem);
+            yield return await contentManager.LoadAsync(contentItem).ConfigureAwait(false);
         }
     }
 
     [Obsolete("This method is obsolete and will be removed in future releases.")]
     public static async Task<ContentValidateResult> UpdateValidateAndCreateAsync(this IContentManager contentManager, ContentItem contentItem, VersionOptions options)
     {
-        await contentManager.UpdateAsync(contentItem);
-        var result = await contentManager.ValidateAsync(contentItem);
+        await contentManager.UpdateAsync(contentItem).ConfigureAwait(false);
+        var result = await contentManager.ValidateAsync(contentItem).ConfigureAwait(false);
 
         if (result.Succeeded)
         {
-            await contentManager.CreateAsync(contentItem, options);
+            await contentManager.CreateAsync(contentItem, options).ConfigureAwait(false);
         }
 
         return result;
@@ -73,7 +73,7 @@ public static class ContentManagerExtensions
     /// <param name="jsonPath">The json path of the contained content item.</param>
     public static async Task<ContentItem> GetAsync(this IContentManager contentManager, string contentItemId, string jsonPath, VersionOptions options = null)
     {
-        var contentItem = await contentManager.GetAsync(contentItemId, options);
+        var contentItem = await contentManager.GetAsync(contentItemId, options).ConfigureAwait(false);
 
         // It represents a contained content item.
         if (!string.IsNullOrEmpty(jsonPath))

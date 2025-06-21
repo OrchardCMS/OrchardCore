@@ -59,7 +59,7 @@ public class OpenIdAuthorizationManager<TAuthorization> : OpenIddictAuthorizatio
     }
 
     async ValueTask<object> IOpenIdAuthorizationManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-        => await FindByPhysicalIdAsync(identifier, cancellationToken);
+        => await FindByPhysicalIdAsync(identifier, cancellationToken).ConfigureAwait(false);
 
     ValueTask<string> IOpenIdAuthorizationManager.GetPhysicalIdAsync(object authorization, CancellationToken cancellationToken)
         => GetPhysicalIdAsync((TAuthorization)authorization, cancellationToken);

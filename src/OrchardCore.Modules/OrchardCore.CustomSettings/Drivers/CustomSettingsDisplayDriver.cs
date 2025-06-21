@@ -33,17 +33,17 @@ public sealed class CustomSettingsDisplayDriver : DisplayDriver<ISite>
             return null;
         }
 
-        if (!await _customSettingsService.CanUserCreateSettingsAsync(contentTypeDefinition))
+        if (!await _customSettingsService.CanUserCreateSettingsAsync(contentTypeDefinition).ConfigureAwait(false))
         {
             return null;
         }
 
         var isNew = false;
-        var contentItem = await _customSettingsService.GetSettingsAsync(site, contentTypeDefinition, () => isNew = true);
+        var contentItem = await _customSettingsService.GetSettingsAsync(site, contentTypeDefinition, () => isNew = true).ConfigureAwait(false);
 
         var shape = Initialize<CustomSettingsEditViewModel>(CustomSettingsConstants.Stereotype, async ctx =>
         {
-            ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
+            ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew).ConfigureAwait(false);
         }).Location("Content:3").OnGroup(contentTypeDefinition.Name);
 
         return shape;
@@ -57,18 +57,18 @@ public sealed class CustomSettingsDisplayDriver : DisplayDriver<ISite>
             return null;
         }
 
-        if (!await _customSettingsService.CanUserCreateSettingsAsync(contentTypeDefinition))
+        if (!await _customSettingsService.CanUserCreateSettingsAsync(contentTypeDefinition).ConfigureAwait(false))
         {
             return null;
         }
 
         var isNew = false;
-        var contentItem = await _customSettingsService.GetSettingsAsync(site, contentTypeDefinition, () => isNew = true);
+        var contentItem = await _customSettingsService.GetSettingsAsync(site, contentTypeDefinition, () => isNew = true).ConfigureAwait(false);
 
-        await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew);
+        await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew).ConfigureAwait(false);
 
         site.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
 
-        return await EditAsync(site, context);
+        return await EditAsync(site, context).ConfigureAwait(false);
     }
 }

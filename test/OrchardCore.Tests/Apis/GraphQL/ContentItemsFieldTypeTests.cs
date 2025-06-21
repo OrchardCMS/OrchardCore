@@ -34,10 +34,10 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         var connectionStringTemplate = @"Data Source={0};Cache=Shared";
 
         _tempFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        _store = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(string.Format(connectionStringTemplate, _tempFilename)));
+        _store = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(string.Format(connectionStringTemplate, _tempFilename))).ConfigureAwait(false);
 
         _prefix = "tp";
-        _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(string.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
+        _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(string.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_")).ConfigureAwait(false);
 
         var derivedOptions = new Mock<IOptions<JsonDerivedTypesOptions>>();
         derivedOptions.Setup(x => x.Value)
@@ -57,8 +57,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         _store.Configuration.ContentSerializer = contentSerializer;
         _prefixedStore.Configuration.ContentSerializer = contentSerializer;
 
-        await CreateTablesAsync(_store);
-        await CreateTablesAsync(_prefixedStore);
+        await CreateTablesAsync(_store).ConfigureAwait(false);
+        await CreateTablesAsync(_prefixedStore).ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
@@ -100,7 +100,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
 
     private static async Task CreateTablesAsync(IStore store)
     {
-        await using (var session = store.CreateSession())
+        var session = store.CreateSession();
+        await using (session.ConfigureAwait(false))
         {
             var builder = new SchemaBuilder(store.Configuration, await session.BeginTransactionAsync());
 
@@ -116,18 +117,18 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                 .Column<string>("Owner", column => column.Nullable().WithLength(ContentItemIndex.MaxOwnerSize))
                 .Column<string>("Author", column => column.Nullable().WithLength(ContentItemIndex.MaxAuthorSize))
                 .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
-            );
+            ).ConfigureAwait(false);
 
             await builder.CreateMapIndexTableAsync<AnimalIndex>(table => table
                 .Column<string>(nameof(AnimalIndex.Name))
-            );
+            ).ConfigureAwait(false);
 
             await builder.CreateMapIndexTableAsync<AnimalTraitsIndex>(table => table
                 .Column<bool>(nameof(AnimalTraitsIndex.IsHappy))
                 .Column<bool>(nameof(AnimalTraitsIndex.IsScary))
-            );
+            ).ConfigureAwait(false);
 
-            await session.SaveChangesAsync();
+            await session.SaveChangesAsync().ConfigureAwait(false);
         }
 
         store.RegisterIndexes<ContentItemIndexProvider>();
@@ -408,7 +409,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
 
     private static async Task<IEnumerable<ContentItem>> ResolveContentItems(ContentItemsFieldType type, ResolveFieldContext context)
     {
-        return (await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
+        return (await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).ResolveAsync(context).ConfigureAwait(false)) as IEnumerable<ContentItem>;
     }
 
     private static ResolveFieldContext CreateAnimalFieldContext(IServiceProvider services, string fieldName = null, bool collapsed = false)

@@ -30,7 +30,7 @@ public sealed class CustomSettingsDeploymentStepDriver : DisplayDriver<Deploymen
         {
             model.IncludeAll = step.IncludeAll;
             model.SettingsTypeNames = step.SettingsTypeNames;
-            model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
+            model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync().ConfigureAwait(false)).ToArray();
         }).Location("Content");
     }
 
@@ -41,7 +41,7 @@ public sealed class CustomSettingsDeploymentStepDriver : DisplayDriver<Deploymen
         await context.Updater.TryUpdateModelAsync(step,
                                           Prefix,
                                           x => x.SettingsTypeNames,
-                                          x => x.IncludeAll);
+                                          x => x.IncludeAll).ConfigureAwait(false);
 
         // Don't have the selected option if include all.
         if (step.IncludeAll)

@@ -37,7 +37,7 @@ public class ValidateAntiforgeryTokenTask : TaskActivity<ValidateAntiforgeryToke
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        if (await _antiforgery.IsRequestValidAsync(_httpContextAccessor.HttpContext))
+        if (await _antiforgery.IsRequestValidAsync(_httpContextAccessor.HttpContext).ConfigureAwait(false))
         {
             return Outcomes("Done", "Valid");
         }

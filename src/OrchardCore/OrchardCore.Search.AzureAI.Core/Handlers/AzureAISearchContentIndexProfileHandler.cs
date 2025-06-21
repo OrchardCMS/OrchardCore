@@ -54,16 +54,16 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
         var metadata = index.As<ContentIndexMetadata>();
         var azureMetadata = index.As<AzureAISearchIndexMetadata>();
 
-        await AddIndexMappingAsync(azureMetadata.IndexMappings, ContentIndexingConstants.ContentItemIdKey, new DocumentIndexEntry(ContentIndexingConstants.ContentItemIdKey, value: null, Types.Text, DocumentIndexOptions.Keyword), index);
-        await AddIndexMappingAsync(azureMetadata.IndexMappings, ContentIndexingConstants.ContentItemVersionIdKey, new DocumentIndexEntry(ContentIndexingConstants.ContentItemVersionIdKey, value: null, Types.Text, DocumentIndexOptions.Keyword), index);
+        await AddIndexMappingAsync(azureMetadata.IndexMappings, ContentIndexingConstants.ContentItemIdKey, new DocumentIndexEntry(ContentIndexingConstants.ContentItemIdKey, value: null, Types.Text, DocumentIndexOptions.Keyword), index).ConfigureAwait(false);
+        await AddIndexMappingAsync(azureMetadata.IndexMappings, ContentIndexingConstants.ContentItemVersionIdKey, new DocumentIndexEntry(ContentIndexingConstants.ContentItemVersionIdKey, value: null, Types.Text, DocumentIndexOptions.Keyword), index).ConfigureAwait(false);
 
         foreach (var contentType in metadata.IndexedContentTypes ?? [])
         {
-            var contentItem = await _contentManager.NewAsync(contentType);
+            var contentItem = await _contentManager.NewAsync(contentType).ConfigureAwait(false);
 
             var document = new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
             var buildIndexContext = new BuildDocumentIndexContext(document, contentItem, [contentType], new AzureAISearchContentIndexSettings());
-            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
+            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger).ConfigureAwait(false);
 
             foreach (var entry in document.Entries)
             {
@@ -77,7 +77,7 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
                     continue;
                 }
 
-                await AddIndexMappingAsync(azureMetadata.IndexMappings, safeFieldName, entry, index);
+                await AddIndexMappingAsync(azureMetadata.IndexMappings, safeFieldName, entry, index).ConfigureAwait(false);
             }
         }
 
@@ -107,8 +107,8 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
 
         var context = new SearchIndexDefinition(indexMap, entry, index);
 
-        await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappingAsync(ctx), context, _logger);
+        await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappingAsync(ctx), context, _logger).ConfigureAwait(false);
 
-        await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappedAsync(ctx), context, _logger);
+        await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappedAsync(ctx), context, _logger).ConfigureAwait(false);
     }
 }

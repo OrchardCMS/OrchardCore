@@ -96,7 +96,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
     {
         var model = new FormInputElementVisibilityViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         part.Action = model.Action;
 

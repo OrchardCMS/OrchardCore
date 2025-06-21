@@ -27,7 +27,7 @@ public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
         {
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
             if (!contentTypeDefinition.Parts.Any(pd => pd.Name == nameof(ArchiveLaterPart)))
             {
                 context.ContentItem.Remove<ArchiveLaterPart>();

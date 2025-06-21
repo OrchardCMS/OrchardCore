@@ -24,17 +24,17 @@ public class ContainedPartHandler : ContentHandlerBase
             // Resolve from DI to avoid circular references.
             var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
 
-            var listContentItem = await contentManager.GetAsync(containedPart.ListContentItemId);
+            var listContentItem = await contentManager.GetAsync(containedPart.ListContentItemId).ConfigureAwait(false);
             if (listContentItem != null)
             {
                 var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-                var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(listContentItem.ContentType);
+                var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(listContentItem.ContentType).ConfigureAwait(false);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
                 var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
                 if (settings.EnableOrdering)
                 {
                     var containerService = _serviceProvider.GetRequiredService<IContainerService>();
-                    var nextOrder = await containerService.GetNextOrderNumberAsync(containedPart.ListContentItemId);
+                    var nextOrder = await containerService.GetNextOrderNumberAsync(containedPart.ListContentItemId).ConfigureAwait(false);
                     context.CloneContentItem.Alter<ContainedPart>(x => x.Order = nextOrder);
                 }
             }

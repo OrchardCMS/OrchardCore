@@ -42,7 +42,7 @@ public class DisplayUrlFilter : ILiquidFilter
         }
         else
         {
-            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem).ConfigureAwait(false);
             routeValues = contentItemMetadata.DisplayRouteValues;
         }
 

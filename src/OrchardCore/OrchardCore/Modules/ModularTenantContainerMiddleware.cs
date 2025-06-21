@@ -27,7 +27,7 @@ public class ModularTenantContainerMiddleware
     public async Task Invoke(HttpContext httpContext)
     {
         // Ensure all ShellContext are loaded and available.
-        await _shellHost.InitializeAsync();
+        await _shellHost.InitializeAsync().ConfigureAwait(false);
 
         var shellSettings = _runningShellTable.Match(httpContext);
 
@@ -38,14 +38,14 @@ public class ModularTenantContainerMiddleware
             {
                 httpContext.Response.Headers.Append(HeaderNames.RetryAfter, "10");
                 httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                await httpContext.Response.WriteAsync("The requested tenant is currently initializing.");
+                await httpContext.Response.WriteAsync("The requested tenant is currently initializing.").ConfigureAwait(false);
                 return;
             }
 
             // Makes 'RequestServices' aware of the current 'ShellScope'.
             httpContext.UseShellScopeServices();
 
-            var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+            var shellScope = await _shellHost.GetScopeAsync(shellSettings).ConfigureAwait(false);
 
             // Holds the 'ShellContext' for the full request.
             httpContext.Features.Set(new ShellContextFeature
@@ -57,14 +57,14 @@ public class ModularTenantContainerMiddleware
 
             await shellScope.UsingAsync(async scope =>
             {
-                await _next.Invoke(httpContext);
+                await _next.Invoke(httpContext).ConfigureAwait(false);
 
                 var feature = httpContext.Features.Get<IExceptionHandlerFeature>();
                 if (feature?.Error is not null)
                 {
-                    await scope.HandleExceptionAsync(feature.Error);
+                    await scope.HandleExceptionAsync(feature.Error).ConfigureAwait(false);
                 }
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

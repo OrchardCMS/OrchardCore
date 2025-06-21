@@ -75,10 +75,12 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         var (factory, sqlDialect) = GetFactoryAndSqlDialect(context.DatabaseProvider, connectionString);
 
-        await using var connection = factory.CreateConnection();
+        var connection = factory.CreateConnection();
+        await using (connection.ConfigureAwait(false))
+        {
 
-        // Prevent from creating an empty locked 'Sqlite' file.
-        if (provider.Value == DatabaseProviderValue.Sqlite &&
+            // Prevent from creating an empty locked 'Sqlite' file.
+            if (provider.Value == DatabaseProviderValue.Sqlite &&
             connection is SqliteConnection sqliteConnection &&
             !File.Exists(sqliteConnection.DataSource))
         {
@@ -160,6 +162,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         // The 'Document' table exists.
         return DbConnectionValidatorResult.DocumentTableFound;
+        }
     }
 
     private static string GetDocumentCommandText(SqlBuilder sqlBuilder, string documentTable, string schema, bool isShellDescriptorDocument = false)

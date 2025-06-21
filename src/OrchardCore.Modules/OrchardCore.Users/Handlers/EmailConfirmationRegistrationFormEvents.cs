@@ -24,12 +24,12 @@ internal sealed class EmailConfirmationRegistrationFormEvents : RegistrationForm
 
     public override async Task RegisteringAsync(UserRegisteringContext context)
     {
-        if (!_registrationOptions.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(context.User))
+        if (!_registrationOptions.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(context.User).ConfigureAwait(false))
         {
             return;
         }
 
         context.CancelSignIn = true;
-        await _userEmailConfirmationService.SendEmailConfirmationAsync(context.User);
+        await _userEmailConfirmationService.SendEmailConfirmationAsync(context.User).ConfigureAwait(false);
     }
 }

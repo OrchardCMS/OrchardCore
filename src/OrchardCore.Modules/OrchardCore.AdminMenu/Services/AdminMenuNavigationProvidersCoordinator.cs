@@ -39,16 +39,16 @@ public sealed class AdminMenuNavigationProvidersCoordinator : INavigationProvide
             return;
         }
 
-        var trees = (await _adminMenuService.GetAdminMenuListAsync())
+        var trees = (await _adminMenuService.GetAdminMenuListAsync().ConfigureAwait(false))
             .AdminMenu.Where(m => m.Enabled && m.MenuItems.Count > 0);
 
         foreach (var tree in trees)
         {
             if (await _authorizationService.AuthorizeAsync(
                 _httpContextAccessor.HttpContext?.User,
-                Permissions.CreatePermissionForAdminMenu(tree.Name)))
+                Permissions.CreatePermissionForAdminMenu(tree.Name)).ConfigureAwait(false))
             {
-                await BuildTreeAsync(tree, builder);
+                await BuildTreeAsync(tree, builder).ConfigureAwait(false);
             }
         }
     }
@@ -61,7 +61,7 @@ public sealed class AdminMenuNavigationProvidersCoordinator : INavigationProvide
 
             if (nodeBuilder != null)
             {
-                await nodeBuilder.BuildNavigationAsync(node, builder, _nodeBuilders);
+                await nodeBuilder.BuildNavigationAsync(node, builder, _nodeBuilders).ConfigureAwait(false);
             }
             else
             {

@@ -26,7 +26,7 @@ public sealed class AuditTrailTrimmingSettingsDisplayDriver : SiteDisplayDriver<
     public override async Task<IDisplayResult> EditAsync(ISite site, AuditTrailTrimmingSettings section, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -43,16 +43,16 @@ public sealed class AuditTrailTrimmingSettingsDisplayDriver : SiteDisplayDriver<
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AuditTrailTrimmingSettings section, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new AuditTrailTrimmingSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
         section.RetentionDays = model.RetentionDays;
         section.Disabled = model.Disabled;
 
-        return await EditAsync(site, section, context);
+        return await EditAsync(site, section, context).ConfigureAwait(false);
     }
 }

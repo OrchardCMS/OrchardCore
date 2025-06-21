@@ -52,7 +52,7 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
         var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
 
         var user = _httpContextAccessor.HttpContext.User;
-        var widgetDefinitions = (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync())
+        var widgetDefinitions = (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync().ConfigureAwait(false))
             .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 
         foreach (var zone in part.Widgets.Keys)
@@ -64,7 +64,7 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
                     continue;
                 }
 
-                if (definition.IsSecurable() && !await _authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent, widget))
+                if (definition.IsSecurable() && !await _authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent, widget).ConfigureAwait(false))
                 {
                     continue;
                 }
@@ -73,13 +73,13 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
 
                 if (layerMetadata != null)
                 {
-                    var widgetContent = await contentItemDisplayManager.BuildDisplayAsync(widget, context.Updater);
+                    var widgetContent = await contentItemDisplayManager.BuildDisplayAsync(widget, context.Updater).ConfigureAwait(false);
 
                     widgetContent.Classes.Add("widget");
                     widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
                     var contentZone = layoutZones[zone];
-                    await contentZone.AddAsync(widgetContent, "");
+                    await contentZone.AddAsync(widgetContent, "").ConfigureAwait(false);
                 }
             }
         }
@@ -91,7 +91,7 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
     {
         return Initialize<WidgetsListPartEditViewModel>(GetEditorShapeType(context), async m =>
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(widgetPart.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(widgetPart.ContentItem.ContentType).ConfigureAwait(false);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(WidgetsListPart));
             var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
 
@@ -108,7 +108,7 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
 
         var model = new WidgetsListPartEditViewModel { WidgetsListPart = part };
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var zonedContentItems = new Dictionary<string, List<ContentItem>>();
 
@@ -121,7 +121,7 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
             var zone = model.Zones[i];
             var prefix = model.Prefixes[i];
 
-            var contentItem = await _contentManager.NewAsync(contentType);
+            var contentItem = await _contentManager.NewAsync(contentType).ConfigureAwait(false);
             if (part.Widgets.TryGetValue(zone, out var widgets))
             {
                 var existingContentItem = widgets.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
@@ -138,7 +138,7 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
 
             contentItem.Weld(new WidgetMetadata());
 
-            var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: prefix);
+            var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: prefix).ConfigureAwait(false);
 
             if (!zonedContentItems.TryGetValue(zone, out var value))
             {

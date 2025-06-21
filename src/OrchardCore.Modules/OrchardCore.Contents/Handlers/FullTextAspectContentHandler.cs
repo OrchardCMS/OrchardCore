@@ -34,7 +34,7 @@ public class FullTextAspectContentHandler : ContentHandlerBase
 
     public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
 
         if (contentTypeDefinition == null)
         {
@@ -43,7 +43,7 @@ public class FullTextAspectContentHandler : ContentHandlerBase
 
         await context.ForAsync<FullTextAspect>(async fullTextAspect =>
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
             var settings = contentTypeDefinition.GetSettings<FullTextAspectSettings>();
 
             if (settings.IncludeDisplayText)
@@ -55,7 +55,7 @@ public class FullTextAspectContentHandler : ContentHandlerBase
             {
                 // Lazy resolution to prevent cyclic dependency of content handlers
                 var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
-                var bodyAspect = await contentManager.PopulateAspectAsync<BodyAspect>(context.ContentItem);
+                var bodyAspect = await contentManager.PopulateAspectAsync<BodyAspect>(context.ContentItem).ConfigureAwait(false);
 
                 if (bodyAspect != null && bodyAspect.Body != null)
                 {
@@ -69,10 +69,10 @@ public class FullTextAspectContentHandler : ContentHandlerBase
             if (settings.IncludeFullTextTemplate && !string.IsNullOrEmpty(settings.FullTextTemplate))
             {
                 var result = await _liquidTemplateManager.RenderStringAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) });
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) }).ConfigureAwait(false);
 
                 fullTextAspect.Segments.Add(result);
             }
-        });
+        }).ConfigureAwait(false);
     }
 }

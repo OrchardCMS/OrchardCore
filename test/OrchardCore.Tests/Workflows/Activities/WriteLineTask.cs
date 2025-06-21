@@ -35,8 +35,8 @@ public class WriteLineTask : TaskActivity<WriteLineTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var text = await _scriptEvaluator.EvaluateAsync(Text, workflowContext);
-        await _output.WriteLineAsync(text);
+        var text = await _scriptEvaluator.EvaluateAsync(Text, workflowContext).ConfigureAwait(false);
+        await _output.WriteLineAsync(text).ConfigureAwait(false);
         return Outcomes("Done");
     }
 }

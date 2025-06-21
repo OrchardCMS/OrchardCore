@@ -27,7 +27,7 @@ public sealed class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPar
     {
         var viewModel = new ButtonPartEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         part.Text = viewModel.Text?.Trim();
         part.Type = viewModel.Type?.Trim();

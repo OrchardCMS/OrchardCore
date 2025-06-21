@@ -32,7 +32,7 @@ public sealed class UsersStep : NamedRecipeStepHandler
                 continue;
             }
 
-            var iUser = await _userManager.FindByIdAsync(importedUser.UserId);
+            var iUser = await _userManager.FindByIdAsync(importedUser.UserId).ConfigureAwait(false);
 
             if (iUser is not User user)
             {
@@ -58,7 +58,7 @@ public sealed class UsersStep : NamedRecipeStepHandler
             user.PhoneNumberConfirmed = importedUser.PhoneNumberConfirmed;
             user.RoleNames = importedUser.RoleNames;
 
-            await _session.SaveAsync(user);
+            await _session.SaveAsync(user).ConfigureAwait(false);
         }
     }
 }

@@ -52,7 +52,7 @@ public class ThemeService : IThemeService
                 : null;
         }
 
-        var currentTheme = await _siteThemeService.GetSiteThemeNameAsync();
+        var currentTheme = await _siteThemeService.GetSiteThemeNameAsync().ConfigureAwait(false);
 
         while (themes.Count > 0)
         {
@@ -61,7 +61,7 @@ public class ThemeService : IThemeService
             // Not disabling base theme if it's the current theme.
             if (themeId != currentTheme)
             {
-                await DisableFeaturesAsync(new[] { themeId }, true);
+                await DisableFeaturesAsync(new[] { themeId }, true).ConfigureAwait(false);
             }
         }
     }
@@ -89,7 +89,7 @@ public class ThemeService : IThemeService
         {
             var themeId = themes.Pop();
 
-            await EnableFeaturesAsync(new[] { themeId }, true);
+            await EnableFeaturesAsync(new[] { themeId }, true).ConfigureAwait(false);
         }
     }
 
@@ -113,10 +113,10 @@ public class ThemeService : IThemeService
             .GetFeatures()
             .Where(x => featureIds.Contains(x.Id));
 
-        var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
+        var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force).ConfigureAwait(false);
         foreach (var enabledFeature in enabledFeatures)
         {
-            await _notifier.SuccessAsync(H["{0} was enabled.", enabledFeature.Name]);
+            await _notifier.SuccessAsync(H["{0} was enabled.", enabledFeature.Name]).ConfigureAwait(false);
         }
     }
 
@@ -140,10 +140,10 @@ public class ThemeService : IThemeService
             .GetFeatures()
             .Where(x => featureIds.Contains(x.Id));
 
-        var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
+        var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force).ConfigureAwait(false);
         foreach (var feature in features)
         {
-            await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name]);
+            await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name]).ConfigureAwait(false);
         }
     }
 }

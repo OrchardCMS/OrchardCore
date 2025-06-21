@@ -25,7 +25,7 @@ public class AllDataTranslationsDeploymentSource : IDeploymentSource
         }
 
         var translationObjects = new JsonArray();
-        var translationsDocument = await _translationsManager.GetTranslationsDocumentAsync();
+        var translationsDocument = await _translationsManager.GetTranslationsDocumentAsync().ConfigureAwait(false);
 
         foreach (var translation in translationsDocument.Translations)
         {
@@ -38,6 +38,6 @@ public class AllDataTranslationsDeploymentSource : IDeploymentSource
             ["DynamicDataTranslations"] = translationObjects,
         });
 
-        await Task.CompletedTask;
+        await Task.CompletedTask.ConfigureAwait(false);
     }
 }

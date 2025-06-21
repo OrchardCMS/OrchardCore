@@ -21,7 +21,7 @@ public class AspectsContentIndexHandler : IDocumentIndexHandler
             return;
         }
 
-        var body = await _contentManager.PopulateAspectAsync(contentItem, new BodyAspect());
+        var body = await _contentManager.PopulateAspectAsync(contentItem, new BodyAspect()).ConfigureAwait(false);
 
         if (body != null && body.Body != null)
         {

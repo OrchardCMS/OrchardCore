@@ -42,14 +42,14 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     public async Task<IEnumerable<ContentTypeDefinition>> LoadTypeDefinitionsAsync()
     {
-        var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+        var document = await _contentDefinitionStore.LoadContentDefinitionAsync().ConfigureAwait(false);
 
         return document.ContentTypeDefinitionRecords.Select(type => LoadTypeDefinition(document, type.Name)).ToList();
     }
 
     public async Task<IEnumerable<ContentTypeDefinition>> ListTypeDefinitionsAsync()
     {
-        var document = await _contentDefinitionStore.GetContentDefinitionAsync();
+        var document = await _contentDefinitionStore.GetContentDefinitionAsync().ConfigureAwait(false);
 
         CheckDocumentIdentifier(document);
 
@@ -58,14 +58,14 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     public async Task<IEnumerable<ContentPartDefinition>> LoadPartDefinitionsAsync()
     {
-        var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+        var document = await _contentDefinitionStore.LoadContentDefinitionAsync().ConfigureAwait(false);
 
         return document.ContentPartDefinitionRecords.Select(part => LoadPartDefinition(document, part.Name)).ToList();
     }
 
     public async Task<IEnumerable<ContentPartDefinition>> ListPartDefinitionsAsync()
     {
-        var document = await _contentDefinitionStore.GetContentDefinitionAsync();
+        var document = await _contentDefinitionStore.GetContentDefinitionAsync().ConfigureAwait(false);
 
         CheckDocumentIdentifier(document);
 
@@ -81,7 +81,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
             return typeDefinition;
         }
 
-        var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+        var document = await _contentDefinitionStore.LoadContentDefinitionAsync().ConfigureAwait(false);
 
         return LoadTypeDefinition(document, name);
     }
@@ -90,7 +90,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        var document = await _contentDefinitionStore.GetContentDefinitionAsync();
+        var document = await _contentDefinitionStore.GetContentDefinitionAsync().ConfigureAwait(false);
 
         CheckDocumentIdentifier(document);
 
@@ -106,7 +106,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
             return partDefinition;
         }
 
-        var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+        var document = await _contentDefinitionStore.LoadContentDefinitionAsync().ConfigureAwait(false);
 
         return LoadPartDefinition(document, name);
     }
@@ -115,7 +115,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        var document = await _contentDefinitionStore.GetContentDefinitionAsync();
+        var document = await _contentDefinitionStore.GetContentDefinitionAsync().ConfigureAwait(false);
 
         CheckDocumentIdentifier(document);
 
@@ -126,7 +126,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+        var document = await _contentDefinitionStore.LoadContentDefinitionAsync().ConfigureAwait(false);
 
         var record = document.ContentTypeDefinitionRecords.FirstOrDefault(record => record.Name.EqualsOrdinalIgnoreCase(name));
 
@@ -134,7 +134,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
         if (record is not null)
         {
             document.ContentTypeDefinitionRecords.Remove(record);
-            await UpdateContentDefinitionRecordAsync(document);
+            await UpdateContentDefinitionRecordAsync(document).ConfigureAwait(false);
         }
     }
 
@@ -142,7 +142,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+        var document = await _contentDefinitionStore.LoadContentDefinitionAsync().ConfigureAwait(false);
 
         // Remove parts from current types.
         var typeDefinitions = document.ContentTypeDefinitionRecords
@@ -154,7 +154,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
         foreach (var typeDefinition in typesWithPart)
         {
-            await this.AlterTypeDefinitionAsync(typeDefinition.Name, builder => Task.FromResult(builder.RemovePart(name)));
+            await this.AlterTypeDefinitionAsync(typeDefinition.Name, builder => Task.FromResult(builder.RemovePart(name))).ConfigureAwait(false);
         }
 
         // Delete part.
@@ -162,30 +162,30 @@ public class ContentDefinitionManager : IContentDefinitionManager
         if (record is not null)
         {
             document.ContentPartDefinitionRecords.Remove(record);
-            await UpdateContentDefinitionRecordAsync(document);
+            await UpdateContentDefinitionRecordAsync(document).ConfigureAwait(false);
         }
     }
 
     public async Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition)
     {
-        var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+        var document = await _contentDefinitionStore.LoadContentDefinitionAsync().ConfigureAwait(false);
 
         Apply(contentTypeDefinition, Acquire(document, contentTypeDefinition));
 
-        await UpdateContentDefinitionRecordAsync(document);
+        await UpdateContentDefinitionRecordAsync(document).ConfigureAwait(false);
     }
 
     public async Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition)
     {
-        var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+        var document = await _contentDefinitionStore.LoadContentDefinitionAsync().ConfigureAwait(false);
 
         Apply(contentPartDefinition, Acquire(document, contentPartDefinition));
 
-        await UpdateContentDefinitionRecordAsync(document);
+        await UpdateContentDefinitionRecordAsync(document).ConfigureAwait(false);
     }
 
     public async Task<string> GetIdentifierAsync()
-        => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
+        => (await _contentDefinitionStore.GetContentDefinitionAsync().ConfigureAwait(false)).Identifier;
 
     private ContentTypeDefinition LoadTypeDefinition(ContentDefinitionRecord document, string name) =>
         _scopedTypeDefinitions.TryGetValue(name, out var typeDefinition)
@@ -429,7 +429,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     private async Task UpdateContentDefinitionRecordAsync(ContentDefinitionRecord document)
     {
-        await _contentDefinitionStore.SaveContentDefinitionAsync(document);
+        await _contentDefinitionStore.SaveContentDefinitionAsync(document).ConfigureAwait(false);
 
         // If multiple updates in the same scope, types and parts may need to be rebuilt.
         _scopedTypeDefinitions.Clear();

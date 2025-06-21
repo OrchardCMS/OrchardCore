@@ -38,13 +38,13 @@ public class ZoneTag
             switch (argument.Name)
             {
                 case "position":
-                    position = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    position = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
                     break;
 
                 case null:
                 case "name":
                 case "":
-                    name ??= (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    name ??= (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
                     break;
             }
         }
@@ -53,20 +53,20 @@ public class ZoneTag
         {
             var content = new ViewBufferTextWriterContent();
 
-            var completion = await statements.RenderStatementsAsync(content, encoder, context);
+            var completion = await statements.RenderStatementsAsync(content, encoder, context).ConfigureAwait(false);
 
             if (completion != Completion.Normal)
             {
                 return completion;
             }
 
-            var layout = await layoutAccessor.GetLayoutAsync();
+            var layout = await layoutAccessor.GetLayoutAsync().ConfigureAwait(false);
 
             var zone = layout.Zones[name];
 
             if (zone is Shape shape)
             {
-                await shape.AddAsync(content, position);
+                await shape.AddAsync(content, position).ConfigureAwait(false);
             }
             else
             {

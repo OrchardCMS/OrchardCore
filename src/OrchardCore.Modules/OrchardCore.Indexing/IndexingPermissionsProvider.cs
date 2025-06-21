@@ -19,14 +19,14 @@ public sealed class IndexingPermissionsProvider : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var indexes = await _store.GetAllAsync();
+        var indexes = await _store.GetAllAsync().ConfigureAwait(false);
 
         var permissions = new List<Permission>(indexes.Count() + 1)
         {
             IndexingPermissions.ManageIndexes,
         };
 
-        foreach (var index in await _store.GetAllAsync())
+        foreach (var index in await _store.GetAllAsync().ConfigureAwait(false))
         {
             permissions.Add(IndexingPermissions.CreateDynamicPermission(index));
         }

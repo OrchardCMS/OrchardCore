@@ -26,17 +26,17 @@ public sealed class ExportContentToDeploymentTargetMigrations : DataMigration
 
     public async Task<int> CreateAsync()
     {
-        await _recipeMigrator.ExecuteAsync($"exportcontenttodeploymenttarget{RecipesConstants.RecipeExtension}", this);
+        await _recipeMigrator.ExecuteAsync($"exportcontenttodeploymenttarget{RecipesConstants.RecipeExtension}", this).ConfigureAwait(false);
 
-        var deploymentPlans = await _deploymentPlanService.GetAllDeploymentPlansAsync();
+        var deploymentPlans = await _deploymentPlanService.GetAllDeploymentPlansAsync().ConfigureAwait(false);
         var exportContentToDeploymentTargetPlan = deploymentPlans.FirstOrDefault(x => x.DeploymentSteps.Any(x => x.Name == nameof(ExportContentToDeploymentTargetDeploymentStep)));
 
         if (exportContentToDeploymentTargetPlan != null)
         {
-            var siteSettings = await _siteService.LoadSiteSettingsAsync();
+            var siteSettings = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
             siteSettings.Alter<ExportContentToDeploymentTargetSettings>(aspect => aspect.ExportContentToDeploymentTargetPlanId = exportContentToDeploymentTargetPlan.Id);
 
-            await _siteService.UpdateSiteSettingsAsync(siteSettings);
+            await _siteService.UpdateSiteSettingsAsync(siteSettings).ConfigureAwait(false);
         }
 
         return 1;

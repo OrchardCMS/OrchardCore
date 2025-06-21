@@ -22,14 +22,14 @@ public sealed class AzureADSettingsStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<AzureADSettingsStepModel>();
-        var settings = await _azureADService.LoadSettingsAsync();
+        var settings = await _azureADService.LoadSettingsAsync().ConfigureAwait(false);
 
         settings.AppId = model.AppId;
         settings.TenantId = model.TenantId;
         settings.DisplayName = model.DisplayName;
         settings.CallbackPath = model.CallbackPath;
 
-        await _azureADService.UpdateSettingsAsync(settings);
+        await _azureADService.UpdateSettingsAsync(settings).ConfigureAwait(false);
     }
 }
 

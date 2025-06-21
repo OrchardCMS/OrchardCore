@@ -14,7 +14,7 @@ public class ContentItemAspectContext
 
         if (aspect != null)
         {
-            await action(aspect);
+            await action(aspect).ConfigureAwait(false);
         }
 
         return this;

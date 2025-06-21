@@ -51,7 +51,7 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
         }
         else
         {
-            var existing = await _store.FindByNameAsync(context.Model.Name);
+            var existing = await _store.FindByNameAsync(context.Model.Name).ConfigureAwait(false);
 
             if (existing is not null && existing.Id != context.Model.Id)
             {

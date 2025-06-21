@@ -25,7 +25,7 @@ public sealed class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisp
         var model = new MarkdownFieldSettingsViewModel();
         var settings = new MarkdownFieldSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.SanitizeHtml = model.SanitizeHtml;
         settings.Hint = model.Hint;

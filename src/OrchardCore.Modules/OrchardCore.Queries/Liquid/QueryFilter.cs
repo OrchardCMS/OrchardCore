@@ -32,7 +32,7 @@ public class QueryFilter : ILiquidFilter
 
         var queryManager = _serviceProvider.GetRequiredService<IQueryManager>();
 
-        var result = await queryManager.ExecuteQueryAsync(query, parameters);
+        var result = await queryManager.ExecuteQueryAsync(query, parameters).ConfigureAwait(false);
 
         return FluidValue.Create(result.Items, ctx.Options);
     }

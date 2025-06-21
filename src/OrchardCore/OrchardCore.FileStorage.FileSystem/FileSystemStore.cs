@@ -305,7 +305,7 @@ public class FileSystemStore : IFileStore
             var fileInfo = new FileInfo(physicalPath);
             using (var outputStream = fileInfo.Create())
             {
-                await inputStream.CopyToAsync(outputStream);
+                await inputStream.CopyToAsync(outputStream).ConfigureAwait(false);
             }
 
             return path;

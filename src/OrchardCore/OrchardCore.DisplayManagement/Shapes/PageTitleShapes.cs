@@ -20,7 +20,7 @@ public class PageTitleShapes : IShapeAttributeProvider
     [Shape]
     public async Task<IHtmlContent> PageTitle()
     {
-        var siteSettings = await ShellScope.Services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
+        var siteSettings = await ShellScope.Services.GetRequiredService<ISiteService>().GetSiteSettingsAsync().ConfigureAwait(false);
 
         // We must return a page title so if the format setting is blank just use the current title unformatted
         if (string.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
@@ -32,7 +32,7 @@ public class PageTitleShapes : IShapeAttributeProvider
             var liquidTemplateManager = ShellScope.Services.GetRequiredService<ILiquidTemplateManager>();
             var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
 
-            var result = await liquidTemplateManager.RenderHtmlContentAsync(siteSettings.PageTitleFormat, htmlEncoder);
+            var result = await liquidTemplateManager.RenderHtmlContentAsync(siteSettings.PageTitleFormat, htmlEncoder).ConfigureAwait(false);
             return result;
         }
     }

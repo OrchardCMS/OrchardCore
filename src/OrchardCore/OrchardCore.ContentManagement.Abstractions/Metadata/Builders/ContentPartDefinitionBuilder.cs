@@ -163,7 +163,7 @@ public class ContentPartDefinitionBuilder
     public Task<ContentPartDefinitionBuilder> WithFieldAsync<TField>(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configuration)
         => WithFieldAsync(fieldName, async field =>
         {
-            await configuration(field);
+            await configuration(field).ConfigureAwait(false);
 
             field.OfType(typeof(TField).Name);
         });
@@ -189,7 +189,7 @@ public class ContentPartDefinitionBuilder
 
         var configurer = new FieldConfigurerImpl(existingField, _part);
 
-        await configurationAsync(configurer);
+        await configurationAsync(configurer).ConfigureAwait(false);
 
         var fieldDefinition = configurer.Build();
 

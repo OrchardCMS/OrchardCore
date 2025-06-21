@@ -15,7 +15,7 @@ public sealed class SiteSettingsDeploymentSource
 
     protected override async Task ProcessAsync(SiteSettingsDeploymentStep step, DeploymentPlanResult result)
     {
-        var site = await _siteService.GetSiteSettingsAsync();
+        var site = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
 
         var data = new JsonObject { ["name"] = "Settings" };
 

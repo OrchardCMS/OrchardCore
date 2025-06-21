@@ -24,15 +24,15 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.CreateMapIndexTableAsync<DashboardPartIndex>(table => table
            .Column<double>("Position")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
             .CreateIndex("IDX_DashboardPart_DocumentId",
                 "DocumentId",
                 "Position")
-        );
+        ).ConfigureAwait(false);
 
-        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
+        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 4;
@@ -40,7 +40,7 @@ public sealed class Migrations : DataMigration
 
     public async Task<int> UpdateFrom1Async()
     {
-        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
+        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this).ConfigureAwait(false);
 
         return 2;
     }
@@ -52,14 +52,14 @@ public sealed class Migrations : DataMigration
             .CreateIndex("IDX_DashboardPart_DocumentId",
                 "DocumentId",
                 "Position")
-        );
+        ).ConfigureAwait(false);
 
         return 3;
     }
 
     public async Task<int> UpdateFrom3Async()
     {
-        await _contentDefinitionManager.DeletePartDefinitionAsync("DashboardPart");
+        await _contentDefinitionManager.DeletePartDefinitionAsync("DashboardPart").ConfigureAwait(false);
 
         return 4;
     }

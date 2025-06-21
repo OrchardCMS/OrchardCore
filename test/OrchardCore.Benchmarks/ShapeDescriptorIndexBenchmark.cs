@@ -21,7 +21,7 @@ public class ShapeDescriptorIndexBenchmark
     public async Task SetupAsync()
     {
         using var content = new BlogContext();
-        await content.InitializeAsync();
+        await content.InitializeAsync().ConfigureAwait(false);
         await content.UsingTenantScopeAsync(async scope =>
         {
             var bindingStrategies = scope.ServiceProvider.GetRequiredService<IEnumerable<IShapeTableProvider>>();
@@ -31,10 +31,10 @@ public class ShapeDescriptorIndexBenchmark
                 var strategyFeature = typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
                 var builder = new ShapeTableBuilder(strategyFeature, []);
-                await bindingStrategy.DiscoverAsync(builder);
+                await bindingStrategy.DiscoverAsync(builder).ConfigureAwait(false);
                 BuildDescriptors(bindingStrategy, builder.BuildAlterations());
             }
-        });
+        }).ConfigureAwait(false);
     }
 
     [Benchmark(Baseline = true)]

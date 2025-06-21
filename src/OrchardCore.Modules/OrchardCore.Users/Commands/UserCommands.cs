@@ -44,7 +44,7 @@ public class UserCommands : DefaultCommandHandler
         {
             valid = false;
             Context.Output.WriteLine(message);
-        });
+        }).ConfigureAwait(false);
 
         if (valid)
         {

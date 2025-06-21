@@ -40,7 +40,7 @@ public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
         }
 
         using var fs = File.Create(fullname, 4 * 1024, FileOptions.None);
-        await stream.CopyToAsync(fs);
+        await stream.CopyToAsync(fs).ConfigureAwait(false);
     }
 
     public override string ToString()

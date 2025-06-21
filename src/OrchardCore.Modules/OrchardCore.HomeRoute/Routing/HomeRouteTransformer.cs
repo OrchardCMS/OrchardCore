@@ -16,7 +16,7 @@ public class HomeRouteTransformer : DynamicRouteValueTransformer
 
     public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
     {
-        var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
+        var homeRoute = (await _siteService.GetSiteSettingsAsync().ConfigureAwait(false)).HomeRoute;
 
         if (homeRoute.Count > 0)
         {

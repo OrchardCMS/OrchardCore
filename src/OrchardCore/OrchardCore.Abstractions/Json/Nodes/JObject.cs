@@ -9,7 +9,7 @@ public static class JObject
     /// <summary>
     /// Loads a JSON object from the provided stream.
     /// </summary>
-    public static async Task<JsonObject?> LoadAsync(Stream utf8Json) => (await JNode.LoadAsync(utf8Json))?.AsObject();
+    public static async Task<JsonObject?> LoadAsync(Stream utf8Json) => (await JNode.LoadAsync(utf8Json).ConfigureAwait(false))?.AsObject();
 
     /// <summary>
     /// Loads a JSON object from the provided stream.
@@ -19,7 +19,7 @@ public static class JObject
         JsonNodeOptions? nodeOptions = null,
         JsonDocumentOptions documentOptions = default,
         CancellationToken cancellationToken = default)
-        => (await JNode.LoadAsync(utf8Json, nodeOptions, documentOptions, cancellationToken))?.AsObject();
+        => (await JNode.LoadAsync(utf8Json, nodeOptions, documentOptions, cancellationToken).ConfigureAwait(false))?.AsObject();
 
     /// <summary>
     /// Loads a JSON object from the provided reader.

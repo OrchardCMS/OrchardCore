@@ -21,15 +21,15 @@ public class ShortcodeTemplatesManager
 
     public async Task RemoveShortcodeTemplateAsync(string name)
     {
-        var document = await LoadShortcodeTemplatesDocumentAsync();
+        var document = await LoadShortcodeTemplatesDocumentAsync().ConfigureAwait(false);
         document.ShortcodeTemplates.Remove(name);
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     public async Task UpdateShortcodeTemplateAsync(string name, ShortcodeTemplate template)
     {
-        var document = await LoadShortcodeTemplatesDocumentAsync();
+        var document = await LoadShortcodeTemplatesDocumentAsync().ConfigureAwait(false);
         document.ShortcodeTemplates[name.ToLower()] = template;
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 }

@@ -73,7 +73,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
         // media fields we will check sub folders too.
         var i = path.IndexOf(PathSeparator);
         var folderPath = i >= 0 ? path[..i] : path;
-        var directory = await _fileStore.GetDirectoryInfoAsync(folderPath);
+        var directory = await _fileStore.GetDirectoryInfoAsync(folderPath).ConfigureAwait(false);
         if (directory is null && path.IndexOf(PathSeparator, folderPath.Length) < 0)
         {
             // This could be a new directory, or a new or existing file in the root folder. As we cannot directly determine
@@ -81,7 +81,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             // If none is matched, we assume a new directory is created, otherwise we will check the root access only.
             // Note: The file path is currently not authorized during upload, only the folder is checked. Therefore checking 
             // the file extensions is not actually required, but let's leave this in case we add an authorization call later.
-            if (await _fileStore.GetFileInfoAsync(folderPath) is not null ||
+            if (await _fileStore.GetFileInfoAsync(folderPath).ConfigureAwait(false) is not null ||
                _mediaOptions.AllowedFileExtensions.Any(ext => path.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
             {
                 path = string.Empty;
@@ -90,21 +90,21 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
 
         if (IsAuthorizedFolder("/", path))
         {
-            await AuthorizeAsync(context, requirement, MediaPermissions.ViewRootMedia);
+            await AuthorizeAsync(context, requirement, MediaPermissions.ViewRootMedia).ConfigureAwait(false);
 
             return;
         }
 
         if (IsAuthorizedFolder(_mediaFieldsFolder, path) || IsDescendantOfAuthorizedFolder(_mediaFieldsFolder, path))
         {
-            await AuthorizeAttachedMediaFieldsFolderAsync(context, requirement, path);
+            await AuthorizeAttachedMediaFieldsFolderAsync(context, requirement, path).ConfigureAwait(false);
 
             return;
         }
 
         if (IsAuthorizedFolder(_usersFolder, path) || IsDescendantOfAuthorizedFolder(_usersFolder, path))
         {
-            await AuthorizeUsersFolderAsync(context, requirement, path);
+            await AuthorizeUsersFolderAsync(context, requirement, path).ConfigureAwait(false);
 
             return;
         }
@@ -114,7 +114,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
         if (template != null)
         {
             var permission = SecureMediaPermissions.CreateDynamicPermission(template, folderPath);
-            await AuthorizeAsync(context, requirement, permission);
+            await AuthorizeAsync(context, requirement, permission).ConfigureAwait(false);
         }
         else
         {
@@ -143,11 +143,11 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
 
             if (IsAuthorizedFolder(userAssetsFolderName, userId))
             {
-                await AuthorizeAsync(context, requirement, MediaPermissions.ViewOwnMedia);
+                await AuthorizeAsync(context, requirement, MediaPermissions.ViewOwnMedia).ConfigureAwait(false);
             }
             else
             {
-                await AuthorizeAsync(context, requirement, MediaPermissions.ViewOthersMedia);
+                await AuthorizeAsync(context, requirement, MediaPermissions.ViewOthersMedia).ConfigureAwait(false);
             }
         }
         else
@@ -155,12 +155,12 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             // Authorize by using the content item permission. The user must have access to the content item to allow its media
             // as well.
             var contentItemId = attachedMediaPathParts.Length > 1 ? attachedMediaPathParts[1] : null;
-            var contentItem = !string.IsNullOrEmpty(contentItemId) ? await _contentManager.GetAsync(contentItemId) : null;
+            var contentItem = !string.IsNullOrEmpty(contentItemId) ? await _contentManager.GetAsync(contentItemId).ConfigureAwait(false) : null;
 
             // Disallow if content item is not found or allowed
             if (contentItem is not null)
             {
-                await AuthorizeAsync(context, requirement, Contents.CommonPermissions.ViewContent, contentItem);
+                await AuthorizeAsync(context, requirement, Contents.CommonPermissions.ViewContent, contentItem).ConfigureAwait(false);
             }
         }
     }
@@ -189,17 +189,17 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             }
         }
 
-        await AuthorizeAsync(context, requirement, permission);
+        await AuthorizeAsync(context, requirement, permission).ConfigureAwait(false);
     }
 
     private async Task AuthorizeAsync(AuthorizationHandlerContext context, PermissionRequirement requirement, Permission permission, object resource = null)
     {
         var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
-        if (await authorizationService.AuthorizeAsync(context.User, permission, resource))
+        if (await authorizationService.AuthorizeAsync(context.User, permission, resource).ConfigureAwait(false))
         {
             // If anonymous access is also possible, we want to use default browser caching policies.
             // Otherwise we set a marker which causes a different caching policy being used.
-            if ((context.User.Identity?.IsAuthenticated ?? false) && !await authorizationService.AuthorizeAsync(_anonymous, permission, resource))
+            if ((context.User.Identity?.IsAuthenticated ?? false) && !await authorizationService.AuthorizeAsync(_anonymous, permission, resource).ConfigureAwait(false))
             {
                 _httpContextAccessor.HttpContext.MarkAsSecureMediaRequested();
             }

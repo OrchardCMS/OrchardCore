@@ -130,12 +130,12 @@ public class ShapeResult : IDisplayResult
         }
 
         // If a condition has been applied to this result evaluate it only if the shape has been placed.
-        if (_renderPredicateAsync != null && !await _renderPredicateAsync())
+        if (_renderPredicateAsync != null && !await _renderPredicateAsync().ConfigureAwait(false))
         {
             return;
         }
 
-        var newShape = Shape = await _shapeBuilder(context);
+        var newShape = Shape = await _shapeBuilder(context).ConfigureAwait(false);
 
         // Ignore it if the driver returned a null shape.
         if (newShape == null)
@@ -160,7 +160,7 @@ public class ShapeResult : IDisplayResult
 
         if (_initializingAsync != null)
         {
-            await _initializingAsync.Invoke(Shape);
+            await _initializingAsync.Invoke(Shape).ConfigureAwait(false);
         }
 
         if (_displaying != null)
@@ -230,7 +230,7 @@ public class ShapeResult : IDisplayResult
 
         if (parentShape is Shape shape)
         {
-            await shape.AddAsync(newShape, position);
+            await shape.AddAsync(newShape, position).ConfigureAwait(false);
         }
     }
 

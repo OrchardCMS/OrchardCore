@@ -24,7 +24,7 @@ public sealed class HtmlBodyPartSettingsDisplayDriver : ContentTypePartDefinitio
         var model = new HtmlBodyPartSettingsViewModel();
         var settings = new HtmlBodyPartSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.SanitizeHtml = model.SanitizeHtml;
 

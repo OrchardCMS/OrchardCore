@@ -16,7 +16,7 @@ public class SelectRolesViewComponent : ViewComponent
     {
         selectedRoles ??= Array.Empty<string>();
 
-        var roleSelections = await BuildRoleSelectionsAsync(selectedRoles, except);
+        var roleSelections = await BuildRoleSelectionsAsync(selectedRoles, except).ConfigureAwait(false);
 
         var model = new SelectRolesViewModel
         {
@@ -29,7 +29,7 @@ public class SelectRolesViewComponent : ViewComponent
 
     private async Task<IList<Selection<string>>> BuildRoleSelectionsAsync(IEnumerable<string> selectedRoles, IEnumerable<string> except)
     {
-        var roleNames = await _roleService.GetRoleNamesAsync();
+        var roleNames = await _roleService.GetRoleNamesAsync().ConfigureAwait(false);
 
         if (except != null)
         {

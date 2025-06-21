@@ -48,7 +48,7 @@ public class SmsTask : TaskActivity<SmsTask>
     {
         var result = await _smsService.SendAsync(
             await _expressionEvaluator.EvaluateAsync(PhoneNumber, workflowContext, null),
-            await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null));
+            await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null)).ConfigureAwait(false);
 
         workflowContext.LastResult = result;
 

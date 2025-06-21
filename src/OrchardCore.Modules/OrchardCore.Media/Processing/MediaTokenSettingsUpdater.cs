@@ -33,16 +33,16 @@ public class MediaTokenSettingsUpdater : FeatureEventHandler, IModularTenantEven
             return;
         }
 
-        var mediaTokenSettings = await _siteService.GetSettingsAsync<MediaTokenSettings>();
+        var mediaTokenSettings = await _siteService.GetSettingsAsync<MediaTokenSettings>().ConfigureAwait(false);
 
         if (mediaTokenSettings.HashKey == null)
         {
-            var siteSettings = await _siteService.LoadSiteSettingsAsync();
+            var siteSettings = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
 
             mediaTokenSettings.HashKey = RandomNumberGenerator.GetBytes(DefaultMediaTokenKeySize);
             siteSettings.Put(mediaTokenSettings);
 
-            await _siteService.UpdateSiteSettingsAsync(siteSettings);
+            await _siteService.UpdateSiteSettingsAsync(siteSettings).ConfigureAwait(false);
         }
     }
 
@@ -60,12 +60,12 @@ public class MediaTokenSettingsUpdater : FeatureEventHandler, IModularTenantEven
             return;
         }
 
-        var siteSettings = await _siteService.LoadSiteSettingsAsync();
+        var siteSettings = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         var mediaTokenSettings = siteSettings.As<MediaTokenSettings>();
 
         mediaTokenSettings.HashKey = RandomNumberGenerator.GetBytes(DefaultMediaTokenKeySize);
         siteSettings.Put(mediaTokenSettings);
 
-        await _siteService.UpdateSiteSettingsAsync(siteSettings);
+        await _siteService.UpdateSiteSettingsAsync(siteSettings).ConfigureAwait(false);
     }
 }

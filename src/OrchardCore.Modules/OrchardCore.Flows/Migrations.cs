@@ -18,12 +18,12 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("FlowPart", builder => builder
             .Attachable()
-            .WithDescription("Provides a customizable body for your content item where you can build a content structure with widgets."));
+            .WithDescription("Provides a customizable body for your content item where you can build a content structure with widgets.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterPartDefinitionAsync("BagPart", builder => builder
             .Attachable()
             .Reusable()
-            .WithDescription("Provides a collection behavior for your content item where you can place other content items."));
+            .WithDescription("Provides a collection behavior for your content item where you can place other content items.")).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 3;
@@ -35,7 +35,7 @@ public sealed class Migrations : DataMigration
         await _contentDefinitionManager.AlterPartDefinitionAsync("BagPart", builder => builder
             .Attachable()
             .Reusable()
-            .WithDescription("Provides a collection behavior for your content item where you can place other content items."));
+            .WithDescription("Provides a collection behavior for your content item where you can place other content items.")).ConfigureAwait(false);
 
         return 2;
     }
@@ -44,7 +44,7 @@ public sealed class Migrations : DataMigration
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom2Async()
     {
-        await _contentDefinitionManager.MigratePartSettingsAsync<BagPart, BagPartSettings>();
+        await _contentDefinitionManager.MigratePartSettingsAsync<BagPart, BagPartSettings>().ConfigureAwait(false);
 
         return 3;
     }

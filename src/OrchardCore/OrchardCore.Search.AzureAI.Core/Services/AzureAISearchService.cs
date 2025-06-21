@@ -85,7 +85,7 @@ public sealed class AzureAISearchService : ISearchService
                 {
                     result.ContentItemIds.Add(contentItemId.ToString());
                 }
-            }, searchOptions);
+            }, searchOptions).ConfigureAwait(false);
 
             result.Success = true;
         }

@@ -22,8 +22,8 @@ public class TwoFactorAuthenticationClaimsProvider : IUserClaimsProvider
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(claims);
 
-        if (await _twoFactorHandlerCoordinator.IsRequiredAsync(user) &&
-            !await _userManager.GetTwoFactorEnabledAsync(user))
+        if (await _twoFactorHandlerCoordinator.IsRequiredAsync(user).ConfigureAwait(false) &&
+            !await _userManager.GetTwoFactorEnabledAsync(user).ConfigureAwait(false))
         {
             // At this point, we know that the user must enable two-factor authentication.
             claims.AddClaim(new Claim(UserConstants.TwoFactorAuthenticationClaimType, "required"));

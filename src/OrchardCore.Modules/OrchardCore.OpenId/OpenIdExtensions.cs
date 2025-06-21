@@ -32,8 +32,11 @@ internal static class OpenIdExtensions
     {
         ArgumentNullException.ThrowIfNull(source);
 
-        await using var enumerator = source.GetAsyncEnumerator();
-        return await enumerator.MoveNextAsync();
+        var enumerator = source.GetAsyncEnumerator();
+        await using (enumerator.ConfigureAwait(false))
+        {
+            return await enumerator.MoveNextAsync();
+        }
     }
 
     internal static Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source)
@@ -46,7 +49,7 @@ internal static class OpenIdExtensions
         {
             var list = new List<T>();
 
-            await foreach (var element in source)
+            await foreach (var element in source.ConfigureAwait(false))
             {
                 list.Add(element);
             }

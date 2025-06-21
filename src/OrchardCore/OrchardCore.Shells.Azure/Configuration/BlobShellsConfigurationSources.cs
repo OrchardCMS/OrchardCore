@@ -33,29 +33,29 @@ public class BlobShellsConfigurationSources : IShellsConfigurationSources
 
     public async Task AddSourcesAsync(IConfigurationBuilder builder)
     {
-        var appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
+        var appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName).ConfigureAwait(false);
 
         if (appSettingsFileInfo == null && _blobOptions.MigrateFromFiles)
         {
-            if (await TryMigrateFromFileAsync($"{_fileSystemAppSettings}.json", OrchardCoreConstants.Configuration.ApplicationSettingsFileName))
+            if (await TryMigrateFromFileAsync($"{_fileSystemAppSettings}.json", OrchardCoreConstants.Configuration.ApplicationSettingsFileName).ConfigureAwait(false))
             {
-                appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
+                appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName).ConfigureAwait(false);
             }
         }
 
         if (appSettingsFileInfo != null)
         {
-            var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
+            var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName).ConfigureAwait(false);
             builder.AddTenantJsonStream(stream);
         }
 
         var environmentAppSettingsFileName = $"{_appSettings}.{_environment}.json";
-        var environmentAppSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(environmentAppSettingsFileName);
+        var environmentAppSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(environmentAppSettingsFileName).ConfigureAwait(false);
         if (environmentAppSettingsFileInfo == null && _blobOptions.MigrateFromFiles)
         {
-            if (await TryMigrateFromFileAsync($"{_fileSystemAppSettings}.{_environment}.json", environmentAppSettingsFileName))
+            if (await TryMigrateFromFileAsync($"{_fileSystemAppSettings}.{_environment}.json", environmentAppSettingsFileName).ConfigureAwait(false))
             {
-                environmentAppSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(environmentAppSettingsFileName);
+                environmentAppSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(environmentAppSettingsFileName).ConfigureAwait(false);
             }
             else
             {
@@ -65,7 +65,7 @@ public class BlobShellsConfigurationSources : IShellsConfigurationSources
 
         if (environmentAppSettingsFileInfo != null)
         {
-            var stream = await _shellsFileStore.GetFileStreamAsync(environmentAppSettingsFileName);
+            var stream = await _shellsFileStore.GetFileStreamAsync(environmentAppSettingsFileName).ConfigureAwait(false);
             builder.AddTenantJsonStream(stream);
         }
     }
@@ -78,7 +78,7 @@ public class BlobShellsConfigurationSources : IShellsConfigurationSources
         }
 
         using var file = File.OpenRead(fileSystemPath);
-        await _shellsFileStore.CreateFileFromStreamAsync(destPath, file);
+        await _shellsFileStore.CreateFileFromStreamAsync(destPath, file).ConfigureAwait(false);
 
         return true;
     }

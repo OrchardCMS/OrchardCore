@@ -17,7 +17,7 @@ public sealed class CreateContentTaskDisplayDriver : ContentTaskDisplayDriver<Cr
 
     protected override async ValueTask EditActivityAsync(CreateContentTask activity, CreateContentTaskViewModel model)
     {
-        model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+        model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
             .ToList();
 

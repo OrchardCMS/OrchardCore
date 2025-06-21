@@ -197,7 +197,7 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
         _typePartDefinition = typePartDefinition;
         _partFieldDefinition = partFieldDefinition;
 
-        var result = await UpdateAsync(field, updateFieldEditorContext);
+        var result = await UpdateAsync(field, updateFieldEditorContext).ConfigureAwait(false);
 
         _typePartDefinition = null;
         _partFieldDefinition = null;

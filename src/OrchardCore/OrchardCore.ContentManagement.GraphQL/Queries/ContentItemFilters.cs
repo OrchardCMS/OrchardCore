@@ -31,17 +31,17 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
     {
         var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
 
-        if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ViewContent))
+        if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ViewContent).ConfigureAwait(false))
         {
             // No additional check when the user has permission to view all contents
             return query;
         }
 
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType).ConfigureAwait(false);
         var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewContent);
         var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 
-        if (await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, dynamicPermission, contentTypeDefinition))
+        if (await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, dynamicPermission, contentTypeDefinition).ConfigureAwait(false))
         {
             // User has access to view any content item of the given type.
             return query;
@@ -51,7 +51,7 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
 
         var contentTypeOwnPermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewOwnContent);
 
-        if (await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, contentTypeOwnPermission, contentTypeDefinition, userId))
+        if (await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, contentTypeOwnPermission, contentTypeDefinition, userId).ConfigureAwait(false))
         {
             return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userId);
         }

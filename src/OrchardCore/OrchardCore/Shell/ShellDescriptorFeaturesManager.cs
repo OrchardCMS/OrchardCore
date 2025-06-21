@@ -69,7 +69,7 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
                 _logger.LogInformation("Disabling feature '{FeatureName}'", feature.Id);
             }
 
-            await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
+            await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger).ConfigureAwait(false);
         }
 
         var allFeaturesToEnable = featuresToEnable
@@ -85,7 +85,7 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
                 _logger.LogInformation("Enabling feature '{FeatureName}'", feature.Id);
             }
 
-            await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), feature, _logger);
+            await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), feature, _logger).ConfigureAwait(false);
         }
 
         var allFeaturesToInstall = allFeaturesToEnable
@@ -99,7 +99,7 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
                 _logger.LogInformation("Installing feature '{FeatureName}'", feature.Id);
             }
 
-            await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstallingAsync(featureInfo), feature, _logger);
+            await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstallingAsync(featureInfo), feature, _logger).ConfigureAwait(false);
         }
 
         if (allFeaturesToEnable.Count > 0)
@@ -111,7 +111,7 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
         {
             await _shellDescriptorManager.UpdateShellDescriptorAsync(
                 shellDescriptor.SerialNumber,
-                enabledFeatureIds.Select(id => new ShellFeature(id)).ToArray());
+                enabledFeatureIds.Select(id => new ShellFeature(id)).ToArray()).ConfigureAwait(false);
 
             ShellScope.AddDeferredTask(async scope =>
             {
@@ -125,7 +125,7 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
                         logger.LogInformation("Feature '{FeatureName}' was installed", feature.Id);
                     }
 
-                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstalledAsync(featureInfo), feature, logger);
+                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstalledAsync(featureInfo), feature, logger).ConfigureAwait(false);
                 }
 
                 foreach (var feature in allFeaturesToEnable)
@@ -135,7 +135,7 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
                         logger.LogInformation("Feature '{FeatureName}' was enabled", feature.Id);
                     }
 
-                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnabledAsync(featureInfo), feature, logger);
+                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnabledAsync(featureInfo), feature, logger).ConfigureAwait(false);
                 }
 
                 foreach (var feature in allFeaturesToDisable)
@@ -145,7 +145,7 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
                         logger.LogInformation("Feature '{FeatureName}' was disabled", feature.Id);
                     }
 
-                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisabledAsync(featureInfo), feature, logger);
+                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisabledAsync(featureInfo), feature, logger).ConfigureAwait(false);
                 }
             });
         }

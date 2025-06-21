@@ -40,7 +40,7 @@ public sealed class Migrations : DataMigration
                     AllowRouteContainedItems = true,
                 }))
             .WithPart("TaxonomyPart", part => part.WithPosition("4"))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<TaxonomyIndex>(table => table
             .Column<string>("TaxonomyContentItemId", c => c.WithLength(26))
@@ -51,7 +51,7 @@ public sealed class Migrations : DataMigration
             .Column<string>("TermContentItemId", column => column.WithLength(26))
             .Column<bool>("Published", c => c.WithDefault(true))
             .Column<bool>("Latest", c => c.WithDefault(false))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
             .CreateIndex("IDX_TaxonomyIndex_DocumentId",
@@ -61,7 +61,7 @@ public sealed class Migrations : DataMigration
                 "TermContentItemId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
         // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
@@ -73,7 +73,7 @@ public sealed class Migrations : DataMigration
                 "ContentField(254)",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 5;
@@ -83,7 +83,7 @@ public sealed class Migrations : DataMigration
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom1Async()
     {
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<TaxonomyField, TaxonomyFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<TaxonomyField, TaxonomyFieldSettings>().ConfigureAwait(false);
         return 2;
     }
 
@@ -99,7 +99,7 @@ public sealed class Migrations : DataMigration
                     AllowRouteContainedItems = true,
                 }))
             .WithPart("TaxonomyPart", part => part.WithPosition("4"))
-        );
+        ).ConfigureAwait(false);
 
         return 3;
     }
@@ -110,11 +110,11 @@ public sealed class Migrations : DataMigration
         // This step has been updated to also add these new columns.
         await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
             .AddColumn<bool>("Published", c => c.WithDefault(true))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
             .AddColumn<bool>("Latest", c => c.WithDefault(false))
-        );
+        ).ConfigureAwait(false);
 
         // So that the new indexes can be fully created.
         await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
@@ -125,7 +125,7 @@ public sealed class Migrations : DataMigration
                 "TermContentItemId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
         // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
@@ -137,7 +137,7 @@ public sealed class Migrations : DataMigration
                 "ContentField(254)",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // We then shortcut the next migration step.
         return 5;
@@ -150,11 +150,11 @@ public sealed class Migrations : DataMigration
         // it was updated, so here we also add the following columns.
         await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
             .AddColumn<bool>("Published", c => c.WithDefault(true))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
             .AddColumn<bool>("Latest", c => c.WithDefault(false))
-        );
+        ).ConfigureAwait(false);
 
         // But we create a separate index for these new columns.
         await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
@@ -162,7 +162,7 @@ public sealed class Migrations : DataMigration
                 "DocumentId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         return 5;
     }

@@ -28,7 +28,7 @@ public sealed class AuditTrailPartDisplayDriver : ContentPartDisplayDriver<Audit
 
     public override async Task<IDisplayResult> UpdateAsync(AuditTrailPart part, UpdatePartEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(part, Prefix);
+        await context.Updater.TryUpdateModelAsync(part, Prefix).ConfigureAwait(false);
 
         return Edit(part, context);
     }

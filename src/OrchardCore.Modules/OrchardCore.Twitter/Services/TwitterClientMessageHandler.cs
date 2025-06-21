@@ -26,8 +26,8 @@ public class TwitterClientMessageHandler : DelegatingHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        await ConfigureOAuthAsync(request);
-        return await base.SendAsync(request, cancellationToken);
+        await ConfigureOAuthAsync(request).ConfigureAwait(false);
+        return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
     }
 
     public virtual string GetNonce()
@@ -74,7 +74,7 @@ public class TwitterClientMessageHandler : DelegatingHandler
             }
         }
 
-        var contentString = await request.Content.ReadAsStringAsync();
+        var contentString = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(contentString))
         {

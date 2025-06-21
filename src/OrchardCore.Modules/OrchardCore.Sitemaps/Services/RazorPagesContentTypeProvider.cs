@@ -43,7 +43,7 @@ public class RazorPagesContentTypeProvider : IRouteableContentTypeProvider
 
     public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
     {
-        var definitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+        var definitions = await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false);
 
         return definitions.Where(definition => _options.ContentTypeOptions.Any(o => o.ContentType == definition.Name));
     }

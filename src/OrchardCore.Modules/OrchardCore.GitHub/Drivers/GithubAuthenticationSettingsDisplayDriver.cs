@@ -41,7 +41,7 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
     public override async Task<IDisplayResult> EditAsync(ISite site, GitHubAuthenticationSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGitHubAuthentication))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGitHubAuthentication).ConfigureAwait(false))
         {
             return null;
         }
@@ -79,13 +79,13 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GitHubAuthenticationSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGitHubAuthentication))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGitHubAuthentication).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new GitHubAuthenticationSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (context.Updater.ModelState.IsValid)
         {
@@ -99,6 +99,6 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
             _shellReleaseManager.RequestRelease();
         }
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

@@ -18,7 +18,7 @@ public class DocumentEntityManager<TDocumentEntity> : IDocumentEntityManager<TDo
 
     public async Task<T> GetAsync<T>(string key) where T : new()
     {
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
         if (document.Properties.TryGetPropertyValue(key, out var value))
         {
             return value.Deserialize<T>(JOptions.Default);
@@ -29,15 +29,15 @@ public class DocumentEntityManager<TDocumentEntity> : IDocumentEntityManager<TDo
 
     public async Task SetAsync<T>(string key, T value) where T : new()
     {
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
         document.Properties[key] = JObject.FromObject(value);
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     public async Task RemoveAsync(string key)
     {
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
         document.Properties.Remove(key);
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 }

@@ -44,12 +44,12 @@ public sealed class SmsAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriv
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SmsAuthenticatorLoginSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        await context.Updater.TryUpdateModelAsync(settings, Prefix).ConfigureAwait(false);
 
         if (!_liquidTemplateManager.Validate(settings.Body, out var bodyErrors))
         {

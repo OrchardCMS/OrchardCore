@@ -28,10 +28,10 @@ public sealed class TaxonomyFieldSettingsDriver : ContentPartFieldDefinitionDisp
     {
         var model = new TaxonomyFieldSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         context.Builder.WithSettings(model);
 
-        return await EditAsync(partFieldDefinition, context);
+        return await EditAsync(partFieldDefinition, context).ConfigureAwait(false);
     }
 }

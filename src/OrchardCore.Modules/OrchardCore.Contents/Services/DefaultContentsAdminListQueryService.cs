@@ -65,11 +65,11 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
         // Because admin filters can add a different index to the query this must be added as a 'Query<ContentItem>()'.
         var query = _session.Query<ContentItem>();
 
-        query = await model.FilterResult.ExecuteAsync(new ContentQueryContext(_serviceProvider, query));
+        query = await model.FilterResult.ExecuteAsync(new ContentQueryContext(_serviceProvider, query)).ConfigureAwait(false);
 
         // After the 'q=xx' filters have been applied, allow the secondary filter providers to also parse other values for filtering.
         await _contentsAdminListFilters
-            .InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger);
+            .InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger).ConfigureAwait(false);
 
         if (defaultOperator != defaultTermNode?.Operation)
         {

@@ -57,12 +57,12 @@ public class SitemapHelperService : ISitemapHelperService
         var routeExists = false;
         if (string.IsNullOrEmpty(sitemapId))
         {
-            routeExists = (await _sitemapManager.GetSitemapsAsync())
+            routeExists = (await _sitemapManager.GetSitemapsAsync().ConfigureAwait(false))
                 .Any(p => string.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
         }
         else
         {
-            routeExists = (await _sitemapManager.GetSitemapsAsync())
+            routeExists = (await _sitemapManager.GetSitemapsAsync().ConfigureAwait(false))
                 .Any(p => p.SitemapId != sitemapId && string.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
         }
 

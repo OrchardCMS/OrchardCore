@@ -24,7 +24,7 @@ public sealed class PlacementsDeploymentSource
     protected override async Task ProcessAsync(PlacementsDeploymentStep step, DeploymentPlanResult result)
     {
         var placementObjects = new JsonObject();
-        var placements = await _placementsManager.ListShapePlacementsAsync();
+        var placements = await _placementsManager.ListShapePlacementsAsync().ConfigureAwait(false);
 
         foreach (var placement in placements)
         {

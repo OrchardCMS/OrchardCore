@@ -33,7 +33,7 @@ public class SmtpService : ISmtpService
             return SmtpResult.Failed([S["Unable to find any SMTP providers."]]);
         }
 
-        var result = await provider.SendAsync(message);
+        var result = await provider.SendAsync(message).ConfigureAwait(false);
 
         if (result.Succeeded)
         {

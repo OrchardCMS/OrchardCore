@@ -36,7 +36,7 @@ public sealed class Startup : StartupBase
                 var liquidTemplateContext = (LiquidTemplateContext)context;
 
                 var siteService = liquidTemplateContext.Services.GetRequiredService<ISiteService>();
-                var site = await siteService.GetSiteSettingsAsync();
+                var site = await siteService.GetSiteSettingsAsync().ConfigureAwait(false);
 
                 FluidValue result = name switch
                 {

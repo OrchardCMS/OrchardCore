@@ -19,7 +19,7 @@ public sealed class AllTemplatesDeploymentSource
     protected override async Task ProcessAsync(AllTemplatesDeploymentStep step, DeploymentPlanResult result)
     {
         var templateObjects = new JsonObject();
-        var templates = await _templatesManager.GetTemplatesDocumentAsync();
+        var templates = await _templatesManager.GetTemplatesDocumentAsync().ConfigureAwait(false);
 
         if (step.ExportAsFiles)
         {
@@ -27,7 +27,7 @@ public sealed class AllTemplatesDeploymentSource
             {
                 var fileName = "Templates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
                 var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
-                await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
+                await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content)).ConfigureAwait(false);
                 templateObjects[template.Key] = JObject.FromObject(templateValue);
             }
         }

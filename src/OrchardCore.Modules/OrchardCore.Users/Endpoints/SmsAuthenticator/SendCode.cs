@@ -37,7 +37,7 @@ public static class SendCode
         HtmlEncoder htmlEncoder,
         IStringLocalizer<T> S)
     {
-        var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+        var user = await signInManager.GetTwoFactorAuthenticationUserAsync().ConfigureAwait(false);
         var errorMessage = S["The SMS message could not be sent. Please attempt to request the code at a later time."];
 
         if (user == null)
@@ -49,12 +49,12 @@ public static class SendCode
             });
         }
 
-        var settings = await siteService.GetSettingsAsync<SmsAuthenticatorLoginSettings>();
-        var code = await userManager.GenerateTwoFactorTokenAsync(user, identityOptions.Value.Tokens.ChangePhoneNumberTokenProvider);
+        var settings = await siteService.GetSettingsAsync<SmsAuthenticatorLoginSettings>().ConfigureAwait(false);
+        var code = await userManager.GenerateTwoFactorTokenAsync(user, identityOptions.Value.Tokens.ChangePhoneNumberTokenProvider).ConfigureAwait(false);
 
         var result = await smsService.SendAsync(
             await userManager.GetPhoneNumberAsync(user),
-            await GetBodyAsync(settings, user, code, liquidTemplateManager, htmlEncoder));
+            await GetBodyAsync(settings, user, code, liquidTemplateManager, htmlEncoder)).ConfigureAwait(false);
 
         return TypedResults.Ok(new
         {
@@ -90,7 +90,7 @@ public static class SendCode
             {
                 ["User"] = new ObjectValue(user),
                 ["Code"] = new StringValue(code),
-            });
+            }).ConfigureAwait(false);
 
         using var writer = new StringWriter();
         result.WriteTo(writer, htmlEncoder);

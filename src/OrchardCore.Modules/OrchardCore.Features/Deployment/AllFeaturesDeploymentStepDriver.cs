@@ -26,7 +26,7 @@ public sealed class AllFeaturesDeploymentStepDriver : DisplayDriver<DeploymentSt
 
     public override async Task<IDisplayResult> UpdateAsync(AllFeaturesDeploymentStep step, UpdateEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.IgnoreDisabledFeatures);
+        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.IgnoreDisabledFeatures).ConfigureAwait(false);
 
         return Edit(step, context);
     }

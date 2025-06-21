@@ -28,12 +28,12 @@ public class ShapePlacementParsingStrategy : ShapeTableProvider, IShapeTableHarv
 
     public override async ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
-        var enabledFeatures = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
+        var enabledFeatures = (await _shellFeaturesManager.GetEnabledFeaturesAsync().ConfigureAwait(false))
             .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
 
         foreach (var featureDescriptor in enabledFeatures)
         {
-            await ProcessFeatureDescriptorAsync(builder, featureDescriptor);
+            await ProcessFeatureDescriptorAsync(builder, featureDescriptor).ConfigureAwait(false);
         }
     }
 

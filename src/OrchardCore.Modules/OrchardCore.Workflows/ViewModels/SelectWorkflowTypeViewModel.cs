@@ -16,7 +16,7 @@ public class WorkflowTypeSelection
 
     public static async Task<IList<WorkflowTypeSelection>> BuildAsync(IWorkflowTypeStore workflowTypeStore, string selectedWorkflowTypeId)
     {
-        var workflowTypes = await workflowTypeStore.ListAsync();
+        var workflowTypes = await workflowTypeStore.ListAsync().ConfigureAwait(false);
         var selections = workflowTypes
             .Select(x => new WorkflowTypeSelection
             {

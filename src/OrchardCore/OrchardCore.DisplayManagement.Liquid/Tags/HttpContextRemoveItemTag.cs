@@ -17,7 +17,7 @@ public class HttpContextRemoveItemTag
 
         if (httpContext != null)
         {
-            var itemKey = (await argument.EvaluateAsync(context)).ToStringValue();
+            var itemKey = (await argument.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
 
             if (!string.IsNullOrEmpty(itemKey))
             {

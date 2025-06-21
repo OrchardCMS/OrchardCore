@@ -48,9 +48,9 @@ public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
             .Differentiator("SignOut"),
         };
 
-        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>().ConfigureAwait(false);
 
-        if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AdminPermissions.AccessAdminPanel))
+        if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AdminPermissions.AccessAdminPanel).ConfigureAwait(false))
         {
             results.Add(View("UserMenuItems__Dashboard", model)
                 .Location("Detail", "Content:1.1")

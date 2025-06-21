@@ -31,7 +31,7 @@ public sealed class MicrosoftAccountSettingsConfiguration : IConfigureOptions<Mi
 
     private async Task<MicrosoftAccountSettings> GetMicrosoftAccountSettingsAsync()
     {
-        var settings = await _microsoftAccountService.GetSettingsAsync();
+        var settings = await _microsoftAccountService.GetSettingsAsync().ConfigureAwait(false);
         if (_microsoftAccountService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {
             return null;

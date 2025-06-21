@@ -17,7 +17,7 @@ public sealed class ElasticsearchIndexDeploymentSource
 
     protected override async Task ProcessAsync(ElasticsearchIndexDeploymentStep step, DeploymentPlanResult result)
     {
-        var indexSettings = await _indexStore.GetByProviderAsync(ElasticsearchConstants.ProviderName);
+        var indexSettings = await _indexStore.GetByProviderAsync(ElasticsearchConstants.ProviderName).ConfigureAwait(false);
 
         var data = new JsonArray();
         var indicesToAdd = step.IncludeAll

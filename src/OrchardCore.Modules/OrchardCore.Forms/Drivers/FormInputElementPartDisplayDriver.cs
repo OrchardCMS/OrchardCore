@@ -30,7 +30,7 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
     {
         var viewModel = new FormInputElementPartEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(viewModel.Name))
         {

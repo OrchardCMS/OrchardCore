@@ -37,12 +37,12 @@ public sealed class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriv
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AuthenticatorAppLoginSettings section, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(section, Prefix);
+        await context.Updater.TryUpdateModelAsync(section, Prefix).ConfigureAwait(false);
 
         // A possible issue in Identity prevents from validation token that are not 6 in length.
         // If this limitation is lifted, the following block can be uncommented.

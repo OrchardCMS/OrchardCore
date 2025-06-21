@@ -28,7 +28,7 @@ public class RedisTagCache : ITagCache
     {
         if (_redis.Database == null)
         {
-            await _redis.ConnectAsync();
+            await _redis.ConnectAsync().ConfigureAwait(false);
             if (_redis.Database == null)
             {
                 _logger.LogError("Fails to add the '{KeyName}' to the {PrefixName} tags.", key, _prefix);
@@ -40,7 +40,7 @@ public class RedisTagCache : ITagCache
         {
             foreach (var tag in tags)
             {
-                await _redis.Database.SetAddAsync(_prefix + tag, key);
+                await _redis.Database.SetAddAsync(_prefix + tag, key).ConfigureAwait(false);
             }
         }
         catch (Exception e)
@@ -53,7 +53,7 @@ public class RedisTagCache : ITagCache
     {
         if (_redis.Database == null)
         {
-            await _redis.ConnectAsync();
+            await _redis.ConnectAsync().ConfigureAwait(false);
             if (_redis.Database == null)
             {
                 _logger.LogError("Fails to get '{TagName}' items.", _prefix + tag);
@@ -63,7 +63,7 @@ public class RedisTagCache : ITagCache
 
         try
         {
-            var values = await _redis.Database.SetMembersAsync(_prefix + tag);
+            var values = await _redis.Database.SetMembersAsync(_prefix + tag).ConfigureAwait(false);
 
             if (values == null || values.Length == 0)
             {
@@ -84,7 +84,7 @@ public class RedisTagCache : ITagCache
     {
         if (_redis.Database == null)
         {
-            await _redis.ConnectAsync();
+            await _redis.ConnectAsync().ConfigureAwait(false);
             if (_redis.Database == null)
             {
                 _logger.LogError("Fails to remove the '{TagName}'.", _prefix + tag);
@@ -94,7 +94,7 @@ public class RedisTagCache : ITagCache
 
         try
         {
-            var values = await _redis.Database.SetMembersAsync(_prefix + tag);
+            var values = await _redis.Database.SetMembersAsync(_prefix + tag).ConfigureAwait(false);
 
             if (values == null || values.Length == 0)
             {
@@ -103,9 +103,9 @@ public class RedisTagCache : ITagCache
 
             var set = values.Select(v => (string)v).ToArray();
 
-            await _redis.Database.KeyDeleteAsync(_prefix + tag);
+            await _redis.Database.KeyDeleteAsync(_prefix + tag).ConfigureAwait(false);
 
-            await _tagRemovedEventHandlers.InvokeAsync(x => x.TagRemovedAsync(tag, set), _logger);
+            await _tagRemovedEventHandlers.InvokeAsync(x => x.TagRemovedAsync(tag, set), _logger).ConfigureAwait(false);
         }
         catch (Exception e)
         {

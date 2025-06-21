@@ -34,7 +34,7 @@ public class ResizeUrlFilter : ILiquidFilter
 
         if (!profile.IsNil())
         {
-            queryStringParams = await _mediaProfileService.GetMediaProfileCommands(profile.ToStringValue());
+            queryStringParams = await _mediaProfileService.GetMediaProfileCommands(profile.ToStringValue()).ConfigureAwait(false);
 
             // Additional commands to a profile must be named.
             var width = arguments["width"];

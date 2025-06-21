@@ -54,7 +54,7 @@ internal sealed class CultureValue : FluidValue
     public override string ToStringValue() => Culture.Name;
 
     public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-        => await writer.WriteAsync(Culture.Name);
+        => await writer.WriteAsync(Culture.Name).ConfigureAwait(false);
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)
     {
@@ -78,7 +78,7 @@ internal sealed class CultureValue : FluidValue
 
         var services = ctx.Services;
         var localizationService = services.GetRequiredService<ILocalizationService>();
-        var supportedCultures = await localizationService.GetSupportedCulturesAsync();
+        var supportedCultures = await localizationService.GetSupportedCulturesAsync().ConfigureAwait(false);
 
         return new ArrayValue(supportedCultures.Select(c => new CultureValue(CultureInfo.GetCultureInfo(c))).ToArray());
     }

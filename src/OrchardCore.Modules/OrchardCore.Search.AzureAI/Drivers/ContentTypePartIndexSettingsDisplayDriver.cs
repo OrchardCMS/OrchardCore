@@ -23,7 +23,7 @@ public sealed class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartD
 
     public override async Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -36,17 +36,17 @@ public sealed class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartD
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var settings = new AzureAISearchContentIndexSettings();
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        await context.Updater.TryUpdateModelAsync(settings, Prefix).ConfigureAwait(false);
 
         context.Builder.WithSettings(settings);
 
-        return await EditAsync(contentTypePartDefinition, context);
+        return await EditAsync(contentTypePartDefinition, context).ConfigureAwait(false);
     }
 }

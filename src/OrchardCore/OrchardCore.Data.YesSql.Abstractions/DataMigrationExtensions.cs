@@ -19,7 +19,7 @@ public static class DataMigrationExtensions
             methodInfo = GetCreateAsyncMethod(migration);
             if (methodInfo != null)
             {
-                return await (Task<int>)methodInfo.Invoke(migration, []);
+                return await ((Task<int>)methodInfo.Invoke(migration, [])).ConfigureAwait(false);
             }
         }
 
@@ -37,7 +37,7 @@ public static class DataMigrationExtensions
             var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
             if (isAwaitable)
             {
-                version = await (Task<int>)methodInfo.Invoke(migration, []);
+                version = await ((Task<int>)methodInfo.Invoke(migration, [])).ConfigureAwait(false);
             }
             else
             {

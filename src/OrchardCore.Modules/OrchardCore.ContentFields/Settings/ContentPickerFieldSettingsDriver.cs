@@ -43,7 +43,7 @@ public sealed class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitio
     {
         var model = new ContentPickerFieldSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var settings = new ContentPickerFieldSettings
         {

@@ -33,7 +33,7 @@ public static class FluidTagHelper
         // If no identifier is set, use the first argument as the name of the tag helper
         // e.g., {% helper "input", for: "Text", class: "form-control" %}
 
-        identifier ??= (await arguments[0].Expression.EvaluateAsync(context)).ToStringValue();
+        identifier ??= (await arguments[0].Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
 
         // These mapping will assign an argument name to the first element in the filter arguments,
         // such that the tag helper can be matched based on the expected attribute names.
@@ -70,7 +70,7 @@ public static class FluidTagHelper
         {
             content = new ViewBufferTextWriterContent();
 
-            var completion = await statements.RenderStatementsAsync(content, encoder, context);
+            var completion = await statements.RenderStatementsAsync(content, encoder, context).ConfigureAwait(false);
 
             if (completion != Completion.Normal)
             {
@@ -100,7 +100,7 @@ public static class FluidTagHelper
             );
         }
 
-        await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
+        await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput).ConfigureAwait(false);
         tagHelperOutput.WriteTo(writer, (HtmlEncoder)encoder);
 
         return Completion.Normal;

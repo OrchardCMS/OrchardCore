@@ -37,7 +37,7 @@ public sealed class TextFieldPredefinedListEditorSettingsDriver : ContentPartFie
             var model = new PredefinedListSettingsViewModel();
             var settings = new TextFieldPredefinedListEditorSettings();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
             try
             {

@@ -49,11 +49,11 @@ public sealed class UserEmailService
             controller: typeof(EmailConfirmationController).ControllerName(),
             values: new
             {
-                userId = await _userManager.GetUserIdAsync(user),
-                code = await _userManager.GenerateEmailConfirmationTokenAsync(user),
+                userId = await _userManager.GetUserIdAsync(user).ConfigureAwait(false),
+                code = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false),
             });
 
-        var email = await _userManager.GetEmailAsync(user);
+        var email = await _userManager.GetEmailAsync(user).ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(email))
         {
@@ -64,7 +64,7 @@ public sealed class UserEmailService
         {
             User = user,
             ConfirmEmailUrl = confirmEmailUrl,
-        });
+        }).ConfigureAwait(false);
     }
 
     public async Task<bool> SendPasswordResetAsync(User user)
@@ -77,7 +77,7 @@ public sealed class UserEmailService
             controller: typeof(ResetPasswordController).ControllerName(),
             values: new
             {
-                userId = await _userManager.GetUserIdAsync(user),
+                userId = await _userManager.GetUserIdAsync(user).ConfigureAwait(false),
                 code = user.ResetToken,
             });
 
@@ -86,7 +86,7 @@ public sealed class UserEmailService
         {
             User = user,
             LostPasswordUrl = lostPasswordUrl,
-        });
+        }).ConfigureAwait(false);
     }
 
     private async Task<bool> SendEmailAsync(string email, string subject, IShape model)
@@ -95,12 +95,12 @@ public sealed class UserEmailService
 
         using (var sw = new StringWriter())
         {
-            var htmlContent = await _displayHelper.ShapeExecuteAsync(model);
+            var htmlContent = await _displayHelper.ShapeExecuteAsync(model).ConfigureAwait(false);
             htmlContent.WriteTo(sw, _htmlEncoder);
             body = sw.ToString();
         }
 
-        var result = await _emailService.SendAsync(email, subject, body);
+        var result = await _emailService.SendAsync(email, subject, body).ConfigureAwait(false);
 
         return result.Succeeded;
     }

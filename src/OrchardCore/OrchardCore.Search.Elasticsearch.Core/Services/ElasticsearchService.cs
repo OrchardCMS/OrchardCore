@@ -65,7 +65,7 @@ public class ElasticsearchService : ISearchService
 
         var queryMetadata = index.As<ElasticsearchDefaultQueryMetadata>();
 
-        if (index == null || !await _elasticIndexManager.ExistsAsync(index.IndexFullName))
+        if (index == null || !await _elasticIndexManager.ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
             _logger.LogWarning("Elasticsearch: Couldn't execute search. The search index doesn't exist.");
 
@@ -93,13 +93,13 @@ public class ElasticsearchService : ISearchService
                     new Dictionary<string, FluidValue>()
                     {
                         ["term"] = new StringValue(term),
-                    });
+                    }).ConfigureAwait(false);
 
                 try
                 {
                     using var stream = new MemoryStream(Encoding.UTF8.GetBytes(tokenizedContent));
 
-                    var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
+                    var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream).ConfigureAwait(false);
 
                     query = searchRequest.Query;
                     highlight = searchRequest.Highlight;
@@ -130,7 +130,7 @@ public class ElasticsearchService : ISearchService
                 Highlight = highlight,
             };
 
-            await _elasticsQueryService.PopulateResultAsync(searchContext, result);
+            await _elasticsQueryService.PopulateResultAsync(searchContext, result).ConfigureAwait(false);
             result.Success = true;
         }
         catch (Exception e)

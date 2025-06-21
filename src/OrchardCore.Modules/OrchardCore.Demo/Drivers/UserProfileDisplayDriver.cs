@@ -34,14 +34,14 @@ public sealed class UserProfileDisplayDriver : SectionDisplayDriver<User, UserPr
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UserProfile profile, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile).ConfigureAwait(false))
         {
             return Edit(user, profile, context);
         }
 
         var model = new EditUserProfileViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         profile.Age = model.Age;
         profile.FirstName = model.FirstName;

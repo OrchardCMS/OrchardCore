@@ -14,7 +14,7 @@ public class RuleService : IRuleService
         foreach (var childCondition in rule.Conditions)
         {
             var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
-            if (evaluator is null || !await evaluator.EvaluateAsync(childCondition))
+            if (evaluator is null || !await evaluator.EvaluateAsync(childCondition).ConfigureAwait(false))
             {
                 return false;
             }

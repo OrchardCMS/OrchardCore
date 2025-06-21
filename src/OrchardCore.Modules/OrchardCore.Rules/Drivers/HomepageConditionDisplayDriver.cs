@@ -27,7 +27,7 @@ public sealed class HomepageConditionDisplayDriver : DisplayDriver<Condition, Ho
 
     public override async Task<IDisplayResult> UpdateAsync(HomepageCondition condition, UpdateEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.Value);
+        await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.Value).ConfigureAwait(false);
 
         return Edit(condition, context);
     }

@@ -77,7 +77,7 @@ public static class OrchardRazorHelperExtensions
     public static async Task<string> ImageProfileResizeUrlAsync(this IOrchardHelper orchardHelper, string imagePath, string imageProfile, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
     {
         var mediaProfileService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IMediaProfileService>();
-        var queryStringParams = await mediaProfileService.GetMediaProfileCommands(imageProfile);
+        var queryStringParams = await mediaProfileService.GetMediaProfileCommands(imageProfile).ConfigureAwait(false);
 
         var resizedUrl = ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, queryStringParams, width, height, resizeMode, quality, format, anchor, bgcolor);
 

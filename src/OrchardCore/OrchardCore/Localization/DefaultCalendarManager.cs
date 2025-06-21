@@ -30,7 +30,7 @@ public class DefaultCalendarManager : ICalendarManager
 
         foreach (var calendarSelector in _calendarSelectors)
         {
-            var calendarResult = await calendarSelector.GetCalendarAsync();
+            var calendarResult = await calendarSelector.GetCalendarAsync().ConfigureAwait(false);
 
             if (calendarResult != null)
             {
@@ -47,7 +47,7 @@ public class DefaultCalendarManager : ICalendarManager
             calendarResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
         }
 
-        _calendarName = await calendarResults.First().CalendarName();
+        _calendarName = await calendarResults.First().CalendarName().ConfigureAwait(false);
 
         return _calendarName.Value;
     }

@@ -33,7 +33,7 @@ public class LuceneSearchService : ISearchService
     {
         var result = new SearchResult();
 
-        if (index == null || !await _indexManager.ExistsAsync(index.IndexFullName))
+        if (index == null || !await _indexManager.ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
             _logger.LogWarning("Lucene: Couldn't execute search. Lucene has not been configured yet.");
 
@@ -63,7 +63,7 @@ public class LuceneSearchService : ISearchService
         try
         {
             var query = queryParser.Parse(term);
-            result.ContentItemIds = await _searchQueryService.ExecuteQueryAsync(query, index.IndexName, start, size);
+            result.ContentItemIds = await _searchQueryService.ExecuteQueryAsync(query, index.IndexName, start, size).ConfigureAwait(false);
             result.Success = true;
         }
         catch (ParseException e)

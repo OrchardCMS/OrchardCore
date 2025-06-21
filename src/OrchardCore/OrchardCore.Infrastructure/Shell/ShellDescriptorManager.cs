@@ -50,7 +50,7 @@ public class ShellDescriptorManager : IShellDescriptorManager
             return _shellDescriptor;
         }
 
-        (var cacheable, var shellDescriptor) = await _documentStore.GetOrCreateImmutableAsync<ShellDescriptor>();
+        (var cacheable, var shellDescriptor) = await _documentStore.GetOrCreateImmutableAsync<ShellDescriptor>().ConfigureAwait(false);
 
         if (shellDescriptor.SerialNumber == 0)
         {
@@ -78,7 +78,7 @@ public class ShellDescriptorManager : IShellDescriptorManager
 
         var featureIds = features.Select(sf => sf.Id).ToArray();
 
-        var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds))
+        var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds).ConfigureAwait(false))
             .Select(entry => entry.Id)
             .Except(featureIds)
             .Select(id => new ShellFeature(id));
@@ -92,7 +92,7 @@ public class ShellDescriptorManager : IShellDescriptorManager
 
     public async Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures)
     {
-        var shellDescriptor = await _documentStore.GetOrCreateMutableAsync<ShellDescriptor>();
+        var shellDescriptor = await _documentStore.GetOrCreateMutableAsync<ShellDescriptor>().ConfigureAwait(false);
 
         if (priorSerialNumber != shellDescriptor.SerialNumber)
         {
@@ -127,13 +127,13 @@ public class ShellDescriptorManager : IShellDescriptorManager
             _logger.LogInformation("Shell descriptor updated for tenant '{TenantName}'.", _shellSettings.Name);
         }
 
-        await _documentStore.UpdateAsync(shellDescriptor, _ => Task.CompletedTask);
-        await _documentStore.CommitAsync();
+        await _documentStore.UpdateAsync(shellDescriptor, _ => Task.CompletedTask).ConfigureAwait(false);
+        await _documentStore.CommitAsync().ConfigureAwait(false);
 
         // In the 'ChangedAsync()' event the shell will be released so that, on request, a new one will be built.
         // So, we commit the session earlier to prevent a new shell from being built from an outdated descriptor.
         await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptor, _shellSettings) =>
-            handler.ChangedAsync(shellDescriptor, _shellSettings), shellDescriptor, _shellSettings, _logger);
+            handler.ChangedAsync(shellDescriptor, _shellSettings), shellDescriptor, _shellSettings, _logger).ConfigureAwait(false);
     }
 
     private sealed class ConfiguredFeatures

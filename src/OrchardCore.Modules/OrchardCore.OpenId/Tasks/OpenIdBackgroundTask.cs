@@ -28,7 +28,7 @@ public sealed class OpenIdBackgroundTask : IBackgroundTask
     {
         try
         {
-            await _serverService.PruneManagedCertificatesAsync();
+            await _serverService.PruneManagedCertificatesAsync().ConfigureAwait(false);
         }
         catch (OperationCanceledException exception) when (exception.CancellationToken == cancellationToken)
         {
@@ -53,7 +53,7 @@ public sealed class OpenIdBackgroundTask : IBackgroundTask
 
         try
         {
-            await serviceProvider.GetRequiredService<IOpenIdTokenManager>().PruneAsync(threshold, cancellationToken);
+            await serviceProvider.GetRequiredService<IOpenIdTokenManager>().PruneAsync(threshold, cancellationToken).ConfigureAwait(false);
         }
         catch (OpenIddictExceptions.ConcurrencyException exception)
         {
@@ -70,7 +70,7 @@ public sealed class OpenIdBackgroundTask : IBackgroundTask
 
         try
         {
-            await serviceProvider.GetRequiredService<IOpenIdAuthorizationManager>().PruneAsync(threshold, cancellationToken);
+            await serviceProvider.GetRequiredService<IOpenIdAuthorizationManager>().PruneAsync(threshold, cancellationToken).ConfigureAwait(false);
         }
         catch (OpenIddictExceptions.ConcurrencyException exception)
         {

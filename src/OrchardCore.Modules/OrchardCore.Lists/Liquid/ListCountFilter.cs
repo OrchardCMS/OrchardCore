@@ -29,7 +29,7 @@ public class ListCountFilter : ILiquidFilter
             listContentItemId = input.ToStringValue();
         }
 
-        var listCount = await ListQueryHelpers.QueryListItemsCountAsync(_session, listContentItemId);
+        var listCount = await ListQueryHelpers.QueryListItemsCountAsync(_session, listContentItemId).ConfigureAwait(false);
 
         return NumberValue.Create(listCount);
     }

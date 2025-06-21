@@ -16,11 +16,11 @@ public sealed class Migrations : DataMigration
     public async Task<int> CreateAsync()
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("ReCaptchaPart", part => part
-            .WithDescription("Provides captcha properties."));
+            .WithDescription("Provides captcha properties.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("ReCaptcha", type => type
             .WithPart("ReCaptchaPart")
-            .Stereotype("Widget"));
+            .Stereotype("Widget")).ConfigureAwait(false);
 
         return 1;
     }

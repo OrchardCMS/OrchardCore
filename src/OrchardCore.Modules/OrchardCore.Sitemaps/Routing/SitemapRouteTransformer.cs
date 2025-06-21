@@ -23,7 +23,7 @@ public class SitemapRouteTransformer : DynamicRouteValueTransformer
 
         if (!string.IsNullOrEmpty(path))
         {
-            (var found, var sitemapId) = await _entries.TryGetSitemapIdByPathAsync(path);
+            (var found, var sitemapId) = await _entries.TryGetSitemapIdByPathAsync(path).ConfigureAwait(false);
 
             if (found)
             {

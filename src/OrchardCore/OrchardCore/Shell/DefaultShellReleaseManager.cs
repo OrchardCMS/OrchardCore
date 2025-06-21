@@ -36,7 +36,7 @@ public class DefaultShellReleaseManager : IShellReleaseManager
             var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
             var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
 
-            await shellHost.ReleaseShellContextAsync(shellSettings);
+            await shellHost.ReleaseShellContextAsync(shellSettings).ConfigureAwait(false);
         });
     }
 }

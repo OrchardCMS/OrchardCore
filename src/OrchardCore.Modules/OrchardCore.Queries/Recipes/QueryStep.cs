@@ -55,11 +55,11 @@ public sealed class QueryStep : NamedRecipeStepHandler
                 continue;
             }
 
-            var query = await _queryManager.GetQueryAsync(name);
+            var query = await _queryManager.GetQueryAsync(name).ConfigureAwait(false);
 
             if (query == null)
             {
-                query = await _queryManager.NewAsync(sourceName, token);
+                query = await _queryManager.NewAsync(sourceName, token).ConfigureAwait(false);
 
                 if (query == null)
                 {
@@ -72,11 +72,11 @@ public sealed class QueryStep : NamedRecipeStepHandler
             }
             else
             {
-                await _queryManager.UpdateAsync(query, token);
+                await _queryManager.UpdateAsync(query, token).ConfigureAwait(false);
             }
         }
 
-        await _queryManager.SaveAsync(queries.ToArray());
+        await _queryManager.SaveAsync(queries.ToArray()).ConfigureAwait(false);
     }
 }
 

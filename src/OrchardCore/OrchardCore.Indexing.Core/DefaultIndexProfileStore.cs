@@ -17,7 +17,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
     {
         ArgumentNullException.ThrowIfNull(indexProfile);
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
 
         if (!document.Records.TryGetValue(indexProfile.Id, out var existingInstance))
         {
@@ -28,7 +28,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
 
         if (removed)
         {
-            await _documentManager.UpdateAsync(document);
+            await _documentManager.UpdateAsync(document).ConfigureAwait(false);
         }
         return removed;
     }
@@ -37,7 +37,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
     {
         ArgumentException.ThrowIfNullOrEmpty(id);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         if (document.Records.TryGetValue(id, out var record))
         {
@@ -51,7 +51,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         return document.Records.Values.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
     }
@@ -61,7 +61,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
         ArgumentException.ThrowIfNullOrEmpty(indexName);
         ArgumentException.ThrowIfNullOrEmpty(providerName);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         return document.Records.Values.FirstOrDefault(x => string.Equals(x.IndexName, indexName, StringComparison.OrdinalIgnoreCase) &&
             string.Equals(x.ProviderName, providerName, StringComparison.OrdinalIgnoreCase));
@@ -71,7 +71,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
     {
         ArgumentException.ThrowIfNullOrEmpty(type);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         return document.Records.Values.Where(x => x.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
     }
@@ -80,7 +80,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
     {
         ArgumentException.ThrowIfNullOrEmpty(providerName);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         return document.Records.Values.Where(x => x.ProviderName.Equals(providerName, StringComparison.OrdinalIgnoreCase));
     }
@@ -90,7 +90,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
         ArgumentException.ThrowIfNullOrEmpty(providerName);
         ArgumentException.ThrowIfNullOrEmpty(type);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         return document.Records.Values.Where(x => x.ProviderName.Equals(providerName, StringComparison.OrdinalIgnoreCase) && x.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
     }
@@ -98,7 +98,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
     public async ValueTask<PageResult<IndexProfile>> PageAsync<TQuery>(int page, int pageSize, TQuery context)
         where TQuery : QueryContext
     {
-        var records = await LocateInstancesAsync(context);
+        var records = await LocateInstancesAsync(context).ConfigureAwait(false);
 
         var skip = (page - 1) * pageSize;
 
@@ -111,7 +111,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
 
     public async ValueTask<IEnumerable<IndexProfile>> GetAllAsync()
     {
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         return document.Records.Values;
     }
@@ -120,7 +120,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
     {
         ArgumentNullException.ThrowIfNull(record);
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
 
         if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase) &&
             x.ProviderName.Equals(record.ProviderName, StringComparison.OrdinalIgnoreCase)))
@@ -140,14 +140,14 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
 
         document.Records[record.Id] = record;
 
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     public async ValueTask UpdateAsync(IndexProfile record)
     {
         ArgumentNullException.ThrowIfNull(record);
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
 
         if (document.Records.Values.Any(x => x.IndexName.Equals(record.IndexName, StringComparison.OrdinalIgnoreCase) &&
             x.ProviderName.Equals(record.ProviderName, StringComparison.OrdinalIgnoreCase) &&
@@ -169,7 +169,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
 
         document.Records[record.Id] = record;
 
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     public ValueTask SaveChangesAsync()
@@ -177,7 +177,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
 
     private async ValueTask<IEnumerable<IndexProfile>> LocateInstancesAsync(QueryContext context)
     {
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         if (context == null)
         {

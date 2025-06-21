@@ -51,7 +51,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
     public override async Task<IDisplayResult> EditAsync(ISite site, OpenIdClientSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageClientSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageClientSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -104,14 +104,14 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
     public override async Task<IDisplayResult> UpdateAsync(ISite site, OpenIdClientSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageClientSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageClientSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var previousClientSecret = settings.ClientSecret;
         var model = new OpenIdClientSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         model.Scopes ??= string.Empty;
 
@@ -181,7 +181,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             settings.ClientSecret = protector.Protect(model.ClientSecret);
         }
 
-        foreach (var result in await _clientService.ValidateSettingsAsync(settings))
+        foreach (var result in await _clientService.ValidateSettingsAsync(settings).ConfigureAwait(false))
         {
             if (result != ValidationResult.Success)
             {
@@ -192,6 +192,6 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

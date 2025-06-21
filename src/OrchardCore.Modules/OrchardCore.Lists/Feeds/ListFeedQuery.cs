@@ -27,13 +27,13 @@ public class ListFeedQuery : IFeedQueryProvider, IFeedQuery
     {
         var model = new ListFeedQueryViewModel();
 
-        if (!await context.Updater.TryUpdateModelAsync(model) || model.ContentItemId == null)
+        if (!await context.Updater.TryUpdateModelAsync(model).ConfigureAwait(false) || model.ContentItemId == null)
         {
             return null;
         }
 
-        var contentItem = await _contentManager.GetAsync(model.ContentItemId);
-        var feedMetadata = await _contentManager.PopulateAspectAsync<FeedMetadata>(contentItem);
+        var contentItem = await _contentManager.GetAsync(model.ContentItemId).ConfigureAwait(false);
+        var feedMetadata = await _contentManager.PopulateAspectAsync<FeedMetadata>(contentItem).ConfigureAwait(false);
 
         if (feedMetadata.DisableRssFeed)
         {
@@ -47,20 +47,20 @@ public class ListFeedQuery : IFeedQueryProvider, IFeedQuery
     {
         var model = new ListFeedQueryViewModel();
 
-        if (!await context.Updater.TryUpdateModelAsync(model) || model.ContentItemId == null)
+        if (!await context.Updater.TryUpdateModelAsync(model).ConfigureAwait(false) || model.ContentItemId == null)
         {
             return;
         }
 
-        var contentItem = await _contentManager.GetAsync(model.ContentItemId);
+        var contentItem = await _contentManager.GetAsync(model.ContentItemId).ConfigureAwait(false);
 
         if (contentItem == null)
         {
             return;
         }
 
-        var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-        var bodyAspect = await _contentManager.PopulateAspectAsync<BodyAspect>(contentItem);
+        var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem).ConfigureAwait(false);
+        var bodyAspect = await _contentManager.PopulateAspectAsync<BodyAspect>(contentItem).ConfigureAwait(false);
         var routes = contentItemMetadata.DisplayRouteValues;
 
         if (context.Format == "rss")
@@ -104,7 +104,7 @@ public class ListFeedQuery : IFeedQueryProvider, IFeedQuery
                 .With<ContentItemIndex>(x => x.Published)
                 .OrderByDescending(x => x.CreatedUtc)
                 .Take(itemsCount)
-                .ListAsync();
+                .ListAsync().ConfigureAwait(false);
 
         foreach (var item in items)
         {

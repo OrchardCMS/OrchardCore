@@ -44,7 +44,7 @@ public class TaxonomyTermsFilter : ILiquidFilter
             return NilValue.Instance;
         }
 
-        var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId);
+        var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId).ConfigureAwait(false);
 
         if (taxonomy == null)
         {

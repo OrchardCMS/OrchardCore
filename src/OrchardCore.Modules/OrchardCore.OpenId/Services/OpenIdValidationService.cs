@@ -38,13 +38,13 @@ public class OpenIdValidationService : IOpenIdValidationService
 
     public async Task<OpenIdValidationSettings> GetSettingsAsync()
     {
-        var container = await _siteService.GetSiteSettingsAsync();
+        var container = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
         return GetSettingsFromContainer(container);
     }
 
     public async Task<OpenIdValidationSettings> LoadSettingsAsync()
     {
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         return GetSettingsFromContainer(container);
     }
 
@@ -72,9 +72,9 @@ public class OpenIdValidationService : IOpenIdValidationService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         container.Properties[nameof(OpenIdValidationSettings)] = JObject.FromObject(settings);
-        await _siteService.UpdateSiteSettingsAsync(container);
+        await _siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
     }
 
     public async Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdValidationSettings settings)
@@ -183,7 +183,7 @@ public class OpenIdValidationService : IOpenIdValidationService
             }
             else
             {
-                var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+                var shellScope = await _shellHost.GetScopeAsync(shellSettings).ConfigureAwait(false);
 
                 await shellScope.UsingAsync(async scope =>
                 {
@@ -207,7 +207,7 @@ public class OpenIdValidationService : IOpenIdValidationService
                     else
                     {
                         var resource = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
-                        if (!await manager.FindByResourceAsync(resource).AnyAsync())
+                        if (!await manager.FindByResourceAsync(resource).AnyAsync().ConfigureAwait(false))
                         {
                             results.Add(new ValidationResult(S["No appropriate scope was found."], new[]
                             {
@@ -215,7 +215,7 @@ public class OpenIdValidationService : IOpenIdValidationService
                             }));
                         }
                     }
-                });
+                }).ConfigureAwait(false);
             }
         }
 

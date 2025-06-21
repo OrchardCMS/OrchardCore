@@ -24,7 +24,7 @@ public sealed class DeploymentPlanDeploymentSource
 
     protected override async Task ProcessAsync(DeploymentPlanDeploymentStep step, DeploymentPlanResult result)
     {
-        if (!await _deploymentPlanService.DoesUserHavePermissionsAsync())
+        if (!await _deploymentPlanService.DoesUserHavePermissionsAsync().ConfigureAwait(false))
         {
             return;
         }
@@ -32,8 +32,8 @@ public sealed class DeploymentPlanDeploymentSource
         var deploymentStepFactories = _deploymentStepFactories.ToDictionary(f => f.Name);
 
         var deploymentPlans = step.IncludeAll
-            ? (await _deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()
-            : (await _deploymentPlanService.GetDeploymentPlansAsync(step.DeploymentPlanNames)).ToArray();
+            ? (await _deploymentPlanService.GetAllDeploymentPlansAsync().ConfigureAwait(false)).ToArray()
+            : (await _deploymentPlanService.GetDeploymentPlansAsync(step.DeploymentPlanNames).ConfigureAwait(false)).ToArray();
 
         var plans = (from plan in deploymentPlans
                      select new

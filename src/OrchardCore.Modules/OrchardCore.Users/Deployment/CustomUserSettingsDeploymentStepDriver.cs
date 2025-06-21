@@ -28,14 +28,14 @@ public sealed class CustomUserSettingsDeploymentStepDriver : DisplayDriver<Deplo
         {
             model.IncludeAll = step.IncludeAll;
             model.SettingsTypeNames = step.SettingsTypeNames;
-            model.AllSettingsTypeNames = (await _customUserSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
+            model.AllSettingsTypeNames = (await _customUserSettingsService.GetAllSettingsTypeNamesAsync().ConfigureAwait(false)).ToArray();
         }).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CustomUserSettingsDeploymentStep step, UpdateEditorContext context)
     {
         step.SettingsTypeNames = [];
-        await context.Updater.TryUpdateModelAsync(step, Prefix);
+        await context.Updater.TryUpdateModelAsync(step, Prefix).ConfigureAwait(false);
 
         if (step.IncludeAll)
         {

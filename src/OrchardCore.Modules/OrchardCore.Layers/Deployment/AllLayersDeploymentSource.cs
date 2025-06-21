@@ -28,7 +28,7 @@ public sealed class AllLayersDeploymentSource
 
     protected override async Task ProcessAsync(AllLayersDeploymentStep step, DeploymentPlanResult result)
     {
-        var layers = await _layerService.GetLayersAsync();
+        var layers = await _layerService.GetLayersAsync().ConfigureAwait(false);
 
         result.Steps.Add(new JsonObject
         {
@@ -36,7 +36,7 @@ public sealed class AllLayersDeploymentSource
             ["Layers"] = JArray.FromObject(layers.Layers, _jsonSerializerOptions),
         });
 
-        var layerSettings = await _siteService.GetSettingsAsync<LayerSettings>();
+        var layerSettings = await _siteService.GetSettingsAsync<LayerSettings>().ConfigureAwait(false);
 
         // Adding Layer settings
         result.Steps.Add(new JsonObject

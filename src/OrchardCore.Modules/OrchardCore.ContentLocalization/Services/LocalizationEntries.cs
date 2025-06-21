@@ -30,7 +30,7 @@ public class LocalizationEntries : ILocalizationEntries
 
     public async Task<(bool, LocalizationEntry)> TryGetLocalizationAsync(string contentItemId)
     {
-        await EnsureInitializedAsync();
+        await EnsureInitializedAsync().ConfigureAwait(false);
 
         if (_localizations.TryGetValue(contentItemId, out var localization))
         {
@@ -42,7 +42,7 @@ public class LocalizationEntries : ILocalizationEntries
 
     public async Task<IEnumerable<LocalizationEntry>> GetLocalizationsAsync(string localizationSet)
     {
-        await EnsureInitializedAsync();
+        await EnsureInitializedAsync().ConfigureAwait(false);
 
         if (_localizationSets.TryGetValue(localizationSet, out var localizations))
         {
@@ -54,24 +54,24 @@ public class LocalizationEntries : ILocalizationEntries
 
     public async Task UpdateEntriesAsync()
     {
-        await EnsureInitializedAsync();
+        await EnsureInitializedAsync().ConfigureAwait(false);
 
         // Update the cache with a new state and then refresh entries as it would be done on a next request.
-        await _localizationStateManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
+        await _localizationStateManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync).ConfigureAwait(false);
     }
 
     private async Task EnsureInitializedAsync()
     {
         if (!_initialized)
         {
-            await InitializeEntriesAsync();
+            await InitializeEntriesAsync().ConfigureAwait(false);
         }
         else
         {
-            var state = await _localizationStateManager.GetOrCreateImmutableAsync();
+            var state = await _localizationStateManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
             if (_stateIdentifier != state.Identifier)
             {
-                await RefreshEntriesAsync(state);
+                await RefreshEntriesAsync(state).ConfigureAwait(false);
             }
         }
     }
@@ -126,7 +126,7 @@ public class LocalizationEntries : ILocalizationEntries
             return;
         }
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             if (_stateIdentifier != state.Identifier)
@@ -134,7 +134,7 @@ public class LocalizationEntries : ILocalizationEntries
                 var indexes = await Session
                     .QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId)
                     .OrderBy(i => i.Id)
-                    .ListAsync();
+                    .ListAsync().ConfigureAwait(false);
 
                 // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                 // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
@@ -181,17 +181,17 @@ public class LocalizationEntries : ILocalizationEntries
             return;
         }
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             if (!_initialized)
             {
-                var state = await _localizationStateManager.GetOrCreateImmutableAsync();
+                var state = await _localizationStateManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
                 var indexes = await Session
                     .QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null)
                     .OrderBy(i => i.Id)
-                    .ListAsync();
+                    .ListAsync().ConfigureAwait(false);
 
                 var entries = indexes.Select(i => new LocalizationEntry
                 {

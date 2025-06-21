@@ -34,7 +34,7 @@ public sealed class ListPartFeedDisplayDriver : ContentPartDisplayDriver<ListPar
             ContentItem = part.ContentItem,
         };
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.DisableRssFeed, t => t.FeedProxyUrl, t => t.FeedItemsCount);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.DisableRssFeed, t => t.FeedProxyUrl, t => t.FeedItemsCount).ConfigureAwait(false);
 
         part.ContentItem.Content.ListPart.DisableRssFeed = model.DisableRssFeed;
         part.ContentItem.Content.ListPart.FeedProxyUrl = model.FeedProxyUrl;

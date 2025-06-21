@@ -40,7 +40,7 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
             actualShapeType = actualShapeType + "_" + actualDisplayType;
         }
 
-        var shape = await CreateContentShapeAsync(actualShapeType);
+        var shape = await CreateContentShapeAsync(actualShapeType).ConfigureAwait(false);
 
         // This provides a way to default a safe default and customize for each model type
         shape.Metadata.Alternates.Add($"{actualShapeType}__{model.GetType().Name}");
@@ -54,16 +54,16 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
             new ModelStateWrapperUpdater(updater)
         );
 
-        await BindPlacementAsync(context);
+        await BindPlacementAsync(context).ConfigureAwait(false);
 
         await _drivers.InvokeAsync(async (driver, model, context) =>
         {
-            var result = await driver.BuildDisplayAsync(model, context);
+            var result = await driver.BuildDisplayAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
-        }, model, context, _logger);
+        }, model, context, _logger).ConfigureAwait(false);
 
         return shape;
     }
@@ -72,7 +72,7 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
     {
         var actualShapeType = typeof(TModel).Name + "_Edit";
 
-        var shape = await CreateContentShapeAsync(actualShapeType);
+        var shape = await CreateContentShapeAsync(actualShapeType).ConfigureAwait(false);
 
         // This provides a way to default a safe default and customize for each model type
         shape.Metadata.Alternates.Add($"{model.GetType().Name}_Edit");
@@ -88,16 +88,16 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
             new ModelStateWrapperUpdater(updater)
         );
 
-        await BindPlacementAsync(context);
+        await BindPlacementAsync(context).ConfigureAwait(false);
 
         await _drivers.InvokeAsync(async (driver, model, context) =>
         {
-            var result = await driver.BuildEditorAsync(model, context);
+            var result = await driver.BuildEditorAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
-        }, model, context, _logger);
+        }, model, context, _logger).ConfigureAwait(false);
 
         return shape;
     }
@@ -106,7 +106,7 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
     {
         var actualShapeType = typeof(TModel).Name + "_Edit";
 
-        var shape = await CreateContentShapeAsync(actualShapeType);
+        var shape = await CreateContentShapeAsync(actualShapeType).ConfigureAwait(false);
 
         // This provides a way to default a safe default and customize for each model type
         shape.Metadata.Alternates.Add($"{model.GetType().Name}_Edit");
@@ -122,16 +122,16 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
             new ModelStateWrapperUpdater(updater)
         );
 
-        await BindPlacementAsync(context);
+        await BindPlacementAsync(context).ConfigureAwait(false);
 
         await _drivers.InvokeAsync(async (driver, model, context) =>
         {
-            var result = await driver.UpdateEditorAsync(model, context);
+            var result = await driver.UpdateEditorAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
-        }, model, context, _logger);
+        }, model, context, _logger).ConfigureAwait(false);
 
         return shape;
     }

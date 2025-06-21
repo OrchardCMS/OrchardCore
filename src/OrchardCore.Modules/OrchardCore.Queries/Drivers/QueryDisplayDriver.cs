@@ -66,7 +66,7 @@ public sealed class QueryDisplayDriver : DisplayDriver<Query>
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             m => m.Name,
             m => m.Source,
-            m => m.Schema);
+            m => m.Schema).ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(model.Name))
         {
@@ -84,7 +84,7 @@ public sealed class QueryDisplayDriver : DisplayDriver<Query>
         }
         else
         {
-            var existing = await _queryManager.GetQueryAsync(safeName);
+            var existing = await _queryManager.GetQueryAsync(safeName).ConfigureAwait(false);
 
             if (existing != null && existing != model)
             {
@@ -92,6 +92,6 @@ public sealed class QueryDisplayDriver : DisplayDriver<Query>
             }
         }
 
-        return await EditAsync(model, context);
+        return await EditAsync(model, context).ConfigureAwait(false);
     }
 }

@@ -68,7 +68,7 @@ public static class IShapeExtensions
     {
         foreach (var item in items)
         {
-            await shape.AddAsync(item, position);
+            await shape.AddAsync(item, position).ConfigureAwait(false);
         }
 
         return shape;

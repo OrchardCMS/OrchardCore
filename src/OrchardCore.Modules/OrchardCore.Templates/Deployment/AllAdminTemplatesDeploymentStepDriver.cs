@@ -25,7 +25,7 @@ public sealed class AllAdminTemplatesDeploymentStepDriver : DisplayDriver<Deploy
     }
     public override async Task<IDisplayResult> UpdateAsync(AllAdminTemplatesDeploymentStep step, UpdateEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsFiles);
+        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsFiles).ConfigureAwait(false);
 
         return Edit(step, context);
     }

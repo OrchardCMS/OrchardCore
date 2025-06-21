@@ -29,7 +29,7 @@ public sealed class UserLocalizationDisplayDriver : SectionDisplayDriver<User, U
     {
         return Initialize<UserLocalizationViewModel>("UserCulture_Edit", async model =>
         {
-            var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+            var supportedCultures = await _localizationService.GetSupportedCulturesAsync().ConfigureAwait(false);
 
             var cultureList = supportedCultures.Select(culture =>
                 new SelectListItem
@@ -60,10 +60,10 @@ public sealed class UserLocalizationDisplayDriver : SectionDisplayDriver<User, U
     {
         var viewModel = new UserLocalizationViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         section.Culture = viewModel.SelectedCulture;
 
-        return await EditAsync(user, section, context);
+        return await EditAsync(user, section, context).ConfigureAwait(false);
     }
 }

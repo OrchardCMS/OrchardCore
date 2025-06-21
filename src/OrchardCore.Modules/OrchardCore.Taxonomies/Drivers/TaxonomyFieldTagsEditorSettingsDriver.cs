@@ -25,7 +25,7 @@ public sealed class TaxonomyFieldTagsEditorSettingsDriver : ContentPartFieldDefi
         {
             var model = new TaxonomyFieldTagsEditorSettings();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
             context.Builder.WithSettings(model);
         }

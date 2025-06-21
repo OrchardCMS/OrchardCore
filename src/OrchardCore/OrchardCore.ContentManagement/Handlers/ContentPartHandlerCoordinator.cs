@@ -257,7 +257,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
 
     public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
         if (contentTypeDefinition == null)
         {
             return;
@@ -280,7 +280,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
             }
 
             var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-            await partHandlers.InvokeAsync((handler, context, part) => handler.GetContentItemAspectAsync(context, part), context, part, _logger);
+            await partHandlers.InvokeAsync((handler, context, part) => handler.GetContentItemAspectAsync(context, part), context, part, _logger).ConfigureAwait(false);
 
             if (typePartDefinition.PartDefinition.Fields is null)
             {
@@ -299,7 +299,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
                 }
 
                 var fieldHandlers = _contentFieldHandlerResolver.GetHandlers(fieldName);
-                await fieldHandlers.InvokeAsync((handler, context, field) => handler.GetContentItemAspectAsync(context, field), context, field, _logger);
+                await fieldHandlers.InvokeAsync((handler, context, field) => handler.GetContentItemAspectAsync(context, field), context, field, _logger).ConfigureAwait(false);
             }
         }
     }
@@ -331,7 +331,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
         where TContext : ContentContextBase
         where TFieldContext : ContentFieldContextBase
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
         if (contentTypeDefinition == null)
         {
             return;
@@ -360,7 +360,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
             }
 
             var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-            await partHandlers.InvokeAsync(partHandlerAction, context, part, _logger);
+            await partHandlers.InvokeAsync(partHandlerAction, context, part, _logger).ConfigureAwait(false);
 
             if (typePartDefinition.PartDefinition.Fields == null)
             {
@@ -391,7 +391,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
                 fieldContext.PartName = typePartDefinition.Name ?? partName;
 
                 var fieldHandlers = _contentFieldHandlerResolver.GetHandlers(fieldName);
-                await fieldHandlers.InvokeAsync(fieldHandlerAction, fieldContext, field, _logger);
+                await fieldHandlers.InvokeAsync(fieldHandlerAction, fieldContext, field, _logger).ConfigureAwait(false);
             }
         }
     }
@@ -405,7 +405,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
         where TFieldContext : VersionContentFieldContext
 
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
         if (contentTypeDefinition == null)
         {
             return;
@@ -431,7 +431,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
 
             var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
 
-            await partHandlers.InvokeAsync(partHandlerAction, context, existingPart, buildingPart, _logger);
+            await partHandlers.InvokeAsync(partHandlerAction, context, existingPart, buildingPart, _logger).ConfigureAwait(false);
 
             if (typePartDefinition.PartDefinition.Fields == null)
             {
@@ -455,7 +455,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
                 fieldContext.PartName = typePartDefinition.Name ?? partName;
 
                 var fieldHandlers = _contentFieldHandlerResolver.GetHandlers(fieldName);
-                await fieldHandlers.InvokeAsync(fieldHandlerAction, fieldContext, existingField, buildingField, _logger);
+                await fieldHandlers.InvokeAsync(fieldHandlerAction, fieldContext, existingField, buildingField, _logger).ConfigureAwait(false);
             }
         }
     }
@@ -466,7 +466,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
         Func<IContentFieldHandler, ValidateContentFieldContext, ContentField, Task> fieldHandlerAction)
         where TContext : ValidateContentContext
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
         if (contentTypeDefinition == null)
         {
             return;
@@ -496,7 +496,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
                 ContentTypePartDefinition = typePartDefinition,
             };
 
-            await partHandlers.InvokeAsync(partHandlerAction, partValidationContext, part, _logger);
+            await partHandlers.InvokeAsync(partHandlerAction, partValidationContext, part, _logger).ConfigureAwait(false);
 
             // Add any part errors to the context errors.
             foreach (var error in partValidationContext.ContentValidateResult.Errors)
@@ -529,7 +529,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
                 };
 
                 var fieldHandlers = _contentFieldHandlerResolver.GetHandlers(fieldName);
-                await fieldHandlers.InvokeAsync(fieldHandlerAction, validateFieldContentContext, field, _logger);
+                await fieldHandlers.InvokeAsync(fieldHandlerAction, validateFieldContentContext, field, _logger).ConfigureAwait(false);
 
                 // Add any field errors to the context errors.
                 foreach (var error in validateFieldContentContext.ContentValidateResult.Errors)

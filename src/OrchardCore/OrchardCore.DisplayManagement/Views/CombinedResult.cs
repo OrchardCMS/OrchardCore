@@ -20,7 +20,7 @@ public class CombinedResult : IDisplayResult
     {
         foreach (var result in _results)
         {
-            await result.ApplyAsync(context);
+            await result.ApplyAsync(context).ConfigureAwait(false);
         }
     }
 
@@ -28,7 +28,7 @@ public class CombinedResult : IDisplayResult
     {
         foreach (var result in _results)
         {
-            await result.ApplyAsync(context);
+            await result.ApplyAsync(context).ConfigureAwait(false);
         }
     }
 

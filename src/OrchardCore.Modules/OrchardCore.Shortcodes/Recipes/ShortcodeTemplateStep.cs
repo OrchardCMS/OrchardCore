@@ -28,7 +28,7 @@ public sealed class ShortcodeTemplateStep : NamedRecipeStepHandler
                 var name = property.Key;
                 var value = property.Value.ToObject<ShortcodeTemplate>();
 
-                await _templatesManager.UpdateShortcodeTemplateAsync(name, value);
+                await _templatesManager.UpdateShortcodeTemplateAsync(name, value).ConfigureAwait(false);
             }
         }
     }

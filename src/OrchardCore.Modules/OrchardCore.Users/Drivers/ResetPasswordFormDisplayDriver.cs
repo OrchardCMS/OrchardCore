@@ -21,7 +21,7 @@ public sealed class ResetPasswordFormDisplayDriver : DisplayDriver<ResetPassword
     {
         var vm = new ResetPasswordViewModel();
 
-        await context.Updater.TryUpdateModelAsync(vm, Prefix);
+        await context.Updater.TryUpdateModelAsync(vm, Prefix).ConfigureAwait(false);
 
         model.UsernameOrEmail = vm.UsernameOrEmail;
         model.NewPassword = vm.NewPassword;

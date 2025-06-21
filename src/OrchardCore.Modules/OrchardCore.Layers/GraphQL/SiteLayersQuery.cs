@@ -52,7 +52,7 @@ public sealed class SiteLayersQuery : ISchemaBuilder
     {
         var layerService = resolveContext.RequestServices.GetService<ILayerService>();
 
-        var allLayers = await layerService.GetLayersAsync();
+        var allLayers = await layerService.GetLayersAsync().ConfigureAwait(false);
 
         return allLayers.Layers;
     }

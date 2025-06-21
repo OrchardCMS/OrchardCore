@@ -33,8 +33,8 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
     public async ValueTask ConfigureAsync(BlobOptions options)
     {
         _configuration.Bind("OrchardCore_DataProtection_Azure", options);
-        await ConfigureContainerNameAsync(options);
-        await ConfigureBlobNameAsync(options);
+        await ConfigureContainerNameAsync(options).ConfigureAwait(false);
+        await ConfigureBlobNameAsync(options).ConfigureAwait(false);
     }
 
     private async ValueTask ConfigureContainerNameAsync(BlobOptions options)
@@ -50,7 +50,7 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
             var template = _fluidParser.Parse(options.ContainerName);
 
             // Container name must be lowercase.
-            var containerName = (await template.RenderAsync(templateContext, NullEncoder.Default)).ToLower();
+            var containerName = (await template.RenderAsync(templateContext, NullEncoder.Default).ConfigureAwait(false)).ToLower();
             options.ContainerName = containerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
         }
         catch (Exception e)
@@ -65,7 +65,7 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
             {
                 _logger.LogDebug("Testing data protection container {ContainerName} existence", options.ContainerName);
                 var blobContainer = new BlobContainerClient(options.ConnectionString, options.ContainerName);
-                var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+                var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).ConfigureAwait(false);
                 _logger.LogDebug("Data protection container {ContainerName} created.", options.ContainerName);
             }
             catch (Exception e)
@@ -95,7 +95,7 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
 
             var template = _fluidParser.Parse(options.BlobName);
 
-            var blobName = await template.RenderAsync(templateContext, NullEncoder.Default);
+            var blobName = await template.RenderAsync(templateContext, NullEncoder.Default).ConfigureAwait(false);
             options.BlobName = blobName.Replace("\r", string.Empty).Replace("\n", string.Empty);
         }
         catch (Exception e)

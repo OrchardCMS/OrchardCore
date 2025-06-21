@@ -7,7 +7,7 @@ public static class SystemRoleNameProviderExtensions
     {
         ArgumentNullException.ThrowIfNull(roleName);
 
-        var adminRole = await provider.GetAdminRoleAsync();
+        var adminRole = await provider.GetAdminRoleAsync().ConfigureAwait(false);
 
         return roleName.Equals(adminRole, StringComparison.OrdinalIgnoreCase);
     }
@@ -16,7 +16,7 @@ public static class SystemRoleNameProviderExtensions
     {
         ArgumentNullException.ThrowIfNull(roleName);
 
-        var roleNames = await provider.GetSystemRolesAsync();
+        var roleNames = await provider.GetSystemRolesAsync().ConfigureAwait(false);
 
         return roleNames.Contains(roleName);
     }

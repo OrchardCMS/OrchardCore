@@ -37,7 +37,7 @@ internal sealed class CurrentUserQuery : ISchemaBuilder
             Resolver = new FuncFieldResolver<User>(async context =>
             {
                 var userService = context.RequestServices.GetRequiredService<IUserService>();
-                var user = await userService.GetAuthenticatedUserAsync(((GraphQLUserContext)context.UserContext).User);
+                var user = await userService.GetAuthenticatedUserAsync(((GraphQLUserContext)context.UserContext).User).ConfigureAwait(false);
 
                 return user as User;
             }),

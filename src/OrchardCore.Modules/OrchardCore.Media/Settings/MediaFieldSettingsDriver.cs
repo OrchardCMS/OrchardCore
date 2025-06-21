@@ -72,7 +72,7 @@ public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplay
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
     {
         var model = new MediaFieldSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
         var settings = new MediaFieldSettings()
         {
             Hint = model.Hint,

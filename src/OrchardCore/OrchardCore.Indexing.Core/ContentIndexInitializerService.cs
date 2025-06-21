@@ -27,7 +27,7 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
             var indexStore = scope.ServiceProvider.GetRequiredService<IIndexProfileStore>();
             var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
 
-            var indexes = await indexStore.GetAllAsync();
+            var indexes = await indexStore.GetAllAsync().ConfigureAwait(false);
 
             var createdIndexes = new List<IndexProfile>();
 
@@ -46,9 +46,9 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
                     continue;
                 }
 
-                if (!await indexManager.ExistsAsync(index.IndexFullName))
+                if (!await indexManager.ExistsAsync(index.IndexFullName).ConfigureAwait(false))
                 {
-                    await indexManager.CreateAsync(index);
+                    await indexManager.CreateAsync(index).ConfigureAwait(false);
                 }
 
                 createdIndexes.Add(index);
@@ -56,7 +56,7 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
 
             if (createdIndexes.Count > 0)
             {
-                await indexingService.ProcessRecordsAsync(createdIndexes);
+                await indexingService.ProcessRecordsAsync(createdIndexes).ConfigureAwait(false);
             }
         });
     }

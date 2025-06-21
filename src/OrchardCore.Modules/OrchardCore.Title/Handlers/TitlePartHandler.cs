@@ -59,7 +59,7 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
             return;
         }
 
-        var settings = await GetSettingsAsync(part);
+        var settings = await GetSettingsAsync(part).ConfigureAwait(false);
 
         // Do not compute the title if the user can modify it.
         if (settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired)
@@ -87,7 +87,7 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
                 new Dictionary<string, FluidValue>()
                 {
                     ["ContentItem"] = new ObjectValue(model.ContentItem),
-                });
+                }).ConfigureAwait(false);
 
             title = title.Replace("\r", string.Empty).Replace("\n", string.Empty);
 
@@ -99,7 +99,7 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
 
     private async Task<TitlePartSettings> GetSettingsAsync(TitlePart part)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType).ConfigureAwait(false);
         var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart), StringComparison.Ordinal));
 
         return contentTypePartDefinition.GetSettings<TitlePartSettings>();

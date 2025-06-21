@@ -31,7 +31,7 @@ public sealed class AzureAISearchIndexResetDeploymentStepDriver
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
-            model.AllIndexNames = (await _store.GetByProviderAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _store.GetByProviderAsync(AzureAISearchConstants.ProviderName).ConfigureAwait(false)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 
@@ -41,7 +41,7 @@ public sealed class AzureAISearchIndexResetDeploymentStepDriver
 
         await context.Updater.TryUpdateModelAsync(step, Prefix,
             p => p.IncludeAll,
-            p => p.Indices);
+            p => p.Indices).ConfigureAwait(false);
 
         if (step.IncludeAll)
         {

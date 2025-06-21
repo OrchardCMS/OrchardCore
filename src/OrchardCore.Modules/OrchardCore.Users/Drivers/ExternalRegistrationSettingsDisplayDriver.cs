@@ -28,7 +28,7 @@ public sealed class ExternalRegistrationSettingsDisplayDriver : SiteDisplayDrive
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
@@ -49,13 +49,13 @@ public sealed class ExternalRegistrationSettingsDisplayDriver : SiteDisplayDrive
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        await context.Updater.TryUpdateModelAsync(settings, Prefix).ConfigureAwait(false);
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

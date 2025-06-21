@@ -10,7 +10,7 @@ public class ShapeCacheTag
 
     public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, IReadOnlyList<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
     {
-        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+        var objectValue = (await arguments.Item1.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue();
 
         if (objectValue is IShape shape)
         {
@@ -20,24 +20,24 @@ public class ShapeCacheTag
 
             if (expressions.HasNamed("cache_id"))
             {
-                metadata.Cache((await expressions["cache_id"].EvaluateAsync(context)).ToStringValue());
+                metadata.Cache((await expressions["cache_id"].EvaluateAsync(context).ConfigureAwait(false)).ToStringValue());
             }
 
             if (expressions.HasNamed("cache_context"))
             {
-                var contexts = (await expressions["cache_context"].EvaluateAsync(context)).ToStringValue().Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var contexts = (await expressions["cache_context"].EvaluateAsync(context).ConfigureAwait(false)).ToStringValue().Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddContext(contexts);
             }
 
             if (expressions.HasNamed("cache_tag"))
             {
-                var tags = (await expressions["cache_tag"].EvaluateAsync(context)).ToStringValue().Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var tags = (await expressions["cache_tag"].EvaluateAsync(context).ConfigureAwait(false)).ToStringValue().Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddTag(tags);
             }
 
             if (expressions.HasNamed("cache_fixed_duration"))
             {
-                if (TimeSpan.TryParse((await expressions["cache_fixed_duration"].EvaluateAsync(context)).ToStringValue(), out var timespan))
+                if (TimeSpan.TryParse((await expressions["cache_fixed_duration"].EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(), out var timespan))
                 {
                     metadata.Cache().WithExpiryAfter(timespan);
                 }
@@ -45,7 +45,7 @@ public class ShapeCacheTag
 
             if (expressions.HasNamed("cache_sliding_duration"))
             {
-                if (TimeSpan.TryParse((await expressions["cache_sliding_duration"].EvaluateAsync(context)).ToStringValue(), out var timespan))
+                if (TimeSpan.TryParse((await expressions["cache_sliding_duration"].EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(), out var timespan))
                 {
                     metadata.Cache().WithExpirySliding(timespan);
                 }

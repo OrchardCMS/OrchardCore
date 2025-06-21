@@ -19,7 +19,7 @@ public class HttpContextAddItemTag
         {
             foreach (var argument in expressions)
             {
-                httpContext.Items[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue();
+                httpContext.Items[argument.Name] = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue();
             }
         }
         return Completion.Normal;

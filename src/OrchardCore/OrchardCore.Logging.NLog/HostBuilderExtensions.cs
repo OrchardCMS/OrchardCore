@@ -22,11 +22,11 @@ public static class HostBuilderExtensions
             }
 
             var environment = context.HostingEnvironment;
-            
+
             var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
-            
-            var configDir = string.IsNullOrWhiteSpace(appData) 
-                ? Path.Combine(environment.ContentRootPath, ShellOptionConstants.DefaultAppDataPath) 
+
+            var configDir = string.IsNullOrWhiteSpace(appData)
+                ? Path.Combine(environment.ContentRootPath, ShellOptionConstants.DefaultAppDataPath)
                 : appData;
 
             LogManager.Configuration.Variables["configDir"] = configDir;

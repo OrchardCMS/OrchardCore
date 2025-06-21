@@ -33,13 +33,13 @@ public sealed class MediaDeploymentSource
             paths = paths.OrderBy(p => p);
         }
 
-        var output = await paths.Select(p => new MediaDeploymentStepModel { SourcePath = p, TargetPath = p }).ToArrayAsync();
+        var output = await paths.Select(p => new MediaDeploymentStepModel { SourcePath = p, TargetPath = p }).ToArrayAsync().ConfigureAwait(false);
 
         foreach (var path in output)
         {
-            var stream = await _mediaFileStore.GetFileStreamAsync(path.SourcePath);
+            var stream = await _mediaFileStore.GetFileStreamAsync(path.SourcePath).ConfigureAwait(false);
 
-            await result.FileBuilder.SetFileAsync(path.SourcePath, stream);
+            await result.FileBuilder.SetFileAsync(path.SourcePath, stream).ConfigureAwait(false);
         }
 
         // Adding media files

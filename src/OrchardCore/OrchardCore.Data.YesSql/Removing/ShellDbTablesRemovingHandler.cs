@@ -50,7 +50,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
 
             // Check for a valid connection and if at least the 'Document' table exists.
             var validationContext = new DbConnectionValidatorContext(context.ShellSettings);
-            var result = await dbConnectionValidator.ValidateAsync(validationContext);
+            var result = await dbConnectionValidator.ValidateAsync(validationContext).ConfigureAwait(false);
 
             if (result != DbConnectionValidatorResult.DocumentTableFound)
             {
@@ -61,7 +61,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         // Can't resolve 'IStore' if 'Uninitialized', so force to 'Disabled'.
         var shellSettings = new ShellSettings(context.ShellSettings).AsDisabled();
 
-        var shellDbTablesInfo = await GetTablesToRemoveAsync(shellSettings);
+        var shellDbTablesInfo = await GetTablesToRemoveAsync(shellSettings).ConfigureAwait(false);
         if (!context.Success)
         {
             return;
@@ -70,8 +70,11 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         try
         {
             // Create a minimum shell context without any features.
-            await using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
-            var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
+            var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings).ConfigureAwait(false);
+            // Create a minimum shell context without any features.
+            await using (shellContext.ConfigureAwait(false))
+            {
+                var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
 
             await using var connection = store.Configuration.ConnectionFactory.CreateConnection();
             if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite && connection is SqliteConnection sqliteConnection)
@@ -98,6 +101,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                     throw;
                 }
             }
+            }
         }
         catch (Exception ex)
         {
@@ -120,8 +124,12 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         }
 
         // Create an isolated shell context composed of all features that have been installed.
-        await using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
-        await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
+
+        // Create an isolated shell context composed of all features that have been installed.
+        await using (shellContext.ConfigureAwait(false))
+        {
+            await (await shellContext.CreateScopeAsync().ConfigureAwait(false)).UsingServiceScopeAsync(async scope =>
         {
             var store = scope.ServiceProvider.GetRequiredService<IStore>();
             shellDbTablesInfo.Configure(store.Configuration);
@@ -136,8 +144,8 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                 var version = 0;
                 try
                 {
-                    version = await migration.ExecuteCreateMethodAsync();
-                    version = await migration.ExecuteUpdateMethodsAsync(version);
+                    version = await migration.ExecuteCreateMethodAsync().ConfigureAwait(false);
+                    version = await migration.ExecuteUpdateMethodsAsync(version).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -160,9 +168,10 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             // The 'ShellDbTablesInfo' doesn't execute any Sql command and type definitions
             // are intended to be idempotent, but anyway here nothing needs to be persisted.
             var documentStore = scope.ServiceProvider.GetRequiredService<IDocumentStore>();
-            await documentStore.CancelAsync();
-        });
+            await documentStore.CancelAsync().ConfigureAwait(false);
+        }).ConfigureAwait(false);
 
         return shellDbTablesInfo;
+        }
     }
 }

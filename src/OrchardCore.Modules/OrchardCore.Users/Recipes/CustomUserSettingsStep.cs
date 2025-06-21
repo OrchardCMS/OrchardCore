@@ -30,7 +30,7 @@ public sealed class CustomUserSettingsStep : NamedRecipeStepHandler
             .Select(p => p.Value)
             .FirstOrDefault();
 
-        var allUsers = await _session.Query<User>().ListAsync();
+        var allUsers = await _session.Query<User>().ListAsync().ConfigureAwait(false);
 
         foreach (var userCustomUserSettings in customUserSettingsList.Cast<JsonObject>())
         {
@@ -59,7 +59,7 @@ public sealed class CustomUserSettingsStep : NamedRecipeStepHandler
                 user.Properties[contentItem.ContentType] = userSetting.DeepClone();
             }
 
-            await _session.SaveAsync(user);
+            await _session.SaveAsync(user).ConfigureAwait(false);
         }
     }
 }

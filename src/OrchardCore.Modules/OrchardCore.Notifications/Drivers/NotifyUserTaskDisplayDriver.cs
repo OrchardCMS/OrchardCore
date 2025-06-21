@@ -28,7 +28,7 @@ public sealed class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayD
     public override async Task<IDisplayResult> UpdateAsync(NotifyUserTask activity, UpdateEditorContext context)
     {
         var viewModel = new NotifyUserTaskViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         var userNames = viewModel.UserNames?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Distinct(StringComparer.OrdinalIgnoreCase) ?? [];
@@ -42,7 +42,7 @@ public sealed class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayD
             activity.UserNames = new WorkflowExpression<string>(string.Join(", ", userNames));
         }
 
-        return await base.UpdateAsync(activity, context);
+        return await base.UpdateAsync(activity, context).ConfigureAwait(false);
     }
 
     protected override void EditActivity(NotifyUserTask activity, NotifyUserTaskViewModel model)

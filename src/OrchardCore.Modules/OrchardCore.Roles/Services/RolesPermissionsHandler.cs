@@ -34,14 +34,14 @@ public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequiremen
         }
 
         var claims = new HashSet<Claim>();
-        foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Anonymous))
+        foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Anonymous).ConfigureAwait(false))
         {
             claims.Add(claim);
         }
 
         if (context.User.Identity.IsAuthenticated)
         {
-            foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Authenticated))
+            foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Authenticated).ConfigureAwait(false))
             {
                 claims.Add(claim);
             }
@@ -56,7 +56,7 @@ public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequiremen
 
     private async Task<IEnumerable<RoleClaim>> GetRoleClaimsAsync(string roleName)
     {
-        var role = await _roleManager.FindByNameAsync(roleName);
+        var role = await _roleManager.FindByNameAsync(roleName).ConfigureAwait(false);
 
         if (role != null)
         {

@@ -35,7 +35,7 @@ public static class ShellHostExtensions
     {
         foreach (var settings in shellHost.GetAllSettings())
         {
-            await shellHost.ReloadShellContextAsync(settings);
+            await shellHost.ReloadShellContextAsync(settings).ConfigureAwait(false);
         }
     }
 
@@ -47,7 +47,7 @@ public static class ShellHostExtensions
     {
         foreach (var settings in shellHost.GetAllSettings())
         {
-            await shellHost.ReleaseShellContextAsync(settings);
+            await shellHost.ReleaseShellContextAsync(settings).ConfigureAwait(false);
         }
     }
 

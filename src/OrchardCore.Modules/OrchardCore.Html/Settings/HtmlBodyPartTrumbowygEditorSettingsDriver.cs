@@ -36,7 +36,7 @@ public sealed class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartD
         {
             var model = new TrumbowygSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
             try
             {

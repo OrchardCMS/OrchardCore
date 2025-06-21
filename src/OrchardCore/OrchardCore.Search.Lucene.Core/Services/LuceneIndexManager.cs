@@ -56,18 +56,18 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
     public async Task<bool> CreateAsync(IndexProfile index)
     {
-        if (await ExistsAsync(index.IndexFullName))
+        if (await ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
             return false;
         }
 
         var context = new IndexCreateContext(index);
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger).ConfigureAwait(false);
 
         try
         {
-            await _indexStore.WriteAndClose(index);
+            await _indexStore.WriteAndClose(index).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -76,7 +76,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             return false;
         }
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger).ConfigureAwait(false);
 
         return true;
     }
@@ -87,16 +87,16 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         var context = new IndexRebuildContext(index);
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger).ConfigureAwait(false);
 
-        if (await ExistsAsync(index.IndexFullName))
+        if (await ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
-            await _indexStore.RemoveAsync(index);
+            await _indexStore.RemoveAsync(index).ConfigureAwait(false);
         }
 
         try
         {
-            await _indexStore.WriteAndClose(index);
+            await _indexStore.WriteAndClose(index).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -105,7 +105,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             return false;
         }
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger).ConfigureAwait(false);
 
         return true;
     }
@@ -116,11 +116,11 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         var context = new IndexRemoveContext(index.IndexFullName);
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger).ConfigureAwait(false);
 
         try
         {
-            await _indexStore.RemoveAsync(index);
+            await _indexStore.RemoveAsync(index).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -129,7 +129,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             return false;
         }
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger).ConfigureAwait(false);
 
         return true;
     }
@@ -152,7 +152,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             var metadata = index.As<LuceneIndexMetadata>();
 
             writer.DeleteDocuments(documentIds.Select(id => new Term(metadata.IndexMappings.KeyFieldName, id)).ToArray());
-        });
+        }).ConfigureAwait(false);
 
         return true;
     }
@@ -177,7 +177,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
                 {
                     writer.UpdateDocument(new Term(metadata.IndexMappings.KeyFieldName, indexDocument.Id), CreateLuceneDocument(indexDocument, metadata.StoreSourceData));
                 }
-            });
+            }).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -199,7 +199,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             {
                 writer.DeleteAll();
                 writer.Commit();
-            });
+            }).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

@@ -39,7 +39,7 @@ public class SetOutputTask : TaskActivity<SetOutputTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var value = await _scriptEvaluator.EvaluateAsync(Value, workflowContext);
+        var value = await _scriptEvaluator.EvaluateAsync(Value, workflowContext).ConfigureAwait(false);
         workflowContext.Output[OutputName] = value;
 
         return Outcomes("Done");

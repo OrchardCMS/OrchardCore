@@ -27,9 +27,9 @@ public class FacebookService : IFacebookService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         container.Properties[nameof(FacebookSettings)] = JObject.FromObject(settings);
-        await _siteService.UpdateSiteSettingsAsync(container);
+        await _siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
     }
 
     public IEnumerable<ValidationResult> ValidateSettings(FacebookSettings settings)

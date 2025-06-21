@@ -28,7 +28,7 @@ public class UserTimeZoneSelector : ITimeZoneSelector
                 Priority = 100,
                 TimeZoneId = async () =>
                 {
-                    var timeZone = await _userTimeZoneService.GetAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
+                    var timeZone = await _userTimeZoneService.GetAsync(_httpContextAccessor.HttpContext.User.Identity.Name).ConfigureAwait(false);
 
                     return timeZone?.TimeZoneId;
                 },

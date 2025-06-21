@@ -19,7 +19,7 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("AuditTrailPart", part => part
             .Attachable()
-            .WithDescription("Allows editors to enter a comment to be saved into the Audit Trail event when saving a content item."));
+            .WithDescription("Allows editors to enter a comment to be saved into the Audit Trail event when saving a content item.")).ConfigureAwait(false);
 
         return 1;
     }

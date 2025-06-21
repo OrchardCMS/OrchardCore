@@ -53,7 +53,7 @@ public sealed class AutoroutePartSettingsDisplayDriver : ContentTypePartDefiniti
             m => m.AllowDisabled,
             m => m.AllowRouteContainedItems,
             m => m.ManageContainedItemRoutes,
-            m => m.AllowAbsolutePath);
+            m => m.AllowAbsolutePath).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
         {

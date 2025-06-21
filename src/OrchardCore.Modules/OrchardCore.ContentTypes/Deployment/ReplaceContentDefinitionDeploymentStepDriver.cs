@@ -37,7 +37,7 @@ public sealed class ReplaceContentDefinitionDeploymentStepDriver : DisplayDriver
             Prefix,
             x => x.ContentTypes,
             x => x.ContentParts,
-            x => x.IncludeAll);
+            x => x.IncludeAll).ConfigureAwait(false);
 
         // don't have the selected option if include all
         if (step.IncludeAll)

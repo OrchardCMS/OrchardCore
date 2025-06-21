@@ -68,7 +68,7 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
         var model = new AzureAISettingsIndexProfileViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var metadata = indexProfile.As<AzureAISearchIndexMetadata>();
 
@@ -83,7 +83,7 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
         var queryModel = new AzureAISearchDefaultQueryViewModel();
 
-        await context.Updater.TryUpdateModelAsync(queryModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(queryModel, Prefix).ConfigureAwait(false);
 
         if (queryModel.DefaultSearchFields?.Length > 0)
         {

@@ -27,7 +27,7 @@ public class WorkflowStore : IWorkflowStore
 
     public async Task<bool> HasHaltedInstanceAsync(string workflowTypeId)
     {
-        return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync()) != null;
+        return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync().ConfigureAwait(false)) != null;
     }
 
     public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null)
@@ -117,21 +117,21 @@ public class WorkflowStore : IWorkflowStore
     public async Task SaveAsync(Workflow workflow)
     {
         var isNew = workflow.Id == 0;
-        await _session.SaveAsync(workflow);
+        await _session.SaveAsync(workflow).ConfigureAwait(false);
 
         if (isNew)
         {
             var context = new WorkflowCreatedContext(workflow);
-            await _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+            await _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger).ConfigureAwait(false);
         }
         else
         {
             var context = new WorkflowUpdatedContext(workflow);
-            await _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+            await _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger).ConfigureAwait(false);
         }
 
         // Allow an atomic workflow to get up to date data.
-        await _session.FlushAsync();
+        await _session.FlushAsync().ConfigureAwait(false);
     }
 
     public Task DeleteAsync(Workflow workflow)

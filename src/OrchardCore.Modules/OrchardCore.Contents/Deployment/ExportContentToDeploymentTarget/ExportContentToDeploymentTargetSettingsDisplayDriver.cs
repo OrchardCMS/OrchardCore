@@ -29,7 +29,7 @@ public sealed class ExportContentToDeploymentTargetSettingsDisplayDriver : SiteD
     public override async Task<IDisplayResult> EditAsync(ISite site, ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.ManageDeploymentPlan).ConfigureAwait(false))
         {
             return null;
         }
@@ -45,10 +45,10 @@ public sealed class ExportContentToDeploymentTargetSettingsDisplayDriver : SiteD
     {
         var model = new ExportContentToDeploymentTargetSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ExportContentToDeploymentTargetPlanId);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ExportContentToDeploymentTargetPlanId).ConfigureAwait(false);
 
         settings.ExportContentToDeploymentTargetPlanId = model.ExportContentToDeploymentTargetPlanId;
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

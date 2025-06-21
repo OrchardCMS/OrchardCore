@@ -24,7 +24,7 @@ public sealed class LocalLock : IDistributedLock, ILocalLock, IDisposable
     public async Task<ILocker> AcquireLockAsync(string key, TimeSpan? expiration = null)
     {
         var semaphore = GetOrCreateSemaphore(key);
-        await semaphore.Value.WaitAsync();
+        await semaphore.Value.WaitAsync().ConfigureAwait(false);
 
         return new Locker(this, semaphore, expiration);
     }
@@ -37,7 +37,7 @@ public sealed class LocalLock : IDistributedLock, ILocalLock, IDisposable
     {
         var semaphore = GetOrCreateSemaphore(key);
 
-        if (await semaphore.Value.WaitAsync(timeout != TimeSpan.MaxValue ? timeout : Timeout.InfiniteTimeSpan))
+        if (await semaphore.Value.WaitAsync(timeout != TimeSpan.MaxValue ? timeout : Timeout.InfiniteTimeSpan).ConfigureAwait(false))
         {
             return (new Locker(this, semaphore, expiration), true);
         }

@@ -62,24 +62,24 @@ public sealed class MediaStep : NamedRecipeStepHandler
                 {
                     var httpClient = _httpClientFactory.CreateClient();
 
-                    var response = await httpClient.GetAsync(file.SourceUrl);
+                    var response = await httpClient.GetAsync(file.SourceUrl).ConfigureAwait(false);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        stream = await response.Content.ReadAsStreamAsync();
+                        stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     }
                 }
 
                 if (stream != null)
                 {
-                    await _mediaFileStore.CreateFileFromStreamAsync(file.TargetPath, stream, true);
+                    await _mediaFileStore.CreateFileFromStreamAsync(file.TargetPath, stream, true).ConfigureAwait(false);
                 }
             }
             finally
             {
                 if (stream != null)
                 {
-                    await stream.DisposeAsync();
+                    await stream.DisposeAsync().ConfigureAwait(false);
                 }
             }
         }

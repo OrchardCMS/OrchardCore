@@ -33,7 +33,7 @@ public class ModuleService : IModuleService
     public async Task<IEnumerable<ModuleFeature>> GetAvailableFeaturesAsync()
     {
         var enabledFeatures =
-            await _shellFeaturesManager.GetEnabledFeaturesAsync();
+            await _shellFeaturesManager.GetEnabledFeaturesAsync().ConfigureAwait(false);
 
         var availableFeatures = _extensionManager.GetFeatures();
 
@@ -62,10 +62,10 @@ public class ModuleService : IModuleService
             .GetFeatures()
             .Where(x => featureIds.Contains(x.Id));
 
-        var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
+        var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force).ConfigureAwait(false);
         foreach (var enabledFeature in enabledFeatures)
         {
-            await _notifier.SuccessAsync(H["{0} was enabled.", enabledFeature.Name]);
+            await _notifier.SuccessAsync(H["{0} was enabled.", enabledFeature.Name]).ConfigureAwait(false);
         }
     }
 
@@ -89,10 +89,10 @@ public class ModuleService : IModuleService
             .GetFeatures()
             .Where(x => featureIds.Contains(x.Id));
 
-        var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
+        var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force).ConfigureAwait(false);
         foreach (var feature in features)
         {
-            await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name]);
+            await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name]).ConfigureAwait(false);
         }
     }
 

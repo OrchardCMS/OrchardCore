@@ -25,13 +25,13 @@ public class RoleService : IRoleService
             throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
         }
 
-        var entity = await _roleManager.FindByNameAsync(role);
+        var entity = await _roleManager.FindByNameAsync(role).ConfigureAwait(false);
         if (entity == null)
         {
             return Array.Empty<Claim>();
         }
 
-        return await _roleManager.GetClaimsAsync(entity);
+        return await _roleManager.GetClaimsAsync(entity).ConfigureAwait(false);
     }
 
     public Task<IEnumerable<IRole>> GetRolesAsync()

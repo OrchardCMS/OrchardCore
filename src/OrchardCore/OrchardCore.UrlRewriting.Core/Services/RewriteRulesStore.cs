@@ -14,7 +14,7 @@ public sealed class RewriteRulesStore : IRewriteRulesStore
 
     public async Task<IEnumerable<RewriteRule>> GetAllAsync()
     {
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         return document.Rules.Values;
     }
@@ -23,22 +23,22 @@ public sealed class RewriteRulesStore : IRewriteRulesStore
     {
         ArgumentNullException.ThrowIfNull(rule);
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
 
         document.Rules[rule.Id] = rule;
 
-        await UpdateOrderAndSaveAsync(document.Rules.Values);
+        await UpdateOrderAndSaveAsync(document.Rules.Values).ConfigureAwait(false);
     }
 
     public async Task DeleteAsync(RewriteRule rule)
     {
         ArgumentNullException.ThrowIfNull(rule);
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
 
         if (document.Rules.Remove(rule.Id))
         {
-            await UpdateOrderAndSaveAsync(document.Rules.Values);
+            await UpdateOrderAndSaveAsync(document.Rules.Values).ConfigureAwait(false);
         }
     }
 
@@ -46,7 +46,7 @@ public sealed class RewriteRulesStore : IRewriteRulesStore
     {
         ArgumentException.ThrowIfNullOrEmpty(id);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         return document.Rules.TryGetValue(id, out var rule)
             ? rule
@@ -64,11 +64,11 @@ public sealed class RewriteRulesStore : IRewriteRulesStore
             rule.Order = order++;
         }
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
 
         document.Rules = rules.ToDictionary(x => x.Id);
 
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
 
         return document.Rules.Values;
     }

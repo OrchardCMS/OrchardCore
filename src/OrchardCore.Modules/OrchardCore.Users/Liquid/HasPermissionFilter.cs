@@ -41,14 +41,14 @@ public class HasPermissionFilter : ILiquidFilter
                     if (resource != null)
                     {
                         if (!string.IsNullOrEmpty(permissionName) &&
-                            await _authorizationService.AuthorizeAsync(user, permission, resource))
+                            await _authorizationService.AuthorizeAsync(user, permission, resource).ConfigureAwait(false))
                         {
                             return BooleanValue.True;
                         }
                     }
                 }
 
-                if (await _authorizationService.AuthorizeAsync(user, permission))
+                if (await _authorizationService.AuthorizeAsync(user, permission).ConfigureAwait(false))
                 {
                     return BooleanValue.True;
                 }

@@ -238,10 +238,10 @@ public class DynamicCacheTests
         async Task<IDisplayResult> CreateDisplayResultAsync()
         {
             var contentItem = new ContentItem();
-            var contentShape = await factory.CreateAsync("Content");
+            var contentShape = await factory.CreateAsync("Content").ConfigureAwait(false);
             var buildDisplayContext = new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null);
             var driverResult = new MyDisplayDriver().Display(contentItem, buildDisplayContext);
-            await driverResult.ApplyAsync(buildDisplayContext);
+            await driverResult.ApplyAsync(buildDisplayContext).ConfigureAwait(false);
 
             return driverResult;
         }

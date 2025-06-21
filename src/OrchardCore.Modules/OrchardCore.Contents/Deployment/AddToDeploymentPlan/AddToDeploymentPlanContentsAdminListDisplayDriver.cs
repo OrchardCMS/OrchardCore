@@ -16,7 +16,7 @@ public sealed class AddToDeploymentPlanContentsAdminListDisplayDriver : DisplayD
 
     public override async Task<IDisplayResult> DisplayAsync(ContentOptionsViewModel model, BuildDisplayContext context)
     {
-        if (await _deploymentPlanService.DoesUserHavePermissionsAsync())
+        if (await _deploymentPlanService.DoesUserHavePermissionsAsync().ConfigureAwait(false))
         {
             return Combine(
                 Dynamic("AddToDeploymentPlan__Button__ContentsBulkActions").Location("BulkActions", "Content:20"),

@@ -24,7 +24,7 @@ public class InheritedTermsFilter : ILiquidFilter
         var firstArg = arguments.At(0);
         if (firstArg.Type != FluidValues.Object || input.ToObjectValue() is not ContentItem taxonomy)
         {
-            taxonomy = await _contentManager.GetAsync(firstArg.ToStringValue());
+            taxonomy = await _contentManager.GetAsync(firstArg.ToStringValue()).ConfigureAwait(false);
         }
 
         if (taxonomy == null)

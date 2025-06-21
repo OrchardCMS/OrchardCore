@@ -30,9 +30,9 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
     public override IDisplayResult Display(FacebookPluginPart part, BuildPartDisplayContext context)
     {
         return Combine(
-            Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", async m => await BuildViewModelAsync(m, part))
+            Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", async m => await BuildViewModelAsync(m, part).ConfigureAwait(false))
                 .Location("Detail", "Content"),
-            Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", async m => await BuildViewModelAsync(m, part))
+            Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", async m => await BuildViewModelAsync(m, part).ConfigureAwait(false))
                 .Location("Summary", "Content")
         );
     }
@@ -43,7 +43,7 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
         ArgumentNullException.ThrowIfNull(part);
 
         model.FacebookPluginPart = part;
-        model.Settings = await GetFacebookPluginPartSettingsAsync(part);
+        model.Settings = await GetFacebookPluginPartSettingsAsync(part).ConfigureAwait(false);
         model.Liquid = part.Liquid;
         model.ContentItem = part.ContentItem;
     }
@@ -52,7 +52,7 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
     {
         return Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Edit", async model =>
         {
-            model.Settings = await GetFacebookPluginPartSettingsAsync(part);
+            model.Settings = await GetFacebookPluginPartSettingsAsync(part).ConfigureAwait(false);
             model.FacebookPluginPart = part;
             model.Liquid = string.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
         });
@@ -62,7 +62,7 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
     {
         ArgumentNullException.ThrowIfNull(part);
 
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType).ConfigureAwait(false);
         var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart), StringComparison.Ordinal));
         return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
     }
@@ -71,7 +71,7 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
     {
         var viewModel = new FacebookPluginPartViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
         {

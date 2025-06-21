@@ -45,7 +45,7 @@ public class NavigationShapes : ShapeTableProvider
 
                 foreach (var navigationManager in navigationManagers)
                 {
-                    var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext);
+                    var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext).ConfigureAwait(false);
                     var httpContext = httpContextAccessor.HttpContext;
 
                     if (httpContext != null)
@@ -68,7 +68,7 @@ public class NavigationShapes : ShapeTableProvider
                     }
 
                     // TODO: Flag Selected menu item
-                    await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, viewContext);
+                    await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, viewContext).ConfigureAwait(false);
                 }
             });
 

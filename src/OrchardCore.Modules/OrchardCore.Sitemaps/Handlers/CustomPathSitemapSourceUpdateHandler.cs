@@ -14,7 +14,7 @@ public class CustomPathSitemapSourceUpdateHandler : ISitemapSourceUpdateHandler
 
     public async Task UpdateSitemapAsync(SitemapUpdateContext context)
     {
-        var sitemaps = (await _sitemapManager.LoadSitemapsAsync()).Where(s => s.GetType() == typeof(Sitemap));
+        var sitemaps = (await _sitemapManager.LoadSitemapsAsync().ConfigureAwait(false)).Where(s => s.GetType() == typeof(Sitemap));
 
         if (!sitemaps.Any())
         {
@@ -41,7 +41,7 @@ public class CustomPathSitemapSourceUpdateHandler : ISitemapSourceUpdateHandler
 
         if (sitemapNeedsUpdate)
         {
-            await _sitemapManager.UpdateSitemapAsync();
+            await _sitemapManager.UpdateSitemapAsync().ConfigureAwait(false);
         }
     }
 }

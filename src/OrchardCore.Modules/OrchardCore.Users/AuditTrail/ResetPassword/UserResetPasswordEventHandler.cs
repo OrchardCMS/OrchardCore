@@ -46,7 +46,7 @@ public sealed class UserResetPasswordEventHandler : PasswordRecoveryFormEvents
         if (string.IsNullOrEmpty(userEvent.UserId))
         {
             _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
-            userEvent.UserId = await _userManager.GetUserIdAsync(user);
+            userEvent.UserId = await _userManager.GetUserIdAsync(user).ConfigureAwait(false);
         }
 
         await _auditTrailManager.RecordEventAsync(
@@ -58,6 +58,6 @@ public sealed class UserResetPasswordEventHandler : PasswordRecoveryFormEvents
                 userEvent.UserId,
                 userName,
                 userEvent
-            ));
+            )).ConfigureAwait(false);
     }
 }

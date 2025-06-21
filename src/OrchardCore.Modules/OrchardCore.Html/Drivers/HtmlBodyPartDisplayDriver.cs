@@ -62,7 +62,7 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
 
         var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
         {
@@ -87,7 +87,7 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
         if (!settings.SanitizeHtml)
         {
             model.Html = await _liquidTemplateManager.RenderStringAsync(htmlBodyPart.Html, _htmlEncoder, model,
-                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }).ConfigureAwait(false);
         }
 
         model.Html = await _shortcodeService.ProcessAsync(model.Html,
@@ -95,6 +95,6 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
             {
                 ["ContentItem"] = htmlBodyPart.ContentItem,
                 ["TypePartDefinition"] = context.TypePartDefinition,
-            });
+            }).ConfigureAwait(false);
     }
 }

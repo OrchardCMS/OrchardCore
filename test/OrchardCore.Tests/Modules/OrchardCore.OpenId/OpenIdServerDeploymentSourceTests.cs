@@ -101,6 +101,6 @@ public class OpenIdServerDeploymentSourceTests
         };
 
         var recipeStep = new OpenIdServerSettingsStep(openIdServerService);
-        await recipeStep.ExecuteAsync(recipeContext);
+        await recipeStep.ExecuteAsync(recipeContext).ConfigureAwait(false);
     }
 }

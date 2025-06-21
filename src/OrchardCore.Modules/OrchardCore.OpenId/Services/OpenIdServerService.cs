@@ -48,13 +48,13 @@ public class OpenIdServerService : IOpenIdServerService
 
     public async Task<OpenIdServerSettings> GetSettingsAsync()
     {
-        var container = await _siteService.GetSiteSettingsAsync();
+        var container = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
         return GetSettingsFromContainer(container);
     }
 
     public async Task<OpenIdServerSettings> LoadSettingsAsync()
     {
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         return GetSettingsFromContainer(container);
     }
 
@@ -87,9 +87,9 @@ public class OpenIdServerService : IOpenIdServerService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings, JOptions.Default);
-        await _siteService.UpdateSiteSettingsAsync(container);
+        await _siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
     }
 
     public Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdServerSettings settings)
@@ -283,7 +283,7 @@ public class OpenIdServerService : IOpenIdServerService
 
     public async Task<ImmutableArray<SecurityKey>> GetEncryptionKeysAsync()
     {
-        var settings = await GetSettingsAsync();
+        var settings = await GetSettingsAsync().ConfigureAwait(false);
 
         // If a certificate was explicitly provided, return it immediately
         // instead of using the fallback managed certificates logic.
@@ -310,7 +310,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             var directory = GetEncryptionCertificateDirectory(_shellOptions.CurrentValue, _shellSettings);
 
-            var certificates = (await GetCertificatesAsync(directory)).Select(tuple => tuple.certificate).ToList();
+            var certificates = (await GetCertificatesAsync(directory).ConfigureAwait(false)).Select(tuple => tuple.certificate).ToList();
             if (certificates.Any(certificate => certificate.NotAfter.AddDays(-7) > DateTime.Now))
             {
                 return ImmutableArray.CreateRange<SecurityKey>(
@@ -324,7 +324,7 @@ public class OpenIdServerService : IOpenIdServerService
                 // generate a new certificate and add it on top of the list to ensure it's preferred
                 // by OpenIddict to the other certificates when issuing new IdentityModel tokens.
                 var certificate = GenerateEncryptionCertificate(_shellSettings);
-                await PersistCertificateAsync(directory, certificate);
+                await PersistCertificateAsync(directory, certificate).ConfigureAwait(false);
 
                 certificates.Insert(0, certificate);
 
@@ -355,7 +355,7 @@ public class OpenIdServerService : IOpenIdServerService
 
     public async Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync()
     {
-        var settings = await GetSettingsAsync();
+        var settings = await GetSettingsAsync().ConfigureAwait(false);
 
         // If a certificate was explicitly provided, return it immediately
         // instead of using the fallback managed certificates logic.
@@ -382,7 +382,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             var directory = GetSigningCertificateDirectory(_shellOptions.CurrentValue, _shellSettings);
 
-            var certificates = (await GetCertificatesAsync(directory)).Select(tuple => tuple.certificate).ToList();
+            var certificates = (await GetCertificatesAsync(directory).ConfigureAwait(false)).Select(tuple => tuple.certificate).ToList();
             if (certificates.Any(certificate => certificate.NotAfter.AddDays(-7) > DateTime.Now))
             {
                 return ImmutableArray.CreateRange<SecurityKey>(
@@ -396,7 +396,7 @@ public class OpenIdServerService : IOpenIdServerService
                 // generate a new certificate and add it on top of the list to ensure it's preferred
                 // by OpenIddict to the other certificates when issuing new IdentityModel tokens.
                 var certificate = GenerateSigningCertificate(_shellSettings);
-                await PersistCertificateAsync(directory, certificate);
+                await PersistCertificateAsync(directory, certificate).ConfigureAwait(false);
 
                 certificates.Insert(0, certificate);
 
@@ -500,7 +500,7 @@ public class OpenIdServerService : IOpenIdServerService
             try
             {
                 // Only add the certificate if it's still valid.
-                var certificate = await GetCertificateAsync(file.FullName);
+                var certificate = await GetCertificateAsync(file.FullName).ConfigureAwait(false);
                 if (certificate.NotBefore <= DateTime.Now && certificate.NotAfter > DateTime.Now)
                 {
                     certificates.Add((file.FullName, certificate));
@@ -527,7 +527,7 @@ public class OpenIdServerService : IOpenIdServerService
         async Task<X509Certificate2> GetCertificateAsync(string path)
         {
             // Extract the certificate password from the separate .pwd file.
-            var password = await GetPasswordAsync(Path.ChangeExtension(path, ".pwd"));
+            var password = await GetPasswordAsync(Path.ChangeExtension(path, ".pwd")).ConfigureAwait(false);
 
             try
             {
@@ -652,8 +652,8 @@ public class OpenIdServerService : IOpenIdServerService
         var password = GeneratePassword();
         var path = Path.Combine(directory.FullName, Guid.NewGuid().ToString());
 
-        await File.WriteAllBytesAsync(Path.ChangeExtension(path, ".pfx"), certificate.Export(X509ContentType.Pfx, password));
-        await File.WriteAllTextAsync(Path.ChangeExtension(path, ".pwd"), _dataProtector.Protect(password));
+        await File.WriteAllBytesAsync(Path.ChangeExtension(path, ".pfx"), certificate.Export(X509ContentType.Pfx, password)).ConfigureAwait(false);
+        await File.WriteAllTextAsync(Path.ChangeExtension(path, ".pwd"), _dataProtector.Protect(password)).ConfigureAwait(false);
 
         static string GeneratePassword()
         {

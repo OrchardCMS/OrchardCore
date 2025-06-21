@@ -35,7 +35,7 @@ public sealed class MultiTextFieldSettingsDriver : ContentPartFieldDefinitionDis
         var model = new MultiTextFieldSettingsViewModel();
         var settings = new MultiTextFieldSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.Required = model.Required;
         settings.Hint = model.Hint;

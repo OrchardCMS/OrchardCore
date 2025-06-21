@@ -36,7 +36,7 @@ public class WhileLoopTask : TaskActivity<WhileLoopTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var loop = await _scriptEvaluator.EvaluateAsync(Condition, workflowContext);
+        var loop = await _scriptEvaluator.EvaluateAsync(Condition, workflowContext).ConfigureAwait(false);
         return Outcomes(loop ? "Iterate" : "Done");
     }
 }

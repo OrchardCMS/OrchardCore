@@ -19,7 +19,7 @@ public sealed class ForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswo
     {
         var viewModel = new ForgotPasswordViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         model.UsernameOrEmail = viewModel.UsernameOrEmail;
 

@@ -44,7 +44,7 @@ public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
     {
         var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
 
-        var queries = await queryManager.ListQueriesBySourceAsync(LuceneQuerySource.SourceName);
+        var queries = await queryManager.ListQueriesBySourceAsync(LuceneQuerySource.SourceName).ConfigureAwait(false);
 
         foreach (var query in queries)
         {
@@ -165,7 +165,7 @@ public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
         {
             var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
 
-            var iQuery = await queryManager.GetQueryAsync(query.Name);
+            var iQuery = await queryManager.GetQueryAsync(query.Name).ConfigureAwait(false);
 
             var parameters = context.GetArgument<string>("parameters");
 
@@ -173,7 +173,7 @@ public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
                 ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                 : [];
 
-            var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
+            var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters).ConfigureAwait(false);
 
             return result.Items;
         }
@@ -206,7 +206,7 @@ public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
         {
             var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
 
-            var iQuery = await queryManager.GetQueryAsync(query.Name);
+            var iQuery = await queryManager.GetQueryAsync(query.Name).ConfigureAwait(false);
 
             var parameters = context.GetArgument<string>("parameters");
 
@@ -214,7 +214,7 @@ public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
                 ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                 : [];
 
-            var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
+            var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters).ConfigureAwait(false);
 
             return result.Items;
         }

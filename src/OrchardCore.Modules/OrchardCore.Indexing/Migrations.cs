@@ -19,11 +19,11 @@ public sealed class Migrations : DataMigration
             .Column<string>("Category", c => c.WithLength(50))
             .Column<DateTime>("CreatedUtc", col => col.NotNull())
             .Column<int>("Type")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
             .CreateIndex("IDX_IndexingTask_RecordId_Category", "RecordId", "Category")
-        );
+        ).ConfigureAwait(false);
 
         return 4;
     }
@@ -32,11 +32,11 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
             .AddColumn<string>("Category", c => c.WithLength(50))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
             .DropIndex("IDX_IndexingTask_ContentItemId")
-        );
+        ).ConfigureAwait(false);
 
         return 2;
     }
@@ -45,7 +45,7 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
             .RenameColumn("ContentItemId", "RecordId")
-        );
+        ).ConfigureAwait(false);
 
         return 3;
     }
@@ -54,7 +54,7 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.AlterTableAsync("IndexingTask", table => table
            .CreateIndex("IDX_IndexingTask_RecordId_Category", "RecordId", "Category")
-        );
+        ).ConfigureAwait(false);
 
         ShellScope.AddDeferredTask(async scope =>
         {
@@ -71,9 +71,10 @@ public sealed class Migrations : DataMigration
 
             var command = $"update {dialect.QuoteForTableName(table, store.Configuration.Schema)} set {quotedCategoryName} = @Category where {quotedCategoryName} is null;";
 
-            await using var connection = dbConnectionAccessor.CreateConnection();
-
-            try
+            var connection = dbConnectionAccessor.CreateConnection();
+            await using (connection.ConfigureAwait(false))
+            {
+                try
             {
                 await connection.OpenAsync();
                 await connection.ExecuteAsync(command, new
@@ -87,6 +88,7 @@ public sealed class Migrations : DataMigration
                 logger.LogError(e, "An error occurred while updating indexing tasks Category to Content.");
 
                 throw;
+            }
             }
         });
 

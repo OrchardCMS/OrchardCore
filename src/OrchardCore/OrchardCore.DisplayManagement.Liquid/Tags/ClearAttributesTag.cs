@@ -8,7 +8,7 @@ public class ClearAttributesTag
 {
     public static async ValueTask<Completion> WriteToAsync(Expression expression, TextWriter _1, TextEncoder _2, TemplateContext context)
     {
-        var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
+        var objectValue = (await expression.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue();
 
         if (objectValue is IShape shape && shape.Attributes.Count > 0)
         {

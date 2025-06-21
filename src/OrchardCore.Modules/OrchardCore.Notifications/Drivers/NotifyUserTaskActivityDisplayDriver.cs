@@ -66,7 +66,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     {
         var model = new NotifyUserTaskActivityViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (!_liquidTemplateManager.Validate(model.Subject, out var subjectErrors))
         {
@@ -96,9 +96,9 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
 
         var modelOfT = new TEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(modelOfT, Prefix);
+        await context.Updater.TryUpdateModelAsync(modelOfT, Prefix).ConfigureAwait(false);
 
-        await UpdateActivityAsync(modelOfT, activity);
+        await UpdateActivityAsync(modelOfT, activity).ConfigureAwait(false);
 
         return Edit(activity, context);
     }

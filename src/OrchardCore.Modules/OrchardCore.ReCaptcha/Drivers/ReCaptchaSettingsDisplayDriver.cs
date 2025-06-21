@@ -35,7 +35,7 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, ReCaptchaPermissions.ManageReCaptchaSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, ReCaptchaPermissions.ManageReCaptchaSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -54,20 +54,20 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, ReCaptchaPermissions.ManageReCaptchaSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, ReCaptchaPermissions.ManageReCaptchaSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new ReCaptchaSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.SiteKey = model.SiteKey?.Trim();
         settings.SecretKey = model.SecretKey?.Trim();
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

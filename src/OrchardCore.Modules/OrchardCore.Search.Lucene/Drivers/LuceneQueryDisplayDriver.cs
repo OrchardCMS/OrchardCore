@@ -54,12 +54,12 @@ public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
             model.Query = metadata.Template;
             model.Index = metadata.Index;
             model.ReturnContentItems = query.ReturnContentItems;
-            model.Indexes = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
+            model.Indexes = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName).ConfigureAwait(false)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
 
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(metadata.Template))
             {
-                await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
+                await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query).ConfigureAwait(false);
             }
         }).Location("Content:5");
     }
@@ -75,7 +75,7 @@ public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix,
             m => m.Query,
             m => m.Index,
-            m => m.ReturnContentItems);
+            m => m.ReturnContentItems).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(viewModel.Query))
         {

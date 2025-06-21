@@ -24,6 +24,6 @@ public class DefaultHealthChecksResponseWriter : IHealthChecksResponseWriter
 
         context.Response.ContentType = MediaTypeNames.Application.Json;
 
-        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response)).ConfigureAwait(false);
     }
 }

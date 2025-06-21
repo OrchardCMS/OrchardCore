@@ -6,8 +6,8 @@ internal static class HttpContentExtensions
 {
     public static async Task<T> ReadAsAsync<T>(this HttpContent content)
     {
-        using var data = await content.ReadAsStreamAsync();
-        return await data.ReadAsAsync<T>();
+        using var data = await content.ReadAsStreamAsync().ConfigureAwait(false);
+        return await data.ReadAsAsync<T>().ConfigureAwait(false);
     }
 
     public static ValueTask<T> ReadAsAsync<T>(this Stream stream) =>

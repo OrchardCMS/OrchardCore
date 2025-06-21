@@ -66,11 +66,11 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
 
             aspect.CustomMetaTags = part.CustomMetaTags;
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
 
             var actionContext = _actionContextAccessor.ActionContext;
 
-            actionContext ??= await _httpContextAccessor.GetActionContextAsync();
+            actionContext ??= await _httpContextAccessor.GetActionContextAsync().ConfigureAwait(false);
 
             var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
 
@@ -80,7 +80,7 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
             }
             else
             {
-                var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(part.ContentItem);
+                var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(part.ContentItem).ConfigureAwait(false);
                 var relativeUrl = urlHelper.RouteUrl(contentItemMetadata.DisplayRouteValues);
                 aspect.Canonical = urlHelper.ToAbsoluteUrl(relativeUrl);
             }

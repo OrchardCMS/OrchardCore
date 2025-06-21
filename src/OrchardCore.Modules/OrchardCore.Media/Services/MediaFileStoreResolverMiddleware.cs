@@ -46,14 +46,14 @@ public class MediaFileStoreResolverMiddleware
         // Support only Head requests or Get Requests.
         if (!HttpMethods.IsGet(context.Request.Method) && !HttpMethods.IsHead(context.Request.Method))
         {
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
             return;
         }
 
         var validatePath = context.Request.Path.StartsWithNormalizedSegments(_assetsRequestPath, StringComparison.OrdinalIgnoreCase, out var subPath);
         if (!validatePath || string.IsNullOrEmpty(_mediaFileStore.NormalizePath(subPath)))
         {
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
 
             return;
         }
@@ -61,17 +61,17 @@ public class MediaFileStoreResolverMiddleware
         // subPath.Value returns an unescaped path value, subPath returns an escaped path value.
         var subPathValue = subPath.Value;
 
-        var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPathValue);
+        var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPathValue).ConfigureAwait(false);
         if (isFileCached)
         {
             // When multiple requests occur for the same file the download
             // may already be in progress so we wait for it to complete.
             if (_workers.TryGetValue(subPathValue, out var writeTask))
             {
-                await writeTask.Value;
+                await writeTask.Value.ConfigureAwait(false);
             }
 
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
             return;
         }
 
@@ -81,12 +81,12 @@ public class MediaFileStoreResolverMiddleware
         {
             try
             {
-                var fileStoreEntry = await _mediaFileStore.GetFileInfoAsync(path);
+                var fileStoreEntry = await _mediaFileStore.GetFileInfoAsync(path).ConfigureAwait(false);
 
                 if (fileStoreEntry != null)
                 {
-                    using var stream = await _mediaFileStore.GetFileStreamAsync(fileStoreEntry);
-                    await _mediaFileStoreCache.SetCacheAsync(stream, fileStoreEntry, context.RequestAborted);
+                    using var stream = await _mediaFileStore.GetFileStreamAsync(fileStoreEntry).ConfigureAwait(false);
+                    await _mediaFileStoreCache.SetCacheAsync(stream, fileStoreEntry, context.RequestAborted).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -100,10 +100,10 @@ public class MediaFileStoreResolverMiddleware
             {
                 _workers.TryRemove(path, out var writeTask);
             }
-        }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
+        }, LazyThreadSafetyMode.ExecutionAndPublication)).Value.ConfigureAwait(false);
 
         // Always call next, this middleware always passes.
-        await _next(context);
+        await _next(context).ConfigureAwait(false);
         return;
     }
 }

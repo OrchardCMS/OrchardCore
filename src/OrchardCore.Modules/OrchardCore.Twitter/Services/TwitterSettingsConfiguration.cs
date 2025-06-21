@@ -30,7 +30,7 @@ public sealed class TwitterSettingsConfiguration : IConfigureOptions<TwitterSett
 
     private async Task<TwitterSettings> GetTwitterSettingsAsync()
     {
-        var settings = await _twitterSettingsService.GetSettingsAsync();
+        var settings = await _twitterSettingsService.GetSettingsAsync().ConfigureAwait(false);
 
         if ((_twitterSettingsService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
         {

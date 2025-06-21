@@ -29,11 +29,11 @@ public class AutoSetupService : IAutoSetupService
 
     public async Task<(SetupContext, bool)> SetupTenantAsync(TenantSetupOptions setupOptions, ShellSettings shellSettings)
     {
-        var setupContext = await GetSetupContextAsync(setupOptions, shellSettings);
+        var setupContext = await GetSetupContextAsync(setupOptions, shellSettings).ConfigureAwait(false);
 
         _logger.LogInformation("The AutoSetup is initializing the site.");
 
-        await _setupService.SetupAsync(setupContext);
+        await _setupService.SetupAsync(setupContext).ConfigureAwait(false);
 
         if (setupContext.Errors.Count == 0)
         {
@@ -71,14 +71,14 @@ public class AutoSetupService : IAutoSetupService
         shellSettings["RecipeName"] = setupOptions.RecipeName;
         shellSettings["FeatureProfile"] = setupOptions.FeatureProfile;
 
-        await _shellHost.UpdateShellSettingsAsync(shellSettings);
+        await _shellHost.UpdateShellSettingsAsync(shellSettings).ConfigureAwait(false);
 
         return shellSettings;
     }
 
     public async Task<SetupContext> GetSetupContextAsync(TenantSetupOptions options, ShellSettings shellSettings)
     {
-        var recipe = (await _setupService.GetSetupRecipesAsync())
+        var recipe = (await _setupService.GetSetupRecipesAsync().ConfigureAwait(false))
             .SingleOrDefault(r => r.Name == options.RecipeName);
 
         var setupContext = new SetupContext

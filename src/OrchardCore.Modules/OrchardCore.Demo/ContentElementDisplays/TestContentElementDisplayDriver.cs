@@ -67,7 +67,7 @@ public sealed class TestContentElementDisplayDriver : ContentDisplayDriver
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(testContentPart, "");
+        await context.Updater.TryUpdateModelAsync(testContentPart, "").ConfigureAwait(false);
 
         if (testContentPart.Line.EndsWith(' '))
         {

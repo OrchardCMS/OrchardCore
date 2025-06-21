@@ -19,7 +19,7 @@ public sealed class UserRolePermissions : IPermissionProvider
             UsersPermissions.AssignRoleToUsers,
         };
 
-        var roleNames = (await _roleService.GetAssignableRolesAsync())
+        var roleNames = (await _roleService.GetAssignableRolesAsync().ConfigureAwait(false))
             .Select(role => role.RoleName)
             .OrderBy(roleName => roleName);
 
@@ -28,7 +28,7 @@ public sealed class UserRolePermissions : IPermissionProvider
             permissions.Add(UsersPermissions.CreateListUsersInRolePermission(roleName));
             permissions.Add(UsersPermissions.CreateEditUsersInRolePermission(roleName));
 
-            if (!await _roleService.IsAdminRoleAsync(roleName))
+            if (!await _roleService.IsAdminRoleAsync(roleName).ConfigureAwait(false))
             {
                 // Do not create permissions for deleting or creating admins.
                 // These operations are restricted to admin users only.

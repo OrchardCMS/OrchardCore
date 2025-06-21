@@ -20,8 +20,8 @@ public class BlogPostDeploymentContext : SiteContext
 
     public override async Task InitializeAsync()
     {
-        await base.InitializeAsync();
-        await RunRecipeAsync(BlogContext.luceneRecipeName, BlogContext.luceneRecipePath);
+        await base.InitializeAsync().ConfigureAwait(false);
+        await RunRecipeAsync(BlogContext.luceneRecipeName, BlogContext.luceneRecipePath).ConfigureAwait(false);
 
         var result = await GraphQLClient
             .Content
@@ -29,20 +29,20 @@ public class BlogPostDeploymentContext : SiteContext
             {
                 builder
                     .WithField("contentItemId");
-            });
+            }).ConfigureAwait(false);
 
         BlogPostContentItemId = result["data"]["blogPost"][0]["contentItemId"].ToString();
 
-        var content = await Client.GetAsync($"api/content/{BlogPostContentItemId}");
-        OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>();
+        var content = await Client.GetAsync($"api/content/{BlogPostContentItemId}").ConfigureAwait(false);
+        OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>().ConfigureAwait(false);
         OriginalBlogPostVersionId = OriginalBlogPost.ContentItemVersionId;
 
         await UsingTenantScopeAsync(async scope =>
         {
             var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();
 
-            await remoteClientService.CreateRemoteClientAsync(RemoteDeploymentClientName, RemoteDeploymentApiKey);
-        });
+            await remoteClientService.CreateRemoteClientAsync(RemoteDeploymentClientName, RemoteDeploymentApiKey).ConfigureAwait(false);
+        }).ConfigureAwait(false);
     }
 
     public static JsonObject GetContentStepRecipe(ContentItem contentItem, Action<JsonObject> mutation)
@@ -67,8 +67,10 @@ public class BlogPostDeploymentContext : SiteContext
 
     public async Task<HttpResponseMessage> PostRecipeAsync(JsonObject recipe, bool ensureSuccess = true)
     {
-        await using var zipStream = MemoryStreamFactory.GetStream();
-        using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+        var zipStream = MemoryStreamFactory.GetStream();
+        await using (zipStream.ConfigureAwait(false))
+        {
+            using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
         {
             var entry = zip.CreateEntry("Recipe.json");
             using var streamWriter = new Utf8JsonWriter(entry.Open());
@@ -84,12 +86,13 @@ public class BlogPostDeploymentContext : SiteContext
             { new StringContent(RemoteDeploymentApiKey), nameof(ImportViewModel.ApiKey) },
         };
 
-        var response = await Client.PostAsync("OrchardCore.Deployment.Remote/ImportRemoteInstance/Import", requestContent);
+        var response = await Client.PostAsync("OrchardCore.Deployment.Remote/ImportRemoteInstance/Import", requestContent).ConfigureAwait(false);
         if (ensureSuccess)
         {
             response.EnsureSuccessStatusCode();
         }
 
         return response;
+        }
     }
 }

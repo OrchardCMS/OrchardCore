@@ -35,7 +35,7 @@ public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
     {
         var currentUser = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
+        if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem).ConfigureAwait(false))
         {
             return null;
         }
@@ -49,7 +49,7 @@ public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
                 if (!string.IsNullOrEmpty(part.ContentItem.Owner))
                 {
                     // TODO Move this editor to a user picker.
-                    var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
+                    var user = await _userManager.FindByIdAsync(part.ContentItem.Owner).ConfigureAwait(false);
 
                     model.OwnerName = user?.UserName;
                 }
@@ -63,7 +63,7 @@ public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
     {
         var currentUser = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
+        if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem).ConfigureAwait(false))
         {
             return null;
         }
@@ -74,7 +74,7 @@ public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
         {
             var model = new OwnerEditorViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
             if (string.IsNullOrWhiteSpace(model.OwnerName))
             {
@@ -82,7 +82,7 @@ public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
             }
             else
             {
-                var newOwner = await _userManager.FindByNameAsync(model.OwnerName);
+                var newOwner = await _userManager.FindByNameAsync(model.OwnerName).ConfigureAwait(false);
 
                 if (newOwner == null)
                 {
@@ -90,11 +90,11 @@ public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
                 }
                 else
                 {
-                    part.ContentItem.Owner = await _userManager.GetUserIdAsync(newOwner);
+                    part.ContentItem.Owner = await _userManager.GetUserIdAsync(newOwner).ConfigureAwait(false);
                 }
             }
         }
 
-        return await EditAsync(part, context);
+        return await EditAsync(part, context).ConfigureAwait(false);
     }
 }

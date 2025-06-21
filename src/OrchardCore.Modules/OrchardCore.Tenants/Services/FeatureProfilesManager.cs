@@ -22,15 +22,15 @@ public class FeatureProfilesManager
 
     public async Task RemoveFeatureProfileAsync(string id)
     {
-        var document = await LoadFeatureProfilesDocumentAsync();
+        var document = await LoadFeatureProfilesDocumentAsync().ConfigureAwait(false);
         document.FeatureProfiles.Remove(id);
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     public async Task UpdateFeatureProfileAsync(string id, FeatureProfile profile)
     {
-        var document = await LoadFeatureProfilesDocumentAsync();
+        var document = await LoadFeatureProfilesDocumentAsync().ConfigureAwait(false);
         document.FeatureProfiles[id] = profile;
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 }

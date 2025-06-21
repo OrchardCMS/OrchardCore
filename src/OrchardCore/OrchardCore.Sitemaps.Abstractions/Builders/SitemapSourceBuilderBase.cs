@@ -12,7 +12,7 @@ public abstract class SitemapSourceBuilderBase<TSitemapSource> : ISitemapSourceB
         var tSource = source as TSitemapSource;
         if (tSource != null)
         {
-            await BuildSourceAsync(tSource, context);
+            await BuildSourceAsync(tSource, context).ConfigureAwait(false);
         }
 
     }

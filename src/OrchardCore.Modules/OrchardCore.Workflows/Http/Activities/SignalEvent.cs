@@ -31,7 +31,7 @@ public class SignalEvent : EventActivity
 
     public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var signalName = await _expressionEvaluator.EvaluateAsync(SignalName, workflowContext, null);
+        var signalName = await _expressionEvaluator.EvaluateAsync(SignalName, workflowContext, null).ConfigureAwait(false);
         return string.Equals(workflowContext.Input.GetValue<string>("Signal"), signalName, StringComparison.OrdinalIgnoreCase);
     }
 

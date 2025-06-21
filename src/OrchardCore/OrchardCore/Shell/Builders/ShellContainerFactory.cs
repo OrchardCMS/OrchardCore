@@ -124,7 +124,7 @@ public class ShellContainerFactory : IShellContainerFactory
             startup.ConfigureServices(featureAwareServiceCollection);
         }
 
-        await shellServiceProvider.DisposeAsync();
+        await shellServiceProvider.DisposeAsync().ConfigureAwait(false);
 
         // Rebuild the service provider from the updated collection.
         shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);

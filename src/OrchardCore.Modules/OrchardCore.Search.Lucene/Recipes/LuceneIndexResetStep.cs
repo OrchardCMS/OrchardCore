@@ -30,8 +30,8 @@ public sealed class LuceneIndexResetStep : NamedRecipeStepHandler
         if (model != null && (model.IncludeAll || model.Indices.Length > 0))
         {
             var indexes = model.IncludeAll
-            ? (await _indexProfileManager.GetByProviderAsync(LuceneConstants.ProviderName))
-            : (await _indexProfileManager.GetByProviderAsync(LuceneConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
+            ? (await _indexProfileManager.GetByProviderAsync(LuceneConstants.ProviderName).ConfigureAwait(false))
+            : (await _indexProfileManager.GetByProviderAsync(LuceneConstants.ProviderName).ConfigureAwait(false)).Where(x => model.Indices.Contains(x.IndexName));
 
             var indexManagers = new Dictionary<string, IIndexManager>();
 
@@ -48,15 +48,15 @@ public sealed class LuceneIndexResetStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                await _indexProfileManager.ResetAsync(index);
-                await _indexProfileManager.UpdateAsync(index);
+                await _indexProfileManager.ResetAsync(index).ConfigureAwait(false);
+                await _indexProfileManager.UpdateAsync(index).ConfigureAwait(false);
 
-                if (!await indexManager.ExistsAsync(index.IndexFullName))
+                if (!await indexManager.ExistsAsync(index.IndexFullName).ConfigureAwait(false))
                 {
-                    await indexManager.CreateAsync(index);
+                    await indexManager.CreateAsync(index).ConfigureAwait(false);
                 }
 
-                await _indexProfileManager.SynchronizeAsync(index);
+                await _indexProfileManager.SynchronizeAsync(index).ConfigureAwait(false);
             }
 
         }

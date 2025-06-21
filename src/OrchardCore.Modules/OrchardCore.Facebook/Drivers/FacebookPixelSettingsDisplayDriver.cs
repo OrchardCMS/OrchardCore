@@ -28,7 +28,7 @@ public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<Faceb
     public override async Task<IDisplayResult> EditAsync(ISite site, FacebookPixelSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp).ConfigureAwait(false))
         {
             return null;
         }
@@ -42,15 +42,15 @@ public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<Faceb
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookPixelSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageFacebookApp))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageFacebookApp).ConfigureAwait(false))
         {
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        await context.Updater.TryUpdateModelAsync(settings, Prefix).ConfigureAwait(false);
 
         settings.PixelId = settings.PixelId?.Trim();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

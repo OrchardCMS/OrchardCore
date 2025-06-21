@@ -20,7 +20,7 @@ public sealed class PermissionProvider : IPermissionProvider
             ElasticsearchPermissions.QueryElasticApi,
         };
 
-        var elasticIndexSettings = await _indexStore.GetByProviderAsync(ElasticsearchConstants.ProviderName);
+        var elasticIndexSettings = await _indexStore.GetByProviderAsync(ElasticsearchConstants.ProviderName).ConfigureAwait(false);
 
         foreach (var index in elasticIndexSettings)
         {

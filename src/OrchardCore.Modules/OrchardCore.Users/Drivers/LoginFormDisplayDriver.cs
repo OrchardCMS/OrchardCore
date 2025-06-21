@@ -20,7 +20,7 @@ public sealed class LoginFormDisplayDriver : DisplayDriver<LoginForm>
     {
         var viewModel = new LoginViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         model.UserName = viewModel.UserName;
         model.Password = viewModel.Password;

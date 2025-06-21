@@ -39,9 +39,9 @@ internal sealed class WorkflowRoutesHandler : WorkflowHandlerBase
     private async Task UpdateRouteEntriesAsync(WorkflowContext context)
     {
         var workflow = context.Workflow;
-        var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+        var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId).ConfigureAwait(false);
         var entries = WorkflowInstanceRouteEntries.GetWorkflowRoutesEntries(workflowType, context.Workflow, _activityLibrary);
 
-        await _workflowRouteEntries.AddEntriesAsync(entries);
+        await _workflowRouteEntries.AddEntriesAsync(entries).ConfigureAwait(false);
     }
 }

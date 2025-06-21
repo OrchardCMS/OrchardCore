@@ -16,9 +16,9 @@ public class BlogContext : SiteContext
 
     public override async Task InitializeAsync()
     {
-        await base.InitializeAsync();
-        await RunRecipeAsync(luceneRecipeName, luceneRecipePath);
-        await ResetLuceneIndexesAsync(luceneIndexName);
+        await base.InitializeAsync().ConfigureAwait(false);
+        await RunRecipeAsync(luceneRecipeName, luceneRecipePath).ConfigureAwait(false);
+        await ResetLuceneIndexesAsync(luceneIndexName).ConfigureAwait(false);
 
         var result = await GraphQLClient
             .Content
@@ -26,7 +26,7 @@ public class BlogContext : SiteContext
             {
                 builder
                     .WithField("contentItemId");
-            });
+            }).ConfigureAwait(false);
 
         BlogContentItemId = result["data"]["blog"][0]["contentItemId"].ToString();
     }

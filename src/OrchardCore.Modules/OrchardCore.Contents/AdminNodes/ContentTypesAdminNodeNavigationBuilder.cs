@@ -45,7 +45,7 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
         }
 
         // Add ContentTypes specific children
-        var typesToShow = await GetListableContentTypeDefinitionsAsync(node);
+        var typesToShow = await GetListableContentTypeDefinitionsAsync(node).ConfigureAwait(false);
         foreach (var ctd in typesToShow)
         {
             builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
@@ -73,7 +73,7 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
             try
             {
                 var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childNode.GetType().Name);
-                await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders);
+                await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -84,7 +84,7 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
 
     private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync(ContentTypesAdminNode node)
     {
-        var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+        var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false);
 
         var listableContentTypeDefinitions = new List<ContentTypeDefinition>();
 
@@ -95,7 +95,7 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
                 continue;
             }
 
-            if (!await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ListContent, contentTypeDefinition))
+            if (!await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ListContent, contentTypeDefinition).ConfigureAwait(false))
             {
                 continue;
             }

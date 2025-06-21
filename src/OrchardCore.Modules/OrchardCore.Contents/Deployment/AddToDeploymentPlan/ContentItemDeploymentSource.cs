@@ -21,7 +21,7 @@ public sealed class ContentItemDeploymentSource
             return;
         }
 
-        var contentItem = await _contentManager.GetAsync(step.ContentItemId);
+        var contentItem = await _contentManager.GetAsync(step.ContentItemId).ConfigureAwait(false);
 
         if (contentItem == null)
         {

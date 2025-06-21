@@ -48,7 +48,7 @@ public sealed class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPo
     {
         var viewModel = new EditGeoPointFieldViewModel();
 
-        var modelUpdated = await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Latitude, f => f.Longitude);
+        var modelUpdated = await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Latitude, f => f.Longitude).ConfigureAwait(false);
 
         if (modelUpdated)
         {

@@ -61,7 +61,7 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
             if (!settings.SanitizeHtml)
             {
                 model.Markdown = await _liquidTemplateManager.RenderStringAsync(model.Html, _htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) }).ConfigureAwait(false);
             }
 
             model.Html = await _shortcodeService.ProcessAsync(model.Html,
@@ -69,7 +69,7 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
                 {
                     ["ContentItem"] = field.ContentItem,
                     ["PartFieldDefinition"] = context.PartFieldDefinition,
-                });
+                }).ConfigureAwait(false);
 
             if (settings.SanitizeHtml)
             {
@@ -95,7 +95,7 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
     {
         var viewModel = new EditMarkdownFieldViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
         {

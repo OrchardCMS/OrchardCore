@@ -43,7 +43,7 @@ public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
     {
         if (!string.IsNullOrEmpty(UserNames.Expression))
         {
-            var expression = await _expressionEvaluator.EvaluateAsync(UserNames, workflowContext, null);
+            var expression = await _expressionEvaluator.EvaluateAsync(UserNames, workflowContext, null).ConfigureAwait(false);
 
             var userNames = expression.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 

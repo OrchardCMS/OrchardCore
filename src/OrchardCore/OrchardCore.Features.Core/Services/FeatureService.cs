@@ -20,7 +20,7 @@ public class FeatureService
 
     public async Task<IEnumerable<IFeatureInfo>> GetAvailableFeatures()
     {
-        return (await _shellFeaturesManager.GetAvailableFeaturesAsync()).Where(feature => !feature.IsTheme());
+        return (await _shellFeaturesManager.GetAvailableFeaturesAsync().ConfigureAwait(false)).Where(feature => !feature.IsTheme());
     }
 
     public async Task<IFeatureInfo> GetAvailableFeature(string id)
@@ -30,7 +30,7 @@ public class FeatureService
             return null;
         }
 
-        return (await GetAvailableFeatures()).FirstOrDefault(feature => feature.Id == id);
+        return (await GetAvailableFeatures().ConfigureAwait(false)).FirstOrDefault(feature => feature.Id == id);
     }
 
     public async Task<IEnumerable<IFeatureInfo>> GetAvailableFeatures(string[] ids)
@@ -40,17 +40,17 @@ public class FeatureService
             return [];
         }
 
-        return (await GetAvailableFeatures()).Where(feature => ids.Contains(feature.Id));
+        return (await GetAvailableFeatures().ConfigureAwait(false)).Where(feature => ids.Contains(feature.Id));
     }
 
     public async Task<IEnumerable<ModuleFeature>> GetModuleFeaturesAsync()
     {
-        var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
-        var alwaysEnabledFeatures = await _shellFeaturesManager.GetAlwaysEnabledFeaturesAsync();
+        var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync().ConfigureAwait(false);
+        var alwaysEnabledFeatures = await _shellFeaturesManager.GetAlwaysEnabledFeaturesAsync().ConfigureAwait(false);
 
         var moduleFeatures = new List<ModuleFeature>();
 
-        foreach (var moduleFeatureInfo in await GetAvailableFeatures())
+        foreach (var moduleFeatureInfo in await GetAvailableFeatures().ConfigureAwait(false))
         {
             var dependentFeatures = _extensionManager.GetDependentFeatures(moduleFeatureInfo.Id);
             var featureDependencies = _extensionManager.GetFeatureDependencies(moduleFeatureInfo.Id);
@@ -76,23 +76,23 @@ public class FeatureService
         switch (action)
         {
             case FeaturesBulkAction.Enable:
-                await _shellFeaturesManager.EnableFeaturesAsync(features, force == true);
-                await notifyAsync(features, true);
+                await _shellFeaturesManager.EnableFeaturesAsync(features, force == true).ConfigureAwait(false);
+                await notifyAsync(features, true).ConfigureAwait(false);
                 break;
             case FeaturesBulkAction.Disable:
-                await _shellFeaturesManager.DisableFeaturesAsync(features, force == true);
-                await notifyAsync(features, false);
+                await _shellFeaturesManager.DisableFeaturesAsync(features, force == true).ConfigureAwait(false);
+                await notifyAsync(features, false).ConfigureAwait(false);
                 break;
             case FeaturesBulkAction.Toggle:
                 // The features array has already been checked for validity.
-                var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
-                var disabledFeatures = await _shellFeaturesManager.GetDisabledFeaturesAsync();
+                var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync().ConfigureAwait(false);
+                var disabledFeatures = await _shellFeaturesManager.GetDisabledFeaturesAsync().ConfigureAwait(false);
                 var featuresToEnable = disabledFeatures.Intersect(features);
                 var featuresToDisable = enabledFeatures.Intersect(features);
 
-                await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, force == true);
-                await notifyAsync(featuresToEnable, true);
-                await notifyAsync(featuresToDisable, false);
+                await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, force == true).ConfigureAwait(false);
+                await notifyAsync(featuresToEnable, true).ConfigureAwait(false);
+                await notifyAsync(featuresToDisable, false).ConfigureAwait(false);
                 return;
             default:
                 break;

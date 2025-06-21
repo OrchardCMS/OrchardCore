@@ -38,7 +38,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, SearchPermissions.ManageSearchSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SearchPermissions.ManageSearchSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -48,7 +48,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
             model.DefaultIndexProfileName = settings.DefaultIndexProfileName;
             model.Placeholder = settings.Placeholder;
             model.PageTitle = settings.PageTitle;
-            model.Indexes = (await _indexProfileStore.GetAllAsync())
+            model.Indexes = (await _indexProfileStore.GetAllAsync().ConfigureAwait(false))
                 .Select(index => new SelectListItem(index.Name, index.Id))
                 .ToArray();
         }).Location("Content:2")
@@ -59,19 +59,19 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, SearchPermissions.ManageSearchSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SearchPermissions.ManageSearchSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new SearchSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         section.DefaultIndexProfileName = model.DefaultIndexProfileName;
         section.Placeholder = model.Placeholder;
         section.PageTitle = model.PageTitle;
 
-        return await EditAsync(site, section, context);
+        return await EditAsync(site, section, context).ConfigureAwait(false);
     }
 }

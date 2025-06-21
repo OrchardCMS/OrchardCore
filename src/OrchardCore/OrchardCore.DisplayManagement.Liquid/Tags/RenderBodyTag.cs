@@ -13,10 +13,10 @@ public class RenderBodyTag
     {
         var services = ((LiquidTemplateContext)context).Services;
 
-        var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync();
+        var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync().ConfigureAwait(false);
         var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-        var htmlContent = await displayHelper.ShapeExecuteAsync(layout.Zones["Content"]);
+        var htmlContent = await displayHelper.ShapeExecuteAsync(layout.Zones["Content"]).ConfigureAwait(false);
 
         htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
         return Completion.Normal;

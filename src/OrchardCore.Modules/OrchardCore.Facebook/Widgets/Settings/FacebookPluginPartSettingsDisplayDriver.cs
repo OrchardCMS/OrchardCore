@@ -34,7 +34,7 @@ public sealed class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDef
         var model = new FacebookPluginPartSettingsViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix,
-            m => m.Liquid);
+            m => m.Liquid).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
         {

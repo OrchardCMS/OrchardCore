@@ -35,7 +35,7 @@ public class RoleClaimsProvider : IUserClaimsProvider
 
         var isAdministrator = false;
 
-        var roleNames = await _userManager.GetRolesAsync(user);
+        var roleNames = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
 
         foreach (var roleName in roleNames)
         {
@@ -55,7 +55,7 @@ public class RoleClaimsProvider : IUserClaimsProvider
                 continue;
             }
 
-            var role = await _roleManager.FindByNameAsync(roleName);
+            var role = await _roleManager.FindByNameAsync(roleName).ConfigureAwait(false);
 
             if (role == null)
             {

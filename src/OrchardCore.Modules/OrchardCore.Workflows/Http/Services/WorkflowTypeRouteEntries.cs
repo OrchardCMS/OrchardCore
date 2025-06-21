@@ -14,7 +14,7 @@ internal sealed class WorkflowTypeRouteEntries : WorkflowRouteEntries<WorkflowTy
 
     protected override async Task<WorkflowTypeRouteDocument> CreateDocumentAsync()
     {
-        var workflowTypeDictionary = (await Session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync()).ToDictionary(x => x.WorkflowTypeId);
+        var workflowTypeDictionary = (await Session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync().ConfigureAwait(false)).ToDictionary(x => x.WorkflowTypeId);
 
         var workflowTypeRouteEntries =
             from workflowType in workflowTypeDictionary.Values

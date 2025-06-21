@@ -13,7 +13,7 @@ public class ContentHandleManager : IContentHandleManager
     {
         foreach (var provider in _contentHandleProviders)
         {
-            var result = await provider.GetContentItemIdAsync(handle);
+            var result = await provider.GetContentItemIdAsync(handle).ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(result))
             {

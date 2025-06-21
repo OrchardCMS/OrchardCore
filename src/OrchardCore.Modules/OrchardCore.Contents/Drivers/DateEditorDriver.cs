@@ -25,7 +25,7 @@ public sealed class DateEditorDriver : ContentPartDisplayDriver<CommonPart>
             return Initialize<DateEditorViewModel>("CommonPart_Edit__Date", async model =>
             {
                 model.LocalDateTime = part.ContentItem.CreatedUtc.HasValue
-                ? (await _localClock.ConvertToLocalAsync(part.ContentItem.CreatedUtc.Value)).DateTime
+                ? (await _localClock.ConvertToLocalAsync(part.ContentItem.CreatedUtc.Value).ConfigureAwait(false)).DateTime
                 : null;
             });
         }
@@ -40,7 +40,7 @@ public sealed class DateEditorDriver : ContentPartDisplayDriver<CommonPart>
         if (settings.DisplayDateEditor)
         {
             var model = new DateEditorViewModel();
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
             if (model.LocalDateTime == null)
             {
@@ -48,7 +48,7 @@ public sealed class DateEditorDriver : ContentPartDisplayDriver<CommonPart>
             }
             else
             {
-                part.ContentItem.CreatedUtc = await _localClock.ConvertToUtcAsync(model.LocalDateTime.Value);
+                part.ContentItem.CreatedUtc = await _localClock.ConvertToUtcAsync(model.LocalDateTime.Value).ConfigureAwait(false);
             }
         }
 

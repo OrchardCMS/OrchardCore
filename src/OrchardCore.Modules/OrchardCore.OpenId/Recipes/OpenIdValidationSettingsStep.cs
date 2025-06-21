@@ -22,7 +22,7 @@ public sealed class OpenIdValidationSettingsStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<OpenIdValidationSettingsStepModel>();
-        var settings = await _validationService.LoadSettingsAsync();
+        var settings = await _validationService.LoadSettingsAsync().ConfigureAwait(false);
 
         settings.Tenant = model.Tenant;
         settings.MetadataAddress = !string.IsNullOrEmpty(model.MetadataAddress) ? new Uri(model.MetadataAddress, UriKind.Absolute) : null;
@@ -30,6 +30,6 @@ public sealed class OpenIdValidationSettingsStep : NamedRecipeStepHandler
         settings.Audience = model.Audience;
         settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
 
-        await _validationService.UpdateSettingsAsync(settings);
+        await _validationService.UpdateSettingsAsync(settings).ConfigureAwait(false);
     }
 }

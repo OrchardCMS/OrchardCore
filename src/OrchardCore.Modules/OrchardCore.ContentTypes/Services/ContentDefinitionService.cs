@@ -58,18 +58,18 @@ public class ContentDefinitionService : IContentDefinitionService
     }
 
     public async Task<IEnumerable<EditTypeViewModel>> LoadTypesAsync()
-        => (await _contentDefinitionManager.LoadTypeDefinitionsAsync())
+        => (await _contentDefinitionManager.LoadTypeDefinitionsAsync().ConfigureAwait(false))
             .Select(ctd => new EditTypeViewModel(ctd))
             .OrderBy(m => m.DisplayName);
 
     public async Task<IEnumerable<EditTypeViewModel>> GetTypesAsync()
-        => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+        => (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             .Select(ctd => new EditTypeViewModel(ctd))
             .OrderBy(m => m.DisplayName);
 
     public async Task<EditTypeViewModel> LoadTypeAsync(string name)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name);
+        var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name).ConfigureAwait(false);
 
         if (contentTypeDefinition == null)
         {
@@ -81,7 +81,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task<EditTypeViewModel> GetTypeAsync(string name)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name).ConfigureAwait(false);
 
         if (contentTypeDefinition == null)
         {
@@ -100,7 +100,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
         if (string.IsNullOrWhiteSpace(name))
         {
-            name = await GenerateContentTypeNameFromDisplayNameAsync(displayName);
+            name = await GenerateContentTypeNameFromDisplayNameAsync(displayName).ConfigureAwait(false);
         }
         else
         {
@@ -114,18 +114,18 @@ public class ContentDefinitionService : IContentDefinitionService
             }
         }
 
-        while (await _contentDefinitionManager.LoadTypeDefinitionAsync(name) is not null)
+        while (await _contentDefinitionManager.LoadTypeDefinitionAsync(name).ConfigureAwait(false) is not null)
         {
             name = VersionName(name);
         }
 
         var contentTypeDefinition = new ContentTypeDefinition(name, displayName);
 
-        await _contentDefinitionManager.StoreTypeDefinitionAsync(contentTypeDefinition);
+        await _contentDefinitionManager.StoreTypeDefinitionAsync(contentTypeDefinition).ConfigureAwait(false);
 
         // Ensure it has its own part.
-        await _contentDefinitionManager.AlterTypeDefinitionAsync(name, builder => builder.WithPart(name));
-        await _contentDefinitionManager.AlterTypeDefinitionAsync(name, cfg => cfg.Creatable().Draftable().Versionable().Listable().Securable());
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(name, builder => builder.WithPart(name)).ConfigureAwait(false);
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(name, cfg => cfg.Creatable().Draftable().Versionable().Listable().Securable()).ConfigureAwait(false);
 
         var context = new ContentTypeCreatedContext
         {
@@ -140,7 +140,7 @@ public class ContentDefinitionService : IContentDefinitionService
     public async Task RemoveTypeAsync(string name, bool deleteContent)
     {
         // First remove all attached parts.
-        var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name);
+        var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name).ConfigureAwait(false);
 
         if (typeDefinition == null)
         {
@@ -157,16 +157,16 @@ public class ContentDefinitionService : IContentDefinitionService
         var partDefinitions = typeDefinition.Parts.ToList();
         foreach (var partDefinition in partDefinitions)
         {
-            await RemovePartFromTypeAsync(partDefinition.PartDefinition.Name, name);
+            await RemovePartFromTypeAsync(partDefinition.PartDefinition.Name, name).ConfigureAwait(false);
 
             // Delete the part if it's its own part.
             if (partDefinition.PartDefinition.Name == name)
             {
-                await RemovePartAsync(name);
+                await RemovePartAsync(name).ConfigureAwait(false);
             }
         }
 
-        await _contentDefinitionManager.DeleteTypeDefinitionAsync(name);
+        await _contentDefinitionManager.DeleteTypeDefinitionAsync(name).ConfigureAwait(false);
 
         var context = new ContentTypeRemovedContext
         {
@@ -178,7 +178,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task AddPartToTypeAsync(string partName, string typeName)
     {
-        await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.WithPart(partName));
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.WithPart(partName)).ConfigureAwait(false);
         var context = new ContentPartAttachedContext
         {
             ContentTypeName = typeName,
@@ -196,7 +196,7 @@ public class ContentDefinitionService : IContentDefinitionService
                 partBuilder.WithDisplayName(displayName);
                 partBuilder.WithDescription(description);
             })
-        );
+        ).ConfigureAwait(false);
 
         var context = new ContentPartAttachedContext
         {
@@ -209,7 +209,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task RemovePartFromTypeAsync(string partName, string typeName)
     {
-        var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(typeName);
+        var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(typeName).ConfigureAwait(false);
 
         if (typeDefinition == null)
         {
@@ -230,7 +230,7 @@ public class ContentDefinitionService : IContentDefinitionService
             throw new InvalidOperationException("Unable to remove system-defined part.");
         }
 
-        await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.RemovePart(partName));
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.RemovePart(partName)).ConfigureAwait(false);
 
         var context = new ContentPartDetachedContext
         {
@@ -243,11 +243,11 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task<IEnumerable<EditPartViewModel>> LoadPartsAsync(bool metadataPartsOnly)
     {
-        var typeNames = new HashSet<string>((await LoadTypesAsync()).Select(ctd => ctd.Name));
+        var typeNames = new HashSet<string>((await LoadTypesAsync().ConfigureAwait(false)).Select(ctd => ctd.Name));
 
         // User-defined parts.
         // Except for those parts with the same name as a type (implicit type's part or a mistake).
-        var userContentParts = (await _contentDefinitionManager.LoadPartDefinitionsAsync())
+        var userContentParts = (await _contentDefinitionManager.LoadPartDefinitionsAsync().ConfigureAwait(false))
             .Where(cpd => !typeNames.Contains(cpd.Name))
             .Select(cpd => new EditPartViewModel(cpd))
             .ToDictionary(k => k.Name);
@@ -271,11 +271,11 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task<IEnumerable<EditPartViewModel>> GetPartsAsync(bool metadataPartsOnly)
     {
-        var typeNames = new HashSet<string>((await GetTypesAsync()).Select(ctd => ctd.Name));
+        var typeNames = new HashSet<string>((await GetTypesAsync().ConfigureAwait(false)).Select(ctd => ctd.Name));
 
         // User-defined parts.
         // Except for those parts with the same name as a type (implicit type's part or a mistake).
-        var userContentParts = (await _contentDefinitionManager.ListPartDefinitionsAsync())
+        var userContentParts = (await _contentDefinitionManager.ListPartDefinitionsAsync().ConfigureAwait(false))
             .Where(cpd => !typeNames.Contains(cpd.Name))
             .Select(cpd => new EditPartViewModel(cpd))
             .ToDictionary(k => k.Name);
@@ -299,11 +299,11 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task<EditPartViewModel> LoadPartAsync(string name)
     {
-        var contentPartDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name);
+        var contentPartDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name).ConfigureAwait(false);
 
         if (contentPartDefinition == null)
         {
-            var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name);
+            var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name).ConfigureAwait(false);
 
             if (contentTypeDefinition == null)
             {
@@ -320,11 +320,11 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task<EditPartViewModel> GetPartAsync(string name)
     {
-        var contentPartDefinition = await _contentDefinitionManager.GetPartDefinitionAsync(name);
+        var contentPartDefinition = await _contentDefinitionManager.GetPartDefinitionAsync(name).ConfigureAwait(false);
 
         if (contentPartDefinition == null)
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name).ConfigureAwait(false);
 
             if (contentTypeDefinition == null)
             {
@@ -343,15 +343,15 @@ public class ContentDefinitionService : IContentDefinitionService
     {
         var name = partViewModel.Name;
 
-        if (await _contentDefinitionManager.LoadPartDefinitionAsync(name) is not null)
+        if (await _contentDefinitionManager.LoadPartDefinitionAsync(name).ConfigureAwait(false) is not null)
         {
             throw new Exception(S["Cannot add part named '{0}'. It already exists.", name]);
         }
 
         if (!string.IsNullOrEmpty(name))
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync(name, builder => builder.Attachable());
-            var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name);
+            await _contentDefinitionManager.AlterPartDefinitionAsync(name, builder => builder.Attachable()).ConfigureAwait(false);
+            var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name).ConfigureAwait(false);
 
             var context = new ContentPartCreatedContext
             {
@@ -368,7 +368,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task RemovePartAsync(string name)
     {
-        var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name);
+        var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name).ConfigureAwait(false);
 
         if (partDefinition == null)
         {
@@ -385,10 +385,10 @@ public class ContentDefinitionService : IContentDefinitionService
 
         foreach (var fieldDefinition in partDefinition.Fields)
         {
-            await RemoveFieldFromPartAsync(fieldDefinition.Name, name);
+            await RemoveFieldFromPartAsync(fieldDefinition.Name, name).ConfigureAwait(false);
         }
 
-        await _contentDefinitionManager.DeletePartDefinitionAsync(name);
+        await _contentDefinitionManager.DeletePartDefinitionAsync(name).ConfigureAwait(false);
 
         var context = new ContentPartRemovedContext
         {
@@ -411,19 +411,19 @@ public class ContentDefinitionService : IContentDefinitionService
             throw new ArgumentException($"The '{nameof(fieldName)}' can't be null or empty.", nameof(fieldName));
         }
 
-        var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(partName);
-        var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(partName);
+        var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(partName).ConfigureAwait(false);
+        var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(partName).ConfigureAwait(false);
 
         // If the type exists ensure it has its own part.
         if (typeDefinition != null)
         {
-            await _contentDefinitionManager.AlterTypeDefinitionAsync(partName, builder => builder.WithPart(partName));
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(partName, builder => builder.WithPart(partName)).ConfigureAwait(false);
         }
 
         fieldName = fieldName.ToSafeName();
 
         await _contentDefinitionManager.AlterPartDefinitionAsync(partName,
-            partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName)));
+            partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName))).ConfigureAwait(false);
 
         _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentFieldAttached(context), new ContentFieldAttachedContext
         {
@@ -436,7 +436,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task RemoveFieldFromPartAsync(string fieldName, string partName)
     {
-        var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(partName);
+        var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(partName).ConfigureAwait(false);
 
         if (partDefinition == null)
         {
@@ -450,7 +450,7 @@ public class ContentDefinitionService : IContentDefinitionService
             throw new InvalidOperationException("Unable to remove system-defined field.");
         }
 
-        await _contentDefinitionManager.AlterPartDefinitionAsync(partName, typeBuilder => typeBuilder.RemoveField(fieldName));
+        await _contentDefinitionManager.AlterPartDefinitionAsync(partName, typeBuilder => typeBuilder.RemoveField(fieldName)).ConfigureAwait(false);
 
         var context = new ContentFieldDetachedContext
         {
@@ -471,7 +471,7 @@ public class ContentDefinitionService : IContentDefinitionService
                 fieldBuilder.WithEditor(fieldViewModel.Editor);
                 fieldBuilder.WithDisplayMode(fieldViewModel.DisplayMode);
             });
-        });
+        }).ConfigureAwait(false);
 
         var context = new ContentPartFieldUpdatedContext
         {
@@ -495,7 +495,7 @@ public class ContentDefinitionService : IContentDefinitionService
                 part.WithEditor(typePartViewModel.Editor);
                 part.WithDisplayMode(typePartViewModel.DisplayMode);
             });
-        });
+        }).ConfigureAwait(false);
 
         var context = new ContentTypePartUpdatedContext
         {
@@ -529,7 +529,7 @@ public class ContentDefinitionService : IContentDefinitionService
                     part.MergeSettings<ContentTypePartSettings>(x => x.Position = i.ToString());
                 });
             }
-        });
+        }).ConfigureAwait(false);
 
         var context = new ContentTypeUpdatedContext
         {
@@ -556,7 +556,7 @@ public class ContentDefinitionService : IContentDefinitionService
                     field.MergeSettings<ContentPartFieldSettings>(x => x.Position = i.ToString());
                 });
             }
-        });
+        }).ConfigureAwait(false);
 
         _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartUpdated(context), new ContentPartUpdatedContext
         {
@@ -568,7 +568,7 @@ public class ContentDefinitionService : IContentDefinitionService
     {
         displayName = displayName.ToSafeName();
 
-        while (await _contentDefinitionManager.LoadTypeDefinitionAsync(displayName) != null)
+        while (await _contentDefinitionManager.LoadTypeDefinitionAsync(displayName).ConfigureAwait(false) != null)
         {
             displayName = VersionName(displayName);
         }
@@ -580,13 +580,13 @@ public class ContentDefinitionService : IContentDefinitionService
     {
         IEnumerable<ContentPartFieldDefinition> fieldDefinitions;
 
-        var part = await _contentDefinitionManager.LoadPartDefinitionAsync(partName);
+        var part = await _contentDefinitionManager.LoadPartDefinitionAsync(partName).ConfigureAwait(false);
         displayName = displayName.ToSafeName();
 
         if (part == null)
         {
             var type = await _contentDefinitionManager.LoadTypeDefinitionAsync(partName)
-                ?? throw new ArgumentException("The part doesn't exist: " + partName);
+.ConfigureAwait(false) ?? throw new ArgumentException("The part doesn't exist: " + partName);
 
             var typePart = type.Parts?.FirstOrDefault(x => x.PartDefinition.Name == partName);
 

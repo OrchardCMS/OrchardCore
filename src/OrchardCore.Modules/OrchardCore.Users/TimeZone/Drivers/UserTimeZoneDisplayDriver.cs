@@ -21,10 +21,10 @@ public sealed class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserT
     {
         var model = new UserTimeZoneViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         userTimeZone.TimeZoneId = model.TimeZoneId;
 
-        return await EditAsync(user, userTimeZone, context);
+        return await EditAsync(user, userTimeZone, context).ConfigureAwait(false);
     }
 }

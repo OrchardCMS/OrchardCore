@@ -195,7 +195,7 @@ public abstract class ContentPartHandler<TPart> : IContentPartHandler where TPar
     {
         if (part is TPart tpart)
         {
-            await CloningAsync(context, tpart);
+            await CloningAsync(context, tpart).ConfigureAwait(false);
         }
     }
 
@@ -203,7 +203,7 @@ public abstract class ContentPartHandler<TPart> : IContentPartHandler where TPar
     {
         if (part is TPart tpart)
         {
-            await ClonedAsync(context, tpart);
+            await ClonedAsync(context, tpart).ConfigureAwait(false);
         }
     }
 

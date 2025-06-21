@@ -39,7 +39,7 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
         return Initialize<MenuPartEditViewModel>("MenuPart_Edit", async model =>
         {
-            var menuItemContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            var menuItemContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
                 .Where(t => t.StereotypeEquals("MenuItem"))
                 .ToArray();
 
@@ -50,14 +50,14 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
                 if (!menuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
                 {
                     _logger.LogWarning("The menu item content item with id {ContentItemId} has no matching {ContentType} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType);
-                    await _notifier.WarningAsync(H["The menu item content item with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType]);
+                    await _notifier.WarningAsync(H["The menu item content item with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType]).ConfigureAwait(false);
                     notify = true;
                 }
             }
 
             if (notify)
             {
-                await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
+                await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]).ConfigureAwait(false);
             }
 
             model.MenuPart = part;
@@ -68,7 +68,7 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     public override async Task<IDisplayResult> UpdateAsync(MenuPart part, UpdatePartEditorContext context)
     {
         var model = new MenuPartEditViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy).ConfigureAwait(false);
 
         if (!string.IsNullOrWhiteSpace(model.Hierarchy))
         {

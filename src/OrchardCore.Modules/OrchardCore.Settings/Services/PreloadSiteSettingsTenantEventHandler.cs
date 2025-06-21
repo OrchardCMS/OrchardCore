@@ -24,6 +24,6 @@ internal sealed class PreloadSiteSettingsTenantEventHandler : ModularTenantEvent
 
         // Preload the site settings to ensure that the the required database access is asynchronous. This allows to
         // safely retrieve the site settings synchronously afterwards.
-        _ = await _siteService.GetSiteSettingsAsync();
+        _ = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
     }
 }

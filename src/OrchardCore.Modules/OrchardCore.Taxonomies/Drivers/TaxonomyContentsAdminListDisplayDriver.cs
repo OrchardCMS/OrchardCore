@@ -40,7 +40,7 @@ public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<Conte
 
     public override async Task<IDisplayResult> EditAsync(ContentOptionsViewModel model, BuildEditorContext context)
     {
-        var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
+        var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>().ConfigureAwait(false);
 
         if (settings.TaxonomyContentItemIds.Length == 0)
         {
@@ -50,7 +50,7 @@ public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<Conte
         var taxonomyContentItemIds = settings.TaxonomyContentItemIds;
         if (!string.IsNullOrEmpty(model.SelectedContentType))
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(model.SelectedContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(model.SelectedContentType).ConfigureAwait(false);
             var fieldDefinitions = contentTypeDefinition
                 .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
             var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
@@ -63,7 +63,7 @@ public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<Conte
         }
 
         var results = new List<IDisplayResult>();
-        var taxonomies = await _contentManager.GetAsync(taxonomyContentItemIds);
+        var taxonomies = await _contentManager.GetAsync(taxonomyContentItemIds).ConfigureAwait(false);
 
         var position = 5;
         foreach (var taxonomy in taxonomies)
@@ -124,11 +124,11 @@ public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<Conte
 
     public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)
     {
-        var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
+        var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>().ConfigureAwait(false);
         foreach (var contentItemId in settings.TaxonomyContentItemIds)
         {
             var viewModel = new TaxonomyContentsAdminFilterViewModel();
-            await context.Updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId);
+            await context.Updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId).ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
             {
@@ -136,7 +136,7 @@ public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<Conte
             }
         }
 
-        return await EditAsync(model, context);
+        return await EditAsync(model, context).ConfigureAwait(false);
     }
 
     private static void PopulateTermEntries(List<FilterTermEntry> termEntries, IEnumerable<ContentItem> contentItems, int level)

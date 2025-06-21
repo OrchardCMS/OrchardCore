@@ -23,7 +23,7 @@ public sealed class DashboardPartDisplayDriver : ContentPartDisplayDriver<Dashbo
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             t => t.Position,
             t => t.Width,
-            t => t.Height);
+            t => t.Height).ConfigureAwait(false);
 
         return Edit(model, context);
     }

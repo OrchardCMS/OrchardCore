@@ -23,7 +23,7 @@ public class DefaultCommandManager : ICommandManager
         if (matches.Count == 1)
         {
             var match = matches.Single();
-            await match.CommandHandler.ExecuteAsync(match.Context);
+            await match.CommandHandler.ExecuteAsync(match.Context).ConfigureAwait(false);
         }
         else
         {

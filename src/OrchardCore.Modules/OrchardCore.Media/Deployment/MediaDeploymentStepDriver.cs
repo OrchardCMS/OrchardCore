@@ -30,7 +30,7 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
             model.IncludeAll = step.IncludeAll;
             model.FilePaths = step.FilePaths;
             model.DirectoryPaths = step.DirectoryPaths;
-            model.Entries = await GetMediaStoreEntries().ToListAsync();
+            model.Entries = await GetMediaStoreEntries().ToListAsync().ConfigureAwait(false);
         }).Location("Content");
     }
 
@@ -43,7 +43,7 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
                                           Prefix,
                                           x => x.FilePaths,
                                           x => x.DirectoryPaths,
-                                          x => x.IncludeAll);
+                                          x => x.IncludeAll).ConfigureAwait(false);
 
         // Don't have the selected option if include all.
         if (step.IncludeAll)
@@ -57,7 +57,7 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
 
     private async IAsyncEnumerable<MediaStoreEntryViewModel> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)
     {
-        await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path))
+        await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path).ConfigureAwait(false))
         {
             var mediaStoreEntry = new MediaStoreEntryViewModel
             {
@@ -68,7 +68,7 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
 
             mediaStoreEntry.Entries = e.IsDirectory
                 ? await GetMediaStoreEntries(e.Path, mediaStoreEntry).ToListAsync()
-                : [];
+.ConfigureAwait(false) : [];
 
             yield return mediaStoreEntry;
         }

@@ -23,11 +23,11 @@ public class ContentResource
         };
 
         var response = await _client
-            .PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
+            .PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default)).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
         {
-            throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
+            throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         return JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -40,11 +40,11 @@ public class ContentResource
             ["query"] = @"query { " + body + " }",
         };
 
-        var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
+        var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default)).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
+            throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         return JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -57,11 +57,11 @@ public class ContentResource
             ["namedquery"] = name,
         };
 
-        var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
+        var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default)).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
+            throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         return JObject.Parse(await response.Content.ReadAsStringAsync());

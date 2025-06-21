@@ -28,7 +28,7 @@ public sealed class AdminTemplateStep : NamedRecipeStepHandler
                 var name = property.Key;
                 var value = property.Value.ToObject<Template>();
 
-                await _adminTemplatesManager.UpdateTemplateAsync(name, value);
+                await _adminTemplatesManager.UpdateTemplateAsync(name, value).ConfigureAwait(false);
             }
         }
     }

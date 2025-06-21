@@ -25,13 +25,13 @@ public sealed class AllRolesDeploymentSource
     protected override async Task ProcessAsync(AllRolesDeploymentStep step, DeploymentPlanResult result)
     {
         // Get all roles
-        var allRoles = await _roleService.GetRolesAsync();
+        var allRoles = await _roleService.GetRolesAsync().ConfigureAwait(false);
         var permissions = new JsonArray();
         var tasks = new List<Task>();
 
         foreach (var role in allRoles)
         {
-            var currentRole = await _roleManager.FindByNameAsync(role.RoleName);
+            var currentRole = await _roleManager.FindByNameAsync(role.RoleName).ConfigureAwait(false);
 
             if (currentRole is Role r)
             {

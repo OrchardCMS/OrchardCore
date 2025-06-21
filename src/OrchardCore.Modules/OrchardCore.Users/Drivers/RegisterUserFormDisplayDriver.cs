@@ -40,13 +40,13 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
     {
         var vm = new RegisterViewModel();
 
-        await context.Updater.TryUpdateModelAsync(vm, Prefix);
+        await context.Updater.TryUpdateModelAsync(vm, Prefix).ConfigureAwait(false);
 
-        if (!string.IsNullOrEmpty(vm.UserName) && await _userManager.FindByNameAsync(vm.UserName) != null)
+        if (!string.IsNullOrEmpty(vm.UserName) && await _userManager.FindByNameAsync(vm.UserName).ConfigureAwait(false) != null)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(vm.UserName), S["A user with the same username already exists."]);
         }
-        else if (_identityOptions.User.RequireUniqueEmail && !string.IsNullOrEmpty(vm.Email) && await _userManager.FindByEmailAsync(vm.Email) != null)
+        else if (_identityOptions.User.RequireUniqueEmail && !string.IsNullOrEmpty(vm.Email) && await _userManager.FindByEmailAsync(vm.Email).ConfigureAwait(false) != null)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(vm.Email), S["A user with the same email address already exists."]);
         }

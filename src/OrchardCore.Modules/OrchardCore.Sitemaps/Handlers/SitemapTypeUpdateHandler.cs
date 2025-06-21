@@ -13,7 +13,7 @@ public class SitemapTypeUpdateHandler : ISitemapTypeUpdateHandler
     {
         foreach (var sitemapSourceUpdateHandler in _sitemapSourceUpdateHandlers)
         {
-            await sitemapSourceUpdateHandler.UpdateSitemapAsync(context);
+            await sitemapSourceUpdateHandler.UpdateSitemapAsync(context).ConfigureAwait(false);
         }
     }
 }

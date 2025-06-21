@@ -16,7 +16,7 @@ public class FullTextContentIndexHandler(IContentManager contentManager) : IDocu
             return;
         }
 
-        var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem);
+        var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem).ConfigureAwait(false);
 
         using var stringBuilder = ZString.CreateStringBuilder();
 

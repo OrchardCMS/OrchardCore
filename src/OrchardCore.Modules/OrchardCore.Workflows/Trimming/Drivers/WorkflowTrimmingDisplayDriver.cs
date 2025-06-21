@@ -33,7 +33,7 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
 
     public override async Task<IDisplayResult> EditAsync(ISite model, WorkflowTrimmingSettings settings, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, WorkflowsPermissions.ManageWorkflowSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, WorkflowsPermissions.ManageWorkflowSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -41,7 +41,7 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
         return Initialize<WorkflowTrimmingViewModel>("WorkflowTrimming_Fields_Edit", async model =>
         {
             model.RetentionDays = settings.RetentionDays;
-            model.LastRunUtc = (await _workflowTrimmingStateDocumentManager.GetOrCreateImmutableAsync()).LastRunUtc;
+            model.LastRunUtc = (await _workflowTrimmingStateDocumentManager.GetOrCreateImmutableAsync().ConfigureAwait(false)).LastRunUtc;
             model.Disabled = settings.Disabled;
 
             foreach (var status in settings.Statuses ?? [])
@@ -54,13 +54,13 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, WorkflowTrimmingSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, WorkflowsPermissions.ManageWorkflowSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, WorkflowsPermissions.ManageWorkflowSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var viewModel = new WorkflowTrimmingViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         settings.RetentionDays = viewModel.RetentionDays;
         settings.Disabled = viewModel.Disabled;
@@ -69,6 +69,6 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
             .Select(statusItem => statusItem.Status)
             .ToArray();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

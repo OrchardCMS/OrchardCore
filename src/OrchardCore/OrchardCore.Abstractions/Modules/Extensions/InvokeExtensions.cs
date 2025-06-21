@@ -109,7 +109,7 @@ public static class InvokeExtensions
         {
             try
             {
-                await dispatch(sink);
+                await dispatch(sink).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -127,7 +127,7 @@ public static class InvokeExtensions
         {
             try
             {
-                await dispatch(sink, arg1);
+                await dispatch(sink, arg1).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -145,7 +145,7 @@ public static class InvokeExtensions
         {
             try
             {
-                await dispatch(sink, arg1, arg2);
+                await dispatch(sink, arg1, arg2).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -163,7 +163,7 @@ public static class InvokeExtensions
         {
             try
             {
-                await dispatch(sink, arg1, arg2, arg3);
+                await dispatch(sink, arg1, arg2, arg3).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -181,7 +181,7 @@ public static class InvokeExtensions
         {
             try
             {
-                await dispatch(sink, arg1, arg2, arg3, arg4);
+                await dispatch(sink, arg1, arg2, arg3, arg4).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -199,7 +199,7 @@ public static class InvokeExtensions
         {
             try
             {
-                await dispatch(sink, arg1, arg2, arg3, arg4, arg5);
+                await dispatch(sink, arg1, arg2, arg3, arg4, arg5).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -216,7 +216,7 @@ public static class InvokeExtensions
         {
             try
             {
-                var result = await dispatch(sink);
+                var result = await dispatch(sink).ConfigureAwait(false);
                 results.Add(result);
             }
             catch (Exception ex)
@@ -236,7 +236,7 @@ public static class InvokeExtensions
         {
             try
             {
-                var result = await dispatch(sink, arg1);
+                var result = await dispatch(sink, arg1).ConfigureAwait(false);
                 results.Add(result);
             }
             catch (Exception ex)
@@ -256,7 +256,7 @@ public static class InvokeExtensions
         {
             try
             {
-                var result = await dispatch(sink);
+                var result = await dispatch(sink).ConfigureAwait(false);
                 results.AddRange(result);
             }
             catch (Exception ex)

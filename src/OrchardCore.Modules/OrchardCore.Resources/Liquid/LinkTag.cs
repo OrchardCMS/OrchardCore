@@ -27,13 +27,13 @@ public class LinkTag
         {
             switch (argument.Name)
             {
-                case "src": src = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "rel": rel = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "condition": condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "title": title = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "type": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "src": src = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "rel": rel = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "condition": condition = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "title": title = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "type": type = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToBooleanValue(); break;
+                default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
             }
         }
 

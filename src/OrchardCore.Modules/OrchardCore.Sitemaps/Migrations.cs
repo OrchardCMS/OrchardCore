@@ -17,7 +17,7 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("SitemapPart", builder => builder
             .Attachable()
-            .WithDescription("Provides an optional part that allows content items to be excluded, or configured, on a content item."));
+            .WithDescription("Provides an optional part that allows content items to be excluded, or configured, on a content item.")).ConfigureAwait(false);
 
         return 1;
     }

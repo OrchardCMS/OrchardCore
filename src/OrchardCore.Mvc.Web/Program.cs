@@ -15,4 +15,4 @@ app.UseStaticFiles();
 
 app.UseOrchardCore();
 
-await app.RunAsync();
+await app.RunAsync().ConfigureAwait(false);

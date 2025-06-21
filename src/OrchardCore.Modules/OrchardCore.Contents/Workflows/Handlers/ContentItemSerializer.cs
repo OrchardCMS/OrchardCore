@@ -21,7 +21,7 @@ public class ContentItemSerializer : IWorkflowValueSerializer
             {
                 context.Output = input.TryGetValue("ContentId", out var contentIdObj) && contentIdObj is string contentId
                     ? await _contentManager.GetAsync(contentId, VersionOptions.Latest)
-                    : default(IContent);
+.ConfigureAwait(false) : default(IContent);
             }
         }
     }

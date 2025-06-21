@@ -17,7 +17,7 @@ public sealed class AzureADDeploymentSource
 
     protected override async Task ProcessAsync(AzureADDeploymentStep step, DeploymentPlanResult result)
     {
-        var azureADSettings = await _azureADService.GetSettingsAsync();
+        var azureADSettings = await _azureADService.GetSettingsAsync().ConfigureAwait(false);
 
         result.Steps.Add(new JsonObject
         {

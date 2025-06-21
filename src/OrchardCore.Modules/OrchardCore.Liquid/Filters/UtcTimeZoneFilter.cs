@@ -24,7 +24,7 @@ public class UtcTimeZoneFilter : ILiquidFilter
 
             if (stringValue == "now" || stringValue == "today")
             {
-                value = await _localClock.GetLocalNowAsync();
+                value = await _localClock.GetLocalNowAsync().ConfigureAwait(false);
             }
             else
             {

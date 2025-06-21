@@ -30,7 +30,7 @@ public sealed class DiagnosticsStartupFilter : IStartupFilter
 
             app.Use(async (context, next) =>
             {
-                await next();
+                await next().ConfigureAwait(false);
 
                 if (context.Response.StatusCode < 200 || context.Response.StatusCode >= 400)
                 {

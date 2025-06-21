@@ -20,7 +20,7 @@ public sealed class MenuItemPermissionPartDisplayDriver : ContentPartDisplayDriv
     {
         return Initialize<MenuItemPermissionViewModel>("MenuItemPermissionPart_Edit", async model =>
         {
-            var selectedPermissions = await _permissionService.FindByNamesAsync(part.PermissionNames);
+            var selectedPermissions = await _permissionService.FindByNamesAsync(part.PermissionNames).ConfigureAwait(false);
 
             model.SelectedItems = selectedPermissions
                 .Select(p => new PermissionViewModel
@@ -29,7 +29,7 @@ public sealed class MenuItemPermissionPartDisplayDriver : ContentPartDisplayDriv
                     DisplayText = p.Description,
                 }).ToArray();
 
-            var permissions = await _permissionService.GetPermissionsAsync();
+            var permissions = await _permissionService.GetPermissionsAsync().ConfigureAwait(false);
 
             model.AllItems = permissions
                 .Select(p => new PermissionViewModel
@@ -44,13 +44,13 @@ public sealed class MenuItemPermissionPartDisplayDriver : ContentPartDisplayDriv
     {
         var model = new MenuItemPermissionViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix,
-            x => x.SelectedPermissionNames);
+            x => x.SelectedPermissionNames).ConfigureAwait(false);
 
         var selectedPermissions = model.SelectedPermissionNames == null
             ? []
             : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-        var permissions = await _permissionService.FindByNamesAsync(selectedPermissions);
+        var permissions = await _permissionService.FindByNamesAsync(selectedPermissions).ConfigureAwait(false);
 
         part.PermissionNames = permissions.Select(x => x.Name).ToArray();
 

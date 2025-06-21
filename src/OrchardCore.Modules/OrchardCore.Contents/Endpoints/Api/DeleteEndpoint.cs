@@ -28,24 +28,24 @@ public static class DeleteEndpoint
         HttpContext httpContext,
         IOptions<DocumentJsonSerializerOptions> options)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi).ConfigureAwait(false))
         {
             return httpContext.ChallengeOrForbid("Api");
         }
 
-        var contentItem = await contentManager.GetAsync(contentItemId);
+        var contentItem = await contentManager.GetAsync(contentItemId).ConfigureAwait(false);
 
         if (contentItem == null)
         {
             return TypedResults.NotFound();
         }
 
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.DeleteContent, contentItem))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.DeleteContent, contentItem).ConfigureAwait(false))
         {
             return httpContext.ChallengeOrForbid("Api");
         }
 
-        await contentManager.RemoveAsync(contentItem);
+        await contentManager.RemoveAsync(contentItem).ConfigureAwait(false);
 
         return Results.Json(contentItem, options.Value.SerializerOptions);
     }

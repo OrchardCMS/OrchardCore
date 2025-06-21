@@ -27,19 +27,19 @@ public class BackgroundTaskManager
 
     public async Task RemoveAsync(string name)
     {
-        var document = await LoadDocumentAsync();
+        var document = await LoadDocumentAsync().ConfigureAwait(false);
         document.Settings.Remove(name);
 
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
         _signal.DeferredSignalToken(nameof(BackgroundTaskSettings));
     }
 
     public async Task UpdateAsync(string name, BackgroundTaskSettings settings)
     {
-        var document = await LoadDocumentAsync();
+        var document = await LoadDocumentAsync().ConfigureAwait(false);
         document.Settings[name] = settings;
 
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
         _signal.DeferredSignalToken(nameof(BackgroundTaskSettings));
     }
 }

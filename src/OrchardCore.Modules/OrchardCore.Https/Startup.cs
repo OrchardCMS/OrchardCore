@@ -19,7 +19,7 @@ public sealed class Startup : StartupBase
     public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         var httpsService = serviceProvider.GetRequiredService<IHttpsService>();
-        var settings = await httpsService.GetSettingsAsync();
+        var settings = await httpsService.GetSettingsAsync().ConfigureAwait(false);
         if (settings.RequireHttps)
         {
             app.UseHttpsRedirection();

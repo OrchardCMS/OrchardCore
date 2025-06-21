@@ -22,14 +22,14 @@ public sealed class FeatureStep : NamedRecipeStepHandler
     {
         var step = context.Step.ToObject<FeatureStepModel>();
 
-        var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
+        var features = await _shellFeaturesManager.GetAvailableFeaturesAsync().ConfigureAwait(false);
 
         var featuresToDisable = features.Where(x => step.Disable?.Contains(x.Id) == true).ToArray();
         var featuresToEnable = features.Where(x => step.Enable?.Contains(x.Id) == true).ToArray();
 
         if (featuresToDisable.Length > 0 || featuresToEnable.Length > 0)
         {
-            await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, true);
+            await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, true).ConfigureAwait(false);
         }
     }
 

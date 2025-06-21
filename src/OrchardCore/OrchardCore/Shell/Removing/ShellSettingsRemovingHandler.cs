@@ -34,7 +34,7 @@ public class ShellSettingsRemovingHandler : IShellRemovingHandler
                 return;
             }
 
-            await _shellHost.RemoveShellSettingsAsync(context.ShellSettings);
+            await _shellHost.RemoveShellSettingsAsync(context.ShellSettings).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

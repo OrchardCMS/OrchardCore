@@ -42,7 +42,7 @@ public class FlowPartIndexHandler : ContentPartIndexHandler<FlowPart>
 
                     var buildIndexContext = new BuildDocumentIndexContext(context.DocumentIndex, contentItem, keys, context.Settings);
 
-                    await contentItemIndexHandler.BuildIndexAsync(buildIndexContext);
+                    await contentItemIndexHandler.BuildIndexAsync(buildIndexContext).ConfigureAwait(false);
                 }
             }
         }

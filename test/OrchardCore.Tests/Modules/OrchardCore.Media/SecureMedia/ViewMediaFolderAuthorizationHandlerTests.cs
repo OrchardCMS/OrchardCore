@@ -338,7 +338,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
                 var permissionGrantingService = new DefaultPermissionGrantingService();
                 var handler = new PermissionHandler(permissionGrantingService);
 
-                await handler.HandleAsync(context);
+                await handler.HandleAsync(context).ConfigureAwait(false);
 
                 return new DefaultAuthorizationEvaluator().Evaluate(context);
             });

@@ -1,12 +1,12 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Moq;
-using Xunit;
-using OrchardCore.Media.Core;
-using OrchardCore.FileStorage;
-using OrchardCore.Media.Events;
 using Microsoft.Extensions.Logging;
+using Moq;
+using OrchardCore.FileStorage;
+using OrchardCore.Media.Core;
+using OrchardCore.Media.Events;
+using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 

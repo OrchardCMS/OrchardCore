@@ -48,9 +48,9 @@ public sealed class UserType : ObjectGraphType<User>
                         user.Properties.ContainsKey(context.FieldDefinition.ResolvedType.Name))
                     {
                         var customUserSettingsService = context.RequestServices.GetRequiredService<CustomUserSettingsService>();
-                        var settingsType = await customUserSettingsService.GetSettingsTypeAsync(context.FieldDefinition.ResolvedType.Name);
+                        var settingsType = await customUserSettingsService.GetSettingsTypeAsync(context.FieldDefinition.ResolvedType.Name).ConfigureAwait(false);
 
-                        return await customUserSettingsService.GetSettingsAsync(user, settingsType);
+                        return await customUserSettingsService.GetSettingsAsync(user, settingsType).ConfigureAwait(false);
                     }
 
                     return null;

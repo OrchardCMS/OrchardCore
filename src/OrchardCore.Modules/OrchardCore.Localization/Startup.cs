@@ -41,8 +41,8 @@ public sealed class Startup : StartupBase
     {
         var localizationService = serviceProvider.GetService<ILocalizationService>();
 
-        var defaultCulture = await localizationService.GetDefaultCultureAsync();
-        var supportedCultures = await localizationService.GetSupportedCulturesAsync();
+        var defaultCulture = await localizationService.GetDefaultCultureAsync().ConfigureAwait(false);
+        var supportedCultures = await localizationService.GetSupportedCulturesAsync().ConfigureAwait(false);
 
         var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
         var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;

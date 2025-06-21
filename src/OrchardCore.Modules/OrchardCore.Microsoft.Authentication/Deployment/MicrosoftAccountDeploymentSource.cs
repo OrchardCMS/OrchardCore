@@ -17,7 +17,7 @@ public sealed class MicrosoftAccountDeploymentSource
 
     protected override async Task ProcessAsync(MicrosoftAccountDeploymentStep step, DeploymentPlanResult result)
     {
-        var microsoftAccountSettings = await _microsoftAccountService.GetSettingsAsync();
+        var microsoftAccountSettings = await _microsoftAccountService.GetSettingsAsync().ConfigureAwait(false);
 
         result.Steps.Add(new JsonObject
         {

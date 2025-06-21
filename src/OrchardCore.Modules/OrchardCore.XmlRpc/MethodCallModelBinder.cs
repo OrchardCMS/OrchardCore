@@ -21,7 +21,7 @@ public class MethodCallModelBinder : IModelBinder
             // This code is maybe bad. Because if someone send a very big XML to this endpoint the server will die a out of memory exception.
             using (var reader = new StreamReader(bindingContext.HttpContext.Request.Body, Encoding.UTF8, true, 1024, true))
             {
-                bodyTextContent = await reader.ReadToEndAsync();
+                bodyTextContent = await reader.ReadToEndAsync().ConfigureAwait(false);
             }
             var element = XElement.Parse(bodyTextContent);
 

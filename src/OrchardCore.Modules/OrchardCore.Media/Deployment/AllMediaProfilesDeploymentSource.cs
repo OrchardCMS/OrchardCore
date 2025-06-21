@@ -16,7 +16,7 @@ public sealed class AllMediaProfilesDeploymentSource
 
     protected override async Task ProcessAsync(AllMediaProfilesDeploymentStep step, DeploymentPlanResult result)
     {
-        var mediaProfiles = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
+        var mediaProfiles = await _mediaProfilesManager.GetMediaProfilesDocumentAsync().ConfigureAwait(false);
 
         result.Steps.Add(new JsonObject
         {

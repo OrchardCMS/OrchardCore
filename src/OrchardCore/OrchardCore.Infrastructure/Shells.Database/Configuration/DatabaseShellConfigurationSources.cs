@@ -41,8 +41,10 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
     {
         JsonObject configurations = null;
 
-        await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-        await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        var context = await _shellContextFactory.GetDatabaseContextAsync(_options).ConfigureAwait(false);
+        await using (context.ConfigureAwait(false))
+        {
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -76,12 +78,15 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
             var configurationString = configuration.ToJsonString(JOptions.Default);
             builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configurationString)));
         }
+        }
     }
 
     public async Task SaveAsync(string tenant, IDictionary<string, string> data)
     {
-        await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-        await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        var context = await _shellContextFactory.GetDatabaseContextAsync(_options).ConfigureAwait(false);
+        await using (context.ConfigureAwait(false))
+        {
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -116,12 +121,15 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
 
             await session.SaveAsync(document, checkConcurrency: true);
         });
+        }
     }
 
     public async Task RemoveAsync(string tenant)
     {
-        await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-        await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        var context = await _shellContextFactory.GetDatabaseContextAsync(_options).ConfigureAwait(false);
+        await using (context.ConfigureAwait(false))
+        {
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -132,6 +140,7 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
                 await session.SaveAsync(document, checkConcurrency: true);
             }
         });
+        }
     }
 
     private async Task<bool> TryMigrateFromFileAsync(string tenant, JsonObject configurations)
@@ -146,7 +155,7 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
 
         using var stream = File.OpenRead(appsettings);
 
-        var configuration = await JObject.LoadAsync(stream);
+        var configuration = await JObject.LoadAsync(stream).ConfigureAwait(false);
         if (configuration is JsonObject jsonObject)
         {
             configurations[tenant] = jsonObject;

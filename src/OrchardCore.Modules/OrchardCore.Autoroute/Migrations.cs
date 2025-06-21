@@ -20,7 +20,7 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("AutoroutePart", builder => builder
             .Attachable()
-            .WithDescription("Provides a custom url for your content item."));
+            .WithDescription("Provides a custom url for your content item.")).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<AutoroutePartIndex>(table => table
             .Column<string>("ContentItemId", c => c.WithLength(26))
@@ -29,7 +29,7 @@ public sealed class Migrations : DataMigration
             .Column<string>("Path", col => col.WithLength(AutoroutePart.MaxPathLength))
             .Column<bool>("Published")
             .Column<bool>("Latest")
-        );
+        ).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 5;
@@ -39,7 +39,7 @@ public sealed class Migrations : DataMigration
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom1Async()
     {
-        await _contentDefinitionManager.MigratePartSettingsAsync<AutoroutePart, AutoroutePartSettings>();
+        await _contentDefinitionManager.MigratePartSettingsAsync<AutoroutePart, AutoroutePartSettings>().ConfigureAwait(false);
 
         return 2;
     }
@@ -57,15 +57,15 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
             .AddColumn<string>("ContainedContentItemId", c => c.WithLength(26))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
             .AddColumn<string>("JsonPath", c => c.Unlimited())
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
             .AddColumn<bool>("Latest", c => c.WithDefault(false))
-        );
+        ).ConfigureAwait(false);
 
         return 4;
     }

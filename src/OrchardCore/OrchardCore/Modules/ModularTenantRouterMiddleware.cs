@@ -39,9 +39,9 @@ public class ModularTenantRouterMiddleware
         // Do we need to rebuild the pipeline?
         if (!shellContext.HasPipeline())
         {
-            await shellContext.BuildPipelineAsync();
+            await shellContext.BuildPipelineAsync().ConfigureAwait(false);
         }
 
-        await shellContext.Pipeline.Invoke(httpContext);
+        await shellContext.Pipeline.Invoke(httpContext).ConfigureAwait(false);
     }
 }

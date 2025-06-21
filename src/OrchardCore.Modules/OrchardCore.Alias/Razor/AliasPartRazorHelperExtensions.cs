@@ -29,7 +29,7 @@ public static class AliasPartRazorHelperExtensions
         }
 
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
-        var aliasPartIndex = await AliasPartContentHandleHelper.QueryAliasIndex(session, alias);
+        var aliasPartIndex = await AliasPartContentHandleHelper.QueryAliasIndex(session, alias).ConfigureAwait(false);
 
         return aliasPartIndex?.ContentItemId;
     }
@@ -44,9 +44,9 @@ public static class AliasPartRazorHelperExtensions
     /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
     public static async Task<ContentItem> GetContentItemByAliasAsync(this IOrchardHelper orchardHelper, string alias, bool latest = false)
     {
-        var contentItemId = await orchardHelper.GetContentItemIdByAliasAsync(alias);
+        var contentItemId = await orchardHelper.GetContentItemIdByAliasAsync(alias).ConfigureAwait(false);
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
 
-        return await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
+        return await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published).ConfigureAwait(false);
     }
 }

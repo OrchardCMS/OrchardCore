@@ -43,7 +43,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
             contentRangeHeader.Count is 0 ||
             !request.Form.TryGetValue(UploadIdFormKey, out var uploadIdValue))
         {
-            return await completedAsync(request.Form.Files);
+            return await completedAsync(request.Form.Files).ConfigureAwait(false);
         }
 
         if (request.Form.Files.Count != 1 ||
@@ -64,12 +64,12 @@ public class ChunkFileUploadService : IChunkFileUploadService
             contentRange.Length.Value))
         {
             fileStream.Seek(contentRange.From.Value, SeekOrigin.Begin);
-            await formFile.CopyToAsync(fileStream, request.HttpContext.RequestAborted);
+            await formFile.CopyToAsync(fileStream, request.HttpContext.RequestAborted).ConfigureAwait(false);
         }
 
         return (contentRange.To.Value + 1) >= contentRange.Length.Value
             ? await CompleteUploadAsync(uploadId, formFile, completedAsync)
-            : await chunkAsync(uploadId, formFile, contentRange);
+.ConfigureAwait(false) : await chunkAsync(uploadId, formFile, contentRange).ConfigureAwait(false);
     }
 
     private async Task<IActionResult> CompleteUploadAsync(
@@ -81,7 +81,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         {
             using var chunkedFormFile = GetTemporaryFileForRead(uploadId, formFile);
 
-            return await completedAsync(new[] { chunkedFormFile });
+            return await completedAsync(new[] { chunkedFormFile }).ConfigureAwait(false);
         }
         finally
         {

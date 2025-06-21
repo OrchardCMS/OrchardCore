@@ -18,7 +18,7 @@ public sealed class Migrations : DataMigration
         await _contentDefinitionManager.AlterPartDefinitionAsync("WidgetsListPart", builder => builder
             .Attachable()
             .WithDescription("Provides a way to add widgets to Layout zones for your content item.")
-            );
+            ).ConfigureAwait(false);
 
         return 1;
     }

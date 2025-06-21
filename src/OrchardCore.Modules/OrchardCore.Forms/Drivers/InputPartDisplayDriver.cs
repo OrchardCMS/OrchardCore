@@ -27,7 +27,7 @@ public sealed class InputPartDisplayDriver : ContentPartDisplayDriver<InputPart>
     {
         var viewModel = new InputPartEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         part.Placeholder = viewModel.Placeholder?.Trim();
         part.DefaultValue = viewModel.DefaultValue?.Trim();

@@ -32,7 +32,7 @@ public sealed class DeleteContentDefinitionDeploymentStepDriver : DisplayDriver<
     {
         var model = new DeleteContentDefinitionStepViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         step.ContentTypes = model.ContentTypes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
         step.ContentParts = model.ContentParts.Split(_separator, StringSplitOptions.RemoveEmptyEntries);

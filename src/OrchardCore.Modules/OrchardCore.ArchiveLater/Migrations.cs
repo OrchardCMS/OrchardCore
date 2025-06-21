@@ -20,14 +20,14 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(ArchiveLaterPart), builder => builder
             .Attachable()
-            .WithDescription("Adds the ability to schedule content items to be archived at a given future date and time."));
+            .WithDescription("Adds the ability to schedule content items to be archived at a given future date and time.")).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<ArchiveLaterPartIndex>(table => table
             .Column<string>("ContentItemId")
             .Column<DateTime>("ScheduledArchiveDateTimeUtc")
             .Column<bool>("Published")
             .Column<bool>("Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ArchiveLaterPartIndex>(table => table
             .CreateIndex("IDX_ArchiveLaterPartIndex_DocumentId",
@@ -37,7 +37,7 @@ public sealed class Migrations : DataMigration
                 "ScheduledArchiveDateTimeUtc",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         return 1;
     }

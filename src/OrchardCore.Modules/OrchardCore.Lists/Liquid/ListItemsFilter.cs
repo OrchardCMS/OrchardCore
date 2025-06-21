@@ -29,7 +29,7 @@ public class ListItemsFilter : ILiquidFilter
             listContentItemId = input.ToStringValue();
         }
 
-        var listItems = await ListQueryHelpers.QueryListItemsAsync(_session, listContentItemId);
+        var listItems = await ListQueryHelpers.QueryListItemsAsync(_session, listContentItemId).ConfigureAwait(false);
 
         return FluidValue.Create(listItems, ctx.Options);
     }

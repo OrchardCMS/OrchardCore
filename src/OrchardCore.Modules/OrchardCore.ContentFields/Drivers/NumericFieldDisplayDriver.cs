@@ -64,7 +64,7 @@ public sealed class NumericFieldDisplayDriver : ContentFieldDisplayDriver<Numeri
     {
         var viewModel = new EditNumericFieldViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Value);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Value).ConfigureAwait(false);
         var settings = context.PartFieldDefinition.GetSettings<NumericFieldSettings>();
 
         field.Value = null;

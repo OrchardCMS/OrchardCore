@@ -26,7 +26,7 @@ public class AdminThemeSelector : IThemeSelector
     {
         if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
         {
-            var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
+            var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync().ConfigureAwait(false);
             if (string.IsNullOrEmpty(adminThemeName))
             {
                 return null;

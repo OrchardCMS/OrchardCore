@@ -21,9 +21,9 @@ public sealed class ExportContentToDeploymentTargetContentsAdminListDisplayDrive
 
     public override async Task<IDisplayResult> DisplayAsync(ContentOptionsViewModel model, BuildDisplayContext context)
     {
-        if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
+        if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync().ConfigureAwait(false))
         {
-            var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
+            var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>().ConfigureAwait(false);
 
             if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
             {

@@ -14,7 +14,7 @@ public class TenantShapeTableProvider : ShapeTableProvider
            {
                if (displaying.Shape.TryGetProperty("ShellSettingsEntry", out ShellSettingsEntry entry))
                {
-                   await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ManageTenantActionTags", entry), "5");
+                   await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ManageTenantActionTags", entry), "5").ConfigureAwait(false);
                }
            });
 
@@ -23,7 +23,7 @@ public class TenantShapeTableProvider : ShapeTableProvider
             {
                 if (displaying.Shape.TryGetProperty("ShellSettingsEntry", out ShellSettingsEntry entry))
                 {
-                    await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ManageTenantActionButtons", entry), "5");
+                    await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ManageTenantActionButtons", entry), "5").ConfigureAwait(false);
                 }
             });
 

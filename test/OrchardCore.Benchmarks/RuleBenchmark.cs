@@ -63,6 +63,6 @@ public class RuleBenchmark
     public void EvaluateIsHomepageWithJavascript() => _engine.Evaluate(_scope, "isHomepage()");
 
     [Benchmark]
-    public async Task EvaluateIsHomepageWithRule() => await _ruleService.EvaluateAsync(_rule);
+    public async Task EvaluateIsHomepageWithRule() => await _ruleService.EvaluateAsync(_rule).ConfigureAwait(false);
 #pragma warning restore CA1822 // Mark members as static
 }

@@ -26,18 +26,18 @@ public sealed class ReplaceContentDefinitionStep : NamedRecipeStepHandler
         // Delete existing parts first, as deleting them later will clear any imported content types using them.
         foreach (var contentPart in step.ContentParts)
         {
-            await _contentDefinitionManager.DeletePartDefinitionAsync(contentPart.Name);
+            await _contentDefinitionManager.DeletePartDefinitionAsync(contentPart.Name).ConfigureAwait(false);
         }
 
         foreach (var contentType in step.ContentTypes)
         {
-            await _contentDefinitionManager.DeleteTypeDefinitionAsync(contentType.Name);
-            await AlterContentTypeAsync(contentType);
+            await _contentDefinitionManager.DeleteTypeDefinitionAsync(contentType.Name).ConfigureAwait(false);
+            await AlterContentTypeAsync(contentType).ConfigureAwait(false);
         }
 
         foreach (var contentPart in step.ContentParts)
         {
-            await AlterContentPartAsync(contentPart);
+            await AlterContentPartAsync(contentPart).ConfigureAwait(false);
         }
     }
 
@@ -55,7 +55,7 @@ public sealed class ReplaceContentDefinitionStep : NamedRecipeStepHandler
             {
                 builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
             }
-        });
+        }).ConfigureAwait(false);
     }
 
     private async Task AlterContentPartAsync(ContentPartDefinitionRecord record)
@@ -72,7 +72,7 @@ public sealed class ReplaceContentDefinitionStep : NamedRecipeStepHandler
                     fieldBuilder.MergeSettings(field.Settings);
                 });
             }
-        });
+        }).ConfigureAwait(false);
     }
 
     private sealed class ReplaceContentDefinitionStepModel

@@ -29,7 +29,7 @@ public static class DataLoaderExtensions
         var query = session.Query<ContentItem, ContentItemIndex>(y => y.ContentItemId.IsIn(contentItemIds));
         query = FilterVersion(query, status);
 
-        var contentItemsLoaded = await query.ListAsync();
+        var contentItemsLoaded = await query.ListAsync().ConfigureAwait(false);
         return contentItemsLoaded.ToLookup(k => k.ContentItemId, v => v);
     }
 

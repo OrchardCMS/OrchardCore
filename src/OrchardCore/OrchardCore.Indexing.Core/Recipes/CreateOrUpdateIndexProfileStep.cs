@@ -40,7 +40,7 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
 
             if (!string.IsNullOrEmpty(id))
             {
-                indexProfile = await _indexProfileManager.FindByIdAsync(id);
+                indexProfile = await _indexProfileManager.FindByIdAsync(id).ConfigureAwait(false);
             }
 
             if (indexProfile is null)
@@ -49,13 +49,13 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
 
                 if (!string.IsNullOrEmpty(name))
                 {
-                    indexProfile = await _indexProfileManager.FindByNameAsync(name);
+                    indexProfile = await _indexProfileManager.FindByNameAsync(name).ConfigureAwait(false);
                 }
             }
 
             if (indexProfile is not null)
             {
-                var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
+                var validationResult = await _indexProfileManager.ValidateAsync(indexProfile).ConfigureAwait(false);
 
                 if (!validationResult.Succeeded)
                 {
@@ -67,7 +67,7 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                await _indexProfileManager.UpdateAsync(indexProfile, token);
+                await _indexProfileManager.UpdateAsync(indexProfile, token).ConfigureAwait(false);
             }
             else
             {
@@ -96,9 +96,9 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
                     return;
                 }
 
-                indexProfile = await _indexProfileManager.NewAsync(providerName, type, token);
+                indexProfile = await _indexProfileManager.NewAsync(providerName, type, token).ConfigureAwait(false);
 
-                var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
+                var validationResult = await _indexProfileManager.ValidateAsync(indexProfile).ConfigureAwait(false);
 
                 if (!validationResult.Succeeded)
                 {
@@ -110,7 +110,7 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                await _indexProfileManager.CreateAsync(indexProfile);
+                await _indexProfileManager.CreateAsync(indexProfile).ConfigureAwait(false);
             }
         }
     }

@@ -42,9 +42,9 @@ public sealed class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminLis
         // Because admin filters can add a different index to the query this must be added as a Query<AuditTrailEvent>()
         var query = _session.Query<AuditTrailEvent>(collection: AuditTrailEvent.Collection);
 
-        query = await options.FilterResult.ExecuteAsync(new AuditTrailQueryContext(_serviceProvider, query));
+        query = await options.FilterResult.ExecuteAsync(new AuditTrailQueryContext(_serviceProvider, query)).ConfigureAwait(false);
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync().ConfigureAwait(false);
 
         if (pageSize > 0)
         {
@@ -56,7 +56,7 @@ public sealed class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminLis
             query = query.Take(pageSize);
         }
 
-        var events = await query.ListAsync();
+        var events = await query.ListAsync().ConfigureAwait(false);
 
         var result = new AuditTrailEventQueryResult
         {
@@ -88,7 +88,7 @@ public sealed class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminLis
             }
         }
 
-        var localNow = await _localClock.GetLocalNowAsync();
+        var localNow = await _localClock.GetLocalNowAsync().ConfigureAwait(false);
         var startOfWeek = CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek;
 
         options.AuditTrailDates =

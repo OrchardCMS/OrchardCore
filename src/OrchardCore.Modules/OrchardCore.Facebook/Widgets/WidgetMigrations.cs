@@ -24,9 +24,9 @@ public sealed class WidgetMigrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(FacebookPluginPart), builder => builder
             .Attachable()
-            .WithDescription("Provides a Facebook plugin part to create Facebook social plugin widgets."));
+            .WithDescription("Provides a Facebook plugin part to create Facebook social plugin widgets.")).ConfigureAwait(false);
 
-        await _recipeMigrator.ExecuteAsync($"Widgets/migration{RecipesConstants.RecipeExtension}", this);
+        await _recipeMigrator.ExecuteAsync($"Widgets/migration{RecipesConstants.RecipeExtension}", this).ConfigureAwait(false);
 
         return 1;
     }

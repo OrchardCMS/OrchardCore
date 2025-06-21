@@ -47,7 +47,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
     }
     public override async Task<IDisplayResult> EditAsync(ISite site, EmailSettings settings, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, EmailPermissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, EmailPermissions.ManageEmailSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -57,21 +57,21 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         return Initialize<EmailSettingsViewModel>("EmailSettings_Edit", async model =>
         {
             model.DefaultProvider = settings.DefaultProviderName ?? _emailOptions.DefaultProviderName;
-            model.Providers = await GetProviderOptionsAsync();
+            model.Providers = await GetProviderOptionsAsync().ConfigureAwait(false);
         }).Location("Content:1#Providers")
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, EmailSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, EmailPermissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, EmailPermissions.ManageEmailSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new EmailSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (settings.DefaultProviderName != model.DefaultProvider)
         {
@@ -80,7 +80,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
             _shellReleaseManager.RequestRelease();
         }
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 
     private async Task<SelectListItem[]> GetProviderOptionsAsync()
@@ -94,7 +94,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
                 continue;
             }
 
-            var provider = await _emailProviderResolver.GetAsync(entry.Key);
+            var provider = await _emailProviderResolver.GetAsync(entry.Key).ConfigureAwait(false);
 
             options.Add(new SelectListItem(provider.DisplayName, entry.Key));
         }

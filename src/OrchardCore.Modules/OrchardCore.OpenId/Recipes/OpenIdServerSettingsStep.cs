@@ -23,7 +23,7 @@ public sealed class OpenIdServerSettingsStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<OpenIdServerSettingsStepModel>();
-        var settings = await _serverService.LoadSettingsAsync();
+        var settings = await _serverService.LoadSettingsAsync().ConfigureAwait(false);
 
         settings.AccessTokenFormat = model.AccessTokenFormat;
         settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
@@ -64,6 +64,6 @@ public sealed class OpenIdServerSettingsStep : NamedRecipeStepHandler
         settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
         settings.RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests;
 
-        await _serverService.UpdateSettingsAsync(settings);
+        await _serverService.UpdateSettingsAsync(settings).ConfigureAwait(false);
     }
 }

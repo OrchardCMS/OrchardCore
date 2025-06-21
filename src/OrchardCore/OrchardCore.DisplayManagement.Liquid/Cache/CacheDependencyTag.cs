@@ -20,7 +20,7 @@ public class CacheDependencyTag
             return Completion.Normal;
         }
 
-        var dependency = (await argument.EvaluateAsync(context)).ToStringValue();
+        var dependency = (await argument.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
 
         cacheScopeManager.AddDependencies(dependency);
 

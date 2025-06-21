@@ -40,11 +40,11 @@ public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<Arc
     {
         var httpContext = _httpContextAccessor.HttpContext;
 
-        if (await _authorizationService.AuthorizeAsync(httpContext?.User, CommonPermissions.PublishContent, part.ContentItem))
+        if (await _authorizationService.AuthorizeAsync(httpContext?.User, CommonPermissions.PublishContent, part.ContentItem).ConfigureAwait(false))
         {
             var viewModel = new ArchiveLaterPartViewModel();
 
-            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
             if (viewModel.ScheduledArchiveLocalDateTime == null || httpContext.Request.Form["submit.Publish"] == "submit.CancelArchiveLater")
             {
@@ -52,7 +52,7 @@ public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<Arc
             }
             else
             {
-                part.ScheduledArchiveUtc = await _localClock.ConvertToUtcAsync(viewModel.ScheduledArchiveLocalDateTime.Value);
+                part.ScheduledArchiveUtc = await _localClock.ConvertToUtcAsync(viewModel.ScheduledArchiveLocalDateTime.Value).ConfigureAwait(false);
             }
         }
 
@@ -64,7 +64,7 @@ public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<Arc
         viewModel.ContentItem = part.ContentItem;
         viewModel.ScheduledArchiveUtc = part.ScheduledArchiveUtc;
         viewModel.ScheduledArchiveLocalDateTime = part.ScheduledArchiveUtc.HasValue
-            ? (await _localClock.ConvertToLocalAsync(part.ScheduledArchiveUtc.Value)).DateTime
+            ? (await _localClock.ConvertToLocalAsync(part.ScheduledArchiveUtc.Value).ConfigureAwait(false)).DateTime
             : null;
     }
 }

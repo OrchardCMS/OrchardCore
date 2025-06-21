@@ -74,8 +74,8 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
             m.BagPart = bagPart;
             m.Updater = context.Updater;
-            m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
-            m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
+            m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition).ConfigureAwait(false);
+            m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager).ConfigureAwait(false);
             m.TypePartDefinition = context.TypePartDefinition;
         });
     }
@@ -87,14 +87,14 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
         var model = new BagPartEditViewModel { BagPart = part };
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var contentItems = new List<ContentItem>();
 
         // Handle the content found in the request
         for (var i = 0; i < model.Prefixes.Length; i++)
         {
-            var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
+            var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]).ConfigureAwait(false);
 
             // assign the owner of the item to ensure we can validate access to it later.
             contentItem.Owner = GetCurrentOwner();
@@ -102,9 +102,9 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
             // Try to match the requested id with an existing id
             var existingContentItem = part.ContentItems.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
-            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
 
-            if (existingContentItem == null && !await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem))
+            if (existingContentItem == null && !await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem).ConfigureAwait(false))
             {
                 // at this point the user is somehow trying to add content with no privileges. ignore the request
                 continue;
@@ -115,7 +115,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
             // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
             if (existingContentItem != null)
             {
-                if (!await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, existingContentItem))
+                if (!await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, existingContentItem).ConfigureAwait(false))
                 {
                     // at this point the user is somehow modifying existing content with no privileges.
                     // honor the existing data and ignore the data in the request
@@ -129,7 +129,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
                 contentItem.Merge(existingContentItem);
             }
 
-            var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
+            var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]).ConfigureAwait(false);
 
             contentItems.Add(contentItem);
         }
@@ -144,9 +144,9 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
                 continue;
             }
 
-            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(existingContentItem.ContentType);
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(existingContentItem.ContentType).ConfigureAwait(false);
 
-            if (await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, existingContentItem))
+            if (await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, existingContentItem).ConfigureAwait(false))
             {
                 // at this point the user has permission to delete a securable item or the type isn't securable
                 // if the existing content id isn't in the requested ids, don't add the content item... meaning the user deleted it
@@ -180,20 +180,20 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
                 Deletable = true,
             };
 
-            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
 
             if (contentTypeDefinition == null)
             {
                 _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", contentItem.ContentItemId, contentItem.ContentType);
 
-                await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", contentItem.ContentItemId, contentItem.ContentType]);
+                await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", contentItem.ContentItemId, contentItem.ContentType]).ConfigureAwait(false);
 
                 continue;
             }
 
-            widget.Viewable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.ViewContent, contentItem);
-            widget.Editable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem);
-            widget.Deletable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, contentItem);
+            widget.Viewable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.ViewContent, contentItem).ConfigureAwait(false);
+            widget.Editable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem).ConfigureAwait(false);
+            widget.Deletable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, contentItem).ConfigureAwait(false);
             widget.ContentTypeDefinition = contentTypeDefinition;
 
             if (widget.Editable || widget.Viewable)
@@ -209,7 +209,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
     {
         if (contentTypeDefinition is not null && contentTypeDefinition.IsSecurable())
         {
-            return await AuthorizeAsync(permission, contentItem);
+            return await AuthorizeAsync(permission, contentItem).ConfigureAwait(false);
         }
 
         return true;
@@ -225,7 +225,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
         if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
         {
-            contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
                 .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
         }
         else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
@@ -234,7 +234,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
             foreach (var contentType in settings.ContainedContentTypes)
             {
-                var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+                var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType).ConfigureAwait(false);
 
                 if (definition == null)
                 {
@@ -253,7 +253,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
         foreach (var contentType in contentTypes)
         {
-            if (contentType.IsSecurable() && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, contentType, GetCurrentOwner()))
+            if (contentType.IsSecurable() && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, contentType, GetCurrentOwner()).ConfigureAwait(false))
             {
                 continue;
             }

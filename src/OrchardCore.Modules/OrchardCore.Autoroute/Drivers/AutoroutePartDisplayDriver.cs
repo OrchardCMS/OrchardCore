@@ -52,7 +52,7 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
             model.ContentItem = autoroutePart.ContentItem;
             model.SetHomepage = false;
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
             var homeRoute = siteSettings.HomeRoute;
 
             if (homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
@@ -84,7 +84,7 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
             t => t.UpdatePath,
             t => t.RouteContainedItems,
             t => t.Absolute,
-            t => t.Disabled);
+            t => t.Disabled).ConfigureAwait(false);
 
         var settings = context.TypePartDefinition.GetSettings<AutoroutePartSettings>();
 
@@ -108,9 +108,9 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
 
             var httpContext = _httpContextAccessor.HttpContext;
 
-            if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, AutoroutePermissions.SetHomepage))
+            if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, AutoroutePermissions.SetHomepage).ConfigureAwait(false))
             {
-                await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
+                await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage).ConfigureAwait(false);
             }
 
             context.Updater.ModelState.BindValidationResults(Prefix, model.ValidatePathFieldValue(S));
@@ -121,7 +121,7 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
                 var path = model.Path.Trim('/');
                 var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
 
-                var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
+                var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync().ConfigureAwait(false);
                 if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId && x.ContainedContentItemId != model.ContentItem.ContentItemId))
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Path), S["Your permalink is already in use."]);

@@ -31,14 +31,14 @@ public class RequiresPermissionValidationRule : IValidationRule
         return await Task.FromResult(new NodeVisitors(
             new MatchingNodeVisitor<GraphQLOperationDefinition>(async (operationDefinition, validationContext) =>
             {
-                await AuthorizeOperationAsync(operationDefinition, validationContext, userContext, operationDefinition.Operation, operationDefinition?.Name?.StringValue);
+                await AuthorizeOperationAsync(operationDefinition, validationContext, userContext, operationDefinition.Operation, operationDefinition?.Name?.StringValue).ConfigureAwait(false);
             }),
             new MatchingNodeVisitor<GraphQLObjectField>(async (objectFieldAst, validationContext) =>
             {
                 if (validationContext.TypeInfo.GetArgument()?.ResolvedType.GetNamedType() is IComplexGraphType argumentType)
                 {
                     var fieldType = argumentType.GetField(objectFieldAst.Name);
-                    await AuthorizeNodePermissionAsync(objectFieldAst, fieldType, validationContext, userContext);
+                    await AuthorizeNodePermissionAsync(objectFieldAst, fieldType, validationContext, userContext).ConfigureAwait(false);
                 }
             }),
             new MatchingNodeVisitor<GraphQLField>(async (fieldAst, validationContext) =>
@@ -51,16 +51,16 @@ public class RequiresPermissionValidationRule : IValidationRule
                 }
 
                 // check target field
-                await AuthorizeNodePermissionAsync(fieldAst, fieldDef, validationContext, userContext);
+                await AuthorizeNodePermissionAsync(fieldAst, fieldDef, validationContext, userContext).ConfigureAwait(false);
                 // check returned graph type
                 //   AuthorizeNodePermissionAsync(fieldAst, fieldDef.ResolvedType.GetNamedType(), validationContext, userContext).GetAwaiter().GetResult(); // TODO: need to think of something to avoid this
             })
-        ));
+        )).ConfigureAwait(false);
     }
 
     private async Task AuthorizeOperationAsync(ASTNode node, ValidationContext validationContext, GraphQLUserContext userContext, OperationType? operationType, string operationName)
     {
-        if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, GraphQLPermissions.ExecuteGraphQLMutations)))
+        if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, GraphQLPermissions.ExecuteGraphQLMutations).ConfigureAwait(false)))
         {
             validationContext.ReportError(new ValidationError(
                 validationContext.Document.Source,
@@ -90,7 +90,7 @@ public class RequiresPermissionValidationRule : IValidationRule
         {
             var permission = permissions.First();
             // small optimization for the single policy - no 'new List<>()', no 'await Task.WhenAll()'
-            if (!await _authorizationService.AuthorizeAsync(userContext.User, permission.Permission, permission.Resource))
+            if (!await _authorizationService.AuthorizeAsync(userContext.User, permission.Permission, permission.Resource).ConfigureAwait(false))
             {
                 AddPermissionValidationError(validationContext, node, fieldType.Name);
             }
@@ -104,7 +104,7 @@ public class RequiresPermissionValidationRule : IValidationRule
                 tasks.Add(_authorizationService.AuthorizeAsync(userContext.User, permission.Permission, permission.Resource));
             }
 
-            var authorizationResults = await Task.WhenAll(tasks);
+            var authorizationResults = await Task.WhenAll(tasks).ConfigureAwait(false);
 
             if (authorizationResults.Any(isAuthorized => !isAuthorized))
             {

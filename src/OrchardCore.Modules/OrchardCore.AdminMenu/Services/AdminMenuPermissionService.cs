@@ -13,6 +13,6 @@ public sealed class AdminMenuPermissionService : IAdminMenuPermissionService
     }
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => await _permissionService.GetPermissionsAsync();
+        => await _permissionService.GetPermissionsAsync().ConfigureAwait(false);
 }
 

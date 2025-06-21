@@ -13,10 +13,12 @@ public static class FileInfoExtensions
 
     public static async Task<string> ReadToEndAsync(this IFileInfo fileInfo)
     {
-        await using var stream = fileInfo.CreateReadStream();
-
-        using var streamReader = new StreamReader(stream);
+        var stream = fileInfo.CreateReadStream();
+        await using (stream.ConfigureAwait(false))
+        {
+            using var streamReader = new StreamReader(stream);
 
         return await streamReader.ReadToEndAsync();
+        }
     }
 }

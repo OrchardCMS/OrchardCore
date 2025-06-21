@@ -28,6 +28,6 @@ internal static class DocumentWriterExtensions
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         context.Response.ContentType = MediaTypeNames.Application.Json;
 
-        await graphQLSerializer.WriteAsync(context.Response.Body, errorResult);
+        await graphQLSerializer.WriteAsync(context.Response.Body, errorResult).ConfigureAwait(false);
     }
 }

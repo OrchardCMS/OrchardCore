@@ -42,7 +42,7 @@ public partial class TenantValidator : ITenantValidator
 
         if (model.FeatureProfiles is not null && model.FeatureProfiles.Length > 0)
         {
-            var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
+            var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync().ConfigureAwait(false);
 
             foreach (var featureProfile in model.FeatureProfiles)
             {
@@ -111,7 +111,7 @@ public partial class TenantValidator : ITenantValidator
             using var disposable = existingShellSettings is null ? shellSettings : null;
 
             var validationContext = new DbConnectionValidatorContext(shellSettings, model);
-            await ValidateConnectionAsync(validationContext, errors);
+            await ValidateConnectionAsync(validationContext, errors).ConfigureAwait(false);
         }
 
         return errors;
@@ -119,7 +119,7 @@ public partial class TenantValidator : ITenantValidator
 
     private async Task ValidateConnectionAsync(DbConnectionValidatorContext validationContext, List<ModelError> errors)
     {
-        switch (await _dbConnectionValidator.ValidateAsync(validationContext))
+        switch (await _dbConnectionValidator.ValidateAsync(validationContext).ConfigureAwait(false))
         {
             case DbConnectionValidatorResult.UnsupportedProvider:
                 errors.Add(new ModelError(nameof(

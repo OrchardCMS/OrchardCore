@@ -33,7 +33,7 @@ public class AzureAISearchIndexManager : IIndexManager
 
     public async Task<bool> CreateAsync(IndexProfile index)
     {
-        if (await ExistsAsync(index.IndexFullName))
+        if (await ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
             return true;
         }
@@ -42,15 +42,15 @@ public class AzureAISearchIndexManager : IIndexManager
         {
             var context = new IndexCreateContext(index);
 
-            await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger);
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger).ConfigureAwait(false);
 
             var searchIndex = GetSearchIndex(index);
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            await client.CreateIndexAsync(searchIndex);
+            await client.CreateIndexAsync(searchIndex).ConfigureAwait(false);
 
-            await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger);
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger).ConfigureAwait(false);
 
             return true;
         }
@@ -63,7 +63,7 @@ public class AzureAISearchIndexManager : IIndexManager
     }
 
     public async Task<bool> ExistsAsync(string indexFullName)
-        => await GetAsync(indexFullName) != null;
+        => await GetAsync(indexFullName).ConfigureAwait(false) != null;
 
     public async Task<SearchIndex> GetAsync(string indexFullName)
     {
@@ -71,7 +71,7 @@ public class AzureAISearchIndexManager : IIndexManager
         {
             var client = _clientFactory.CreateSearchIndexClient();
 
-            var response = await client.GetIndexAsync(indexFullName);
+            var response = await client.GetIndexAsync(indexFullName).ConfigureAwait(false);
 
             return response?.Value;
         }
@@ -94,7 +94,7 @@ public class AzureAISearchIndexManager : IIndexManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        if (!await ExistsAsync(index.IndexFullName))
+        if (!await ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
             return false;
         }
@@ -103,13 +103,13 @@ public class AzureAISearchIndexManager : IIndexManager
         {
             var context = new IndexRemoveContext(index.IndexFullName);
 
-            await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger).ConfigureAwait(false);
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            await client.DeleteIndexAsync(context.IndexFullName);
+            await client.DeleteIndexAsync(context.IndexFullName).ConfigureAwait(false);
 
-            await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger);
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger).ConfigureAwait(false);
 
             return true;
         }
@@ -127,20 +127,20 @@ public class AzureAISearchIndexManager : IIndexManager
         {
             var context = new IndexRebuildContext(index);
 
-            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger).ConfigureAwait(false);
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            if (await ExistsAsync(index.IndexName))
+            if (await ExistsAsync(index.IndexName).ConfigureAwait(false))
             {
-                await client.DeleteIndexAsync(index.IndexFullName);
+                await client.DeleteIndexAsync(index.IndexFullName).ConfigureAwait(false);
             }
 
             var searchIndex = GetSearchIndex(index);
 
-            await client.CreateIndexAsync(searchIndex);
+            await client.CreateIndexAsync(searchIndex).ConfigureAwait(false);
 
-            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger).ConfigureAwait(false);
 
             return true;
         }

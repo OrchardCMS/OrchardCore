@@ -53,7 +53,7 @@ public sealed class UserTaskEventContentDriver : ContentDisplayDriver
         var results = new List<IDisplayResult>
         {
             Initialize<UserTaskEventContentViewModel>("Content_UserTaskButton", async model => {
-                var actions = await GetUserTaskActionsAsync(contentItem.ContentItemId);
+                var actions = await GetUserTaskActionsAsync(contentItem.ContentItemId).ConfigureAwait(false);
                 model.Actions = actions;
             }).Location("Actions:30"),
         };
@@ -69,11 +69,11 @@ public sealed class UserTaskEventContentDriver : ContentDisplayDriver
         {
             action = action["user-task.".Length..];
 
-            var availableActions = await GetUserTaskActionsAsync(model.ContentItemId);
+            var availableActions = await GetUserTaskActionsAsync(model.ContentItemId).ConfigureAwait(false);
 
             if (!availableActions.Contains(action))
             {
-                await _notifier.ErrorAsync(H["Not authorized to trigger '{0}'.", action]);
+                await _notifier.ErrorAsync(H["Not authorized to trigger '{0}'.", action]).ConfigureAwait(false);
             }
             else
             {
@@ -92,16 +92,16 @@ public sealed class UserTaskEventContentDriver : ContentDisplayDriver
                     { ContentEventConstants.ContentEventInputKey, contentEvent },
                 };
 
-                await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, correlationId: model.ContentItemId);
+                await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, correlationId: model.ContentItemId).ConfigureAwait(false);
             }
         }
 
-        return await EditAsync(model, context);
+        return await EditAsync(model, context).ConfigureAwait(false);
     }
 
     private async Task<IList<string>> GetUserTaskActionsAsync(string contentItemId)
     {
-        var workflows = await _workflowStore.ListByActivityNameAsync(nameof(UserTaskEvent), contentItemId);
+        var workflows = await _workflowStore.ListByActivityNameAsync(nameof(UserTaskEvent), contentItemId).ConfigureAwait(false);
         var user = _httpContextAccessor.HttpContext.User;
         var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
         var actionsQuery =

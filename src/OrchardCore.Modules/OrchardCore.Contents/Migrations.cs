@@ -17,7 +17,7 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("CommonPart", builder => builder
             .Attachable()
-            .WithDescription("Provides an editor for the common properties of a content item."));
+            .WithDescription("Provides an editor for the common properties of a content item.")).ConfigureAwait(false);
 
         return 1;
     }

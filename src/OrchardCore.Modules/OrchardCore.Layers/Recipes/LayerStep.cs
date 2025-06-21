@@ -44,7 +44,7 @@ public sealed class LayerStep : NamedRecipeStepHandler
         // The recipe step contains polymorphic types which need to be resolved.
         var model = context.Step.ToObject<LayersStepModel>(_serializationOptions);
 
-        var allLayers = await _layerService.LoadLayersAsync();
+        var allLayers = await _layerService.LoadLayersAsync().ConfigureAwait(false);
 
         var unknownTypes = new List<string>();
         var factories = _factories.ToDictionary(x => x.Name);
@@ -116,7 +116,7 @@ public sealed class LayerStep : NamedRecipeStepHandler
             return;
         }
 
-        await _layerService.UpdateAsync(allLayers);
+        await _layerService.UpdateAsync(allLayers).ConfigureAwait(false);
     }
 }
 

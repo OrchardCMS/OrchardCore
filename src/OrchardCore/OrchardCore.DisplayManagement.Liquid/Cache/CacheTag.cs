@@ -32,7 +32,7 @@ public class CacheTag
 
             if (statements != null && statements.Count > 0)
             {
-                var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+                var completion = await statements.RenderStatementsAsync(writer, encoder, context).ConfigureAwait(false);
 
                 if (completion != Completion.Normal)
                 {
@@ -69,10 +69,10 @@ public class CacheTag
             cacheContext.WithExpirySliding(slidingDuration);
         }
 
-        var cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext);
+        var cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext).ConfigureAwait(false);
         if (cacheResult != null)
         {
-            await writer.WriteAsync(cacheResult);
+            await writer.WriteAsync(cacheResult).ConfigureAwait(false);
 
             return Completion.Normal;
         }
@@ -89,10 +89,10 @@ public class CacheTag
                 {
                     foreach (var statement in statements)
                     {
-                        await statement.WriteToAsync(render, encoder, context);
+                        await statement.WriteToAsync(render, encoder, context).ConfigureAwait(false);
                     }
 
-                    await render.FlushAsync();
+                    await render.FlushAsync().ConfigureAwait(false);
                 }
 
                 content = sb.Builder.ToString();
@@ -124,9 +124,9 @@ public class CacheTag
             content = debugContent.ToString();
         }
 
-        await dynamicCache.SetCachedValueAsync(cacheContext, content);
+        await dynamicCache.SetCachedValueAsync(cacheContext, content).ConfigureAwait(false);
 
-        await writer.WriteAsync(content);
+        await writer.WriteAsync(content).ConfigureAwait(false);
 
         return Completion.Normal;
     }

@@ -25,7 +25,7 @@ public sealed class HtmlFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
         var model = new HtmlSettingsViewModel();
         var settings = new HtmlFieldSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.SanitizeHtml = model.SanitizeHtml;
         settings.Hint = model.Hint;

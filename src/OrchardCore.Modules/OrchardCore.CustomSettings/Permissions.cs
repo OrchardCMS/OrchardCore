@@ -19,7 +19,7 @@ public sealed class Permissions : IPermissionProvider
     {
         var list = new List<Permission>();
 
-        foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
+        foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync().ConfigureAwait(false))
         {
             list.Add(CreatePermissionForType(type));
         }

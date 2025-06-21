@@ -28,7 +28,7 @@ public sealed class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<Goo
     public override async Task<IDisplayResult> EditAsync(ISite site, GoogleAnalyticsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics).ConfigureAwait(false))
         {
             return null;
         }
@@ -43,19 +43,19 @@ public sealed class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<Goo
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleAnalyticsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new GoogleAnalyticsSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (context.Updater.ModelState.IsValid)
         {
             settings.TrackingID = model.TrackingID;
         }
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

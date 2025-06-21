@@ -20,7 +20,7 @@ public class SitemapsRobotsProvider : IRobotsProvider
 
     public async Task<string> GetContentAsync()
     {
-        var site = await _siteService.GetSiteSettingsAsync();
+        var site = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(site.BaseUrl))
         {
@@ -38,7 +38,7 @@ public class SitemapsRobotsProvider : IRobotsProvider
 
         var baseUrl = site.BaseUrl.TrimEnd('/');
 
-        var sitemaps = await _sitemapManager.GetSitemapsAsync();
+        var sitemaps = await _sitemapManager.GetSitemapsAsync().ConfigureAwait(false);
 
         var content = new StringBuilder();
         var paths = new HashSet<string>();

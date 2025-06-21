@@ -53,8 +53,10 @@ internal sealed class IndexingMigrations : DataMigration
             sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Search.Elasticsearch.Core.Models.ElasticIndexSettingsDocument, OrchardCore.Search.Elasticsearch.Core' ");
             sqlBuilder.Take("1");
 
-            await using var connection = dbConnectionAccessor.CreateConnection();
-            await connection.OpenAsync();
+            var connection = dbConnectionAccessor.CreateConnection();
+            await using (connection.ConfigureAwait(false))
+            {
+                await connection.OpenAsync();
             var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString());
 
             if (string.IsNullOrEmpty(jsonContent))
@@ -208,6 +210,7 @@ internal sealed class IndexingMigrations : DataMigration
             if (saveSiteSettings)
             {
                 await siteService.UpdateSiteSettingsAsync(site);
+            }
             }
         });
 

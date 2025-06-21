@@ -109,7 +109,7 @@ public class TwitterOptionsConfiguration :
 
     private async Task<Tuple<TwitterSettings, TwitterSigninSettings>> GetSettingsAsync()
     {
-        var settings = await _twitterService.GetSettingsAsync();
+        var settings = await _twitterService.GetSettingsAsync().ConfigureAwait(false);
         if ((_twitterService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
         {
             if (_shellSettings.IsRunning())
@@ -120,7 +120,7 @@ public class TwitterOptionsConfiguration :
             return null;
         }
 
-        var signInSettings = await _twitterSigninService.GetSettingsAsync();
+        var signInSettings = await _twitterSigninService.GetSettingsAsync().ConfigureAwait(false);
         return new Tuple<TwitterSettings, TwitterSigninSettings>(settings, signInSettings);
     }
 }

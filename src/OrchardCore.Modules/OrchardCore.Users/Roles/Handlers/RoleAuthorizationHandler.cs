@@ -41,7 +41,7 @@ public sealed class RoleAuthorizationHandler : AuthorizationHandler<PermissionRe
         {
             var variantPermission = GetPermissionVariation(requirement.Permission, role.RoleName);
 
-            if (variantPermission != null && await _authorizationService.AuthorizeAsync(context.User, variantPermission))
+            if (variantPermission != null && await _authorizationService.AuthorizeAsync(context.User, variantPermission).ConfigureAwait(false))
             {
                 context.Succeed(requirement);
 
@@ -55,14 +55,14 @@ public sealed class RoleAuthorizationHandler : AuthorizationHandler<PermissionRe
 
             if (requirement.Permission.Name == UsersPermissions.EditUsers.Name
                 && user.UserId == currentUserId
-                && await _authorizationService.AuthorizeAsync(context.User, UsersPermissions.EditOwnUser))
+                && await _authorizationService.AuthorizeAsync(context.User, UsersPermissions.EditOwnUser).ConfigureAwait(false))
             {
                 context.Succeed(requirement);
 
                 return;
             }
 
-            if (await _authorizationService.AuthorizeAsync(context.User, requirement.Permission))
+            if (await _authorizationService.AuthorizeAsync(context.User, requirement.Permission).ConfigureAwait(false))
             {
                 context.Succeed(requirement);
 
@@ -74,7 +74,7 @@ public sealed class RoleAuthorizationHandler : AuthorizationHandler<PermissionRe
             if (!roleNames.Any())
             {
                 // When the user is in no roles, we check to see if the current user can manage any roles.
-                roleNames = (await _roleService.GetAssignableRolesAsync())
+                roleNames = (await _roleService.GetAssignableRolesAsync().ConfigureAwait(false))
                     .Select(x => x.RoleName);
             }
 
@@ -83,7 +83,7 @@ public sealed class RoleAuthorizationHandler : AuthorizationHandler<PermissionRe
             {
                 var variantPermission = GetPermissionVariation(requirement.Permission, roleName);
 
-                if (variantPermission != null && await _authorizationService.AuthorizeAsync(context.User, variantPermission))
+                if (variantPermission != null && await _authorizationService.AuthorizeAsync(context.User, variantPermission).ConfigureAwait(false))
                 {
                     context.Succeed(requirement);
 

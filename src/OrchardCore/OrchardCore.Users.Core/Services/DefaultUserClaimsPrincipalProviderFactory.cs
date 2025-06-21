@@ -27,9 +27,9 @@ public class DefaultUserClaimsPrincipalProviderFactory : UserClaimsPrincipalFact
 
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(IUser user)
     {
-        var claims = await base.GenerateClaimsAsync(user);
+        var claims = await base.GenerateClaimsAsync(user).ConfigureAwait(false);
 
-        await _claimsProviders.InvokeAsync((claimsProvider) => claimsProvider.GenerateAsync(user, claims), _logger);
+        await _claimsProviders.InvokeAsync((claimsProvider) => claimsProvider.GenerateAsync(user, claims), _logger).ConfigureAwait(false);
 
         return claims;
     }

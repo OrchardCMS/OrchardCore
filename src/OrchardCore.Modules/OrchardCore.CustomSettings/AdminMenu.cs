@@ -25,7 +25,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override async ValueTask BuildAsync(NavigationBuilder builder)
     {
-        foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
+        foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync().ConfigureAwait(false))
         {
             if (!_routeValues.TryGetValue(type.Name, out var routeValues))
             {

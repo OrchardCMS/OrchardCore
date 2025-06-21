@@ -32,7 +32,7 @@ public static class OrchardRazorHelperExtensions
             context["ContentItem"] = null;
         }
 
-        html = await shortcodeService.ProcessAsync(html, context);
+        html = await shortcodeService.ProcessAsync(html, context).ConfigureAwait(false);
 
         return new HtmlString(html);
     }

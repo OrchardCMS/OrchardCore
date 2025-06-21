@@ -22,10 +22,10 @@ public sealed class DefaultNotificationsAdminListQueryService : INotificationsAd
     {
         var query = _session.Query<Notification>(collection: NotificationConstants.NotificationCollection);
 
-        query = await options.FilterResult.ExecuteAsync(new NotificationQueryContext(_serviceProvider, query));
+        query = await options.FilterResult.ExecuteAsync(new NotificationQueryContext(_serviceProvider, query)).ConfigureAwait(false);
 
         // Query the count before applying pagination logic.
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync().ConfigureAwait(false);
 
         if (pageSize > 0)
         {
@@ -39,7 +39,7 @@ public sealed class DefaultNotificationsAdminListQueryService : INotificationsAd
 
         return new NotificationQueryResult()
         {
-            Notifications = await query.ListAsync(),
+            Notifications = await query.ListAsync().ConfigureAwait(false),
             TotalCount = totalCount,
         };
     }

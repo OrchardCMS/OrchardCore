@@ -46,7 +46,7 @@ public static class GetSdkEndpoints
         public static async Task<IResult> HandleRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache)
         {
             byte[] scriptBytes;
-            var settings = await siteService.GetSettingsAsync<FacebookSettings>();
+            var settings = await siteService.GetSettingsAsync<FacebookSettings>().ConfigureAwait(false);
             // Regenerate hash: Don't trust url hash because it could cause cache issues
             var expectedHash = HashCacheBustingValues(settings);
 
@@ -101,7 +101,7 @@ public static class GetSdkEndpoints
         public static async Task<IResult> HandleRequestAsync(string culture, HttpContext context, IMemoryCache cache, UrlEncoder urlEncoder, ISiteService siteService)
         {
             byte[] scriptBytes;
-            var settings = await siteService.GetSettingsAsync<FacebookSettings>();
+            var settings = await siteService.GetSettingsAsync<FacebookSettings>().ConfigureAwait(false);
             // Regenerate hash: Don't trust url hash because it could cause cache issues
             var expectedHash = HashCacheBustingValues(settings);
 

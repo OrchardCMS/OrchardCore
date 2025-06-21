@@ -15,7 +15,7 @@ internal sealed class TablePrefixGenerator
     internal async Task<string> GeneratePrefixAsync()
 #pragma warning restore CA1822 // Mark members as static
     {
-        await Task.Delay(1);
+        await Task.Delay(1).ConfigureAwait(false);
         var ticks = DateTime.Now.Ticks;
 
         var result = new StringBuilder();

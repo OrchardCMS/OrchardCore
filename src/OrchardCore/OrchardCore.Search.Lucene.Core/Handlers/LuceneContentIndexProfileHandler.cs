@@ -56,7 +56,7 @@ public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
 
         var metadata = index.As<ContentIndexMetadata>();
 
-        map.Fields = (await PopulateTypeMappingAsync(metadata)).ToArray();
+        map.Fields = (await PopulateTypeMappingAsync(metadata).ConfigureAwait(false)).ToArray();
 
         LuceneMetadata.IndexMappings = map;
 
@@ -79,7 +79,7 @@ public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
 
         var metadata = index.As<ContentIndexMetadata>();
 
-        map.Fields = (await PopulateTypeMappingAsync(metadata)).ToArray();
+        map.Fields = (await PopulateTypeMappingAsync(metadata).ConfigureAwait(false)).ToArray();
 
         LuceneMetadata.IndexMappings = map;
 
@@ -129,12 +129,12 @@ public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
 
         foreach (var contentType in metadata.IndexedContentTypes)
         {
-            var contentItem = await _contentManager.NewAsync(contentType);
+            var contentItem = await _contentManager.NewAsync(contentType).ConfigureAwait(false);
 
             var document = new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
             var buildIndexContext = new BuildDocumentIndexContext(document, contentItem, [contentType], new LuceneContentIndexSettings());
 
-            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
+            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger).ConfigureAwait(false);
 
             foreach (var entry in document.Entries)
             {

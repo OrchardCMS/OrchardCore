@@ -36,7 +36,7 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
         return Initialize<ListsAdminNodeViewModel>("ListsAdminNode_Fields_TreeEdit", async model =>
         {
             model.ContentType = treeNode.ContentType;
-            model.ContentTypes = await GetContentTypesSelectListAsync();
+            model.ContentTypes = await GetContentTypesSelectListAsync().ConfigureAwait(false);
             model.IconForContentItems = treeNode.IconForContentItems;
             model.AddContentTypeAsParent = treeNode.AddContentTypeAsParent;
             model.IconForParentLink = treeNode.IconForParentLink;
@@ -50,13 +50,13 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             m => m.ContentType, x => x.IconForContentItems,
             m => m.AddContentTypeAsParent,
-            m => m.IconForParentLink);
+            m => m.IconForParentLink).ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(model.ContentType))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.ContentType), S["Content type field is required."]);
         }
-        else if (!await IsValidContentTypeAsync(model.ContentType))
+        else if (!await IsValidContentTypeAsync(model.ContentType).ConfigureAwait(false))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.ContentType), S["Invalid Content type provided."]);
         }
@@ -71,7 +71,7 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
 
     private async Task<List<SelectListItem>> GetContentTypesSelectListAsync()
     {
-        return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+        return (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             .Where(ctd => ctd.Parts.Any(p => p.PartDefinition.Name.Equals(nameof(ListPart), StringComparison.OrdinalIgnoreCase)))
             .OrderBy(ctd => ctd.DisplayName)
             .Select(ctd => new SelectListItem(ctd.DisplayName, ctd.Name))
@@ -80,7 +80,7 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
 
     private async Task<bool> IsValidContentTypeAsync(string contentType)
     {
-        var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+        var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType).ConfigureAwait(false);
 
         if (definition is null)
         {

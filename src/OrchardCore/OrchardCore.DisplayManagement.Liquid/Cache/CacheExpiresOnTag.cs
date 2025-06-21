@@ -23,7 +23,7 @@ public class CacheExpiresOnTag
         }
 
         DateTimeOffset value;
-        var input = await argument.EvaluateAsync(context);
+        var input = await argument.EvaluateAsync(context).ConfigureAwait(false);
         if (input.Type == FluidValues.String)
         {
             var stringValue = input.ToStringValue();

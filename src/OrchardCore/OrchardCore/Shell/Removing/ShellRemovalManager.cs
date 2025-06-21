@@ -56,7 +56,7 @@ public class ShellRemovalManager : IShellRemovalManager
             ShellContext maximumContext = null;
             try
             {
-                maximumContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
+                maximumContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -71,8 +71,10 @@ public class ShellRemovalManager : IShellRemovalManager
                 return context;
             }
 
-            await using var shellContext = maximumContext;
-            (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
+            var shellContext = maximumContext;
+            await using (shellContext.ConfigureAwait(false))
+            {
+                (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
             if (!locked)
             {
                 _logger.LogError(
@@ -119,13 +121,14 @@ public class ShellRemovalManager : IShellRemovalManager
                     }
                 }
             });
+            }
         }
 
         if (_shellHost.TryGetSettings(ShellSettings.DefaultShellName, out var defaultSettings))
         {
             // Use the default shell context to execute the host level removing handlers.
-            var shellContext = await _shellHost.GetOrCreateShellContextAsync(defaultSettings);
-            (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
+            var shellContext = await _shellHost.GetOrCreateShellContextAsync(defaultSettings).ConfigureAwait(false);
+            (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync().ConfigureAwait(false);
             if (!locked)
             {
                 _logger.LogError(
@@ -144,10 +147,12 @@ public class ShellRemovalManager : IShellRemovalManager
                 return context;
             }
 
-            await using var acquiredLock = locker;
+            var acquiredLock = locker;
+            await using (acquiredLock.ConfigureAwait(false))
+            {
 
-            // Execute host level removing handlers in a reverse order.
-            foreach (var handler in _shellRemovingHandlers.Reverse())
+                // Execute host level removing handlers in a reverse order.
+                foreach (var handler in _shellRemovingHandlers.Reverse())
             {
                 try
                 {
@@ -172,6 +177,7 @@ public class ShellRemovalManager : IShellRemovalManager
 
                     break;
                 }
+            }
             }
         }
 

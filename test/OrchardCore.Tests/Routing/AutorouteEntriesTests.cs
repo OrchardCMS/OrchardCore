@@ -36,7 +36,7 @@ public class AutorouteEntriesTests
             var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
             // Test
-            (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path");
+            (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path").ConfigureAwait(false);
 
             Assert.True(result);
             Assert.Equal("contained", containedEntry.ContainedContentItemId);
@@ -70,7 +70,7 @@ public class AutorouteEntriesTests
             var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
             // Test
-            (var result, var containedEntry) = await entries.TryGetEntryByContentItemIdAsync("contained");
+            (var result, var containedEntry) = await entries.TryGetEntryByContentItemIdAsync("contained").ConfigureAwait(false);
 
             Assert.True(result);
             Assert.Equal("/contained-path", containedEntry.Path);
@@ -106,7 +106,7 @@ public class AutorouteEntriesTests
             var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
             // Test
-            (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path");
+            (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path").ConfigureAwait(false);
 
             Assert.False(result);
         });
@@ -148,7 +148,7 @@ public class AutorouteEntriesTests
             var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
             // Test
-            (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path2");
+            (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path2").ConfigureAwait(false);
 
             Assert.False(result);
         });
@@ -189,7 +189,7 @@ public class AutorouteEntriesTests
             var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
             // Test
-            (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path-old");
+            (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path-old").ConfigureAwait(false);
 
             Assert.False(result);
         });
@@ -218,7 +218,7 @@ public class AutorouteEntriesTests
             var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
             // Test
-            (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/container-path");
+            (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/container-path").ConfigureAwait(false);
 
             Assert.False(result);
         });

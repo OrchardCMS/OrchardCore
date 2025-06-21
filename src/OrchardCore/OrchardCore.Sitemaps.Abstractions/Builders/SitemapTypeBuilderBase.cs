@@ -12,7 +12,7 @@ public abstract class SitemapTypeBuilderBase<TSitemapType> : ISitemapTypeBuilder
         var tSitemap = sitemap as TSitemapType;
         if (tSitemap != null)
         {
-            await BuildSitemapTypeAsync(tSitemap, context);
+            await BuildSitemapTypeAsync(tSitemap, context).ConfigureAwait(false);
         }
     }
 

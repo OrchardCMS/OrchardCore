@@ -111,7 +111,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(searcher);
 
-        if (!await ExistsAsync(index.IndexFullName))
+        if (!await ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
             return;
         }
@@ -119,7 +119,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
         using (var reader = GetReader(index))
         {
             var indexSearcher = new IndexSearcher(reader.IndexReader);
-            await searcher(indexSearcher);
+            await searcher(indexSearcher).ConfigureAwait(false);
         }
 
         _timestamps.AddOrUpdate(index.Id, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);

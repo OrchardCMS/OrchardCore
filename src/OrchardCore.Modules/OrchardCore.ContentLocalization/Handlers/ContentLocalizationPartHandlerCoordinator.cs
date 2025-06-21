@@ -28,7 +28,7 @@ internal sealed class ContentLocalizationPartHandlerCoordinator : ContentLocaliz
 
     public override async Task LocalizingAsync(LocalizationContentContext context)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
         if (contentTypeDefinition == null)
         {
             return;
@@ -42,14 +42,14 @@ internal sealed class ContentLocalizationPartHandlerCoordinator : ContentLocaliz
 
             if (part != null)
             {
-                await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizingAsync(context, part), context, part, _logger);
+                await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizingAsync(context, part), context, part, _logger).ConfigureAwait(false);
             }
         }
     }
 
     public override async Task LocalizedAsync(LocalizationContentContext context)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
         if (contentTypeDefinition == null)
         {
             return;
@@ -63,7 +63,7 @@ internal sealed class ContentLocalizationPartHandlerCoordinator : ContentLocaliz
 
             if (part != null)
             {
-                await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizedAsync(context, part), context, part, _logger);
+                await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizedAsync(context, part), context, part, _logger).ConfigureAwait(false);
             }
         }
     }

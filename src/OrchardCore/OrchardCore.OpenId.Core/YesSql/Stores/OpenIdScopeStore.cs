@@ -28,7 +28,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TScope>(collection: OpenIdCollection).CountAsync();
+        return await _session.Query<TScope>(collection: OpenIdCollection).CountAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -42,8 +42,8 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _session.SaveAsync(scope, collection: OpenIdCollection);
-        await _session.FlushAsync();
+        await _session.SaveAsync(scope, collection: OpenIdCollection).ConfigureAwait(false);
+        await _session.FlushAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -54,7 +54,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(scope, collection: OpenIdCollection);
-        await _session.FlushAsync();
+        await _session.FlushAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -64,7 +64,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TScope, OpenIdScopeIndex>(index => index.ScopeId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
+        return await _session.Query<TScope, OpenIdScopeIndex>(index => index.ScopeId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -74,7 +74,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TScope, OpenIdScopeIndex>(index => index.Name == name, collection: OpenIdCollection).FirstOrDefaultAsync();
+        return await _session.Query<TScope, OpenIdScopeIndex>(index => index.Name == name, collection: OpenIdCollection).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -98,7 +98,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.GetAsync<TScope>(long.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
+        return await _session.GetAsync<TScope>(long.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -322,11 +322,11 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _session.SaveAsync(scope, checkConcurrency: true, collection: OpenIdCollection);
+        await _session.SaveAsync(scope, checkConcurrency: true, collection: OpenIdCollection).ConfigureAwait(false);
 
         try
         {
-            await _session.FlushAsync();
+            await _session.FlushAsync().ConfigureAwait(false);
         }
         catch (ConcurrencyException exception)
         {

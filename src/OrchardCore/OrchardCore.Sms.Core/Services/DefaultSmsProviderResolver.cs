@@ -28,7 +28,7 @@ public class DefaultSmsProviderResolver : ISmsProviderResolver
     {
         if (string.IsNullOrEmpty(name))
         {
-            var settings = await _siteService.GetSettingsAsync<SmsSettings>();
+            var settings = await _siteService.GetSettingsAsync<SmsSettings>().ConfigureAwait(false);
 
             name = settings.DefaultProviderName;
         }

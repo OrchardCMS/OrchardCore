@@ -31,10 +31,10 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
     {
         return _typeDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
         {
-            var result = await contentDisplay.BuildEditorAsync(model, context);
+            var result = await contentDisplay.BuildEditorAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
         }, model, context, _logger);
     }
@@ -43,10 +43,10 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
     {
         return _typeDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
         {
-            var result = await contentDisplay.UpdateEditorAsync(model, context);
+            var result = await contentDisplay.UpdateEditorAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
         }, model, context, _logger);
     }
@@ -55,10 +55,10 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
     {
         return _typePartDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
         {
-            var result = await contentDisplay.BuildEditorAsync(model, context);
+            var result = await contentDisplay.BuildEditorAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
         }, model, context, _logger);
     }
@@ -67,10 +67,10 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
     {
         return _typePartDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
         {
-            var result = await contentDisplay.UpdateEditorAsync(model, context);
+            var result = await contentDisplay.UpdateEditorAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
         }, model, context, _logger);
     }
@@ -79,10 +79,10 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
     {
         return _partDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
         {
-            var result = await contentDisplay.BuildEditorAsync(model, context);
+            var result = await contentDisplay.BuildEditorAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
         }, model, context, _logger);
     }
@@ -91,10 +91,10 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
     {
         return _partDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
         {
-            var result = await contentDisplay.UpdateEditorAsync(model, context);
+            var result = await contentDisplay.UpdateEditorAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
         }, model, context, _logger);
     }
@@ -103,23 +103,23 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
     {
         await _partFieldDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
         {
-            var result = await contentDisplay.BuildEditorAsync(model, context);
+            var result = await contentDisplay.BuildEditorAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
-        }, model, context, _logger);
+        }, model, context, _logger).ConfigureAwait(false);
     }
 
     public async Task UpdatePartFieldEditorAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
     {
         await _partFieldDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
         {
-            var result = await contentDisplay.UpdateEditorAsync(model, context);
+            var result = await contentDisplay.UpdateEditorAsync(model, context).ConfigureAwait(false);
             if (result != null)
             {
-                await result.ApplyAsync(context);
+                await result.ApplyAsync(context).ConfigureAwait(false);
             }
-        }, model, context, _logger);
+        }, model, context, _logger).ConfigureAwait(false);
     }
 }

@@ -16,7 +16,7 @@ public sealed class ForgotPasswordLoginFormDisplayDriver : DisplayDriver<LoginFo
 
     public override async Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
     {
-        var settings = await _siteService.GetSettingsAsync<ResetPasswordSettings>();
+        var settings = await _siteService.GetSettingsAsync<ResetPasswordSettings>().ConfigureAwait(false);
 
         if (!settings.AllowResetPassword)
         {

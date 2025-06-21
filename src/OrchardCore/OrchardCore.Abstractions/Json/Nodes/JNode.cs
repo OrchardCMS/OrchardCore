@@ -20,7 +20,7 @@ public static class JNode
         JsonNodeOptions? nodeOptions = null,
         JsonDocumentOptions documentOptions = default,
         CancellationToken cancellationToken = default)
-        => (await JsonNode.ParseAsync(utf8Json, nodeOptions ?? JOptions.Node, documentOptions, cancellationToken));
+        => (await JsonNode.ParseAsync(utf8Json, nodeOptions ?? JOptions.Node, documentOptions, cancellationToken).ConfigureAwait(false));
 
     /// <summary>
     /// Loads a JSON node (including objects or arrays) from the provided reader.

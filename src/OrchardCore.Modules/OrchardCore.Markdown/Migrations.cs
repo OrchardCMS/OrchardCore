@@ -19,7 +19,7 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("MarkdownBodyPart", builder => builder
             .Attachable()
-            .WithDescription("Provides a Markdown formatted body for your content item."));
+            .WithDescription("Provides a Markdown formatted body for your content item.")).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 4;
@@ -29,7 +29,7 @@ public sealed class Migrations : DataMigration
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom1Async()
     {
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<MarkdownField, MarkdownFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<MarkdownField, MarkdownFieldSettings>().ConfigureAwait(false);
 
         return 2;
     }
@@ -38,14 +38,14 @@ public sealed class Migrations : DataMigration
     public async Task<int> UpdateFrom2Async()
     {
         // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
-        foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
+        foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync().ConfigureAwait(false))
         {
             if (contentType.Parts.Any(x => x.PartDefinition.Name == "MarkdownBodyPart"))
             {
                 await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("MarkdownBodyPart", part =>
                 {
                     part.MergeSettings<MarkdownBodyPartSettings>(x => x.SanitizeHtml = false);
-                }));
+                })).ConfigureAwait(false);
             }
         }
 
@@ -56,7 +56,7 @@ public sealed class Migrations : DataMigration
     public async Task<int> UpdateFrom3Async()
     {
         // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
-        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
+        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync().ConfigureAwait(false);
         foreach (var partDefinition in partDefinitions)
         {
             if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "MarkdownField"))
@@ -70,7 +70,7 @@ public sealed class Migrations : DataMigration
                             fieldBuilder.MergeSettings<MarkdownFieldSettings>(s => s.SanitizeHtml = false);
                         });
                     }
-                });
+                }).ConfigureAwait(false);
             }
         }
 

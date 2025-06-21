@@ -9,11 +9,11 @@ public class ShapeRemoveItemTag
 {
     public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
     {
-        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+        var objectValue = (await arguments.Item1.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue();
 
         if (objectValue is Shape shape && shape.Items != null)
         {
-            var shapeName = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
+            var shapeName = (await arguments.Item2.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
             shape.Remove(shapeName);
         }
 

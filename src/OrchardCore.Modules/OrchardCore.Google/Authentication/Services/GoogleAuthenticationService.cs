@@ -21,13 +21,13 @@ public class GoogleAuthenticationService : IGoogleAuthenticationService
 
     public async Task<GoogleAuthenticationSettings> GetSettingsAsync()
     {
-        var container = await _siteService.GetSiteSettingsAsync();
+        var container = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
         return container.As<GoogleAuthenticationSettings>();
     }
 
     public async Task<GoogleAuthenticationSettings> LoadSettingsAsync()
     {
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         return container.As<GoogleAuthenticationSettings>();
     }
 
@@ -35,7 +35,7 @@ public class GoogleAuthenticationService : IGoogleAuthenticationService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         container.Alter<GoogleAuthenticationSettings>(aspect =>
         {
             aspect.ClientID = settings.ClientID;
@@ -43,7 +43,7 @@ public class GoogleAuthenticationService : IGoogleAuthenticationService
             aspect.CallbackPath = settings.CallbackPath;
         });
 
-        await _siteService.UpdateSiteSettingsAsync(container);
+        await _siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
     }
 
     public IEnumerable<ValidationResult> ValidateSettings(GoogleAuthenticationSettings settings)

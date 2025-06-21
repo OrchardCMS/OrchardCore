@@ -15,11 +15,11 @@ public class BlockingMiddleware
     {
         if (httpContext.Request.Path.Value == "/middleware")
         {
-            await httpContext.Response.WriteAsync("middleware");
+            await httpContext.Response.WriteAsync("middleware").ConfigureAwait(false);
         }
         else
         {
-            await _next.Invoke(httpContext);
+            await _next.Invoke(httpContext).ConfigureAwait(false);
         }
     }
 }

@@ -43,7 +43,7 @@ public sealed class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<T
         return Initialize<EditTagTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
         {
             var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
-            model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+            model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest).ConfigureAwait(false);
 
             if (model.Taxonomy != null)
             {
@@ -80,7 +80,7 @@ public sealed class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<T
     {
         var model = new EditTagTaxonomyFieldViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, f => f.TermContentItemIds);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, f => f.TermContentItemIds).ConfigureAwait(false);
 
         var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
@@ -97,7 +97,7 @@ public sealed class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<T
         }
 
         // Update display text for tags.
-        var taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+        var taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest).ConfigureAwait(false);
 
         if (taxonomy == null)
         {

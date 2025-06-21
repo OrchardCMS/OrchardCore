@@ -55,7 +55,7 @@ internal sealed class ContentIndexProfileDisplayDriver : DisplayDriver<IndexProf
 
         var model = new ContentIndexMetadataViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (model.IndexedContentTypes is null || model.IndexedContentTypes.Length == 0)
         {

@@ -54,21 +54,21 @@ public sealed class ElasticsearchQuerySource : IQuerySource
             Items = [],
         };
 
-        var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata?.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+        var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata?.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions)))).ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(metadata.Index))
         {
             return elasticQueryResults;
         }
 
-        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync(metadata.Index, ElasticsearchConstants.ProviderName);
+        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync(metadata.Index, ElasticsearchConstants.ProviderName).ConfigureAwait(false);
 
         if (index is null)
         {
             return elasticQueryResults;
         }
 
-        var docs = await _queryService.SearchAsync(index, tokenizedContent);
+        var docs = await _queryService.SearchAsync(index, tokenizedContent).ConfigureAwait(false);
         elasticQueryResults.Count = docs.Count;
 
         if (elasticQueryResults.Count == 0 || docs.TopDocs == null || docs.TopDocs.Count == 0)
@@ -95,7 +95,7 @@ public sealed class ElasticsearchQuerySource : IQuerySource
                     indexedContentItemVersionIds.Add(versionId.GetValue<string>());
                 }
 
-                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
+                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync().ConfigureAwait(false);
 
                 // Reorder the result to preserve the one from the Elasticsearch query.
                 if (dbContentItems.Any())

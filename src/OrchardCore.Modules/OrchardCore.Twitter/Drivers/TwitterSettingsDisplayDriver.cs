@@ -42,7 +42,7 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin).ConfigureAwait(false))
         {
             return null;
         }
@@ -94,13 +94,13 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitter))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitter).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new TwitterSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.ConsumerKey = model.APIKey;
         settings.AccessToken = model.AccessToken;
@@ -115,6 +115,6 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

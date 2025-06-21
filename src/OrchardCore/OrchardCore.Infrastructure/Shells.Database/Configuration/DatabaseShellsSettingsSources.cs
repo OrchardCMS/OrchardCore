@@ -38,7 +38,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
 
     public async Task AddSourcesAsync(IConfigurationBuilder builder)
     {
-        var document = await GetDocumentAsync();
+        var document = await GetDocumentAsync().ConfigureAwait(false);
         if (document.ShellsSettings is not null)
         {
             var shellsSettingsString = document.ShellsSettings.ToJsonString(JOptions.Default);
@@ -48,7 +48,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
 
     public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
     {
-        var document = await GetDocumentAsync();
+        var document = await GetDocumentAsync().ConfigureAwait(false);
         if (document.ShellsSettings is not null && document.ShellsSettings.ContainsKey(tenant))
         {
             var shellSettings = new JsonObject { [tenant] = document.ShellsSettings[tenant] };
@@ -59,8 +59,10 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
 
     public async Task SaveAsync(string tenant, IDictionary<string, string> data)
     {
-        await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-        await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        var context = await _shellContextFactory.GetDatabaseContextAsync(_options).ConfigureAwait(false);
+        await using (context.ConfigureAwait(false))
+        {
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -96,12 +98,15 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
 
             await session.SaveAsync(document, checkConcurrency: true);
         });
+        }
     }
 
     public async Task RemoveAsync(string tenant)
     {
-        await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-        await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        var context = await _shellContextFactory.GetDatabaseContextAsync(_options).ConfigureAwait(false);
+        await using (context.ConfigureAwait(false))
+        {
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -112,14 +117,17 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
                 await session.SaveAsync(document, checkConcurrency: true);
             }
         });
+        }
     }
 
     private async Task<DatabaseShellsSettings> GetDocumentAsync()
     {
         DatabaseShellsSettings document = null;
 
-        await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-        await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        var context = await _shellContextFactory.GetDatabaseContextAsync(_options).ConfigureAwait(false);
+        await using (context.ConfigureAwait(false))
+        {
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -137,6 +145,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
         });
 
         return document;
+        }
     }
 
     private async Task<bool> TryMigrateFromFileAsync(DatabaseShellsSettings document)
@@ -147,7 +156,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
         }
 
         using var fileStream = File.OpenRead(_tenants);
-        document.ShellsSettings = await JObject.LoadAsync(fileStream);
+        document.ShellsSettings = await JObject.LoadAsync(fileStream).ConfigureAwait(false);
 
         return true;
     }

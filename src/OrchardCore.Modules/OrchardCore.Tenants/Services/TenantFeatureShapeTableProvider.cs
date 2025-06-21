@@ -16,7 +16,7 @@ public class TenantFeatureShapeTableProvider : ShapeTableProvider
                {
                    if (displaying.Shape.TryGetProperty("ShellSettingsEntry", out ShellSettingsEntry entry))
                    {
-                       await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ManageFeaturesActionButton", entry), "10");
+                       await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ManageFeaturesActionButton", entry), "10").ConfigureAwait(false);
                    }
                });
 

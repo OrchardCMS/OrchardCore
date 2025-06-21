@@ -8,7 +8,7 @@ public abstract class ContentLocalizationPartHandlerBase<TPart> : IContentLocali
     {
         if (part is TPart tpart)
         {
-            await LocalizingAsync(context, tpart);
+            await LocalizingAsync(context, tpart).ConfigureAwait(false);
         }
     }
 
@@ -16,7 +16,7 @@ public abstract class ContentLocalizationPartHandlerBase<TPart> : IContentLocali
     {
         if (part is TPart tpart)
         {
-            await LocalizedAsync(context, tpart);
+            await LocalizedAsync(context, tpart).ConfigureAwait(false);
         }
     }
     public virtual Task LocalizingAsync(LocalizationContentContext context, TPart part) => Task.CompletedTask;

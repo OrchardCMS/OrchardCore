@@ -52,6 +52,6 @@ public sealed class ContentItemQuery : ISchemaBuilder
         var contentItemId = context.GetArgument<string>("contentItemId");
         var contentManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentManager>();
 
-        return await contentManager.GetAsync(contentItemId);
+        return await contentManager.GetAsync(contentItemId).ConfigureAwait(false);
     }
 }

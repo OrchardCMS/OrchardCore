@@ -22,12 +22,12 @@ public sealed class CustomSettingsDeploymentSource
         };
 
         var settingsTypes = step.IncludeAll
-            ? (await _customSettingsService.GetAllSettingsTypesAsync()).ToArray()
-            : (await _customSettingsService.GetSettingsTypesAsync(step.SettingsTypeNames)).ToArray();
+            ? (await _customSettingsService.GetAllSettingsTypesAsync().ConfigureAwait(false)).ToArray()
+            : (await _customSettingsService.GetSettingsTypesAsync(step.SettingsTypeNames).ConfigureAwait(false)).ToArray();
 
         foreach (var settingsType in settingsTypes)
         {
-            if (!await _customSettingsService.CanUserCreateSettingsAsync(settingsType))
+            if (!await _customSettingsService.CanUserCreateSettingsAsync(settingsType).ConfigureAwait(false))
             {
                 return;
             }
@@ -35,7 +35,7 @@ public sealed class CustomSettingsDeploymentSource
 
         foreach (var settingsType in settingsTypes)
         {
-            var settings = await _customSettingsService.GetSettingsAsync(settingsType);
+            var settings = await _customSettingsService.GetSettingsAsync(settingsType).ConfigureAwait(false);
             settingsList.Add(new(settings.ContentType, JObject.FromObject(settings)));
         }
 

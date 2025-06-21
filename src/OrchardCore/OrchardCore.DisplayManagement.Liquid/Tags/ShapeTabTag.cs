@@ -8,11 +8,11 @@ public class ShapeTabTag
 {
     public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
     {
-        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+        var objectValue = (await arguments.Item1.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue();
 
         if (objectValue is IShape shape)
         {
-            var shapeTab = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
+            var shapeTab = (await arguments.Item2.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
             shape.Metadata.Tab = shapeTab;
         }
 

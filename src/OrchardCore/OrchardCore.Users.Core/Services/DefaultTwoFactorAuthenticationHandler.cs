@@ -14,5 +14,5 @@ public class DefaultTwoFactorAuthenticationHandler : ITwoFactorAuthenticationHan
     }
 
     public async Task<bool> IsRequiredAsync(IUser user)
-        => (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>()).RequireTwoFactorAuthentication;
+        => (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>().ConfigureAwait(false)).RequireTwoFactorAuthentication;
 }

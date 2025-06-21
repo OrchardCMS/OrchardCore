@@ -33,7 +33,7 @@ public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers).ConfigureAwait(false))
         {
             return null;
         }
@@ -49,17 +49,17 @@ public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new LayerSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

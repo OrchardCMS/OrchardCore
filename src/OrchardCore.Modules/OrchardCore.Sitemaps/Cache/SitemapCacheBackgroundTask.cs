@@ -15,7 +15,7 @@ public sealed class SitemapCacheBackgroundTask : IBackgroundTask
         var sitemapManager = serviceProvider.GetRequiredService<ISitemapManager>();
         var sitemapCacheProvider = serviceProvider.GetRequiredService<ISitemapCacheProvider>();
 
-        var sitemaps = await sitemapManager.GetSitemapsAsync();
-        await sitemapCacheProvider.CleanSitemapCacheAsync(sitemaps.Select(s => s.CacheFileName));
+        var sitemaps = await sitemapManager.GetSitemapsAsync().ConfigureAwait(false);
+        await sitemapCacheProvider.CleanSitemapCacheAsync(sitemaps.Select(s => s.CacheFileName)).ConfigureAwait(false);
     }
 }

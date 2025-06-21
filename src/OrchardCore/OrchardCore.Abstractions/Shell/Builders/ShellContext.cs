@@ -91,7 +91,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
         if (_released)
         {
             // But let this scope manage the shell state as usual.
-            await scope.TerminateShellAsync();
+            await scope.TerminateShellAsync().ConfigureAwait(false);
             return null;
         }
 
@@ -129,7 +129,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
         if (this is PlaceHolder)
         {
             // But still try to dispose the settings.
-            await DisposeAsync();
+            await DisposeAsync().ConfigureAwait(false);
             return;
         }
 
@@ -150,7 +150,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
         // this is the last shell scope (when the shell reference count reaches zero) that disposes its parent shell context.
 
         ShellScope scope = null;
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             if (_released)
@@ -164,7 +164,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
                 {
                     if (dependent.TryGetTarget(out var shellContext))
                     {
-                        await shellContext.ReleaseFromDependencyAsync();
+                        await shellContext.ReleaseFromDependencyAsync().ConfigureAwait(false);
                     }
                 }
             }
@@ -191,11 +191,11 @@ public class ShellContext : IDisposable, IAsyncDisposable
         if (scope is not null)
         {
             // Use this scope to manage the shell state as usual.
-            await scope.TerminateShellAsync();
+            await scope.TerminateShellAsync().ConfigureAwait(false);
             return;
         }
 
-        await DisposeAsync();
+        await DisposeAsync().ConfigureAwait(false);
     }
 
     internal enum ReleaseMode
@@ -220,11 +220,11 @@ public class ShellContext : IDisposable, IAsyncDisposable
         if (_released)
         {
             // The dependent is released immediately.
-            await shellContext.ReleaseInternalAsync();
+            await shellContext.ReleaseInternalAsync().ConfigureAwait(false);
             return;
         }
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             _dependents ??= [];
@@ -299,7 +299,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
         // A disabled shell still in use is released by its last scope.
         if (Settings.IsDisabled())
         {
-            await ReleaseFromLastScopeAsync();
+            await ReleaseFromLastScopeAsync().ConfigureAwait(false);
         }
 
         if (!_released)
@@ -330,7 +330,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await CloseAsync();
+        await CloseAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
 
@@ -362,7 +362,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
 
         if (ServiceProvider is IAsyncDisposable asyncDisposable)
         {
-            await asyncDisposable.DisposeAsync();
+            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
         }
         else if (ServiceProvider is IDisposable disposable)
         {

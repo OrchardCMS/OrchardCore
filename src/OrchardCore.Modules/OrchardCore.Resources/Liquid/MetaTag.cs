@@ -27,13 +27,13 @@ public class MetaTag
         {
             switch (argument.Name)
             {
-                case "name": name = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "property": property = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "content": content = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "http_equiv": httpEquiv = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "charset": charset = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "separator": separator = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "name": name = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "property": property = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "content": content = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "http_equiv": httpEquiv = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "charset": charset = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "separator": separator = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
             }
         }
 

@@ -17,7 +17,7 @@ public sealed class OpenIdValidationDeploymentSource
 
     protected override async Task ProcessAsync(OpenIdValidationDeploymentStep step, DeploymentPlanResult result)
     {
-        var validationSettings = await _openIdValidationService.GetSettingsAsync();
+        var validationSettings = await _openIdValidationService.GetSettingsAsync().ConfigureAwait(false);
 
         result.Steps.Add(new JsonObject
         {

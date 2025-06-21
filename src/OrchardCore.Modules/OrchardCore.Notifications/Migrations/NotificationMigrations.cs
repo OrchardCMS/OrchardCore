@@ -16,7 +16,7 @@ public sealed class NotificationMigrations : DataMigration
             .Column<DateTime>("CreatedAtUtc")
             .Column<string>("Content", column => column.WithLength(NotificationConstants.NotificationIndexContentLength)),
             collection: NotificationConstants.NotificationCollection
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<NotificationIndex>(table => table
             .CreateIndex("IDX_NotificationIndex_DocumentId",
@@ -27,7 +27,7 @@ public sealed class NotificationMigrations : DataMigration
                 "CreatedAtUtc",
                 "Content"),
             collection: NotificationConstants.NotificationCollection
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<NotificationIndex>(table => table
             .CreateIndex("IDX_NotificationIndex_UserId",
@@ -36,7 +36,7 @@ public sealed class NotificationMigrations : DataMigration
                 "IsRead",
                 "CreatedAtUtc"),
             collection: NotificationConstants.NotificationCollection
-        );
+        ).ConfigureAwait(false);
 
         return 2;
     }
@@ -50,7 +50,7 @@ public sealed class NotificationMigrations : DataMigration
                 "IsRead",
                 "CreatedAtUtc"),
             collection: NotificationConstants.NotificationCollection
-        );
+        ).ConfigureAwait(false);
 
         return 2;
     }

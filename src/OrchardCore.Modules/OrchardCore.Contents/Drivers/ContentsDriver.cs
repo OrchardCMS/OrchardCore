@@ -37,7 +37,7 @@ public sealed class ContentsDriver : ContentDisplayDriver
             Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Meta:20"),
         };
 
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
 
         if (contentTypeDefinition != null)
         {
@@ -73,10 +73,10 @@ public sealed class ContentsDriver : ContentDisplayDriver
             results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10")
                 .RenderWhen(async () =>
                 {
-                    var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem);
-                    var hasDeletePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem);
-                    var hasPreviewPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PreviewContent, contentItem);
-                    var hasClonePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.CloneContent, contentItem);
+                    var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem).ConfigureAwait(false);
+                    var hasDeletePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem).ConfigureAwait(false);
+                    var hasPreviewPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PreviewContent, contentItem).ConfigureAwait(false);
+                    var hasClonePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.CloneContent, contentItem).ConfigureAwait(false);
 
                     return hasPublishPermission || hasDeletePermission || hasPreviewPermission || hasClonePermission;
                 })
@@ -88,7 +88,7 @@ public sealed class ContentsDriver : ContentDisplayDriver
 
     public override async Task<IDisplayResult> EditAsync(ContentItem contentItem, BuildEditorContext context)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
 
         if (contentTypeDefinition == null)
         {
@@ -104,7 +104,7 @@ public sealed class ContentsDriver : ContentDisplayDriver
                 .RenderWhen(async () =>
                 {
                     return contentTypeDefinition.IsDraftable()
-                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem);
+                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem).ConfigureAwait(false);
                 })
             );
     }

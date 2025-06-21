@@ -16,7 +16,7 @@ public class SelectContentTypesViewComponent : ViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedContentTypes, string htmlName, string stereotype)
     {
-        var contentTypes = await ContentTypeSelection.BuildAsync(_contentDefinitionManager, selectedContentTypes ?? []);
+        var contentTypes = await ContentTypeSelection.BuildAsync(_contentDefinitionManager, selectedContentTypes ?? []).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(stereotype))
         {

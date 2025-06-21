@@ -70,20 +70,20 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var users = await GetUsersAsync(workflowContext, activityContext);
+        var users = await GetUsersAsync(workflowContext, activityContext).ConfigureAwait(false);
 
         if (users == null || !users.Any())
         {
             return Outcomes("Failed: no user found");
         }
 
-        var message = await GetMessageAsync(workflowContext);
+        var message = await GetMessageAsync(workflowContext).ConfigureAwait(false);
 
         var totalSent = 0;
 
         foreach (var user in users)
         {
-            totalSent += await _notificationService.SendAsync(user, message);
+            totalSent += await _notificationService.SendAsync(user, message).ConfigureAwait(false);
         }
 
         workflowContext.LastResult = totalSent;
@@ -100,10 +100,10 @@ public abstract class NotifyUserTaskActivity : TaskActivity
     {
         return new NotificationMessage()
         {
-            Subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null),
-            Summary = await _expressionEvaluator.EvaluateAsync(Summary, workflowContext, _htmlEncoder),
-            TextBody = await _expressionEvaluator.EvaluateAsync(TextBody, workflowContext, null),
-            HtmlBody = await _expressionEvaluator.EvaluateAsync(HtmlBody, workflowContext, _htmlEncoder),
+            Subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null).ConfigureAwait(false),
+            Summary = await _expressionEvaluator.EvaluateAsync(Summary, workflowContext, _htmlEncoder).ConfigureAwait(false),
+            TextBody = await _expressionEvaluator.EvaluateAsync(TextBody, workflowContext, null).ConfigureAwait(false),
+            HtmlBody = await _expressionEvaluator.EvaluateAsync(HtmlBody, workflowContext, _htmlEncoder).ConfigureAwait(false),
             IsHtmlPreferred = IsHtmlPreferred,
         };
     }

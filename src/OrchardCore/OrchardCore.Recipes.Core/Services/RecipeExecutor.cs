@@ -39,7 +39,7 @@ public class RecipeExecutor : IRecipeExecutor
 
     public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, IDictionary<string, object> environment, CancellationToken cancellationToken)
     {
-        await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
+        await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger).ConfigureAwait(false);
 
         try
         {
@@ -51,9 +51,10 @@ public class RecipeExecutor : IRecipeExecutor
 
             var result = new RecipeResult { ExecutionId = executionId };
 
-            await using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
+            var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream();
+            await using (stream.ConfigureAwait(false))
             {
-                using var doc = await JsonDocument.ParseAsync(stream, JOptions.Document, cancellationToken);
+                using var doc = await JsonDocument.ParseAsync(stream, JOptions.Document, cancellationToken).ConfigureAwait(false);
                 if (doc.RootElement.ValueKind != JsonValueKind.Object)
                 {
                     throw new FormatException($"Top-level JSON element must be an object. Instead, '{doc.RootElement.ValueKind}' was found.");
@@ -95,7 +96,7 @@ public class RecipeExecutor : IRecipeExecutor
                             ExceptionDispatchInfo capturedException = null;
                             try
                             {
-                                await ExecuteStepAsync(recipeStep);
+                                await ExecuteStepAsync(recipeStep).ConfigureAwait(false);
 
                                 if (recipeStep.Errors.Count > 0)
                                 {
@@ -133,7 +134,7 @@ public class RecipeExecutor : IRecipeExecutor
                                 {
                                     var innerExecutionId = Guid.NewGuid().ToString();
                                     descriptor.RequireNewScope = recipeDescriptor.RequireNewScope;
-                                    await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
+                                    await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken).ConfigureAwait(false);
                                 }
                             }
                         }
@@ -141,13 +142,13 @@ public class RecipeExecutor : IRecipeExecutor
                 }
             }
 
-            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
+            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger).ConfigureAwait(false);
 
             return executionId;
         }
         catch (Exception)
         {
-            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.ExecutionFailedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
+            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.ExecutionFailedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger).ConfigureAwait(false);
 
             throw;
         }
@@ -161,7 +162,7 @@ public class RecipeExecutor : IRecipeExecutor
     {
         var shellScope = recipeStep.RecipeDescriptor.RequireNewScope
             ? await _shellHost.GetScopeAsync(_shellSettings)
-            : ShellScope.Current;
+.ConfigureAwait(false) : ShellScope.Current;
 
         await shellScope.UsingAsync(async scope =>
         {
@@ -173,17 +174,17 @@ public class RecipeExecutor : IRecipeExecutor
 
             _logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
 
-            await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, _logger);
+            await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, _logger).ConfigureAwait(false);
 
             foreach (var recipeStepHandler in recipeStepHandlers)
             {
-                await recipeStepHandler.ExecuteAsync(recipeStep);
+                await recipeStepHandler.ExecuteAsync(recipeStep).ConfigureAwait(false);
             }
 
-            await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, _logger);
+            await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, _logger).ConfigureAwait(false);
 
             _logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
-        });
+        }).ConfigureAwait(false);
     }
 
     /// <summary>

@@ -18,7 +18,7 @@ public class SiteThemeSelector : IThemeSelector
 
     public async Task<ThemeSelectorResult> GetThemeAsync()
     {
-        var currentThemeName = await _siteThemeService.GetSiteThemeNameAsync();
+        var currentThemeName = await _siteThemeService.GetSiteThemeNameAsync().ConfigureAwait(false);
         if (string.IsNullOrEmpty(currentThemeName))
         {
             return null;

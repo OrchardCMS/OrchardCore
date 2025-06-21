@@ -102,8 +102,8 @@ public class FacebookLoginConfiguration :
 
     private async Task<FacebookLoginSettings> GetFacebookLoginSettingsAsync()
     {
-        var settings = await _loginService.GetSettingsAsync();
-        if ((await _loginService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+        var settings = await _loginService.GetSettingsAsync().ConfigureAwait(false);
+        if ((await _loginService.ValidateSettingsAsync(settings).ConfigureAwait(false)).Any(result => result != ValidationResult.Success))
         {
             _logger.LogWarning("The Facebook Login module is not correctly configured.");
 

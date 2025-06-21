@@ -15,6 +15,6 @@ public class NonBlockingMiddleware
     {
         // If the tenant pipeline is re-executed on error, the header is already set.
         httpContext.Response.Headers["Orchard"] = "2.0";
-        await _next.Invoke(httpContext);
+        await _next.Invoke(httpContext).ConfigureAwait(false);
     }
 }

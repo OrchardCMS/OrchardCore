@@ -86,7 +86,7 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
     {
         var model = new EditMediaFieldViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, f => f.Paths);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, f => f.Paths).ConfigureAwait(false);
 
         // Deserializing an empty string doesn't return an array
         var items = string.IsNullOrWhiteSpace(model.Paths)
@@ -99,7 +99,7 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
             try
             {
                 field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
-                await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
+                await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem).ConfigureAwait(false);
             }
             catch (Exception e)
             {

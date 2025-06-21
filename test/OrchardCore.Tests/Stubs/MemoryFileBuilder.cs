@@ -14,7 +14,7 @@ public class MemoryFileBuilder : IFileBuilder
     {
         var buffer = new byte[stream.Length];
         using var ms = new MemoryStream(buffer);
-        await stream.CopyToAsync(ms);
+        await stream.CopyToAsync(ms).ConfigureAwait(false);
         VirtualFiles[subpath] = buffer;
     }
 

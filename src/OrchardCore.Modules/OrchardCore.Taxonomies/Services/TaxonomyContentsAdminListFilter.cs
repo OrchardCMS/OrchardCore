@@ -24,11 +24,11 @@ public class TaxonomyContentsAdminListFilter : IContentsAdminListFilter
 
     public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
     {
-        var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
+        var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>().ConfigureAwait(false);
         foreach (var contentItemId in settings.TaxonomyContentItemIds)
         {
             var viewModel = new TaxonomyContentsAdminFilterViewModel();
-            await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId);
+            await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId).ConfigureAwait(false);
 
             // Show all items categorized by the taxonomy
             if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))

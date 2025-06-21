@@ -86,14 +86,14 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
 
         var viewEngine = viewEngines[0];
 
-        var result = await RenderViewToStringAsync(viewName, displayContext.Value, viewEngine);
+        var result = await RenderViewToStringAsync(viewName, displayContext.Value, viewEngine).ConfigureAwait(false);
 
         return new HtmlString(result);
     }
 
     public async Task<string> RenderViewToStringAsync(string viewName, object model, IViewEngine viewEngine)
     {
-        var actionContext = await _httpContextAccessor.GetActionContextAsync();
+        var actionContext = await _httpContextAccessor.GetActionContextAsync().ConfigureAwait(false);
         var view = FindView(actionContext, viewName, viewEngine);
 
         using var output = new ZStringWriter();
@@ -112,7 +112,7 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
             output,
             new HtmlHelperOptions());
 
-        await view.RenderAsync(viewContext);
+        await view.RenderAsync(viewContext).ConfigureAwait(false);
 
         return output.ToString();
     }

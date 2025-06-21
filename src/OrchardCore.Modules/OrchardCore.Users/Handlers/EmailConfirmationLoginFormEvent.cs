@@ -30,7 +30,7 @@ internal sealed class EmailConfirmationLoginFormEvent : LoginFormEventBase
     public override async Task<IActionResult> ValidatingLoginAsync(IUser user)
     {
         // Require that the users have a confirmed email before they can log on.
-        if (!_registrationOptions.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(user))
+        if (!_registrationOptions.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(user).ConfigureAwait(false))
         {
             return null;
         }

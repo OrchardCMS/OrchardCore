@@ -23,7 +23,7 @@ public sealed class GitHubAuthenticationSettingsStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
-        var site = await _siteService.LoadSiteSettingsAsync();
+        var site = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
 
         site.Alter<GitHubAuthenticationSettings>(settings =>
         {
@@ -32,7 +32,7 @@ public sealed class GitHubAuthenticationSettingsStep : NamedRecipeStepHandler
             settings.CallbackPath = model.CallbackPath;
         });
 
-        await _siteService.UpdateSiteSettingsAsync(site);
+        await _siteService.UpdateSiteSettingsAsync(site).ConfigureAwait(false);
     }
 }
 

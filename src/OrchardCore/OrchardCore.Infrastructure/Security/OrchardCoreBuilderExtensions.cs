@@ -47,7 +47,7 @@ public static partial class OrchardCoreBuilderExtensions
 
         foreach (var permissionProvider in permissionProviders)
         {
-            var permissions = await permissionProvider.GetPermissionsAsync();
+            var permissions = await permissionProvider.GetPermissionsAsync().ConfigureAwait(false);
 
             foreach (var permission in permissions)
             {

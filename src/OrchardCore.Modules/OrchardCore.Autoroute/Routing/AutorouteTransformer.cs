@@ -19,7 +19,7 @@ public class AutorouteTransformer : DynamicRouteValueTransformer
 
     public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
     {
-        (var found, var entry) = await _entries.TryGetEntryByPathAsync(httpContext.Request.Path.Value);
+        (var found, var entry) = await _entries.TryGetEntryByPathAsync(httpContext.Request.Path.Value).ConfigureAwait(false);
 
         if (found)
         {

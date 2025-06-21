@@ -28,7 +28,7 @@ public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<Go
     public override async Task<IDisplayResult> EditAsync(ISite site, GoogleTagManagerSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager).ConfigureAwait(false))
         {
             return null;
         }
@@ -43,19 +43,19 @@ public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<Go
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleTagManagerSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new GoogleTagManagerSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (context.Updater.ModelState.IsValid)
         {
             settings.ContainerID = model.ContainerID;
         }
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

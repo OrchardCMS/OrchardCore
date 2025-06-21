@@ -24,14 +24,14 @@ public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider
 
     public async ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return await _memoryCache.GetOrCreateAsync(_cacheKey, async _ => await GetAliasesInternalAsync());
+        return await _memoryCache.GetOrCreateAsync(_cacheKey, async _ => await GetAliasesInternalAsync().ConfigureAwait(false)).ConfigureAwait(false);
     }
 
     private async ValueTask<IEnumerable<IndexAlias>> GetAliasesInternalAsync()
     {
         var aliases = new List<IndexAlias>();
 
-        var types = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+        var types = await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false);
         var parts = types.SelectMany(t => t.Parts);
 
         foreach (var part in parts)

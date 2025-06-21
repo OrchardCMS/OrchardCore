@@ -33,7 +33,7 @@ public sealed class AzureADSettingsConfiguration : IConfigureOptions<AzureADSett
 
     private async Task<AzureADSettings> GetAzureADSettingsAsync()
     {
-        var settings = await _azureADService.GetSettingsAsync();
+        var settings = await _azureADService.GetSettingsAsync().ConfigureAwait(false);
 
         if (_azureADService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {

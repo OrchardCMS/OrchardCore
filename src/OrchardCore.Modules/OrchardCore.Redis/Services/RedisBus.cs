@@ -27,7 +27,7 @@ public class RedisBus : IMessageBus
     {
         if (_redis.Connection == null)
         {
-            await _redis.ConnectAsync();
+            await _redis.ConnectAsync().ConfigureAwait(false);
             if (_redis.Connection == null)
             {
                 _logger.LogError("Unable to subscribe to the channel '{ChannelName}'.", _channelPrefix + channel);
@@ -49,7 +49,7 @@ public class RedisBus : IMessageBus
                 }
 
                 handler(channel, tokens[1]);
-            });
+            }).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -61,7 +61,7 @@ public class RedisBus : IMessageBus
     {
         if (_redis.Connection == null)
         {
-            await _redis.ConnectAsync();
+            await _redis.ConnectAsync().ConfigureAwait(false);
             if (_redis.Connection == null)
             {
                 _logger.LogError("Unable to publish to the channel '{ChannelName}'.", _channelPrefix + channel);
@@ -71,7 +71,7 @@ public class RedisBus : IMessageBus
 
         try
         {
-            await _redis.Connection.GetSubscriber().PublishAsync(RedisChannel.Literal(_channelPrefix + channel), _messagePrefix + message);
+            await _redis.Connection.GetSubscriber().PublishAsync(RedisChannel.Literal(_channelPrefix + channel), _messagePrefix + message).ConfigureAwait(false);
         }
         catch (Exception e)
         {

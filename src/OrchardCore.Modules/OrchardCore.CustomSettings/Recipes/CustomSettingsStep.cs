@@ -19,7 +19,7 @@ public sealed class CustomSettingsStep : NamedRecipeStepHandler
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        var siteSettings = await _siteService.LoadSiteSettingsAsync();
+        var siteSettings = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
 
         var model = context.Step;
         foreach (var customSettings in model)
@@ -32,6 +32,6 @@ public sealed class CustomSettingsStep : NamedRecipeStepHandler
             siteSettings.Properties[customSettings.Key] = customSettings.Value.DeepClone();
         }
 
-        await _siteService.UpdateSiteSettingsAsync(siteSettings);
+        await _siteService.UpdateSiteSettingsAsync(siteSettings).ConfigureAwait(false);
     }
 }

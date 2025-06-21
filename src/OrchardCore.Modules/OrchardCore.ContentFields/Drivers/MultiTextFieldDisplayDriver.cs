@@ -55,7 +55,7 @@ public sealed class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<Mult
     public override async Task<IDisplayResult> UpdateAsync(MultiTextField field, UpdateFieldEditorContext context)
     {
         var viewModel = new EditMultiTextFieldViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         field.Values = viewModel.Values;
 

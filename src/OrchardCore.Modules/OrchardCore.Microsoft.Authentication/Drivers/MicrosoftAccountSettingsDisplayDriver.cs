@@ -41,7 +41,7 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
     public override async Task<IDisplayResult> EditAsync(ISite site, MicrosoftAccountSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication).ConfigureAwait(false))
         {
             return null;
         }
@@ -79,13 +79,13 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
     public override async Task<IDisplayResult> UpdateAsync(ISite site, MicrosoftAccountSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new MicrosoftAccountSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.AppId = model.AppId;
         settings.CallbackPath = model.CallbackPath;
@@ -100,6 +100,6 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

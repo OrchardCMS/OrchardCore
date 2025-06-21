@@ -33,7 +33,7 @@ public class EnableTenantTask : TenantTask
             return Outcomes("Failed");
         }
 
-        var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
+        var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null).ConfigureAwait(false))?.Trim();
 
         if (string.IsNullOrEmpty(tenantName))
         {
@@ -55,7 +55,7 @@ public class EnableTenantTask : TenantTask
             return Outcomes("Failed");
         }
 
-        await ShellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
+        await ShellHost.UpdateShellSettingsAsync(shellSettings.AsRunning()).ConfigureAwait(false);
 
         return Outcomes("Enabled");
     }

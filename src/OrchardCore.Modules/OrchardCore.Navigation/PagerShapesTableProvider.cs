@@ -176,7 +176,7 @@ public class PagerShapes : IShapeAttributeProvider
         if (totalPageCount < 2)
         {
             shape.Metadata.Type = "List";
-            return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+            return await displayContext.DisplayHelper.ShapeExecuteAsync(shape).ConfigureAwait(false);
         }
 
         var firstText = FirstText ?? S["<<"];
@@ -211,14 +211,14 @@ public class PagerShapes : IShapeAttributeProvider
             RouteValues = new RouteValueDictionary(routeData),
             Pager = shape,
             Disabled = Page < 2,
-        }));
+        })).ConfigureAwait(false);
 
         if (noFollow)
         {
             firstItem.Attributes["rel"] = "no-follow";
         }
 
-        await shape.AddAsync(firstItem);
+        await shape.AddAsync(firstItem).ConfigureAwait(false);
 
         // previous
         if ((Page > 1) && (currentPage > 2))
@@ -232,14 +232,14 @@ public class PagerShapes : IShapeAttributeProvider
             RouteValues = new RouteValueDictionary(routeData),
             Pager = shape,
             Disabled = Page < 2,
-        }));
+        })).ConfigureAwait(false);
 
         if (noFollow)
         {
             previousItem.Attributes["rel"] = "no-follow";
         }
 
-        await shape.AddAsync(previousItem);
+        await shape.AddAsync(previousItem).ConfigureAwait(false);
 
         // gap at the beginning of the pager
         if (firstPage > 1 && numberOfPagesToShow > 0)
@@ -249,7 +249,7 @@ public class PagerShapes : IShapeAttributeProvider
                 Value = gapText,
                 RouteValues = new RouteValueDictionary(routeData),
                 Pager = shape,
-            })));
+            }))).ConfigureAwait(false);
         }
 
         // page numbers
@@ -274,14 +274,14 @@ public class PagerShapes : IShapeAttributeProvider
                         Value = p,
                         RouteValues = new RouteValueDictionary(routeData),
                         Pager = shape,
-                    }));
+                    })).ConfigureAwait(false);
 
                     if (noFollow)
                     {
                         currentPageItem.Attributes["rel"] = "no-follow";
                     }
 
-                    await shape.AddAsync(currentPageItem);
+                    await shape.AddAsync(currentPageItem).ConfigureAwait(false);
                 }
                 else
                 {
@@ -290,7 +290,7 @@ public class PagerShapes : IShapeAttributeProvider
                         Value = p,
                         RouteValues = new RouteValueDictionary(routeData),
                         Pager = shape,
-                    }));
+                    })).ConfigureAwait(false);
 
                     if (p > currentPage)
                     {
@@ -301,7 +301,7 @@ public class PagerShapes : IShapeAttributeProvider
                         pagerItem.Attributes["rel"] = noFollow ? "no-follow" : "prev";
                     }
 
-                    await shape.AddAsync(pagerItem);
+                    await shape.AddAsync(pagerItem).ConfigureAwait(false);
                 }
             }
         }
@@ -314,7 +314,7 @@ public class PagerShapes : IShapeAttributeProvider
                 Value = gapText,
                 RouteValues = new RouteValueDictionary(routeData),
                 Pager = shape,
-            })));
+            }))).ConfigureAwait(false);
         }
 
         // Next
@@ -325,14 +325,14 @@ public class PagerShapes : IShapeAttributeProvider
             RouteValues = new RouteValueDictionary(routeData),
             Pager = shape,
             Disabled = Page >= totalPageCount && !ShowNext,
-        }));
+        })).ConfigureAwait(false);
 
         if (noFollow)
         {
             pagerNextItem.Attributes["rel"] = "no-follow";
         }
 
-        await shape.AddAsync(pagerNextItem);
+        await shape.AddAsync(pagerNextItem).ConfigureAwait(false);
 
         // Last
         routeData[pageKey] = totalPageCount;
@@ -342,16 +342,16 @@ public class PagerShapes : IShapeAttributeProvider
             RouteValues = new RouteValueDictionary(routeData),
             Pager = shape,
             Disabled = Page >= totalPageCount,
-        }));
+        })).ConfigureAwait(false);
 
         if (noFollow)
         {
             pagerLastItem.Attributes["rel"] = "no-follow";
         }
 
-        await shape.AddAsync(pagerLastItem);
+        await shape.AddAsync(pagerLastItem).ConfigureAwait(false);
 
-        return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+        return await displayContext.DisplayHelper.ShapeExecuteAsync(shape).ConfigureAwait(false);
     }
 
     [Shape]
@@ -397,14 +397,14 @@ public class PagerShapes : IShapeAttributeProvider
                 Value = previousText,
                 RouteValues = beforeRouteData,
                 Pager = shape,
-            }));
+            })).ConfigureAwait(false);
 
             if (noFollow)
             {
                 previousItem.Attributes["rel"] = "no-follow";
             }
 
-            await shape.AddAsync(previousItem);
+            await shape.AddAsync(previousItem).ConfigureAwait(false);
             shape.Properties["FirstClass"] = PreviousClass;
         }
         else
@@ -426,14 +426,14 @@ public class PagerShapes : IShapeAttributeProvider
                 Value = nextText,
                 RouteValues = afterRouteData,
                 Pager = shape,
-            }));
+            })).ConfigureAwait(false);
 
             if (noFollow)
             {
                 nextItem.Attributes["rel"] = "no-follow";
             }
 
-            await shape.AddAsync(nextItem);
+            await shape.AddAsync(nextItem).ConfigureAwait(false);
             shape.Properties["LastClass"] = NextClass;
         }
         else
@@ -441,7 +441,7 @@ public class PagerShapes : IShapeAttributeProvider
             routeData.Remove("after");
         }
 
-        return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+        return await displayContext.DisplayHelper.ShapeExecuteAsync(shape).ConfigureAwait(false);
     }
 
     [Shape]

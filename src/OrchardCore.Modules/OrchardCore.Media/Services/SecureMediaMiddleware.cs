@@ -24,7 +24,7 @@ public class SecureMediaMiddleware
         var validateAssetsRequestPath = context.Request.Path.StartsWithNormalizedSegments(_assetsRequestPath, StringComparison.OrdinalIgnoreCase, out var subPath);
         if (!validateAssetsRequestPath)
         {
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
 
             return;
         }
@@ -32,7 +32,7 @@ public class SecureMediaMiddleware
         if (!(context.User.Identity?.IsAuthenticated ?? false))
         {
             // Allow bearer (API) authentication too.
-            var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
+            var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api").ConfigureAwait(false);
 
             if (authenticateResult.Succeeded)
             {
@@ -40,9 +40,9 @@ public class SecureMediaMiddleware
             }
         }
 
-        if (await authorizationService.AuthorizeAsync(context.User, MediaPermissions.ViewMedia, (object)subPath.ToString()))
+        if (await authorizationService.AuthorizeAsync(context.User, MediaPermissions.ViewMedia, (object)subPath.ToString()).ConfigureAwait(false))
         {
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
         }
         else
         {

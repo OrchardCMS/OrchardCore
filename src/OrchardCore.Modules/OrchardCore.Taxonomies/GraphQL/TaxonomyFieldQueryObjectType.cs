@@ -38,7 +38,7 @@ public class TaxonomyFieldQueryObjectType : ObjectGraphType<TaxonomyField>
                 var ids = x.Page(x.Source.TermContentItemIds);
                 var contentManager = x.RequestServices.GetService<IContentManager>();
 
-                var taxonomy = await contentManager.GetAsync(x.Source.TaxonomyContentItemId);
+                var taxonomy = await contentManager.GetAsync(x.Source.TaxonomyContentItemId).ConfigureAwait(false);
 
                 if (taxonomy == null)
                 {
@@ -65,7 +65,7 @@ public class TaxonomyFieldQueryObjectType : ObjectGraphType<TaxonomyField>
             {
                 var contentManager = context.RequestServices.GetService<IContentManager>();
 
-                return await contentManager.GetAsync(context.Source.TaxonomyContentItemId);
+                return await contentManager.GetAsync(context.Source.TaxonomyContentItemId).ConfigureAwait(false);
             });
     }
 }

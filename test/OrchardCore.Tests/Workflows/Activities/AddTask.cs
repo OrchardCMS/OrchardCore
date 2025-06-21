@@ -39,8 +39,8 @@ public class AddTask : TaskActivity<AddTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var a = await _scriptEvaluator.EvaluateAsync(A, workflowContext);
-        var b = await _scriptEvaluator.EvaluateAsync(B, workflowContext);
+        var a = await _scriptEvaluator.EvaluateAsync(A, workflowContext).ConfigureAwait(false);
+        var b = await _scriptEvaluator.EvaluateAsync(B, workflowContext).ConfigureAwait(false);
         var result = a + b;
 
         workflowContext.LastResult = result;

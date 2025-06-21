@@ -46,13 +46,13 @@ public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExt
 
         foreach (var localizedPart in localizedContentParts)
         {
-            var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(localizedPart.ContentItem);
+            var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(localizedPart.ContentItem).ConfigureAwait(false);
             if (sitemapMetadataAspect.Exclude)
             {
                 continue;
             }
 
-            var hrefValue = await _routeableContentTypeCoordinator.GetRouteAsync(context, localizedPart.ContentItem);
+            var hrefValue = await _routeableContentTypeCoordinator.GetRouteAsync(context, localizedPart.ContentItem).ConfigureAwait(false);
 
             var linkNode = new XElement(_extendedNamespace + "link",
                 new XAttribute("rel", "alternate"),

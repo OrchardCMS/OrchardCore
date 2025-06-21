@@ -12,7 +12,7 @@ public sealed class PreviewStartupFilter : IStartupFilter
         {
             app.Use(async (context, next) =>
             {
-                await next();
+                await next().ConfigureAwait(false);
 
                 if (!context.Items.TryGetValue("PreviewPath", out var previewPathObject) || previewPathObject == null)
                 {
@@ -34,7 +34,7 @@ public sealed class PreviewStartupFilter : IStartupFilter
 
                     try
                     {
-                        await next();
+                        await next().ConfigureAwait(false);
                     }
                     finally
                     {

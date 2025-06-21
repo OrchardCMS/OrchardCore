@@ -34,7 +34,7 @@ public class FacebookPluginPartHandler : ContentPartHandler<FacebookPluginPart>
                 };
 
                 var result = await _liquidTemplateManager.RenderHtmlContentAsync(part.Liquid, _htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }).ConfigureAwait(false);
 
                 bodyAspect.Body = result;
             }

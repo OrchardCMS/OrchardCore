@@ -60,7 +60,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         return Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
         {
             model.ContainerContentItem = part.ContentItem;
-            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
+            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings).ConfigureAwait(false)).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
         }).Location("Content:1")
         .RenderWhen(() => Task.FromResult(!context.IsNew && settings.ShowHeader));
@@ -71,7 +71,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         return Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
         {
             model.Container = part.ContentItem;
-            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
+            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings).ConfigureAwait(false)).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
             model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
         })
@@ -90,7 +90,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         return Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
         {
             model.ContainerContentItem = listPart.ContentItem;
-            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
+            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings).ConfigureAwait(false)).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
         }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:1")
         .RenderWhen(() => Task.FromResult(settings.ShowHeader));
@@ -100,7 +100,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     {
         return Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
         {
-            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
+            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings).ConfigureAwait(false)).ToArray();
             model.Container = listPart.ContentItem;
             model.EnableOrdering = settings.EnableOrdering;
             model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
@@ -111,12 +111,12 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     {
         return Initialize("ListPartDetailAdmin", (Func<ListPartViewModel, ValueTask>)(async model =>
         {
-            var pager = await GetPagerSlimAsync(context);
+            var pager = await GetPagerSlimAsync(context).ConfigureAwait(false);
             var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
             var listPartFilterViewModel = new ListPartFilterViewModel();
             var containedItemOptions = new ContainedItemOptions();
 
-            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
+            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix).ConfigureAwait(false);
             model.ListPart = listPart;
             containedItemOptions.DisplayText = listPartFilterViewModel.DisplayText;
             containedItemOptions.Status = listPartFilterViewModel.Status;
@@ -126,9 +126,9 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                 listPart.ContentItem.ContentItemId,
                 settings.EnableOrdering,
                 pager,
-                containedItemOptions)).ToArray();
+                containedItemOptions).ConfigureAwait(false)).ToArray();
 
-            model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(settings);
+            model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(settings).ConfigureAwait(false);
             model.Context = context;
             model.EnableOrdering = settings.EnableOrdering;
             model.Pager = await context.New.PagerSlim(pager);
@@ -140,7 +140,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         return Initialize<ListPartViewModel>("ListPartDetailAdminSearchPanel", async model =>
         {
             var listPartFilterViewModel = new ListPartFilterViewModel();
-            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
+            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix).ConfigureAwait(false);
 
             model.ListPartFilterViewModel = listPartFilterViewModel;
 
@@ -151,16 +151,16 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     {
         return Initialize<ListPartViewModel>(GetDisplayShapeType(context), async model =>
         {
-            var pager = await GetPagerSlimAsync(context);
+            var pager = await GetPagerSlimAsync(context).ConfigureAwait(false);
             var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
             var containedItemOptions = new ContainedItemOptions();
             model.ContentItems = (await _containerService.QueryContainedItemsAsync(
                 listPart.ContentItem.ContentItemId,
                 settings.EnableOrdering,
                 pager,
-                containedItemOptions)).ToArray();
+                containedItemOptions).ConfigureAwait(false)).ToArray();
 
-            model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(settings);
+            model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(settings).ConfigureAwait(false);
             model.Context = context;
             model.Pager = await context.New.PagerSlim(pager);
             model.ListPart = listPart;
@@ -172,7 +172,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     {
         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
         var pagerParameters = new PagerSlimParameters();
-        await context.Updater.TryUpdateModelAsync(pagerParameters);
+        await context.Updater.TryUpdateModelAsync(pagerParameters).ConfigureAwait(false);
 
         var pager = new PagerSlim(pagerParameters, settings.PageSize);
 
@@ -187,7 +187,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
 
         foreach (var contentType in contentTypes)
         {
-            var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+            var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType).ConfigureAwait(false);
 
             if (definition == null)
             {

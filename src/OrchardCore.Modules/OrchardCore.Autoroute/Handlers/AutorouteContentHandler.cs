@@ -19,7 +19,7 @@ public class AutorouteContentHandler : ContentHandlerBase
         return context.ForAsync<ContentItemMetadata>(async metadata =>
         {
             // When a content item is contained we provide different route values when generating urls.
-            (var found, var entry) = await _autorouteEntries.TryGetEntryByContentItemIdAsync(context.ContentItem.ContentItemId);
+            (var found, var entry) = await _autorouteEntries.TryGetEntryByContentItemIdAsync(context.ContentItem.ContentItemId).ConfigureAwait(false);
 
             if (found && !string.IsNullOrEmpty(entry.ContainedContentItemId))
             {

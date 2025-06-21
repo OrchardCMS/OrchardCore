@@ -42,7 +42,7 @@ public class LogTask : TaskActivity<LogTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var text = await _expressionEvaluator.EvaluateAsync(Text, workflowContext, null);
+        var text = await _expressionEvaluator.EvaluateAsync(Text, workflowContext, null).ConfigureAwait(false);
         var logLevel = LogLevel;
 
         _logger.Log(logLevel, 0, text, null, (state, error) => state.ToString());

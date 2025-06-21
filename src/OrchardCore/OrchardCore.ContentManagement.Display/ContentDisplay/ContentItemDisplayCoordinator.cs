@@ -41,7 +41,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
     public async Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
 
         if (contentTypeDefinition == null)
         {
@@ -52,10 +52,10 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         {
             try
             {
-                var result = await displayDriver.BuildDisplayAsync(contentItem, context);
+                var result = await displayDriver.BuildDisplayAsync(contentItem, context).ConfigureAwait(false);
                 if (result != null)
                 {
-                    await result.ApplyAsync(context);
+                    await result.ApplyAsync(context).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -84,10 +84,10 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             {
                 try
                 {
-                    var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
+                    var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context).ConfigureAwait(false);
                     if (result != null)
                     {
-                        await result.ApplyAsync(context);
+                        await result.ApplyAsync(context).ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
@@ -150,7 +150,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                     }
                 });
 
-                await shapeResult.ApplyAsync(context);
+                await shapeResult.ApplyAsync(context).ConfigureAwait(false);
 
                 var contentPartShape = shapeResult.Shape;
 
@@ -178,10 +178,10 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                 {
                     try
                     {
-                        var result = await fieldDisplayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
+                        var result = await fieldDisplayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context).ConfigureAwait(false);
                         if (result != null)
                         {
-                            await result.ApplyAsync(context);
+                            await result.ApplyAsync(context).ConfigureAwait(false);
                         }
                     }
                     catch (Exception ex)
@@ -197,7 +197,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
     public async Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
         if (contentTypeDefinition == null)
         {
             return;
@@ -208,7 +208,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             Arguments.From(new
             {
                 Identifier = contentItem.ContentItemId,
-            }));
+            })).ConfigureAwait(false);
 
         contentShape.Zones["Parts"] = partsShape;
 
@@ -216,10 +216,10 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         {
             try
             {
-                var result = await displayDriver.BuildEditorAsync(contentItem, context);
+                var result = await displayDriver.BuildEditorAsync(contentItem, context).ConfigureAwait(false);
                 if (result != null)
                 {
-                    await result.ApplyAsync(context);
+                    await result.ApplyAsync(context).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -241,7 +241,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             // Create a custom shape to render all the part shapes into it
             var typePartShapeResult = CreateShapeResult(context.GroupId, partTypeName, contentType, typePartDefinition, partPosition);
 
-            await typePartShapeResult.ApplyAsync(context);
+            await typePartShapeResult.ApplyAsync(context).ConfigureAwait(false);
             var typePartShape = typePartShapeResult.Shape;
 
             if (typePartShape == null)
@@ -260,12 +260,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             var partDisplayDrivers = _contentPartDisplayDriverResolver.GetEditorDrivers(partTypeName, typePartDefinition.Editor());
             await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
             {
-                var result = await driver.BuildEditorAsync(part, typePartDefinition, context);
+                var result = await driver.BuildEditorAsync(part, typePartDefinition, context).ConfigureAwait(false);
                 if (result != null)
                 {
-                    await result.ApplyAsync(context);
+                    await result.ApplyAsync(context).ConfigureAwait(false);
                 }
-            }, part, typePartDefinition, context, _logger);
+            }, part, typePartDefinition, context, _logger).ConfigureAwait(false);
 
             foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
             {
@@ -276,19 +276,19 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                 var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetEditorDrivers(partFieldDefinition.FieldDefinition.Name, partFieldDefinition.Editor());
                 await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                 {
-                    var result = await driver.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
+                    var result = await driver.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context).ConfigureAwait(false);
                     if (result != null)
                     {
-                        await result.ApplyAsync(context);
+                        await result.ApplyAsync(context).ConfigureAwait(false);
                     }
-                }, part, partFieldDefinition, typePartDefinition, context, _logger);
+                }, part, partFieldDefinition, typePartDefinition, context, _logger).ConfigureAwait(false);
             }
         }
     }
 
     public async Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
         if (contentTypeDefinition == null)
         {
             return;
@@ -299,7 +299,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             Arguments.From(new
             {
                 Identifier = contentItem.ContentItemId,
-            }));
+            })).ConfigureAwait(false);
 
         contentShape.Zones["Parts"] = partsShape;
 
@@ -307,10 +307,10 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         {
             try
             {
-                var result = await displayDriver.UpdateEditorAsync(contentItem, context);
+                var result = await displayDriver.UpdateEditorAsync(contentItem, context).ConfigureAwait(false);
                 if (result != null)
                 {
-                    await result.ApplyAsync(context);
+                    await result.ApplyAsync(context).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -332,7 +332,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             // Create a custom shape to render all the part shapes into it
             var typePartShapeResult = CreateShapeResult(context.GroupId, partTypeName, contentType, typePartDefinition, partPosition);
 
-            await typePartShapeResult.ApplyAsync(context);
+            await typePartShapeResult.ApplyAsync(context).ConfigureAwait(false);
             var typePartShape = typePartShapeResult.Shape;
 
             if (typePartShape == null)
@@ -349,12 +349,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             var partDisplayDrivers = _contentPartDisplayDriverResolver.GetEditorDrivers(partTypeName, typePartDefinition.Editor());
             await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
             {
-                var result = await driver.UpdateEditorAsync(part, typePartDefinition, context);
+                var result = await driver.UpdateEditorAsync(part, typePartDefinition, context).ConfigureAwait(false);
                 if (result != null)
                 {
-                    await result.ApplyAsync(context);
+                    await result.ApplyAsync(context).ConfigureAwait(false);
                 }
-            }, part, typePartDefinition, context, _logger);
+            }, part, typePartDefinition, context, _logger).ConfigureAwait(false);
 
             foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
             {
@@ -365,12 +365,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                 var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetEditorDrivers(partFieldDefinition.FieldDefinition.Name, partFieldDefinition.Editor());
                 await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                 {
-                    var result = await driver.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
+                    var result = await driver.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context).ConfigureAwait(false);
                     if (result != null)
                     {
-                        await result.ApplyAsync(context);
+                        await result.ApplyAsync(context).ConfigureAwait(false);
                     }
-                }, part, partFieldDefinition, typePartDefinition, context, _logger);
+                }, part, partFieldDefinition, typePartDefinition, context, _logger).ConfigureAwait(false);
             }
         }
     }

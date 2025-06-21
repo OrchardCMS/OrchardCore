@@ -35,19 +35,19 @@ public class BlobShellConfigurationSources : IShellConfigurationSources
     public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
     {
         var appSettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
-        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings).ConfigureAwait(false);
 
         if (fileInfo == null && _blobOptions.MigrateFromFiles)
         {
-            if (await TryMigrateFromFileAsync(tenant, appSettings))
+            if (await TryMigrateFromFileAsync(tenant, appSettings).ConfigureAwait(false))
             {
-                fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
+                fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings).ConfigureAwait(false);
             }
         }
 
         if (fileInfo != null)
         {
-            var stream = await _shellsFileStore.GetFileStreamAsync(appSettings);
+            var stream = await _shellsFileStore.GetFileStreamAsync(appSettings).ConfigureAwait(false);
             builder.AddTenantJsonStream(stream);
         }
     }
@@ -56,15 +56,15 @@ public class BlobShellConfigurationSources : IShellConfigurationSources
     {
         var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
-        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings).ConfigureAwait(false);
 
 #pragma warning disable CA1859 // Use concrete types when possible for improved performance
         IDictionary<string, string> configData;
 #pragma warning restore CA1859 // Use concrete types when possible for improved performance
         if (fileInfo != null)
         {
-            using var stream = await _shellsFileStore.GetFileStreamAsync(appsettings);
-            configData = await JsonConfigurationParser.ParseAsync(stream);
+            using var stream = await _shellsFileStore.GetFileStreamAsync(appsettings).ConfigureAwait(false);
+            configData = await JsonConfigurationParser.ParseAsync(stream).ConfigureAwait(false);
         }
         else
         {
@@ -86,17 +86,17 @@ public class BlobShellConfigurationSources : IShellConfigurationSources
         var configurationString = configData.ToJsonObject().ToJsonString(JOptions.Default);
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
 
-        await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);
+        await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream).ConfigureAwait(false);
     }
 
     public async Task RemoveAsync(string tenant)
     {
         var appSettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
-        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings).ConfigureAwait(false);
         if (fileInfo != null)
         {
-            await _shellsFileStore.RemoveFileAsync(appSettings);
+            await _shellsFileStore.RemoveFileAsync(appSettings).ConfigureAwait(false);
         }
     }
 
@@ -109,7 +109,7 @@ public class BlobShellConfigurationSources : IShellConfigurationSources
         }
 
         using var file = File.OpenRead(tenantFile);
-        await _shellsFileStore.CreateFileFromStreamAsync(destFile, file);
+        await _shellsFileStore.CreateFileFromStreamAsync(destFile, file).ConfigureAwait(false);
 
         return true;
     }

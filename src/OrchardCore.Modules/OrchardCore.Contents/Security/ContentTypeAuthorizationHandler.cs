@@ -69,7 +69,7 @@ public sealed class ContentTypeAuthorizationHandler : AuthorizationHandler<Permi
         // Lazy load to prevent circular dependencies
         _authorizationService ??= _serviceProvider.GetService<IAuthorizationService>();
 
-        if (await _authorizationService.AuthorizeAsync(context.User, permission))
+        if (await _authorizationService.AuthorizeAsync(context.User, permission).ConfigureAwait(false))
         {
             context.Succeed(requirement);
         }

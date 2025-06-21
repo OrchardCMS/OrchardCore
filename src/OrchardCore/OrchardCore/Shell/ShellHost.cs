@@ -59,12 +59,12 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         }
 
         // Prevent concurrent requests from creating all shells multiple times.
-        await _initializingSemaphore.WaitAsync();
+        await _initializingSemaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             if (!_initialized)
             {
-                await PreCreateAndRegisterShellsAsync();
+                await PreCreateAndRegisterShellsAsync().ConfigureAwait(false);
                 _initialized = true;
             }
         }
@@ -86,17 +86,17 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
             {
                 var semaphore = _shellSemaphores.GetOrAdd(settings.Name, (name) => new SemaphoreSlim(1));
 
-                await semaphore.WaitAsync();
+                await semaphore.WaitAsync().ConfigureAwait(false);
                 try
                 {
                     if (!_shellContexts.TryGetValue(settings.Name, out shell))
                     {
                         if (!settings.HasConfiguration())
                         {
-                            settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+                            settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name).ConfigureAwait(false);
                         }
 
-                        shell = await CreateShellContextAsync(settings);
+                        shell = await CreateShellContextAsync(settings).ConfigureAwait(false);
                         AddAndRegisterShell(shell);
                     }
                 }
@@ -128,11 +128,11 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         {
             if (!_shellContexts.TryGetValue(settings.Name, out var shellContext))
             {
-                shellContext = await GetOrCreateShellContextAsync(settings);
+                shellContext = await GetOrCreateShellContextAsync(settings).ConfigureAwait(false);
             }
 
             // We create a scope before checking if the shell has been released.
-            scope = await shellContext.CreateScopeAsync();
+            scope = await shellContext.CreateScopeAsync().ConfigureAwait(false);
 
             // If 'CreateScope()' returned null, the shell is released. We then remove it and
             // retry with the hope to get one that won't be released before we create a scope.
@@ -153,8 +153,8 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     public async Task UpdateShellSettingsAsync(ShellSettings settings)
     {
         settings.VersionId = IdGenerator.GenerateId();
-        await _shellSettingsManager.SaveSettingsAsync(settings);
-        await ReloadShellContextAsync(settings);
+        await _shellSettingsManager.SaveSettingsAsync(settings).ConfigureAwait(false);
+        await ReloadShellContextAsync(settings).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -163,8 +163,8 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     public async Task RemoveShellSettingsAsync(ShellSettings settings)
     {
         CheckCanRemoveShell(settings);
-        await _shellSettingsManager.RemoveSettingsAsync(settings);
-        await RemoveShellContextAsync(settings);
+        await _shellSettingsManager.RemoveSettingsAsync(settings).ConfigureAwait(false);
+        await RemoveShellContextAsync(settings).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         {
             foreach (var d in ReloadingAsync.GetInvocationList())
             {
-                await ((ShellEvent)d)(settings.Name);
+                await ((ShellEvent)d)(settings.Name).ConfigureAwait(false);
             }
         }
 
@@ -203,7 +203,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         }
 
         // Reload the shell settings from the configuration.
-        settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+        settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name).ConfigureAwait(false);
 
         var count = 0;
         while (count++ < ReloadShellMaxRetriesCount)
@@ -212,7 +212,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
             {
                 _runningShellTable.Remove(settings);
                 context.Settings.AsDisposable();
-                await context.ReleaseAsync();
+                await context.ReleaseAsync().ConfigureAwait(false);
             }
 
             // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
@@ -230,7 +230,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
             }
 
             // Consistency: We may have been the last to add the shell but not with the last settings.
-            var loaded = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+            var loaded = await _shellSettingsManager.LoadSettingsAsync(settings.Name).ConfigureAwait(false);
             if (settings.VersionId == loaded.VersionId)
             {
                 loaded.AsDisposable().Dispose();
@@ -256,7 +256,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         {
             foreach (var d in ReleasingAsync.GetInvocationList())
             {
-                await ((ShellEvent)d)(settings.Name);
+                await ((ShellEvent)d)(settings.Name).ConfigureAwait(false);
             }
         }
 
@@ -268,7 +268,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
 
         if (_shellContexts.TryRemove(settings.Name, out var context))
         {
-            await context.ReleaseAsync();
+            await context.ReleaseAsync().ConfigureAwait(false);
         }
 
         // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
@@ -292,14 +292,14 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         {
             foreach (var d in RemovingAsync.GetInvocationList())
             {
-                await ((ShellEvent)d)(settings.Name);
+                await ((ShellEvent)d)(settings.Name).ConfigureAwait(false);
             }
         }
 
         if (_shellContexts.TryRemove(settings.Name, out var context))
         {
             context.Settings.AsDisposable();
-            await context.ReleaseAsync();
+            await context.ReleaseAsync().ConfigureAwait(false);
         }
 
         _shellSettings.TryRemove(settings.Name, out _);
@@ -340,24 +340,24 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         }
 
         // Load all extensions and features and register their components.
-        await _extensionManager.LoadFeaturesAsync();
+        await _extensionManager.LoadFeaturesAsync().ConfigureAwait(false);
 
         if (LoadingAsync is not null)
         {
             foreach (var d in LoadingAsync.GetInvocationList())
             {
-                await ((ShellsEvent)d)();
+                await ((ShellsEvent)d)().ConfigureAwait(false);
             }
         }
 
         // Is there any tenant right now?
-        var allSettings = (await _shellSettingsManager.LoadSettingsAsync()).Where(CanCreateShell).ToArray();
+        var allSettings = (await _shellSettingsManager.LoadSettingsAsync().ConfigureAwait(false)).Where(CanCreateShell).ToArray();
         var defaultSettings = allSettings.FirstOrDefault(s => s.IsDefaultShell());
 
         // The 'Default' tenant is not running, run the Setup.
         if (!defaultSettings.IsRunning())
         {
-            var setupContext = await CreateSetupContextAsync(defaultSettings);
+            var setupContext = await CreateSetupContextAsync(defaultSettings).ConfigureAwait(false);
             AddAndRegisterShell(setupContext);
         }
 
@@ -430,10 +430,10 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
                 .AsUninitialized()
                 .AsDisposable();
 
-            await UpdateShellSettingsAsync(defaultSettings);
+            await UpdateShellSettingsAsync(defaultSettings).ConfigureAwait(false);
         }
 
-        return await _shellContextFactory.CreateSetupContextAsync(defaultSettings);
+        return await _shellContextFactory.CreateSetupContextAsync(defaultSettings).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -545,7 +545,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     {
         foreach (var shell in ListShellContexts())
         {
-            await shell.DisposeAsync();
+            await shell.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

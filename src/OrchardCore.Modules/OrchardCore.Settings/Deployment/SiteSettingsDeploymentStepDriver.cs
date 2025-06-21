@@ -29,7 +29,7 @@ public sealed class SiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentS
         // Initializes the value to empty otherwise the model is not updated if no type is selected.
         step.Settings = [];
 
-        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.Settings);
+        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.Settings).ConfigureAwait(false);
 
         return Edit(step, context);
     }

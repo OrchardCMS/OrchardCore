@@ -29,31 +29,31 @@ public class NotificationService : INotificationService
     {
         var notificationContext = new NotificationContext(message, notify);
 
-        var notification = await CreateNotificationAsync(notificationContext);
+        var notification = await CreateNotificationAsync(notificationContext).ConfigureAwait(false);
 
-        await _notificationEvents.InvokeAsync((handler, context) => handler.SendingAsync(context), notificationContext, _logger);
+        await _notificationEvents.InvokeAsync((handler, context) => handler.SendingAsync(context), notificationContext, _logger).ConfigureAwait(false);
 
         var totalSent = 0;
 
-        var providers = await _notificationMethodProviderAccessor.GetProvidersAsync(notify);
+        var providers = await _notificationMethodProviderAccessor.GetProvidersAsync(notify).ConfigureAwait(false);
 
         foreach (var provider in providers)
         {
-            await _notificationEvents.InvokeAsync((handler, service, context) => handler.SendingAsync(service, notificationContext), provider, notificationContext, _logger);
+            await _notificationEvents.InvokeAsync((handler, service, context) => handler.SendingAsync(service, notificationContext), provider, notificationContext, _logger).ConfigureAwait(false);
 
-            if (await provider.TrySendAsync(notify, message))
+            if (await provider.TrySendAsync(notify, message).ConfigureAwait(false))
             {
                 totalSent++;
 
-                await _notificationEvents.InvokeAsync((handler, service, context) => handler.SentAsync(service, notificationContext), provider, notificationContext, _logger);
+                await _notificationEvents.InvokeAsync((handler, service, context) => handler.SentAsync(service, notificationContext), provider, notificationContext, _logger).ConfigureAwait(false);
             }
             else
             {
-                await _notificationEvents.InvokeAsync((handler, service, context) => handler.FailedAsync(service, notificationContext), provider, notificationContext, _logger);
+                await _notificationEvents.InvokeAsync((handler, service, context) => handler.FailedAsync(service, notificationContext), provider, notificationContext, _logger).ConfigureAwait(false);
             }
         }
 
-        await _notificationEvents.InvokeAsync((handler, context) => handler.SentAsync(context), notificationContext, _logger);
+        await _notificationEvents.InvokeAsync((handler, context) => handler.SentAsync(context), notificationContext, _logger).ConfigureAwait(false);
 
         return totalSent;
     }
@@ -70,9 +70,9 @@ public class NotificationService : INotificationService
 
         context.Notification = notification;
 
-        await _notificationEvents.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
-        await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
-        await _notificationEvents.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+        await _notificationEvents.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger).ConfigureAwait(false);
+        await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection).ConfigureAwait(false);
+        await _notificationEvents.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger).ConfigureAwait(false);
 
         return notification;
     }

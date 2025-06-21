@@ -17,7 +17,7 @@ public sealed class SearchSettingsDeploymentSource
 
     protected override async Task ProcessAsync(SearchSettingsDeploymentStep step, DeploymentPlanResult result)
     {
-        var searchSettings = await _siteService.GetSettingsAsync<SearchSettings>();
+        var searchSettings = await _siteService.GetSettingsAsync<SearchSettings>().ConfigureAwait(false);
 
         result.Steps.Add(new JsonObject
         {

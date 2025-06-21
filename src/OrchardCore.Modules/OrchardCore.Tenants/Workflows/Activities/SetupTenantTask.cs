@@ -116,7 +116,7 @@ public class SetupTenantTask : TenantTask
             return Outcomes("Failed");
         }
 
-        var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
+        var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null).ConfigureAwait(false))?.Trim();
 
         if (string.IsNullOrWhiteSpace(tenantName))
         {
@@ -138,9 +138,9 @@ public class SetupTenantTask : TenantTask
             return Outcomes("Failed");
         }
 
-        var siteName = (await ExpressionEvaluator.EvaluateAsync(SiteName, workflowContext, null))?.Trim();
-        var adminUsername = (await ExpressionEvaluator.EvaluateAsync(AdminUsername, workflowContext, null))?.Trim();
-        var adminEmail = (await ExpressionEvaluator.EvaluateAsync(AdminEmail, workflowContext, null))?.Trim();
+        var siteName = (await ExpressionEvaluator.EvaluateAsync(SiteName, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var adminUsername = (await ExpressionEvaluator.EvaluateAsync(AdminUsername, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var adminEmail = (await ExpressionEvaluator.EvaluateAsync(AdminEmail, workflowContext, null).ConfigureAwait(false))?.Trim();
 
         if (string.IsNullOrEmpty(adminUsername) || adminUsername.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
         {
@@ -152,13 +152,13 @@ public class SetupTenantTask : TenantTask
             return Outcomes("Failed");
         }
 
-        var adminPassword = (await ExpressionEvaluator.EvaluateAsync(AdminPassword, workflowContext, null))?.Trim();
+        var adminPassword = (await ExpressionEvaluator.EvaluateAsync(AdminPassword, workflowContext, null).ConfigureAwait(false))?.Trim();
 
-        var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
-        var databaseConnectionString = (await ExpressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext, null))?.Trim();
-        var databaseTablePrefix = (await ExpressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null))?.Trim();
-        var databaseSchema = (await ExpressionEvaluator.EvaluateAsync(DatabaseSchema, workflowContext, null))?.Trim();
-        var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
+        var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var databaseConnectionString = (await ExpressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var databaseTablePrefix = (await ExpressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var databaseSchema = (await ExpressionEvaluator.EvaluateAsync(DatabaseSchema, workflowContext, null).ConfigureAwait(false))?.Trim();
+        var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null).ConfigureAwait(false))?.Trim();
 
         if (string.IsNullOrEmpty(databaseProvider))
         {
@@ -185,7 +185,7 @@ public class SetupTenantTask : TenantTask
             recipeName = shellSettings["RecipeName"];
         }
 
-        var recipes = await SetupService.GetSetupRecipesAsync();
+        var recipes = await SetupService.GetSetupRecipesAsync().ConfigureAwait(false);
         var recipe = recipes.FirstOrDefault(r => r.Name == recipeName);
 
         var setupContext = new SetupContext
@@ -208,7 +208,7 @@ public class SetupTenantTask : TenantTask
             },
         };
 
-        var executionId = await SetupService.SetupAsync(setupContext);
+        var executionId = await SetupService.SetupAsync(setupContext).ConfigureAwait(false);
 
         // Check if a component in the Setup failed.
         if (setupContext.Errors.Count > 0)

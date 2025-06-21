@@ -28,7 +28,7 @@ public sealed class DefaultContentTypeDisplayDriver : ContentTypeDefinitionDispl
     {
         var model = new ContentTypeViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         context.Builder.DisplayedAs(model.DisplayName);
 

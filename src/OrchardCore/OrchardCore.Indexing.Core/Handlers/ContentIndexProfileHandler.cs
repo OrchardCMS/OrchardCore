@@ -94,7 +94,7 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
         // Cache the indexes per-request to avoid having to reset the same index multiple times.
         if (_resetIndexIds.Add(context.IndexProfile.Id))
         {
-            await documentIndexManager.SetLastTaskIdAsync(context.IndexProfile, 0);
+            await documentIndexManager.SetLastTaskIdAsync(context.IndexProfile, 0).ConfigureAwait(false);
         }
     }
 
@@ -108,7 +108,7 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
         return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-indexing", context.IndexProfile, async (scope, index) =>
         {
             var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
-            await indexingService.ProcessRecordsAsync([index]);
+            await indexingService.ProcessRecordsAsync([index]).ConfigureAwait(false);
         });
     }
 

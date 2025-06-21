@@ -56,8 +56,8 @@ public class DisplayHelper : DynamicObject, IDisplayHelper
 
     private async Task<IHtmlContent> ShapeTypeExecuteAsync(string name, INamedEnumerable<object> parameters)
     {
-        var shape = await _shapeFactory.CreateAsync(name, parameters);
-        return await ShapeExecuteAsync(shape);
+        var shape = await _shapeFactory.CreateAsync(name, parameters).ConfigureAwait(false);
+        return await ShapeExecuteAsync(shape).ConfigureAwait(false);
     }
 
     public Task<IHtmlContent> ShapeExecuteAsync(IShape shape)

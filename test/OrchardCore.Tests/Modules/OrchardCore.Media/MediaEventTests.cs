@@ -79,7 +79,7 @@ public class TestMediaEventHandler : IMediaCreatingEventHandler
     public async Task<Stream> MediaCreatingAsync(MediaCreatingContext context, Stream inputStream)
     {
         var outStream = MemoryStreamFactory.GetStream();
-        await inputStream.CopyToAsync(outStream);
+        await inputStream.CopyToAsync(outStream).ConfigureAwait(false);
         outStream.Seek(0, SeekOrigin.Begin);
 
         return outStream;

@@ -33,14 +33,14 @@ public class CustomSettingsService
     }
 
     public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync()
-        => (await _settingsTypes.Value).Keys;
+        => (await _settingsTypes.Value.ConfigureAwait(false)).Keys;
 
     public async Task<IEnumerable<ContentTypeDefinition>> GetAllSettingsTypesAsync()
-        => (await _settingsTypes.Value).Values;
+        => (await _settingsTypes.Value.ConfigureAwait(false)).Values;
 
     public async Task<IEnumerable<ContentTypeDefinition>> GetSettingsTypesAsync(params string[] settingsTypeNames)
     {
-        var types = await _settingsTypes.Value;
+        var types = await _settingsTypes.Value.ConfigureAwait(false);
         var definitions = new List<ContentTypeDefinition>();
 
         foreach (var settingsTypeName in settingsTypeNames)
@@ -60,7 +60,7 @@ public class CustomSettingsService
 
     public async Task<ContentTypeDefinition> GetSettingsTypeAsync(string settingsTypeName)
     {
-        (await _settingsTypes.Value).TryGetValue(settingsTypeName, out var settingsType);
+        (await _settingsTypes.Value.ConfigureAwait(false)).TryGetValue(settingsTypeName, out var settingsType);
 
         return settingsType;
     }
@@ -85,9 +85,9 @@ public class CustomSettingsService
 
     public async Task<ContentItem> GetSettingsAsync(ContentTypeDefinition settingsType, Action isNew = null)
     {
-        var site = await _siteService.GetSiteSettingsAsync();
+        var site = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
 
-        return await GetSettingsAsync(site, settingsType, isNew);
+        return await GetSettingsAsync(site, settingsType, isNew).ConfigureAwait(false);
     }
 
     public async Task<ContentItem> GetSettingsAsync(ISite site, ContentTypeDefinition settingsType, Action isNew = null)
@@ -100,12 +100,12 @@ public class CustomSettingsService
             var existing = property.ToObject<ContentItem>();
 
             // Create a new item to take into account the current type definition.
-            contentItem = await _contentManager.NewAsync(existing.ContentType);
+            contentItem = await _contentManager.NewAsync(existing.ContentType).ConfigureAwait(false);
             contentItem.Merge(existing);
         }
         else
         {
-            contentItem = await _contentManager.NewAsync(settingsType.Name);
+            contentItem = await _contentManager.NewAsync(settingsType.Name).ConfigureAwait(false);
             isNew?.Invoke();
         }
 
@@ -114,7 +114,7 @@ public class CustomSettingsService
 
     private async Task<IDictionary<string, ContentTypeDefinition>> GetContentTypeAsync()
     {
-        var contentTypes = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+        var contentTypes = await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false);
 
         var result = contentTypes.Where(x => x.StereotypeEquals(CustomSettingsConstants.Stereotype))
         .ToDictionary(x => x.Name);

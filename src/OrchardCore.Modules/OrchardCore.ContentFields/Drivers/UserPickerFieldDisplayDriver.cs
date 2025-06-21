@@ -53,7 +53,7 @@ public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<Use
 
             if (field.UserIds.Length > 0)
             {
-                var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync())
+                var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync().ConfigureAwait(false))
                     .OrderBy(o => Array.FindIndex(field.UserIds, x => string.Equals(o.UserId, x, StringComparison.OrdinalIgnoreCase)));
 
                 foreach (var user in users)
@@ -73,7 +73,7 @@ public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<Use
     {
         var viewModel = new EditUserPickerFieldViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.UserIds);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.UserIds).ConfigureAwait(false);
         field.UserIds = viewModel.UserIds == null
             ? [] : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
@@ -89,7 +89,7 @@ public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<Use
             context.Updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
         }
 
-        var users = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync();
+        var users = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync().ConfigureAwait(false);
         field.SetUserNames(users.Select(t => t.UserName).ToArray());
 
         return Edit(field, context);

@@ -89,13 +89,13 @@ public sealed class ContentItemType : ObjectGraphType<ContentItem>
         // Build shape
         var displayManager = serviceProvider.GetRequiredService<IContentItemDisplayManager>();
         var updateModelAccessor = serviceProvider.GetRequiredService<IUpdateModelAccessor>();
-        var model = await displayManager.BuildDisplayAsync(context.Source, updateModelAccessor.ModelUpdater);
+        var model = await displayManager.BuildDisplayAsync(context.Source, updateModelAccessor.ModelUpdater).ConfigureAwait(false);
 
         var displayHelper = serviceProvider.GetRequiredService<IDisplayHelper>();
         var htmlEncoder = serviceProvider.GetRequiredService<HtmlEncoder>();
 
         using var sw = new ZStringWriter();
-        var htmlContent = await displayHelper.ShapeExecuteAsync(model);
+        var htmlContent = await displayHelper.ShapeExecuteAsync(model).ConfigureAwait(false);
         htmlContent.WriteTo(sw, htmlEncoder);
 
         return sw.ToString();

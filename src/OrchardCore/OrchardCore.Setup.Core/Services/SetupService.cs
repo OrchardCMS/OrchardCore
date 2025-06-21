@@ -77,7 +77,7 @@ public class SetupService : ISetupService
     {
         if (_recipes is null)
         {
-            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync())).ConfigureAwait(false);
             _recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
         }
 
@@ -90,12 +90,12 @@ public class SetupService : ISetupService
         var initialState = context.ShellSettings.State;
         try
         {
-            var executionId = await SetupInternalAsync(context);
+            var executionId = await SetupInternalAsync(context).ConfigureAwait(false);
 
             if (context.Errors.Count > 0)
             {
                 context.ShellSettings.State = initialState;
-                await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
+                await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false).ConfigureAwait(false);
             }
 
             return executionId;
@@ -103,7 +103,7 @@ public class SetupService : ISetupService
         catch
         {
             context.ShellSettings.State = initialState;
-            await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
+            await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false).ConfigureAwait(false);
 
             throw;
         }
@@ -165,7 +165,7 @@ public class SetupService : ISetupService
         }
 
         var validationContext = new DbConnectionValidatorContext(shellSettings);
-        switch (await _dbConnectionValidator.ValidateAsync(validationContext))
+        switch (await _dbConnectionValidator.ValidateAsync(validationContext).ConfigureAwait(false))
         {
             case DbConnectionValidatorResult.NoProvider:
                 context.Errors.Add(string.Empty, S["DatabaseProvider setting is required."]);
@@ -200,22 +200,23 @@ public class SetupService : ISetupService
 
         string executionId;
 
-        await using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
+        var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor);
+        await using (shellContext.ConfigureAwait(false).ConfigureAwait(false))
         {
-            await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+            await (await shellContext.CreateScopeAsync().ConfigureAwait(false)).UsingServiceScopeAsync(async scope =>
             {
                 try
                 {
                     // Create the "minimum" shell descriptor.
                     await scope.ServiceProvider.GetService<IShellDescriptorManager>()
-                        .UpdateShellDescriptorAsync(0, shellContext.Blueprint.Descriptor.Features);
+                        .UpdateShellDescriptorAsync(0, shellContext.Blueprint.Descriptor.Features).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
                     _logger.LogError(e, "An error occurred while initializing the datastore.");
                     context.Errors.Add(string.Empty, S["An error occurred while initializing the datastore: {0}", e.Message]);
                 }
-            });
+            }).ConfigureAwait(false);
 
             if (context.Errors.Count > 0)
             {
@@ -227,7 +228,7 @@ public class SetupService : ISetupService
             var recipeExecutor = shellContext.ServiceProvider.GetRequiredService<IRecipeExecutor>();
             try
             {
-                await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
+                await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping).ConfigureAwait(false);
             }
             catch (RecipeExecutionException e)
             {
@@ -244,18 +245,18 @@ public class SetupService : ISetupService
         }
 
         // Reloading the shell context as the recipe has probably updated its features.
-        await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
+        await (await _shellHost.GetScopeAsync(shellSettings).ConfigureAwait(false)).UsingAsync(async scope =>
         {
             var handlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
 
-            await handlers.InvokeAsync((handler, ctx) => handler.SetupAsync(ctx), context, _logger);
+            await handlers.InvokeAsync((handler, ctx) => handler.SetupAsync(ctx), context, _logger).ConfigureAwait(false);
 
             if (context.Errors.Count > 0)
             {
-                await handlers.InvokeAsync((handler) => handler.FailedAsync(context), _logger);
+                await handlers.InvokeAsync((handler) => handler.FailedAsync(context), _logger).ConfigureAwait(false);
             }
-        });
+        }).ConfigureAwait(false);
 
         if (context.Errors.Count > 0)
         {
@@ -266,23 +267,26 @@ public class SetupService : ISetupService
         // still initializing, to unlock the database file (and thus also allow it to be deleted).
         if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite)
         {
-            await using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
-            var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
+            var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings).ConfigureAwait(false);
+            await using (shellContext.ConfigureAwait(false))
+            {
+                var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
             await using var connection = store.Configuration.ConnectionFactory.CreateConnection();
             if (connection is SqliteConnection sqliteConnection)
             {
                 SqliteConnection.ClearPool(sqliteConnection);
             }
+            }
         }
 
         // Update the shell state.
-        await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
+        await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning()).ConfigureAwait(false);
 
-        await (await _shellHost.GetScopeAsync(shellSettings.Name)).UsingAsync(async scope =>
+        await (await _shellHost.GetScopeAsync(shellSettings.Name).ConfigureAwait(false)).UsingAsync(async scope =>
         {
             var handlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
-            await handlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger);
-        });
+            await handlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger).ConfigureAwait(false);
+        }).ConfigureAwait(false);
 
         return executionId;
     }

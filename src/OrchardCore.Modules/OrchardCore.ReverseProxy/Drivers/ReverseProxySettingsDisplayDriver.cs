@@ -36,7 +36,7 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -56,14 +56,14 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new ReverseProxySettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.ForwardedHeaders = ForwardedHeaders.None;
 
@@ -84,6 +84,6 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

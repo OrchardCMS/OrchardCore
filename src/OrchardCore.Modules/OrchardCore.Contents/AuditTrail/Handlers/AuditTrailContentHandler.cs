@@ -69,7 +69,7 @@ public class AuditTrailContentHandler : ContentHandlerBase
             return;
         }
 
-        var settings = await _siteService.GetSettingsAsync<ContentAuditTrailSettings>();
+        var settings = await _siteService.GetSettingsAsync<ContentAuditTrailSettings>().ConfigureAwait(false);
 
         if (!settings.AllowedContentTypes.Contains(content.ContentItem.ContentType))
         {
@@ -78,7 +78,7 @@ public class AuditTrailContentHandler : ContentHandlerBase
 
         var versionNumber = await _session
             .QueryIndex<ContentItemIndex>(index => index.ContentItemId == content.ContentItem.ContentItemId)
-            .CountAsync();
+            .CountAsync().ConfigureAwait(false);
 
         await _auditTrailManager.RecordEventAsync(
             new AuditTrailContext<AuditTrailContentEvent>
@@ -93,6 +93,6 @@ public class AuditTrailContentHandler : ContentHandlerBase
                     ContentItem = content.ContentItem,
                     VersionNumber = versionNumber,
                 }
-            ));
+            )).ConfigureAwait(false);
     }
 }

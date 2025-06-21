@@ -36,7 +36,7 @@ public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAre
     {
         var viewModel = new TextAreaPartEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         part.Placeholder = viewModel.Placeholder?.Trim();
         part.DefaultValue = viewModel.DefaultValue?.Trim();

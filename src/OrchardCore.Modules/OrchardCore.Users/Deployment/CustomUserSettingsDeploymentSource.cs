@@ -23,19 +23,19 @@ public sealed class CustomUserSettingsDeploymentSource
     protected override async Task ProcessAsync(CustomUserSettingsDeploymentStep step, DeploymentPlanResult result)
     {
         var settingsTypes = step.IncludeAll
-            ? (await _customUserSettingsService.GetAllSettingsTypesAsync()).ToArray()
-            : (await _customUserSettingsService.GetSettingsTypesAsync(step.SettingsTypeNames)).ToArray();
+            ? (await _customUserSettingsService.GetAllSettingsTypesAsync().ConfigureAwait(false)).ToArray()
+            : (await _customUserSettingsService.GetSettingsTypesAsync(step.SettingsTypeNames).ConfigureAwait(false)).ToArray();
 
         // Todo: check permissions for each settings type
         var userData = new JsonArray();
-        var allUsers = await _session.Query<User>().ListAsync();
+        var allUsers = await _session.Query<User>().ListAsync().ConfigureAwait(false);
 
         foreach (var user in allUsers)
         {
             var userSettingsData = new JsonArray();
             foreach (var settingsType in settingsTypes)
             {
-                var userSetting = await _customUserSettingsService.GetSettingsAsync(user, settingsType);
+                var userSetting = await _customUserSettingsService.GetSettingsAsync(user, settingsType).ConfigureAwait(false);
                 userSettingsData.Add(JObject.FromObject(userSetting));
             }
 

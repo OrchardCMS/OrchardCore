@@ -22,14 +22,14 @@ public sealed class TwitterSettingsStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<TwitterSettingsStepModel>();
-        var settings = await _twitterService.LoadSettingsAsync();
+        var settings = await _twitterService.LoadSettingsAsync().ConfigureAwait(false);
 
         settings.ConsumerKey = model.ConsumerKey;
         settings.ConsumerSecret = model.ConsumerSecret;
         settings.AccessToken = model.AccessToken;
         settings.AccessTokenSecret = model.AccessTokenSecret;
 
-        await _twitterService.UpdateSettingsAsync(settings);
+        await _twitterService.UpdateSettingsAsync(settings).ConfigureAwait(false);
     }
 }
 

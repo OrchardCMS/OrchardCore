@@ -121,7 +121,7 @@ public sealed class Startup : StartupBase
             {
                 var contentHandleManager = context.Services.GetRequiredService<IContentHandleManager>();
 
-                var contentItemId = await contentHandleManager.GetContentItemIdAsync(handle);
+                var contentItemId = await contentHandleManager.GetContentItemIdAsync(handle).ConfigureAwait(false);
 
                 if (contentItemId == null)
                 {
@@ -130,7 +130,7 @@ public sealed class Startup : StartupBase
 
                 var contentManager = context.Services.GetRequiredService<IContentManager>();
 
-                var contentItem = await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
+                var contentItem = await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published).ConfigureAwait(false);
                 return FluidValue.Create(contentItem, context.Options);
             }
         })

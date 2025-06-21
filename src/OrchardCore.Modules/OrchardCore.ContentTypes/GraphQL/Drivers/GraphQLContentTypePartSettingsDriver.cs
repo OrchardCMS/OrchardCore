@@ -34,7 +34,7 @@ public sealed class GraphQLContentTypePartSettingsDriver : ContentTypePartDefini
             if (!context.Updater.ModelState.IsValid)
             {
                 await context.Updater.TryUpdateModelAsync(model, Prefix,
-                    m => m.Settings);
+                    m => m.Settings).ConfigureAwait(false);
             }
         }).Location("Content");
     }
@@ -48,7 +48,7 @@ public sealed class GraphQLContentTypePartSettingsDriver : ContentTypePartDefini
 
         var model = new GraphQLContentTypePartSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Settings);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Settings).ConfigureAwait(false);
 
         context.Builder.WithSettings(model.Settings);
 

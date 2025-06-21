@@ -51,7 +51,7 @@ internal sealed class ModularBackgroundService : BackgroundService
             try
             {
                 // Ensure all tenants are pre-loaded.
-                await _shellHost.InitializeAsync();
+                await _shellHost.InitializeAsync().ConfigureAwait(false);
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
@@ -63,7 +63,7 @@ internal sealed class ModularBackgroundService : BackgroundService
         {
             try
             {
-                await Task.Delay(_options.MinimumIdleTime, stoppingToken);
+                await Task.Delay(_options.MinimumIdleTime, stoppingToken).ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {
@@ -79,8 +79,8 @@ internal sealed class ModularBackgroundService : BackgroundService
             try
             {
                 var runningShells = GetRunningShells();
-                await UpdateAsync(previousShells, runningShells, stoppingToken);
-                await RunAsync(runningShells, stoppingToken);
+                await UpdateAsync(previousShells, runningShells, stoppingToken).ConfigureAwait(false);
+                await RunAsync(runningShells, stoppingToken).ConfigureAwait(false);
                 previousShells = runningShells;
             }
             catch (Exception ex) when (!ex.IsFatal())
@@ -88,7 +88,7 @@ internal sealed class ModularBackgroundService : BackgroundService
                 _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
             }
 
-            await WaitAsync(pollingDelay, stoppingToken);
+            await WaitAsync(pollingDelay, stoppingToken).ConfigureAwait(false);
         }
     }
 
@@ -114,7 +114,7 @@ internal sealed class ModularBackgroundService : BackgroundService
                 }
 
                 // Try to create a shell scope on this shell context.
-                var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name);
+                var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name).ConfigureAwait(false);
                 if (!success)
                 {
                     break;
@@ -123,7 +123,7 @@ internal sealed class ModularBackgroundService : BackgroundService
                 // Check if the shell has no pipeline and should not be warmed up.
                 if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
                 {
-                    await shellScope.TerminateShellAsync();
+                    await shellScope.TerminateShellAsync().ConfigureAwait(false);
                     break;
                 }
 
@@ -133,24 +133,25 @@ internal sealed class ModularBackgroundService : BackgroundService
                 {
                     // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
                     var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
-                    (locker, locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
+                    (locker, locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings).ConfigureAwait(false);
                     if (!locked)
                     {
-                        await shellScope.TerminateShellAsync();
+                        await shellScope.TerminateShellAsync().ConfigureAwait(false);
                         _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
                         break;
                     }
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    await shellScope.TerminateShellAsync();
+                    await shellScope.TerminateShellAsync().ConfigureAwait(false);
                     _logger.LogError(ex, "Failed to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
                     break;
                 }
 
-                await using var acquiredLock = locker;
-
-                await shellScope.UsingAsync(async scope =>
+                var acquiredLock = locker;
+                await using (acquiredLock.ConfigureAwait(false))
+                {
+                    await shellScope.UsingAsync(async scope =>
                 {
                     var taskName = scheduler.Name;
 
@@ -217,11 +218,12 @@ internal sealed class ModularBackgroundService : BackgroundService
 
                     await handlers.InvokeAsync((handler, context, token) => handler.ExecutedAsync(context, token), context, stoppingToken, _logger);
                 });
+                }
             }
 
             // Clear the 'HttpContext' for this async flow.
             _httpContextAccessor.HttpContext = null;
-        });
+        }).ConfigureAwait(false);
     }
 
     private async Task UpdateAsync(
@@ -244,7 +246,7 @@ internal sealed class ModularBackgroundService : BackgroundService
             }
 
             // Try to create a shell scope on this shell context.
-            var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name);
+            var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name).ConfigureAwait(false);
             if (!success)
             {
                 return;
@@ -253,7 +255,7 @@ internal sealed class ModularBackgroundService : BackgroundService
             // Check if the shell has no pipeline and should not be warmed up.
             if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
             {
-                await shellScope.TerminateShellAsync();
+                await shellScope.TerminateShellAsync().ConfigureAwait(false);
                 return;
             }
 
@@ -280,7 +282,7 @@ internal sealed class ModularBackgroundService : BackgroundService
                 {
                     try
                     {
-                        timeZone = _clock.GetTimeZone((await siteService.GetSiteSettingsAsync()).TimeZoneId);
+                        timeZone = _clock.GetTimeZone((await siteService.GetSiteSettingsAsync().ConfigureAwait(false)).TimeZoneId);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -308,7 +310,7 @@ internal sealed class ModularBackgroundService : BackgroundService
                     {
                         try
                         {
-                            settings = await settingsProvider.GetSettingsAsync(task);
+                            settings = await settingsProvider.GetSettingsAsync(task).ConfigureAwait(false);
                         }
                         catch (Exception ex) when (!ex.IsFatal())
                         {
@@ -326,19 +328,19 @@ internal sealed class ModularBackgroundService : BackgroundService
                     scheduler.Released = false;
                     scheduler.Updated = true;
                 }
-            });
+            }).ConfigureAwait(false);
 
             // Clear the 'HttpContext' for this async flow.
             _httpContextAccessor.HttpContext = null;
-        });
+        }).ConfigureAwait(false);
     }
 
     private async Task WaitAsync(Task pollingDelay, CancellationToken stoppingToken)
     {
         try
         {
-            await Task.Delay(_options.MinimumIdleTime, stoppingToken);
-            await pollingDelay;
+            await Task.Delay(_options.MinimumIdleTime, stoppingToken).ConfigureAwait(false);
+            await pollingDelay.ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {

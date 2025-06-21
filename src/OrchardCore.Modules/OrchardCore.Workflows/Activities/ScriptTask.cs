@@ -44,7 +44,7 @@ public class ScriptTask : TaskActivity<ScriptTask>
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var outcomes = new List<string>();
-        workflowContext.LastResult = await _scriptEvaluator.EvaluateAsync(Script, workflowContext, new OutcomeMethodProvider(outcomes));
+        workflowContext.LastResult = await _scriptEvaluator.EvaluateAsync(Script, workflowContext, new OutcomeMethodProvider(outcomes)).ConfigureAwait(false);
 
         return Outcomes(outcomes);
     }

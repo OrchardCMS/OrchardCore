@@ -37,11 +37,11 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 
         var client = _clientFactory.CreateSearchClient(indexFullName);
 
-        var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions);
+        var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions).ConfigureAwait(false);
 
         var docs = new List<SearchDocument>();
 
-        await foreach (var doc in searchResult.Value.GetResultsAsync())
+        await foreach (var doc in searchResult.Value.GetResultsAsync().ConfigureAwait(false))
         {
             docs.Add(doc.Document);
         }
@@ -57,7 +57,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 
         var client = _clientFactory.CreateSearchClient(indexFullName);
 
-        var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions);
+        var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions).ConfigureAwait(false);
         var counter = 0L;
 
         if (searchResult.Value is null)
@@ -65,7 +65,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
             return counter;
         }
 
-        await foreach (var doc in searchResult.Value.GetResultsAsync())
+        await foreach (var doc in searchResult.Value.GetResultsAsync().ConfigureAwait(false))
         {
             action(doc.Document);
             counter++;
@@ -90,7 +90,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 
             var keyName = GetKeyFieldNameOrThrow(index);
 
-            await client.DeleteDocumentsAsync(keyName, documentIds);
+            await client.DeleteDocumentsAsync(keyName, documentIds).ConfigureAwait(false);
 
             return true;
         }
@@ -134,7 +134,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
             return false;
         }
 
-        return await DeleteDocumentsAsync(index, documentIds);
+        return await DeleteDocumentsAsync(index, documentIds).ConfigureAwait(false);
     }
 
     public async Task<bool> AddOrUpdateDocumentsAsync(IndexProfile index, IEnumerable<DocumentIndex> indexDocuments)
@@ -160,9 +160,9 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
             {
                 var docs = CreateSearchDocuments(page, maps);
 
-                await _documentEvents.InvokeAsync(handler => handler.MergingOrUploadingAsync(docs), _logger);
+                await _documentEvents.InvokeAsync(handler => handler.MergingOrUploadingAsync(docs), _logger).ConfigureAwait(false);
 
-                await client.MergeOrUploadDocumentsAsync(docs);
+                await client.MergeOrUploadDocumentsAsync(docs).ConfigureAwait(false);
             }
 
             return true;
@@ -192,9 +192,9 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
             {
                 var docs = CreateSearchDocuments(page, maps);
 
-                await _documentEvents.InvokeAsync(handler => handler.UploadingAsync(docs), _logger);
+                await _documentEvents.InvokeAsync(handler => handler.UploadingAsync(docs), _logger).ConfigureAwait(false);
 
-                await client.UploadDocumentsAsync(docs);
+                await client.UploadDocumentsAsync(docs).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -219,7 +219,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
             metadata.LastTaskId = lastTaskId;
         });
 
-        await _indexStore.UpdateAsync(index);
+        await _indexStore.UpdateAsync(index).ConfigureAwait(false);
     }
 
     public IContentIndexSettings GetContentIndexSettings()

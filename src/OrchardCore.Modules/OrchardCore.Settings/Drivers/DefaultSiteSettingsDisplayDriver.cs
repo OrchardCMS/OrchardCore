@@ -56,7 +56,7 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
         var model = new SiteSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         site.SiteName = model.SiteName;
         site.PageTitleFormat = model.PageTitleFormat;
@@ -86,7 +86,7 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, context);
+        return await EditAsync(site, context).ConfigureAwait(false);
     }
 
     private static void PopulateProperties(ISite site, SiteSettingsViewModel model)

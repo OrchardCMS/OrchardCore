@@ -16,7 +16,7 @@ public sealed class AllFeaturesDeploymentSource
 
     protected override async Task ProcessAsync(AllFeaturesDeploymentStep step, DeploymentPlanResult result)
     {
-        var features = await _moduleService.GetAvailableFeaturesAsync();
+        var features = await _moduleService.GetAvailableFeaturesAsync().ConfigureAwait(false);
         var featureStep = new JsonObject
         {
             ["name"] = "Feature",

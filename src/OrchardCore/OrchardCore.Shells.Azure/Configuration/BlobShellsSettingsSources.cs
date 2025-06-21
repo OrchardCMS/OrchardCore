@@ -27,13 +27,13 @@ public class BlobShellsSettingsSources : IShellsSettingsSources
 
     public async Task AddSourcesAsync(IConfigurationBuilder builder)
     {
-        var fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName);
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName).ConfigureAwait(false);
 
         if (fileInfo == null && _blobOptions.MigrateFromFiles)
         {
-            if (await TryMigrateFromFileAsync())
+            if (await TryMigrateFromFileAsync().ConfigureAwait(false))
             {
-                fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName);
+                fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName).ConfigureAwait(false);
             }
             else
             {
@@ -43,7 +43,7 @@ public class BlobShellsSettingsSources : IShellsSettingsSources
 
         if (fileInfo != null)
         {
-            var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Shell.TenantsFileName);
+            var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Shell.TenantsFileName).ConfigureAwait(false);
             builder.AddTenantJsonStream(stream);
         }
     }
@@ -54,12 +54,12 @@ public class BlobShellsSettingsSources : IShellsSettingsSources
     {
         JsonObject tenantsSettings;
 
-        var fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName);
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName).ConfigureAwait(false);
 
         if (fileInfo != null)
         {
-            using var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Shell.TenantsFileName);
-            tenantsSettings = await JObject.LoadAsync(stream);
+            using var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Shell.TenantsFileName).ConfigureAwait(false);
+            tenantsSettings = await JObject.LoadAsync(stream).ConfigureAwait(false);
         }
         else
         {
@@ -84,19 +84,19 @@ public class BlobShellsSettingsSources : IShellsSettingsSources
         var tenantsSettingsString = tenantsSettings.ToJsonString(JOptions.Default);
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
-        await _shellsFileStore.CreateFileFromStreamAsync(OrchardCoreConstants.Shell.TenantsFileName, memoryStream);
+        await _shellsFileStore.CreateFileFromStreamAsync(OrchardCoreConstants.Shell.TenantsFileName, memoryStream).ConfigureAwait(false);
     }
 
     public async Task RemoveAsync(string tenant)
     {
-        var fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName);
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName).ConfigureAwait(false);
 
         if (fileInfo != null)
         {
             JsonObject tenantsSettings;
-            using (var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Shell.TenantsFileName))
+            using (var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Shell.TenantsFileName).ConfigureAwait(false))
             {
-                tenantsSettings = await JObject.LoadAsync(stream);
+                tenantsSettings = await JObject.LoadAsync(stream).ConfigureAwait(false);
             }
 
             tenantsSettings.Remove(tenant);
@@ -104,7 +104,7 @@ public class BlobShellsSettingsSources : IShellsSettingsSources
             var tenantsSettingsString = tenantsSettings.ToJsonString(JOptions.Default);
             using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
-            await _shellsFileStore.CreateFileFromStreamAsync(OrchardCoreConstants.Shell.TenantsFileName, memoryStream);
+            await _shellsFileStore.CreateFileFromStreamAsync(OrchardCoreConstants.Shell.TenantsFileName, memoryStream).ConfigureAwait(false);
         }
     }
 
@@ -116,7 +116,7 @@ public class BlobShellsSettingsSources : IShellsSettingsSources
         }
 
         using var file = File.OpenRead(_tenantsFileSystemName);
-        await _shellsFileStore.CreateFileFromStreamAsync(OrchardCoreConstants.Shell.TenantsFileName, file);
+        await _shellsFileStore.CreateFileFromStreamAsync(OrchardCoreConstants.Shell.TenantsFileName, file).ConfigureAwait(false);
 
         return true;
     }

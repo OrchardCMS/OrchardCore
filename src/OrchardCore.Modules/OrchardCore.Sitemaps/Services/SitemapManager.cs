@@ -12,21 +12,21 @@ public class SitemapManager : ISitemapManager
         _documentManager = documentManager;
     }
 
-    public async Task<string> GetIdentifierAsync() => (await GetDocumentAsync()).Identifier;
+    public async Task<string> GetIdentifierAsync() => (await GetDocumentAsync().ConfigureAwait(false)).Identifier;
 
     public async Task<IEnumerable<SitemapType>> LoadSitemapsAsync()
     {
-        return (await LoadDocumentAsync()).Sitemaps.Values.ToArray();
+        return (await LoadDocumentAsync().ConfigureAwait(false)).Sitemaps.Values.ToArray();
     }
 
     public async Task<IEnumerable<SitemapType>> GetSitemapsAsync()
     {
-        return (await GetDocumentAsync()).Sitemaps.Values.ToArray();
+        return (await GetDocumentAsync().ConfigureAwait(false)).Sitemaps.Values.ToArray();
     }
 
     public async Task<SitemapType> LoadSitemapAsync(string sitemapId)
     {
-        var document = await LoadDocumentAsync();
+        var document = await LoadDocumentAsync().ConfigureAwait(false);
         if (document.Sitemaps.TryGetValue(sitemapId, out var sitemap))
         {
             return sitemap;
@@ -37,7 +37,7 @@ public class SitemapManager : ISitemapManager
 
     public async Task<SitemapType> GetSitemapAsync(string sitemapId)
     {
-        var document = await GetDocumentAsync();
+        var document = await GetDocumentAsync().ConfigureAwait(false);
         if (document.Sitemaps.TryGetValue(sitemapId, out var sitemap))
         {
             return sitemap;
@@ -48,23 +48,23 @@ public class SitemapManager : ISitemapManager
 
     public async Task DeleteSitemapAsync(string sitemapId)
     {
-        var existing = await LoadDocumentAsync();
+        var existing = await LoadDocumentAsync().ConfigureAwait(false);
         existing.Sitemaps.Remove(sitemapId);
-        await _documentManager.UpdateAsync(existing);
+        await _documentManager.UpdateAsync(existing).ConfigureAwait(false);
     }
 
     public async Task UpdateSitemapAsync(SitemapType sitemap)
     {
-        var existing = await LoadDocumentAsync();
+        var existing = await LoadDocumentAsync().ConfigureAwait(false);
         existing.Sitemaps[sitemap.SitemapId] = sitemap;
         sitemap.Identifier = IdGenerator.GenerateId();
-        await _documentManager.UpdateAsync(existing);
+        await _documentManager.UpdateAsync(existing).ConfigureAwait(false);
     }
 
     public async Task UpdateSitemapAsync()
     {
-        var existing = await LoadDocumentAsync();
-        await _documentManager.UpdateAsync(existing);
+        var existing = await LoadDocumentAsync().ConfigureAwait(false);
+        await _documentManager.UpdateAsync(existing).ConfigureAwait(false);
     }
 
     /// <summary>

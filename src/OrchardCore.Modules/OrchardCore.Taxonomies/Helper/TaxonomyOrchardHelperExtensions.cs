@@ -19,7 +19,7 @@ public static class TaxonomyOrchardHelperExtensions
     public static async Task<ContentItem> GetTaxonomyTermAsync(this IOrchardHelper orchardHelper, string taxonomyContentItemId, string termContentItemId)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
-        var taxonomy = await contentManager.GetAsync(taxonomyContentItemId);
+        var taxonomy = await contentManager.GetAsync(taxonomyContentItemId).ConfigureAwait(false);
 
         if (taxonomy == null)
         {
@@ -39,7 +39,7 @@ public static class TaxonomyOrchardHelperExtensions
     public static async Task<List<ContentItem>> GetInheritedTermsAsync(this IOrchardHelper orchardHelper, string taxonomyContentItemId, string termContentItemId)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
-        var taxonomy = await contentManager.GetAsync(taxonomyContentItemId);
+        var taxonomy = await contentManager.GetAsync(taxonomyContentItemId).ConfigureAwait(false);
 
         if (taxonomy == null)
         {
@@ -61,9 +61,9 @@ public static class TaxonomyOrchardHelperExtensions
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
 
-        var contentItems = await query(session.Query<ContentItem, TaxonomyIndex>()).ListAsync();
+        var contentItems = await query(session.Query<ContentItem, TaxonomyIndex>()).ListAsync().ConfigureAwait(false);
 
-        return await contentManager.LoadAsync(contentItems);
+        return await contentManager.LoadAsync(contentItems).ConfigureAwait(false);
     }
 
     internal static ContentItem FindTerm(JsonArray termsArray, string termContentItemId)

@@ -87,7 +87,7 @@ public sealed class MediaImageSharpConfiguration : IConfigureOptions<ImageSharpM
         {
             if (onPrepareResponse is not null)
             {
-                await onPrepareResponse(context);
+                await onPrepareResponse(context).ConfigureAwait(false);
             }
 
             // Override cache control for secure files

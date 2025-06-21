@@ -34,7 +34,7 @@ public class MenuShapes : ShapeTableProvider
 
                 var contentItemId = menu.TryGetProperty("Alias", out object alias) && alias != null
                     ? await handleManager.GetContentItemIdAsync(alias.ToString())
-                    : menu.TryGetProperty("ContentItemId", out object id)
+.ConfigureAwait(false) : menu.TryGetProperty("ContentItemId", out object id)
                         ? id.ToString()
                         : null;
 
@@ -45,7 +45,7 @@ public class MenuShapes : ShapeTableProvider
 
                 menu.Classes.Add("menu");
 
-                var menuContentItem = await contentManager.GetAsync(contentItemId);
+                var menuContentItem = await contentManager.GetAsync(contentItemId).ConfigureAwait(false);
 
                 if (menuContentItem == null)
                 {
@@ -82,7 +82,7 @@ public class MenuShapes : ShapeTableProvider
 
                 foreach (var contentItem in menuItems)
                 {
-                    if (!await ShouldCreateAsync(contentItem, contentManager, permissionService, authorizationService, httpContextAccessor.HttpContext?.User))
+                    if (!await ShouldCreateAsync(contentItem, contentManager, permissionService, authorizationService, httpContextAccessor.HttpContext?.User).ConfigureAwait(false))
                     {
                         continue;
                     }
@@ -92,12 +92,12 @@ public class MenuShapes : ShapeTableProvider
                         ContentItem = contentItem,
                         Level = 0,
                         Menu = menu,
-                    }));
+                    })).ConfigureAwait(false);
 
                     shape.Metadata.Differentiator = differentiator;
 
                     // Don't use Items.Add() or the collection won't be sorted
-                    await ((Shape)menu).AddAsync(shape);
+                    await ((Shape)menu).AddAsync(shape).ConfigureAwait(false);
                 }
             });
 
@@ -123,7 +123,7 @@ public class MenuShapes : ShapeTableProvider
 
                     foreach (var contentItem in menuItems)
                     {
-                        if (!await ShouldCreateAsync(contentItem, contentManager, permissionService, authorizationService, httpContextAccessor.HttpContext?.User))
+                        if (!await ShouldCreateAsync(contentItem, contentManager, permissionService, authorizationService, httpContextAccessor.HttpContext?.User).ConfigureAwait(false))
                         {
                             continue;
                         }
@@ -133,12 +133,12 @@ public class MenuShapes : ShapeTableProvider
                             ContentItem = contentItem,
                             Level = level + 1,
                             Menu = menu,
-                        }));
+                        })).ConfigureAwait(false);
 
                         shape.Metadata.Differentiator = differentiator;
 
                         // Don't use Items.Add() or the collection won't be sorted
-                        await menuItem.AddAsync(shape);
+                        await menuItem.AddAsync(shape).ConfigureAwait(false);
                     }
                 }
 
@@ -212,11 +212,11 @@ public class MenuShapes : ShapeTableProvider
             permissionPart.PermissionNames is not null &&
             permissionPart.PermissionNames.Length > 0)
         {
-            var permissions = await permissionService.FindByNamesAsync(permissionPart.PermissionNames);
+            var permissions = await permissionService.FindByNamesAsync(permissionPart.PermissionNames).ConfigureAwait(false);
 
             foreach (var permission in permissions)
             {
-                if (await authorizationService.AuthorizeAsync(user, permission, contentItem))
+                if (await authorizationService.AuthorizeAsync(user, permission, contentItem).ConfigureAwait(false))
                 {
                     continue;
                 }
@@ -236,16 +236,16 @@ public class MenuShapes : ShapeTableProvider
 
             if (menuItemPart.CheckContentPermissions)
             {
-                var displayItem = await contentManager.GetAsync(contentItemId, VersionOptions.Published);
+                var displayItem = await contentManager.GetAsync(contentItemId, VersionOptions.Published).ConfigureAwait(false);
 
                 if (displayItem is null)
                 {
                     return false;
                 }
 
-                await contentManager.LoadAsync(displayItem);
+                await contentManager.LoadAsync(displayItem).ConfigureAwait(false);
 
-                if (!await authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent, displayItem))
+                if (!await authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent, displayItem).ConfigureAwait(false))
                 {
                     return false;
                 }

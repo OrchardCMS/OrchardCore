@@ -38,7 +38,7 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
     {
         ArgumentNullException.ThrowIfNull(contentTypeDefinition);
 
-        var contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit");
+        var contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit").ConfigureAwait(false);
         contentTypeDefinitionShape.Properties["ContentTypeDefinition"] = contentTypeDefinition;
 
         var typeContext = new BuildEditorContext(
@@ -51,9 +51,9 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
             updater
         );
 
-        await BindPlacementAsync(typeContext);
+        await BindPlacementAsync(typeContext).ConfigureAwait(false);
 
-        await _handlers.InvokeAsync((handler, contentTypeDefinition, typeContext) => handler.BuildTypeEditorAsync(contentTypeDefinition, typeContext), contentTypeDefinition, typeContext, _logger);
+        await _handlers.InvokeAsync((handler, contentTypeDefinition, typeContext) => handler.BuildTypeEditorAsync(contentTypeDefinition, typeContext), contentTypeDefinition, typeContext, _logger).ConfigureAwait(false);
 
         return contentTypeDefinitionShape;
     }
@@ -62,10 +62,10 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
     {
         ArgumentNullException.ThrowIfNull(contentTypeDefinition);
 
-        var contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit");
+        var contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit").ConfigureAwait(false);
         contentTypeDefinitionShape.Properties["ContentTypeDefinition"] = contentTypeDefinition;
 
-        var layout = await _layoutAccessor.GetLayoutAsync();
+        var layout = await _layoutAccessor.GetLayoutAsync().ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync(contentTypeDefinition.Name, async typeBuilder =>
         {
@@ -79,10 +79,10 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
                 updater
             );
 
-            await BindPlacementAsync(typeContext);
+            await BindPlacementAsync(typeContext).ConfigureAwait(false);
 
-            await _handlers.InvokeAsync((handler, contentTypeDefinition, typeContext) => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), contentTypeDefinition, typeContext, _logger);
-        });
+            await _handlers.InvokeAsync((handler, contentTypeDefinition, typeContext) => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), contentTypeDefinition, typeContext, _logger).ConfigureAwait(false);
+        }).ConfigureAwait(false);
 
         return contentTypeDefinitionShape;
     }
@@ -91,7 +91,7 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
     {
         ArgumentNullException.ThrowIfNull(contentPartDefinition);
 
-        var contentPartDefinitionShape = await CreateContentShapeAsync("ContentPartDefinition_Edit");
+        var contentPartDefinitionShape = await CreateContentShapeAsync("ContentPartDefinition_Edit").ConfigureAwait(false);
 
         var partContext = new BuildEditorContext(
             contentPartDefinitionShape,
@@ -103,9 +103,9 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
             updater
         );
 
-        await BindPlacementAsync(partContext);
+        await BindPlacementAsync(partContext).ConfigureAwait(false);
 
-        await _handlers.InvokeAsync((handler, contentPartDefinition, partContext) => handler.BuildPartEditorAsync(contentPartDefinition, partContext), contentPartDefinition, partContext, _logger);
+        await _handlers.InvokeAsync((handler, contentPartDefinition, partContext) => handler.BuildPartEditorAsync(contentPartDefinition, partContext), contentPartDefinition, partContext, _logger).ConfigureAwait(false);
 
         return contentPartDefinitionShape;
     }
@@ -114,10 +114,10 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
     {
         ArgumentNullException.ThrowIfNull(contentPartDefinition);
 
-        var contentPartDefinitionShape = await CreateContentShapeAsync("ContentPartDefinition_Edit");
+        var contentPartDefinitionShape = await CreateContentShapeAsync("ContentPartDefinition_Edit").ConfigureAwait(false);
 
         UpdatePartEditorContext partContext = null;
-        var layout = await _layoutAccessor.GetLayoutAsync();
+        var layout = await _layoutAccessor.GetLayoutAsync().ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterPartDefinitionAsync(contentPartDefinition.Name, async partBuilder =>
         {
@@ -131,10 +131,10 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
                 updater
             );
 
-            await BindPlacementAsync(partContext);
+            await BindPlacementAsync(partContext).ConfigureAwait(false);
 
-            await _handlers.InvokeAsync((handler, contentPartDefinition, partContext) => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), contentPartDefinition, partContext, _logger);
-        });
+            await _handlers.InvokeAsync((handler, contentPartDefinition, partContext) => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), contentPartDefinition, partContext, _logger).ConfigureAwait(false);
+        }).ConfigureAwait(false);
 
         return contentPartDefinitionShape;
     }
@@ -143,7 +143,7 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
     {
         ArgumentNullException.ThrowIfNull(contentTypePartDefinition);
 
-        var typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
+        var typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit").ConfigureAwait(false);
         typePartDefinitionShape.Properties["ContentPart"] = contentTypePartDefinition;
 
         var partContext = new BuildEditorContext(
@@ -156,9 +156,9 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
             updater
         );
 
-        await BindPlacementAsync(partContext);
+        await BindPlacementAsync(partContext).ConfigureAwait(false);
 
-        await _handlers.InvokeAsync((handler, contentTypePartDefinition, partContext) => handler.BuildTypePartEditorAsync(contentTypePartDefinition, partContext), contentTypePartDefinition, partContext, _logger);
+        await _handlers.InvokeAsync((handler, contentTypePartDefinition, partContext) => handler.BuildTypePartEditorAsync(contentTypePartDefinition, partContext), contentTypePartDefinition, partContext, _logger).ConfigureAwait(false);
 
         return typePartDefinitionShape;
     }
@@ -167,8 +167,8 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
     {
         ArgumentNullException.ThrowIfNull(contentTypePartDefinition);
 
-        var typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
-        var layout = await _layoutAccessor.GetLayoutAsync();
+        var typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit").ConfigureAwait(false);
+        var layout = await _layoutAccessor.GetLayoutAsync().ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync(contentTypePartDefinition.ContentTypeDefinition.Name, typeBuilder =>
         {
@@ -186,11 +186,11 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
                     updater
                 );
 
-                await BindPlacementAsync(partContext);
+                await BindPlacementAsync(partContext).ConfigureAwait(false);
 
-                await _handlers.InvokeAsync((handler, contentTypePartDefinition, partContext) => handler.UpdateTypePartEditorAsync(contentTypePartDefinition, partContext), contentTypePartDefinition, partContext, _logger);
+                await _handlers.InvokeAsync((handler, contentTypePartDefinition, partContext) => handler.UpdateTypePartEditorAsync(contentTypePartDefinition, partContext), contentTypePartDefinition, partContext, _logger).ConfigureAwait(false);
             });
-        });
+        }).ConfigureAwait(false);
 
         return typePartDefinitionShape;
     }
@@ -199,7 +199,7 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
     {
         ArgumentNullException.ThrowIfNull(contentPartFieldDefinition);
 
-        var partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit");
+        var partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit").ConfigureAwait(false);
         partFieldDefinitionShape.Properties["ContentField"] = contentPartFieldDefinition;
 
         var fieldContext = new BuildEditorContext(
@@ -212,9 +212,9 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
             updater
         );
 
-        await BindPlacementAsync(fieldContext);
+        await BindPlacementAsync(fieldContext).ConfigureAwait(false);
 
-        await _handlers.InvokeAsync((handler, contentPartFieldDefinition, fieldContext) => handler.BuildPartFieldEditorAsync(contentPartFieldDefinition, fieldContext), contentPartFieldDefinition, fieldContext, _logger);
+        await _handlers.InvokeAsync((handler, contentPartFieldDefinition, fieldContext) => handler.BuildPartFieldEditorAsync(contentPartFieldDefinition, fieldContext), contentPartFieldDefinition, fieldContext, _logger).ConfigureAwait(false);
 
         return partFieldDefinitionShape;
     }
@@ -224,9 +224,9 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
         ArgumentNullException.ThrowIfNull(contentPartFieldDefinition);
 
         var contentPartDefinition = contentPartFieldDefinition.PartDefinition;
-        var partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit");
+        var partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit").ConfigureAwait(false);
 
-        var layout = await _layoutAccessor.GetLayoutAsync();
+        var layout = await _layoutAccessor.GetLayoutAsync().ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterPartDefinitionAsync(contentPartDefinition.Name, partBuilder =>
         {
@@ -244,11 +244,11 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
                     updater
                 );
 
-                await BindPlacementAsync(fieldContext);
+                await BindPlacementAsync(fieldContext).ConfigureAwait(false);
 
-                await _handlers.InvokeAsync((handler, contentPartFieldDefinition, fieldContext) => handler.UpdatePartFieldEditorAsync(contentPartFieldDefinition, fieldContext), contentPartFieldDefinition, fieldContext, _logger);
+                await _handlers.InvokeAsync((handler, contentPartFieldDefinition, fieldContext) => handler.UpdatePartFieldEditorAsync(contentPartFieldDefinition, fieldContext), contentPartFieldDefinition, fieldContext, _logger).ConfigureAwait(false);
             });
-        });
+        }).ConfigureAwait(false);
 
         return partFieldDefinitionShape;
     }

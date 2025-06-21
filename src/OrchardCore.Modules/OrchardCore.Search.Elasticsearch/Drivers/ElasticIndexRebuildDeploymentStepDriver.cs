@@ -30,7 +30,7 @@ public sealed class ElasticIndexRebuildDeploymentStepDriver : DisplayDriver<Depl
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
-            model.AllIndexNames = (await _indexStore.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexStore.GetByProviderAsync(ElasticsearchConstants.ProviderName).ConfigureAwait(false)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 
@@ -38,7 +38,7 @@ public sealed class ElasticIndexRebuildDeploymentStepDriver : DisplayDriver<Depl
     {
         rebuildIndexStep.Indices = [];
 
-        await context.Updater.TryUpdateModelAsync(rebuildIndexStep, Prefix, step => step.Indices, step => step.IncludeAll);
+        await context.Updater.TryUpdateModelAsync(rebuildIndexStep, Prefix, step => step.Indices, step => step.IncludeAll).ConfigureAwait(false);
 
         if (rebuildIndexStep.IncludeAll)
         {

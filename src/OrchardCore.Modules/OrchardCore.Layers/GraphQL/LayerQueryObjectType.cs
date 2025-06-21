@@ -39,7 +39,7 @@ public class LayerQueryObjectType : ObjectGraphType<Layer>
             var layerService = context.RequestServices.GetService<ILayerService>();
 
             var filter = GetVersionFilter(context.GetArgument<PublicationStatusEnum>("status"));
-            var widgets = await layerService.GetLayerWidgetsAsync(filter);
+            var widgets = await layerService.GetLayerWidgetsAsync(filter).ConfigureAwait(false);
 
             var layerWidgets = widgets?.Where(item =>
             {

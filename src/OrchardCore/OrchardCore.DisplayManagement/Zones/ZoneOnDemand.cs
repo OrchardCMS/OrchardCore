@@ -115,12 +115,12 @@ public class ZoneOnDemand : Shape
 
         if (_zone == null)
         {
-            _zone = await _zoneFactory();
+            _zone = await _zoneFactory().ConfigureAwait(false);
             _zone.Properties["Parent"] = _parent;
             _zone.Properties["ZoneName"] = _potentialZoneName;
             _parent.Properties[_potentialZoneName] = _zone;
         }
 
-        return _zone = await _zone.AddAsync(item, position);
+        return _zone = await _zone.AddAsync(item, position).ConfigureAwait(false);
     }
 }

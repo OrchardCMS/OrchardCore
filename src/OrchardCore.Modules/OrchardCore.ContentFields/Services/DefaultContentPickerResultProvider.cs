@@ -35,7 +35,7 @@ public class DefaultContentPickerResultProvider : IContentPickerResultProvider
         var contentTypes = searchContext.ContentTypes;
         if (searchContext.DisplayAllContentTypes)
         {
-            contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
                 .Where(x => !x.HasStereotype())
                 .Select(x => x.Name)
                 .AsEnumerable();
@@ -49,22 +49,22 @@ public class DefaultContentPickerResultProvider : IContentPickerResultProvider
             query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query) || x.ContentType.Contains(searchContext.Query));
         }
 
-        var contentItems = await query.Take(50).ListAsync();
+        var contentItems = await query.Take(50).ListAsync().ConfigureAwait(false);
 
         var results = new List<ContentPickerResult>();
         var settings = searchContext.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
         foreach (var contentItem in contentItems)
         {
-            var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
+            var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect()).ConfigureAwait(false);
             using (CultureScope.Create(cultureAspect.Culture))
             {
                 results.Add(new ContentPickerResult
                 {
                     ContentItemId = contentItem.ContentItemId,
                     DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
-                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
-                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
+                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }).ConfigureAwait(false),
+                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem).ConfigureAwait(false),
                 });
             }
         }

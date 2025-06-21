@@ -38,7 +38,7 @@ public class RecipeMigrator : IRecipeMigrator
         var recipeBasePath = Path.Combine(extensionInfo.SubPath, "Migrations").Replace('\\', '/');
         var recipeFilePath = Path.Combine(recipeBasePath, recipeFileName).Replace('\\', '/');
         var recipeFileInfo = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(recipeFilePath);
-        var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(recipeBasePath, recipeFileInfo, _hostingEnvironment.ContentRootFileProvider);
+        var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(recipeBasePath, recipeFileInfo, _hostingEnvironment.ContentRootFileProvider).ConfigureAwait(false);
 
         if (recipeDescriptor == null)
         {
@@ -50,11 +50,11 @@ public class RecipeMigrator : IRecipeMigrator
         var environment = new Dictionary<string, object>();
 
         await _environmentProviders.OrderBy(x => x.Order)
-            .InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
+            .InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger).ConfigureAwait(false);
 
         var executionId = Guid.NewGuid().ToString("n");
 
-        return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None);
+        return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None).ConfigureAwait(false);
     }
 }
 

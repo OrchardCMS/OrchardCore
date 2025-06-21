@@ -21,15 +21,15 @@ public class TemplatesManager
 
     public async Task RemoveTemplateAsync(string name)
     {
-        var document = await LoadTemplatesDocumentAsync();
+        var document = await LoadTemplatesDocumentAsync().ConfigureAwait(false);
         document.Templates.Remove(name);
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     public async Task UpdateTemplateAsync(string name, Template template)
     {
-        var document = await LoadTemplatesDocumentAsync();
+        var document = await LoadTemplatesDocumentAsync().ConfigureAwait(false);
         document.Templates[name] = template;
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 }

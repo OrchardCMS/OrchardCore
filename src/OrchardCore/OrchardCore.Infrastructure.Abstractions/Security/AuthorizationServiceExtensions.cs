@@ -18,6 +18,6 @@ public static class AuthorizationServiceExtensions
             return false;
         }
 
-        return (await service.AuthorizeAsync(user, resource, new PermissionRequirement(permission))).Succeeded;
+        return (await service.AuthorizeAsync(user, resource, new PermissionRequirement(permission)).ConfigureAwait(false)).Succeeded;
     }
 }

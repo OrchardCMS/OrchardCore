@@ -28,7 +28,7 @@ public sealed class Permissions : IPermissionProvider
             ExecuteApiAll,
         };
 
-        var queries = await _queryManager.ListQueriesAsync(true);
+        var queries = await _queryManager.ListQueriesAsync(true).ConfigureAwait(false);
 
         foreach (var query in queries)
         {

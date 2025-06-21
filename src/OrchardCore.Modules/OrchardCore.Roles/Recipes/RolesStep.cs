@@ -37,7 +37,7 @@ public sealed class RolesStep : NamedRecipeStepHandler
                 continue;
             }
 
-            var role = await _roleManager.FindByNameAsync(roleName);
+            var role = await _roleManager.FindByNameAsync(roleName).ConfigureAwait(false);
             var isNewRole = role == null;
 
             if (isNewRole)
@@ -83,11 +83,11 @@ public sealed class RolesStep : NamedRecipeStepHandler
 
             if (isNewRole)
             {
-                await _roleManager.CreateAsync(role);
+                await _roleManager.CreateAsync(role).ConfigureAwait(false);
             }
             else
             {
-                await _roleManager.UpdateAsync(role);
+                await _roleManager.UpdateAsync(role).ConfigureAwait(false);
             }
         }
     }

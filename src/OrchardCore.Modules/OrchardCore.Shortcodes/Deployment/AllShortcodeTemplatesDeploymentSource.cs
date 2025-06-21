@@ -17,7 +17,7 @@ public sealed class AllShortcodeTemplatesDeploymentSource
     protected override async Task ProcessAsync(AllShortcodeTemplatesDeploymentStep step, DeploymentPlanResult result)
     {
         var templateObjects = new JsonObject();
-        var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync();
+        var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync().ConfigureAwait(false);
 
         foreach (var template in templates.ShortcodeTemplates)
         {

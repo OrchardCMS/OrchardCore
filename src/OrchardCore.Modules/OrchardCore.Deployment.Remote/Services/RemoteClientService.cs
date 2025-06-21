@@ -28,12 +28,12 @@ public class RemoteClientService
             return _remoteClientList;
         }
 
-        _remoteClientList = await _session.Query<RemoteClientList>().FirstOrDefaultAsync();
+        _remoteClientList = await _session.Query<RemoteClientList>().FirstOrDefaultAsync().ConfigureAwait(false);
 
         if (_remoteClientList == null)
         {
             _remoteClientList = new RemoteClientList();
-            await _session.SaveAsync(_remoteClientList);
+            await _session.SaveAsync(_remoteClientList).ConfigureAwait(false);
         }
 
         return _remoteClientList;
@@ -41,25 +41,25 @@ public class RemoteClientService
 
     public async Task<RemoteClient> GetRemoteClientAsync(string id)
     {
-        var remoteClientList = await GetRemoteClientListAsync();
+        var remoteClientList = await GetRemoteClientListAsync().ConfigureAwait(false);
         return remoteClientList.RemoteClients.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task DeleteRemoteClientAsync(string id)
     {
-        var remoteClientList = await GetRemoteClientListAsync();
-        var remoteClient = await GetRemoteClientAsync(id);
+        var remoteClientList = await GetRemoteClientListAsync().ConfigureAwait(false);
+        var remoteClient = await GetRemoteClientAsync(id).ConfigureAwait(false);
 
         if (remoteClient != null)
         {
             remoteClientList.RemoteClients.Remove(remoteClient);
-            await _session.SaveAsync(remoteClientList);
+            await _session.SaveAsync(remoteClientList).ConfigureAwait(false);
         }
     }
 
     public async Task<RemoteClient> CreateRemoteClientAsync(string clientName, string apiKey)
     {
-        var remoteClientList = await GetRemoteClientListAsync();
+        var remoteClientList = await GetRemoteClientListAsync().ConfigureAwait(false);
 
         var remoteClient = new RemoteClient
         {
@@ -69,14 +69,14 @@ public class RemoteClientService
         };
 
         remoteClientList.RemoteClients.Add(remoteClient);
-        await _session.SaveAsync(remoteClientList);
+        await _session.SaveAsync(remoteClientList).ConfigureAwait(false);
 
         return remoteClient;
     }
 
     public async Task<bool> TryUpdateRemoteClient(string id, string clientName, string apiKey)
     {
-        var remoteClient = await GetRemoteClientAsync(id);
+        var remoteClient = await GetRemoteClientAsync(id).ConfigureAwait(false);
 
         if (remoteClient == null)
         {
@@ -86,7 +86,7 @@ public class RemoteClientService
         remoteClient.ClientName = clientName;
         remoteClient.ProtectedApiKey = _dataProtector.Protect(Encoding.UTF8.GetBytes(apiKey));
 
-        await _session.SaveAsync(_remoteClientList);
+        await _session.SaveAsync(_remoteClientList).ConfigureAwait(false);
 
         return true;
     }

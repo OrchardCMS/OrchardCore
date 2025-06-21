@@ -31,12 +31,12 @@ public static class ContentRazorHelperExtensions
             var liquidTemplateManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ILiquidTemplateManager>();
             var htmlEncoder = orchardHelper.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
 
-            markdown = await liquidTemplateManager.RenderStringAsync(markdown, htmlEncoder);
+            markdown = await liquidTemplateManager.RenderStringAsync(markdown, htmlEncoder).ConfigureAwait(false);
         }
 
         // TODO: provide context argument (optional on this helper as with the liquid helper?).
 
-        markdown = await shortcodeService.ProcessAsync(markdown);
+        markdown = await shortcodeService.ProcessAsync(markdown).ConfigureAwait(false);
 
         if (sanitize)
         {

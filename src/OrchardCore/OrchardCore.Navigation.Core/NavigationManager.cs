@@ -42,7 +42,7 @@ public class NavigationManager : INavigationManager
         {
             try
             {
-                await navigationProvider.BuildNavigationAsync(name, builder);
+                await navigationProvider.BuildNavigationAsync(name, builder).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -56,7 +56,7 @@ public class NavigationManager : INavigationManager
         Merge(menuItems);
 
         // Remove unauthorized menu items.
-        menuItems = await AuthorizeAsync(menuItems, actionContext.HttpContext.User);
+        menuItems = await AuthorizeAsync(menuItems, actionContext.HttpContext.User).ConfigureAwait(false);
 
         // Compute Url and RouteValues properties to Href.
         menuItems = ComputeHref(menuItems, actionContext);
@@ -224,7 +224,7 @@ public class NavigationManager : INavigationManager
                 var isAuthorized = true;
                 foreach (var permission in item.Permissions)
                 {
-                    if (!(await _authorizationService.AuthorizeAsync(user, permission, item.Resource)))
+                    if (!(await _authorizationService.AuthorizeAsync(user, permission, item.Resource).ConfigureAwait(false)))
                     {
                         isAuthorized = false;
                         break;
@@ -238,7 +238,7 @@ public class NavigationManager : INavigationManager
             }
 
             // Process child items.
-            item.Items = (await AuthorizeAsync(item.Items, user));
+            item.Items = (await AuthorizeAsync(item.Items, user).ConfigureAwait(false));
         }
 
         return filtered;

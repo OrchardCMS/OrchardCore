@@ -24,7 +24,7 @@ public abstract class ContentEvent : ContentActivity, IEvent
 
     public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var content = await GetContentAsync(workflowContext);
+        var content = await GetContentAsync(workflowContext).ConfigureAwait(false);
 
         if (content == null)
         {

@@ -43,13 +43,13 @@ public sealed class SchemaService : ISchemaFactory
             return existingSchema;
         }
 
-        await _schemaGenerationSemaphore.WaitAsync();
+        await _schemaGenerationSemaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
             foreach (var builder in _schemaBuilders)
             {
-                if (_identifiers.TryGetValue(builder, out var identifier) && await builder.GetIdentifierAsync() != identifier)
+                if (_identifiers.TryGetValue(builder, out var identifier) && await builder.GetIdentifierAsync().ConfigureAwait(false) != identifier)
                 {
                     hasChanged = true;
                     break;
@@ -85,7 +85,7 @@ public sealed class SchemaService : ISchemaFactory
 
             foreach (var builder in _schemaBuilders)
             {
-                var identifier = await builder.GetIdentifierAsync();
+                var identifier = await builder.GetIdentifierAsync().ConfigureAwait(false);
 
                 // Null being a valid value not yet updated.
                 if (identifier != string.Empty)
@@ -93,7 +93,7 @@ public sealed class SchemaService : ISchemaFactory
                     _identifiers[builder] = identifier;
                 }
 
-                await builder.BuildAsync(schema);
+                await builder.BuildAsync(schema).ConfigureAwait(false);
             }
 
             // Clean Query, Mutation and Subscription if they have no fields

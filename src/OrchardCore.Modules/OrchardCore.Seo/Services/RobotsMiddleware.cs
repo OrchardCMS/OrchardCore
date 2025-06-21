@@ -30,7 +30,7 @@ public class RobotsMiddleware
             {
                 // At this point we know that the a robots.txt file exists as a static file.
                 // Let the static file provider handle it.
-                await _next(httpContext);
+                await _next(httpContext).ConfigureAwait(false);
 
                 return;
             }
@@ -39,7 +39,7 @@ public class RobotsMiddleware
 
             foreach (var provider in _robotsProviders.Reverse())
             {
-                var item = (await provider.GetContentAsync())?.Trim();
+                var item = (await provider.GetContentAsync().ConfigureAwait(false))?.Trim();
 
                 if (string.IsNullOrEmpty(item))
                 {
@@ -51,11 +51,11 @@ public class RobotsMiddleware
 
             httpContext.Response.Clear();
             httpContext.Response.ContentType = "text/plain";
-            await httpContext.Response.WriteAsync(content.ToString());
+            await httpContext.Response.WriteAsync(content.ToString()).ConfigureAwait(false);
 
             return;
         }
 
-        await _next(httpContext);
+        await _next(httpContext).ConfigureAwait(false);
     }
 }

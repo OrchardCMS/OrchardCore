@@ -25,7 +25,7 @@ public sealed class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
     {
         var viewModel = new LabelPartEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         part.For = viewModel.For?.Trim();
 

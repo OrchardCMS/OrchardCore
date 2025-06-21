@@ -37,7 +37,7 @@ public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
         {
             try
             {
-                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType).ConfigureAwait(false);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart", StringComparison.Ordinal));
                 var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
@@ -53,7 +53,7 @@ public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
                     };
 
                     html = await _liquidTemplateManager.RenderStringAsync(html, _htmlEncoder, model,
-                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }).ConfigureAwait(false);
                 }
 
                 html = await _shortcodeService.ProcessAsync(html,
@@ -61,7 +61,7 @@ public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
                     {
                         ["ContentItem"] = part.ContentItem,
                         ["TypePartDefinition"] = contentTypePartDefinition,
-                    });
+                    }).ConfigureAwait(false);
 
                 bodyAspect.Body = new HtmlString(html);
             }

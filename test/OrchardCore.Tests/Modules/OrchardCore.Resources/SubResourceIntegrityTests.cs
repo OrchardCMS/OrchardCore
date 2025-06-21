@@ -28,8 +28,8 @@ public class SubResourceIntegrityTests
         var resourceManifest = resourceManagementOptions.ResourceManifests.First();
 
         using var httpClient = new HttpClient();
-        await ValidateSubResourceIntegrityAsync("script");
-        await ValidateSubResourceIntegrityAsync("style");
+        await ValidateSubResourceIntegrityAsync("script").ConfigureAwait(false);
+        await ValidateSubResourceIntegrityAsync("style").ConfigureAwait(false);
 
         async Task ValidateSubResourceIntegrityAsync(string resourceType)
         {
@@ -39,7 +39,7 @@ public class SubResourceIntegrityTests
                 {
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug);
+                        var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug).ConfigureAwait(false);
 
                         Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity, StringComparison.Ordinal),
                             $"The {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
@@ -47,7 +47,7 @@ public class SubResourceIntegrityTests
 
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdn);
+                        var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdn).ConfigureAwait(false);
 
                         Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity, StringComparison.Ordinal),
                             $"The {resourceType} {resourceDefinition.UrlCdn} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
@@ -59,10 +59,10 @@ public class SubResourceIntegrityTests
 
     private static async Task<string> GetSubResourceIntegrityAsync(HttpClient httpClient, string url)
     {
-        var data = await httpClient.GetByteArrayAsync(url);
+        var data = await httpClient.GetByteArrayAsync(url).ConfigureAwait(false);
 
         using var memoryStream = new MemoryStream(data);
-        var hash = await SHA384.HashDataAsync(memoryStream);
+        var hash = await SHA384.HashDataAsync(memoryStream).ConfigureAwait(false);
 
         return "sha384-" + Convert.ToBase64String(hash);
     }

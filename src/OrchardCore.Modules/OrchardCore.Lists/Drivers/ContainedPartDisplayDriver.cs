@@ -37,11 +37,11 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
 
         if (containedPart != null)
         {
-            return await BuildViewModelAsync(containedPart.ListContentItemId, containedPart.ListContentType, model.ContentType);
+            return await BuildViewModelAsync(containedPart.ListContentItemId, containedPart.ListContentType, model.ContentType).ConfigureAwait(false);
         }
 
         var viewModel = new EditContainedPartViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
+        await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart)).ConfigureAwait(false);
 
         if (viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
         {
@@ -57,11 +57,11 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
                 part.ListContentType = viewModel.ContainerContentType;
                 if (viewModel.EnableOrdering)
                 {
-                    part.Order = await _containerService.GetNextOrderNumberAsync(viewModel.ContainerId);
+                    part.Order = await _containerService.GetNextOrderNumberAsync(viewModel.ContainerId).ConfigureAwait(false);
                 }
-            });
+            }).ConfigureAwait(false);
 
-            return await BuildViewModelAsync(viewModel.ContainerId, viewModel.ContainerContentType, model.ContentType, viewModel.EnableOrdering);
+            return await BuildViewModelAsync(viewModel.ContainerId, viewModel.ContainerContentType, model.ContentType, viewModel.EnableOrdering).ConfigureAwait(false);
         }
 
         return null;
@@ -70,7 +70,7 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
     public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)
     {
         var viewModel = new EditContainedPartViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
+        await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart)).ConfigureAwait(false);
 
         // The content type must match the value provided in the query string
         // in order for the ContainedPart to be included on the Content Item.
@@ -84,12 +84,12 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
                 // If creating get next order number so item is added to the end of the list.
                 if (viewModel.EnableOrdering)
                 {
-                    part.Order = await _containerService.GetNextOrderNumberAsync(viewModel.ContainerId);
+                    part.Order = await _containerService.GetNextOrderNumberAsync(viewModel.ContainerId).ConfigureAwait(false);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
-        return await EditAsync(model, context);
+        return await EditAsync(model, context).ConfigureAwait(false);
     }
 
     private async Task<IDisplayResult> BuildViewModelAsync(string containerId, string containerContentType, string contentType, bool enableOrdering = false)
@@ -108,7 +108,7 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
 
         if (!string.IsNullOrEmpty(containerContentType))
         {
-            var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(containerContentType);
+            var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(containerContentType).ConfigureAwait(false);
 
             if (definition != null)
             {
@@ -117,14 +117,14 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
 
                 if (settings != null)
                 {
-                    var container = await GetContainerAsync(containerId);
+                    var container = await GetContainerAsync(containerId).ConfigureAwait(false);
 
                     if (container != null)
                     {
                         // Add list part navigation.
                         results.Add(Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
                         {
-                            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
+                            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings).ConfigureAwait(false)).ToArray();
                             model.Container = container;
                             model.EnableOrdering = settings.EnableOrdering;
                             model.ContainerContentTypeDefinition = definition;
@@ -149,7 +149,7 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
 
             if (listPartSettings != null)
             {
-                model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(listPartSettings)).ToArray();
+                model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(listPartSettings).ConfigureAwait(false)).ToArray();
                 model.EnableOrdering = listPartSettings.EnableOrdering;
             }
         }).Location("Content:1");
@@ -157,7 +157,7 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
     // Initially, attempt to locate a published container.
     // If none is found, try acquiring the most recent unpublished version.
     private async Task<ContentItem> GetContainerAsync(string containerId)
-        => await _contentManager.GetAsync(containerId) ?? await _contentManager.GetAsync(containerId, VersionOptions.Latest);
+        => await _contentManager.GetAsync(containerId).ConfigureAwait(false) ?? await _contentManager.GetAsync(containerId, VersionOptions.Latest).ConfigureAwait(false);
 
     private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ListPartSettings settings)
     {
@@ -170,7 +170,7 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
 
         foreach (var contentTypeDefinition in settings.ContainedContentTypes)
         {
-            var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeDefinition);
+            var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeDefinition).ConfigureAwait(false);
 
             if (definition is not null)
             {

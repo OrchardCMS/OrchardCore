@@ -45,7 +45,7 @@ public class LiquidViewTemplate
         var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
 
         var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
-        var template = await ParseAsync(liquidViewParser, path, templateOptions.FileProvider, Cache, isDevelopment);
+        var template = await ParseAsync(liquidViewParser, path, templateOptions.FileProvider, Cache, isDevelopment).ConfigureAwait(false);
         var context = new LiquidTemplateContext(services, templateOptions);
         var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
@@ -55,8 +55,8 @@ public class LiquidViewTemplate
             var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
             ShellScope.Current.RegisterBeforeDispose(scope => content.Dispose());
 
-            await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
-            await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);
+            await context.EnterScopeAsync(page.ViewContext, (object)page.Model).ConfigureAwait(false);
+            await template.FluidTemplate.RenderAsync(content, htmlEncoder, context).ConfigureAwait(false);
 
             // Use ViewBufferTextWriter.Write(object) from ASP.NET directly since it will use a special code path
             // for IHtmlContent. This prevent the TextWriter methods from copying the content from our buffer
@@ -82,8 +82,10 @@ public class LiquidViewTemplate
                 entry.ExpirationTokens.Add(fileProvider.Watch(path));
             }
 
-            await using var stream = fileInfo.CreateReadStream();
-            using var sr = new StreamReader(stream);
+            var stream = fileInfo.CreateReadStream();
+            await using (stream.ConfigureAwait(false))
+            {
+                using var sr = new StreamReader(stream);
 
             if (parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
             {
@@ -91,6 +93,7 @@ public class LiquidViewTemplate
             }
 
             throw new Exception($"Failed to parse liquid file {path}: {string.Join(System.Environment.NewLine, errors)}");
+            }
         });
     }
 }
@@ -150,12 +153,12 @@ public static class LiquidViewTemplateExtensions
         var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
         var viewContext = viewContextAccessor.ViewContext;
 
-        viewContext ??= viewContextAccessor.ViewContext = await GetViewContextAsync(context);
+        viewContext ??= viewContextAccessor.ViewContext = await GetViewContextAsync(context).ConfigureAwait(false);
 
         try
         {
-            await context.EnterScopeAsync(viewContext, model);
-            return await template.FluidTemplate.RenderAsync(context, encoder);
+            await context.EnterScopeAsync(viewContext, model).ConfigureAwait(false);
+            return await template.FluidTemplate.RenderAsync(context, encoder).ConfigureAwait(false);
         }
         finally
         {
@@ -168,12 +171,12 @@ public static class LiquidViewTemplateExtensions
         var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
         var viewContext = viewContextAccessor.ViewContext;
 
-        viewContext ??= viewContextAccessor.ViewContext = await GetViewContextAsync(context);
+        viewContext ??= viewContextAccessor.ViewContext = await GetViewContextAsync(context).ConfigureAwait(false);
 
         try
         {
-            await context.EnterScopeAsync(viewContext, model);
-            await template.FluidTemplate.RenderAsync(writer, encoder, context);
+            await context.EnterScopeAsync(viewContext, model).ConfigureAwait(false);
+            await template.FluidTemplate.RenderAsync(writer, encoder, context).ConfigureAwait(false);
         }
         finally
         {
@@ -188,7 +191,7 @@ public static class LiquidViewTemplateExtensions
         if (actionContext == null)
         {
             var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            actionContext = await httpContext.GetActionContextAsync();
+            actionContext = await httpContext.GetActionContextAsync().ConfigureAwait(false);
         }
 
         return GetViewContext(actionContext);
@@ -236,7 +239,7 @@ public static class LiquidTemplateContextExtensions
             var localClock = context.Services.GetRequiredService<ILocalClock>();
 
             // Configure Fluid with the time zone to represent local date and times
-            var localTimeZone = await localClock.GetLocalTimeZoneAsync();
+            var localTimeZone = await localClock.GetLocalTimeZoneAsync().ConfigureAwait(false);
 
             if (TZConvert.TryGetTimeZoneInfo(localTimeZone.TimeZoneId, out var timeZoneInfo))
             {
@@ -244,7 +247,7 @@ public static class LiquidTemplateContextExtensions
             }
 
             // Configure Fluid with the local date and time
-            var now = await localClock.GetLocalNowAsync();
+            var now = await localClock.GetLocalNowAsync().ConfigureAwait(false);
 
             context.Now = () => now;
 

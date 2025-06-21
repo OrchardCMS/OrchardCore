@@ -38,7 +38,7 @@ public class ContentItemIndexCoordinator : IDocumentIndexHandler
             return;
         }
 
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
 
         if (contentTypeDefinition == null)
         {
@@ -64,7 +64,7 @@ public class ContentItemIndexCoordinator : IDocumentIndexHandler
 
             await _partIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, context, typePartIndexSettings) =>
                 handler.BuildIndexAsync(part, contentTypePartDefinition, context, typePartIndexSettings),
-                    part, contentTypePartDefinition, context, typePartIndexSettings, _logger);
+                    part, contentTypePartDefinition, context, typePartIndexSettings, _logger).ConfigureAwait(false);
 
             foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
             {
@@ -79,7 +79,7 @@ public class ContentItemIndexCoordinator : IDocumentIndexHandler
 
                 await _fieldIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings) =>
                     handler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings),
-                        part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, _logger);
+                        part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, _logger).ConfigureAwait(false);
             }
         }
 

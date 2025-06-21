@@ -27,22 +27,22 @@ public sealed class DefaultDocumentSerializer : IDocumentSerializer
         using var utf8Stream = MemoryStreamFactory.GetStream(StreamTag);
         byte[] result;
 
-        await JsonSerializer.SerializeAsync(utf8Stream, document, _serializerOptions);
+        await JsonSerializer.SerializeAsync(utf8Stream, document, _serializerOptions).ConfigureAwait(false);
         utf8Stream.Seek(0, SeekOrigin.Begin);
 
         if (utf8Stream.Length >= compressThreshold)
         {
             using var stream = MemoryStreamFactory.GetStream(StreamTag);
-            await CompressAsync(utf8Stream, stream);
+            await CompressAsync(utf8Stream, stream).ConfigureAwait(false);
 
             result = new byte[stream.Length];
             stream.Seek(0, SeekOrigin.Begin);
-            await stream.CopyToAsync(new MemoryStream(result));
+            await stream.CopyToAsync(new MemoryStream(result)).ConfigureAwait(false);
         }
         else
         {
             result = new byte[utf8Stream.Length];
-            await utf8Stream.CopyToAsync(new MemoryStream(result));
+            await utf8Stream.CopyToAsync(new MemoryStream(result)).ConfigureAwait(false);
         }
 
         return result;
@@ -58,10 +58,10 @@ public sealed class DefaultDocumentSerializer : IDocumentSerializer
             // Assume the decompressed data could fill a twice as big buffer.
             var stream = MemoryStreamFactory.GetStream(data.Length * 2, StreamTag);
 
-            await DecompressAsync(data, stream);
+            await DecompressAsync(data, stream).ConfigureAwait(false);
             stream.Seek(0, SeekOrigin.Begin);
 
-            document = await JsonSerializer.DeserializeAsync<TDocument>(stream, _serializerOptions);
+            document = await JsonSerializer.DeserializeAsync<TDocument>(stream, _serializerOptions).ConfigureAwait(false);
         }
         else
         {
@@ -81,13 +81,13 @@ public sealed class DefaultDocumentSerializer : IDocumentSerializer
     internal static async Task CompressAsync(Stream source, RecyclableMemoryStream output)
     {
         using var gZip = new GZipStream(output, CompressionMode.Compress, leaveOpen: true);
-        await source.CopyToAsync(gZip);
+        await source.CopyToAsync(gZip).ConfigureAwait(false);
     }
 
     internal static async Task DecompressAsync(byte[] data, RecyclableMemoryStream output)
     {
         using var input = new MemoryStream(data);
         using var gZip = new GZipStream(input, CompressionMode.Decompress);
-        await gZip.CopyToAsync(output);
+        await gZip.CopyToAsync(output).ConfigureAwait(false);
     }
 }

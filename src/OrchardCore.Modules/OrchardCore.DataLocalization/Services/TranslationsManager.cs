@@ -17,19 +17,19 @@ public class TranslationsManager : ITranslationsManager
 
     public async Task RemoveTranslationAsync(string name)
     {
-        var document = await LoadTranslationsDocumentAsync();
+        var document = await LoadTranslationsDocumentAsync().ConfigureAwait(false);
 
         document.Translations.Remove(name);
 
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     public async Task UpdateTranslationAsync(string name, IEnumerable<Translation> translations)
     {
-        var document = await LoadTranslationsDocumentAsync();
+        var document = await LoadTranslationsDocumentAsync().ConfigureAwait(false);
 
         document.Translations[name] = translations;
 
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 }

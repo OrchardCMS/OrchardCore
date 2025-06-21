@@ -36,7 +36,7 @@ public class LiquidTests
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
                 NullEncoder.Default,
-                testModel);
+                testModel).ConfigureAwait(false);
 
             Assert.Equal("true", result);
         });
@@ -71,7 +71,7 @@ public class LiquidTests
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
                 NullEncoder.Default,
-                testModel);
+                testModel).ConfigureAwait(false);
 
             Assert.Contains("true", result);
         });
@@ -104,7 +104,7 @@ public class LiquidTests
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
                 NullEncoder.Default,
-                testModel);
+                testModel).ConfigureAwait(false);
 
             Assert.Equal("true", result);
         });
@@ -130,7 +130,7 @@ public class LiquidTests
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
                 NullEncoder.Default,
-                testModel);
+                testModel).ConfigureAwait(false);
 
             Assert.Equal("unsorted:302040605010sorted:102030405060", result.ReplaceLineEndings(""));
         });
@@ -156,7 +156,7 @@ public class LiquidTests
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
                 NullEncoder.Default,
-                testModel);
+                testModel).ConfigureAwait(false);
 
             Assert.Equal("total:6filtered:5", result.ReplaceLineEndings(""));
         });
@@ -182,7 +182,7 @@ public class LiquidTests
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
                 NullEncoder.Default,
-                testModel);
+                testModel).ConfigureAwait(false);
 
             Assert.Equal("original:302040605010filtered_sorted:1030405060", result.ReplaceLineEndings(""));
         });

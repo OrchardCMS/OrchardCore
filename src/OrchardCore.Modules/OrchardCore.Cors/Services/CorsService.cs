@@ -15,13 +15,13 @@ public class CorsService
 
     public async Task<CorsSettings> GetSettingsAsync()
     {
-        return await _siteService.GetSettingsAsync<CorsSettings>();
+        return await _siteService.GetSettingsAsync<CorsSettings>().ConfigureAwait(false);
     }
 
     internal async Task UpdateSettingsAsync(CorsSettings corsSettings)
     {
-        var siteSettings = await _siteService.LoadSiteSettingsAsync();
+        var siteSettings = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         siteSettings.Properties[nameof(CorsSettings)] = JObject.FromObject(corsSettings);
-        await _siteService.UpdateSiteSettingsAsync(siteSettings);
+        await _siteService.UpdateSiteSettingsAsync(siteSettings).ConfigureAwait(false);
     }
 }

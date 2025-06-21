@@ -21,7 +21,7 @@ public class DefaultSitemapBuilder : ISitemapBuilder
 
         foreach (var sitemapTypeBuilder in _sitemapTypeBuilders)
         {
-            await sitemapTypeBuilder.BuildAsync(sitemap, context);
+            await sitemapTypeBuilder.BuildAsync(sitemap, context).ConfigureAwait(false);
             if (context.Response != null)
             {
                 var document = new XDocument(context.Response.ResponseElement);

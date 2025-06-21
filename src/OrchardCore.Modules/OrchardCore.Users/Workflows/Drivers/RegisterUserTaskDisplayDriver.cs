@@ -29,7 +29,7 @@ public sealed class RegisterUserTaskDisplayDriver : ActivityDisplayDriver<Regist
     public override async Task<IDisplayResult> UpdateAsync(RegisterUserTask model, UpdateEditorContext context)
     {
         var viewModel = new RegisterUserTaskViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         model.SendConfirmationEmail = viewModel.SendConfirmationEmail;
         model.RequireModeration = viewModel.RequireModeration;

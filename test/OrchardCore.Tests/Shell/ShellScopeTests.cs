@@ -26,7 +26,7 @@ public class ShellScopeTests
                 // scope, to ensure the second scope is done before this action completes.
                 try
                 {
-                    await Task.Delay(1000, cts.Token);
+                    await Task.Delay(1000, cts.Token).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException) { }
 
@@ -46,7 +46,7 @@ public class ShellScopeTests
 
             // Release shell context from the second scope. This should not cause any issues in the first
             // scope.
-            await shellHost.ReleaseShellContextAsync(shellSettings);
+            await shellHost.ReleaseShellContextAsync(shellSettings).ConfigureAwait(false);
         });
 
         // Continue the first scope after the second scope has released the shell context.

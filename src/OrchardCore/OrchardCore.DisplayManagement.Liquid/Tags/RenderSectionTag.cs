@@ -13,16 +13,16 @@ public class RenderSectionTag
     {
         var services = ((LiquidTemplateContext)context).Services;
 
-        var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync();
+        var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync().ConfigureAwait(false);
         var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
         var arguments = new NamedExpressionList(argumentsList);
 
         var nameExpression = arguments["name", 0] ?? throw new ArgumentException("render_section tag requires a name argument");
-        var name = (await nameExpression.EvaluateAsync(context)).ToStringValue();
+        var name = (await nameExpression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
 
         var requiredExpression = arguments["required", 1];
-        var required = requiredExpression != null && (await requiredExpression.EvaluateAsync(context)).ToBooleanValue();
+        var required = requiredExpression != null && (await requiredExpression.EvaluateAsync(context).ConfigureAwait(false)).ToBooleanValue();
 
         var zone = layout.Zones[name];
 
@@ -36,7 +36,7 @@ public class RenderSectionTag
             return Completion.Normal;
         }
 
-        var htmlContent = await displayHelper.ShapeExecuteAsync(zone);
+        var htmlContent = await displayHelper.ShapeExecuteAsync(zone).ConfigureAwait(false);
         htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
 
         return Completion.Normal;

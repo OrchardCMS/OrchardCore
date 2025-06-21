@@ -24,7 +24,7 @@ public sealed class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFiel
 
     public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition contentPartFieldDefinition, BuildEditorContext updater)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, LuceneSearchPermissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, LuceneSearchPermissions.ManageLuceneIndexes).ConfigureAwait(false))
         {
             return null;
         }
@@ -37,17 +37,17 @@ public sealed class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFiel
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition contentPartFieldDefinition, UpdatePartFieldEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, LuceneSearchPermissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, LuceneSearchPermissions.ManageLuceneIndexes).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new LuceneContentIndexSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         context.Builder.WithSettings(model.LuceneContentIndexSettings);
 
-        return await EditAsync(contentPartFieldDefinition, context);
+        return await EditAsync(contentPartFieldDefinition, context).ConfigureAwait(false);
     }
 }

@@ -15,10 +15,10 @@ public class SitemapEntries
 
     public async Task<(bool, string)> TryGetSitemapIdByPathAsync(string path)
     {
-        var identifier = await _sitemapManager.GetIdentifierAsync();
+        var identifier = await _sitemapManager.GetIdentifierAsync().ConfigureAwait(false);
         if (_document == null || _document.Identifier != identifier)
         {
-            await BuildEntriesAsync(identifier);
+            await BuildEntriesAsync(identifier).ConfigureAwait(false);
         }
 
         if (_document.SitemapIds.TryGetValue(path, out var sitemapId))
@@ -31,10 +31,10 @@ public class SitemapEntries
 
     public async Task<(bool, string)> TryGetPathBySitemapIdAsync(string sitemapId)
     {
-        var identifier = await _sitemapManager.GetIdentifierAsync();
+        var identifier = await _sitemapManager.GetIdentifierAsync().ConfigureAwait(false);
         if (_document == null || _document.Identifier != identifier)
         {
-            await BuildEntriesAsync(identifier);
+            await BuildEntriesAsync(identifier).ConfigureAwait(false);
         }
 
         if (_document.SitemapPaths.TryGetValue(sitemapId, out var path))
@@ -52,7 +52,7 @@ public class SitemapEntries
             Identifier = identifier,
         };
 
-        var sitemaps = await _sitemapManager.GetSitemapsAsync();
+        var sitemaps = await _sitemapManager.GetSitemapsAsync().ConfigureAwait(false);
         foreach (var sitemap in sitemaps)
         {
             if (!sitemap.Enabled)

@@ -21,7 +21,7 @@ public sealed class SettingsStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step;
-        var site = await _siteService.LoadSiteSettingsAsync();
+        var site = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
 
         foreach (var property in model)
         {
@@ -97,6 +97,6 @@ public sealed class SettingsStep : NamedRecipeStepHandler
             }
         }
 
-        await _siteService.UpdateSiteSettingsAsync(site);
+        await _siteService.UpdateSiteSettingsAsync(site).ConfigureAwait(false);
     }
 }

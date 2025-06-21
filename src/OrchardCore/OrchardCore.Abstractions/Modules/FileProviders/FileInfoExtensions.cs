@@ -13,13 +13,16 @@ public static class FileInfoExtensions
 
         if (fileInfo?.Exists ?? false)
         {
-            await using var reader = fileInfo.CreateReadStream();
-            using var sr = new StreamReader(reader);
+            var reader = fileInfo.CreateReadStream();
+            await using (reader.ConfigureAwait(false))
+            {
+                using var sr = new StreamReader(reader);
 
             string line;
             while ((line = await sr.ReadLineAsync()) != null)
             {
                 lines.Add(line);
+            }
             }
         }
 

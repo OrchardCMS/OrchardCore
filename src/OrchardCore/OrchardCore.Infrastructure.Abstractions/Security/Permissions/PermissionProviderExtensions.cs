@@ -10,7 +10,7 @@ public static class PermissionProviderExtensions
 
         foreach (var name in names)
         {
-            var permission = await permissionService.FindByNameAsync(name);
+            var permission = await permissionService.FindByNameAsync(name).ConfigureAwait(false);
 
             if (permission != null)
             {

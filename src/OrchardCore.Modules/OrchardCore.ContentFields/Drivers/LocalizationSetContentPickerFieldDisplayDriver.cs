@@ -55,9 +55,9 @@ public sealed class LocalizationSetContentPickerFieldDisplayDriver : ContentFiel
 
             model.SelectedItems = [];
 
-            foreach (var kvp in await _contentLocalizationManager.GetFirstItemIdForSetsAsync(field.LocalizationSets))
+            foreach (var kvp in await _contentLocalizationManager.GetFirstItemIdForSetsAsync(field.LocalizationSets).ConfigureAwait(false))
             {
-                var contentItem = await _contentManager.GetAsync(kvp.Value, VersionOptions.Latest);
+                var contentItem = await _contentManager.GetAsync(kvp.Value, VersionOptions.Latest).ConfigureAwait(false);
 
                 if (contentItem == null)
                 {
@@ -68,7 +68,7 @@ public sealed class LocalizationSetContentPickerFieldDisplayDriver : ContentFiel
                 {
                     Id = kvp.Key, // localization set
                     DisplayText = contentItem.ToString(),
-                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
+                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem).ConfigureAwait(false),
                 });
             }
         });
@@ -78,7 +78,7 @@ public sealed class LocalizationSetContentPickerFieldDisplayDriver : ContentFiel
     {
         var viewModel = new EditLocalizationSetContentPickerFieldViewModel();
 
-        var modelUpdated = await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.LocalizationSets);
+        var modelUpdated = await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.LocalizationSets).ConfigureAwait(false);
 
         if (!modelUpdated)
         {

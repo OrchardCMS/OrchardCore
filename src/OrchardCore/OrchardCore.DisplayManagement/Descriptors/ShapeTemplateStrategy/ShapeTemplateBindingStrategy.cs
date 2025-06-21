@@ -46,7 +46,7 @@ public class ShapeTemplateBindingStrategy : ShapeTableProvider, IShapeTableHarve
             })
             .ToList();
 
-        var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+        var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync().ConfigureAwait(false);
         var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToList();
 
         // Excludes the extensions whose templates are already associated to an excluded feature that is still enabled.

@@ -24,7 +24,7 @@ public sealed class MarkdownBodyPartSettingsDisplayDriver : ContentTypePartDefin
         var model = new MarkdownBodyPartSettingsViewModel();
         var settings = new MarkdownBodyPartSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.SanitizeHtml = model.SanitizeHtml;
 

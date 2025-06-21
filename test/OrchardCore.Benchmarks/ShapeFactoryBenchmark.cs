@@ -48,7 +48,7 @@ public class ShapeFactoryBenchmark
     public async Task OriginalShapeRender()
 #pragma warning restore CA1822 // Mark members as static
     {
-        await ShapeRenderOriginal(_input, _filterArguments, _templateContext);
+        await ShapeRenderOriginal(_input, _filterArguments, _templateContext).ConfigureAwait(false);
     }
 
 

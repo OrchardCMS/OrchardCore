@@ -29,7 +29,7 @@ public sealed class AdminMenuDeploymentSource
             ["data"] = data,
         });
 
-        foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
+        foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync().ConfigureAwait(false)).AdminMenu)
         {
             var objectData = JObject.FromObject(adminMenu, _serializationOptions);
             data.Add(objectData);

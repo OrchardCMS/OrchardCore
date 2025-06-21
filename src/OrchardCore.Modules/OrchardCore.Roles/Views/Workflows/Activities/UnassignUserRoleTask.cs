@@ -46,9 +46,9 @@ public class UnassignUserRoleTask : TaskActivity<UnassignUserRoleTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null);
+        var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null).ConfigureAwait(false);
 
-        var u = await _userService.GetUserAsync(userName);
+        var u = await _userService.GetUserAsync(userName).ConfigureAwait(false);
 
         if (u is User user)
         {
@@ -56,7 +56,7 @@ public class UnassignUserRoleTask : TaskActivity<UnassignUserRoleTask>
             {
                 if (user.RoleNames.Contains(role))
                 {
-                    await _userManager.RemoveFromRoleAsync(user, role);
+                    await _userManager.RemoveFromRoleAsync(user, role).ConfigureAwait(false);
                 }
             }
 

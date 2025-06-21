@@ -29,7 +29,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
             model.LinkText = treeNode.LinkText;
             model.IconClass = treeNode.IconClass;
 
-            var selectedPermissions = await _permissionService.FindByNamesAsync(treeNode.PermissionNames);
+            var selectedPermissions = await _permissionService.FindByNamesAsync(treeNode.PermissionNames).ConfigureAwait(false);
 
             model.SelectedItems = selectedPermissions
                 .Select(p => new PermissionViewModel
@@ -38,7 +38,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
                     DisplayText = p.Description,
                 }).ToArray();
 
-            var permissions = await _permissionService.GetPermissionsAsync();
+            var permissions = await _permissionService.GetPermissionsAsync().ConfigureAwait(false);
 
             model.AllItems = permissions
                 .Select(p => new PermissionViewModel
@@ -55,7 +55,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             x => x.LinkText,
             x => x.IconClass,
-            x => x.SelectedPermissionNames);
+            x => x.SelectedPermissionNames).ConfigureAwait(false);
 
         treeNode.LinkText = model.LinkText;
         treeNode.IconClass = model.IconClass;
@@ -65,7 +65,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
             ? []
             : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-        var permissions = await _permissionService.FindByNamesAsync(selectedPermissions);
+        var permissions = await _permissionService.FindByNamesAsync(selectedPermissions).ConfigureAwait(false);
         treeNode.PermissionNames = permissions.Select(p => p.Name).ToArray();
 
         return Edit(treeNode, context);

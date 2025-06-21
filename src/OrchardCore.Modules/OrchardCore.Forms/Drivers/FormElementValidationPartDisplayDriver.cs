@@ -26,7 +26,7 @@ public sealed class FormElementValidationPartDisplayDriver : ContentPartDisplayD
     {
         var viewModel = new FormElementValidationPartViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         part.Option = viewModel.ValidationOption;
 

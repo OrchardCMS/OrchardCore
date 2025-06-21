@@ -30,7 +30,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
 
     public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context, int? skip = null, int? take = null)
     {
-        var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
+        var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync().ConfigureAwait(false);
         using var session = _store.CreateSession(withTracking: false);
 
         IEnumerable<ContentItem> contentItems = null;
@@ -46,7 +46,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                 .ThenBy(x => x.Id)
                 .Skip(skip ?? 0)
                 .Take(take ?? 0)
-                .ListAsync();
+                .ListAsync().ConfigureAwait(false);
 
         }
         else if (source.LimitItems)
@@ -63,7 +63,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
             if (contentType.Parts.Any(ctd => string.Equals(ctd.Name, nameof(LocalizationPart), StringComparison.Ordinal)))
             {
                 // When limiting items Content item is valid if it is for the default culture.
-                var defaultCulture = await _localizationService.GetDefaultCultureAsync();
+                var defaultCulture = await _localizationService.GetDefaultCultureAsync().ConfigureAwait(false);
 
                 // Get all content items here for reference. Then reduce by default culture.
                 // We know that the content item should be localized.
@@ -75,7 +75,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                     .With<LocalizedContentItemIndex>(x => x.Culture == defaultCulture)
                     .Take(take ?? 0)
                     .Skip(skip ?? 0)
-                    .ListAsync();
+                    .ListAsync().ConfigureAwait(false);
             }
             else
             {
@@ -85,7 +85,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                     .OrderBy(x => x.CreatedUtc)
                     .Skip(skip ?? 0)
                     .Take(take ?? 0)
-                    .ListAsync();
+                    .ListAsync().ConfigureAwait(false);
 
             }
         }
@@ -104,7 +104,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                 .ThenBy(x => x.Id)
                 .Skip(skip ?? 0)
                 .Take(take ?? 0)
-                .ListAsync();
+                .ListAsync().ConfigureAwait(false);
 
         }
 

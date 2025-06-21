@@ -16,7 +16,7 @@ public class AnyConditionEvaluator : ConditionEvaluator<AnyConditionGroup>
         foreach (var childCondition in condition.Conditions)
         {
             var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
-            if (evaluator is null || await evaluator.EvaluateAsync(childCondition))
+            if (evaluator is null || await evaluator.EvaluateAsync(childCondition).ConfigureAwait(false))
             {
                 return true;
             }

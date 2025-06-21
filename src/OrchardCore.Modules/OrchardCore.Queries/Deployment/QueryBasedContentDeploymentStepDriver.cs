@@ -38,7 +38,7 @@ public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<Deploy
             model.QueryName = step.QueryName;
             model.QueryParameters = step.QueryParameters;
             model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-            model.Queries = await _queryManager.ListQueriesAsync(true);
+            model.Queries = await _queryManager.ListQueriesAsync(true).ConfigureAwait(false);
         }).Location("Content");
     }
 
@@ -48,9 +48,9 @@ public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<Deploy
         await context.Updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix,
             viewModel => viewModel.QueryName,
             viewModel => viewModel.QueryParameters,
-            viewModel => viewModel.ExportAsSetupRecipe);
+            viewModel => viewModel.ExportAsSetupRecipe).ConfigureAwait(false);
 
-        var query = await _queryManager.GetQueryAsync(queryBasedContentViewModel.QueryName);
+        var query = await _queryManager.GetQueryAsync(queryBasedContentViewModel.QueryName).ConfigureAwait(false);
 
         if (!query.ReturnContentItems)
         {

@@ -21,7 +21,7 @@ public sealed class OpenIdApplicationStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<OpenIdApplicationStepModel>();
-        var app = await _applicationManager.FindByClientIdAsync(model.ClientId);
+        var app = await _applicationManager.FindByClientIdAsync(model.ClientId).ConfigureAwait(false);
 
         var settings = new OpenIdApplicationSettings()
         {
@@ -47,6 +47,6 @@ public sealed class OpenIdApplicationStep : NamedRecipeStepHandler
             RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests,
         };
 
-        await _applicationManager.UpdateDescriptorFromSettings(settings, app);
+        await _applicationManager.UpdateDescriptorFromSettings(settings, app).ConfigureAwait(false);
     }
 }

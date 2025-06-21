@@ -27,7 +27,7 @@ public class WorkflowTrimmingService : IWorkflowTrimmingService
     public async Task<int> TrimWorkflowInstancesAsync(TimeSpan retentionPeriod, int batchSize)
     {
         var dateThreshold = _clock.UtcNow - retentionPeriod;
-        var settings = await _siteService.GetSettingsAsync<WorkflowTrimmingSettings>();
+        var settings = await _siteService.GetSettingsAsync<WorkflowTrimmingSettings>().ConfigureAwait(false);
 
         settings.Statuses ??=
         [
@@ -51,7 +51,7 @@ public class WorkflowTrimmingService : IWorkflowTrimmingService
             .Query<Workflow, WorkflowIndex>(x => x.WorkflowStatus.IsIn(statuses) && x.CreatedUtc <= dateThreshold)
             .OrderBy(x => x.Id)
             .Take(batchSize)
-            .ListAsync();
+            .ListAsync().ConfigureAwait(false);
 
         var total = 0;
         foreach (var item in workflowInstances)

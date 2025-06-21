@@ -27,7 +27,7 @@ public class PreviewPartHandler : ContentPartHandler<PreviewPart>
     /// </summary>
     private async Task<string> GetPatternAsync(PreviewPart part)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType).ConfigureAwait(false);
         var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "PreviewPart", StringComparison.Ordinal));
         var pattern = contentTypePartDefinition.GetSettings<PreviewPartSettings>().Pattern;
 
@@ -36,7 +36,7 @@ public class PreviewPartHandler : ContentPartHandler<PreviewPart>
 
     public override async Task GetContentItemAspectAsync(ContentItemAspectContext context, PreviewPart part)
     {
-        var pattern = await GetPatternAsync(part);
+        var pattern = await GetPatternAsync(part).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(pattern))
         {
@@ -49,10 +49,10 @@ public class PreviewPartHandler : ContentPartHandler<PreviewPart>
                 };
 
                 previewAspect.PreviewUrl = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }).ConfigureAwait(false);
 
                 previewAspect.PreviewUrl = previewAspect.PreviewUrl.Replace("\r", string.Empty).Replace("\n", string.Empty);
-            });
+            }).ConfigureAwait(false);
         }
 
         return;

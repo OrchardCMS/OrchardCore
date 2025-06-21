@@ -35,7 +35,7 @@ public class AwsFileStore : IFileStore
             {
                 BucketName = _options.BucketName,
                 Key = this.Combine(_basePrefix, path),
-            });
+            }).ConfigureAwait(false);
 
             return new AwsFile(path, objectMetadata.ContentLength, objectMetadata.LastModified);
         }
@@ -59,7 +59,7 @@ public class AwsFileStore : IFileStore
             Prefix = NormalizePrefix(this.Combine(_basePrefix, path)),
             MaxKeys = 1,
             FetchOwner = false,
-        });
+        }).ConfigureAwait(false);
 
         return awsDirectory.S3Objects.Count > 0 ? new AwsDirectory(path, _clock.UtcNow) : null;
     }
@@ -73,7 +73,7 @@ public class AwsFileStore : IFileStore
             Delimiter = "/",
             Prefix = NormalizePrefix(this.Combine(_basePrefix, path)),
             FetchOwner = false,
-        });
+        }).ConfigureAwait(false);
 
         foreach (var file in listObjectsResponse.S3Objects)
         {
@@ -111,7 +111,7 @@ public class AwsFileStore : IFileStore
             {
                 BucketName = _options.BucketName,
                 Key = NormalizePrefix(this.Combine(_basePrefix, path)),
-            });
+            }).ConfigureAwait(false);
 
             return response.IsSuccessful();
         }
@@ -129,7 +129,7 @@ public class AwsFileStore : IFileStore
             {
                 BucketName = _options.BucketName,
                 Key = this.Combine(_basePrefix, path),
-            });
+            }).ConfigureAwait(false);
 
             return response.IsDeleteSuccessful();
         }
@@ -150,7 +150,7 @@ public class AwsFileStore : IFileStore
         {
             BucketName = _options.BucketName,
             Prefix = NormalizePrefix(this.Combine(_basePrefix, path)),
-        });
+        }).ConfigureAwait(false);
 
         if (listObjectsResponse.S3Objects.Count > 0)
         {
@@ -161,7 +161,7 @@ public class AwsFileStore : IFileStore
                     .Select(metadata => new KeyVersion { Key = metadata.Key }).ToList(),
             };
 
-            var response = await _amazonS3Client.DeleteObjectsAsync(deleteObjectsRequest);
+            var response = await _amazonS3Client.DeleteObjectsAsync(deleteObjectsRequest).ConfigureAwait(false);
             return response.IsSuccessful();
         }
 
@@ -170,8 +170,8 @@ public class AwsFileStore : IFileStore
 
     public async Task MoveFileAsync(string oldPath, string newPath)
     {
-        await CopyFileAsync(oldPath, newPath);
-        await TryDeleteFileAsync(oldPath);
+        await CopyFileAsync(oldPath, newPath).ConfigureAwait(false);
+        await TryDeleteFileAsync(oldPath).ConfigureAwait(false);
     }
 
     public async Task CopyFileAsync(string srcPath, string dstPath)
@@ -187,7 +187,7 @@ public class AwsFileStore : IFileStore
             {
                 BucketName = _options.BucketName,
                 Key = this.Combine(_basePrefix, srcPath),
-            });
+            }).ConfigureAwait(false);
         }
         catch (AmazonS3Exception)
         {
@@ -200,7 +200,7 @@ public class AwsFileStore : IFileStore
             {
                 BucketName = _options.BucketName,
                 Prefix = this.Combine(_basePrefix, dstPath),
-            });
+            }).ConfigureAwait(false);
 
             if (listObjects.S3Objects.Count > 0)
             {
@@ -213,7 +213,7 @@ public class AwsFileStore : IFileStore
                 SourceKey = this.Combine(_basePrefix, srcPath),
                 DestinationBucket = _options.BucketName,
                 DestinationKey = this.Combine(_basePrefix, dstPath),
-            });
+            }).ConfigureAwait(false);
 
             if (!copyObjectResponse.IsSuccessful())
             {
@@ -255,7 +255,7 @@ public class AwsFileStore : IFileStore
                 {
                     BucketName = _options.BucketName,
                     Prefix = this.Combine(_basePrefix, path),
-                });
+                }).ConfigureAwait(false);
 
                 if (listObjects.S3Objects.Count > 0)
                 {
@@ -268,7 +268,7 @@ public class AwsFileStore : IFileStore
                 BucketName = _options.BucketName,
                 Key = this.Combine(_basePrefix, path),
                 InputStream = inputStream,
-            });
+            }).ConfigureAwait(false);
 
             if (!response.IsSuccessful())
             {

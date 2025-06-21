@@ -58,7 +58,7 @@ public sealed class Startup : StartupBase
                         slug = '/' + slug;
                     }
 
-                    (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
+                    (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug).ConfigureAwait(false);
 
                     if (found)
                     {

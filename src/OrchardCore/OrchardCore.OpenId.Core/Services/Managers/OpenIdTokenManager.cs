@@ -58,7 +58,7 @@ public class OpenIdTokenManager<TToken> : OpenIddictTokenManager<TToken>, IOpenI
     }
 
     async ValueTask<object> IOpenIdTokenManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-        => await FindByPhysicalIdAsync(identifier, cancellationToken);
+        => await FindByPhysicalIdAsync(identifier, cancellationToken).ConfigureAwait(false);
 
     ValueTask<string> IOpenIdTokenManager.GetPhysicalIdAsync(object token, CancellationToken cancellationToken)
         => GetPhysicalIdAsync((TToken)token, cancellationToken);

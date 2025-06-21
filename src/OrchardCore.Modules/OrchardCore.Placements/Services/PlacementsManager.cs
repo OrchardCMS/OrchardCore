@@ -13,14 +13,14 @@ public sealed class PlacementsManager
 
     public async Task<IReadOnlyDictionary<string, PlacementNode[]>> ListShapePlacementsAsync()
     {
-        var document = await _placementStore.GetPlacementsAsync();
+        var document = await _placementStore.GetPlacementsAsync().ConfigureAwait(false);
 
         return document.Placements;
     }
 
     public async Task<PlacementNode[]> GetShapePlacementsAsync(string shapeType)
     {
-        var document = await _placementStore.GetPlacementsAsync();
+        var document = await _placementStore.GetPlacementsAsync().ConfigureAwait(false);
 
         if (document.Placements.TryGetValue(shapeType, out var nodes))
         {
@@ -34,20 +34,20 @@ public sealed class PlacementsManager
 
     public async Task UpdateShapePlacementsAsync(string shapeType, IEnumerable<PlacementNode> placementNodes)
     {
-        var document = await _placementStore.LoadPlacementsAsync();
+        var document = await _placementStore.LoadPlacementsAsync().ConfigureAwait(false);
 
         document.Placements[shapeType] = placementNodes.ToArray();
 
-        await _placementStore.SavePlacementsAsync(document);
+        await _placementStore.SavePlacementsAsync(document).ConfigureAwait(false);
     }
 
     public async Task RemoveShapePlacementsAsync(string shapeType)
     {
-        var document = await _placementStore.LoadPlacementsAsync();
+        var document = await _placementStore.LoadPlacementsAsync().ConfigureAwait(false);
 
         if (document.Placements.Remove(shapeType))
         {
-            await _placementStore.SavePlacementsAsync(document);
+            await _placementStore.SavePlacementsAsync(document).ConfigureAwait(false);
         }
     }
 }

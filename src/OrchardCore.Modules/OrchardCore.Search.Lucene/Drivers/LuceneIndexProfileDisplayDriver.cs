@@ -96,7 +96,7 @@ internal sealed class LuceneIndexProfileDisplayDriver : DisplayDriver<IndexProfi
 
         var model = new LuceneIndexProfileViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var metadata = index.As<LuceneIndexMetadata>();
 
@@ -112,7 +112,7 @@ internal sealed class LuceneIndexProfileDisplayDriver : DisplayDriver<IndexProfi
 
         var queryModel = new LuceneDefaultQueryViewModel();
 
-        await context.Updater.TryUpdateModelAsync(queryModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(queryModel, Prefix).ConfigureAwait(false);
 
         if (queryModel.DefaultSearchFields?.Length > 0)
         {

@@ -65,8 +65,10 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
 
     public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count, string category)
     {
-        await using var connection = _dbConnectionAccessor.CreateConnection();
-        await connection.OpenAsync();
+        var connection = _dbConnectionAccessor.CreateConnection();
+        await using (connection.ConfigureAwait(false))
+        {
+            await connection.OpenAsync();
 
         try
         {
@@ -100,6 +102,7 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
         {
             _logger.LogError(ex, "An error occurred while reading indexing tasks");
             throw;
+        }
         }
     }
 
@@ -139,8 +142,10 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
 
         var table = $"{store.Configuration.TablePrefix}{nameof(IndexingTask)}";
 
-        await using var connection = dbConnectionAccessor.CreateConnection();
-        await connection.OpenAsync();
+        var connection = dbConnectionAccessor.CreateConnection();
+        await using (connection.ConfigureAwait(false))
+        {
+            await connection.OpenAsync();
 
         using var transaction = await connection.BeginTransactionAsync(store.Configuration.IsolationLevel);
         var dialect = store.Configuration.SqlDialect;
@@ -188,6 +193,7 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
             logger.LogError(e, "An error occurred while updating indexing tasks");
 
             throw;
+        }
         }
     }
 }

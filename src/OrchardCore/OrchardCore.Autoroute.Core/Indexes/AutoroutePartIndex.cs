@@ -88,7 +88,7 @@ public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IS
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             // Search for this part.
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
             if (contentTypeDefinition != null && !contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(AutoroutePart)))
             {
                 context.ContentItem.Remove<AutoroutePart>();
@@ -96,7 +96,7 @@ public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IS
 
                 // When the part has been removed enlist an update for after the session has been committed.
                 var autorouteEntries = _serviceProvider.GetRequiredService<IAutorouteEntries>();
-                await autorouteEntries.UpdateEntriesAsync();
+                await autorouteEntries.UpdateEntriesAsync().ConfigureAwait(false);
             }
         }
     }
@@ -145,9 +145,9 @@ public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IS
 
                 _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
 
-                var containedContentItemsAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+                var containedContentItemsAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem).ConfigureAwait(false);
 
-                await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, (JsonObject)contentItem.Content, part.Path);
+                await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, (JsonObject)contentItem.Content, part.Path).ConfigureAwait(false);
 
                 return results;
             });
@@ -162,7 +162,7 @@ public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IS
             foreach (var jItem in items.Cast<JsonObject>())
             {
                 var contentItem = jItem.ToObject<ContentItem>();
-                var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
+                var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem).ConfigureAwait(false);
 
                 if (!handlerAspect.Disabled)
                 {
@@ -184,9 +184,9 @@ public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IS
                 }
 
                 var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
-                var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+                var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem).ConfigureAwait(false);
 
-                await PopulateContainedContentItemIndexesAsync(results, containerContentItem, childrenAspect, jItem, itemBasePath);
+                await PopulateContainedContentItemIndexesAsync(results, containerContentItem, childrenAspect, jItem, itemBasePath).ConfigureAwait(false);
             }
         }
     }

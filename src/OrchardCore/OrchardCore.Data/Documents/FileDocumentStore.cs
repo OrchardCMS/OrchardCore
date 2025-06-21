@@ -37,8 +37,8 @@ public class FileDocumentStore : IFileDocumentStore
         }
 
         var document = await GetDocumentAsync<T>()
-            ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
-            ?? new T();
+.ConfigureAwait(false) ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
+.ConfigureAwait(false) ?? new T();
 
         ShellScope.Set(typeof(T), document);
 
@@ -55,7 +55,7 @@ public class FileDocumentStore : IFileDocumentStore
             return (false, loaded);
         }
 
-        return (true, await GetDocumentAsync<T>() ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
+        return (true, await GetDocumentAsync<T>().ConfigureAwait(false) ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)).ConfigureAwait(false) ?? new T());
     }
 
     /// <inheritdoc />
@@ -63,9 +63,9 @@ public class FileDocumentStore : IFileDocumentStore
     {
         DocumentStore.AfterCommitSuccess<T>(async () =>
         {
-            await SaveDocumentAsync(document);
+            await SaveDocumentAsync(document).ConfigureAwait(false);
             ShellScope.Set(typeof(T), null);
-            await updateCache(document);
+            await updateCache(document).ConfigureAwait(false);
         });
 
         return Task.CompletedTask;
@@ -92,11 +92,11 @@ public class FileDocumentStore : IFileDocumentStore
             return default;
         }
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             using var stream = File.OpenRead(filename);
-            return await JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
+            return await JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default).ConfigureAwait(false);
         }
         finally
         {
@@ -116,11 +116,11 @@ public class FileDocumentStore : IFileDocumentStore
 
         var filename = _tenantPath + typeName + ".json";
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             using var stream = File.Create(filename);
-            await JsonSerializer.SerializeAsync(stream, document, JOptions.Indented);
+            await JsonSerializer.SerializeAsync(stream, document, JOptions.Indented).ConfigureAwait(false);
         }
         finally
         {

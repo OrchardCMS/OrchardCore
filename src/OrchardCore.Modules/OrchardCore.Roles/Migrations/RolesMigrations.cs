@@ -99,7 +99,7 @@ public sealed class RolesMigrations : DataMigration
                         await roleManager.CreateAsync(new Role
                         {
                             RoleName = adminSystemRoleName,
-                        });
+                        }).ConfigureAwait(false);
                     }
                     else
                     {
@@ -107,7 +107,7 @@ public sealed class RolesMigrations : DataMigration
 
                         r.RoleClaims.Clear();
 
-                        await roleManager.UpdateAsync(r);
+                        await roleManager.UpdateAsync(r).ConfigureAwait(false);
 
                         // Don't processed to avoid adding the default 'Administrator' role to the adminRoles collection;
                         continue;
@@ -129,7 +129,7 @@ public sealed class RolesMigrations : DataMigration
 
                     foreach (var adminRole in adminRoles)
                     {
-                        var users = await userManager.GetUsersInRoleAsync(adminRole.RoleName);
+                        var users = await userManager.GetUsersInRoleAsync(adminRole.RoleName).ConfigureAwait(false);
 
                         if (users.Count > 0)
                         {
@@ -137,11 +137,11 @@ public sealed class RolesMigrations : DataMigration
 
                             foreach (var user in users)
                             {
-                                await userManager.AddToRoleAsync(user, adminSystemRoleName);
+                                await userManager.AddToRoleAsync(user, adminSystemRoleName).ConfigureAwait(false);
                             }
                         }
                     }
-                });
+                }).ConfigureAwait(false);
             }
 
             if (adminSystemRoleName != OrchardCoreConstants.Roles.Administrator)
@@ -154,8 +154,8 @@ public sealed class RolesMigrations : DataMigration
 
                 shellSettings["AdminRoleName"] = adminSystemRoleName;
 
-                await shellHost.UpdateShellSettingsAsync(shellSettings);
-                await shellHost.ReleaseShellContextAsync(shellSettings);
+                await shellHost.UpdateShellSettingsAsync(shellSettings).ConfigureAwait(false);
+                await shellHost.ReleaseShellContextAsync(shellSettings).ConfigureAwait(false);
             }
         });
     }

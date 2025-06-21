@@ -29,7 +29,7 @@ public class DeleteContentTask : ContentTask
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var content = (await GetContentAsync(workflowContext))
+        var content = (await GetContentAsync(workflowContext).ConfigureAwait(false))
             ?? throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' failed to retrieve the content item.");
 
         if (string.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
@@ -37,7 +37,7 @@ public class DeleteContentTask : ContentTask
             return Outcomes("Noop");
         }
 
-        var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Latest);
+        var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Latest).ConfigureAwait(false);
 
         if (contentItem == null)
         {
@@ -54,7 +54,7 @@ public class DeleteContentTask : ContentTask
             throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' can't delete the content item as it is executed inline from a starting '{nameof(ContentDeletedEvent)}' of the same content type, which would result in an infinitive loop.");
         }
 
-        await ContentManager.RemoveAsync(contentItem);
+        await ContentManager.RemoveAsync(contentItem).ConfigureAwait(false);
 
         return Outcomes("Deleted");
     }

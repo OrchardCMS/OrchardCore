@@ -28,32 +28,32 @@ public sealed class RewriteRulesManager : IRewriteRulesManager
     public async Task DeleteAsync(RewriteRule rule)
     {
         var deletingContext = new DeletingRewriteRuleContext(rule);
-        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.DeletingAsync(ctx), deletingContext, _logger);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.DeletingAsync(ctx), deletingContext, _logger).ConfigureAwait(false);
 
-        await _store.DeleteAsync(rule);
+        await _store.DeleteAsync(rule).ConfigureAwait(false);
 
         var deletedContext = new DeletedRewriteRuleContext(rule);
-        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.DeletedAsync(ctx), deletedContext, _logger);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.DeletedAsync(ctx), deletedContext, _logger).ConfigureAwait(false);
     }
 
     public async Task<RewriteValidateResult> ValidateAsync(RewriteRule rule)
     {
         var validatingContext = new ValidatingRewriteRuleContext(rule);
-        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.ValidatingAsync(ctx), validatingContext, _logger);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.ValidatingAsync(ctx), validatingContext, _logger).ConfigureAwait(false);
 
         var validatedContext = new ValidatedRewriteRuleContext(rule, validatingContext.Result);
-        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.ValidatedAsync(ctx), validatedContext, _logger);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.ValidatedAsync(ctx), validatedContext, _logger).ConfigureAwait(false);
 
         return validatingContext.Result;
     }
 
     public async Task<RewriteRule> FindByIdAsync(string id)
     {
-        var rule = await _store.FindByIdAsync(id);
+        var rule = await _store.FindByIdAsync(id).ConfigureAwait(false);
 
         if (rule != null)
         {
-            await LoadAsync(rule);
+            await LoadAsync(rule).ConfigureAwait(false);
         }
 
         return rule;
@@ -78,14 +78,14 @@ public sealed class RewriteRulesManager : IRewriteRulesManager
         {
             Id = id,
             Source = source,
-            Order = await GetNextOrderSequence(),
+            Order = await GetNextOrderSequence().ConfigureAwait(false),
         };
 
         var initializingContext = new InitializingRewriteRuleContext(rule, data);
-        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.InitializingAsync(ctx), initializingContext, _logger);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.InitializingAsync(ctx), initializingContext, _logger).ConfigureAwait(false);
 
         var initializedContext = new InitializedRewriteRuleContext(rule);
-        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.InitializedAsync(ctx), initializedContext, _logger);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.InitializedAsync(ctx), initializedContext, _logger).ConfigureAwait(false);
 
         // Set the source again after calling handlers to prevent handlers from updating the source during initialization.
         rule.Source = source;
@@ -100,11 +100,11 @@ public sealed class RewriteRulesManager : IRewriteRulesManager
 
     public async Task<IEnumerable<RewriteRule>> GetAllAsync()
     {
-        var rules = await GetSortedRuleAsync();
+        var rules = await GetSortedRuleAsync().ConfigureAwait(false);
 
         foreach (var rule in rules)
         {
-            await LoadAsync(rule);
+            await LoadAsync(rule).ConfigureAwait(false);
         }
 
         return rules;
@@ -113,21 +113,21 @@ public sealed class RewriteRulesManager : IRewriteRulesManager
     public async Task UpdateAsync(RewriteRule rule, JsonNode data = null)
     {
         var updatingContext = new UpdatingRewriteRuleContext(rule, data);
-        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.UpdatingAsync(ctx), updatingContext, _logger);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.UpdatingAsync(ctx), updatingContext, _logger).ConfigureAwait(false);
 
         var updatedContext = new UpdatedRewriteRuleContext(rule);
-        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.UpdatedAsync(ctx), updatedContext, _logger);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.UpdatedAsync(ctx), updatedContext, _logger).ConfigureAwait(false);
     }
 
     public async Task SaveAsync(RewriteRule rule)
     {
         var savingContext = new SavingRewriteRuleContext(rule);
-        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.SavingAsync(ctx), savingContext, _logger);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.SavingAsync(ctx), savingContext, _logger).ConfigureAwait(false);
 
-        await _store.SaveAsync(rule);
+        await _store.SaveAsync(rule).ConfigureAwait(false);
 
         var savedContext = new SavedRewriteRuleContext(rule);
-        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.SavedAsync(ctx), savedContext, _logger);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.SavedAsync(ctx), savedContext, _logger).ConfigureAwait(false);
     }
 
     public async Task ResortOrderAsync(int oldOrder, int newOrder)
@@ -137,7 +137,7 @@ public sealed class RewriteRulesManager : IRewriteRulesManager
             return;
         }
 
-        var rules = (await GetSortedRuleAsync()).ToList();
+        var rules = (await GetSortedRuleAsync().ConfigureAwait(false)).ToList();
 
         if (oldOrder > rules.Count || newOrder > rules.Count)
         {
@@ -155,7 +155,7 @@ public sealed class RewriteRulesManager : IRewriteRulesManager
 
         rules.Insert(zeroBasedNewOrder, ruleToMove);
 
-        await _store.UpdateOrderAndSaveAsync(rules);
+        await _store.UpdateOrderAndSaveAsync(rules).ConfigureAwait(false);
     }
 
     private Task LoadAsync(RewriteRule rule)
@@ -167,7 +167,7 @@ public sealed class RewriteRulesManager : IRewriteRulesManager
 
     private async Task<IEnumerable<RewriteRule>> GetSortedRuleAsync()
     {
-        var rules = await _store.GetAllAsync();
+        var rules = await _store.GetAllAsync().ConfigureAwait(false);
 
         return rules.OrderBy(x => x.Order)
             .ThenBy(x => x.CreatedUtc);
@@ -175,7 +175,7 @@ public sealed class RewriteRulesManager : IRewriteRulesManager
 
     private async Task<int> GetNextOrderSequence()
     {
-        var rules = await _store.GetAllAsync();
+        var rules = await _store.GetAllAsync().ConfigureAwait(false);
 
         // When importing multiple rules using a recipe, the rules collection will not include the newly added rule.
         // To address this, we maintain an internal counter managed by this scoped service.

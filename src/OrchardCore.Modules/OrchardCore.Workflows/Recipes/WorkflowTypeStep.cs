@@ -46,7 +46,7 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
         {
             var workflow = token.ToObject<WorkflowType>(_jsonSerializerOptions);
 
-            var existing = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+            var existing = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId).ConfigureAwait(false);
 
             if (existing is null)
             {
@@ -67,10 +67,10 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
             }
             else
             {
-                await _workflowTypeStore.DeleteAsync(existing);
+                await _workflowTypeStore.DeleteAsync(existing).ConfigureAwait(false);
             }
 
-            await _workflowTypeStore.SaveAsync(workflow);
+            await _workflowTypeStore.SaveAsync(workflow).ConfigureAwait(false);
         }
     }
 

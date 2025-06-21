@@ -35,7 +35,7 @@ public sealed class LocalizationContentsAdminListDisplayDriver : DisplayDriver<C
         return Initialize<LocalizationContentsAdminFilterViewModel>("ContentsAdminList__LocalizationPartFilter", async m =>
         {
             model.FilterResult.MapTo(m);
-            var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+            var supportedCultures = await _localizationService.GetSupportedCulturesAsync().ConfigureAwait(false);
             var cultures = new List<SelectListItem>
             {
                 new()
@@ -59,7 +59,7 @@ public sealed class LocalizationContentsAdminListDisplayDriver : DisplayDriver<C
     public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)
     {
         var viewModel = new LocalizationContentsAdminFilterViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, "Localization");
+        await context.Updater.TryUpdateModelAsync(viewModel, "Localization").ConfigureAwait(false);
 
         if (viewModel.ShowLocalizedContentTypes)
         {

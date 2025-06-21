@@ -187,7 +187,7 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
 
             var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
 
-            var result = await DisplayAsync(part, buildDisplayContext);
+            var result = await DisplayAsync(part, buildDisplayContext).ConfigureAwait(false);
 
             _typePartDefinition = null;
 
@@ -210,7 +210,7 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
 
             var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
 
-            var result = await EditAsync(part, buildEditorContext);
+            var result = await EditAsync(part, buildEditorContext).ConfigureAwait(false);
 
             _typePartDefinition = null;
 
@@ -233,7 +233,7 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
 
             _typePartDefinition = typePartDefinition;
 
-            var result = await UpdateAsync(part, updateEditorContext);
+            var result = await UpdateAsync(part, updateEditorContext).ConfigureAwait(false);
 
             part.ContentItem.Apply(typePartDefinition.Name, part);
 

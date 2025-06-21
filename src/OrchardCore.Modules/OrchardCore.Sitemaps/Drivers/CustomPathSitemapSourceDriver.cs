@@ -44,7 +44,7 @@ public sealed class CustomPathSitemapSourceDriver : DisplayDriver<SitemapSource,
                 m => m.Path,
                 m => m.Priority,
                 m => m.ChangeFrequency
-            );
+            ).ConfigureAwait(false);
 
         sitemap.Path = model.Path;
         sitemap.Priority = model.Priority;

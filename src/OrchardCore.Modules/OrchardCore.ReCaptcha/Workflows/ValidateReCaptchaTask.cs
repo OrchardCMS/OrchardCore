@@ -45,7 +45,7 @@ public class ValidateReCaptchaTask : TaskActivity<ValidateReCaptchaTask>
             outcome = "Invalid";
 
             updater?.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
-        });
+        }).ConfigureAwait(false);
 
         return Outcomes("Done", outcome);
     }

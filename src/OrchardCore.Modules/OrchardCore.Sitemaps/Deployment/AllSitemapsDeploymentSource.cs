@@ -22,7 +22,7 @@ public sealed class AllSitemapsDeploymentSource
 
     protected override async Task ProcessAsync(AllSitemapsDeploymentStep step, DeploymentPlanResult result)
     {
-        var sitemaps = await _sitemapManager.GetSitemapsAsync();
+        var sitemaps = await _sitemapManager.GetSitemapsAsync().ConfigureAwait(false);
 
         var jArray = JArray.FromObject(sitemaps, _documentJsonSerializerOptions.SerializerOptions);
 

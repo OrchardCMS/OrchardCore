@@ -75,7 +75,7 @@ public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<Htm
     {
         var settings = context.TypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
         var model = new HtmlMenuItemPartEditViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         part.ContentItem.DisplayText = model.Name;
         part.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(model.Html) : model.Html;

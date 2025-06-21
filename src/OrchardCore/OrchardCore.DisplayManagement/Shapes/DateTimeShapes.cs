@@ -117,7 +117,7 @@ public class DateTimeShapes : IShapeAttributeProvider
     public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
     {
         Utc ??= _clock.UtcNow;
-        var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
+        var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value).ConfigureAwait(false);
         Format ??= S[LongDateTimeFormat].Value;
 
         return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));

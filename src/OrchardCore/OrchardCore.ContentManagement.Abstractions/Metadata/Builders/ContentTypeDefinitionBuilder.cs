@@ -181,7 +181,7 @@ public class ContentTypeDefinitionBuilder
 
         var configurer = new PartConfigurerImpl(existingPart);
 
-        await configurationAsync(configurer);
+        await configurationAsync(configurer).ConfigureAwait(false);
 
         _parts.Add(configurer.Build());
 

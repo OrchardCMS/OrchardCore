@@ -24,7 +24,7 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             model.Hint = settings.Hint;
             model.Required = settings.Required;
             model.Multiple = settings.Multiple;
-            var roles = await _roleService.GetAssignableRolesAsync();
+            var roles = await _roleService.GetAssignableRolesAsync().ConfigureAwait(false);
             var roleEntries = roles.Select(role => new RoleEntry
             {
                 Role = role.RoleName,
@@ -40,7 +40,7 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
     {
         var model = new UserPickerFieldSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var settings = new UserPickerFieldSettings
         {
@@ -49,7 +49,7 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             Multiple = model.Multiple,
         };
 
-        var roles = await _roleService.GetAssignableRolesAsync();
+        var roles = await _roleService.GetAssignableRolesAsync().ConfigureAwait(false);
 
         var selectedRoles = model.Roles
             .Where(x => x.IsSelected && roles.Any(y => y.RoleName == x.Role))

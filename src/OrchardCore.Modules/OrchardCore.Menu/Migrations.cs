@@ -23,7 +23,7 @@ public sealed class Migrations : DataMigration
 
     public async Task<int> CreateAsync()
     {
-        await _recipeMigrator.ExecuteAsync($"menu{RecipesConstants.RecipeExtension}", this);
+        await _recipeMigrator.ExecuteAsync($"menu{RecipesConstants.RecipeExtension}", this).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 4;
@@ -33,7 +33,7 @@ public sealed class Migrations : DataMigration
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom1Async()
     {
-        await _recipeMigrator.ExecuteAsync($"content-menu-updatefrom1{RecipesConstants.RecipeExtension}", this);
+        await _recipeMigrator.ExecuteAsync($"content-menu-updatefrom1{RecipesConstants.RecipeExtension}", this).ConfigureAwait(false);
 
         return 2;
     }
@@ -42,14 +42,14 @@ public sealed class Migrations : DataMigration
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom2Async()
     {
-        await _recipeMigrator.ExecuteAsync($"html-menu-updatefrom2{RecipesConstants.RecipeExtension}", this);
+        await _recipeMigrator.ExecuteAsync($"html-menu-updatefrom2{RecipesConstants.RecipeExtension}", this).ConfigureAwait(false);
 
         return 3;
     }
 
     public async Task<int> UpdateFrom3Async()
     {
-        var menus = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "Menu").ListAsync();
+        var menus = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "Menu").ListAsync().ConfigureAwait(false);
 
         foreach (var menu in menus)
         {
@@ -60,7 +60,7 @@ public sealed class Migrations : DataMigration
                 menu.Apply(menuItemsListPart);
             }
 
-            await _session.SaveAsync(menu);
+            await _session.SaveAsync(menu).ConfigureAwait(false);
         }
 
         return 4;

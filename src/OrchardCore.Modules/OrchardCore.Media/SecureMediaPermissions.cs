@@ -61,8 +61,8 @@ public sealed class SecureMediaPermissions : IPermissionProvider
             entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(5))
                  .AddExpirationToken(_signal.GetToken(nameof(SecureMediaPermissions)));
 
-            return await GetPermissionsInternalAsync();
-        });
+            return await GetPermissionsInternalAsync().ConfigureAwait(false);
+        }).ConfigureAwait(false);
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -143,7 +143,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
             MediaPermissions.ViewOwnMedia,
         };
 
-        await foreach (var entry in _fileStore.GetDirectoryContentAsync())
+        await foreach (var entry in _fileStore.GetDirectoryContentAsync().ConfigureAwait(false))
         {
             if (!entry.IsDirectory)
             {

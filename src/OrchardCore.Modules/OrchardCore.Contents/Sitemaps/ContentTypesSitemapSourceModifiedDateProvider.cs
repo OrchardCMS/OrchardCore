@@ -28,14 +28,14 @@ public class ContentTypesSitemapSourceModifiedDateProvider : SitemapSourceModifi
 
         if (source.IndexAll)
         {
-            var typesToIndex = (await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync())
+            var typesToIndex = (await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync().ConfigureAwait(false))
                 .Select(ctd => ctd.Name);
 
             var query = _session.Query<ContentItem>()
                 .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex))
                 .OrderByDescending(x => x.ModifiedUtc);
 
-            lastModifiedContentItem = await query.FirstOrDefaultAsync();
+            lastModifiedContentItem = await query.FirstOrDefaultAsync().ConfigureAwait(false);
         }
         else if (source.LimitItems)
         {
@@ -43,11 +43,11 @@ public class ContentTypesSitemapSourceModifiedDateProvider : SitemapSourceModifi
                 .With<ContentItemIndex>(x => x.Published && x.ContentType == source.LimitedContentType.ContentTypeName)
                 .OrderByDescending(x => x.ModifiedUtc);
 
-            lastModifiedContentItem = await query.FirstOrDefaultAsync();
+            lastModifiedContentItem = await query.FirstOrDefaultAsync().ConfigureAwait(false);
         }
         else
         {
-            var typesToIndex = (await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync())
+            var typesToIndex = (await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync().ConfigureAwait(false))
                 .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName, StringComparison.Ordinal)))
                 .Select(ctd => ctd.Name);
 
@@ -56,7 +56,7 @@ public class ContentTypesSitemapSourceModifiedDateProvider : SitemapSourceModifi
                 .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex))
                 .OrderByDescending(x => x.ModifiedUtc);
 
-            lastModifiedContentItem = await query.FirstOrDefaultAsync();
+            lastModifiedContentItem = await query.FirstOrDefaultAsync().ConfigureAwait(false);
         }
 
         return lastModifiedContentItem.ModifiedUtc;

@@ -22,7 +22,7 @@ public class AutorouteHandleProvider : IContentHandleProvider
                 handle = "/" + handle;
             }
 
-            (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(handle);
+            (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(handle).ConfigureAwait(false);
 
             if (found)
             {

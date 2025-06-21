@@ -40,7 +40,7 @@ public sealed class RoleConditionDisplayDriver : DisplayDriver<Condition, RoleCo
     public override async Task<IDisplayResult> UpdateAsync(RoleCondition condition, UpdateEditorContext context)
     {
         var model = new RoleConditionViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
         condition.Value = model.Value;
 
         if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))

@@ -64,7 +64,7 @@ public class BlobFileStore : IFileStore
         {
             var blob = GetBlobReference(path);
 
-            var properties = await blob.GetPropertiesAsync();
+            var properties = await blob.GetPropertiesAsync().ConfigureAwait(false);
 
             return new BlobFile(path, properties.Value.ContentLength, properties.Value.LastModified);
         }
@@ -88,7 +88,7 @@ public class BlobFileStore : IFileStore
                 return new BlobDirectory(path, _clock.UtcNow);
             }
 
-            var blobDirectory = await GetBlobDirectoryReference(path);
+            var blobDirectory = await GetBlobDirectoryReference(path).ConfigureAwait(false);
 
             if (blobDirectory != null)
             {
@@ -129,7 +129,7 @@ public class BlobFileStore : IFileStore
 
         var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
 
-        await foreach (var blob in page)
+        await foreach (var blob in page.ConfigureAwait(false))
         {
             if (blob.IsPrefix)
             {
@@ -165,7 +165,7 @@ public class BlobFileStore : IFileStore
         prefix = NormalizePrefix(prefix);
 
         var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
-        await foreach (var blob in page)
+        await foreach (var blob in page.ConfigureAwait(false))
         {
             var name = WebUtility.UrlDecode(blob.Name);
 
@@ -211,15 +211,15 @@ public class BlobFileStore : IFileStore
         {
             var blobFile = GetBlobReference(path);
 
-            if (await blobFile.ExistsAsync())
+            if (await blobFile.ExistsAsync().ConfigureAwait(false))
             {
                 throw new FileStoreException($"Cannot create directory because the path '{path}' already exists and is a file.");
             }
 
-            var blobDirectory = await GetBlobDirectoryReference(path);
+            var blobDirectory = await GetBlobDirectoryReference(path).ConfigureAwait(false);
             if (blobDirectory == null)
             {
-                await CreateDirectoryAsync(path);
+                await CreateDirectoryAsync(path).ConfigureAwait(false);
             }
 
             return true;
@@ -240,7 +240,7 @@ public class BlobFileStore : IFileStore
         {
             var blob = GetBlobReference(path);
 
-            return await blob.DeleteIfExistsAsync();
+            return await blob.DeleteIfExistsAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -262,10 +262,10 @@ public class BlobFileStore : IFileStore
             prefix = NormalizePrefix(prefix);
 
             var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
-            await foreach (var blob in page)
+            await foreach (var blob in page.ConfigureAwait(false))
             {
                 var blobReference = _blobContainer.GetBlobClient(blob.Name);
-                await blobReference.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
+                await blobReference.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots).ConfigureAwait(false);
                 blobsWereDeleted = true;
             }
 
@@ -285,8 +285,8 @@ public class BlobFileStore : IFileStore
     {
         try
         {
-            await CopyFileAsync(oldPath, newPath);
-            await TryDeleteFileAsync(oldPath);
+            await CopyFileAsync(oldPath, newPath).ConfigureAwait(false);
+            await TryDeleteFileAsync(oldPath).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -306,27 +306,27 @@ public class BlobFileStore : IFileStore
             var oldBlob = GetBlobReference(srcPath);
             var newBlob = GetBlobReference(dstPath);
 
-            if (!await oldBlob.ExistsAsync())
+            if (!await oldBlob.ExistsAsync().ConfigureAwait(false))
             {
                 throw new FileStoreException($"Cannot copy file '{srcPath}' because it does not exist.");
             }
 
-            if (await newBlob.ExistsAsync())
+            if (await newBlob.ExistsAsync().ConfigureAwait(false))
             {
                 throw new FileStoreException($"Cannot copy file '{srcPath}' because a file already exists in the new path '{dstPath}'.");
             }
 
-            await newBlob.StartCopyFromUriAsync(oldBlob.Uri);
+            await newBlob.StartCopyFromUriAsync(oldBlob.Uri).ConfigureAwait(false);
 
-            await Task.Delay(250);
-            var properties = await newBlob.GetPropertiesAsync();
+            await Task.Delay(250).ConfigureAwait(false);
+            var properties = await newBlob.GetPropertiesAsync().ConfigureAwait(false);
 
             while (properties.Value.CopyStatus == CopyStatus.Pending)
             {
-                await Task.Delay(250);
+                await Task.Delay(250).ConfigureAwait(false);
 
                 // Need to fetch properties or CopyStatus will never update.
-                properties = await newBlob.GetPropertiesAsync();
+                properties = await newBlob.GetPropertiesAsync().ConfigureAwait(false);
             }
 
             if (properties.Value.CopyStatus != CopyStatus.Success)
@@ -350,12 +350,12 @@ public class BlobFileStore : IFileStore
         {
             var blob = GetBlobReference(path);
 
-            if (!await blob.ExistsAsync())
+            if (!await blob.ExistsAsync().ConfigureAwait(false))
             {
                 throw new FileStoreException($"Cannot get file stream because the file '{path}' does not exist.");
             }
 
-            return (await blob.DownloadAsync()).Value.Content;
+            return (await blob.DownloadAsync().ConfigureAwait(false)).Value.Content;
         }
         catch (FileStoreException)
         {
@@ -380,7 +380,7 @@ public class BlobFileStore : IFileStore
         {
             var blob = GetBlobReference(path);
 
-            if (!overwrite && await blob.ExistsAsync())
+            if (!overwrite && await blob.ExistsAsync().ConfigureAwait(false))
             {
                 throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
             }
@@ -392,7 +392,7 @@ public class BlobFileStore : IFileStore
                 ContentType = contentType ?? "application/octet-stream",
             };
 
-            await blob.UploadAsync(inputStream, headers);
+            await blob.UploadAsync(inputStream, headers).ConfigureAwait(false);
 
             return path;
         }
@@ -424,7 +424,7 @@ public class BlobFileStore : IFileStore
 
         var enumerator = page.GetAsyncEnumerator();
 
-        var result = await enumerator.MoveNextAsync();
+        var result = await enumerator.MoveNextAsync().ConfigureAwait(false);
         if (result)
         {
             return enumerator.Current;
@@ -440,7 +440,7 @@ public class BlobFileStore : IFileStore
         // Create a directory marker file to make this directory appear when listing directories.
         using var stream = new MemoryStream(MarkerFileContent);
 
-        await placeholderBlob.UploadAsync(stream);
+        await placeholderBlob.UploadAsync(stream).ConfigureAwait(false);
     }
 
     /// <summary>

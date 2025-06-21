@@ -38,7 +38,7 @@ public sealed class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<
     {
         var model = new ContentMenuItemPartEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         part.ContentItem.DisplayText = model.Name;
         part.CheckContentPermissions = model.CheckContentPermissions;

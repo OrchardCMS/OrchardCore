@@ -23,7 +23,7 @@ public class ContentTypesSitemapSourceUpdateHandler : ISitemapSourceUpdateHandle
             return;
         }
 
-        var sitemaps = (await _sitemapManager.LoadSitemapsAsync())
+        var sitemaps = (await _sitemapManager.LoadSitemapsAsync().ConfigureAwait(false))
             .Where(s => s.GetType() == typeof(Sitemap));
 
         if (!sitemaps.Any())
@@ -68,7 +68,7 @@ public class ContentTypesSitemapSourceUpdateHandler : ISitemapSourceUpdateHandle
 
         if (sitemapNeedsUpdate)
         {
-            await _sitemapManager.UpdateSitemapAsync();
+            await _sitemapManager.UpdateSitemapAsync().ConfigureAwait(false);
         }
     }
 }

@@ -24,11 +24,11 @@ public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : Activit
     public override async Task<IDisplayResult> UpdateAsync(TActivity model, UpdateEditorContext context)
     {
         var viewModel = new TViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames).ConfigureAwait(false);
 
-        model.ContentTypeFilter = (await FilterContentTypesQueryAsync(viewModel.SelectedContentTypeNames)).ToArray();
+        model.ContentTypeFilter = (await FilterContentTypesQueryAsync(viewModel.SelectedContentTypeNames).ConfigureAwait(false)).ToArray();
 
-        return await EditAsync(model, context);
+        return await EditAsync(model, context).ConfigureAwait(false);
     }
 
     public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
@@ -37,7 +37,7 @@ public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : Activit
             Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ContentEventViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
             Factory($"{typeof(TActivity).Name}_Fields_Design", async ctx =>
             {
-                var contentTypeDefinitions = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).ToDictionary(x => x.Name);
+                var contentTypeDefinitions = (await ContentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false)).ToDictionary(x => x.Name);
                 var selectedContentTypeDefinitions = activity.ContentTypeFilter.Select(x => contentTypeDefinitions[x]).ToList();
 
                 var shape = new ContentEventViewModel<TActivity>
@@ -53,7 +53,7 @@ public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : Activit
 
     protected async Task<IEnumerable<string>> FilterContentTypesQueryAsync(IEnumerable<string> contentTypeNames)
     {
-        var contentTypeDefinitions = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).ToDictionary(x => x.Name);
+        var contentTypeDefinitions = (await ContentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false)).ToDictionary(x => x.Name);
 
         return contentTypeNames.Where(x => !string.IsNullOrWhiteSpace(x) && contentTypeDefinitions.ContainsKey(x));
     }

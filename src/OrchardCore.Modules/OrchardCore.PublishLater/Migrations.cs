@@ -19,14 +19,14 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("PublishLaterPart", builder => builder
             .Attachable()
-            .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
+            .WithDescription("Adds the ability to schedule content items to be published at a given future date and time.")).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<PublishLaterPartIndex>(table => table
             .Column<string>("ContentItemId")
             .Column<DateTime>("ScheduledPublishDateTimeUtc")
             .Column<bool>("Published")
             .Column<bool>("Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table
             .CreateIndex("IDX_PublishLaterPartIndex_DocumentId",
@@ -36,7 +36,7 @@ public sealed class Migrations : DataMigration
                 "ScheduledPublishDateTimeUtc",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         return 3;
     }
@@ -49,13 +49,13 @@ public sealed class Migrations : DataMigration
 
         await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table
             .AddColumn<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table
             .CreateIndex($"IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc",
                 "DocumentId",
                 "ScheduledPublishDateTimeUtc")
-        );
+        ).ConfigureAwait(false);
 
         return 2;
     }
@@ -67,12 +67,12 @@ public sealed class Migrations : DataMigration
             table.AddColumn<string>("ContentItemId");
             table.AddColumn<bool>("Published");
             table.AddColumn<bool>("Latest");
-        });
+        }).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table =>
         {
             table.DropIndex("IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc");
-        });
+        }).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table =>
         {
@@ -83,7 +83,7 @@ public sealed class Migrations : DataMigration
                 "ScheduledPublishDateTimeUtc",
                 "Published",
                 "Latest");
-        });
+        }).ConfigureAwait(false);
 
         return 3;
     }

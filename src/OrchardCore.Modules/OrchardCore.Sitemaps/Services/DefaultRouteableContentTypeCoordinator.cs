@@ -17,7 +17,7 @@ public class DefaultRouteableContentTypeCoordinator : IRouteableContentTypeCoord
     {
         foreach (var rctp in _routeableContentTypeProviders)
         {
-            var result = await rctp.GetRouteAsync(context, contentItem);
+            var result = await rctp.GetRouteAsync(context, contentItem).ConfigureAwait(false);
             if (result != null)
             {
                 return result;

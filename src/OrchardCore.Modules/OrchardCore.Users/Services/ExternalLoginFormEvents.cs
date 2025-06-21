@@ -58,7 +58,7 @@ public sealed class ExternalLoginFormEvents : LoginFormEventBase
             return null;
         }
 
-        var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
+        var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync().ConfigureAwait(false);
 
         if (schemes.Count() == 1)
         {

@@ -24,7 +24,7 @@ public class TwitterSettingsService : ITwitterSettingsService
 
     public async Task<TwitterSettings> LoadSettingsAsync()
     {
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         return container.As<TwitterSettings>();
     }
 
@@ -32,7 +32,7 @@ public class TwitterSettingsService : ITwitterSettingsService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         container.Alter<TwitterSettings>(aspect =>
         {
             aspect.ConsumerKey = settings.ConsumerKey;
@@ -41,7 +41,7 @@ public class TwitterSettingsService : ITwitterSettingsService
             aspect.AccessTokenSecret = settings.AccessTokenSecret;
         });
 
-        await _siteService.UpdateSiteSettingsAsync(container);
+        await _siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
     }
 
     public IEnumerable<ValidationResult> ValidateSettings(TwitterSettings settings)

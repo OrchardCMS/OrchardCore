@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
         services.Initialize(async sp =>
         {
             var options = sp.GetRequiredService<TOptions>();
-            await configureAsync(sp, options);
+            await configureAsync(sp, options).ConfigureAwait(false);
         });
 
         return services;
@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
             {
                 var options = sp.GetRequiredService<TOptions>();
                 var setup = sp.GetRequiredService<TConfigure>();
-                await setup.ConfigureAsync(options);
+                await setup.ConfigureAsync(options).ConfigureAwait(false);
             });
         }
 

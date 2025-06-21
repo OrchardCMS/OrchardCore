@@ -25,7 +25,7 @@ public sealed class AllContentDeploymentSource
             ["data"] = data,
         });
 
-        foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published).ListAsync())
+        foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published).ListAsync().ConfigureAwait(false))
         {
             var objectData = JObject.FromObject(contentItem);
 

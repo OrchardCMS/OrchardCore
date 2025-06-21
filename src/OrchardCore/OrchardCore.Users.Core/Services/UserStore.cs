@@ -88,7 +88,7 @@ public class UserStore :
         {
             var attempts = 10;
 
-            while (await _session.QueryIndex<UserIndex>(x => x.UserId == newUserId).CountAsync() != 0)
+            while (await _session.QueryIndex<UserIndex>(x => x.UserId == newUserId).CountAsync().ConfigureAwait(false) != 0)
             {
                 if (attempts-- == 0)
                 {
@@ -102,16 +102,16 @@ public class UserStore :
 
             var context = new UserCreateContext(user);
 
-            await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
+            await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger).ConfigureAwait(false);
 
             if (context.Cancel)
             {
                 return IdentityResult.Failed();
             }
 
-            await _session.SaveAsync(user);
-            await _session.FlushAsync();
-            await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+            await _session.SaveAsync(user).ConfigureAwait(false);
+            await _session.FlushAsync().ConfigureAwait(false);
+            await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -130,7 +130,7 @@ public class UserStore :
         try
         {
             var context = new UserDeleteContext(user);
-            await Handlers.InvokeAsync((handler, context) => handler.DeletingAsync(context), context, _logger);
+            await Handlers.InvokeAsync((handler, context) => handler.DeletingAsync(context), context, _logger).ConfigureAwait(false);
 
             if (context.Cancel)
             {
@@ -138,8 +138,8 @@ public class UserStore :
             }
 
             _session.Delete(user);
-            await _session.FlushAsync();
-            await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
+            await _session.FlushAsync().ConfigureAwait(false);
+            await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -153,12 +153,12 @@ public class UserStore :
 
     public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default)
     {
-        return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync();
+        return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default)
     {
-        return await _session.Query<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefaultAsync();
+        return await _session.Query<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     public Task<string> GetNormalizedUserNameAsync(IUser user, CancellationToken cancellationToken = default)
@@ -223,16 +223,16 @@ public class UserStore :
         try
         {
             var context = new UserUpdateContext(user);
-            await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
+            await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger).ConfigureAwait(false);
 
             if (context.Cancel)
             {
                 return IdentityResult.Failed();
             }
 
-            await _session.SaveAsync(user);
-            await _session.FlushAsync();
-            await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+            await _session.SaveAsync(user).ConfigureAwait(false);
+            await _session.FlushAsync().ConfigureAwait(false);
+            await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -366,7 +366,7 @@ public class UserStore :
 
     public async Task<IUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
     {
-        return await _session.Query<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefaultAsync();
+        return await _session.Query<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     public Task<string> GetNormalizedEmailAsync(IUser user, CancellationToken cancellationToken)
@@ -403,7 +403,7 @@ public class UserStore :
 
         if (user is User u)
         {
-            var roleNames = await _roleService.GetRoleNamesAsync();
+            var roleNames = await _roleService.GetRoleNamesAsync().ConfigureAwait(false);
 
             var roleName = roleNames.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
             if (string.IsNullOrEmpty(roleName))
@@ -421,7 +421,7 @@ public class UserStore :
 
         if (user is User u)
         {
-            var roleNames = await _roleService.GetRoleNamesAsync();
+            var roleNames = await _roleService.GetRoleNamesAsync().ConfigureAwait(false);
 
             var roleName = roleNames.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
             if (string.IsNullOrEmpty(roleName))
@@ -466,7 +466,7 @@ public class UserStore :
     {
         ArgumentException.ThrowIfNullOrEmpty(normalizedRoleName);
 
-        var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
+        var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync().ConfigureAwait(false);
         return users == null ? [] : users.ToList<IUser>();
     }
 
@@ -495,7 +495,7 @@ public class UserStore :
 
     public async Task<IUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
     {
-        return await _session.Query<User, UserByLoginInfoIndex>(u => u.LoginProvider == loginProvider && u.ProviderKey == providerKey).FirstOrDefaultAsync();
+        return await _session.Query<User, UserByLoginInfoIndex>(u => u.LoginProvider == loginProvider && u.ProviderKey == providerKey).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     public Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user, CancellationToken cancellationToken)
@@ -603,7 +603,7 @@ public class UserStore :
     {
         ArgumentNullException.ThrowIfNull(claim);
 
-        var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync();
+        var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync().ConfigureAwait(false);
 
         return users.Cast<IUser>().ToList();
     }
@@ -848,12 +848,12 @@ public class UserStore :
             throw new ArgumentException($"{nameof(code)} cannot be null or empty.");
         }
 
-        var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken)) ?? string.Empty;
+        var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken).ConfigureAwait(false)) ?? string.Empty;
         var splitCodes = mergedCodes.Split(';');
         if (splitCodes.Contains(code))
         {
             var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
-            await ReplaceCodesAsync(user, updatedCodes, cancellationToken);
+            await ReplaceCodesAsync(user, updatedCodes, cancellationToken).ConfigureAwait(false);
 
             return true;
         }
@@ -865,7 +865,7 @@ public class UserStore :
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken)) ?? "";
+        var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken).ConfigureAwait(false)) ?? "";
         if (mergedCodes.Length > 0)
         {
             // non-allocating version of mergedCodes.Split(';').Length

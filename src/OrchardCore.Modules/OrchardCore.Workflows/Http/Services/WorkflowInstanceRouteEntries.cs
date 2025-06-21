@@ -14,7 +14,7 @@ internal sealed class WorkflowInstanceRouteEntries : WorkflowRouteEntries<Workfl
 
     protected override async Task<WorkflowRouteDocument> CreateDocumentAsync()
     {
-        var workflowTypeDictionary = (await Session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync()).ToDictionary(x => x.WorkflowTypeId);
+        var workflowTypeDictionary = (await Session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync().ConfigureAwait(false)).ToDictionary(x => x.WorkflowTypeId);
 
         var skip = 0;
         var pageSize = 50;
@@ -27,7 +27,7 @@ internal sealed class WorkflowInstanceRouteEntries : WorkflowRouteEntries<Workfl
                     index.ActivityName == HttpRequestFilterEvent.EventName)
                 .Skip(skip)
                 .Take(pageSize)
-                .ListAsync();
+                .ListAsync().ConfigureAwait(false);
 
             if (!pendingWorkflows.Any())
             {

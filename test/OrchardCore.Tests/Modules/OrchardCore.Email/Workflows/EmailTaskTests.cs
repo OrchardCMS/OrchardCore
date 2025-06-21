@@ -82,6 +82,6 @@ public class EmailTaskTests
     private sealed class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
     {
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder)
-            => await Task.FromResult((T)Convert.ChangeType(expression.Expression, typeof(T)));
+            => await Task.FromResult((T)Convert.ChangeType(expression.Expression, typeof(T))).ConfigureAwait(false);
     }
 }

@@ -78,7 +78,7 @@ public sealed class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaP
     public override async Task<IDisplayResult> UpdateAsync(SeoMetaPart part, UpdatePartEditorContext context)
     {
         var partViewModel = new SeoMetaPartViewModel();
-        await context.Updater.TryUpdateModelAsync(partViewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(partViewModel, Prefix).ConfigureAwait(false);
 
         try
         {
@@ -105,7 +105,7 @@ public sealed class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaP
 
         var openGraphModel = new SeoMetaPartOpenGraphViewModel();
 
-        await context.Updater.TryUpdateModelAsync(openGraphModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(openGraphModel, Prefix).ConfigureAwait(false);
 
         part.OpenGraphType = openGraphModel.OpenGraphType;
         part.OpenGraphTitle = openGraphModel.OpenGraphTitle;
@@ -113,7 +113,7 @@ public sealed class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaP
 
         var twitterModel = new SeoMetaPartTwitterViewModel();
 
-        await context.Updater.TryUpdateModelAsync(twitterModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(twitterModel, Prefix).ConfigureAwait(false);
 
         part.TwitterTitle = twitterModel.TwitterTitle;
         part.TwitterDescription = twitterModel.TwitterDescription;
@@ -123,7 +123,7 @@ public sealed class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaP
 
         var googleSchemaModel = new SeoMetaPartGoogleSchemaViewModel();
 
-        await context.Updater.TryUpdateModelAsync(googleSchemaModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(googleSchemaModel, Prefix).ConfigureAwait(false);
 
         part.GoogleSchema = googleSchemaModel.GoogleSchema;
         if (!string.IsNullOrWhiteSpace(googleSchemaModel.GoogleSchema) && !googleSchemaModel.GoogleSchema.IsJson())

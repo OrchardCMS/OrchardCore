@@ -179,7 +179,7 @@ public class GroupShapes : IShapeAttributeProvider
         {
             shape.Identifier,
             Tabs = shape.Groupings,
-        }));
+        })).ConfigureAwait(false);
 
         var htmlContentBuilder = new HtmlContentBuilder();
         htmlContentBuilder.AppendHtml(await displayAsync.ShapeExecuteAsync(localNavigation));

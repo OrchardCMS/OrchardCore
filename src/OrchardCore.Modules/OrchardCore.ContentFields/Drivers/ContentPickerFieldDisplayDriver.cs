@@ -69,14 +69,14 @@ public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<
 
             foreach (var contentItemId in field.ContentItemIds)
             {
-                var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+                var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest).ConfigureAwait(false);
 
                 if (contentItem == null)
                 {
                     continue;
                 }
 
-                var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
+                var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect()).ConfigureAwait(false);
 
                 using (CultureScope.Create(cultureAspect.Culture))
                 {
@@ -84,10 +84,10 @@ public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<
                     {
                         Id = contentItemId,
                         DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
-                            new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
-                        HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
-                        IsEditable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.EditContent, contentItem),
-                        IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.ViewContent, contentItem),
+                            new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }).ConfigureAwait(false),
+                        HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem).ConfigureAwait(false),
+                        IsEditable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.EditContent, contentItem).ConfigureAwait(false),
+                        IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.ViewContent, contentItem).ConfigureAwait(false),
                     });
                 }
 
@@ -99,7 +99,7 @@ public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<
     {
         var viewModel = new EditContentPickerFieldViewModel();
 
-        var modelUpdated = await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.ContentItemIds);
+        var modelUpdated = await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.ContentItemIds).ConfigureAwait(false);
 
         if (!modelUpdated)
         {

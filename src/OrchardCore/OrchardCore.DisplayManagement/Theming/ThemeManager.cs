@@ -27,7 +27,7 @@ public class ThemeManager : IThemeManager
             var themeResults = new List<ThemeSelectorResult>();
             foreach (var themeSelector in _themeSelectors)
             {
-                var themeResult = await themeSelector.GetThemeAsync();
+                var themeResult = await themeSelector.GetThemeAsync().ConfigureAwait(false);
                 if (themeResult != null)
                 {
                     themeResults.Add(themeResult);

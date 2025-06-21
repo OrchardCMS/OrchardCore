@@ -24,7 +24,7 @@ public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSourc
 
     public override async Task<IDisplayResult> EditAsync(ContentTypesSitemapSource sitemapSource, BuildEditorContext context)
     {
-        var contentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
+        var contentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync().ConfigureAwait(false);
 
         var entries = contentTypeDefinitions
             .Select(ctd => new ContentTypeSitemapEntryViewModel
@@ -85,7 +85,7 @@ public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSourc
                 m => m.ContentTypes,
                 m => m.LimitedContentTypes,
                 m => m.LimitedContentType
-            );
+            ).ConfigureAwait(false);
 
         sitemap.IndexAll = model.IndexAll;
         sitemap.LimitItems = model.LimitItems;
@@ -115,6 +115,6 @@ public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSourc
             sitemap.LimitedContentType = new LimitedContentTypeSitemapEntry();
         }
 
-        return await EditAsync(sitemap, context);
+        return await EditAsync(sitemap, context).ConfigureAwait(false);
     }
 }

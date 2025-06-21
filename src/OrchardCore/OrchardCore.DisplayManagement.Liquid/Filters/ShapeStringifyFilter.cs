@@ -21,7 +21,7 @@ public class ShapeStringifyFilter : ILiquidFilter
         static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
         {
             using var writer = new ZStringWriter();
-            (await task).WriteTo(writer, NullHtmlEncoder.Default);
+            (await task.ConfigureAwait(false)).WriteTo(writer, NullHtmlEncoder.Default);
             return new StringValue(writer.ToString(), false);
         }
 

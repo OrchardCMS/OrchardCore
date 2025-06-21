@@ -23,7 +23,7 @@ public class ShapePagerTag
 
     public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, IReadOnlyList<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
     {
-        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue() as dynamic;
+        var objectValue = (await arguments.Item1.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue() as dynamic;
 
         if (objectValue is Shape shape)
         {
@@ -35,7 +35,7 @@ public class ShapePagerTag
 
                     if (_properties.Contains(propertyName))
                     {
-                        objectValue[propertyName] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        objectValue[propertyName] = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
                     }
                 }
             }
@@ -46,7 +46,7 @@ public class ShapePagerTag
             {
                 if (expressions.HasNamed("item_classes"))
                 {
-                    var itemClasses = await expressions["item_classes"].EvaluateAsync(context);
+                    var itemClasses = await expressions["item_classes"].EvaluateAsync(context).ConfigureAwait(false);
 
                     if (itemClasses.Type == FluidValues.String)
                     {
@@ -68,7 +68,7 @@ public class ShapePagerTag
 
                 if (expressions.HasNamed("classes"))
                 {
-                    var classes = await expressions["classes"].EvaluateAsync(context);
+                    var classes = await expressions["classes"].EvaluateAsync(context).ConfigureAwait(false);
 
                     if (classes.Type == FluidValues.String)
                     {
@@ -90,7 +90,7 @@ public class ShapePagerTag
 
                 if (expressions.HasNamed("attributes"))
                 {
-                    var attributes = await expressions["attributes"].EvaluateAsync(context);
+                    var attributes = await expressions["attributes"].EvaluateAsync(context).ConfigureAwait(false);
 
                     if (attributes.Type == FluidValues.String)
                     {
@@ -104,7 +104,7 @@ public class ShapePagerTag
 
                 if (expressions.HasNamed("item_attributes"))
                 {
-                    var itemAttributes = await expressions["item_attributes"].EvaluateAsync(context);
+                    var itemAttributes = await expressions["item_attributes"].EvaluateAsync(context).ConfigureAwait(false);
 
                     if (itemAttributes.Type == FluidValues.String)
                     {

@@ -24,7 +24,7 @@ public class ThemeTogglerService
 
     public async Task<string> CurrentTheme()
     {
-        var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
+        var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>().ConfigureAwait(false);
 
         if (adminSettings.DisplayThemeToggler)
         {

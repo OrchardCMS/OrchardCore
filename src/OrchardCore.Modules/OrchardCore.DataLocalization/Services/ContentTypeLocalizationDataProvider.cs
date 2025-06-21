@@ -18,6 +18,6 @@ public class ContentTypeDataLocalizationProvider : ILocalizationDataProvider
     }
 
     public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
-        => (await _contentDefinitionService.GetTypesAsync())
+        => (await _contentDefinitionService.GetTypesAsync().ConfigureAwait(false))
             .Select(t => new DataLocalizedString(_contentTypesContext, t.DisplayName, string.Empty));
 }

@@ -46,9 +46,9 @@ public class UpdateTwitterStatusTask : TaskActivity<UpdateTwitterStatusTask>
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         // The twitter client encodes the status using FormUrlEncodedContent
-        var status = await _expressionEvaluator.EvaluateAsync(StatusTemplate, workflowContext, null);
+        var status = await _expressionEvaluator.EvaluateAsync(StatusTemplate, workflowContext, null).ConfigureAwait(false);
 
-        var result = await _twitterClient.UpdateStatus(status);
+        var result = await _twitterClient.UpdateStatus(status).ConfigureAwait(false);
         workflowContext.Properties.Add("TwitterResponse", await result.Content.ReadAsStringAsync());
 
         if (!result.IsSuccessStatusCode)

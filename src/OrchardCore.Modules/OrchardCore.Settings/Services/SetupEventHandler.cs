@@ -19,12 +19,12 @@ public class SetupEventHandler : ISetupEventHandler
     public async Task SetupAsync(SetupContext context)
     {
         // Updating site settings.
-        var siteSettings = await _siteService.LoadSiteSettingsAsync();
+        var siteSettings = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         siteSettings.SiteName = context.Properties.TryGetValue(SetupConstants.SiteName, out var siteName) ? siteName?.ToString() : string.Empty;
         siteSettings.SuperUser = context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString() : string.Empty;
         siteSettings.TimeZoneId = context.Properties.TryGetValue(SetupConstants.SiteTimeZone, out var siteTimeZone) ? siteTimeZone?.ToString() : string.Empty;
 
-        await _siteService.UpdateSiteSettingsAsync(siteSettings);
+        await _siteService.UpdateSiteSettingsAsync(siteSettings).ConfigureAwait(false);
 
         // TODO: Add Encryption Settings in.
     }

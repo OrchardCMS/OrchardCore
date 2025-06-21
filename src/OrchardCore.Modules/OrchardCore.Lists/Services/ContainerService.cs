@@ -31,7 +31,7 @@ public class ContainerService : IContainerService
     {
         var index = await _session.QueryIndex<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
             .OrderByDescending(x => x.Order)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync().ConfigureAwait(false);
 
         if (index != null)
         {
@@ -57,15 +57,15 @@ public class ContainerService : IContainerService
                 // Keep the published and draft orders the same to avoid confusion in the admin list.
                 if (!contentItem.IsPublished())
                 {
-                    var publishedItem = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Published);
+                    var publishedItem = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Published).ConfigureAwait(false);
                     if (publishedItem != null)
                     {
                         publishedItem.Alter<ContainedPart>(x => x.Order = orderOfFirstItem + i);
-                        await _contentManager.UpdateAsync(publishedItem);
+                        await _contentManager.UpdateAsync(publishedItem).ConfigureAwait(false);
                     }
                 }
 
-                await _contentManager.UpdateAsync(contentItem);
+                await _contentManager.UpdateAsync(contentItem).ConfigureAwait(false);
             }
 
             i++;
@@ -76,7 +76,7 @@ public class ContainerService : IContainerService
     {
         // Set initial order for published and drafts if they have never been published.
         var contanerContentItemsQuery = _session.QueryIndex<ContentItemIndex>(x => x.ContentType == contentType && (x.Published || x.Latest));
-        var containerContentItems = await contanerContentItemsQuery.ListAsync();
+        var containerContentItems = await contanerContentItemsQuery.ListAsync().ConfigureAwait(false);
 
         if (!containerContentItems.Any())
         {
@@ -92,7 +92,7 @@ public class ContainerService : IContainerService
             .OrderByDescending(x => x.CreatedUtc);
 
         // Load items so that loading handlers are invoked.
-        var contentItemGroups = (await containedItemsQuery.ListAsync(_contentManager)).ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
+        var contentItemGroups = (await containedItemsQuery.ListAsync(_contentManager).ConfigureAwait(false)).ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
 
         foreach (var contentItemGroup in contentItemGroups)
         {
@@ -139,7 +139,7 @@ public class ContainerService : IContainerService
                         }
                     }
 
-                    await _session.SaveAsync(contentItem);
+                    await _session.SaveAsync(contentItem).ConfigureAwait(false);
                 }
 
                 i++;
@@ -181,7 +181,7 @@ public class ContainerService : IContainerService
             query.Take(pager.PageSize + 1);
 
             // Load items so that loading handlers are invoked.
-            var containedItems = await query.ListAsync(_contentManager);
+            var containedItems = await query.ListAsync(_contentManager).ConfigureAwait(false);
 
             if (!containedItems.Any())
             {
@@ -238,7 +238,7 @@ public class ContainerService : IContainerService
             query.Take(pager.PageSize + 1);
 
             // Load items so that loading handlers are invoked.
-            var containedItems = await query.ListAsync(_contentManager);
+            var containedItems = await query.ListAsync(_contentManager).ConfigureAwait(false);
 
             if (!containedItems.Any())
             {
@@ -292,7 +292,7 @@ public class ContainerService : IContainerService
             query.Take(pager.PageSize + 1);
 
             // Load items so that loading handlers are invoked.
-            var containedItems = await query.ListAsync(_contentManager);
+            var containedItems = await query.ListAsync(_contentManager).ConfigureAwait(false);
 
             if (!containedItems.Any())
             {

@@ -38,7 +38,7 @@ public class CommitTransactionTask : TaskActivity<CommitTransactionTask>
             return Outcomes("Done", "Invalid");
         }
 
-        await _session.SaveChangesAsync();
+        await _session.SaveChangesAsync().ConfigureAwait(false);
         return Outcomes("Done", "Valid");
     }
 }

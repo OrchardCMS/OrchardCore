@@ -32,7 +32,7 @@ public sealed class LuceneIndexDeploymentStepDriver : DisplayDriver<DeploymentSt
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
-            model.AllIndexNames = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName).ConfigureAwait(false)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 
@@ -43,7 +43,7 @@ public sealed class LuceneIndexDeploymentStepDriver : DisplayDriver<DeploymentSt
         await context.Updater.TryUpdateModelAsync(step,
                                           Prefix,
                                           x => x.IndexNames,
-                                          x => x.IncludeAll);
+                                          x => x.IncludeAll).ConfigureAwait(false);
 
         // don't have the selected option if include all
         if (step.IncludeAll)

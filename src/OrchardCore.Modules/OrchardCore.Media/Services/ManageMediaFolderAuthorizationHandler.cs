@@ -87,11 +87,11 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
         // Lazy load to prevent circular dependencies.
         var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
 
-        if (await authorizationService.AuthorizeAsync(context.User, permission))
+        if (await authorizationService.AuthorizeAsync(context.User, permission).ConfigureAwait(false))
         {
             // Check if viewing is allowed for this folder, if secure media is also enabled.
             if (!_serviceProvider.IsSecureMediaEnabled() ||
-                await authorizationService.AuthorizeAsync(context.User, MediaPermissions.ViewMedia, (object)path))
+                await authorizationService.AuthorizeAsync(context.User, MediaPermissions.ViewMedia, (object)path).ConfigureAwait(false))
             {
                 context.Succeed(requirement);
             }

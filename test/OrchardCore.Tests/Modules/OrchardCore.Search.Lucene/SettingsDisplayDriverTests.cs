@@ -113,7 +113,7 @@ public partial class SettingsDisplayDriverTests
             var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
 
             // Act
-            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldLuceneEditorSettingsDriver(storeMock.Object));
+            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldLuceneEditorSettingsDriver(storeMock.Object)).ConfigureAwait(false);
             var shape = (ContentPickerFieldLuceneEditorSettings)shapeResult.Shape;
 
             // Assert

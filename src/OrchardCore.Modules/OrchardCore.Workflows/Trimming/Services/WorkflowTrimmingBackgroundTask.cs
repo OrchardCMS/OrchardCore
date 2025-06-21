@@ -22,7 +22,7 @@ public class WorkflowTrimmingBackgroundTask : IBackgroundTask
     {
         var siteService = serviceProvider.GetRequiredService<ISiteService>();
 
-        var workflowTrimmingSettings = await siteService.GetSettingsAsync<WorkflowTrimmingSettings>();
+        var workflowTrimmingSettings = await siteService.GetSettingsAsync<WorkflowTrimmingSettings>().ConfigureAwait(false);
         if (workflowTrimmingSettings.Disabled)
         {
             return;
@@ -41,14 +41,14 @@ public class WorkflowTrimmingBackgroundTask : IBackgroundTask
             var trimmedCount = await workflowTrimmingManager.TrimWorkflowInstancesAsync(
                 TimeSpan.FromDays(workflowTrimmingSettings.RetentionDays),
                 batchSize
-            );
+            ).ConfigureAwait(false);
 
             logger.LogDebug("Trimmed {TrimmedCount} workflow instances.", trimmedCount);
 
             var workflowTrimmingSateDocumentManager = serviceProvider.GetRequiredService<IDocumentManager<WorkflowTrimmingState>>();
-            var workflowTrimmingState = await workflowTrimmingSateDocumentManager.GetOrCreateMutableAsync();
+            var workflowTrimmingState = await workflowTrimmingSateDocumentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
             workflowTrimmingState.LastRunUtc = clock.UtcNow;
-            await workflowTrimmingSateDocumentManager.UpdateAsync(workflowTrimmingState);
+            await workflowTrimmingSateDocumentManager.UpdateAsync(workflowTrimmingState).ConfigureAwait(false);
         }
         catch (Exception ex) when (!ex.IsFatal())
         {

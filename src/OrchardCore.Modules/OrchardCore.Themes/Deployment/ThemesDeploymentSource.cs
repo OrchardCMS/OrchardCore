@@ -22,8 +22,8 @@ public sealed class ThemesDeploymentSource
         result.Steps.Add(new JsonObject
         {
             ["name"] = "Themes",
-            ["Site"] = await _siteThemeService.GetSiteThemeNameAsync(),
-            ["Admin"] = await _adminThemeService.GetAdminThemeNameAsync(),
+            ["Site"] = await _siteThemeService.GetSiteThemeNameAsync().ConfigureAwait(false),
+            ["Admin"] = await _adminThemeService.GetAdminThemeNameAsync().ConfigureAwait(false),
         });
     }
 }

@@ -78,7 +78,7 @@ public class MediaFieldIndexHandler : ContentFieldIndexHandler<MediaField>
                 continue;
             }
 
-            using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
+            using var fileStream = await _mediaFileStore.GetFileStreamAsync(path).ConfigureAwait(false);
 
             if (fileStream == null)
             {
@@ -86,7 +86,7 @@ public class MediaFieldIndexHandler : ContentFieldIndexHandler<MediaField>
             }
 
             var fileText = await _serviceProvider.CreateInstance<IMediaFileTextProvider>(providerType)
-                .GetTextAsync(path, fileStream);
+                .GetTextAsync(path, fileStream).ConfigureAwait(false);
 
             foreach (var key in context.Keys)
             {

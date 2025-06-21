@@ -20,7 +20,7 @@ internal static class RecipeHelpers
                 {
                     var bytes = JsonSerializer.SerializeToUtf8Bytes(data);
 
-                    await stream.WriteAsync(bytes);
+                    await stream.WriteAsync(bytes).ConfigureAwait(false);
                 }
 
                 Directory.CreateDirectory(tempArchiveFolder);
@@ -28,7 +28,7 @@ internal static class RecipeHelpers
 
                 var deploymentManager = scope.ServiceProvider.GetRequiredService<IDeploymentManager>();
 
-                await deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
+                await deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder)).ConfigureAwait(false);
             }
             finally
             {

@@ -20,7 +20,7 @@ public sealed class FormElementPartDisplayDriver : ContentPartDisplayDriver<Form
     {
         var viewModel = new FormElementPartEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         part.Id = viewModel.Id?.Trim();
 

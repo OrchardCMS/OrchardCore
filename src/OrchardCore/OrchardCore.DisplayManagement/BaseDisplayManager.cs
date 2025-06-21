@@ -24,7 +24,7 @@ public abstract class BaseDisplayManager
 
         foreach (var provider in _placementProviders)
         {
-            var resolver = await provider.BuildPlacementInfoResolverAsync(context);
+            var resolver = await provider.BuildPlacementInfoResolverAsync(context).ConfigureAwait(false);
 
             if (resolver != null)
             {

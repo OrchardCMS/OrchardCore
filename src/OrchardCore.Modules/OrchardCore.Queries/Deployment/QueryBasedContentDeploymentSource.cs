@@ -19,7 +19,7 @@ public sealed class QueryBasedContentDeploymentSource
     {
         var data = new JsonArray();
 
-        var query = await _queryManager.GetQueryAsync(step.QueryName);
+        var query = await _queryManager.GetQueryAsync(step.QueryName).ConfigureAwait(false);
 
         if (query == null)
         {
@@ -36,7 +36,7 @@ public sealed class QueryBasedContentDeploymentSource
             return;
         }
 
-        var results = await _queryManager.ExecuteQueryAsync(query, parameters);
+        var results = await _queryManager.ExecuteQueryAsync(query, parameters).ConfigureAwait(false);
 
         foreach (var contentItem in results.Items)
         {

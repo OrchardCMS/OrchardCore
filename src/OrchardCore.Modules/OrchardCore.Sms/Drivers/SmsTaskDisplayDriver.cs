@@ -39,7 +39,7 @@ public sealed class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTas
     {
         var viewModel = new SmsTaskViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(viewModel.PhoneNumber))
         {
@@ -62,6 +62,6 @@ public sealed class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTas
         activity.PhoneNumber = new WorkflowExpression<string>(viewModel.PhoneNumber);
         activity.Body = new WorkflowExpression<string>(viewModel.Body);
 
-        return await EditAsync(activity, context);
+        return await EditAsync(activity, context).ConfigureAwait(false);
     }
 }

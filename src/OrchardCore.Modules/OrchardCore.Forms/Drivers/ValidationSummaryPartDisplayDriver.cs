@@ -26,7 +26,7 @@ public sealed class ValidationSummaryPartDisplayDriver : ContentPartDisplayDrive
     {
         var model = new ValidationSummaryViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         part.ModelOnly = model.ModelOnly;
 

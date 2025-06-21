@@ -24,7 +24,7 @@ public sealed class HtmlMenuItemPartSettingsDisplayDriver : ContentTypePartDefin
         var model = new HtmlMenuItemPartSettingsViewModel();
         var settings = new HtmlMenuItemPartSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.SanitizeHtml = model.SanitizeHtml;
 

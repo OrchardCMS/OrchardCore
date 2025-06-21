@@ -35,7 +35,7 @@ public class TestRecipeHarvester : IRecipeHarvester
 
         foreach (var fileInfo in fileInfos)
         {
-            var descriptor = await _recipeReader.GetRecipeDescriptorAsync(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider);
+            var descriptor = await _recipeReader.GetRecipeDescriptorAsync(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider).ConfigureAwait(false);
 
             if (descriptor == null)
             {

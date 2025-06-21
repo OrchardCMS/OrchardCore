@@ -33,7 +33,7 @@ public sealed class DefaultQueryManager : IQueryManager
             return false;
         }
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
 
         var queries = new List<Query>();
 
@@ -45,7 +45,7 @@ public sealed class DefaultQueryManager : IQueryManager
             }
 
             var deletingContext = new DeletingQueryContext(query);
-            await _queryHandlers.InvokeAsync((handler, context) => handler.DeletingAsync(context), deletingContext, _logger);
+            await _queryHandlers.InvokeAsync((handler, context) => handler.DeletingAsync(context), deletingContext, _logger).ConfigureAwait(false);
 
             queries.Add(query);
             document.Queries.Remove(name);
@@ -53,12 +53,12 @@ public sealed class DefaultQueryManager : IQueryManager
 
         if (queries.Count > 0)
         {
-            await _documentManager.UpdateAsync(document);
+            await _documentManager.UpdateAsync(document).ConfigureAwait(false);
 
             foreach (var query in queries)
             {
                 var deletedContext = new DeletedQueryContext(query);
-                await _queryHandlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), deletedContext, _logger);
+                await _queryHandlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), deletedContext, _logger).ConfigureAwait(false);
             }
 
             return true;
@@ -77,17 +77,17 @@ public sealed class DefaultQueryManager : IQueryManager
     }
 
     public async Task<string> GetIdentifierAsync()
-        => (await _documentManager.GetOrCreateImmutableAsync()).Identifier;
+        => (await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false)).Identifier;
 
     public async Task<Query> GetQueryAsync(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         if (document.Queries.TryGetValue(name, out var query))
         {
-            await LoadAsync(query);
+            await LoadAsync(query).ConfigureAwait(false);
         }
 
         return query;
@@ -95,11 +95,11 @@ public sealed class DefaultQueryManager : IQueryManager
 
     public async Task<IEnumerable<Query>> ListQueriesAsync(QueryContext context = null)
     {
-        var records = await LocateQueriesAsync(context);
+        var records = await LocateQueriesAsync(context).ConfigureAwait(false);
 
         foreach (var record in records)
         {
-            await LoadAsync(record);
+            await LoadAsync(record).ConfigureAwait(false);
         }
 
         return records;
@@ -125,7 +125,7 @@ public sealed class DefaultQueryManager : IQueryManager
 
         var initializingContext = new InitializingQueryContext(query, data);
 
-        await _queryHandlers.InvokeAsync((handler, context) => handler.InitializingAsync(context), initializingContext, _logger);
+        await _queryHandlers.InvokeAsync((handler, context) => handler.InitializingAsync(context), initializingContext, _logger).ConfigureAwait(false);
 
         if (data != null)
         {
@@ -137,7 +137,7 @@ public sealed class DefaultQueryManager : IQueryManager
 
         var initializedContext = new InitializedQueryContext(query);
 
-        await _queryHandlers.InvokeAsync((handler, context) => handler.InitializedAsync(context), initializedContext, _logger);
+        await _queryHandlers.InvokeAsync((handler, context) => handler.InitializedAsync(context), initializedContext, _logger).ConfigureAwait(false);
 
         // Set the source again after calling handlers to prevent handlers from updating the source during initialization.
         query.Source = source;
@@ -147,7 +147,7 @@ public sealed class DefaultQueryManager : IQueryManager
 
     public async Task<ListQueryResult> PageQueriesAsync(int page, int pageSize, QueryContext context = null)
     {
-        var records = await LocateQueriesAsync(context);
+        var records = await LocateQueriesAsync(context).ConfigureAwait(false);
 
         var skip = (page - 1) * pageSize;
 
@@ -159,7 +159,7 @@ public sealed class DefaultQueryManager : IQueryManager
 
         foreach (var record in result.Records)
         {
-            await LoadAsync(record);
+            await LoadAsync(record).ConfigureAwait(false);
         }
 
         return result;
@@ -189,14 +189,14 @@ public sealed class DefaultQueryManager : IQueryManager
         }
 
         var updatingContext = new UpdatingQueryContext(query, data);
-        await _queryHandlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), updatingContext, _logger);
+        await _queryHandlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), updatingContext, _logger).ConfigureAwait(false);
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
         document.Queries[query.Name] = query;
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
 
         var updatedContext = new UpdatedQueryContext(query);
-        await _queryHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), updatedContext, _logger);
+        await _queryHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), updatedContext, _logger).ConfigureAwait(false);
     }
 
     public async Task SaveAsync(params Query[] queries)
@@ -206,19 +206,19 @@ public sealed class DefaultQueryManager : IQueryManager
             return;
         }
 
-        var document = await _documentManager.GetOrCreateMutableAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync().ConfigureAwait(false);
 
         foreach (var query in queries)
         {
             document.Queries[query.Name] = query;
         }
 
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     private async Task<IEnumerable<Query>> LocateQueriesAsync(QueryContext context)
     {
-        var document = await _documentManager.GetOrCreateImmutableAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
         if (context == null)
         {

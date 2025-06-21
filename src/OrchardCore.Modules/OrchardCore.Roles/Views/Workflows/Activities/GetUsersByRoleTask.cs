@@ -45,7 +45,7 @@ public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var outputKeyName = await _expressionEvaluator.EvaluateAsync(OutputKeyName, workflowContext, null);
+        var outputKeyName = await _expressionEvaluator.EvaluateAsync(OutputKeyName, workflowContext, null).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(outputKeyName))
         {
@@ -53,7 +53,7 @@ public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>
 
             foreach (var role in Roles)
             {
-                foreach (var u in await _userManager.GetUsersInRoleAsync(role))
+                foreach (var u in await _userManager.GetUsersInRoleAsync(role).ConfigureAwait(false))
                 {
                     if (u is not User user)
                     {

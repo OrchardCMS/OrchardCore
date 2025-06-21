@@ -43,9 +43,9 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
             return [];
         }
 
-        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync(fieldSettings.Index, ElasticsearchConstants.ProviderName);
+        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync(fieldSettings.Index, ElasticsearchConstants.ProviderName).ConfigureAwait(false);
 
-        if (index is null || index.Type != IndexingConstants.ContentsIndexSource || !await _indexManager.ExistsAsync(index.IndexFullName))
+        if (index is null || index.Type != IndexingConstants.ContentsIndexSource || !await _indexManager.ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
             return [];
         }
@@ -73,7 +73,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                             )
                         )
                     )
-                );
+                ).ConfigureAwait(false);
             }
             else
             {
@@ -95,7 +95,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                             )
                         )
                     )
-                );
+                ).ConfigureAwait(false);
             }
 
             if (searchResponse.IsValidResponse)
@@ -125,7 +125,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                     }
                 }
             }
-        });
+        }).ConfigureAwait(false);
 
         return results.OrderBy(x => x.DisplayText);
     }

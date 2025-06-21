@@ -42,7 +42,7 @@ public class DefaultUserPickerResultProvider : IUserPickerResultProvider
             query.With<UserIndex>(x => x.NormalizedUserName.Contains(_userManager.NormalizeName(searchContext.Query)));
         }
 
-        var users = await query.Take(50).ListAsync();
+        var users = await query.Take(50).ListAsync().ConfigureAwait(false);
 
         var results = new List<UserPickerResult>();
 

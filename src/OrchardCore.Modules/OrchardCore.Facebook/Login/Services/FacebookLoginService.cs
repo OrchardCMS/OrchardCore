@@ -21,7 +21,7 @@ public class FacebookLoginService : IFacebookLoginService
 
     public async Task<FacebookLoginSettings> LoadSettingsAsync()
     {
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         return container.As<FacebookLoginSettings>();
     }
 
@@ -29,9 +29,9 @@ public class FacebookLoginService : IFacebookLoginService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings, JOptions.Default);
-        await _siteService.UpdateSiteSettingsAsync(container);
+        await _siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
     }
 
     public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookLoginSettings settings)

@@ -32,20 +32,20 @@ public class ShellContextFactory : IShellContextFactory
             _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
         }
 
-        var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
+        var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor()).ConfigureAwait(false);
 
         ShellDescriptor currentDescriptor = null;
-        await (await describedContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        await (await describedContext.CreateScopeAsync().ConfigureAwait(false)).UsingServiceScopeAsync(async scope =>
         {
             var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
-            currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
-        });
+            currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync().ConfigureAwait(false);
+        }).ConfigureAwait(false);
 
         if (currentDescriptor is not null)
         {
             // Mark as using shared setting that should not be disposed.
-            await describedContext.WithSharedSettings().DisposeAsync();
-            return await CreateDescribedContextAsync(settings, currentDescriptor);
+            await describedContext.WithSharedSettings().DisposeAsync().ConfigureAwait(false);
+            return await CreateDescribedContextAsync(settings, currentDescriptor).ConfigureAwait(false);
         }
 
         return describedContext;
@@ -74,15 +74,15 @@ public class ShellContextFactory : IShellContextFactory
         Interlocked.Increment(ref settings._shellCreating);
         try
         {
-            await settings.EnsureConfigurationAsync();
+            await settings.EnsureConfigurationAsync().ConfigureAwait(false);
 
-            var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
-            var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
+            var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor).ConfigureAwait(false);
+            var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint).ConfigureAwait(false);
 
             var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
             foreach (var initializeAsync in options.Initializers)
             {
-                await initializeAsync(provider);
+                await initializeAsync(provider).ConfigureAwait(false);
             }
 
             return new ShellContext

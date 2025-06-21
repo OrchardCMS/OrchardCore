@@ -26,7 +26,7 @@ public class RecipeEnvironmentSuperUserProvider : IRecipeEnvironmentProvider
 
     public async Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
     {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var siteSettings = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
         if (!string.IsNullOrEmpty(siteSettings.SuperUser))
         {
             try
@@ -36,7 +36,7 @@ public class RecipeEnvironmentSuperUserProvider : IRecipeEnvironmentProvider
                 // migration to do, 'IUserService' is lazily resolved, so that it is not injected on each shell activation.
                 _userService ??= _serviceProvider.GetRequiredService<IUserService>();
 
-                var superUser = await _userService.GetUserByUniqueIdAsync(siteSettings.SuperUser);
+                var superUser = await _userService.GetUserByUniqueIdAsync(siteSettings.SuperUser).ConfigureAwait(false);
                 if (superUser != null)
                 {
                     environment["AdminUserId"] = siteSettings.SuperUser;

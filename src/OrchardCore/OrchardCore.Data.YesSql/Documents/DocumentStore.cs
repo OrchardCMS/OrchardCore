@@ -33,8 +33,8 @@ public class DocumentStore : IDocumentStore
         }
 
         var document = await _session.Query<T>().FirstOrDefaultAsync()
-            ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
-            ?? new T();
+.ConfigureAwait(false) ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
+.ConfigureAwait(false) ?? new T();
 
         _loaded[typeof(T)] = document;
 
@@ -50,20 +50,20 @@ public class DocumentStore : IDocumentStore
             return (false, loaded as T);
         }
 
-        var document = await _session.Query<T>().FirstOrDefaultAsync();
+        var document = await _session.Query<T>().FirstOrDefaultAsync().ConfigureAwait(false);
         if (document is not null)
         {
             _session.Detach(document);
             return (true, document);
         }
 
-        return (true, await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
+        return (true, await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)).ConfigureAwait(false) ?? new T());
     }
 
     /// <inheritdoc />
     public async Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
     {
-        await _session.SaveAsync(document, checkConcurrency);
+        await _session.SaveAsync(document, checkConcurrency).ConfigureAwait(false);
 
         AfterCommitSuccess<T>(() =>
         {
@@ -88,7 +88,7 @@ public class DocumentStore : IDocumentStore
             return;
         }
 
-        await _session.CancelAsync();
+        await _session.CancelAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -121,7 +121,7 @@ public class DocumentStore : IDocumentStore
 
         try
         {
-            await _session.SaveChangesAsync();
+            await _session.SaveChangesAsync().ConfigureAwait(false);
 
             _loaded.Clear();
 
@@ -129,7 +129,7 @@ public class DocumentStore : IDocumentStore
             {
                 foreach (var d in _afterCommitSuccess.GetInvocationList())
                 {
-                    await ((DocumentStoreCommitSuccessDelegate)d)();
+                    await ((DocumentStoreCommitSuccessDelegate)d)().ConfigureAwait(false);
                 }
             }
         }
@@ -139,7 +139,7 @@ public class DocumentStore : IDocumentStore
             {
                 foreach (var d in _afterCommitFailure.GetInvocationList())
                 {
-                    await ((DocumentStoreCommitFailureDelegate)d)(exception);
+                    await ((DocumentStoreCommitFailureDelegate)d)(exception).ConfigureAwait(false);
                 }
             }
             else

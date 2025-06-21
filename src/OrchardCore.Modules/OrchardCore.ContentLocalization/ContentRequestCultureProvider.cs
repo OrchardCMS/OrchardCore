@@ -18,11 +18,11 @@ public class ContentRequestCultureProvider : RequestCultureProvider
 
         var culturePickerService = httpContext.RequestServices.GetService<IContentCulturePickerService>();
         var siteService = httpContext.RequestServices.GetService<ISiteService>();
-        var localization = await culturePickerService.GetLocalizationFromRouteAsync(httpContext.Request.Path);
+        var localization = await culturePickerService.GetLocalizationFromRouteAsync(httpContext.Request.Path).ConfigureAwait(false);
 
         if (localization != null)
         {
-            var settings = await siteService.GetSettingsAsync<ContentRequestCultureProviderSettings>();
+            var settings = await siteService.GetSettingsAsync<ContentRequestCultureProviderSettings>().ConfigureAwait(false);
             if (settings.SetCookie)
             {
                 culturePickerService.SetContentCulturePickerCookie(localization.Culture);

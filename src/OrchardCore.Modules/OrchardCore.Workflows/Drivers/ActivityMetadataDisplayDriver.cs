@@ -21,10 +21,10 @@ public sealed class ActivityMetadataDisplayDriver : SectionDisplayDriver<IActivi
     {
         var viewModel = new ActivityMetadataEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         section.Title = viewModel.Title?.Trim();
 
-        return await EditAsync(activity, section, context);
+        return await EditAsync(activity, section, context).ConfigureAwait(false);
     }
 }

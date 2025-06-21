@@ -37,11 +37,11 @@ public sealed class DashboardContentDisplayDriver : ContentDisplayDriver
         }
 
         var results = new List<IDisplayResult>();
-        var hasPublished = await _contentManager.HasPublishedVersionAsync(model);
+        var hasPublished = await _contentManager.HasPublishedVersionAsync(model).ConfigureAwait(false);
         var hasDraft = model.HasDraft();
-        var hasEditPermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, model);
-        var hasDeletePermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.DeleteContent, model);
-        var hasPublishPermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, model);
+        var hasEditPermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, model).ConfigureAwait(false);
+        var hasDeletePermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.DeleteContent, model).ConfigureAwait(false);
+        var hasPublishPermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, model).ConfigureAwait(false);
 
         var dragHandle = Initialize<ContentItemViewModel>("Dashboard_DragHandle", m =>
         {

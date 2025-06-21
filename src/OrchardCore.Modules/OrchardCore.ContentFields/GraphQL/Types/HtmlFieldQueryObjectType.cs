@@ -41,7 +41,7 @@ public class HtmlFieldQueryObjectType : ObjectGraphType<HtmlField>
         var paths = jsonPath.Split('.');
         var partName = paths[0];
         var fieldName = paths[1];
-        var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
+        var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType).ConfigureAwait(false);
         var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName, StringComparison.Ordinal));
         var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.Ordinal));
         var settings = contentPartFieldDefinition.GetSettings<HtmlFieldSettings>();
@@ -61,7 +61,7 @@ public class HtmlFieldQueryObjectType : ObjectGraphType<HtmlField>
             var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
             html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
-                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
+                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) }).ConfigureAwait(false);
         }
 
         return await shortcodeService.ProcessAsync(html,
@@ -69,6 +69,6 @@ public class HtmlFieldQueryObjectType : ObjectGraphType<HtmlField>
             {
                 ["ContentItem"] = ctx.Source.ContentItem,
                 ["PartFieldDefinition"] = contentPartFieldDefinition,
-            });
+            }).ConfigureAwait(false);
     }
 }

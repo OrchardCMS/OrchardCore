@@ -40,7 +40,7 @@ public sealed class UrlConditionDisplayDriver : DisplayDriver<Condition, UrlCond
     public override async Task<IDisplayResult> UpdateAsync(UrlCondition condition, UpdateEditorContext context)
     {
         var model = new UrlConditionViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
         condition.Value = model.Value;
 
         if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))

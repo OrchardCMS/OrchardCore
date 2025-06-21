@@ -14,15 +14,15 @@ public static class ShellContextFactoryExtensions
     public static async Task<ShellContext> CreateMaximumContextAsync(
         this IShellContextFactory shellContextFactory, ShellSettings shellSettings, bool sharedSettings = true)
     {
-        var shellDescriptor = await shellContextFactory.GetShellDescriptorAsync(shellSettings);
+        var shellDescriptor = await shellContextFactory.GetShellDescriptorAsync(shellSettings).ConfigureAwait(false);
         if (shellDescriptor is null)
         {
-            return await shellContextFactory.CreateMinimumContextAsync(shellSettings, sharedSettings);
+            return await shellContextFactory.CreateMinimumContextAsync(shellSettings, sharedSettings).ConfigureAwait(false);
         }
 
         shellDescriptor = new ShellDescriptor { Features = shellDescriptor.Installed.Cast<ShellFeature>().ToList() };
 
-        var context = await shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor);
+        var context = await shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor).ConfigureAwait(false);
         if (sharedSettings)
         {
             context.WithSharedSettings();
@@ -38,7 +38,7 @@ public static class ShellContextFactoryExtensions
     public static async Task<ShellContext> CreateMinimumContextAsync(
         this IShellContextFactory shellContextFactory, ShellSettings shellSettings, bool sharedSettings = true)
     {
-        var context = await shellContextFactory.CreateDescribedContextAsync(shellSettings, new ShellDescriptor());
+        var context = await shellContextFactory.CreateDescribedContextAsync(shellSettings, new ShellDescriptor()).ConfigureAwait(false);
         if (sharedSettings)
         {
             context.WithSharedSettings();
@@ -54,13 +54,16 @@ public static class ShellContextFactoryExtensions
     {
         ShellDescriptor shellDescriptor = null;
 
-        await using var shellContext = await shellContextFactory.CreateMinimumContextAsync(shellSettings);
-        await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        var shellContext = await shellContextFactory.CreateMinimumContextAsync(shellSettings).ConfigureAwait(false);
+        await using (shellContext.ConfigureAwait(false))
+        {
+            await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
         {
             var shellDescriptorManager = scope.ServiceProvider.GetRequiredService<IShellDescriptorManager>();
             shellDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
         });
 
         return shellDescriptor;
+        }
     }
 }

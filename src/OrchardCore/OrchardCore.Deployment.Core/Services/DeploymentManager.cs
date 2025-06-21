@@ -25,11 +25,11 @@ public class DeploymentManager : IDeploymentManager
         {
             foreach (var source in _deploymentSources)
             {
-                await source.ProcessDeploymentStepAsync(step, result);
+                await source.ProcessDeploymentStepAsync(step, result).ConfigureAwait(false);
             }
         }
 
-        await result.FinalizeAsync();
+        await result.FinalizeAsync().ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
@@ -49,7 +49,7 @@ public class DeploymentManager : IDeploymentManager
         foreach (var deploymentTargetHandler in _deploymentTargetHandlers)
         {
             // Don't trigger in parallel to avoid potential race conditions in the handlers
-            await deploymentTargetHandler.ImportFromFileAsync(deploymentPackage);
+            await deploymentTargetHandler.ImportFromFileAsync(deploymentPackage).ConfigureAwait(false);
         }
     }
 }

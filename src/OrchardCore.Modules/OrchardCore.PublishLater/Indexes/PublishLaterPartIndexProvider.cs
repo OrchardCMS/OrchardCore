@@ -37,7 +37,7 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             // Search for this part.
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
             if (!contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(PublishLaterPart)))
             {
                 contentItem.Remove<PublishLaterPart>();

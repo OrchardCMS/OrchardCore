@@ -16,7 +16,7 @@ public class ContentDefinitionCacheContextProvider : ICacheContextProvider
     {
         if (contexts.Any(ctx => string.Equals(ctx, "types", StringComparison.OrdinalIgnoreCase)))
         {
-            var identifier = await _contentDefinitionManager.GetIdentifierAsync();
+            var identifier = await _contentDefinitionManager.GetIdentifierAsync().ConfigureAwait(false);
             entries.Add(new CacheContextEntry("types", identifier));
 
             return;

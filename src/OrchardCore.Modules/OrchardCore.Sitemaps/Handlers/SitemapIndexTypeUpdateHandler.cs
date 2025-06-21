@@ -17,7 +17,7 @@ public class SitemapIndexTypeUpdateHandler : ISitemapTypeUpdateHandler
     {
         var contentItem = context.UpdateObject as ContentItem;
 
-        var allSitemaps = await _sitemapManager.LoadSitemapsAsync();
+        var allSitemaps = await _sitemapManager.LoadSitemapsAsync().ConfigureAwait(false);
 
         var sitemapIndex = allSitemaps
             .FirstOrDefault(s => s.GetType() == typeof(SitemapIndex));
@@ -69,7 +69,7 @@ public class SitemapIndexTypeUpdateHandler : ISitemapTypeUpdateHandler
 
         if (sitemapNeedsUpdate)
         {
-            await _sitemapManager.UpdateSitemapAsync();
+            await _sitemapManager.UpdateSitemapAsync().ConfigureAwait(false);
         }
     }
 }

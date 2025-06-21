@@ -42,39 +42,39 @@ public class UsersThemeSelector : IThemeSelector
             {
                 case "Account":
                 case "ExternalAuthentications":
-                    useSiteTheme = (await _siteService.GetSettingsAsync<LoginSettings>()).UseSiteTheme;
+                    useSiteTheme = (await _siteService.GetSettingsAsync<LoginSettings>().ConfigureAwait(false)).UseSiteTheme;
                     break;
                 case "TwoFactorAuthentication":
                     {
                         if (routeValues["action"] != null
                            && routeValues["action"].ToString().StartsWith("LoginWith", StringComparison.OrdinalIgnoreCase)
-                           && (await _siteService.GetSettingsAsync<LoginSettings>()).UseSiteTheme)
+                           && (await _siteService.GetSettingsAsync<LoginSettings>().ConfigureAwait(false)).UseSiteTheme)
                         {
                             useSiteTheme = true;
                         }
                         else
                         {
-                            useSiteTheme = (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>()).UseSiteTheme;
+                            useSiteTheme = (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>().ConfigureAwait(false)).UseSiteTheme;
                         }
                     }
                     break;
                 case "SmsAuthenticator":
                 case "AuthenticatorApp":
                     {
-                        useSiteTheme = (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>()).UseSiteTheme;
+                        useSiteTheme = (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>().ConfigureAwait(false)).UseSiteTheme;
                     }
                     break;
                 case "Registration":
-                    useSiteTheme = (await _siteService.GetSettingsAsync<RegistrationSettings>()).UseSiteTheme;
+                    useSiteTheme = (await _siteService.GetSettingsAsync<RegistrationSettings>().ConfigureAwait(false)).UseSiteTheme;
                     break;
                 case "ResetPassword":
-                    useSiteTheme = (await _siteService.GetSettingsAsync<ResetPasswordSettings>()).UseSiteTheme;
+                    useSiteTheme = (await _siteService.GetSettingsAsync<ResetPasswordSettings>().ConfigureAwait(false)).UseSiteTheme;
                     break;
                 default:
                     return null;
             }
 
-            var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
+            var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync().ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(adminThemeName))
             {

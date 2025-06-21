@@ -87,27 +87,27 @@ public class CreateContentTask : ContentTask
             }
         }
 
-        var contentItem = await ContentManager.NewAsync(ContentType);
+        var contentItem = await ContentManager.NewAsync(ContentType).ConfigureAwait(false);
 
         if (!string.IsNullOrWhiteSpace(ContentProperties.Expression))
         {
-            var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext, _javaScriptEncoder);
+            var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext, _javaScriptEncoder).ConfigureAwait(false);
             contentItem.Merge(JObject.Parse(contentProperties));
         }
 
-        var result = await ContentManager.ValidateAsync(contentItem);
+        var result = await ContentManager.ValidateAsync(contentItem).ConfigureAwait(false);
 
         if (result.Succeeded)
         {
-            await ContentManager.CreateAsync(contentItem, VersionOptions.Draft);
+            await ContentManager.CreateAsync(contentItem, VersionOptions.Draft).ConfigureAwait(false);
 
             if (Publish)
             {
-                await ContentManager.PublishAsync(contentItem);
+                await ContentManager.PublishAsync(contentItem).ConfigureAwait(false);
             }
             else
             {
-                await ContentManager.SaveDraftAsync(contentItem);
+                await ContentManager.SaveDraftAsync(contentItem).ConfigureAwait(false);
             }
 
             if (string.IsNullOrEmpty(workflowContext.CorrelationId))

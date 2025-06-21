@@ -17,7 +17,7 @@ public sealed class OpenIdServerDeploymentSource
 
     protected override async Task ProcessAsync(OpenIdServerDeploymentStep step, DeploymentPlanResult result)
     {
-        var settings = await _openIdServerService.GetSettingsAsync();
+        var settings = await _openIdServerService.GetSettingsAsync().ConfigureAwait(false);
 
         var settingsModel = new OpenIdServerSettingsStepModel
         {

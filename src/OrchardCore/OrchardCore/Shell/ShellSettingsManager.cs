@@ -47,11 +47,11 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
     public async Task<IEnumerable<ShellSettings>> LoadSettingsAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            await EnsureConfigurationAsync();
-            await ReloadTenantsSettingsAsync();
+            await EnsureConfigurationAsync().ConfigureAwait(false);
+            await ReloadTenantsSettingsAsync().ConfigureAwait(false);
 
             var tenants = _tenantsSettingsRoot.GetChildren().Select(section => section.Key);
             var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
@@ -86,11 +86,11 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
     public async Task<IEnumerable<string>> LoadSettingsNamesAsync()
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            await EnsureConfigurationAsync();
-            await ReloadTenantsSettingsAsync();
+            await EnsureConfigurationAsync().ConfigureAwait(false);
+            await ReloadTenantsSettingsAsync().ConfigureAwait(false);
 
             var tenants = _tenantsSettingsRoot.GetChildren().Select(section => section.Key);
             return _configuredTenants.Concat(tenants).Distinct().ToArray();
@@ -103,11 +103,11 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
     public async Task<ShellSettings> LoadSettingsAsync(string tenant)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            await EnsureConfigurationAsync();
-            await ReloadTenantsSettingsAsync();
+            await EnsureConfigurationAsync().ConfigureAwait(false);
+            await ReloadTenantsSettingsAsync().ConfigureAwait(false);
 
             var tenantSettingsBuilder = new ConfigurationBuilder()
                 .AddConfiguration(_configuration)
@@ -130,10 +130,10 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
     public async Task SaveSettingsAsync(ShellSettings settings)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            await EnsureConfigurationAsync();
+            await EnsureConfigurationAsync().ConfigureAwait(false);
 
             ArgumentNullException.ThrowIfNull(settings);
 
@@ -169,7 +169,7 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
             tenantSettings.Remove("Name");
 
-            await _tenantsSettingsSources.SaveAsync(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>());
+            await _tenantsSettingsSources.SaveAsync(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>()).ConfigureAwait(false);
 
             var tenantConfig = new Dictionary<string, string>();
             foreach (var config in settings.ShellConfiguration.AsEnumerable())
@@ -191,10 +191,10 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
             tenantConfig.Remove("Name");
 
-            await _tenantConfigSemaphore.WaitAsync();
+            await _tenantConfigSemaphore.WaitAsync().ConfigureAwait(false);
             try
             {
-                await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig);
+                await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig).ConfigureAwait(false);
             }
             finally
             {
@@ -209,19 +209,19 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
     public async Task RemoveSettingsAsync(ShellSettings settings)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            await EnsureConfigurationAsync();
+            await EnsureConfigurationAsync().ConfigureAwait(false);
 
             ArgumentNullException.ThrowIfNull(settings);
 
-            await _tenantsSettingsSources.RemoveAsync(settings.Name);
+            await _tenantsSettingsSources.RemoveAsync(settings.Name).ConfigureAwait(false);
 
-            await _tenantConfigSemaphore.WaitAsync();
+            await _tenantConfigSemaphore.WaitAsync().ConfigureAwait(false);
             try
             {
-                await _tenantConfigSources.RemoveAsync(settings.Name);
+                await _tenantConfigSources.RemoveAsync(settings.Name).ConfigureAwait(false);
             }
             finally
             {
@@ -249,7 +249,7 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
         var configurationBuilder = await new ConfigurationBuilder()
             .AddConfiguration(_applicationConfiguration)
-            .AddSourcesAsync(_tenantsConfigSources);
+            .AddSourcesAsync(_tenantsConfigSources).ConfigureAwait(false);
 
         if (lastProviders.Length > 0)
         {
@@ -267,13 +267,13 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
         _tenantConfigFactoryAsync = async (tenant, configure) =>
         {
-            await _tenantConfigSemaphore.WaitAsync();
+            await _tenantConfigSemaphore.WaitAsync().ConfigureAwait(false);
             try
             {
                 var builder = await new ConfigurationBuilder()
                     .AddConfiguration(_configuration)
                     .AddConfiguration(_configuration.GetSection(tenant))
-                    .AddSourcesAsync(tenant, _tenantConfigSources);
+                    .AddSourcesAsync(tenant, _tenantConfigSources).ConfigureAwait(false);
 
                 configure(builder);
 
@@ -293,7 +293,7 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
         using var disposable = _tenantsSettingsRoot as IDisposable;
 
         _tenantsSettingsRoot = (await new ConfigurationBuilder()
-            .AddSourcesAsync(_tenantsSettingsSources))
+            .AddSourcesAsync(_tenantsSettingsSources).ConfigureAwait(false))
             .Build();
     }
 

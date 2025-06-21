@@ -37,7 +37,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
     {
         return Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", async model =>
             {
-                var listable = await GetListableContentTypeDefinitionsAsync();
+                var listable = await GetListableContentTypeDefinitionsAsync().ConfigureAwait(false);
 
                 model.ShowAll = treeNode.ShowAll;
                 model.IconClass = treeNode.IconClass;
@@ -57,7 +57,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
 
         var model = new ContentTypesAdminNodeViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.IconClass, x => x.ContentTypes);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.IconClass, x => x.ContentTypes).ConfigureAwait(false);
 
         treeNode.ShowAll = model.ShowAll;
         treeNode.IconClass = model.IconClass;
@@ -76,13 +76,13 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
 
     private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync()
     {
-        var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+        var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false);
 
         var listableContentTypeDefinitions = new List<ContentTypeDefinition>();
 
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
-            if (!await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ListContent, contentTypeDefinition))
+            if (!await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ListContent, contentTypeDefinition).ConfigureAwait(false))
             {
                 continue;
             }

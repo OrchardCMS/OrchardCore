@@ -14,7 +14,7 @@ public class RssFeedBuilder : IFeedBuilder
         context.Response.Element = channel;
         rss.Add(channel);
 
-        await populate();
+        await populate().ConfigureAwait(false);
 
         return new XDocument(rss);
     }

@@ -56,7 +56,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             return null;
         }
 
-        var aspect = await _contentManager.PopulateAspectAsync<SeoAspect>(contentItem);
+        var aspect = await _contentManager.PopulateAspectAsync<SeoAspect>(contentItem).ConfigureAwait(false);
 
         if (!aspect.Render)
         {
@@ -277,7 +277,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
 
         if (!string.IsNullOrEmpty(aspect.GoogleSchema))
         {
-            var json = await _shortcodeService.ProcessAsync(aspect.GoogleSchema, shortCodeContext);
+            var json = await _shortcodeService.ProcessAsync(aspect.GoogleSchema, shortCodeContext).ConfigureAwait(false);
 
             try
             {

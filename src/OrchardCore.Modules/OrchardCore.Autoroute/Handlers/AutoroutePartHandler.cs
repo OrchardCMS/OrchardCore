@@ -67,12 +67,12 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             if (part.RouteContainedItems)
             {
                 _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
-                var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.ContentItem);
-                await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, (JsonObject)context.ContentItem.Content);
+                var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.ContentItem).ConfigureAwait(false);
+                await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, (JsonObject)context.ContentItem.Content).ConfigureAwait(false);
             }
 
             // Update entries from the index table after the session is committed.
-            await _entries.UpdateEntriesAsync();
+            await _entries.UpdateEntriesAsync().ConfigureAwait(false);
         }
 
         if (!string.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
@@ -81,11 +81,11 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             {
                 homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
                 homeRoute.Remove(_options.JsonPathKey);
-            });
+            }).ConfigureAwait(false);
         }
 
         // Evict any dependent item from cache.
-        await RemoveTagAsync(part);
+        await RemoveTagAsync(part).ConfigureAwait(false);
     }
 
     public override async Task UnpublishedAsync(PublishContentContext context, AutoroutePart part)
@@ -93,10 +93,10 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         if (!string.IsNullOrWhiteSpace(part.Path))
         {
             // Update entries from the index table after the session is committed.
-            await _entries.UpdateEntriesAsync();
+            await _entries.UpdateEntriesAsync().ConfigureAwait(false);
 
             // Evict any dependent item from cache.
-            await RemoveTagAsync(part);
+            await RemoveTagAsync(part).ConfigureAwait(false);
         }
     }
 
@@ -105,10 +105,10 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         if (!string.IsNullOrWhiteSpace(part.Path) && context.NoActiveVersionLeft)
         {
             // Update entries from the index table after the session is committed.
-            await _entries.UpdateEntriesAsync();
+            await _entries.UpdateEntriesAsync().ConfigureAwait(false);
 
             // Evict any dependent item from cache.
-            await RemoveTagAsync(part);
+            await RemoveTagAsync(part).ConfigureAwait(false);
         }
     }
 
@@ -125,7 +125,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             context.Fail(item);
         }
 
-        if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
+        if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId).ConfigureAwait(false))
         {
             context.Fail(S["Your permalink is already in use."], nameof(part.Path));
         }
@@ -134,31 +134,31 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
     public override async Task CreatedAsync(CreateContentContext context, AutoroutePart part)
     {
-        await GenerateContainerPathFromPatternAsync(part);
-        await GenerateContainedPathsFromPatternAsync(context.ContentItem, part);
+        await GenerateContainerPathFromPatternAsync(part).ConfigureAwait(false);
+        await GenerateContainedPathsFromPatternAsync(context.ContentItem, part).ConfigureAwait(false);
     }
 
     public override async Task UpdatedAsync(UpdateContentContext context, AutoroutePart part)
     {
-        await GenerateContainerPathFromPatternAsync(part);
-        await GenerateContainedPathsFromPatternAsync(context.ContentItem, part);
+        await GenerateContainerPathFromPatternAsync(part).ConfigureAwait(false);
+        await GenerateContainedPathsFromPatternAsync(context.ContentItem, part).ConfigureAwait(false);
     }
 
     public override async Task CloningAsync(CloneContentContext context, AutoroutePart part)
     {
         var clonedPart = context.CloneContentItem.As<AutoroutePart>();
-        clonedPart.Path = await GenerateUniqueAbsolutePathAsync(part.Path, context.CloneContentItem.ContentItemId);
+        clonedPart.Path = await GenerateUniqueAbsolutePathAsync(part.Path, context.CloneContentItem.ContentItemId).ConfigureAwait(false);
         clonedPart.SetHomepage = false;
         clonedPart.Apply();
 
-        await GenerateContainedPathsFromPatternAsync(context.CloneContentItem, part);
+        await GenerateContainedPathsFromPatternAsync(context.CloneContentItem, part).ConfigureAwait(false);
     }
 
     public override Task GetContentItemAspectAsync(ContentItemAspectContext context, AutoroutePart part)
     {
         return context.ForAsync<RouteHandlerAspect>(async aspect =>
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType).ConfigureAwait(false);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "AutoroutePart", StringComparison.Ordinal));
             var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
             if (settings.ManageContainedItemRoutes)
@@ -172,7 +172,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
     private async Task SetHomeRouteAsync(AutoroutePart part, Action<RouteValueDictionary> action)
     {
-        var site = await _siteService.LoadSiteSettingsAsync();
+        var site = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
 
         site.HomeRoute ??= [];
 
@@ -189,7 +189,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         part.SetHomepage = false;
         part.Apply();
 
-        await _siteService.UpdateSiteSettingsAsync(site);
+        await _siteService.UpdateSiteSettingsAsync(site).ConfigureAwait(false);
     }
 
     private Task RemoveTagAsync(AutoroutePart part)
@@ -206,7 +206,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             foreach (var jItem in jItems.Cast<JsonObject>())
             {
                 var contentItem = jItem.ToObject<ContentItem>();
-                var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
+                var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem).ConfigureAwait(false);
 
                 if (!handlerAspect.Disabled)
                 {
@@ -218,7 +218,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                         {
                             homeRoute[_options.ContentItemIdKey] = containerContentItemId;
                             homeRoute[_options.JsonPathKey] = jItem.GetNormalizedPath();
-                        });
+                        }).ConfigureAwait(false);
 
                         break;
                     }
@@ -236,13 +236,13 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         }
 
         _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
-        var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+        var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem).ConfigureAwait(false);
 
         // Build the entries for this content item to evaluate for duplicates.
         var entries = new List<AutorouteEntry>();
-        await PopulateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, (JsonObject)contentItem.Content, part.Path);
+        await PopulateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, (JsonObject)contentItem.Content, part.Path).ConfigureAwait(false);
 
-        await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, (JsonObject)contentItem.Content, part.Path);
+        await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, (JsonObject)contentItem.Content, part.Path).ConfigureAwait(false);
     }
 
     private async Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
@@ -254,7 +254,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             foreach (var jItem in jItems.Cast<JsonObject>())
             {
                 var contentItem = jItem.ToObject<ContentItem>();
-                var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
+                var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem).ConfigureAwait(false);
 
                 if (!handlerAspect.Disabled)
                 {
@@ -271,8 +271,8 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                 }
 
                 var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
-                var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
-                await PopulateContainedContentItemRoutesAsync(entries, containerContentItemId, childrenAspect, jItem, itemBasePath);
+                var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem).ConfigureAwait(false);
+                await PopulateContainedContentItemRoutesAsync(entries, containerContentItemId, childrenAspect, jItem, itemBasePath).ConfigureAwait(false);
             }
         }
     }
@@ -294,9 +294,9 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                 {
                     var path = containedAutoroutePart.Path;
 
-                    if (containedAutoroutePart.Absolute && !await IsAbsolutePathUniqueAsync(path, contentItem.ContentItemId))
+                    if (containedAutoroutePart.Absolute && !await IsAbsolutePathUniqueAsync(path, contentItem.ContentItemId).ConfigureAwait(false))
                     {
-                        path = await GenerateUniqueAbsolutePathAsync(path, contentItem.ContentItemId);
+                        path = await GenerateUniqueAbsolutePathAsync(path, contentItem.ContentItemId).ConfigureAwait(false);
                         containedAutoroutePart.Path = path;
                         containedAutoroutePart.Apply();
 
@@ -330,8 +330,8 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                     }
 
                     var containedItemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + path;
-                    var childItemAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
-                    await ValidateContainedContentItemRoutesAsync(entries, containerContentItemId, childItemAspect, jItem, containedItemBasePath);
+                    var childItemAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem).ConfigureAwait(false);
+                    await ValidateContainedContentItemRoutesAsync(entries, containerContentItemId, childItemAspect, jItem, containedItemBasePath).ConfigureAwait(false);
                 }
             }
         }
@@ -382,7 +382,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             return;
         }
 
-        var pattern = await GetPatternAsync(part);
+        var pattern = await GetPatternAsync(part).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(pattern))
         {
@@ -395,14 +395,14 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
             _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
 
-            var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
+            var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect()).ConfigureAwait(false);
 
             var cultureOptions = _serviceProvider.GetService<IOptions<CultureOptions>>().Value;
 
             using (CultureScope.Create(cultureAspect.Culture, ignoreSystemSettings: cultureOptions.IgnoreSystemSettings))
             {
                 part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
+                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) }).ConfigureAwait(false);
             }
 
             part.Path = part.Path.Replace("\r", string.Empty).Replace("\n", string.Empty);
@@ -412,9 +412,9 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                 part.Path = part.Path[..AutoroutePart.MaxPathLength];
             }
 
-            if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
+            if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId).ConfigureAwait(false))
             {
-                part.Path = await GenerateUniqueAbsolutePathAsync(part.Path, part.ContentItem.ContentItemId);
+                part.Path = await GenerateUniqueAbsolutePathAsync(part.Path, part.ContentItem.ContentItemId).ConfigureAwait(false);
             }
 
             part.Apply();
@@ -426,7 +426,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
     /// </summary>
     private async Task<string> GetPatternAsync(AutoroutePart part)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType).ConfigureAwait(false);
         var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AutoroutePart), StringComparison.Ordinal));
         var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 
@@ -454,7 +454,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             }
 
             var versionedPath = $"{unversionedPath}-{version++}";
-            if (await IsAbsolutePathUniqueAsync(versionedPath, contentItemId))
+            if (await IsAbsolutePathUniqueAsync(versionedPath, contentItemId).ConfigureAwait(false))
             {
                 return versionedPath;
             }
@@ -466,7 +466,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         path = path.Trim('/');
         var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
 
-        var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
+        var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync().ConfigureAwait(false);
         if (possibleConflicts.Any(x => x.ContentItemId != contentItemId && x.ContainedContentItemId != contentItemId))
         {
             return false;

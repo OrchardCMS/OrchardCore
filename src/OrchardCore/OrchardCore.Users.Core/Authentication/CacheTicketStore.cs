@@ -35,7 +35,7 @@ public class CacheTicketStore : ITicketStore
     public async Task RemoveAsync(string key)
     {
         var cacheKey = $"{KeyPrefix}-{key}";
-        await _distributedCache.RemoveAsync(cacheKey);
+        await _distributedCache.RemoveAsync(cacheKey).ConfigureAwait(false);
     }
 
     public async Task RenewAsync(string key, AuthenticationTicket ticket)
@@ -46,7 +46,7 @@ public class CacheTicketStore : ITicketStore
         {
             var protectedBytes = DataProtector.Protect(SerializeTicket(ticket));
             await _distributedCache.SetAsync(cacheKey, protectedBytes,
-                new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc });
+                new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc }).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -59,7 +59,7 @@ public class CacheTicketStore : ITicketStore
     {
         var cacheKey = $"{KeyPrefix}-{key}";
 
-        var bytes = await _distributedCache.GetAsync(cacheKey);
+        var bytes = await _distributedCache.GetAsync(cacheKey).ConfigureAwait(false);
         if (bytes == null || bytes.Length == 0)
         {
             return null;
@@ -87,7 +87,7 @@ public class CacheTicketStore : ITicketStore
         {
             var protectedBytes = DataProtector.Protect(SerializeTicket(ticket));
             await _distributedCache.SetAsync(cacheKey, protectedBytes,
-                new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc });
+                new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc }).ConfigureAwait(false);
 
             return key;
         }

@@ -34,7 +34,7 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
 
     public override async Task<IDisplayResult> EditAsync(ISite site, AuditTrailSettings settings, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -79,7 +79,7 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AuditTrailSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -87,7 +87,7 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
         if (context.GroupId == AuditTrailSettingsGroup.Id)
         {
             var model = new AuditTrailSettingsViewModel();
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
             settings.Categories = model.Categories
                 .Select(categorySettings => new AuditTrailCategorySettings()
@@ -107,6 +107,6 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
             settings.ClientIpAddressAllowed = model.ClientIpAddressAllowed;
         }
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

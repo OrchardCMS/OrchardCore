@@ -35,7 +35,7 @@ public static class AutoroutePartRazorHelperExtensions
 
         var autorouteEntries = orchardHelper.HttpContext.RequestServices.GetService<IAutorouteEntries>();
 
-        (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
+        (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug).ConfigureAwait(false);
 
         if (found)
         {
@@ -55,9 +55,9 @@ public static class AutoroutePartRazorHelperExtensions
     /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
     public static async Task<ContentItem> GetContentItemBySlugAsync(this IOrchardHelper orchardHelper, string slug, bool latest = false)
     {
-        var contentItemId = await orchardHelper.GetContentItemIdBySlugAsync(slug);
+        var contentItemId = await orchardHelper.GetContentItemIdBySlugAsync(slug).ConfigureAwait(false);
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
 
-        return await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
+        return await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published).ConfigureAwait(false);
     }
 }

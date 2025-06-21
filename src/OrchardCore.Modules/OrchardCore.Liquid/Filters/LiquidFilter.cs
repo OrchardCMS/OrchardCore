@@ -16,7 +16,7 @@ public class LiquidFilter : ILiquidFilter
     }
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var content = await _liquidTemplateManager.RenderStringAsync(input.ToStringValue(), _htmlEncoder, arguments.At(0));
+        var content = await _liquidTemplateManager.RenderStringAsync(input.ToStringValue(), _htmlEncoder, arguments.At(0)).ConfigureAwait(false);
 
         return new StringValue(content, false);
     }

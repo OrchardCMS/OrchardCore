@@ -36,7 +36,7 @@ public sealed class BooleanFieldDisplayDriver : ContentFieldDisplayDriver<Boolea
 
     public override async Task<IDisplayResult> UpdateAsync(BooleanField field, UpdateFieldEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
+        await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Value).ConfigureAwait(false);
 
         return Edit(field, context);
     }

@@ -66,7 +66,8 @@ internal sealed class SitemapValuesAddressScheme : IShellRouteValuesAddressSchem
             return _endpointCache.GetOrAdd
             (
                 new RouteEndpointKey(path, routeValues),
-                static key => {
+                static key =>
+                {
                     var endpoint = new RouteEndpoint
                     (
                         c => null,

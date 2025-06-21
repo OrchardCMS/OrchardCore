@@ -28,7 +28,7 @@ public class BlogPostUpdateDeploymentPlanTests
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                x.ContentType == "BlogPost").ListAsync();
+                x.ContentType == "BlogPost").ListAsync().ConfigureAwait(false);
 
             Assert.Single(blogPosts);
             var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
@@ -60,7 +60,7 @@ public class BlogPostUpdateDeploymentPlanTests
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                x.ContentType == "BlogPost").ListAsync();
+                x.ContentType == "BlogPost").ListAsync().ConfigureAwait(false);
 
             Assert.Equal(2, blogPosts.Count());
 
@@ -100,7 +100,7 @@ public class BlogPostUpdateDeploymentPlanTests
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                x.ContentType == "BlogPost").ListAsync();
+                x.ContentType == "BlogPost").ListAsync().ConfigureAwait(false);
 
             Assert.Equal(2, blogPosts.Count());
 

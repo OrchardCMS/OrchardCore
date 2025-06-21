@@ -47,8 +47,8 @@ public class CorrelateTask : TaskActivity<CorrelateTask>
     {
         var value = Syntax switch
         {
-            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null),
-            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext, null),
+            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null).ConfigureAwait(false),
+            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext, null).ConfigureAwait(false),
             _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for CorrelateTask.")
         };
 

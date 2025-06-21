@@ -30,7 +30,7 @@ public sealed class ResetIndexDeploymentStepDriver
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
-            model.AllIndexNames = (await _store.GetAllAsync()).Select(x => x.Name).ToArray();
+            model.AllIndexNames = (await _store.GetAllAsync().ConfigureAwait(false)).Select(x => x.Name).ToArray();
         }).Location("Content");
     }
 
@@ -40,7 +40,7 @@ public sealed class ResetIndexDeploymentStepDriver
 
         var model = new ResetIndexDeploymentStepViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (model.IncludeAll)
         {

@@ -51,24 +51,24 @@ public class WorkflowTypeStore : IWorkflowTypeStore
     public async Task SaveAsync(WorkflowType workflowType)
     {
         var isNew = workflowType.Id == 0;
-        await _session.SaveAsync(workflowType);
+        await _session.SaveAsync(workflowType).ConfigureAwait(false);
 
         if (isNew)
         {
             var context = new WorkflowTypeCreatedContext(workflowType);
-            await _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+            await _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger).ConfigureAwait(false);
         }
         else
         {
             var context = new WorkflowTypeUpdatedContext(workflowType);
-            await _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+            await _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger).ConfigureAwait(false);
         }
     }
 
     public async Task DeleteAsync(WorkflowType workflowType)
     {
         // Delete workflows first.
-        var workflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId == workflowType.WorkflowTypeId).ListAsync();
+        var workflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId == workflowType.WorkflowTypeId).ListAsync().ConfigureAwait(false);
 
         foreach (var workflow in workflows)
         {
@@ -78,6 +78,6 @@ public class WorkflowTypeStore : IWorkflowTypeStore
         // Then delete the workflow type.
         _session.Delete(workflowType);
         var context = new WorkflowTypeDeletedContext(workflowType);
-        await _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
+        await _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger).ConfigureAwait(false);
     }
 }

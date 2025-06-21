@@ -20,7 +20,7 @@ public sealed class AuditTrailBackgroundTask : IBackgroundTask
     {
         var siteService = serviceProvider.GetRequiredService<ISiteService>();
 
-        var settings = await siteService.GetSettingsAsync<AuditTrailTrimmingSettings>();
+        var settings = await siteService.GetSettingsAsync<AuditTrailTrimmingSettings>().ConfigureAwait(false);
         if (settings.Disabled)
         {
             return;
@@ -35,17 +35,17 @@ public sealed class AuditTrailBackgroundTask : IBackgroundTask
             var auditTrailManager = serviceProvider.GetRequiredService<IAuditTrailManager>();
 
             logger.LogDebug("Starting Audit Trail trimming.");
-            var deletedEvents = await auditTrailManager.TrimEventsAsync(TimeSpan.FromDays(settings.RetentionDays));
+            var deletedEvents = await auditTrailManager.TrimEventsAsync(TimeSpan.FromDays(settings.RetentionDays)).ConfigureAwait(false);
             logger.LogDebug("Audit Trail trimming completed. {EventCount} events were deleted.", deletedEvents);
             settings.LastRunUtc = clock.UtcNow;
 
-            var container = await siteService.LoadSiteSettingsAsync();
+            var container = await siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
             container.Alter<AuditTrailTrimmingSettings>(nameof(AuditTrailTrimmingSettings), settings =>
             {
                 settings.LastRunUtc = clock.UtcNow;
             });
 
-            await siteService.UpdateSiteSettingsAsync(container);
+            await siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
         }
         catch (Exception ex) when (!ex.IsFatal())
         {

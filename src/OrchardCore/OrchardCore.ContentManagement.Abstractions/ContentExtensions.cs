@@ -264,7 +264,7 @@ public static class ContentExtensions
     {
         var element = contentElement.GetOrCreate<TElement>(name);
 
-        await action(element);
+        await action(element).ConfigureAwait(false);
 
         contentElement.Apply(name, element);
 

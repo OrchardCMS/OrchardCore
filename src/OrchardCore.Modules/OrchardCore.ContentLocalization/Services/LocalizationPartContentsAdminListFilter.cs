@@ -23,13 +23,13 @@ public class LocalizationPartContentsAdminListFilter : IContentsAdminListFilter
     public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
     {
         var viewModel = new LocalizationContentsAdminFilterViewModel();
-        await updater.TryUpdateModelAsync(viewModel, "Localization");
+        await updater.TryUpdateModelAsync(viewModel, "Localization").ConfigureAwait(false);
 
         // Show localization content items
         // This is intended to be used by adding ?Localization.ShowLocalizedContentTypes to an AdminMenu url.
         if (viewModel.ShowLocalizedContentTypes)
         {
-            var localizedTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            var localizedTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
                 .Where(x =>
                     x.Parts.Any(p =>
                         p.PartDefinition.Name == nameof(LocalizationPart)))

@@ -137,7 +137,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         {
             _emailClient ??= new EmailClient(_providerOptions.ConnectionString);
 
-            var emailResult = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage);
+            var emailResult = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage).ConfigureAwait(false);
 
             if (emailResult.HasValue)
             {

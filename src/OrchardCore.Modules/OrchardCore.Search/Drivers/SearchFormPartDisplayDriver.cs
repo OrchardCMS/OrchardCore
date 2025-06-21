@@ -27,7 +27,7 @@ public sealed class SearchFormPartDisplayDriver : ContentPartDisplayDriver<Searc
     {
         var model = new SearchPartViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         part.Placeholder = model.Placeholder;
         part.IndexName = string.IsNullOrWhiteSpace(model.IndexName) ? null : model.IndexName.Trim();

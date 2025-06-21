@@ -17,7 +17,7 @@ public sealed class LuceneIndexDeploymentSource
 
     protected override async Task ProcessAsync(LuceneIndexDeploymentStep step, DeploymentPlanResult result)
     {
-        var indexSettings = await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName);
+        var indexSettings = await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName).ConfigureAwait(false);
 
         var data = new JsonArray();
         var indicesToAdd = step.IncludeAll

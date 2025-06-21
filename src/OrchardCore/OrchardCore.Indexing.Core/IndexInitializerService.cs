@@ -19,7 +19,7 @@ public sealed class IndexInitializerService : ModularTenantEvents
 
     public override async Task RemovingAsync(ShellRemovingContext context)
     {
-        var indexes = await _store.GetAllAsync();
+        var indexes = await _store.GetAllAsync().ConfigureAwait(false);
 
         var indexManagers = new Dictionary<string, IIndexManager>();
 
@@ -36,9 +36,9 @@ public sealed class IndexInitializerService : ModularTenantEvents
                 continue;
             }
 
-            if (await indexManager.ExistsAsync(index.IndexFullName))
+            if (await indexManager.ExistsAsync(index.IndexFullName).ConfigureAwait(false))
             {
-                await indexManager.DeleteAsync(index);
+                await indexManager.DeleteAsync(index).ConfigureAwait(false);
             }
         }
     }

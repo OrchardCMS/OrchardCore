@@ -14,7 +14,7 @@ public class DynamicContentTypeContext : SiteContext
 
     public override async Task InitializeAsync()
     {
-        await base.InitializeAsync();
+        await base.InitializeAsync().ConfigureAwait(false);
 
         var products = await GraphQLClient
             .Content
@@ -24,7 +24,7 @@ public class DynamicContentTypeContext : SiteContext
                     .WithQueryArgument("orderBy", "createdUtc", "ASC")
                     .WithField("contentItemId")
                     .WithField("displayText");
-            });
+            }).ConfigureAwait(false);
 
         Product1ContentItemId = products["data"]["product"][0]["contentItemId"].ToString();
         Product2ContentItemId = products["data"]["product"][1]["contentItemId"].ToString();

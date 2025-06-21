@@ -101,7 +101,7 @@ public class ContentItemsFieldType : FieldType
 
         foreach (var filter in filters)
         {
-            preQuery = await filter.PreQueryAsync(preQuery, context);
+            preQuery = await filter.PreQueryAsync(preQuery, context).ConfigureAwait(false);
         }
 
         var query = preQuery.With<ContentItemIndex>();
@@ -110,14 +110,14 @@ public class ContentItemsFieldType : FieldType
         query = FilterContentType(query, context);
         query = OrderBy(query, context);
 
-        var contentItemsQuery = await FilterWhereArgumentsAsync(query, where, context, session);
+        var contentItemsQuery = await FilterWhereArgumentsAsync(query, where, context, session).ConfigureAwait(false);
         contentItemsQuery = PageQuery(contentItemsQuery, context);
 
-        var contentItems = await contentItemsQuery.ListAsync();
+        var contentItems = await contentItemsQuery.ListAsync().ConfigureAwait(false);
 
         foreach (var filter in filters)
         {
-            contentItems = await filter.PostQueryAsync(contentItems, context);
+            contentItems = await filter.PostQueryAsync(contentItems, context).ConfigureAwait(false);
         }
 
         return contentItems;
@@ -151,7 +151,7 @@ public class ContentItemsFieldType : FieldType
 
         foreach (var aliasProvider in providers)
         {
-            foreach (var alias in await aliasProvider.GetAliasesAsync())
+            foreach (var alias in await aliasProvider.GetAliasesAsync().ConfigureAwait(false))
             {
                 predicateQuery.CreateAlias(alias.Alias, alias.Index, alias.IsPartial);
                 if (indexAliases.Add(alias.Alias))

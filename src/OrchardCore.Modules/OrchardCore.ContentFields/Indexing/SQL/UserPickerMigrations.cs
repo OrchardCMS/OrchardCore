@@ -17,7 +17,7 @@ public sealed class UserPickerMigrations : DataMigration
             .Column<bool>("Published", column => column.Nullable())
             .Column<bool>("Latest", column => column.Nullable())
             .Column<string>("SelectedUserId")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserPickerFieldIndex>(table => table
             .CreateIndex("IDX_UserPickerFieldIndex_DocumentId",
@@ -26,7 +26,7 @@ public sealed class UserPickerMigrations : DataMigration
                 "ContentItemVersionId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
         // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
@@ -38,7 +38,7 @@ public sealed class UserPickerMigrations : DataMigration
                 "ContentField(254)",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserPickerFieldIndex>(table => table
             .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_SelectedUserId",
@@ -46,7 +46,7 @@ public sealed class UserPickerMigrations : DataMigration
                 "SelectedUserId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 2;
@@ -62,7 +62,7 @@ public sealed class UserPickerMigrations : DataMigration
                 "ContentItemVersionId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
         // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
@@ -74,7 +74,7 @@ public sealed class UserPickerMigrations : DataMigration
                 "ContentField(254)",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<UserPickerFieldIndex>(table => table
             .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_SelectedUserId",
@@ -82,7 +82,7 @@ public sealed class UserPickerMigrations : DataMigration
                 "SelectedUserId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         return 2;
     }

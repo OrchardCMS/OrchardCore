@@ -31,7 +31,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, AdminPermissions.ManageAdminSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, AdminPermissions.ManageAdminSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -50,20 +50,20 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, AdminPermissions.ManageAdminSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, AdminPermissions.ManageAdminSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new AdminSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.DisplayThemeToggler = model.DisplayThemeToggler;
         settings.DisplayMenuFilter = model.DisplayMenuFilter;
         settings.DisplayNewMenu = model.DisplayNewMenu;
         settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

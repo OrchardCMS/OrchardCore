@@ -52,7 +52,7 @@ public class TimerEvent : EventActivity
 
     public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return StartedUtc == null || await IsExpiredAsync();
+        return StartedUtc == null || await IsExpiredAsync().ConfigureAwait(false);
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -62,7 +62,7 @@ public class TimerEvent : EventActivity
 
     public override async Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        if (await IsExpiredAsync())
+        if (await IsExpiredAsync().ConfigureAwait(false))
         {
             workflowContext.LastResult = "TimerEvent";
             return Outcomes("Done");
@@ -82,7 +82,7 @@ public class TimerEvent : EventActivity
         {
             try
             {
-                timeZone = _clock.GetTimeZone((await _siteService.GetSiteSettingsAsync()).TimeZoneId);
+                timeZone = _clock.GetTimeZone((await _siteService.GetSiteSettingsAsync().ConfigureAwait(false)).TimeZoneId);
             }
             catch (Exception ex) when (!ex.IsFatal())
             {

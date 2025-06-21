@@ -35,11 +35,11 @@ public sealed class ExportContentToDeploymentTargetDeploymentSource
         });
 
         var model = new ExportContentToDeploymentTargetModel();
-        await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ExportContentToDeploymentTarget", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);
+        await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ExportContentToDeploymentTarget", m => m.ItemIds, m => m.Latest, m => m.ContentItemId).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(model.ContentItemId))
         {
-            var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published);
+            var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published).ConfigureAwait(false);
             if (contentItem != null)
             {
                 var objectData = JObject.FromObject(contentItem);
@@ -50,7 +50,7 @@ public sealed class ExportContentToDeploymentTargetDeploymentSource
 
         if (model.ItemIds?.Count() > 0)
         {
-            var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(model.ItemIds) && x.Published).ListAsync();
+            var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(model.ItemIds) && x.Published).ListAsync().ConfigureAwait(false);
 
             foreach (var contentItem in checkedContentItems)
             {

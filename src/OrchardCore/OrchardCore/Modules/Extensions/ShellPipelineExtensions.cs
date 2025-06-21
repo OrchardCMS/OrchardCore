@@ -24,12 +24,12 @@ public static class ShellPipelineExtensions
     {
         var semaphore = _semaphores.GetOrAdd(context.Settings.Name, _ => new SemaphoreSlim(1));
 
-        await semaphore.WaitAsync();
+        await semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             if (!context.HasPipeline())
             {
-                context.Pipeline = await context.BuildPipelineInternalAsync();
+                context.Pipeline = await context.BuildPipelineInternalAsync().ConfigureAwait(false);
             }
         }
         finally
@@ -55,7 +55,7 @@ public static class ShellPipelineExtensions
 
         configure(builder);
 
-        await ConfigurePipelineAsync(builder);
+        await ConfigurePipelineAsync(builder).ConfigureAwait(false);
 
         var shellPipeline = new ShellRequestPipeline
         {
@@ -90,7 +90,7 @@ public static class ShellPipelineExtensions
         {
             if (startup is IAsyncStartup asyncStartup)
             {
-                await asyncStartup.ConfigureAsync(builder, routes, services);
+                await asyncStartup.ConfigureAsync(builder, routes, services).ConfigureAwait(false);
             }
 
             startup.Configure(builder, routes, services);

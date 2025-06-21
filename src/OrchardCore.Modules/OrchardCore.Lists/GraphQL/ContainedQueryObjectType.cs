@@ -24,7 +24,7 @@ public class ContainedQueryObjectType : ObjectGraphType<ContainedPart>
                var contentItemId = x.Source.ListContentItemId;
                var contentManager = x.RequestServices.GetService<IContentManager>();
 
-               return await contentManager.GetAsync(contentItemId);
+               return await contentManager.GetAsync(contentItemId).ConfigureAwait(false);
            });
 
         Field(x => x.ListContentType)

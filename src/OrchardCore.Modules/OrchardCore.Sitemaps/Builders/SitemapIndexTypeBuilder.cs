@@ -45,7 +45,7 @@ public class SitemapIndexTypeBuilder : SitemapTypeBuilderBase<SitemapIndex>
             return;
         }
 
-        var containedSitemaps = (await _sitemapManager.GetSitemapsAsync())
+        var containedSitemaps = (await _sitemapManager.GetSitemapsAsync().ConfigureAwait(false))
             .Where(s => s.Enabled && indexSource.ContainedSitemapIds.Any(id => id == s.SitemapId));
 
         foreach (var containedSitemap in containedSitemaps)
@@ -61,7 +61,7 @@ public class SitemapIndexTypeBuilder : SitemapTypeBuilderBase<SitemapIndex>
             loc.Add(context.HostPrefix + context.UrlHelper.Action(routeValues["Action"].ToString(), routeValues));
             xmlSitemap.Add(loc);
 
-            var lastModDate = await _sitemapModifiedDateProvider.GetLastModifiedDateAsync(containedSitemap);
+            var lastModDate = await _sitemapModifiedDateProvider.GetLastModifiedDateAsync(containedSitemap).ConfigureAwait(false);
             if (lastModDate.HasValue)
             {
                 var lastMod = new XElement(_namespace + "lastmod");

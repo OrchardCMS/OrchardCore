@@ -34,7 +34,7 @@ public class TaxonomyFieldIndexHandler : ContentFieldIndexHandler<TaxonomyField>
 
         // Inherited term ids are added to a distinct field, prefixed with "Inherited"
         var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
-        var taxonomy = await contentManager.GetAsync(field.TaxonomyContentItemId);
+        var taxonomy = await contentManager.GetAsync(field.TaxonomyContentItemId).ConfigureAwait(false);
 
         var inheritedContentItems = new List<ContentItem>();
         foreach (var contentItemId in field.TermContentItemIds)

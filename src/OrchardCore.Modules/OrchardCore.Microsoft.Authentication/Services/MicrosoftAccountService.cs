@@ -24,7 +24,7 @@ public class MicrosoftAccountService : IMicrosoftAccountService
 
     public async Task<MicrosoftAccountSettings> LoadSettingsAsync()
     {
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         return container.As<MicrosoftAccountSettings>();
     }
 
@@ -32,7 +32,7 @@ public class MicrosoftAccountService : IMicrosoftAccountService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         container.Alter<MicrosoftAccountSettings>(aspect =>
         {
             aspect.AppId = settings.AppId;
@@ -40,7 +40,7 @@ public class MicrosoftAccountService : IMicrosoftAccountService
             aspect.CallbackPath = settings.CallbackPath;
         });
 
-        await _siteService.UpdateSiteSettingsAsync(container);
+        await _siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
     }
 
     public IEnumerable<ValidationResult> ValidateSettings(MicrosoftAccountSettings settings)

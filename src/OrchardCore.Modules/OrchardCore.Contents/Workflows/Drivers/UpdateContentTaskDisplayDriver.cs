@@ -18,7 +18,7 @@ public sealed class UpdateContentTaskDisplayDriver : ContentTaskDisplayDriver<Up
 
     protected override async ValueTask EditActivityAsync(UpdateContentTask activity, UpdateContentTaskViewModel model)
     {
-        model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+        model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
             .ToList();
 

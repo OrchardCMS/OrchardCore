@@ -16,7 +16,7 @@ public class ContentTypeSelection
 
     public static async Task<ContentTypeSelection[]> BuildAsync(IContentDefinitionManager contentDefinitionManager, IEnumerable<string> selectedContentTypes)
     {
-        var contentTypes = (await contentDefinitionManager.ListTypeDefinitionsAsync())
+        var contentTypes = (await contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             .Select(x =>
                 new ContentTypeSelection
                 {

@@ -15,7 +15,7 @@ public class RecipeEnvironmentSiteNameProvider : IRecipeEnvironmentProvider
 
     public async Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
     {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var siteSettings = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
         if (!string.IsNullOrEmpty(siteSettings.SiteName))
         {
             environment[nameof(SiteSettings.SiteName)] = siteSettings.SiteName;

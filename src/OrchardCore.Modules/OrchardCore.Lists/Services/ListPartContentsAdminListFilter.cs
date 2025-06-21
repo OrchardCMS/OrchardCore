@@ -24,12 +24,12 @@ public class ListPartContentsAdminListFilter : IContentsAdminListFilter
     public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
     {
         var viewModel = new ListPartContentsAdminFilterViewModel();
-        await updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
+        await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)).ConfigureAwait(false);
 
         // Show list content items
         if (viewModel.ShowListContentTypes)
         {
-            var listableTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            var listableTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
                 .Where(x =>
                     x.Parts.Any(p =>
                         p.PartDefinition.Name == nameof(ListPart)))

@@ -17,7 +17,7 @@ public sealed class DefaultScopesMigration : DataMigration
         {
             var scopeManager = shellScope.ServiceProvider.GetRequiredService<IOpenIdScopeManager>();
 
-            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Email) == null)
+            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Email).ConfigureAwait(false) == null)
             {
                 var descriptor = new OpenIdScopeDescriptor
                 {
@@ -26,10 +26,10 @@ public sealed class DefaultScopesMigration : DataMigration
                     Description = "Requests access to the user's email address. This scope provides the email and email_verified claims, which indicate the user's email address and whether it has been verified.",
                 };
 
-                await scopeManager.CreateAsync(descriptor);
+                await scopeManager.CreateAsync(descriptor).ConfigureAwait(false);
             }
 
-            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Profile) == null)
+            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Profile).ConfigureAwait(false) == null)
             {
                 var descriptor = new OpenIdScopeDescriptor
                 {
@@ -37,10 +37,10 @@ public sealed class DefaultScopesMigration : DataMigration
                     Name = OpenIddictConstants.Scopes.Profile,
                     Description = "Requests access to the user's default profile information.",
                 };
-                await scopeManager.CreateAsync(descriptor);
+                await scopeManager.CreateAsync(descriptor).ConfigureAwait(false);
             }
 
-            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Phone) == null)
+            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Phone).ConfigureAwait(false) == null)
             {
                 var descriptor = new OpenIdScopeDescriptor
                 {
@@ -49,10 +49,10 @@ public sealed class DefaultScopesMigration : DataMigration
                     Description = "Requests access to the user's phone number. This scope includes the phone_number and phone_number_verified claims, which provide the user's phone number and indicate whether it has been verified.",
                 };
 
-                await scopeManager.CreateAsync(descriptor);
+                await scopeManager.CreateAsync(descriptor).ConfigureAwait(false);
             }
 
-            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Roles) == null)
+            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Roles).ConfigureAwait(false) == null)
             {
                 var descriptor = new OpenIdScopeDescriptor
                 {
@@ -61,7 +61,7 @@ public sealed class DefaultScopesMigration : DataMigration
                     Description = "Requests access to the user's roles.",
                 };
 
-                await scopeManager.CreateAsync(descriptor);
+                await scopeManager.CreateAsync(descriptor).ConfigureAwait(false);
             }
         });
 
@@ -76,7 +76,7 @@ public sealed class DefaultScopesMigration : DataMigration
         {
             var scopeManager = shellScope.ServiceProvider.GetRequiredService<IOpenIdScopeManager>();
 
-            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Roles) == null)
+            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Roles).ConfigureAwait(false) == null)
             {
                 var descriptor = new OpenIdScopeDescriptor
                 {
@@ -85,7 +85,7 @@ public sealed class DefaultScopesMigration : DataMigration
                     Description = "Requests access to the user's roles.",
                 };
 
-                await scopeManager.CreateAsync(descriptor);
+                await scopeManager.CreateAsync(descriptor).ConfigureAwait(false);
             }
         });
 

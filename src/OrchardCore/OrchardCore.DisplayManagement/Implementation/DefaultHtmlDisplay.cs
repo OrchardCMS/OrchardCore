@@ -83,18 +83,18 @@ public class DefaultHtmlDisplay : IHtmlDisplay
 
         try
         {
-            var theme = await _themeManager.GetThemeAsync();
-            var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme?.Id);
+            var theme = await _themeManager.GetThemeAsync().ConfigureAwait(false);
+            var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme?.Id).ConfigureAwait(false);
 
             // Evaluate global Shape Display Events.
-            await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingAsync(displayContext), displayContext, _logger);
+            await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingAsync(displayContext), displayContext, _logger).ConfigureAwait(false);
 
             // Find base shape association using only the fundamental shape type.
             // Alternates that may already be registered do not affect the "displaying" event calls.
             var shapeDescriptor = GetShapeDescriptor(shapeMetadata.Type, shapeTable);
             if (shapeDescriptor != null)
             {
-                await shapeDescriptor.DisplayingAsync.InvokeAsync((action, displayContext) => action(displayContext), displayContext, _logger);
+                await shapeDescriptor.DisplayingAsync.InvokeAsync((action, displayContext) => action(displayContext), displayContext, _logger).ConfigureAwait(false);
 
                 // Copy all binding sources (all templates for this shape) in order to use them as Localization scopes.
                 shapeMetadata.BindingSources = shapeDescriptor.BindingSources;
@@ -119,20 +119,20 @@ public class DefaultHtmlDisplay : IHtmlDisplay
                 // There might be no shape binding for the main shape, and only for its alternates.
                 if (shapeDescriptor != null)
                 {
-                    await shapeDescriptor.ProcessingAsync.InvokeAsync((action, displayContext) => action(displayContext), displayContext, _logger);
+                    await shapeDescriptor.ProcessingAsync.InvokeAsync((action, displayContext) => action(displayContext), displayContext, _logger).ConfigureAwait(false);
                 }
 
                 // Now find the actual binding to render, taking alternates into account.
-                var actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
+                var actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable).ConfigureAwait(false);
 
                 if (actualBinding == null)
                 {
                     throw new InvalidOperationException($"The shape type '{shapeMetadata.Type}' is not found for the theme '{theme?.Id}'");
                 }
 
-                await shapeMetadata.ProcessingAsync.InvokeAsync((action, displayContext) => action(displayContext.Shape), displayContext, _logger);
+                await shapeMetadata.ProcessingAsync.InvokeAsync((action, displayContext) => action(displayContext.Shape), displayContext, _logger).ConfigureAwait(false);
 
-                shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, localContext);
+                shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, localContext).ConfigureAwait(false);
             }
 
             // Process wrappers.
@@ -140,10 +140,10 @@ public class DefaultHtmlDisplay : IHtmlDisplay
             {
                 foreach (var frameType in shape.Metadata.Wrappers)
                 {
-                    var frameBinding = await GetShapeBindingAsync(frameType, AlternatesCollection.Empty, shapeTable);
+                    var frameBinding = await GetShapeBindingAsync(frameType, AlternatesCollection.Empty, shapeTable).ConfigureAwait(false);
                     if (frameBinding != null)
                     {
-                        shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, localContext);
+                        shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, localContext).ConfigureAwait(false);
                     }
                 }
 
@@ -155,14 +155,14 @@ public class DefaultHtmlDisplay : IHtmlDisplay
             {
                 var prior = displayContext.ChildContent = displayContext.Shape.Metadata.ChildContent;
 
-                await e.DisplayedAsync(displayContext);
+                await e.DisplayedAsync(displayContext).ConfigureAwait(false);
 
                 // Update the child content if the context variable has been reassigned.
                 if (prior != displayContext.ChildContent)
                 {
                     displayContext.Shape.Metadata.ChildContent = displayContext.ChildContent;
                 }
-            }, displayContext, _logger);
+            }, displayContext, _logger).ConfigureAwait(false);
 
             if (shapeDescriptor != null)
             {
@@ -170,14 +170,14 @@ public class DefaultHtmlDisplay : IHtmlDisplay
                 {
                     var prior = displayContext.ChildContent = displayContext.Shape.Metadata.ChildContent;
 
-                    await action(displayContext);
+                    await action(displayContext).ConfigureAwait(false);
 
                     // Update the child content if the context variable has been reassigned.
                     if (prior != displayContext.ChildContent)
                     {
                         displayContext.Shape.Metadata.ChildContent = displayContext.ChildContent;
                     }
-                }, displayContext, _logger);
+                }, displayContext, _logger).ConfigureAwait(false);
             }
 
             // Invoking ShapeMetadata displayed events.
@@ -185,7 +185,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         }
         finally
         {
-            await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingFinalizedAsync(displayContext), displayContext, _logger);
+            await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingFinalizedAsync(displayContext), displayContext, _logger).ConfigureAwait(false);
         }
 
         return shape.Metadata.ChildContent;
@@ -225,7 +225,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
 
             foreach (var shapeBindingResolver in _shapeBindingResolvers)
             {
-                var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeAlternate);
+                var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeAlternate).ConfigureAwait(false);
 
                 if (binding != null)
                 {
@@ -262,7 +262,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         {
             foreach (var shapeBindingResolver in _shapeBindingResolvers)
             {
-                var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeTypeSegment);
+                var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeTypeSegment).ConfigureAwait(false);
 
                 if (binding != null)
                 {
@@ -297,7 +297,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
     {
         static async ValueTask<IHtmlContent> Awaited(Task<IHtmlContent> task)
         {
-            return (await task) ?? HtmlString.Empty;
+            return (await task.ConfigureAwait(false)) ?? HtmlString.Empty;
         }
 
         if (shapeBinding?.BindingAsync == null)

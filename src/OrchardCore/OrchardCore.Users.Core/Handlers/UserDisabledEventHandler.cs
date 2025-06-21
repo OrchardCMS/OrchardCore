@@ -15,6 +15,6 @@ public class UserDisabledEventHandler : UserEventHandlerBase
     {
         _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
 
-        await _userManager.UpdateSecurityStampAsync(context.User);
+        await _userManager.UpdateSecurityStampAsync(context.User).ConfigureAwait(false);
     }
 }

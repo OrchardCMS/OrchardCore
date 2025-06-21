@@ -23,7 +23,7 @@ public class RecipeReader : IRecipeReader
 
         try
         {
-            recipeDescriptor = await JsonSerializer.DeserializeAsync<RecipeDescriptor>(stream, JOptions.Default);
+            recipeDescriptor = await JsonSerializer.DeserializeAsync<RecipeDescriptor>(stream, JOptions.Default).ConfigureAwait(false);
 
             recipeDescriptor.FileProvider = recipeFileProvider;
             recipeDescriptor.BasePath = recipeBasePath;

@@ -96,11 +96,11 @@ public abstract class ContentActivity : Activity
 
             if (contentEventContext?.ContentItemVersionId != null)
             {
-                contentItem = await ContentManager.GetVersionAsync(contentEventContext.ContentItemVersionId);
+                contentItem = await ContentManager.GetVersionAsync(contentEventContext.ContentItemVersionId).ConfigureAwait(false);
             }
             if (contentItem == null && contentEventContext?.ContentItemId != null)
             {
-                contentItem = await ContentManager.GetAsync(contentEventContext.ContentItemId);
+                contentItem = await ContentManager.GetAsync(contentEventContext.ContentItemId).ConfigureAwait(false);
             }
         }
 
@@ -122,7 +122,7 @@ public abstract class ContentActivity : Activity
 
             if (existingContentItem?.ContentItemId != null)
             {
-                contentItem = await ContentManager.GetAsync(existingContentItem.ContentItemId);
+                contentItem = await ContentManager.GetAsync(existingContentItem.ContentItemId).ConfigureAwait(false);
             }
         }
 
@@ -140,7 +140,7 @@ public abstract class ContentActivity : Activity
         if (!string.IsNullOrWhiteSpace(Content.Expression))
         {
             var expression = new WorkflowExpression<object> { Expression = Content.Expression };
-            var result = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+            var result = await ScriptEvaluator.EvaluateAsync(expression, workflowContext).ConfigureAwait(false);
 
             if (result is ContentItem contentItem)
             {
@@ -178,7 +178,7 @@ public abstract class ContentActivity : Activity
         if (!string.IsNullOrWhiteSpace(Content.Expression))
         {
             var expression = new WorkflowExpression<object> { Expression = Content.Expression };
-            var contentItemIdResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+            var contentItemIdResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext).ConfigureAwait(false);
 
             if (contentItemIdResult is string contentItemId)
             {

@@ -17,7 +17,7 @@ public sealed class Migrations : DataMigration
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Foo", builder => builder
             .WithPart("TestContentPartA")
             .WithPart("TestContentPartB")
-        );
+        ).ConfigureAwait(false);
 
         return 1;
     }

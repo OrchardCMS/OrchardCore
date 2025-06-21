@@ -30,7 +30,7 @@ public sealed class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateT
     {
         return Initialize<DisplayDateTimeFieldViewModel>(GetDisplayShapeType(context), async model =>
         {
-            model.LocalDateTime = field.Value == null ? null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+            model.LocalDateTime = field.Value == null ? null : (await _localClock.ConvertToLocalAsync(field.Value.Value).ConfigureAwait(false)).DateTime;
             model.Field = field;
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
@@ -43,7 +43,7 @@ public sealed class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateT
     {
         return Initialize<EditDateTimeFieldViewModel>(GetEditorShapeType(context), async model =>
         {
-            model.LocalDateTime = field.Value == null ? null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+            model.LocalDateTime = field.Value == null ? null : (await _localClock.ConvertToLocalAsync(field.Value.Value).ConfigureAwait(false)).DateTime;
             model.Field = field;
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
@@ -54,7 +54,7 @@ public sealed class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateT
     {
         var model = new EditDateTimeFieldViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, f => f.LocalDateTime);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, f => f.LocalDateTime).ConfigureAwait(false);
         var settings = context.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
 
         if (settings.Required && model.LocalDateTime == null)
@@ -69,7 +69,7 @@ public sealed class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateT
             }
             else
             {
-                field.Value = await _localClock.ConvertToUtcAsync(model.LocalDateTime.Value);
+                field.Value = await _localClock.ConvertToUtcAsync(model.LocalDateTime.Value).ConfigureAwait(false);
             }
         }
 

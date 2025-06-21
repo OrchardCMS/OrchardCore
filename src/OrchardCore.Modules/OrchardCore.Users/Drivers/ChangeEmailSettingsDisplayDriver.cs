@@ -30,7 +30,7 @@ public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeE
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
@@ -46,13 +46,13 @@ public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeE
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(section, Prefix);
+        await context.Updater.TryUpdateModelAsync(section, Prefix).ConfigureAwait(false);
 
-        return await EditAsync(site, section, context);
+        return await EditAsync(site, section, context).ConfigureAwait(false);
     }
 }

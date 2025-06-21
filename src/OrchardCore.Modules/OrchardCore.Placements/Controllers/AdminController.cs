@@ -201,7 +201,7 @@ public sealed class AdminController : Controller
             var emptyNodesIndexes = Array.FindAll(placementNodes, IsEmpty)
                 .Select(node => Array.IndexOf(placementNodes, node) + 1);
 
-            if (emptyNodesIndexes.Any()) 
+            if (emptyNodesIndexes.Any())
             {
                 await _notifier.ErrorAsync(H["A valid placement must contain either <b>place</b>, <b>shape</b>, <b>wrappers</b> or <b>alternates</b>. Please correct the placements at positions: {0}.", string.Join(", ", emptyNodesIndexes)]);
                 return View(viewModel);

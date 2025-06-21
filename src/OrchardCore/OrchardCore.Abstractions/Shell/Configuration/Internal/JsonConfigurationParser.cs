@@ -71,7 +71,7 @@ public sealed class JsonConfigurationParser
         try
         {
             // Use JOptions.Document to allow comments and trailing commas
-            using (var doc = await JsonDocument.ParseAsync(input, JOptions.Document))
+            using (var doc = await JsonDocument.ParseAsync(input, JOptions.Document).ConfigureAwait(false))
             {
                 if (doc.RootElement.ValueKind != JsonValueKind.Object)
                 {

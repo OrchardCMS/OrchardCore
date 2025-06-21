@@ -96,7 +96,7 @@ internal sealed class DistributedContext : IDisposable, IAsyncDisposable
     public async Task ReleaseAsync()
     {
         _released = true;
-        await DisposeAsync();
+        await DisposeAsync().ConfigureAwait(false);
     }
 
     /// <summary>

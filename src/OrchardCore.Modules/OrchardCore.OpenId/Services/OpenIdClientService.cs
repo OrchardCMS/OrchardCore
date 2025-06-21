@@ -27,7 +27,7 @@ public class OpenIdClientService : IOpenIdClientService
 
     public async Task<OpenIdClientSettings> LoadSettingsAsync()
     {
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         return container.As<OpenIdClientSettings>();
     }
 
@@ -35,9 +35,9 @@ public class OpenIdClientService : IOpenIdClientService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         container.Properties[nameof(OpenIdClientSettings)] = JObject.FromObject(settings);
-        await _siteService.UpdateSiteSettingsAsync(container);
+        await _siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
     }
 
     public Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdClientSettings settings)

@@ -95,15 +95,16 @@ public class AutoSetupMiddleware
         if (_setupOptions is not null && _shellSettings.IsUninitialized())
         {
             // Try to acquire a lock before starting installation, it guaranties an atomic setup in multi instances environment.
-            (var locker, var locked) = await _distributedLock.TryAcquireAutoSetupLockAsync(_lockOptions);
+            (var locker, var locked) = await _distributedLock.TryAcquireAutoSetupLockAsync(_lockOptions).ConfigureAwait(false);
             if (!locked)
             {
                 throw new TimeoutException($"Fails to acquire an auto setup lock for the tenant: {_setupOptions.ShellName}");
             }
 
-            await using var acquiredLock = locker;
-
-            if (_shellSettings.IsUninitialized())
+            var acquiredLock = locker;
+            await using (acquiredLock.ConfigureAwait(false))
+            {
+                if (_shellSettings.IsUninitialized())
             {
                 var pathBase = httpContext.Request.PathBase;
                 if (!pathBase.HasValue)
@@ -152,8 +153,9 @@ public class AutoSetupMiddleware
                     return;
                 }
             }
+            }
         }
 
-        await _next.Invoke(httpContext);
+        await _next.Invoke(httpContext).ConfigureAwait(false);
     }
 }

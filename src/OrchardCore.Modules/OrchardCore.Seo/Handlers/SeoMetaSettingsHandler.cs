@@ -46,15 +46,15 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
         {
             // This handlers provides defaults, either from the Seo Meta Settings, or ensures values by default. (title etc)
             _contentManager ??= _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentManager>();
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
             var metaSettings = siteSettings.As<ContentItem>("SocialMetaSettings");
 
             var actionContext = _actionContextAccessor.ActionContext;
 
-            actionContext ??= await GetActionContextAsync(_httpContextAccessor.HttpContext);
+            actionContext ??= await GetActionContextAsync(_httpContextAccessor.HttpContext).ConfigureAwait(false);
 
             var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
-            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(context.ContentItem);
+            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(context.ContentItem).ConfigureAwait(false);
 
             var relativeUrl = urlHelper.RouteUrl(contentItemMetadata.DisplayRouteValues);
             var absoluteUrl = urlHelper.ToAbsoluteUrl(relativeUrl);
@@ -215,7 +215,7 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
 
         foreach (var filter in filters)
         {
-            await filter.OnActionExecutionAsync(actionContext);
+            await filter.OnActionExecutionAsync(actionContext).ConfigureAwait(false);
         }
 
         return actionContext;

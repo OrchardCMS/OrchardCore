@@ -50,7 +50,7 @@ public class AdminTemplatesShapeBindingResolver : IShapeBindingResolver
             return BuildShapeBinding(shapeType, localTemplate);
         }
 
-        _templatesDocument ??= await _templatesManager.GetTemplatesDocumentAsync();
+        _templatesDocument ??= await _templatesManager.GetTemplatesDocumentAsync().ConfigureAwait(false);
 
         if (_templatesDocument.Templates.TryGetValue(shapeType, out var template))
         {

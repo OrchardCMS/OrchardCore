@@ -81,14 +81,14 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
             return null;
         }
 
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchPermissions.ManageAzureAISearchISettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new AzureAISearchDefaultSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (!_searchOptions.FileConfigurationExists())
         {

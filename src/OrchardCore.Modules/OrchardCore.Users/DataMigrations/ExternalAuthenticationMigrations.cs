@@ -17,11 +17,11 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
         {
             var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
 
-            var isRegistrationFeatureEnabled = await featuresManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration);
+            var isRegistrationFeatureEnabled = await featuresManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration).ConfigureAwait(false);
 
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
 
-            var site = await siteService.LoadSiteSettingsAsync();
+            var site = await siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
 
             var registrationSettings = site.Properties[nameof(RegistrationSettings)]?.AsObject() ?? new JsonObject();
 
@@ -46,7 +46,7 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
                 SyncPropertiesScript = loginSettings["SyncRolesScript"]?.ToString(),
             });
 
-            await siteService.UpdateSiteSettingsAsync(site);
+            await siteService.UpdateSiteSettingsAsync(site).ConfigureAwait(false);
 
             if (enumValue is not null && enumValue != 1)
             {
@@ -55,7 +55,7 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
                     return;
                 }
 
-                await featuresManager.DisableFeaturesAsync(UserConstants.Features.UserRegistration);
+                await featuresManager.DisableFeaturesAsync(UserConstants.Features.UserRegistration).ConfigureAwait(false);
             }
         });
 

@@ -111,9 +111,9 @@ public sealed class OpenIdClientConfiguration :
 
     private async Task<OpenIdClientSettings> GetClientSettingsAsync()
     {
-        var settings = await _clientService.GetSettingsAsync();
+        var settings = await _clientService.GetSettingsAsync().ConfigureAwait(false);
 
-        var result = await _clientService.ValidateSettingsAsync(settings);
+        var result = await _clientService.ValidateSettingsAsync(settings).ConfigureAwait(false);
 
         if (result.Any(x => x != ValidationResult.Success))
         {

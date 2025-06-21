@@ -30,7 +30,7 @@ public class PublishContentTask : ContentTask
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var content = (await GetContentAsync(workflowContext))
+        var content = (await GetContentAsync(workflowContext).ConfigureAwait(false))
             ?? throw new InvalidOperationException($"The '{nameof(PublishContentTask)}' failed to retrieve the content item.");
 
         if (!content.HasDraft())
@@ -38,7 +38,7 @@ public class PublishContentTask : ContentTask
             return Outcomes("Noop");
         }
 
-        var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.DraftRequired);
+        var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.DraftRequired).ConfigureAwait(false);
 
         if (contentItem == null)
         {
@@ -55,7 +55,7 @@ public class PublishContentTask : ContentTask
             throw new InvalidOperationException($"The '{nameof(PublishContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type, which would result in an infinitive loop.");
         }
 
-        await ContentManager.PublishAsync(contentItem);
+        await ContentManager.PublishAsync(contentItem).ConfigureAwait(false);
 
         return Outcomes("Published");
     }

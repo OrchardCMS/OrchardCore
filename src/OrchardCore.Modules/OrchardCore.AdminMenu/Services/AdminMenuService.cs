@@ -21,7 +21,7 @@ public class AdminMenuService : IAdminMenuService
 
     public async Task SaveAsync(Models.AdminMenu tree)
     {
-        var adminMenuList = await LoadAdminMenuListAsync();
+        var adminMenuList = await LoadAdminMenuListAsync().ConfigureAwait(false);
 
         var preexisting = adminMenuList.AdminMenu.FirstOrDefault(x => string.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
 
@@ -36,7 +36,7 @@ public class AdminMenuService : IAdminMenuService
             adminMenuList.AdminMenu[index] = tree;
         }
 
-        await _documentManager.UpdateAsync(adminMenuList);
+        await _documentManager.UpdateAsync(adminMenuList).ConfigureAwait(false);
     }
 
     public Models.AdminMenu GetAdminMenuById(AdminMenuList adminMenuList, string id)
@@ -46,11 +46,11 @@ public class AdminMenuService : IAdminMenuService
 
     public async Task<int> DeleteAsync(Models.AdminMenu tree)
     {
-        var adminMenuList = await LoadAdminMenuListAsync();
+        var adminMenuList = await LoadAdminMenuListAsync().ConfigureAwait(false);
 
         var count = adminMenuList.AdminMenu.RemoveAll(x => string.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
 
-        await _documentManager.UpdateAsync(adminMenuList);
+        await _documentManager.UpdateAsync(adminMenuList).ConfigureAwait(false);
 
         return count;
     }

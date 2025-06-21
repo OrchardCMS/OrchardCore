@@ -22,7 +22,7 @@ public sealed class OpenIdClientSettingsStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<OpenIdClientSettingsStepModel>();
-        var settings = await _clientService.LoadSettingsAsync();
+        var settings = await _clientService.LoadSettingsAsync().ConfigureAwait(false);
 
         settings.Scopes = model.Scopes.Split(' ', ',');
         settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
@@ -37,7 +37,7 @@ public sealed class OpenIdClientSettingsStep : NamedRecipeStepHandler
         settings.StoreExternalTokens = model.StoreExternalTokens;
         settings.Parameters = model.Parameters;
 
-        await _clientService.UpdateSettingsAsync(settings);
+        await _clientService.UpdateSettingsAsync(settings).ConfigureAwait(false);
     }
 }
 

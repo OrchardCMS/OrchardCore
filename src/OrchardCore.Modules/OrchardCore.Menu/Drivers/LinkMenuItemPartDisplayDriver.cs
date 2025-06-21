@@ -66,7 +66,7 @@ public sealed class LinkMenuItemPartDisplayDriver : ContentPartDisplayDriver<Lin
     {
         var model = new LinkMenuItemPartEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         part.Url = model.Url;
         part.Target = model.Target;

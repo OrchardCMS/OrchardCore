@@ -36,16 +36,16 @@ public sealed class AzureAISearchIndexRebuildStep : NamedRecipeStepHandler
 
             var indexProfiles = model.IncludeAll
             ? await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName)
-            : (await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName))
+.ConfigureAwait(false) : (await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName).ConfigureAwait(false))
                 .Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
 
             foreach (var indexProfile in indexProfiles)
             {
-                await indexProfileManager.ResetAsync(indexProfile);
-                await indexProfileManager.UpdateAsync(indexProfile);
-                await indexManager.RebuildAsync(indexProfile);
-                await indexProfileManager.SynchronizeAsync(indexProfile);
+                await indexProfileManager.ResetAsync(indexProfile).ConfigureAwait(false);
+                await indexProfileManager.UpdateAsync(indexProfile).ConfigureAwait(false);
+                await indexManager.RebuildAsync(indexProfile).ConfigureAwait(false);
+                await indexProfileManager.SynchronizeAsync(indexProfile).ConfigureAwait(false);
             }
-        });
+        }).ConfigureAwait(false);
     }
 }

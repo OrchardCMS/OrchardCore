@@ -14,10 +14,10 @@ internal static class PageTitleSegmentsTags
     {
         var arguments = new NamedExpressionList(argumentsList);
 
-        var titleBuilder = await AddSegmentInternalAsync(arguments, context);
+        var titleBuilder = await AddSegmentInternalAsync(arguments, context).ConfigureAwait(false);
 
         var separatorExpression = arguments["separator", 2];
-        var separator = separatorExpression == null ? null : new HtmlString((await separatorExpression.EvaluateAsync(context)).ToStringValue());
+        var separator = separatorExpression == null ? null : new HtmlString((await separatorExpression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue());
 
         titleBuilder.GenerateTitle(separator).WriteTo(writer, (HtmlEncoder)encoder);
         return Completion.Normal;
@@ -27,7 +27,7 @@ internal static class PageTitleSegmentsTags
     {
         var arguments = new NamedExpressionList(argumentsList);
 
-        await AddSegmentInternalAsync(arguments, context);
+        await AddSegmentInternalAsync(arguments, context).ConfigureAwait(false);
 
         return Completion.Normal;
     }
@@ -39,10 +39,10 @@ internal static class PageTitleSegmentsTags
         var titleBuilder = services.GetRequiredService<IPageTitleBuilder>();
 
         var segmentExpression = arguments["segment", 0] ?? throw new ArgumentException("page_title tag requires a segment argument");
-        var segment = (await segmentExpression.EvaluateAsync(context)).ToStringValue();
+        var segment = (await segmentExpression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
 
         var positionExpression = arguments["position", 1];
-        var position = positionExpression == null ? "0" : (await positionExpression.EvaluateAsync(context)).ToStringValue();
+        var position = positionExpression == null ? "0" : (await positionExpression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
 
         titleBuilder.AddSegment(new HtmlString(segment), position);
 

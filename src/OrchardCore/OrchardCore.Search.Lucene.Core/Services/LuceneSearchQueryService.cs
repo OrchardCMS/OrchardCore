@@ -28,7 +28,7 @@ public class LuceneSearchQueryService : ILuceneSearchQueryService
             return documentIds;
         }
 
-        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync(indexName, LuceneConstants.ProviderName);
+        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync(indexName, LuceneConstants.ProviderName).ConfigureAwait(false);
 
         if (index is null)
         {
@@ -54,7 +54,7 @@ public class LuceneSearchQueryService : ILuceneSearchQueryService
             }
 
             return Task.CompletedTask;
-        });
+        }).ConfigureAwait(false);
 
         return documentIds;
     }

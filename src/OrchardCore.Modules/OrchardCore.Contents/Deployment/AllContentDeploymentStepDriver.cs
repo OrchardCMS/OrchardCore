@@ -26,7 +26,7 @@ public sealed class AllContentDeploymentStepDriver : DisplayDriver<DeploymentSte
 
     public override async Task<IDisplayResult> UpdateAsync(AllContentDeploymentStep step, UpdateEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsSetupRecipe);
+        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsSetupRecipe).ConfigureAwait(false);
 
         return Edit(step, context);
     }

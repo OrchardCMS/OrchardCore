@@ -38,7 +38,7 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
             model.ShowHeader = model.ListPartSettings.ShowHeader;
             model.ContentTypes = [];
 
-            foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             {
                 model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
             }
@@ -51,7 +51,7 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
 
         var model = new ListPartSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize, m => m.EnableOrdering, m => m.ShowHeader);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize, m => m.EnableOrdering, m => m.ShowHeader).ConfigureAwait(false);
 
         if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
         {
@@ -70,7 +70,7 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
             // Update order of existing content if enable ordering has been turned on.
             if (settings.EnableOrdering != model.EnableOrdering && model.EnableOrdering == true)
             {
-                await _containerService.SetInitialOrder(contentTypePartDefinition.ContentTypeDefinition.Name);
+                await _containerService.SetInitialOrder(contentTypePartDefinition.ContentTypeDefinition.Name).ConfigureAwait(false);
             }
         }
 

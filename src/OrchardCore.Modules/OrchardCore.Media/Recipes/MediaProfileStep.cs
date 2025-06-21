@@ -25,7 +25,7 @@ public sealed class MediaProfileStep : NamedRecipeStepHandler
 
         foreach (var mediaProfile in model.MediaProfiles)
         {
-            await _mediaProfilesManager.UpdateMediaProfileAsync(mediaProfile.Key, mediaProfile.Value);
+            await _mediaProfilesManager.UpdateMediaProfileAsync(mediaProfile.Key, mediaProfile.Value).ConfigureAwait(false);
         }
     }
 }

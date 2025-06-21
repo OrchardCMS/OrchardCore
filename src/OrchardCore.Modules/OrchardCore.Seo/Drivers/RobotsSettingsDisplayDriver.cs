@@ -41,7 +41,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -52,7 +52,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
 
             if (fileInfo.Exists)
             {
-                await _notifier.WarningAsync(H["A physical {0} file is found for the current site. Until removed, the settings below will have no effect.", SeoConstants.RobotsFileName]);
+                await _notifier.WarningAsync(H["A physical {0} file is found for the current site. Until removed, the settings below will have no effect.", SeoConstants.RobotsFileName]).ConfigureAwait(false);
             }
 
             model.AllowAllAgents = settings.AllowAllAgents;
@@ -67,13 +67,13 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
         var user = _httpContextAccessor.HttpContext?.User;
 
         if (!context.GroupId.Equals(SeoConstants.RobotsSettingsGroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
+            || !await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings).ConfigureAwait(false))
         {
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        await context.Updater.TryUpdateModelAsync(settings, Prefix).ConfigureAwait(false);
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

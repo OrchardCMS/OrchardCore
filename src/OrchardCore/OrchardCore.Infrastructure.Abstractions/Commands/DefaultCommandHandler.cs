@@ -74,7 +74,7 @@ public abstract class DefaultCommandHandler : ICommandHandler
 
         if (context.CommandDescriptor.MethodInfo.ReturnType == typeof(Task<string>))
         {
-            var taskResult = await (Task<string>)context.CommandDescriptor.MethodInfo.Invoke(this, invokeParameters);
+            var taskResult = await ((Task<string>)context.CommandDescriptor.MethodInfo.Invoke(this, invokeParameters)).ConfigureAwait(false);
             await context.Output.WriteAsync(taskResult);
             return;
         }
@@ -87,7 +87,7 @@ public abstract class DefaultCommandHandler : ICommandHandler
         var result = context.CommandDescriptor.MethodInfo.Invoke(this, invokeParameters);
         if (result is string)
         {
-            await context.Output.WriteAsync(result.ToString());
+            await context.Output.WriteAsync(result.ToString()).ConfigureAwait(false);
         }
     }
 

@@ -65,14 +65,14 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
         {
             if (_providerOptions.DeliveryMethod == SmtpDeliveryMethod.Network)
             {
-                var response = await SendOnlineMessageAsync(mimeMessage);
+                var response = await SendOnlineMessageAsync(mimeMessage).ConfigureAwait(false);
 
                 return EmailResult.GetSuccessResult(response);
             }
 
             if (_providerOptions.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory)
             {
-                await SendOfflineMessageAsync(mimeMessage, _providerOptions.PickupDirectoryLocation);
+                await SendOfflineMessageAsync(mimeMessage, _providerOptions.PickupDirectoryLocation).ConfigureAwait(false);
 
                 return EmailResult.SuccessResult;
             }
@@ -147,18 +147,18 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
 
         client.ServerCertificateValidationCallback = CertificateValidationCallback;
 
-        await client.ConnectAsync(_providerOptions.Host, _providerOptions.Port, secureSocketOptions);
+        await client.ConnectAsync(_providerOptions.Host, _providerOptions.Port, secureSocketOptions).ConfigureAwait(false);
 
         if (_providerOptions.RequireCredentials)
         {
             if (_providerOptions.UseDefaultCredentials)
             {
                 // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in.
-                await client.AuthenticateAsync(string.Empty, string.Empty);
+                await client.AuthenticateAsync(string.Empty, string.Empty).ConfigureAwait(false);
             }
             else if (!string.IsNullOrWhiteSpace(_providerOptions.UserName))
             {
-                await client.AuthenticateAsync(_providerOptions.UserName, _providerOptions.Password);
+                await client.AuthenticateAsync(_providerOptions.UserName, _providerOptions.Password).ConfigureAwait(false);
             }
         }
 
@@ -167,9 +167,9 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
             client.ProxyClient = new Socks5Client(_providerOptions.ProxyHost, _providerOptions.ProxyPort);
         }
 
-        var response = await client.SendAsync(message);
+        var response = await client.SendAsync(message).ConfigureAwait(false);
 
-        await client.DisconnectAsync(true);
+        await client.DisconnectAsync(true).ConfigureAwait(false);
 
         return response;
     }

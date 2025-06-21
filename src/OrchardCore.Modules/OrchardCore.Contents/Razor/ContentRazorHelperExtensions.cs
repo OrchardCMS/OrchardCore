@@ -26,7 +26,7 @@ public static class ContentRazorHelperExtensions
     /// <param name="option">A specific version to load or the default version.</param>
     /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
     public static async Task<ContentItem> GetContentItemByHandleAsync(this IOrchardHelper orchardHelper, string handle, VersionOptions option = null)
-        => await ContentOrchardHelperExtensions.GetContentItemByHandleAsync(orchardHelper, handle, option);
+        => await ContentOrchardHelperExtensions.GetContentItemByHandleAsync(orchardHelper, handle, option).ConfigureAwait(false);
 
     /// <summary>
     /// Loads a content item by its id.
@@ -61,7 +61,7 @@ public static class ContentRazorHelperExtensions
     /// Query content items.
     /// </summary>
     public static async Task<IEnumerable<ContentItem>> QueryContentItemsAsync(this IOrchardHelper orchardHelper, Func<IQuery<ContentItem, ContentItemIndex>, IQuery<ContentItem>> query)
-        => await ContentOrchardHelperExtensions.QueryContentItemsAsync(orchardHelper, query);
+        => await ContentOrchardHelperExtensions.QueryContentItemsAsync(orchardHelper, query).ConfigureAwait(false);
 
     /// <summary>
     /// Loads content items of a specific type.

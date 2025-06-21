@@ -6,6 +6,6 @@ public class TextMediaFileTextProvider : IMediaFileTextProvider
     {
         using var reader = new StreamReader(fileStream);
 
-        return await reader.ReadToEndAsync();
+        return await reader.ReadToEndAsync().ConfigureAwait(false);
     }
 }

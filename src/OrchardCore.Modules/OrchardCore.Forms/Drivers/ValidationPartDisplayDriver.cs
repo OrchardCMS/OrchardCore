@@ -25,7 +25,7 @@ public sealed class ValidationPartDisplayDriver : ContentPartDisplayDriver<Valid
     {
         var viewModel = new ValidationPartEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         part.For = viewModel.For?.Trim();
 

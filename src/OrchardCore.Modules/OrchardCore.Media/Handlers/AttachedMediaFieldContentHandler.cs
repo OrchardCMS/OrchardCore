@@ -19,7 +19,7 @@ public class AttachedMediaFieldContentHandler : ContentHandlerBase
     {
         if (context.NoActiveVersionLeft)
         {
-            await _attachedMediaFieldFileService.DeleteContentItemFolderAsync(context.ContentItem);
+            await _attachedMediaFieldFileService.DeleteContentItemFolderAsync(context.ContentItem).ConfigureAwait(false);
         }
     }
 }

@@ -20,22 +20,22 @@ internal class WorkflowRouteEntries<TWorkflowRouteDocument> : IWorkflowRouteEntr
 
     public async Task<IEnumerable<WorkflowRoutesEntry>> GetWorkflowRouteEntriesAsync(string httpMethod, RouteValueDictionary routeValues)
     {
-        var document = await GetDocumentAsync();
+        var document = await GetDocumentAsync().ConfigureAwait(false);
         return GetWorkflowRoutesEntries(document, httpMethod, routeValues);
     }
 
     public async Task AddEntriesAsync(IEnumerable<WorkflowRoutesEntry> entries)
     {
-        var document = await LoadDocumentAsync();
+        var document = await LoadDocumentAsync().ConfigureAwait(false);
         AddEntries(document, entries);
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     public async Task RemoveEntriesAsync(string workflowId)
     {
-        var document = await LoadDocumentAsync();
+        var document = await LoadDocumentAsync().ConfigureAwait(false);
         RemoveEntries(document, workflowId);
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     protected virtual IEnumerable<WorkflowRoutesEntry> GetWorkflowRoutesEntries(WorkflowRouteDocument document, string httpMethod, RouteValueDictionary routeValues)

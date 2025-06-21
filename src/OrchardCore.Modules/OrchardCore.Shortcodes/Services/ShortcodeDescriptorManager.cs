@@ -19,7 +19,7 @@ public class ShortcodeDescriptorManager : IShortcodeDescriptorManager
 
         foreach (var provider in reversedShortcodeDescriptorProviders)
         {
-            var descriptors = await provider.DiscoverAsync();
+            var descriptors = await provider.DiscoverAsync().ConfigureAwait(false);
             foreach (var descriptor in descriptors)
             {
                 // Overwrite existing descriptors if they have been replaced.

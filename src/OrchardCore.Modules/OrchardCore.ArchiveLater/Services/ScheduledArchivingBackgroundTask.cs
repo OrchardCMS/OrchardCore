@@ -30,7 +30,7 @@ public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
         var itemsToArchive = await serviceProvider
             .GetRequiredService<ISession>()
             .QueryIndex<ArchiveLaterPartIndex>(index => index.Latest && index.Published && index.ScheduledArchiveDateTimeUtc < _clock.UtcNow)
-            .ListAsync();
+            .ListAsync().ConfigureAwait(false);
 
         if (!itemsToArchive.Any())
         {
@@ -41,7 +41,7 @@ public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
 
         foreach (var item in itemsToArchive)
         {
-            var contentItem = await contentManager.GetAsync(item.ContentItemId);
+            var contentItem = await contentManager.GetAsync(item.ContentItemId).ConfigureAwait(false);
 
             var part = contentItem.As<ArchiveLaterPart>();
             if (part != null)
@@ -52,7 +52,7 @@ public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
 
             _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", contentItem.ContentItemId);
 
-            await contentManager.UnpublishAsync(contentItem);
+            await contentManager.UnpublishAsync(contentItem).ConfigureAwait(false);
         }
     }
 }

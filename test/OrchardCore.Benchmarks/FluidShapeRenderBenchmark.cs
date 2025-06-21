@@ -41,7 +41,7 @@ public class FluidShapeRenderBenchmark
         var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
         var displayHelper = _serviceProvider.GetRequiredService<IDisplayHelper>();
         templateContext.AmbientValues["DisplayHelper"] = displayHelper;
-        await OriginalShapeRenderDynamic(_input, _filterArguments, templateContext);
+        await OriginalShapeRenderDynamic(_input, _filterArguments, templateContext).ConfigureAwait(false);
     }
 
     [Benchmark]
@@ -50,14 +50,14 @@ public class FluidShapeRenderBenchmark
         var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
         var displayHelper = _serviceProvider.GetRequiredService<IDisplayHelper>();
         templateContext.AmbientValues["DisplayHelper"] = displayHelper;
-        await ShapeRenderWithAmbientValues(_input, _filterArguments, templateContext);
+        await ShapeRenderWithAmbientValues(_input, _filterArguments, templateContext).ConfigureAwait(false);
     }
 
     [Benchmark]
     public async Task ShapeRenderStatic()
     {
         var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-        await ShapeRenderStatic(_input, _filterArguments, templateContext);
+        await ShapeRenderStatic(_input, _filterArguments, templateContext).ConfigureAwait(false);
     }
 
     [Benchmark]
@@ -65,7 +65,7 @@ public class FluidShapeRenderBenchmark
 #pragma warning restore CA1822 // Mark members as static
     {
         var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-        await _liquidFilterDelegateResolver.ResolveAsync(_input, _filterArguments, templateContext);
+        await _liquidFilterDelegateResolver.ResolveAsync(_input, _filterArguments, templateContext).ConfigureAwait(false);
     }
 
     private static async ValueTask<FluidValue> OriginalShapeRenderDynamic(FluidValue input, FilterArguments _, TemplateContext context)

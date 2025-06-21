@@ -22,11 +22,11 @@ public sealed class LoginFormEventEventHandler : LoginFormEventBase
     {
         // When logging in via an external provider, authentication security is already handled by the provider.
         // Therefore, using a CAPTCHA is unnecessary and impractical, as users wouldn't be able to complete it anyway.
-        if (await _signInManager.GetExternalLoginInfoAsync() != null)
+        if (await _signInManager.GetExternalLoginInfoAsync().ConfigureAwait(false) != null)
         {
             return;
         }
 
-        await _reCaptchaService.ValidateCaptchaAsync(reportError);
+        await _reCaptchaService.ValidateCaptchaAsync(reportError).ConfigureAwait(false);
     }
 }

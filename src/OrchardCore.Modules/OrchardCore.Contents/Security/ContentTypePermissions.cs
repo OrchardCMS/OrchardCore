@@ -16,7 +16,7 @@ public sealed class ContentTypePermissions : IPermissionProvider
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
         // Manage rights only for Securable types.
-        var securableTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+        var securableTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             .Where(ctd => ctd.IsSecurable());
 
         var result = new List<Permission>();

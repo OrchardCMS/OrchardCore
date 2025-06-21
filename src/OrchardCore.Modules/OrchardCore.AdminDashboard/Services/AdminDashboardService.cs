@@ -21,7 +21,7 @@ public class AdminDashboardService : IAdminDashboardService
             .Query<ContentItem, DashboardPartIndex>()
             .OrderBy(w => w.Position)
             .With(predicate)
-            .ListAsync();
+            .ListAsync().ConfigureAwait(false);
 
         return widgets;
     }

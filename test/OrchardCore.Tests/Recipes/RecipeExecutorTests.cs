@@ -47,7 +47,7 @@ public class RecipeExecutorTests
             // Act
             var executionId = Guid.NewGuid().ToString("n");
             var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo(recipeName) };
-            await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
+            await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None).ConfigureAwait(false);
 
             // Assert
             var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
@@ -70,8 +70,8 @@ public class RecipeExecutorTests
 
             var exception = await Assert.ThrowsAsync<RecipeExecutionException>(async () =>
             {
-                await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
-            });
+                await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None).ConfigureAwait(false);
+            }).ConfigureAwait(false);
 
             Assert.Contains("Unable to add content-part to the 'Message' content-type. The part name cannot be null or empty.", exception.StepResult.Errors);
         });

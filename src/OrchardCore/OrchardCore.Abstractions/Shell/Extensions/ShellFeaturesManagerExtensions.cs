@@ -13,7 +13,7 @@ public static class ShellFeaturesManagerExtensions
     public static async Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(this IShellFeaturesManager shellFeaturesManager,
         IEnumerable<IFeatureInfo> features, bool force)
     {
-        var (_, featuresToEnable) = await shellFeaturesManager.UpdateFeaturesAsync([], features, force);
+        var (_, featuresToEnable) = await shellFeaturesManager.UpdateFeaturesAsync([], features, force).ConfigureAwait(false);
 
         return featuresToEnable;
     }
@@ -27,11 +27,11 @@ public static class ShellFeaturesManagerExtensions
             return;
         }
 
-        var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync();
+        var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync().ConfigureAwait(false);
 
         var featuresToEnable = availableFeatures.Where(feature => featureIds.Contains(feature.Id));
 
-        await shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force: false);
+        await shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force: false).ConfigureAwait(false);
     }
 
     public static async Task UpdateFeaturesAsync(this IShellFeaturesManager shellFeaturesManager, IEnumerable<string> featureIdsToDisable, IEnumerable<string> featureIdsToEnable)
@@ -39,12 +39,12 @@ public static class ShellFeaturesManagerExtensions
         ArgumentNullException.ThrowIfNull(featureIdsToEnable);
         ArgumentNullException.ThrowIfNull(featureIdsToDisable);
 
-        var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync();
+        var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync().ConfigureAwait(false);
 
         var featuresToDisable = availableFeatures.Where(feature => featureIdsToDisable.Contains(feature.Id));
         var featuresToEnable = availableFeatures.Where(feature => featureIdsToEnable.Contains(feature.Id));
 
-        await shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, force: false);
+        await shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, force: false).ConfigureAwait(false);
     }
 
     public static async Task DisableFeaturesAsync(this IShellFeaturesManager shellFeaturesManager, params string[] featureIds)
@@ -56,11 +56,11 @@ public static class ShellFeaturesManagerExtensions
             return;
         }
 
-        var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync();
+        var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync().ConfigureAwait(false);
 
         var featuresToEnable = availableFeatures.Where(feature => featureIds.Contains(feature.Id));
 
-        await shellFeaturesManager.DisableFeaturesAsync(featuresToEnable, force: false);
+        await shellFeaturesManager.DisableFeaturesAsync(featuresToEnable, force: false).ConfigureAwait(false);
     }
 
     public static Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(this IShellFeaturesManager shellFeaturesManager,
@@ -72,7 +72,7 @@ public static class ShellFeaturesManagerExtensions
     public static async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(this IShellFeaturesManager shellFeaturesManager,
         IEnumerable<IFeatureInfo> features, bool force)
     {
-        var (featuresToDisable, _) = await shellFeaturesManager.UpdateFeaturesAsync(features, [], force);
+        var (featuresToDisable, _) = await shellFeaturesManager.UpdateFeaturesAsync(features, [], force).ConfigureAwait(false);
 
         return featuresToDisable;
     }
@@ -81,7 +81,7 @@ public static class ShellFeaturesManagerExtensions
     {
         ArgumentException.ThrowIfNullOrEmpty(featureId);
 
-        var enabledFeatures = await shellFeaturesManager.GetEnabledFeaturesAsync();
+        var enabledFeatures = await shellFeaturesManager.GetEnabledFeaturesAsync().ConfigureAwait(false);
 
         return enabledFeatures.Any(feature => feature.Id == featureId);
     }

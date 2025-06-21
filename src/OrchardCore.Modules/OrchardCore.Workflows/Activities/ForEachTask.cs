@@ -63,7 +63,7 @@ public class ForEachTask : TaskActivity<ForEachTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var items = (await _scriptEvaluator.EvaluateAsync(Enumerable, workflowContext)).ToList();
+        var items = (await _scriptEvaluator.EvaluateAsync(Enumerable, workflowContext).ConfigureAwait(false)).ToList();
         var count = items.Count;
 
         if (Index < count)

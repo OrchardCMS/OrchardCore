@@ -58,7 +58,7 @@ public class OpenIdScopeManager<TScope> : OpenIddictScopeManager<TScope>, IOpenI
     }
 
     async ValueTask<object> IOpenIdScopeManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-        => await FindByPhysicalIdAsync(identifier, cancellationToken);
+        => await FindByPhysicalIdAsync(identifier, cancellationToken).ConfigureAwait(false);
 
     ValueTask<string> IOpenIdScopeManager.GetPhysicalIdAsync(object scope, CancellationToken cancellationToken)
         => GetPhysicalIdAsync((TScope)scope, cancellationToken);

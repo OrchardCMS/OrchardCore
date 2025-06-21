@@ -16,7 +16,7 @@ public static class AliasPartExtensions
                 yield return new ValidationResult(S["Your alias is too long. The alias can only be up to {0} characters. \"{1}\"", AliasPart.MaxAliasLength, part.Alias], new string[] { nameof(part.Alias) });
             }
 
-            if (!await IsAliasUniqueAsync(part, session, part.Alias))
+            if (!await IsAliasUniqueAsync(part, session, part.Alias).ConfigureAwait(false))
             {
                 yield return new ValidationResult(S["Your alias is already in use. \"{0}\"", part.Alias], new[] { nameof(part.Alias) });
             }
@@ -25,7 +25,7 @@ public static class AliasPartExtensions
 
     public static async Task<bool> IsAliasUniqueAsync(this AliasPart context, ISession session, string alias)
     {
-        return (await session.QueryIndex<AliasPartIndex>(o => o.Alias == alias && o.ContentItemId != context.ContentItem.ContentItemId).CountAsync()) == 0;
+        return (await session.QueryIndex<AliasPartIndex>(o => o.Alias == alias && o.ContentItemId != context.ContentItem.ContentItemId).CountAsync().ConfigureAwait(false)) == 0;
     }
 
 }

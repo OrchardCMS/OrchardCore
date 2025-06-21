@@ -17,7 +17,7 @@ public sealed class AllFeatureProfilesDeploymentSource
     protected override async Task ProcessAsync(AllFeatureProfilesDeploymentStep step, DeploymentPlanResult result)
     {
         var featureProfileObjects = new JsonObject();
-        var featureProfiles = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
+        var featureProfiles = await _featureProfilesManager.GetFeatureProfilesDocumentAsync().ConfigureAwait(false);
 
         foreach (var featureProfile in featureProfiles.FeatureProfiles)
         {

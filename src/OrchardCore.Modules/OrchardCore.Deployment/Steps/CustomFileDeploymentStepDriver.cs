@@ -27,7 +27,7 @@ public sealed class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentSte
 
     public override async Task<IDisplayResult> UpdateAsync(CustomFileDeploymentStep step, UpdateEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.FileName, x => x.FileContent);
+        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.FileName, x => x.FileContent).ConfigureAwait(false);
 
         return Edit(step, context);
     }

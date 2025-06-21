@@ -12,7 +12,7 @@ internal static class StartupRunner
         var cookieValue = $"c={culture}|uic={culture}";
         request.Headers.Add("Cookie", $"{CookieRequestCultureProvider.DefaultCookieName}={cookieValue}");
 
-        var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request).ConfigureAwait(false);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(expected, await response.Content.ReadAsStringAsync());

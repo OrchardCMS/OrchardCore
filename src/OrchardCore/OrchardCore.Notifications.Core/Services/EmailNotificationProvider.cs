@@ -44,7 +44,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
             isHtmlBody = false;
         }
 
-        var result = await _emailService.SendAsync(user.Email, message.Subject, body, isHtmlBody);
+        var result = await _emailService.SendAsync(user.Email, message.Subject, body, isHtmlBody).ConfigureAwait(false);
 
         return result.Succeeded;
     }

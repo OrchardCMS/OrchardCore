@@ -74,17 +74,17 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
     {
         if (!double.TryParse(From.Expression, out var from))
         {
-            from = await _scriptEvaluator.EvaluateAsync(From, workflowContext);
+            from = await _scriptEvaluator.EvaluateAsync(From, workflowContext).ConfigureAwait(false);
         }
 
         if (!double.TryParse(To.Expression, out var to))
         {
-            to = await _scriptEvaluator.EvaluateAsync(To, workflowContext);
+            to = await _scriptEvaluator.EvaluateAsync(To, workflowContext).ConfigureAwait(false);
         }
 
         if (!double.TryParse(Step.Expression, out var step))
         {
-            step = await _scriptEvaluator.EvaluateAsync(Step, workflowContext);
+            step = await _scriptEvaluator.EvaluateAsync(Step, workflowContext).ConfigureAwait(false);
         }
 
         if (Index < from)

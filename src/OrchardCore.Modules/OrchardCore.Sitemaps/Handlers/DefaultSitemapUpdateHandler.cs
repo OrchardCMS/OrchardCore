@@ -21,7 +21,7 @@ public class DefaultSitemapUpdateHandler : ISitemapUpdateHandler
         // a ConcurrencyException due to the same sitemap document being updated.
 
         var timeout = TimeSpan.FromMilliseconds(20_000);
-        (var locker, var locked) = await _distributedLock.TryAcquireLockAsync("SITEMAPS_UPDATE_LOCK", timeout, timeout);
+        (var locker, var locked) = await _distributedLock.TryAcquireLockAsync("SITEMAPS_UPDATE_LOCK", timeout, timeout).ConfigureAwait(false);
 
         if (!locked)
         {
@@ -32,7 +32,7 @@ public class DefaultSitemapUpdateHandler : ISitemapUpdateHandler
         {
             foreach (var sitemapTypeUpdateHandler in _sitemapTypeUpdateHandlers)
             {
-                await sitemapTypeUpdateHandler.UpdateSitemapAsync(context);
+                await sitemapTypeUpdateHandler.UpdateSitemapAsync(context).ConfigureAwait(false);
             }
         }
     }

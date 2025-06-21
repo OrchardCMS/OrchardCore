@@ -33,8 +33,10 @@ public static class QueriesDocumentMigrationHelper
             sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Queries.Services.QueriesDocument, OrchardCore.Queries' ");
             sqlBuilder.Take("1");
 
-            await using var connection = dbConnectionAccessor.CreateConnection();
-            await connection.OpenAsync();
+            var connection = dbConnectionAccessor.CreateConnection();
+            await using (connection.ConfigureAwait(false))
+            {
+                await connection.OpenAsync();
             var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString());
 
             if (string.IsNullOrEmpty(jsonContent))
@@ -69,6 +71,7 @@ public static class QueriesDocumentMigrationHelper
             }
 
             await queryManager.SaveAsync(queries.ToArray());
+            }
         });
     }
 }

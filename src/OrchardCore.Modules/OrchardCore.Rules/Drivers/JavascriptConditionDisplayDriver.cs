@@ -53,14 +53,14 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
     public override async Task<IDisplayResult> UpdateAsync(JavascriptCondition condition, UpdateEditorContext context)
     {
         var model = new JavascriptConditionViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         // CodeMirror hides the textarea which displays the error when updater.ModelState.AddModelError() is used,
         // that's why a notifier is used to show validation errors.
         if (string.IsNullOrWhiteSpace(model.Script))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["Please provide a script."]);
-            await _notifier.ErrorAsync(H["Please provide a script."]);
+            await _notifier.ErrorAsync(H["Please provide a script."]).ConfigureAwait(false);
 
             return Edit(condition, context);
         }
@@ -72,23 +72,23 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
                 ConditionId = condition.ConditionId,
                 Name = condition.Name,
                 Script = model.Script,
-            });
+            }).ConfigureAwait(false);
             condition.Script = model.Script;
         }
         catch (ParseErrorException ex) // Invalid syntax
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script couldn't be parsed. Details: {0}", ex.Message]);
-            await _notifier.ErrorAsync(H["The script couldn't be parsed. Details: {0}", ex.Message]);
+            await _notifier.ErrorAsync(H["The script couldn't be parsed. Details: {0}", ex.Message]).ConfigureAwait(false);
         }
         catch (JavaScriptException ex) // Evaluation threw an Error
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["JavaScript evaluation resulted in an exception. Details: {0}", ex.Message]);
-            await _notifier.ErrorAsync(H["JavaScript evaluation resulted in an exception. Details: {0}", ex.Message]);
+            await _notifier.ErrorAsync(H["JavaScript evaluation resulted in an exception. Details: {0}", ex.Message]).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is InvalidCastException or FormatException) // Evaluation completes successfully, but the result cannot be converted to Boolean
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script evaluation failed. Details: {0}", ex.Message]);
-            await _notifier.ErrorAsync(H["The script evaluation failed. Details: {0}", ex.Message]);
+            await _notifier.ErrorAsync(H["The script evaluation failed. Details: {0}", ex.Message]).ConfigureAwait(false);
         }
 
         return Edit(condition, context);

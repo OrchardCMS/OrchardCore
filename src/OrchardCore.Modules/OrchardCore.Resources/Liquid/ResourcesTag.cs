@@ -21,7 +21,7 @@ public class ResourcesTag
             switch (argument.Name)
             {
                 case "type":
-                    var typeString = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    var typeString = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
                     if (Enum.TryParse<ResourceTagType>(typeString, out var type))
                     {
                         processorContext = processorContext with { Type = type };
@@ -33,7 +33,7 @@ public class ResourcesTag
 
         foreach (var processor in processors)
         {
-            await processor.ProcessAsync(processorContext);
+            await processor.ProcessAsync(processorContext).ConfigureAwait(false);
         }
 
         return Completion.Normal;

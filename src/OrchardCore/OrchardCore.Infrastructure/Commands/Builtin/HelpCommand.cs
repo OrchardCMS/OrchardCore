@@ -18,16 +18,16 @@ public class HelpCommand : DefaultCommandHandler
     [CommandHelp("help commands", "\tDisplay help text for all available commands")]
     public async Task AllCommandsAsync()
     {
-        await Context.Output.WriteLineAsync(S["List of available commands:"]);
-        await Context.Output.WriteLineAsync("---------------------------");
-        await Context.Output.WriteLineAsync();
+        await Context.Output.WriteLineAsync(S["List of available commands:"]).ConfigureAwait(false);
+        await Context.Output.WriteLineAsync("---------------------------").ConfigureAwait(false);
+        await Context.Output.WriteLineAsync().ConfigureAwait(false);
 
         var descriptors = GetCommandDescriptors().OrderBy(d => d.Names.First());
 
         foreach (var descriptor in descriptors)
         {
-            await Context.Output.WriteLineAsync(GetHelpText(descriptor));
-            await Context.Output.WriteLineAsync();
+            await Context.Output.WriteLineAsync(GetHelpText(descriptor)).ConfigureAwait(false);
+            await Context.Output.WriteLineAsync().ConfigureAwait(false);
         }
     }
 
@@ -42,14 +42,14 @@ public class HelpCommand : DefaultCommandHandler
 
         if (!descriptors.Any())
         {
-            await Context.Output.WriteLineAsync(S["Command {0} doesn't exist", command]);
+            await Context.Output.WriteLineAsync(S["Command {0} doesn't exist", command]).ConfigureAwait(false);
         }
         else
         {
             foreach (var descriptor in descriptors)
             {
-                await Context.Output.WriteLineAsync(GetHelpText(descriptor));
-                await Context.Output.WriteLineAsync();
+                await Context.Output.WriteLineAsync(GetHelpText(descriptor)).ConfigureAwait(false);
+                await Context.Output.WriteLineAsync().ConfigureAwait(false);
             }
         }
     }

@@ -22,7 +22,7 @@ public sealed class RedisCacheOptionsSetup : IConfigureOptions<RedisCacheOptions
         {
             if (redis.Connection == null)
             {
-                await redis.ConnectAsync();
+                await redis.ConnectAsync().ConfigureAwait(false);
             }
 
             return redis.Connection;

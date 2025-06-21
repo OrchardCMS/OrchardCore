@@ -894,7 +894,7 @@ public class ResourceManagerTests
 
         content.WriteTo(writer, HtmlEncoder.Default);
 
-        return await _browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(BasePath));
+        return await _browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(BasePath)).ConfigureAwait(false);
     }
 
     #endregion

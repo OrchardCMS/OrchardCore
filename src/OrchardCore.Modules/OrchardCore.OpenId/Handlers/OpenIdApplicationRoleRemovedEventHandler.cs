@@ -12,10 +12,10 @@ public class OpenIdApplicationRoleRemovedEventHandler : IRoleRemovedEventHandler
 
     public async Task RoleRemovedAsync(string roleName)
     {
-        await foreach (var application in _manager.ListInRoleAsync(roleName))
+        await foreach (var application in _manager.ListInRoleAsync(roleName).ConfigureAwait(false))
         {
-            var roles = await _manager.GetRolesAsync(application);
-            await _manager.SetRolesAsync(application, roles.Remove(roleName, StringComparer.OrdinalIgnoreCase));
+            var roles = await _manager.GetRolesAsync(application).ConfigureAwait(false);
+            await _manager.SetRolesAsync(application, roles.Remove(roleName, StringComparer.OrdinalIgnoreCase)).ConfigureAwait(false);
         }
     }
 }

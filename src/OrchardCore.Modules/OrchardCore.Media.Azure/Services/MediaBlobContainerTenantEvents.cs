@@ -44,7 +44,7 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
         try
         {
             var blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
-            var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+            var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).ConfigureAwait(false);
 
             _logger.LogDebug("Azure Media Storage container {ContainerName} created.", _options.ContainerName);
         }
@@ -67,7 +67,7 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
         {
             try
             {
-                var response = await blobContainer.DeleteIfExistsAsync();
+                var response = await blobContainer.DeleteIfExistsAsync().ConfigureAwait(false);
                 if (!response.Value)
                 {
                     _logger.LogError("Unable to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);
@@ -91,9 +91,9 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
         {
             try
             {
-                await foreach (var blobItem in blobContainer.GetBlobsAsync(prefix: _options.BasePath))
+                await foreach (var blobItem in blobContainer.GetBlobsAsync(prefix: _options.BasePath).ConfigureAwait(false))
                 {
-                    var response = await blobContainer.DeleteBlobIfExistsAsync(blobItem.Name);
+                    var response = await blobContainer.DeleteBlobIfExistsAsync(blobItem.Name).ConfigureAwait(false);
                     if (!response.Value)
                     {
                         _logger.LogError("File removal process failed on file {ItemName}.", blobItem.Name);

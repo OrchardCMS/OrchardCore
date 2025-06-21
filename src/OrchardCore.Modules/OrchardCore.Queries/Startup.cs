@@ -47,7 +47,7 @@ public sealed class CoreStartup : StartupBase
                 var liquidTemplateContext = (LiquidTemplateContext)context;
                 var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
 
-                var query = await queryManager.GetQueryAsync(name);
+                var query = await queryManager.GetQueryAsync(name).ConfigureAwait(false);
 
                 return FluidValue.Create(query, context.Options);
             });

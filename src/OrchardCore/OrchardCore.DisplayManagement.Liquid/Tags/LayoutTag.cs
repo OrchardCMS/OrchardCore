@@ -18,7 +18,7 @@ public class LayoutTag
 
         if (viewContext.View is RazorView razorView && razorView.RazorPage is Razor.IRazorPage razorPage)
         {
-            razorPage.ViewLayout = (await expression.EvaluateAsync(context)).ToStringValue();
+            razorPage.ViewLayout = (await expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
         }
 
         return Completion.Normal;

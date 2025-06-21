@@ -47,7 +47,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
             _cacheScopeManager.EnterScope(cacheContext);
             _openScopes[cacheContext.CacheId] = cacheContext;
 
-            var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext);
+            var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext).ConfigureAwait(false);
 
             if (cachedContent != null)
             {
@@ -98,7 +98,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
             var contentHtmlString = new HtmlString(sw.ToString());
             context.ChildContent = contentHtmlString;
 
-            await _dynamicCacheService.SetCachedValueAsync(cacheContext, contentHtmlString.Value);
+            await _dynamicCacheService.SetCachedValueAsync(cacheContext, contentHtmlString.Value).ConfigureAwait(false);
         }
     }
 

@@ -19,7 +19,7 @@ public class RemoteInstanceDeploymentTargetProvider : IDeploymentTargetProvider
 
     public async Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
     {
-        var remoteInstanceList = await _service.GetRemoteInstanceListAsync();
+        var remoteInstanceList = await _service.GetRemoteInstanceListAsync().ConfigureAwait(false);
 
         return remoteInstanceList.RemoteInstances.Select(x =>
                 new DeploymentTarget(

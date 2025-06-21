@@ -32,9 +32,9 @@ public sealed class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
 
     public override async Task<IDisplayResult> UpdateAsync(AliasPart model, UpdatePartEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Alias).ConfigureAwait(false);
 
-        await foreach (var item in model.ValidateAsync(S, _session))
+        await foreach (var item in model.ValidateAsync(S, _session).ConfigureAwait(false))
         {
             context.Updater.ModelState.BindValidationResult(Prefix, item);
         }

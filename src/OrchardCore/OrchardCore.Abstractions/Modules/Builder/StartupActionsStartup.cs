@@ -46,7 +46,7 @@ internal sealed class StartupActionsStartup : StartupBase
                 continue;
             }
 
-            await asyncConfigure(app, routes, serviceProvider);
+            await asyncConfigure(app, routes, serviceProvider).ConfigureAwait(false);
         }
     }
 }

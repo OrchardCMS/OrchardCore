@@ -53,22 +53,22 @@ public class ContentAnchorTag : IAnchorTag
         {
             switch (argument.Name)
             {
-                case "admin_for": adminFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                case "display_for": displayFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                case "edit_for": editFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                case "remove_for": removeFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                case "create_for": createFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
+                case "admin_for": adminFor = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue() as ContentItem; break;
+                case "display_for": displayFor = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue() as ContentItem; break;
+                case "edit_for": editFor = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue() as ContentItem; break;
+                case "remove_for": removeFor = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue() as ContentItem; break;
+                case "create_for": createFor = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue() as ContentItem; break;
 
                 default:
 
                     if (argument.Name.StartsWith("route_", StringComparison.OrdinalIgnoreCase))
                     {
                         routeValues ??= [];
-                        routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
                     }
                     else
                     {
-                        customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
                     }
 
                     break;
@@ -82,7 +82,7 @@ public class ContentAnchorTag : IAnchorTag
         if (displayFor != null)
         {
             contentItem = displayFor;
-            var previewAspect = await contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
+            var previewAspect = await contentManager.PopulateAspectAsync<PreviewAspect>(contentItem).ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
             {
@@ -103,7 +103,7 @@ public class ContentAnchorTag : IAnchorTag
             }
             else
             {
-                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(displayFor);
+                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(displayFor).ConfigureAwait(false);
 
                 if (metadata.DisplayRouteValues != null)
                 {
@@ -121,7 +121,7 @@ public class ContentAnchorTag : IAnchorTag
         }
         else if (editFor != null)
         {
-            var metadata = await PopulateAspectForContentItemMetadataAsync(editFor);
+            var metadata = await PopulateAspectForContentItemMetadataAsync(editFor).ConfigureAwait(false);
 
             if (metadata.EditorRouteValues != null)
             {
@@ -138,7 +138,7 @@ public class ContentAnchorTag : IAnchorTag
         }
         else if (adminFor != null)
         {
-            var metadata = await PopulateAspectForContentItemMetadataAsync(adminFor);
+            var metadata = await PopulateAspectForContentItemMetadataAsync(adminFor).ConfigureAwait(false);
 
             if (metadata.AdminRouteValues != null)
             {
@@ -155,7 +155,7 @@ public class ContentAnchorTag : IAnchorTag
         }
         else if (removeFor != null)
         {
-            var metadata = await PopulateAspectForContentItemMetadataAsync(removeFor);
+            var metadata = await PopulateAspectForContentItemMetadataAsync(removeFor).ConfigureAwait(false);
 
             if (metadata.RemoveRouteValues != null)
             {
@@ -172,7 +172,7 @@ public class ContentAnchorTag : IAnchorTag
         }
         else if (createFor != null)
         {
-            var metadata = await PopulateAspectForContentItemMetadataAsync(createFor);
+            var metadata = await PopulateAspectForContentItemMetadataAsync(createFor).ConfigureAwait(false);
 
             if (metadata.CreateRouteValues != null)
             {
@@ -204,7 +204,7 @@ public class ContentAnchorTag : IAnchorTag
 
         if (statements != null && statements.Count > 0)
         {
-            var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+            var completion = await statements.RenderStatementsAsync(writer, encoder, context).ConfigureAwait(false);
 
             if (completion != Completion.Normal)
             {
@@ -218,7 +218,7 @@ public class ContentAnchorTag : IAnchorTag
         else
         {
             var contentDefinitionManager = services.GetRequiredService<IContentDefinitionManager>();
-            var typeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            var typeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
             writer.Write(encoder.Encode(typeDefinition.ToString()));
         }
 
@@ -230,7 +230,7 @@ public class ContentAnchorTag : IAnchorTag
         {
             contentItem = item;
 
-            return await contentManager.PopulateAspectAsync<ContentItemMetadata>(item);
+            return await contentManager.PopulateAspectAsync<ContentItemMetadata>(item).ConfigureAwait(false);
         }
     }
 }

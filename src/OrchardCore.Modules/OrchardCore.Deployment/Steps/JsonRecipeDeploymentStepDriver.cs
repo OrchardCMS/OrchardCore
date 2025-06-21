@@ -57,7 +57,7 @@ public sealed class JsonRecipeDeploymentStepDriver : DisplayDriver<DeploymentSte
     {
         var model = new JsonRecipeDeploymentStepViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         try
         {

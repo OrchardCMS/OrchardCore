@@ -35,7 +35,7 @@ public static class SendCode
         HtmlEncoder htmlEncoder,
         IStringLocalizer<T> S)
     {
-        var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+        var user = await signInManager.GetTwoFactorAuthenticationUserAsync().ConfigureAwait(false);
         var errorMessage = S["The email could not be sent. Please attempt to request the code at a later time."];
 
         if (user == null)
@@ -47,13 +47,13 @@ public static class SendCode
             });
         }
 
-        var settings = await siteService.GetSettingsAsync<EmailAuthenticatorLoginSettings>();
-        var code = await userManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
+        var settings = await siteService.GetSettingsAsync<EmailAuthenticatorLoginSettings>().ConfigureAwait(false);
+        var code = await userManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider).ConfigureAwait(false);
 
-        var to = await userManager.GetEmailAsync(user);
-        var subject = await GetSubjectAsync(settings, user, code, liquidTemplateManager, htmlEncoder);
-        var body = await GetBodyAsync(settings, user, code, liquidTemplateManager, htmlEncoder);
-        var result = await emailService.SendAsync(to, subject, body);
+        var to = await userManager.GetEmailAsync(user).ConfigureAwait(false);
+        var subject = await GetSubjectAsync(settings, user, code, liquidTemplateManager, htmlEncoder).ConfigureAwait(false);
+        var body = await GetBodyAsync(settings, user, code, liquidTemplateManager, htmlEncoder).ConfigureAwait(false);
+        var result = await emailService.SendAsync(to, subject, body).ConfigureAwait(false);
 
         return TypedResults.Ok(new
         {
@@ -104,7 +104,7 @@ public static class SendCode
             {
                 ["User"] = new ObjectValue(user),
                 ["Code"] = new StringValue(code),
-            });
+            }).ConfigureAwait(false);
 
         using var writer = new StringWriter();
         result.WriteTo(writer, htmlEncoder);

@@ -66,7 +66,7 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
 
             var queryContext = new ContentItemsQueryContext();
 
-            await _contentItemsQueryProvider.GetContentItemsAsync(source, queryContext, skip, take);
+            await _contentItemsQueryProvider.GetContentItemsAsync(source, queryContext, skip, take).ConfigureAwait(false);
 
             if (queryContext.ContentItems == null || !queryContext.ContentItems.Any())
             {
@@ -81,7 +81,7 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
             {
                 var url = new XElement(_namespace + "url");
 
-                if (await BuildUrlsetMetadataAsync(source, context, queryContext, contentItem, url))
+                if (await BuildUrlsetMetadataAsync(source, context, queryContext, contentItem, url).ConfigureAwait(false))
                 {
                     context.Response.ResponseElement.Add(url);
                 }
@@ -98,13 +98,13 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
 
     private async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapSource source, SitemapBuilderContext context, ContentItemsQueryContext queryContext, ContentItem contentItem, XElement url)
     {
-        if (await BuildUrlAsync(context, contentItem, url))
+        if (await BuildUrlAsync(context, contentItem, url).ConfigureAwait(false))
         {
-            if (await BuildExtendedMetadataAsync(context, queryContext, contentItem, url))
+            if (await BuildExtendedMetadataAsync(context, queryContext, contentItem, url).ConfigureAwait(false))
             {
                 PopulateLastMod(contentItem, url);
 
-                await PopulateChangeFrequencyPriority(source, contentItem, url);
+                await PopulateChangeFrequencyPriority(source, contentItem, url).ConfigureAwait(false);
 
                 return true;
             }
@@ -121,7 +121,7 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
 
         foreach (var sc in _sitemapContentItemExtendedMetadataProviders)
         {
-            if (!await sc.ApplyExtendedMetadataAsync(context, queryContext, contentItem, url))
+            if (!await sc.ApplyExtendedMetadataAsync(context, queryContext, contentItem, url).ConfigureAwait(false))
             {
                 succeeded = false;
             }
@@ -132,13 +132,13 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
 
     private async Task<bool> BuildUrlAsync(SitemapBuilderContext context, ContentItem contentItem, XElement url)
     {
-        var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(contentItem);
+        var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(contentItem).ConfigureAwait(false);
         if (sitemapMetadataAspect.Exclude)
         {
             return false;
         }
 
-        var locValue = await _routeableContentTypeCoordinator.GetRouteAsync(context, contentItem);
+        var locValue = await _routeableContentTypeCoordinator.GetRouteAsync(context, contentItem).ConfigureAwait(false);
 
         var loc = new XElement(_namespace + "loc");
         loc.Add(locValue);
@@ -149,7 +149,7 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
 
     private async Task PopulateChangeFrequencyPriority(ContentTypesSitemapSource source, ContentItem contentItem, XElement url)
     {
-        var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(contentItem);
+        var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(contentItem).ConfigureAwait(false);
 
         var changeFrequencyValue = sitemapMetadataAspect.ChangeFrequency;
         if (string.IsNullOrEmpty(changeFrequencyValue))

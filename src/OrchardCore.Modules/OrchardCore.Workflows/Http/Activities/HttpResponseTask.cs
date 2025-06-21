@@ -66,9 +66,9 @@ public class HttpResponseTask : TaskActivity<HttpResponseTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var headersString = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
-        var content = await _expressionEvaluator.EvaluateAsync(Content, workflowContext, null);
-        var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder);
+        var headersString = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder).ConfigureAwait(false);
+        var content = await _expressionEvaluator.EvaluateAsync(Content, workflowContext, null).ConfigureAwait(false);
+        var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder).ConfigureAwait(false);
         var headers = ParseHeaders(headersString);
         var response = _httpContextAccessor.HttpContext.Response;
 
@@ -86,7 +86,7 @@ public class HttpResponseTask : TaskActivity<HttpResponseTask>
 
         if (!string.IsNullOrWhiteSpace(content))
         {
-            await response.WriteAsync(content);
+            await response.WriteAsync(content).ConfigureAwait(false);
         }
 
         _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;

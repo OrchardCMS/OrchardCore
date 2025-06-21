@@ -28,7 +28,7 @@ public class LocalizationService : ILocalizationService
     /// <inheritdocs />
     public async Task<string> GetDefaultCultureAsync()
     {
-        await InitializeLocalizationSettingsAsync();
+        await InitializeLocalizationSettingsAsync().ConfigureAwait(false);
 
         return _localizationSettings.DefaultCulture ?? _defaultCulture;
     }
@@ -36,7 +36,7 @@ public class LocalizationService : ILocalizationService
     /// <inheritdocs />
     public async Task<string[]> GetSupportedCulturesAsync()
     {
-        await InitializeLocalizationSettingsAsync();
+        await InitializeLocalizationSettingsAsync().ConfigureAwait(false);
 
         return _localizationSettings.SupportedCultures == null || _localizationSettings.SupportedCultures.Length == 0
             ? _supportedCultures
@@ -46,6 +46,6 @@ public class LocalizationService : ILocalizationService
 
     private async Task InitializeLocalizationSettingsAsync()
     {
-        _localizationSettings ??= await _siteService.GetSettingsAsync<LocalizationSettings>();
+        _localizationSettings ??= await _siteService.GetSettingsAsync<LocalizationSettings>().ConfigureAwait(false);
     }
 }

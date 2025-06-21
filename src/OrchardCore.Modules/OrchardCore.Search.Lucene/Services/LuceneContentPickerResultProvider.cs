@@ -42,9 +42,9 @@ public class LuceneContentPickerResultProvider : IContentPickerResultProvider
             return [];
         }
 
-        var index = await _indexStore.FindByIndexNameAndProviderAsync(fieldSettings.Index, LuceneConstants.ProviderName);
+        var index = await _indexStore.FindByIndexNameAndProviderAsync(fieldSettings.Index, LuceneConstants.ProviderName).ConfigureAwait(false);
 
-        if (index is null || index.Type != IndexingConstants.ContentsIndexSource || !await _luceneIndexManager.ExistsAsync(index.IndexFullName))
+        if (index is null || index.Type != IndexingConstants.ContentsIndexSource || !await _luceneIndexManager.ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
             return [];
         }
@@ -81,7 +81,7 @@ public class LuceneContentPickerResultProvider : IContentPickerResultProvider
             }
 
             return Task.CompletedTask;
-        });
+        }).ConfigureAwait(false);
 
         return results.OrderBy(x => x.DisplayText);
     }

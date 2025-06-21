@@ -87,7 +87,7 @@ public class CoreShapes : IShapeAttributeProvider
 
             // Give the item shape the possibility to alter its container tag
             // by rendering them before rendering the containing list.
-            var itemContent = await displayContext.DisplayHelper.ShapeExecuteAsync((IShape)item);
+            var itemContent = await displayContext.DisplayHelper.ShapeExecuteAsync((IShape)item).ConfigureAwait(false);
 
             itemTag.InnerHtml.AppendHtml(itemContent);
             listTagBuilder.InnerHtml.AppendHtml(itemTag);

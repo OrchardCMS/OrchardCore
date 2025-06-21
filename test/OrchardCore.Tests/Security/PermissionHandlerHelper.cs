@@ -33,7 +33,7 @@ public static class PermissionHandlerHelper
     public static async Task SuccessAsync(this AuthorizationHandlerContext context, params string[] permissionNames)
     {
         var handler = new FakePermissionHandler(permissionNames);
-        await handler.HandleAsync(context);
+        await handler.HandleAsync(context).ConfigureAwait(false);
     }
 
     private sealed class FakePermissionHandler : AuthorizationHandler<PermissionRequirement>

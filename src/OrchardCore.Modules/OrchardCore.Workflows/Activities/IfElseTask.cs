@@ -36,7 +36,7 @@ public class IfElseTask : TaskActivity<IfElseTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var result = await _scriptEvaluator.EvaluateAsync(Condition, workflowContext);
+        var result = await _scriptEvaluator.EvaluateAsync(Condition, workflowContext).ConfigureAwait(false);
         return Outcomes(result ? "True" : "False");
     }
 }

@@ -32,7 +32,7 @@ public sealed class SitemapsStep : NamedRecipeStepHandler
         foreach (var token in model.Data.Cast<JsonObject>())
         {
             var sitemap = token.ToObject<SitemapType>(_documentJsonSerializerOptions.SerializerOptions);
-            await _sitemapManager.UpdateSitemapAsync(sitemap);
+            await _sitemapManager.UpdateSitemapAsync(sitemap).ConfigureAwait(false);
         }
     }
 

@@ -42,13 +42,13 @@ public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, LoginSettings section, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(section, Prefix);
+        await context.Updater.TryUpdateModelAsync(section, Prefix).ConfigureAwait(false);
 
-        return await EditAsync(site, section, context);
+        return await EditAsync(site, section, context).ConfigureAwait(false);
     }
 }

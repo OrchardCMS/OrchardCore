@@ -31,7 +31,7 @@ public sealed class Permissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var adminMenuItems = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
+        var adminMenuItems = (await _adminMenuService.GetAdminMenuListAsync().ConfigureAwait(false)).AdminMenu;
 
         var permissions = new List<Permission>(adminMenuItems.Count + 2)
         {

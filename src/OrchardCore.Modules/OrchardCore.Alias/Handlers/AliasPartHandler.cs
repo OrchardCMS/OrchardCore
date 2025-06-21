@@ -44,7 +44,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
             return;
         }
 
-        await foreach (var item in part.ValidateAsync(S, _session))
+        await foreach (var item in part.ValidateAsync(S, _session).ConfigureAwait(false))
         {
             context.Fail(item);
         }
@@ -79,7 +79,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
     public override async Task CloningAsync(CloneContentContext context, AliasPart part)
     {
         var clonedPart = context.CloneContentItem.As<AliasPart>();
-        clonedPart.Alias = await GenerateUniqueAliasAsync(part.Alias, clonedPart);
+        clonedPart.Alias = await GenerateUniqueAliasAsync(part.Alias, clonedPart).ConfigureAwait(false);
 
         clonedPart.Apply();
     }
@@ -92,7 +92,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
             return;
         }
 
-        var pattern = await GetPatternAsync(part);
+        var pattern = await GetPatternAsync(part).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(pattern))
         {
@@ -104,7 +104,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
             };
 
             part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
+                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) }).ConfigureAwait(false);
 
             part.Alias = part.Alias.Replace("\r", string.Empty).Replace("\n", string.Empty);
 
@@ -113,9 +113,9 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
                 part.Alias = part.Alias[..AliasPart.MaxAliasLength];
             }
 
-            if (!await part.IsAliasUniqueAsync(_session, part.Alias))
+            if (!await part.IsAliasUniqueAsync(_session, part.Alias).ConfigureAwait(false))
             {
-                part.Alias = await GenerateUniqueAliasAsync(part.Alias, part);
+                part.Alias = await GenerateUniqueAliasAsync(part.Alias, part).ConfigureAwait(false);
             }
 
             part.Apply();
@@ -127,7 +127,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
     /// </summary>
     private async Task<string> GetPatternAsync(AliasPart part)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType).ConfigureAwait(false);
         var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AliasPart), StringComparison.Ordinal));
         var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
 
@@ -155,7 +155,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
             }
 
             var versionedAlias = $"{unversionedAlias}-{version++}";
-            if (await context.IsAliasUniqueAsync(_session, versionedAlias))
+            if (await context.IsAliasUniqueAsync(_session, versionedAlias).ConfigureAwait(false))
             {
                 return versionedAlias;
             }

@@ -41,7 +41,7 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
         return Initialize<RoleLoginSettingsViewModel>("LoginSettingsRoles_Edit", async model =>
         {
             model.RequireTwoFactorAuthenticationForSpecificRoles = settings.RequireTwoFactorAuthenticationForSpecificRoles;
-            var roles = await _roleService.GetAssignableRolesAsync();
+            var roles = await _roleService.GetAssignableRolesAsync().ConfigureAwait(false);
 
             model.Roles = roles
                 .Select(role => new RoleEntry()
@@ -57,18 +57,18 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, RoleLoginSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new RoleLoginSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (model.RequireTwoFactorAuthenticationForSpecificRoles)
         {
-            var roles = await _roleService.GetAssignableRolesAsync();
+            var roles = await _roleService.GetAssignableRolesAsync().ConfigureAwait(false);
 
             var selectedRoles = model.Roles.Where(x => x.IsSelected)
                 .Join(roles, e => e.Role, r => r.RoleName, (e, r) => r.RoleName)

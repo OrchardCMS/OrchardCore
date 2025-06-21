@@ -18,7 +18,7 @@ public sealed class ReCaptchaLoginFormDisplayDriver : DisplayDriver<LoginForm>
 
     public override async Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
     {
-        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
+        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>().ConfigureAwait(false);
 
         if (!settings.ConfigurationExists())
         {

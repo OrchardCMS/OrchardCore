@@ -17,7 +17,7 @@ public sealed class Migrations : DataMigration
             .Column<string>(nameof(AuditTrailEventIndex.UserId), column => column.WithLength(26))
             .Column<string>(nameof(AuditTrailEventIndex.NormalizedUserName), column => column.Nullable().WithLength(255))
             .Column<DateTime>(nameof(AuditTrailEventIndex.CreatedUtc), column => column.Nullable()),
-            collection: AuditTrailEvent.Collection);
+            collection: AuditTrailEvent.Collection).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<AuditTrailEventIndex>(table => table
             .CreateIndex("IDX_AuditTrailEventIndex_DocumentId",
@@ -31,7 +31,7 @@ public sealed class Migrations : DataMigration
                 "CreatedUtc"
                 ),
             collection: AuditTrailEvent.Collection
-        );
+        ).ConfigureAwait(false);
 
         return 1;
     }

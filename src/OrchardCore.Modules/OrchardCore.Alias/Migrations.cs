@@ -20,14 +20,14 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(AliasPart), builder => builder
             .Attachable()
-            .WithDescription("Provides a way to define custom aliases for content items."));
+            .WithDescription("Provides a way to define custom aliases for content items.")).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<AliasPartIndex>(table => table
             .Column<string>("Alias", col => col.WithLength(AliasPart.MaxAliasLength))
             .Column<string>("ContentItemId", c => c.WithLength(26))
             .Column<bool>("Latest", c => c.WithDefault(false))
             .Column<bool>("Published", c => c.WithDefault(true))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
             .CreateIndex("IDX_AliasPartIndex_DocumentId",
@@ -36,7 +36,7 @@ public sealed class Migrations : DataMigration
                 "ContentItemId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 4;
@@ -47,11 +47,11 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
             .AddColumn<bool>("Latest", c => c.WithDefault(false))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
             .AddColumn<bool>("Published", c => c.WithDefault(true))
-        );
+        ).ConfigureAwait(false);
 
         return 2;
     }
@@ -71,7 +71,7 @@ public sealed class Migrations : DataMigration
             .CreateIndex("IDX_AliasPartIndex_DocumentId",
                 "DocumentId",
                 "Alias")
-        );
+        ).ConfigureAwait(false);
 
         return 3;
     }
@@ -87,7 +87,7 @@ public sealed class Migrations : DataMigration
                 "ContentItemId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         return 4;
     }

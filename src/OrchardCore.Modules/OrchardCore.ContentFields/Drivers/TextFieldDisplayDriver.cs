@@ -45,7 +45,7 @@ public sealed class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField
 
     public override async Task<IDisplayResult> UpdateAsync(TextField field, UpdateFieldEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Text);
+        await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Text).ConfigureAwait(false);
         var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
 
         if (settings.Required && string.IsNullOrWhiteSpace(field.Text))

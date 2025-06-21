@@ -17,7 +17,7 @@ public sealed class CustomUserSettingsPermissions : IPermissionProvider
     }
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+        => (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             .Where(x => x.GetStereotype() == "CustomUserSettings")
             .Select(CreatePermissionForType);
 

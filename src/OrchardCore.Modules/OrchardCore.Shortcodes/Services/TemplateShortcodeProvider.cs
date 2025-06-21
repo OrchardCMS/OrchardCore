@@ -28,7 +28,7 @@ public class TemplateShortcodeProvider : IShortcodeProvider
 
     public async ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
     {
-        _shortcodeTemplatesDocument ??= await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
+        _shortcodeTemplatesDocument ??= await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync().ConfigureAwait(false);
         if (!_shortcodeTemplatesDocument.ShortcodeTemplates.TryGetValue(identifier, out var template))
         {
             return null;
@@ -55,7 +55,7 @@ public class TemplateShortcodeProvider : IShortcodeProvider
             ["Context"] = new ObjectValue(model.Context),
         };
 
-        var result = await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
+        var result = await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters).ConfigureAwait(false);
 
         // Allow multiple serial calls of this shortcode template.
         _identifiers.Remove(identifier);

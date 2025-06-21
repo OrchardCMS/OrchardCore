@@ -57,12 +57,12 @@ public class DataMigrationManager : IDataMigrationManager
     {
         if (_dataMigrationRecord == null)
         {
-            _dataMigrationRecord = await _session.Query<DataMigrationRecord>().FirstOrDefaultAsync();
+            _dataMigrationRecord = await _session.Query<DataMigrationRecord>().FirstOrDefaultAsync().ConfigureAwait(false);
 
             if (_dataMigrationRecord == null)
             {
                 _dataMigrationRecord = new DataMigrationRecord();
-                await _session.SaveAsync(_dataMigrationRecord);
+                await _session.SaveAsync(_dataMigrationRecord).ConfigureAwait(false);
             }
         }
 
@@ -71,7 +71,7 @@ public class DataMigrationManager : IDataMigrationManager
 
     public async Task<IEnumerable<string>> GetFeaturesThatNeedUpdateAsync()
     {
-        var currentVersions = (await GetDataMigrationRecordAsync()).DataMigrations
+        var currentVersions = (await GetDataMigrationRecordAsync().ConfigureAwait(false)).DataMigrations
             .ToDictionary(r => r.DataMigrationClass);
 
         var outOfDateMigrations = _dataMigrations.Where(dataMigration =>
@@ -101,13 +101,13 @@ public class DataMigrationManager : IDataMigrationManager
             var tempMigration = migration;
 
             // get current version for this migration
-            var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
+            var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration).ConfigureAwait(false);
 
             var uninstallMethod = GetMethod(migration, "Uninstall");
 
             if (uninstallMethod != null)
             {
-                await InvokeMethodAsync(uninstallMethod, migration);
+                await InvokeMethodAsync(uninstallMethod, migration).ConfigureAwait(false);
             }
 
             if (dataMigrationRecord == null)
@@ -115,19 +115,19 @@ public class DataMigrationManager : IDataMigrationManager
                 continue;
             }
 
-            (await GetDataMigrationRecordAsync()).DataMigrations.Remove(dataMigrationRecord);
+            (await GetDataMigrationRecordAsync().ConfigureAwait(false)).DataMigrations.Remove(dataMigrationRecord);
         }
     }
 
     public async Task UpdateAllFeaturesAsync()
     {
-        var featuresThatNeedUpdate = await GetFeaturesThatNeedUpdateAsync();
+        var featuresThatNeedUpdate = await GetFeaturesThatNeedUpdateAsync().ConfigureAwait(false);
 
         foreach (var featureId in featuresThatNeedUpdate)
         {
             try
             {
-                await UpdateAsync(featureId);
+                await UpdateAsync(featureId).ConfigureAwait(false);
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
@@ -142,7 +142,7 @@ public class DataMigrationManager : IDataMigrationManager
         {
             if (!_processedFeatures.Contains(featureId))
             {
-                await UpdateAsync(featureId);
+                await UpdateAsync(featureId).ConfigureAwait(false);
             }
         }
     }
@@ -166,7 +166,7 @@ public class DataMigrationManager : IDataMigrationManager
 
         foreach (var dependency in dependencies)
         {
-            await UpdateAsync(dependency);
+            await UpdateAsync(dependency).ConfigureAwait(false);
         }
 
         var migrations = GetDataMigrations(featureId);
@@ -181,7 +181,7 @@ public class DataMigrationManager : IDataMigrationManager
             var tempMigration = migration;
 
             // Get current version for this migration.
-            var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
+            var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration).ConfigureAwait(false);
 
             var current = 0;
             if (dataMigrationRecord != null)
@@ -209,7 +209,7 @@ public class DataMigrationManager : IDataMigrationManager
                         continue;
                     }
 
-                    current = await InvokeMethodAsync(createMethod, migration);
+                    current = await InvokeMethodAsync(createMethod, migration).ConfigureAwait(false);
                 }
 
                 var lookupTable = CreateUpgradeLookupTable(migration);
@@ -218,7 +218,7 @@ public class DataMigrationManager : IDataMigrationManager
                 {
                     _logger.LogInformation("Applying migration for '{Migration}' in '{FeatureId}' from version {Version}.", migration.GetType().FullName, featureId, current);
 
-                    current = await InvokeMethodAsync(methodInfo, migration);
+                    current = await InvokeMethodAsync(methodInfo, migration).ConfigureAwait(false);
                 }
 
                 // If current is 0, it means no upgrade/create method was found or succeeded.
@@ -233,12 +233,12 @@ public class DataMigrationManager : IDataMigrationManager
             {
                 _logger.LogError(ex, "Error while running migration version {Version} for '{Migration}' in '{FeatureId}'.", current, migration.GetType().FullName, featureId);
 
-                await _session.CancelAsync();
+                await _session.CancelAsync().ConfigureAwait(false);
             }
             finally
             {
                 // Persist data migrations.
-                await _session.SaveAsync(_dataMigrationRecord);
+                await _session.SaveAsync(_dataMigrationRecord).ConfigureAwait(false);
             }
         }
     }
@@ -247,7 +247,7 @@ public class DataMigrationManager : IDataMigrationManager
     {
         if (method.ReturnType == typeof(Task<int>))
         {
-            return await (Task<int>)method.Invoke(migration, []);
+            return await ((Task<int>)method.Invoke(migration, [])).ConfigureAwait(false);
         }
 
         if (method.ReturnType == typeof(int))
@@ -260,7 +260,7 @@ public class DataMigrationManager : IDataMigrationManager
 
     private async Task<Records.DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)
     {
-        var dataMigrationRecord = await GetDataMigrationRecordAsync();
+        var dataMigrationRecord = await GetDataMigrationRecordAsync().ConfigureAwait(false);
         return dataMigrationRecord
             .DataMigrations
             .FirstOrDefault(dm => dm.DataMigrationClass == tempMigration.GetType().FullName);

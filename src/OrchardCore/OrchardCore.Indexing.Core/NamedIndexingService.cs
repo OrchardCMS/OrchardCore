@@ -36,7 +36,7 @@ public abstract class NamedIndexingService
 
     public async Task ProcessRecordsForAllIndexesAsync()
     {
-        await ProcessRecordsAsync(await _indexProfileStore.GetByTypeAsync(Name));
+        await ProcessRecordsAsync(await _indexProfileStore.GetByTypeAsync(Name)).ConfigureAwait(false);
     }
 
     public async Task ProcessRecordsAsync(IEnumerable<IndexProfile> indexProfiles)
@@ -51,7 +51,7 @@ public abstract class NamedIndexingService
         // This service could be called multiple times during the same request,
         // so we need to ensure that we only process each index once at a time.
         // This is not guaranteed to be thread-safe, but it should be sufficient for the current use case.
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         var tracker = new Dictionary<string, IndexProfileEntryContext>();
 
@@ -105,14 +105,14 @@ public abstract class NamedIndexingService
                     indexManagers.Add(indexProfile.ProviderName, indexManager);
                 }
 
-                if (!await indexManager.ExistsAsync(indexProfile.IndexFullName))
+                if (!await indexManager.ExistsAsync(indexProfile.IndexFullName).ConfigureAwait(false))
                 {
                     Logger.LogWarning("The index '{IndexName}' does not exist for the provider '{ProviderName}'.", indexProfile.IndexName, indexProfile.ProviderName);
 
                     continue;
                 }
 
-                var taskId = await documentIndexManager.GetLastTaskIdAsync(indexProfile);
+                var taskId = await documentIndexManager.GetLastTaskIdAsync(indexProfile).ConfigureAwait(false);
                 lastTaskId = Math.Min(lastTaskId, taskId);
                 tracker.Add(indexProfile.Id, new IndexProfileEntryContext(indexProfile, documentIndexManager, taskId));
             }
@@ -132,7 +132,7 @@ public abstract class NamedIndexingService
         while (tasks.Count <= _batchSize)
         {
             // Load the next batch of tasks.
-            tasks = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, _batchSize, Name)).ToList();
+            tasks = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, _batchSize, Name).ConfigureAwait(false)).ToList();
 
             if (tasks.Count == 0)
             {
@@ -142,7 +142,7 @@ public abstract class NamedIndexingService
             // Group all DocumentIndex by index to batch update them.
             var updatedDocumentsByIndex = tracker.Values.ToDictionary(x => x.IndexProfile.Id, b => new List<DocumentIndex>());
 
-            await BeforeProcessingTasksAsync(tasks, tracker.Values);
+            await BeforeProcessingTasksAsync(tasks, tracker.Values).ConfigureAwait(false);
 
             foreach (var entry in tracker.Values)
             {
@@ -153,7 +153,7 @@ public abstract class NamedIndexingService
                         continue;
                     }
 
-                    var buildIndexContext = await GetBuildDocumentIndexAsync(entry, task);
+                    var buildIndexContext = await GetBuildDocumentIndexAsync(entry, task).ConfigureAwait(false);
 
                     if (buildIndexContext is not null)
                     {
@@ -176,13 +176,13 @@ public abstract class NamedIndexingService
                 // Delete all the deleted documents from the index.
                 var deletedDocumentIds = indexEntry.Value.Select(x => x.Id);
 
-                await trackerEntry.DocumentIndexManager.DeleteDocumentsAsync(trackerEntry.IndexProfile, deletedDocumentIds);
+                await trackerEntry.DocumentIndexManager.DeleteDocumentsAsync(trackerEntry.IndexProfile, deletedDocumentIds).ConfigureAwait(false);
 
                 // Upload documents to the index.
-                if (await trackerEntry.DocumentIndexManager.AddOrUpdateDocumentsAsync(trackerEntry.IndexProfile, indexEntry.Value))
+                if (await trackerEntry.DocumentIndexManager.AddOrUpdateDocumentsAsync(trackerEntry.IndexProfile, indexEntry.Value).ConfigureAwait(false))
                 {
                     // We know none of the previous batches failed to update this index.
-                    await trackerEntry.DocumentIndexManager.SetLastTaskIdAsync(trackerEntry.IndexProfile, lastTaskId);
+                    await trackerEntry.DocumentIndexManager.SetLastTaskIdAsync(trackerEntry.IndexProfile, lastTaskId).ConfigureAwait(false);
                 }
             }
         }

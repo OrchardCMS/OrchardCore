@@ -48,7 +48,7 @@ public class HttpRedirectTask : TaskActivity<HttpRedirectTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var location = await _expressionEvaluator.EvaluateAsync(Location, workflowContext, NullEncoder.Default);
+        var location = await _expressionEvaluator.EvaluateAsync(Location, workflowContext, NullEncoder.Default).ConfigureAwait(false);
 
         _httpContextAccessor.HttpContext.Response.Redirect(location.ToUriComponents(), Permanent);
         _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;

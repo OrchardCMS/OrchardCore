@@ -20,7 +20,7 @@ public class DefaultTwoFactorAuthenticationHandlerCoordinator : ITwoFactorAuthen
         {
             foreach (var handler in _twoFactorAuthenticationHandlers)
             {
-                if (await handler.IsRequiredAsync(user))
+                if (await handler.IsRequiredAsync(user).ConfigureAwait(false))
                 {
                     _isRequired = true;
 

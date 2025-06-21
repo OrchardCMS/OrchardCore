@@ -23,12 +23,12 @@ public class StereotypeService : IStereotypeService
 
     public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
     {
-        var providerStereotypes = (await _providers.InvokeAsync(provider => provider.GetStereotypesAsync(), _logger)).ToList();
+        var providerStereotypes = (await _providers.InvokeAsync(provider => provider.GetStereotypesAsync(), _logger).ConfigureAwait(false)).ToList();
 
         var stereotypes = providerStereotypes.Select(providerStereotype => providerStereotype.Stereotype)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var contentType in await _contentDefinitionService.GetTypesAsync())
+        foreach (var contentType in await _contentDefinitionService.GetTypesAsync().ConfigureAwait(false))
         {
             if (!contentType.TypeDefinition.TryGetStereotype(out var stereotype) ||
                 stereotypes.Contains(stereotype))

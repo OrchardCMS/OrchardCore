@@ -21,7 +21,7 @@ public class ElasticsearchQueryService
 
     public async Task PopulateResultAsync(ElasticsearchSearchContext request, SearchResult result)
     {
-        var searchResult = await _elasticIndexManager.SearchAsync(request);
+        var searchResult = await _elasticIndexManager.SearchAsync(request).ConfigureAwait(false);
 
         result.ContentItemIds = [];
 
@@ -51,7 +51,7 @@ public class ElasticsearchQueryService
 
     public async Task<IList<string>> GetContentItemIdsAsync(ElasticsearchSearchContext request)
     {
-        var results = await _elasticIndexManager.SearchAsync(request);
+        var results = await _elasticIndexManager.SearchAsync(request).ConfigureAwait(false);
 
         if (results?.TopDocs is null || results.TopDocs.Count == 0)
         {

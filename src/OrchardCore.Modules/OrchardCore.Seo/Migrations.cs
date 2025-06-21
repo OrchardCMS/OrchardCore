@@ -35,16 +35,16 @@ public sealed class Migrations : DataMigration
                 .OfType("MediaField")
                 .WithDisplayName("Twitter image")
                 .WithSettings(new MediaFieldSettings { Multiple = false }))
-        );
+        ).ConfigureAwait(false);
 
-        await _recipeMigrator.ExecuteAsync("socialmetasettings.recipe.json", this);
+        await _recipeMigrator.ExecuteAsync("socialmetasettings.recipe.json", this).ConfigureAwait(false);
 
         return 2;
     }
 
     public async Task<int> UpdateFrom1Async()
     {
-        await _recipeMigrator.ExecuteAsync($"socialmetasettings{RecipesConstants.RecipeExtension}", this);
+        await _recipeMigrator.ExecuteAsync($"socialmetasettings{RecipesConstants.RecipeExtension}", this).ConfigureAwait(false);
 
         return 2;
     }

@@ -67,14 +67,14 @@ public class Shapes : ShapeTableProvider
                 var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
                 var updateModelAccessor = context.ServiceProvider.GetRequiredService<IUpdateModelAccessor>();
 
-                var contentItemId = await handleManager.GetContentItemIdAsync(handle);
+                var contentItemId = await handleManager.GetContentItemIdAsync(handle).ConfigureAwait(false);
 
                 if (string.IsNullOrEmpty(contentItemId))
                 {
                     return;
                 }
 
-                var contentItem = await contentManager.GetAsync(contentItemId);
+                var contentItem = await contentManager.GetAsync(contentItemId).ConfigureAwait(false);
 
                 if (contentItem == null)
                 {
@@ -83,14 +83,14 @@ public class Shapes : ShapeTableProvider
 
                 content.Properties["ContentItem"] = contentItem;
 
-                var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
+                var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(alternate))
                 {
                     displayShape.Metadata.Alternates.Add(alternate);
                 }
 
-                await context.Shape.AddAsync(displayShape, string.Empty);
+                await context.Shape.AddAsync(displayShape, string.Empty).ConfigureAwait(false);
             });
 
         return ValueTask.CompletedTask;

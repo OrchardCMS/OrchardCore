@@ -64,7 +64,7 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
     {
         var viewModel = new MarkdownBodyPartViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
         {
@@ -95,7 +95,7 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
         if (!settings.SanitizeHtml)
         {
             model.Html = await _liquidTemplateManager.RenderStringAsync(model.Html, _htmlEncoder, model,
-                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }).ConfigureAwait(false);
         }
 
         model.Html = await _shortcodeService.ProcessAsync(model.Html,
@@ -103,7 +103,7 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
             {
                 ["ContentItem"] = markdownBodyPart.ContentItem,
                 ["TypePartDefinition"] = context.TypePartDefinition,
-            });
+            }).ConfigureAwait(false);
 
         if (settings.SanitizeHtml)
         {

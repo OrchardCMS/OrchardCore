@@ -61,7 +61,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
     {
         return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), async model =>
         {
-            var containedContentTypes = await GetContainedContentTypesAsync(context.TypePartDefinition);
+            var containedContentTypes = await GetContainedContentTypesAsync(context.TypePartDefinition).ConfigureAwait(false);
             var notify = false;
 
             var existingWidgets = new List<ContentItem>();
@@ -71,7 +71,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
                 if (!containedContentTypes.Any(c => c.Name == widget.ContentType))
                 {
                     _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType);
-                    await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
+                    await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]).ConfigureAwait(false);
                     notify = true;
                 }
                 else
@@ -84,7 +84,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
             if (notify)
             {
-                await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
+                await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]).ConfigureAwait(false);
             }
 
             model.FlowPart = flowPart;
@@ -100,13 +100,13 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
         var model = new FlowPartEditViewModel { FlowPart = part };
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var contentItems = new List<ContentItem>();
 
         for (var i = 0; i < model.Prefixes.Length; i++)
         {
-            var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
+            var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]).ConfigureAwait(false);
             var existingContentItem = part.Widgets.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
             // When the content item already exists merge its elements to reverse nested content item ids.
@@ -120,7 +120,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
             contentItem.Weld(new FlowMetadata());
 
-            var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
+            var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]).ConfigureAwait(false);
 
             contentItems.Add(contentItem);
         }
@@ -136,10 +136,10 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
         if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
         {
-            return await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync();
+            return await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync().ConfigureAwait(false);
         }
 
-        return (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync())
+        return (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync().ConfigureAwait(false))
             .Where(t => settings.ContainedContentTypes.Contains(t.Name));
     }
 }

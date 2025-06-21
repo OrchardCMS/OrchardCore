@@ -10,7 +10,7 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.CreateMapIndexTableAsync<DeploymentPlanIndex>(table => table
             .Column<string>("Name")
-        );
+        ).ConfigureAwait(false);
 
         return 1;
     }

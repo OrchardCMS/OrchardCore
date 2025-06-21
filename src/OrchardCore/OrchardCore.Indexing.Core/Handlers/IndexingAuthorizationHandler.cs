@@ -33,7 +33,7 @@ public sealed class IndexingAuthorizationHandler : AuthorizationHandler<Permissi
 
         var permission = IndexingPermissions.CreateDynamicPermission(indexProfile);
 
-        if (await _authorizationService.AuthorizeAsync(context.User, permission))
+        if (await _authorizationService.AuthorizeAsync(context.User, permission).ConfigureAwait(false))
         {
             context.Succeed(requirement);
 

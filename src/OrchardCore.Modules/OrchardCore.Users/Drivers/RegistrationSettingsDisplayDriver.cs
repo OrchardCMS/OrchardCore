@@ -34,7 +34,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
@@ -54,14 +54,14 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new RegistrationSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var hasChange =
             model.UsersMustValidateEmail != settings.UsersMustValidateEmail ||
@@ -77,6 +77,6 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
             _shellReleaseManager.RequestRelease();
         }
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

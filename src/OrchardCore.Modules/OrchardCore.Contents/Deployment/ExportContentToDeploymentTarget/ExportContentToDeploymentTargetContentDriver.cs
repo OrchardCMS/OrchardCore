@@ -28,9 +28,9 @@ public sealed class ExportContentToDeploymentTargetContentDriver : ContentDispla
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:30")
                 .RenderWhen(async () =>
                 {
-                    if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
+                    if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync().ConfigureAwait(false))
                     {
-                        var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
+                        var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>().ConfigureAwait(false);
 
                         if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                         {
@@ -44,9 +44,9 @@ public sealed class ExportContentToDeploymentTargetContentDriver : ContentDispla
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:40")
                 .RenderWhen(async () =>
                 {
-                    if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
+                    if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync().ConfigureAwait(false))
                     {
-                        var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
+                        var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>().ConfigureAwait(false);
 
                         if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                         {

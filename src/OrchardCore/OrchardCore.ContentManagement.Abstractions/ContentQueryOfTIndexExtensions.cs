@@ -16,14 +16,14 @@ public static class ContentQueryOfTIndexExtensions
     public static async Task<ContentItem> FirstOrDefaultAsync<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
         where TIndex : class, IIndex
     {
-        var contentItem = await query.FirstOrDefaultAsync();
+        var contentItem = await query.FirstOrDefaultAsync().ConfigureAwait(false);
 
         if (contentItem == null)
         {
             return null;
         }
 
-        return await contentManager.LoadAsync(contentItem);
+        return await contentManager.LoadAsync(contentItem).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ public static class ContentQueryOfTIndexExtensions
     /// </summary>
     public static async Task<IEnumerable<ContentItem>> ListAsync<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
         where TIndex : class, IIndex
-        => await contentManager.LoadAsync(await query.ListAsync());
+        => await contentManager.LoadAsync(await query.ListAsync()).ConfigureAwait(false);
 
     /// <summary>
     /// Executes this <see cref="IQuery{ContentItem, TIndex}"/> to return all matching <see cref="ContentItem"/>s

@@ -31,7 +31,7 @@ public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<Faceb
     public override async Task<IDisplayResult> EditAsync(ISite site, FacebookLoginSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp).ConfigureAwait(false))
         {
             return null;
         }
@@ -47,20 +47,20 @@ public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<Faceb
     public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookLoginSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new FacebookLoginSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.CallbackPath = model.CallbackPath;
         settings.SaveTokens = model.SaveTokens;
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

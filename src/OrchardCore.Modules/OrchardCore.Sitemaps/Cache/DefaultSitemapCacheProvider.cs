@@ -50,7 +50,7 @@ public class DefaultSitemapCacheProvider : ISitemapCacheProvider
 
         using var fileStream = File.Create(cachePath);
         stream.Position = 0;
-        await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
+        await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken).ConfigureAwait(false);
     }
 
     public Task CleanSitemapCacheAsync(IEnumerable<string> validCacheFileNames)

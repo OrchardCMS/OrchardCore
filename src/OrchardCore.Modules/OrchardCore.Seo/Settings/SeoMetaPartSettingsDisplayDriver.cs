@@ -32,7 +32,7 @@ public sealed class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinition
             m => m.DisplayCustomMetaTags,
             m => m.DisplayOpenGraph,
             m => m.DisplayTwitter,
-            m => m.DisplayGoogleSchema);
+            m => m.DisplayGoogleSchema).ConfigureAwait(false);
 
         context.Builder.WithSettings(new SeoMetaPartSettings
         {

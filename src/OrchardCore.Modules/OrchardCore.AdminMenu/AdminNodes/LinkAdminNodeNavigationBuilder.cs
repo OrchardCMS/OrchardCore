@@ -76,7 +76,7 @@ public class LinkAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
                 try
                 {
                     var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childTreeNode.GetType().Name);
-                    await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
+                    await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {

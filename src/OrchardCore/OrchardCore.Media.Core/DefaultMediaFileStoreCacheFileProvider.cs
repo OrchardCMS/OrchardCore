@@ -62,8 +62,8 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
             }
 
             using var fileStream = File.Create(cachePath);
-            await stream.CopyToAsync(fileStream, StreamCopyBufferSize, CancellationToken.None);
-            await stream.FlushAsync(CancellationToken.None);
+            await stream.CopyToAsync(fileStream, StreamCopyBufferSize, CancellationToken.None).ConfigureAwait(false);
+            await stream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
 
             if (fileStream.Length == 0)
             {

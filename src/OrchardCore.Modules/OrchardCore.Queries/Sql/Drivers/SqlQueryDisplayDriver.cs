@@ -53,7 +53,7 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(metadata.Template))
             {
-                await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
+                await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query).ConfigureAwait(false);
             }
         }).Location("Content:5");
     }
@@ -68,7 +68,7 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         var viewModel = new SqlQueryViewModel();
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix,
             m => m.Query,
-            m => m.ReturnDocuments);
+            m => m.ReturnDocuments).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(viewModel.Query))
         {

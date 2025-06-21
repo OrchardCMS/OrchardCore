@@ -21,15 +21,15 @@ public class MediaProfilesManager
 
     public async Task RemoveMediaProfileAsync(string name)
     {
-        var document = await LoadMediaProfilesDocumentAsync();
+        var document = await LoadMediaProfilesDocumentAsync().ConfigureAwait(false);
         document.MediaProfiles.Remove(name);
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 
     public async Task UpdateMediaProfileAsync(string name, MediaProfile mediaProfile)
     {
-        var document = await LoadMediaProfilesDocumentAsync();
+        var document = await LoadMediaProfilesDocumentAsync().ConfigureAwait(false);
         document.MediaProfiles[name.ToLower()] = mediaProfile;
-        await _documentManager.UpdateAsync(document);
+        await _documentManager.UpdateAsync(document).ConfigureAwait(false);
     }
 }

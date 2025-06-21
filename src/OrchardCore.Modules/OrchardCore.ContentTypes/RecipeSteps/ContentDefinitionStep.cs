@@ -33,17 +33,17 @@ public sealed class ContentDefinitionStep : NamedRecipeStepHandler
         foreach (var contentType in step.ContentTypes)
         {
             var newType = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentType.Name)
-                ?? new ContentTypeDefinition(contentType.Name, contentType.DisplayName);
+.ConfigureAwait(false) ?? new ContentTypeDefinition(contentType.Name, contentType.DisplayName);
 
-            await UpdateContentTypeAsync(newType, contentType, context);
+            await UpdateContentTypeAsync(newType, contentType, context).ConfigureAwait(false);
         }
 
         foreach (var contentPart in step.ContentParts)
         {
             var newPart = await _contentDefinitionManager.LoadPartDefinitionAsync(contentPart.Name)
-                ?? new ContentPartDefinition(contentPart.Name);
+.ConfigureAwait(false) ?? new ContentPartDefinition(contentPart.Name);
 
-            await UpdateContentPartAsync(newPart, contentPart, context);
+            await UpdateContentPartAsync(newPart, contentPart, context).ConfigureAwait(false);
         }
     }
 

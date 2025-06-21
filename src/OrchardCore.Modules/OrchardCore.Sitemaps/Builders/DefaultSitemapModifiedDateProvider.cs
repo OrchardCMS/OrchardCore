@@ -18,7 +18,7 @@ public class DefaultSitemapModifiedDateProvider : ISitemapModifiedDateProvider
         {
             foreach (var modifiedDateProviders in _sitemapSourceModifiedDateProviders)
             {
-                var result = await modifiedDateProviders.GetLastModifiedDateAsync(source);
+                var result = await modifiedDateProviders.GetLastModifiedDateAsync(source).ConfigureAwait(false);
                 if (result.HasValue && (lastModifiedDate == null || result.Value > lastModifiedDate))
                 {
                     lastModifiedDate = result;

@@ -21,31 +21,31 @@ public class RemoteInstanceService
 
     public async Task<RemoteInstance> LoadRemoteInstanceAsync(string id)
     {
-        var remoteInstanceList = await LoadRemoteInstanceListAsync();
+        var remoteInstanceList = await LoadRemoteInstanceListAsync().ConfigureAwait(false);
         return FindRemoteInstance(remoteInstanceList, id);
     }
 
     public async Task<RemoteInstance> GetRemoteInstanceAsync(string id)
     {
-        var remoteInstanceList = await GetRemoteInstanceListAsync();
+        var remoteInstanceList = await GetRemoteInstanceListAsync().ConfigureAwait(false);
         return FindRemoteInstance(remoteInstanceList, id);
     }
 
     public async Task DeleteRemoteInstanceAsync(string id)
     {
-        var remoteInstanceList = await LoadRemoteInstanceListAsync();
+        var remoteInstanceList = await LoadRemoteInstanceListAsync().ConfigureAwait(false);
         var remoteInstance = FindRemoteInstance(remoteInstanceList, id);
 
         if (remoteInstance != null)
         {
             remoteInstanceList.RemoteInstances.Remove(remoteInstance);
-            await _documentManager.UpdateAsync(remoteInstanceList);
+            await _documentManager.UpdateAsync(remoteInstanceList).ConfigureAwait(false);
         }
     }
 
     public async Task CreateRemoteInstanceAsync(string name, string url, string clientName, string apiKey)
     {
-        var remoteInstanceList = await LoadRemoteInstanceListAsync();
+        var remoteInstanceList = await LoadRemoteInstanceListAsync().ConfigureAwait(false);
 
         remoteInstanceList.RemoteInstances.Add(new RemoteInstance
         {
@@ -56,12 +56,12 @@ public class RemoteInstanceService
             ApiKey = apiKey,
         });
 
-        await _documentManager.UpdateAsync(remoteInstanceList);
+        await _documentManager.UpdateAsync(remoteInstanceList).ConfigureAwait(false);
     }
 
     public async Task UpdateRemoteInstance(string id, string name, string url, string clientName, string apiKey)
     {
-        var remoteInstanceList = await LoadRemoteInstanceListAsync();
+        var remoteInstanceList = await LoadRemoteInstanceListAsync().ConfigureAwait(false);
         var remoteInstance = FindRemoteInstance(remoteInstanceList, id);
 
         remoteInstance.Name = name;
@@ -69,7 +69,7 @@ public class RemoteInstanceService
         remoteInstance.ClientName = clientName;
         remoteInstance.ApiKey = apiKey;
 
-        await _documentManager.UpdateAsync(remoteInstanceList);
+        await _documentManager.UpdateAsync(remoteInstanceList).ConfigureAwait(false);
     }
 
     private static RemoteInstance FindRemoteInstance(RemoteInstanceList remoteInstanceList, string id) =>

@@ -90,7 +90,7 @@ public class ShellConfiguration : IShellConfiguration
             return;
         }
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             if (_configuration is not null)
@@ -102,7 +102,7 @@ public class ShellConfiguration : IShellConfiguration
 
             _configuration = _factoryAsync is not null
                 ? await _factoryAsync(_name, builder => builder.Add(_updatableData))
-                : new ConfigurationBuilder().Add(_updatableData).Build();
+.ConfigureAwait(false) : new ConfigurationBuilder().Add(_updatableData).Build();
         }
         finally
         {

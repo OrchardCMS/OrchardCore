@@ -22,19 +22,19 @@ public sealed class EmailMigrations : DataMigration
         {
             var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
 
-            if (await featuresManager.IsFeatureEnabledAsync(SmtpFeatureId))
+            if (await featuresManager.IsFeatureEnabledAsync(SmtpFeatureId).ConfigureAwait(false))
             {
                 return;
             }
 
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
-            var smtpSettings = await siteService.GetSettingsAsync<SmtpSettings>();
+            var smtpSettings = await siteService.GetSettingsAsync<SmtpSettings>().ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(smtpSettings.DefaultSender) ||
                 scope.ServiceProvider.GetService<IOptions<SmtpOptions>>()?.Value.ConfigurationExists() == true)
             {
                 // Enable the SMTP feature.
-                await featuresManager.EnableFeaturesAsync(SmtpFeatureId);
+                await featuresManager.EnableFeaturesAsync(SmtpFeatureId).ConfigureAwait(false);
             }
         });
 

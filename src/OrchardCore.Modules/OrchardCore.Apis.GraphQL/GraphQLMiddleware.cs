@@ -49,26 +49,26 @@ public class GraphQLMiddleware : IMiddleware
     {
         if (!IsGraphQLRequest(context))
         {
-            await next(context);
+            await next(context).ConfigureAwait(false);
         }
         else
         {
             var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
-            var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
+            var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api").ConfigureAwait(false);
             if (authenticateResult.Succeeded)
             {
                 context.User = authenticateResult.Principal;
             }
             var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
-            var authorized = await authorizationService.AuthorizeAsync(context.User, GraphQLPermissions.ExecuteGraphQL);
+            var authorized = await authorizationService.AuthorizeAsync(context.User, GraphQLPermissions.ExecuteGraphQL).ConfigureAwait(false);
 
             if (authorized)
             {
-                await ExecuteAsync(context);
+                await ExecuteAsync(context).ConfigureAwait(false);
             }
             else
             {
-                await context.ChallengeAsync("Api");
+                await context.ChallengeAsync("Api").ConfigureAwait(false);
             }
         }
     }
@@ -96,7 +96,7 @@ public class GraphQLMiddleware : IMiddleware
                     {
                         request = new GraphQLNamedQueryRequest
                         {
-                            Query = await sr.ReadToEndAsync(),
+                            Query = await sr.ReadToEndAsync().ConfigureAwait(false),
                         };
                     }
                     else
@@ -121,7 +121,7 @@ public class GraphQLMiddleware : IMiddleware
         }
         catch (Exception e)
         {
-            await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
+            await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e).ConfigureAwait(false);
             _logger.LogError(e, "An error occurred while processing the GraphQL query.");
 
             return;
@@ -141,7 +141,7 @@ public class GraphQLMiddleware : IMiddleware
         }
 
         var schemaService = context.RequestServices.GetService<ISchemaFactory>();
-        var schema = await schemaService.GetSchemaAsync();
+        var schema = await schemaService.GetSchemaAsync().ConfigureAwait(false);
         var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
         var result = await _executer.ExecuteAsync(options =>
         {
@@ -160,7 +160,7 @@ public class GraphQLMiddleware : IMiddleware
             }));
             options.Listeners.Add(dataLoaderDocumentListener);
             options.RequestServices = context.RequestServices;
-        });
+        }).ConfigureAwait(false);
 
         context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
             ? HttpStatusCode.OK
@@ -170,7 +170,7 @@ public class GraphQLMiddleware : IMiddleware
 
         context.Response.ContentType = MediaTypeNames.Application.Json;
 
-        await _serializer.WriteAsync(context.Response.Body, result);
+        await _serializer.WriteAsync(context.Response.Body, result).ConfigureAwait(false);
     }
 
     private GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)

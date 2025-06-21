@@ -39,10 +39,10 @@ public class RecipeDeploymentTargetHandler : IDeploymentTargetHandler
         };
 
         var environment = new Dictionary<string, object>();
-        await _environmentProviders.OrderBy(x => x.Order).InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
+        await _environmentProviders.OrderBy(x => x.Order).InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger).ConfigureAwait(false);
 
-        await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None);
+        await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None).ConfigureAwait(false);
 
-        await _shellHost.ReleaseShellContextAsync(_shellSettings);
+        await _shellHost.ReleaseShellContextAsync(_shellSettings).ConfigureAwait(false);
     }
 }

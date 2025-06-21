@@ -26,7 +26,7 @@ public sealed class FacebookSettingsStep : NamedRecipeStepHandler
         }
 
         var model = context.Step.ToObject<FacebookCoreSettingsStepModel>();
-        var settings = await _facebookService.GetSettingsAsync();
+        var settings = await _facebookService.GetSettingsAsync().ConfigureAwait(false);
 
         settings.AppId = model.AppId;
         settings.AppSecret = model.AppSecret;
@@ -35,7 +35,7 @@ public sealed class FacebookSettingsStep : NamedRecipeStepHandler
         settings.FBInitParams = model.FBInitParams;
         settings.Version = model.Version ?? "3.2";
 
-        await _facebookService.UpdateSettingsAsync(settings);
+        await _facebookService.UpdateSettingsAsync(settings).ConfigureAwait(false);
     }
 }
 

@@ -40,7 +40,7 @@ public sealed class ContentTypeConditionDisplayDriver : DisplayDriver<Condition,
     public override async Task<IDisplayResult> UpdateAsync(ContentTypeCondition condition, UpdateEditorContext context)
     {
         var model = new ContentTypeConditionViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         condition.Value = model.Value;
         if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))

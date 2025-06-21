@@ -26,7 +26,7 @@ public sealed class Migrations : DataMigration
     {
         if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.Media"))
         {
-            await UpgradeAsync();
+            await UpgradeAsync().ConfigureAwait(false);
         }
 
         // Shortcut other migration steps on new content definition schemas.

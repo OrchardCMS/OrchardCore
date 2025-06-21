@@ -28,7 +28,7 @@ public sealed class NumericFieldSettingsDriver : ContentPartFieldDefinitionDispl
     {
         var model = new NumericFieldSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         context.Builder.WithSettings(model);
 

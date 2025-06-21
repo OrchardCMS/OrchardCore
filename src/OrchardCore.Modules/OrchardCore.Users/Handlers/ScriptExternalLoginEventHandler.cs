@@ -32,7 +32,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
 
     public async Task<string> GenerateUserName(string provider, IEnumerable<SerializableClaim> claims)
     {
-        var registrationSettings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
+        var registrationSettings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>().ConfigureAwait(false);
 
         if (registrationSettings.UseScriptToGenerateUsername)
         {
@@ -58,7 +58,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
 
     public async Task UpdateUserAsync(UpdateUserContext context)
     {
-        var loginSettings = await _siteService.GetSettingsAsync<ExternalLoginSettings>();
+        var loginSettings = await _siteService.GetSettingsAsync<ExternalLoginSettings>().ConfigureAwait(false);
 
         UpdateUserInternal(context, loginSettings);
     }

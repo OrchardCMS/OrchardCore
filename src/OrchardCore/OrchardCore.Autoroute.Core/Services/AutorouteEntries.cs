@@ -31,7 +31,7 @@ public class AutorouteEntries : IAutorouteEntries
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
 
-        await EnsureInitializedAsync();
+        await EnsureInitializedAsync().ConfigureAwait(false);
 
         if (_contentItemIds.TryGetValue(path.TrimEnd('/'), out var entry))
         {
@@ -45,7 +45,7 @@ public class AutorouteEntries : IAutorouteEntries
     {
         ArgumentException.ThrowIfNullOrEmpty(contentItemId);
 
-        await EnsureInitializedAsync();
+        await EnsureInitializedAsync().ConfigureAwait(false);
 
         if (_paths.TryGetValue(contentItemId, out var entry))
         {
@@ -57,24 +57,24 @@ public class AutorouteEntries : IAutorouteEntries
 
     public async Task UpdateEntriesAsync()
     {
-        await EnsureInitializedAsync();
+        await EnsureInitializedAsync().ConfigureAwait(false);
 
         // Update the cache with a new state and then refresh entries as it would be done on a next request.
-        await _autorouteStateManager.UpdateAsync(new AutorouteStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
+        await _autorouteStateManager.UpdateAsync(new AutorouteStateDocument(), afterUpdateAsync: RefreshEntriesAsync).ConfigureAwait(false);
     }
 
     private async Task EnsureInitializedAsync()
     {
         if (!_initialized)
         {
-            await InitializeEntriesAsync();
+            await InitializeEntriesAsync().ConfigureAwait(false);
         }
         else
         {
-            var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
+            var state = await _autorouteStateManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
             if (_stateIdentifier != state.Identifier)
             {
-                await RefreshEntriesAsync(state);
+                await RefreshEntriesAsync(state).ConfigureAwait(false);
             }
         }
     }
@@ -151,7 +151,7 @@ public class AutorouteEntries : IAutorouteEntries
             return;
         }
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             if (_stateIdentifier != state.Identifier)
@@ -159,7 +159,7 @@ public class AutorouteEntries : IAutorouteEntries
                 var indexes = await Session
                     .QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId)
                     .OrderBy(i => i.Id)
-                    .ListAsync();
+                    .ListAsync().ConfigureAwait(false);
 
                 // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                 // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
@@ -204,17 +204,17 @@ public class AutorouteEntries : IAutorouteEntries
             return;
         }
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             if (!_initialized)
             {
-                var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
+                var state = await _autorouteStateManager.GetOrCreateImmutableAsync().ConfigureAwait(false);
 
                 var indexes = await Session
                     .QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null)
                     .OrderBy(i => i.Id)
-                    .ListAsync();
+                    .ListAsync().ConfigureAwait(false);
 
                 var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
                 {

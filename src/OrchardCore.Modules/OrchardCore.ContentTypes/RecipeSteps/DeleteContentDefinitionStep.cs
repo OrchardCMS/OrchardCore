@@ -25,13 +25,13 @@ public sealed class DeleteContentDefinitionStep : NamedRecipeStepHandler
         foreach (var contentType in step.ContentTypes)
         {
             // The content definition manager tests existence before trying to delete.
-            await _contentDefinitionManager.DeleteTypeDefinitionAsync(contentType);
+            await _contentDefinitionManager.DeleteTypeDefinitionAsync(contentType).ConfigureAwait(false);
         }
 
         foreach (var contentPart in step.ContentParts)
         {
             // The content definition manager tests existence before trying to delete.
-            await _contentDefinitionManager.DeletePartDefinitionAsync(contentPart);
+            await _contentDefinitionManager.DeletePartDefinitionAsync(contentPart).ConfigureAwait(false);
         }
     }
 

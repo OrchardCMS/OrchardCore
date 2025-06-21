@@ -22,13 +22,13 @@ public sealed class MicrosoftAccountSettingsStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<MicrosoftAccountSettingsStepModel>();
-        var settings = await _microsoftAccountService.LoadSettingsAsync();
+        var settings = await _microsoftAccountService.LoadSettingsAsync().ConfigureAwait(false);
 
         settings.AppId = model.AppId;
         settings.AppSecret = model.AppSecret;
         settings.CallbackPath = model.CallbackPath;
 
-        await _microsoftAccountService.UpdateSettingsAsync(settings);
+        await _microsoftAccountService.UpdateSettingsAsync(settings).ConfigureAwait(false);
     }
 }
 

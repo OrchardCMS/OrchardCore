@@ -26,7 +26,7 @@ public sealed class TextFieldHeaderDisplaySettingsDriver : ContentPartFieldDefin
             var model = new HeaderSettingsViewModel();
             var settings = new TextFieldHeaderDisplaySettings();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
             settings.Level = model.Level;
 

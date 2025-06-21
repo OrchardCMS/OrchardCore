@@ -19,19 +19,19 @@ public class MembershipService : IMembershipService
 
     public async Task<bool> CheckPasswordAsync(string userName, string password)
     {
-        var user = await _userManager.FindByNameAsync(userName);
+        var user = await _userManager.FindByNameAsync(userName).ConfigureAwait(false);
 
         if (user == null)
         {
             return false;
         }
 
-        return await _userManager.CheckPasswordAsync(user, password);
+        return await _userManager.CheckPasswordAsync(user, password).ConfigureAwait(false);
     }
 
     public async Task<IUser> GetUserAsync(string userName)
     {
-        var user = await _userManager.FindByNameAsync(userName);
+        var user = await _userManager.FindByNameAsync(userName).ConfigureAwait(false);
 
         return user;
     }

@@ -41,8 +41,8 @@ public sealed class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentSt
     {
         var model = new ContentItemDeploymentStepViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, x => x.ContentItemId);
-        var contentItem = await _contentManager.GetAsync(model.ContentItemId);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, x => x.ContentItemId).ConfigureAwait(false);
+        var contentItem = await _contentManager.GetAsync(model.ContentItemId).ConfigureAwait(false);
 
         if (contentItem == null)
         {

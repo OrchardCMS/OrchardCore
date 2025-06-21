@@ -36,13 +36,14 @@ public sealed class CommandStep : NamedRecipeStepHandler
 
         foreach (var command in step.Commands)
         {
-            await using (var output = new ZStringWriter())
+            var output = new ZStringWriter();
+            await using (output.ConfigureAwait(false))
             {
                 _logger.LogInformation("Executing command: {Command}", command);
 
                 var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
                 commandParameters.Output = output;
-                await _commandManager.ExecuteAsync(commandParameters);
+                await _commandManager.ExecuteAsync(commandParameters).ConfigureAwait(false);
 
                 _logger.LogInformation("Command executed with output: {CommandOutput}", output);
             }

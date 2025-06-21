@@ -23,5 +23,5 @@ public sealed class RedisService : ModularTenantEvents, IRedisService
 
     public override Task ActivatingAsync() => ConnectAsync();
 
-    public async Task ConnectAsync() => Database ??= await _factory.CreateAsync(_options);
+    public async Task ConnectAsync() => Database ??= await _factory.CreateAsync(_options).ConfigureAwait(false);
 }

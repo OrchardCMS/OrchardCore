@@ -35,7 +35,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TApplication>(collection: OpenIdCollection).CountAsync();
+        return await _session.Query<TApplication>(collection: OpenIdCollection).CountAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -49,8 +49,8 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _session.SaveAsync(application, collection: OpenIdCollection);
-        await _session.FlushAsync();
+        await _session.SaveAsync(application, collection: OpenIdCollection).ConfigureAwait(false);
+        await _session.FlushAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -61,7 +61,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(application, collection: OpenIdCollection);
-        await _session.FlushAsync();
+        await _session.FlushAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -71,7 +71,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ApplicationId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
+        return await _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ApplicationId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -81,7 +81,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ClientId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
+        return await _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ClientId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -91,7 +91,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.GetAsync<TApplication>(long.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
+        return await _session.GetAsync<TApplication>(long.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -460,11 +460,11 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _session.SaveAsync(application, checkConcurrency: true, collection: OpenIdCollection);
+        await _session.SaveAsync(application, checkConcurrency: true, collection: OpenIdCollection).ConfigureAwait(false);
 
         try
         {
-            await _session.SaveChangesAsync();
+            await _session.SaveChangesAsync().ConfigureAwait(false);
         }
         catch (ConcurrencyException exception)
         {

@@ -8,7 +8,7 @@ public static class RoleServiceExtensions
     {
         ArgumentNullException.ThrowIfNull(roleService);
 
-        var roles = await roleService.GetRolesAsync();
+        var roles = await roleService.GetRolesAsync().ConfigureAwait(false);
 
         return roles.Select(role => role.RoleName);
     }

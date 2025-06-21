@@ -131,7 +131,7 @@ public sealed class ServerStartup : StartupBase
 
     public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var settings = await GetServerSettingsAsync();
+        var settings = await GetServerSettingsAsync().ConfigureAwait(false);
         if (settings == null)
         {
             return;
@@ -183,8 +183,8 @@ public sealed class ServerStartup : StartupBase
             // safely used with the non-scoped/root service provider available at this stage.
             var service = serviceProvider.GetRequiredService<IOpenIdServerService>();
 
-            var configuration = await service.GetSettingsAsync();
-            if ((await service.ValidateSettingsAsync(configuration)).Any(result => result != ValidationResult.Success))
+            var configuration = await service.GetSettingsAsync().ConfigureAwait(false);
+            if ((await service.ValidateSettingsAsync(configuration).ConfigureAwait(false)).Any(result => result != ValidationResult.Success))
             {
                 return null;
             }

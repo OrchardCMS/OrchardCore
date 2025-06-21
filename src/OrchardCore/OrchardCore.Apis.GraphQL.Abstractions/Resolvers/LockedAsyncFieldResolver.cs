@@ -16,7 +16,7 @@ public class LockedAsyncFieldResolver<TReturnType> : IFieldResolver
     public async ValueTask<object> ResolveAsync(IResolveFieldContext context)
     {
         var graphContext = (GraphQLUserContext)context.UserContext;
-        await graphContext.ExecutionContextLock.WaitAsync();
+        await graphContext.ExecutionContextLock.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -42,7 +42,7 @@ public class LockedAsyncFieldResolver<TSourceType, TReturnType> : IFieldResolver
     public async ValueTask<object> ResolveAsync(IResolveFieldContext context)
     {
         var graphContext = (GraphQLUserContext)context.UserContext;
-        await graphContext.ExecutionContextLock.WaitAsync();
+        await graphContext.ExecutionContextLock.WaitAsync().ConfigureAwait(false);
 
         try
         {

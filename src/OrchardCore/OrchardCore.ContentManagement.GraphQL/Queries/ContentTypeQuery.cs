@@ -47,7 +47,7 @@ public sealed class ContentTypeQuery : ISchemaBuilder
         var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
         var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
 
-        foreach (var typeDefinition in await contentDefinitionManager.ListTypeDefinitionsAsync())
+        foreach (var typeDefinition in await contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
         {
             if (_contentOptionsAccessor.Value.ShouldHide(typeDefinition))
             {

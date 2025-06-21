@@ -29,7 +29,7 @@ public sealed class ScheduledPublishingBackgroundTask : IBackgroundTask
         var itemsToPublish = await serviceProvider
             .GetRequiredService<ISession>()
             .QueryIndex<PublishLaterPartIndex>(index => index.Latest && !index.Published && index.ScheduledPublishDateTimeUtc < _clock.UtcNow)
-            .ListAsync();
+            .ListAsync().ConfigureAwait(false);
 
         if (!itemsToPublish.Any())
         {
@@ -40,7 +40,7 @@ public sealed class ScheduledPublishingBackgroundTask : IBackgroundTask
 
         foreach (var item in itemsToPublish)
         {
-            var contentItem = await contentManager.GetAsync(item.ContentItemId, VersionOptions.Latest);
+            var contentItem = await contentManager.GetAsync(item.ContentItemId, VersionOptions.Latest).ConfigureAwait(false);
 
             var part = contentItem.As<PublishLaterPart>();
             if (part != null)
@@ -51,7 +51,7 @@ public sealed class ScheduledPublishingBackgroundTask : IBackgroundTask
 
             _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", contentItem.ContentItemId);
 
-            await contentManager.PublishAsync(contentItem);
+            await contentManager.PublishAsync(contentItem).ConfigureAwait(false);
         }
     }
 }

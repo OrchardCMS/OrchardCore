@@ -14,7 +14,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
 
     public static async Task<IEnumerable<ContentItem>> ContentQueryAsync(this IOrchardHelper orchardHelper, string queryName, IDictionary<string, object> parameters)
     {
-        var results = await orchardHelper.QueryAsync(queryName, parameters);
+        var results = await orchardHelper.QueryAsync(queryName, parameters).ConfigureAwait(false);
         var contentItems = new List<ContentItem>();
 
         if (results != null)
@@ -48,7 +48,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
     public static async Task<IQueryResults> ContentQueryResultsAsync(this IOrchardHelper orchardHelper, string queryName, Dictionary<string, object> parameters)
     {
         var contentItems = new List<ContentItem>();
-        var queryResult = await orchardHelper.QueryResultsAsync(queryName, parameters);
+        var queryResult = await orchardHelper.QueryResultsAsync(queryName, parameters).ConfigureAwait(false);
 
         if (queryResult.Items != null)
         {

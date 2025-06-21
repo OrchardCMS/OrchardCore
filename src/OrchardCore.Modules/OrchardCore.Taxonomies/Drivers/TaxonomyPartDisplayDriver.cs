@@ -44,7 +44,7 @@ public sealed class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<Taxonom
     {
         var model = new TaxonomyPartEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(model.TermContentType))
         {

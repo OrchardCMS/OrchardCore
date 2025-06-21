@@ -31,7 +31,7 @@ internal sealed class HttpContextValue : FluidValue
     public override string ToStringValue() => "HttpContext";
 
     public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-        => await writer.WriteAsync(ToStringValue());
+        => await writer.WriteAsync(ToStringValue()).ConfigureAwait(false);
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)
     {

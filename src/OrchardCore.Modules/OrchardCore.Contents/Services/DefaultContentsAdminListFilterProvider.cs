@@ -131,14 +131,14 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                     // Filter for a specific type.
                     if (!string.IsNullOrEmpty(contentType))
                     {
-                        var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+                        var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType).ConfigureAwait(false);
                         if (contentTypeDefinition != null)
                         {
                             // We display a specific type even if it's not listable so that admin pages
                             // can reuse the Content list page for specific types.
 
                             // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
-                            if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinition.Name, owner: null))
+                            if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinition.Name, owner: null).ConfigureAwait(false))
                             {
                                 return query.With<ContentItemIndex>(x => x.ContentType == contentType);
                             }
@@ -152,7 +152,7 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                     var listAnyContentTypes = new List<string>();
                     var listOwnContentTypes = new List<string>();
 
-                    foreach (var ctd in await contentDefinitionManager.ListTypeDefinitionsAsync())
+                    foreach (var ctd in await contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
                     {
                         if (!ctd.IsListable())
                         {
@@ -160,7 +160,7 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                         }
 
                         // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
-                        if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, owner: null))
+                        if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, owner: null).ConfigureAwait(false))
                         {
                             listAnyContentTypes.Add(ctd.Name);
 
@@ -168,7 +168,7 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                         }
 
                         // It is important to pass the current user ID to the owner parameter. This will check if the user can view their own content.
-                        if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, userNameIdentifier))
+                        if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, userNameIdentifier).ConfigureAwait(false))
                         {
                             listOwnContentTypes.Add(ctd.Name);
 
@@ -207,7 +207,7 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                     // Filter for a specific stereotype.
                     if (!string.IsNullOrEmpty(stereotype))
                     {
-                        var contentTypeDefinitionNames = (await contentDefinitionManager.ListTypeDefinitionsAsync())
+                        var contentTypeDefinitionNames = (await contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
                             .Where(definition => definition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
                             .Select(definition => definition.Name)
                             .ToList();
@@ -226,7 +226,7 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                             foreach (var contentTypeDefinitionName in contentTypeDefinitionNames)
                             {
                                 // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
-                                if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinitionName, owner: null))
+                                if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinitionName, owner: null).ConfigureAwait(false))
                                 {
                                     viewAll.Add(contentTypeDefinitionName);
 

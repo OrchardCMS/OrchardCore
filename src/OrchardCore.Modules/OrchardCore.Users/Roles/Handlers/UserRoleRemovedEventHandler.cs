@@ -14,11 +14,11 @@ public class UserRoleRemovedEventHandler : IRoleRemovedEventHandler
 
     public async Task RoleRemovedAsync(string roleName)
     {
-        var users = await _userManager.GetUsersInRoleAsync(roleName);
+        var users = await _userManager.GetUsersInRoleAsync(roleName).ConfigureAwait(false);
 
         foreach (var user in users)
         {
-            await _userManager.RemoveFromRoleAsync(user, roleName);
+            await _userManager.RemoveFromRoleAsync(user, roleName).ConfigureAwait(false);
         }
     }
 }

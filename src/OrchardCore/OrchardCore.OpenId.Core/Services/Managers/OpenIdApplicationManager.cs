@@ -69,11 +69,11 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
 
         if (Store is IOpenIdApplicationStore<TApplication> store)
         {
-            return await store.GetRolesAsync(application, cancellationToken);
+            return await store.GetRolesAsync(application, cancellationToken).ConfigureAwait(false);
         }
         else
         {
-            var properties = await Store.GetPropertiesAsync(application, cancellationToken);
+            var properties = await Store.GetPropertiesAsync(application, cancellationToken).ConfigureAwait(false);
             if (properties.TryGetValue(OpenIdConstants.Properties.Roles, out var value))
             {
                 var builder = ImmutableArray.CreateBuilder<string>();
@@ -109,9 +109,9 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
         {
             for (var offset = 0; ; offset += 1_000)
             {
-                await foreach (var application in Store.ListAsync(1_000, offset, cancellationToken))
+                await foreach (var application in Store.ListAsync(1_000, offset, cancellationToken).ConfigureAwait(false))
                 {
-                    var roles = await GetRolesAsync(application, cancellationToken);
+                    var roles = await GetRolesAsync(application, cancellationToken).ConfigureAwait(false);
                     if (roles.Contains(role, StringComparer.OrdinalIgnoreCase))
                     {
                         yield return application;
@@ -133,18 +133,18 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
 
         if (Store is IOpenIdApplicationStore<TApplication> store)
         {
-            await store.SetRolesAsync(application, roles, cancellationToken);
+            await store.SetRolesAsync(application, roles, cancellationToken).ConfigureAwait(false);
         }
         else
         {
-            var properties = await Store.GetPropertiesAsync(application, cancellationToken);
+            var properties = await Store.GetPropertiesAsync(application, cancellationToken).ConfigureAwait(false);
             properties = properties.SetItem(OpenIdConstants.Properties.Roles,
                 JsonSerializer.SerializeToElement(roles, JOptions.UnsafeRelaxedJsonEscaping));
 
-            await Store.SetPropertiesAsync(application, properties, cancellationToken);
+            await Store.SetPropertiesAsync(application, properties, cancellationToken).ConfigureAwait(false);
         }
 
-        await UpdateAsync(application, cancellationToken);
+        await UpdateAsync(application, cancellationToken).ConfigureAwait(false);
     }
 
     public override async ValueTask PopulateAsync(TApplication application,
@@ -156,7 +156,7 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
 
         // Note: this method MUST be called first before applying any change to the untyped
         // properties bag to ensure the base method doesn't override the added properties.
-        await base.PopulateAsync(application, descriptor, cancellationToken);
+        await base.PopulateAsync(application, descriptor, cancellationToken).ConfigureAwait(false);
 
         if (descriptor is OpenIdApplicationDescriptor model)
         {
@@ -164,15 +164,15 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
             // use the corresponding API. Otherwise, store the roles in the untyped properties bag.
             if (Store is IOpenIdApplicationStore<TApplication> store)
             {
-                await store.SetRolesAsync(application, model.Roles.ToImmutableArray(), cancellationToken);
+                await store.SetRolesAsync(application, model.Roles.ToImmutableArray(), cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var properties = await Store.GetPropertiesAsync(application, cancellationToken);
+                var properties = await Store.GetPropertiesAsync(application, cancellationToken).ConfigureAwait(false);
                 properties = properties.SetItem(OpenIdConstants.Properties.Roles,
                     JsonSerializer.SerializeToElement(model.Roles, JOptions.UnsafeRelaxedJsonEscaping));
 
-                await Store.SetPropertiesAsync(application, properties, cancellationToken);
+                await Store.SetPropertiesAsync(application, properties, cancellationToken).ConfigureAwait(false);
             }
         }
     }
@@ -184,7 +184,7 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
 
         ArgumentNullException.ThrowIfNull(application);
 
-        await base.PopulateAsync(descriptor, application, cancellationToken);
+        await base.PopulateAsync(descriptor, application, cancellationToken).ConfigureAwait(false);
 
         if (descriptor is OpenIdApplicationDescriptor model)
         {
@@ -201,12 +201,12 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
 
         async IAsyncEnumerable<ValidationResult> ExecuteAsync()
         {
-            await foreach (var result in base.ValidateAsync(application, cancellationToken))
+            await foreach (var result in base.ValidateAsync(application, cancellationToken).ConfigureAwait(false))
             {
                 yield return result;
             }
 
-            foreach (var role in await GetRolesAsync(application, cancellationToken))
+            foreach (var role in await GetRolesAsync(application, cancellationToken).ConfigureAwait(false))
             {
                 if (string.IsNullOrEmpty(role))
                 {
@@ -219,7 +219,7 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
     }
 
     async ValueTask<object> IOpenIdApplicationManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-        => await FindByPhysicalIdAsync(identifier, cancellationToken);
+        => await FindByPhysicalIdAsync(identifier, cancellationToken).ConfigureAwait(false);
 
     ValueTask<string> IOpenIdApplicationManager.GetPhysicalIdAsync(object application, CancellationToken cancellationToken)
         => GetPhysicalIdAsync((TApplication)application, cancellationToken);

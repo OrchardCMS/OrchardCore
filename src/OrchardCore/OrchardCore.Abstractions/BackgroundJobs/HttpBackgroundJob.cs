@@ -42,7 +42,7 @@ public static class HttpBackgroundJob
             // Wait for the current 'HttpContext' to be released with a timeout of 60s.
             while (httpContextAccessor.HttpContext != null)
             {
-                await Task.Delay(1_000);
+                await Task.Delay(1_000).ConfigureAwait(false);
 
                 if (timeoutTask.IsCompleted)
                 {
@@ -52,7 +52,7 @@ public static class HttpBackgroundJob
 
             // Retrieve the shell context that may have been reloaded.
             var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
-            var shellContext = await shellHost.GetOrCreateShellContextAsync(scope.ShellContext.Settings);
+            var shellContext = await shellHost.GetOrCreateShellContextAsync(scope.ShellContext.Settings).ConfigureAwait(false);
 
             // Can't be executed e.g. if a tenant setup failed.
             if (!shellContext.Settings.IsRunning())
@@ -84,7 +84,7 @@ public static class HttpBackgroundJob
 
                 try
                 {
-                    await job(scope);
+                    await job(scope).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -94,7 +94,7 @@ public static class HttpBackgroundJob
                         jobName,
                         scope.ShellContext.Settings.Name);
                 }
-            });
+            }).ConfigureAwait(false);
 
             // Clear the 'HttpContext' for this async flow.
             httpContextAccessor.HttpContext = null;

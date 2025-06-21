@@ -30,7 +30,7 @@ public sealed class GoogleAuthenticationSettingsConfiguration : IConfigureOption
 
     private async Task<GoogleAuthenticationSettings> GetGoogleAuthenticationSettingsAsync()
     {
-        var settings = await _googleAuthenticationService.GetSettingsAsync();
+        var settings = await _googleAuthenticationService.GetSettingsAsync().ConfigureAwait(false);
 
         if ((_googleAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
         {

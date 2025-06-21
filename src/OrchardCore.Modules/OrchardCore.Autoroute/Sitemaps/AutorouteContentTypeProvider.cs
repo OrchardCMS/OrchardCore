@@ -24,11 +24,11 @@ public class AutorouteContentTypeProvider : IRouteableContentTypeProvider
 
     public async Task<string> GetRouteAsync(SitemapBuilderContext context, ContentItem contentItem)
     {
-        var ctd = (await ListRoutableTypeDefinitionsAsync())?.FirstOrDefault(ctd => ctd.Name == contentItem.ContentType);
+        var ctd = (await ListRoutableTypeDefinitionsAsync().ConfigureAwait(false))?.FirstOrDefault(ctd => ctd.Name == contentItem.ContentType);
 
         if (ctd != null)
         {
-            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem).ConfigureAwait(false);
             var routes = contentItemMetadata.DisplayRouteValues;
 
             // UrlHelper.Action includes BasePath automatically if present.
@@ -41,7 +41,7 @@ public class AutorouteContentTypeProvider : IRouteableContentTypeProvider
 
     public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
     {
-        return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+        return (await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             .Where(ctd => ctd.Parts.Any(p => p.Name == nameof(AutoroutePart)));
     }
 }

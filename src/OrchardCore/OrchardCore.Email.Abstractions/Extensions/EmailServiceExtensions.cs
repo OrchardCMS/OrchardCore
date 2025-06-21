@@ -49,6 +49,6 @@ public static class EmailServiceExtensions
             textBody = body;
         }
 
-        return await emailService.SendAsync(to, subject, htmlBody, textBody);
+        return await emailService.SendAsync(to, subject, htmlBody, textBody).ConfigureAwait(false);
     }
 }

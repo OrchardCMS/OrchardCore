@@ -42,8 +42,8 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
     public override async Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
     {
         var viewModel = new TEditViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
-        await UpdateActivityAsync(viewModel, activity);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
+        await UpdateActivityAsync(viewModel, activity).ConfigureAwait(false);
 
         return Edit(activity, context);
     }

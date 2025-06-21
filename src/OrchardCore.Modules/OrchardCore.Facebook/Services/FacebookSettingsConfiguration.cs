@@ -32,7 +32,7 @@ public sealed class FacebookSettingsConfiguration : IConfigureOptions<FacebookSe
 
     private async Task<FacebookSettings> GetFacebookSettingsAsync()
     {
-        var settings = await _facebookService.GetSettingsAsync();
+        var settings = await _facebookService.GetSettingsAsync().ConfigureAwait(false);
 
         if (_facebookService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {

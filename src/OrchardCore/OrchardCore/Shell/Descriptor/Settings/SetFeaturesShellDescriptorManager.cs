@@ -26,7 +26,7 @@ public class SetFeaturesShellDescriptorManager : IShellDescriptorManager
         {
             var featureIds = _shellFeatures.Distinct().Select(sf => sf.Id).ToArray();
 
-            var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds))
+            var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds).ConfigureAwait(false))
                 .Select(entry => entry.Id)
                 .Except(featureIds)
                 .Select(id => new ShellFeature(id));

@@ -53,7 +53,7 @@ public abstract class SectionDisplayDriverBase<TModel, TSection> : DisplayDriver
     {
         var section = GetSection(model);
 
-        var result = await UpdateAsync(model, section, context);
+        var result = await UpdateAsync(model, section, context).ConfigureAwait(false);
 
         if (result == null)
         {

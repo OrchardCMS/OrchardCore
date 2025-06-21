@@ -23,7 +23,7 @@ public sealed class DateTimeFieldSettingsDriver : ContentPartFieldDefinitionDisp
     {
         var model = new DateTimeFieldSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         context.Builder.WithSettings(model);
 

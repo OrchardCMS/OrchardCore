@@ -110,7 +110,7 @@ public class IndexingContentHandler : ContentHandlerBase
 
         var indexStore = services.GetRequiredService<IIndexProfileStore>();
 
-        var indexProfiles = await indexStore.GetByTypeAsync(IndexingConstants.ContentsIndexSource);
+        var indexProfiles = await indexStore.GetByTypeAsync(IndexingConstants.ContentsIndexSource).ConfigureAwait(false);
 
         if (!indexProfiles.Any())
         {
@@ -154,7 +154,7 @@ public class IndexingContentHandler : ContentHandlerBase
                 {
                     if (!cultureAspects.TryGetValue(contentItem.ContentItemVersionId ?? contentItem.ContentItemId, out var cultureAspect))
                     {
-                        cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(contentItem);
+                        cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(contentItem).ConfigureAwait(false);
                         cultureAspects[contentItem.ContentItemVersionId ?? contentItem.ContentItemId] = cultureAspect;
                     }
 
@@ -178,22 +178,22 @@ public class IndexingContentHandler : ContentHandlerBase
 
                 var buildIndexContext = new BuildDocumentIndexContext(document, contentItem, [contentItem.ContentType], documentIndexManager.GetContentIndexSettings());
 
-                await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
+                await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger).ConfigureAwait(false);
 
                 documents.Add(document);
             }
 
             // Delete all of the documents that we'll be updating in this scope.
-            await documentIndexManager.DeleteDocumentsAsync(indexProfile, contentItems.Select(x => x.ContentItemId));
+            await documentIndexManager.DeleteDocumentsAsync(indexProfile, contentItems.Select(x => x.ContentItemId)).ConfigureAwait(false);
 
             if (documents.Count > 0)
             {
                 // Update all of the documents that were updated in this scope.
-                await documentIndexManager.AddOrUpdateDocumentsAsync(indexProfile, documents);
+                await documentIndexManager.AddOrUpdateDocumentsAsync(indexProfile, documents).ConfigureAwait(false);
             }
 
             // At the end of the indexing, we remove the documents that were removed in the same scope.
-            await documentIndexManager.DeleteDocumentsAsync(indexProfile, removedIds);
+            await documentIndexManager.DeleteDocumentsAsync(indexProfile, removedIds).ConfigureAwait(false);
         }
     }
 }

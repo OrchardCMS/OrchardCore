@@ -15,7 +15,7 @@ public class ThemeCacheContextProvider : ICacheContextProvider
     {
         // Always vary by theme
 
-        var theme = await _themeManager.GetThemeAsync();
+        var theme = await _themeManager.GetThemeAsync().ConfigureAwait(false);
         entries.Add(new CacheContextEntry("theme", theme.Id));
     }
 }

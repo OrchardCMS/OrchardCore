@@ -43,7 +43,7 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
     public override async Task<IDisplayResult> UpdateAsync(LocalizationPart model, UpdatePartEditorContext context)
     {
         var viewModel = new LocalizationPartViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Culture);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Culture).ConfigureAwait(false);
 
         // Invariant culture name is empty so a null value is bound.
         model.Culture = viewModel.Culture ?? string.Empty;
@@ -58,16 +58,16 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
 
     public async ValueTask BuildViewModelAsync(LocalizationPartViewModel model, LocalizationPart localizationPart)
     {
-        var alreadyTranslated = await _contentLocalizationManager.GetItemsForSetAsync(localizationPart.LocalizationSet);
+        var alreadyTranslated = await _contentLocalizationManager.GetItemsForSetAsync(localizationPart.LocalizationSet).ConfigureAwait(false);
 
         model.Culture = localizationPart.Culture;
         model.LocalizationSet = localizationPart.LocalizationSet;
         model.LocalizationPart = localizationPart;
 
         // Invariant culture name is empty so we only do a null check.
-        model.Culture ??= await _localizationService.GetDefaultCultureAsync();
+        model.Culture ??= await _localizationService.GetDefaultCultureAsync().ConfigureAwait(false);
 
-        var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+        var supportedCultures = await _localizationService.GetSupportedCulturesAsync().ConfigureAwait(false);
         var currentCultures = supportedCultures.Where(c => c != model.Culture).Select(culture =>
           {
               return new LocalizationLinksViewModel()

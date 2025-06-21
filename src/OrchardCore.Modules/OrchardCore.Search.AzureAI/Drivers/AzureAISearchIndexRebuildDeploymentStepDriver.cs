@@ -28,7 +28,7 @@ public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
-            model.AllIndexNames = (await _indexProfileStore.GetByProviderAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexProfileStore.GetByProviderAsync(AzureAISearchConstants.ProviderName).ConfigureAwait(false)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexRebuildDeploymentStep step, UpdateEditorContext context)
@@ -37,7 +37,7 @@ public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
 
         await context.Updater.TryUpdateModelAsync(step, Prefix,
             p => p.IncludeAll,
-            p => p.Indices);
+            p => p.Indices).ConfigureAwait(false);
 
         if (step.IncludeAll)
         {

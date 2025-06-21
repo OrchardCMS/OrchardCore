@@ -38,7 +38,7 @@ internal static class OpenIdApplicationExtensions
 
         if (application != null)
         {
-            await _applicationManager.PopulateAsync(descriptor, application);
+            await _applicationManager.PopulateAsync(descriptor, application).ConfigureAwait(false);
         }
 
         descriptor.ClientId = model.ClientId;
@@ -252,11 +252,11 @@ internal static class OpenIdApplicationExtensions
 
         if (application == null)
         {
-            await _applicationManager.CreateAsync(descriptor);
+            await _applicationManager.CreateAsync(descriptor).ConfigureAwait(false);
         }
         else
         {
-            await _applicationManager.UpdateAsync(application, descriptor);
+            await _applicationManager.UpdateAsync(application, descriptor).ConfigureAwait(false);
         }
 
     }

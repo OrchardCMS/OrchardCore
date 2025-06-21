@@ -21,7 +21,7 @@ public class AliasPartContentHandleProvider : IContentHandleProvider
         {
             handle = handle[6..];
 
-            var aliasPartIndex = await AliasPartContentHandleHelper.QueryAliasIndex(_session, handle);
+            var aliasPartIndex = await AliasPartContentHandleHelper.QueryAliasIndex(_session, handle).ConfigureAwait(false);
             return aliasPartIndex?.ContentItemId;
         }
 

@@ -24,7 +24,7 @@ public sealed class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navb
 
     public override async Task<IDisplayResult> DisplayAsync(Navbar model, BuildDisplayContext context)
     {
-        var supportedCultures = (await _localizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
+        var supportedCultures = (await _localizationService.GetSupportedCulturesAsync().ConfigureAwait(false)).Select(c => CultureInfo.GetCultureInfo(c));
 
         return Initialize<CulturePickerViewModel>("ContentCulturePicker", model =>
         {

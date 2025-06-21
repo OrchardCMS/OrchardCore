@@ -39,13 +39,13 @@ public class FeatureProfilesValidationProvider : IFeatureValidationProvider
 
         if (!_featureProfileLookup.NotFound)
         {
-            var scope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
+            var scope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName).ConfigureAwait(false);
 
             await scope.UsingAsync(async (scope) =>
             {
                 var featureProfilesService = scope.ServiceProvider.GetService<IFeatureProfilesService>();
 
-                var featureProfiles = await featureProfilesService.GetFeatureProfilesAsync();
+                var featureProfiles = await featureProfilesService.GetFeatureProfilesAsync().ConfigureAwait(false);
 
                 foreach (var profileName in profileNames.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -58,7 +58,7 @@ public class FeatureProfilesValidationProvider : IFeatureValidationProvider
 
                     _featureProfileLookup = (true, null);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         // When the management feature is not enabled we need to pass feature validation.

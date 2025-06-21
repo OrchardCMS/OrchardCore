@@ -40,14 +40,14 @@ public static class MarkAsReadEndpoints
             return TypedResults.BadRequest();
         }
 
-        if (!await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications))
+        if (!await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications).ConfigureAwait(false))
         {
             return TypedResults.Forbid();
         }
 
         var userId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var notification = await session.Query<Notification, NotificationIndex>(x => x.NotificationId == model.MessageId && x.UserId == userId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+        var notification = await session.Query<Notification, NotificationIndex>(x => x.NotificationId == model.MessageId && x.UserId == userId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync().ConfigureAwait(false);
 
         if (notification == null)
         {
@@ -65,8 +65,8 @@ public static class MarkAsReadEndpoints
 
             updated = true;
 
-            await session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
-            await tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(httpContextAccessor.HttpContext.User.Identity.Name));
+            await session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection).ConfigureAwait(false);
+            await tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(httpContextAccessor.HttpContext.User.Identity.Name)).ConfigureAwait(false);
         }
 
         return TypedResults.Ok(new

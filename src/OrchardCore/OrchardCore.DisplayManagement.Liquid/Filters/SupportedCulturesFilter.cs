@@ -18,7 +18,7 @@ public class SupportedCulturesFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
-        var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+        var supportedCultures = await _localizationService.GetSupportedCulturesAsync().ConfigureAwait(false);
 
         return new ArrayValue(supportedCultures.Select(x => new ObjectValue(CultureInfo.GetCultureInfo(x))).ToArray());
     }

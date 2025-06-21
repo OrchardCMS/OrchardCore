@@ -22,13 +22,13 @@ public class RoleTwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandle
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        var loginSettings = await _siteService.GetSettingsAsync<RoleLoginSettings>();
+        var loginSettings = await _siteService.GetSettingsAsync<RoleLoginSettings>().ConfigureAwait(false);
 
         if (loginSettings.RequireTwoFactorAuthenticationForSpecificRoles && loginSettings.Roles != null)
         {
             foreach (var role in loginSettings.Roles)
             {
-                if (await _userManager.IsInRoleAsync(user, role))
+                if (await _userManager.IsInRoleAsync(user, role).ConfigureAwait(false))
                 {
                     return true;
                 }

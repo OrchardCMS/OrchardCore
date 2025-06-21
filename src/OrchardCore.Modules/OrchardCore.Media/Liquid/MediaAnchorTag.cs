@@ -43,13 +43,13 @@ public class MediaAnchorTag : IAnchorTag
         {
             switch (argument.Name)
             {
-                case "asset_href": assetHref = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "asset_href": assetHref = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
 
                 default:
 
                     customAttributes ??= [];
-                    customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
 
                     break;
             }
@@ -82,7 +82,7 @@ public class MediaAnchorTag : IAnchorTag
 
         if (statements != null && statements.Count > 0)
         {
-            var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+            var completion = await statements.RenderStatementsAsync(writer, encoder, context).ConfigureAwait(false);
 
             if (completion != Completion.Normal)
             {

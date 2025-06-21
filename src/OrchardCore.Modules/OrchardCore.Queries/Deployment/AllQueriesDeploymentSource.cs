@@ -22,7 +22,7 @@ public sealed class AllQueriesDeploymentSource
 
     protected override async Task ProcessAsync(AllQueriesDeploymentStep step, DeploymentPlanResult result)
     {
-        var queries = await _queryManager.ListQueriesAsync();
+        var queries = await _queryManager.ListQueriesAsync().ConfigureAwait(false);
 
         result.Steps.Add(new JsonObject
         {

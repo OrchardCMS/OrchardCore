@@ -12,7 +12,7 @@ public class CustomPathSitemapSourceBuilder : SitemapSourceBuilderBase<CustomPat
     {
         var url = new XElement(_namespace + "url");
 
-        if (await BuildUrlsetMetadataAsync(source, context, url))
+        if (await BuildUrlsetMetadataAsync(source, context, url).ConfigureAwait(false))
         {
             context.Response.ResponseElement.Add(url);
         }

@@ -47,7 +47,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         ArgumentNullException.ThrowIfNull(contentItem);
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
-            ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
+.ConfigureAwait(false) ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
         var actualDisplayType = string.IsNullOrEmpty(displayType) ? OrchardCoreConstants.DisplayType.Detail : displayType;
         var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
@@ -65,7 +65,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
             actualShapeType = actualShapeType + "_" + actualDisplayType;
         }
 
-        var itemShape = await CreateContentShapeAsync(actualShapeType);
+        var itemShape = await CreateContentShapeAsync(actualShapeType).ConfigureAwait(false);
         itemShape.Properties["ContentItem"] = contentItem;
         itemShape.Properties["Stereotype"] = stereotype;
 
@@ -104,9 +104,9 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
             new ModelStateWrapperUpdater(updater)
         );
 
-        await BindPlacementAsync(context);
+        await BindPlacementAsync(context).ConfigureAwait(false);
 
-        await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildDisplayAsync(contentItem, context), contentItem, context, _logger);
+        await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildDisplayAsync(contentItem, context), contentItem, context, _logger).ConfigureAwait(false);
 
         return context.Shape;
     }
@@ -116,7 +116,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         ArgumentNullException.ThrowIfNull(contentItem);
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
-            ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
+.ConfigureAwait(false) ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
         var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
         var actualShapeType = "Content_Edit";
@@ -126,7 +126,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
             actualShapeType = stereotype + "_Edit";
         }
 
-        var itemShape = await CreateContentShapeAsync(actualShapeType);
+        var itemShape = await CreateContentShapeAsync(actualShapeType).ConfigureAwait(false);
         itemShape.Properties["ContentItem"] = contentItem;
         itemShape.Properties["Stereotype"] = stereotype;
 
@@ -152,9 +152,9 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
             new ModelStateWrapperUpdater(updater)
         );
 
-        await BindPlacementAsync(context);
+        await BindPlacementAsync(context).ConfigureAwait(false);
 
-        await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, _logger);
+        await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, _logger).ConfigureAwait(false);
 
         return context.Shape;
     }
@@ -164,7 +164,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         ArgumentNullException.ThrowIfNull(contentItem);
 
         var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentItem.ContentType)
-            ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
+.ConfigureAwait(false) ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
         var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
         var actualShapeType = "Content_Edit";
@@ -174,7 +174,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
             actualShapeType = stereotype + "_Edit";
         }
 
-        var itemShape = await CreateContentShapeAsync(actualShapeType);
+        var itemShape = await CreateContentShapeAsync(actualShapeType).ConfigureAwait(false);
         itemShape.Properties["ContentItem"] = contentItem;
         itemShape.Properties["Stereotype"] = stereotype;
 
@@ -200,11 +200,11 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
             new ModelStateWrapperUpdater(updater)
         );
 
-        await BindPlacementAsync(context);
+        await BindPlacementAsync(context).ConfigureAwait(false);
 
         var updateContentContext = new UpdateContentContext(contentItem);
 
-        await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, _logger);
+        await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, _logger).ConfigureAwait(false);
 
         return context.Shape;
     }

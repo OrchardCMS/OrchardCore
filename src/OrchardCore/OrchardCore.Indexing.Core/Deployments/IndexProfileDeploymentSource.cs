@@ -24,7 +24,7 @@ public sealed class IndexProfileDeploymentSource : DeploymentSourceBase<IndexPro
 
     protected override async Task ProcessAsync(IndexProfileDeploymentStep step, DeploymentPlanResult result)
     {
-        var indexes = await _store.GetAllAsync();
+        var indexes = await _store.GetAllAsync().ConfigureAwait(false);
 
         var indexObjects = new JsonArray();
 
@@ -54,7 +54,7 @@ public sealed class IndexProfileDeploymentSource : DeploymentSourceBase<IndexPro
 
             var exportingContext = new IndexProfileExportingContext(index, indexInfo);
 
-            await _handlers.InvokeAsync((handler, context) => handler.ExportingAsync(context), exportingContext, _logger);
+            await _handlers.InvokeAsync((handler, context) => handler.ExportingAsync(context), exportingContext, _logger).ConfigureAwait(false);
 
             indexObjects.Add(indexInfo);
         }

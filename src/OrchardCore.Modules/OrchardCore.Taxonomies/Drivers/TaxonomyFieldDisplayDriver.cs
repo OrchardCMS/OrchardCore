@@ -41,7 +41,7 @@ public sealed class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<Taxon
         return Initialize<EditTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
         {
             var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
-            model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+            model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest).ConfigureAwait(false);
 
             if (model.Taxonomy != null)
             {
@@ -72,7 +72,7 @@ public sealed class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<Taxon
     {
         var model = new EditTaxonomyFieldViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 

@@ -18,7 +18,7 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
 
     public override async Task<IDisplayResult> EditAsync(RegisterUserForm model, BuildEditorContext context)
     {
-        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
+        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>().ConfigureAwait(false);
 
         if (!settings.ConfigurationExists())
         {

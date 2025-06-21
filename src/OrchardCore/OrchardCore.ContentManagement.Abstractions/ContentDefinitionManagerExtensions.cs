@@ -9,34 +9,34 @@ public static class ContentDefinitionManagerExtensions
 {
     public static async Task AlterTypeDefinitionAsync(this IContentDefinitionManager manager, string name, Func<ContentTypeDefinitionBuilder, Task> alterationAsync)
     {
-        var typeDefinition = (await manager.LoadTypeDefinitionAsync(name)) ?? new ContentTypeDefinition(name, name.CamelFriendly());
+        var typeDefinition = (await manager.LoadTypeDefinitionAsync(name).ConfigureAwait(false)) ?? new ContentTypeDefinition(name, name.CamelFriendly());
         var builder = new ContentTypeDefinitionBuilder(typeDefinition);
-        await alterationAsync(builder);
-        await manager.StoreTypeDefinitionAsync(builder.Build());
+        await alterationAsync(builder).ConfigureAwait(false);
+        await manager.StoreTypeDefinitionAsync(builder.Build()).ConfigureAwait(false);
     }
 
     public static async Task AlterTypeDefinitionAsync(this IContentDefinitionManager manager, string name, Action<ContentTypeDefinitionBuilder> alteration)
     {
-        var typeDefinition = (await manager.LoadTypeDefinitionAsync(name)) ?? new ContentTypeDefinition(name, name.CamelFriendly());
+        var typeDefinition = (await manager.LoadTypeDefinitionAsync(name).ConfigureAwait(false)) ?? new ContentTypeDefinition(name, name.CamelFriendly());
         var builder = new ContentTypeDefinitionBuilder(typeDefinition);
         alteration(builder);
-        await manager.StoreTypeDefinitionAsync(builder.Build());
+        await manager.StoreTypeDefinitionAsync(builder.Build()).ConfigureAwait(false);
     }
 
     public static async Task AlterPartDefinitionAsync(this IContentDefinitionManager manager, string name, Func<ContentPartDefinitionBuilder, Task> alterationAsync)
     {
-        var partDefinition = (await manager.LoadPartDefinitionAsync(name)) ?? new ContentPartDefinition(name);
+        var partDefinition = (await manager.LoadPartDefinitionAsync(name).ConfigureAwait(false)) ?? new ContentPartDefinition(name);
         var builder = new ContentPartDefinitionBuilder(partDefinition);
-        await alterationAsync(builder);
-        await manager.StorePartDefinitionAsync(builder.Build());
+        await alterationAsync(builder).ConfigureAwait(false);
+        await manager.StorePartDefinitionAsync(builder.Build()).ConfigureAwait(false);
     }
 
     public static async Task AlterPartDefinitionAsync(this IContentDefinitionManager manager, string name, Action<ContentPartDefinitionBuilder> alteration)
     {
-        var partDefinition = (await manager.LoadPartDefinitionAsync(name)) ?? new ContentPartDefinition(name);
+        var partDefinition = (await manager.LoadPartDefinitionAsync(name).ConfigureAwait(false)) ?? new ContentPartDefinition(name);
         var builder = new ContentPartDefinitionBuilder(partDefinition);
         alteration(builder);
-        await manager.StorePartDefinitionAsync(builder.Build());
+        await manager.StorePartDefinitionAsync(builder.Build()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public static class ContentDefinitionManagerExtensions
     public static async Task MigratePartSettingsAsync<TPart, TSettings>(this IContentDefinitionManager manager)
         where TPart : ContentPart where TSettings : class
     {
-        var contentTypes = await manager.LoadTypeDefinitionsAsync();
+        var contentTypes = await manager.LoadTypeDefinitionsAsync().ConfigureAwait(false);
 
         foreach (var contentType in contentTypes)
         {
@@ -74,7 +74,7 @@ public static class ContentDefinitionManagerExtensions
                     });
 
                     return Task.CompletedTask;
-                });
+                }).ConfigureAwait(false);
             }
         }
     }
@@ -89,7 +89,7 @@ public static class ContentDefinitionManagerExtensions
     public static async Task MigrateFieldSettingsAsync<TField, TSettings>(this IContentDefinitionManager manager)
         where TField : ContentField where TSettings : class
     {
-        var partDefinitions = await manager.LoadPartDefinitionsAsync();
+        var partDefinitions = await manager.LoadPartDefinitionsAsync().ConfigureAwait(false);
 
         foreach (var partDefinition in partDefinitions)
         {
@@ -121,13 +121,13 @@ public static class ContentDefinitionManagerExtensions
                         });
                     }
                 }
-            });
+            }).ConfigureAwait(false);
         }
     }
 
     public static async Task<IEnumerable<ContentTypeDefinition>> ListWidgetTypeDefinitionsAsync(this IContentDefinitionManager manager)
     {
-        var types = await manager.ListTypeDefinitionsAsync();
+        var types = await manager.ListTypeDefinitionsAsync().ConfigureAwait(false);
 
         return types.Where(x => x.StereotypeEquals("Widget"));
     }

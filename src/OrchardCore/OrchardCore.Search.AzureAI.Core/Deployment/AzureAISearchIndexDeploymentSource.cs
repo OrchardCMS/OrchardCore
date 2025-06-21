@@ -29,7 +29,7 @@ public sealed class AzureAISearchIndexDeploymentSource
 
     protected override async Task ProcessAsync(AzureAISearchIndexDeploymentStep step, DeploymentPlanResult result)
     {
-        var indexes = await _indexStore.GetByProviderAsync(AzureAISearchConstants.ProviderName);
+        var indexes = await _indexStore.GetByProviderAsync(AzureAISearchConstants.ProviderName).ConfigureAwait(false);
 
         var data = new JsonArray();
 
@@ -74,7 +74,7 @@ public sealed class AzureAISearchIndexDeploymentSource
 
             var exportingContext = new IndexProfileExportingContext(index, indexInfo);
 
-            await _handlers.InvokeAsync((handler, context) => handler.ExportingAsync(context), exportingContext, _logger);
+            await _handlers.InvokeAsync((handler, context) => handler.ExportingAsync(context), exportingContext, _logger).ConfigureAwait(false);
 
             data.Add(indexInfo);
         }

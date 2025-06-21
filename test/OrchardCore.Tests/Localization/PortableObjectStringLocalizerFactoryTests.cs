@@ -36,7 +36,7 @@ public class PortableObjectStringLocalizerFactoryTests
 
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync(localizer["Hello"]);
+                await context.Response.WriteAsync(localizer["Hello"]).ConfigureAwait(false);
             });
         }
     }

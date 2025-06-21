@@ -40,7 +40,7 @@ public sealed class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDi
 
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             m => m.Pattern,
-            m => m.Options);
+            m => m.Options).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
         {

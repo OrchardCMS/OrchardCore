@@ -24,7 +24,7 @@ public sealed class TimeFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
     {
         var model = new TimeFieldSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         context.Builder.WithSettings(model);
 

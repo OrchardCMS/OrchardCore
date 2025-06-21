@@ -57,14 +57,14 @@ public class TermShapes : ShapeTableProvider
 
                 var taxonomyContentItemId = termShape.TryGetProperty("Alias", out object alias) && alias != null
                     ? await handleManager.GetContentItemIdAsync(alias.ToString())
-                    : termShape.Properties["TaxonomyContentItemId"].ToString();
+.ConfigureAwait(false) : termShape.Properties["TaxonomyContentItemId"].ToString();
 
                 if (taxonomyContentItemId == null)
                 {
                     return;
                 }
 
-                var taxonomyContentItem = await contentManager.GetAsync(taxonomyContentItemId);
+                var taxonomyContentItem = await contentManager.GetAsync(taxonomyContentItemId).ConfigureAwait(false);
 
                 if (taxonomyContentItem == null)
                 {
@@ -142,12 +142,12 @@ public class TermShapes : ShapeTableProvider
                         TermContentItem = termContentItem,
                         Terms = childTerms ?? [],
                         TaxonomyContentItem = taxonomyContentItem,
-                    }));
+                    })).ConfigureAwait(false);
 
                     shape.Metadata.Differentiator = differentiator;
 
                     // Don't use Items.Add() or the collection won't be sorted.
-                    await termShape.AddAsync(shape);
+                    await termShape.AddAsync(shape).ConfigureAwait(false);
                 }
             });
 
@@ -179,12 +179,12 @@ public class TermShapes : ShapeTableProvider
                             TermContentItem = termContentItem,
                             Term = termShape,
                             Terms = childTerms ?? [],
-                        }));
+                        })).ConfigureAwait(false);
 
                         shape.Metadata.Differentiator = differentiator;
 
                         // Don't use Items.Add() or the collection won't be sorted.
-                        await termItem.AddAsync(shape);
+                        await termItem.AddAsync(shape).ConfigureAwait(false);
                     }
                 }
 

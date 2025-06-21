@@ -32,7 +32,7 @@ public class DisableTenantTask : TenantTask
             return Outcomes("Failed");
         }
 
-        var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
+        var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null).ConfigureAwait(false))?.Trim();
 
         if (string.IsNullOrEmpty(tenantName))
         {
@@ -54,7 +54,7 @@ public class DisableTenantTask : TenantTask
             return Outcomes("Failed");
         }
 
-        await ShellHost.UpdateShellSettingsAsync(shellSettings.AsDisabled());
+        await ShellHost.UpdateShellSettingsAsync(shellSettings.AsDisabled()).ConfigureAwait(false);
 
         return Outcomes("Disabled");
     }

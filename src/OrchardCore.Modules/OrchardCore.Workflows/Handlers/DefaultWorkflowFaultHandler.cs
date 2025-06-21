@@ -31,6 +31,6 @@ public class DefaultWorkflowFaultHandler : IWorkflowFaultHandler
             { WorkflowFaultModel.WorkflowFaultInputKey, faultContext },
         };
 
-        await workflowManager.TriggerEventAsync(name, input);
+        await workflowManager.TriggerEventAsync(name, input).ConfigureAwait(false);
     }
 }

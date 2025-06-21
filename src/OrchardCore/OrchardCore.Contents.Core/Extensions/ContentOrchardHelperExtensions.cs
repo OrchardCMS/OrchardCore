@@ -20,7 +20,7 @@ public static class ContentOrchardHelperExtensions
     {
         var contentHandleManager = orchardHelper.HttpContext.RequestServices.GetService<IContentHandleManager>();
 
-        return await contentHandleManager.GetContentItemIdAsync(handle);
+        return await contentHandleManager.GetContentItemIdAsync(handle).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -34,9 +34,9 @@ public static class ContentOrchardHelperExtensions
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
 
-        var contentItemId = await orchardHelper.GetContentItemIdByHandleAsync(handle);
+        var contentItemId = await orchardHelper.GetContentItemIdByHandleAsync(handle).ConfigureAwait(false);
 
-        return await contentManager.GetAsync(contentItemId, option);
+        return await contentManager.GetAsync(contentItemId, option).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public static class ContentOrchardHelperExtensions
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
 
-        return await contentManager.GetAsync(contentItemId, option);
+        return await contentManager.GetAsync(contentItemId, option).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public static class ContentOrchardHelperExtensions
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
 
-        return await contentManager.GetAsync(contentItemIds, option);
+        return await contentManager.GetAsync(contentItemIds, option).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public static class ContentOrchardHelperExtensions
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
 
-        return await contentManager.GetVersionAsync(contentItemVersionId);
+        return await contentManager.GetVersionAsync(contentItemVersionId).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -88,9 +88,9 @@ public static class ContentOrchardHelperExtensions
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
 
-        var contentItems = await query(session.Query<ContentItem, ContentItemIndex>()).ListAsync();
+        var contentItems = await query(session.Query<ContentItem, ContentItemIndex>()).ListAsync().ConfigureAwait(false);
 
-        return await contentManager.LoadAsync(contentItems);
+        return await contentManager.LoadAsync(contentItems).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -102,5 +102,5 @@ public static class ContentOrchardHelperExtensions
     public static async Task<IEnumerable<ContentItem>> GetRecentContentItemsByContentTypeAsync(this IOrchardHelper orchardHelper, string contentType, int maxContentItems = 10)
         => await orchardHelper.QueryContentItemsAsync(query => query.Where(x => x.ContentType == contentType && x.Published == true)
         .OrderByDescending(i => i.CreatedUtc)
-        .Take(maxContentItems));
+        .Take(maxContentItems)).ConfigureAwait(false);
 }

@@ -179,7 +179,7 @@ public abstract class ContentFieldHandler<TField> : IContentFieldHandler where T
     {
         if (field is TField tfield)
         {
-            await CloningAsync(context, tfield);
+            await CloningAsync(context, tfield).ConfigureAwait(false);
         }
     }
 
@@ -187,7 +187,7 @@ public abstract class ContentFieldHandler<TField> : IContentFieldHandler where T
     {
         if (field is TField tfield)
         {
-            await ClonedAsync(context, tfield);
+            await ClonedAsync(context, tfield).ConfigureAwait(false);
         }
     }
 

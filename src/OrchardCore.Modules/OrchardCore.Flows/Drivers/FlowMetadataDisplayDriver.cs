@@ -33,7 +33,7 @@ public sealed class FlowMetadataDisplayDriver : ContentDisplayDriver
             return null;
         }
 
-        await contentItem.AlterAsync<FlowMetadata>(model => context.Updater.TryUpdateModelAsync(model, Prefix));
+        await contentItem.AlterAsync<FlowMetadata>(model => context.Updater.TryUpdateModelAsync(model, Prefix)).ConfigureAwait(false);
 
         return Edit(contentItem, context);
     }

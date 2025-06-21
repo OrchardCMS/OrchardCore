@@ -40,7 +40,7 @@ public sealed class LayerMetadataWelder : ContentDisplayDriver
         if (layerMetadata == null)
         {
             layerMetadata = new LayerMetadata();
-            await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position);
+            await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position).ConfigureAwait(false);
 
             // Are we loading an editor that requires layer metadata?
             if (!string.IsNullOrEmpty(layerMetadata.Zone))
@@ -57,7 +57,7 @@ public sealed class LayerMetadataWelder : ContentDisplayDriver
         {
             shape.Title = model.DisplayText;
             shape.LayerMetadata = layerMetadata;
-            shape.Layers = (await _layerService.GetLayersAsync()).Layers;
+            shape.Layers = (await _layerService.GetLayersAsync().ConfigureAwait(false)).Layers;
         }).Location("Content:before");
     }
 
@@ -65,7 +65,7 @@ public sealed class LayerMetadataWelder : ContentDisplayDriver
     {
         var viewModel = new LayerMetadataEditViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         if (viewModel.LayerMetadata == null)
         {
@@ -91,6 +91,6 @@ public sealed class LayerMetadataWelder : ContentDisplayDriver
 
         model.DisplayText = viewModel.Title;
 
-        return await EditAsync(model, context);
+        return await EditAsync(model, context).ConfigureAwait(false);
     }
 }

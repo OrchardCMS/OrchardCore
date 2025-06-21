@@ -40,10 +40,10 @@ public class AccountControllerTests
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
-            var user = await userManager.FindByNameAsync(model.UserName) as User;
+            var user = await userManager.FindByNameAsync(model.UserName).ConfigureAwait(false) as User;
 
             var externalClaims = new List<SerializableClaim>();
-            var userRoles = await userManager.GetRolesAsync(user);
+            var userRoles = await userManager.GetRolesAsync(user).ConfigureAwait(false);
 
             var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
@@ -87,15 +87,15 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
 
-            if (await userManager.UpdateUserPropertiesAsync(user, context))
+            if (await userManager.UpdateUserPropertiesAsync(user, context).ConfigureAwait(false))
             {
-                await userManager.UpdateAsync(user);
+                await userManager.UpdateAsync(user).ConfigureAwait(false);
             }
 
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
             var sam = await session.Query<User, UserByClaimIndex>()
                     .Where(claim => claim.ClaimType == "displayName" && claim.ClaimValue == "Sam Zhang(CEO)")
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync().ConfigureAwait(false);
             Assert.NotNull(sam);
 
             var claimsDict = sam.UserClaims.ToDictionary(claim => claim.ClaimType, claim => claim.ClaimValue);
@@ -110,10 +110,10 @@ public class AccountControllerTests
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
-            var user = await userManager.FindByNameAsync(model.UserName) as User;
+            var user = await userManager.FindByNameAsync(model.UserName).ConfigureAwait(false) as User;
 
             var externalClaims = new List<SerializableClaim>();
-            var userRoles = await userManager.GetRolesAsync(user);
+            var userRoles = await userManager.GetRolesAsync(user).ConfigureAwait(false);
 
             var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
@@ -145,15 +145,15 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
 
-            if (await userManager.UpdateUserPropertiesAsync(user, updateContext))
+            if (await userManager.UpdateUserPropertiesAsync(user, updateContext).ConfigureAwait(false))
             {
-                await userManager.UpdateAsync(user);
+                await userManager.UpdateAsync(user).ConfigureAwait(false);
             }
 
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
             var userFromDb = await session.Query<User, UserByClaimIndex>()
                          .Where(claim => claim.ClaimType == "displayName" && claim.ClaimValue == "Sam Zhang")
-                         .FirstOrDefaultAsync();
+                         .FirstOrDefaultAsync().ConfigureAwait(false);
 
             Assert.DoesNotContain("Administrator", userFromDb.RoleNames);
             Assert.DoesNotContain(userFromDb.UserClaims, x => x.ClaimType == "jobTitle" && x.ClaimValue == "CEO");
@@ -190,7 +190,7 @@ public class AccountControllerTests
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
-            var user = await userManager.FindByNameAsync(model.UserName) as User;
+            var user = await userManager.FindByNameAsync(model.UserName).ConfigureAwait(false) as User;
 
             Assert.NotNull(user);
             Assert.Equal(model.Email, user.Email);
@@ -345,7 +345,7 @@ public class AccountControllerTests
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
-            var user = await userManager.FindByNameAsync(model.UserName) as User;
+            var user = await userManager.FindByNameAsync(model.UserName).ConfigureAwait(false) as User;
 
             Assert.NotNull(user);
             Assert.Equal(model.Email, user.Email);
@@ -387,7 +387,7 @@ public class AccountControllerTests
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
-            var user = await userManager.FindByNameAsync(model.UserName) as User;
+            var user = await userManager.FindByNameAsync(model.UserName).ConfigureAwait(false) as User;
 
             Assert.NotNull(user);
             Assert.Equal(model.Email, user.Email);
@@ -399,7 +399,7 @@ public class AccountControllerTests
     {
         var data = new Dictionary<string, string>
         {
-            {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(response) },
+            {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(response).ConfigureAwait(false) },
             {$"{nameof(RegisterUserForm)}.{nameof(model.UserName)}", model.UserName},
             {$"{nameof(RegisterUserForm)}.{nameof(model.Email)}", model.Email},
             {$"{nameof(RegisterUserForm)}.{nameof(model.Password)}", model.Password},
@@ -413,7 +413,7 @@ public class AccountControllerTests
     {
         var context = new SiteContext();
 
-        await context.InitializeAsync();
+        await context.InitializeAsync().ConfigureAwait(false);
 
         var recipeSteps = new JsonArray
         {
@@ -457,7 +457,7 @@ public class AccountControllerTests
             ["steps"] = recipeSteps,
         };
 
-        await RecipeHelpers.RunRecipeAsync(context, recipe);
+        await RecipeHelpers.RunRecipeAsync(context, recipe).ConfigureAwait(false);
 
         return context;
     }

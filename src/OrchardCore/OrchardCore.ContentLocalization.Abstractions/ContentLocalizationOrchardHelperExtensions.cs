@@ -20,7 +20,7 @@ public static class ContentLocalizationOrchardHelperExtensions
     public static async Task<CultureInfo> GetContentCultureAsync(this IOrchardHelper orchardHelper, ContentItem contentItem)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
-        var cultureAspect = await contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
+        var cultureAspect = await contentManager.PopulateAspectAsync(contentItem, new CultureAspect()).ConfigureAwait(false);
 
         return cultureAspect.Culture;
     }

@@ -16,7 +16,7 @@ public class BlogPostApiControllerContext : SiteContext
 
     public override async Task InitializeAsync()
     {
-        await base.InitializeAsync();
+        await base.InitializeAsync().ConfigureAwait(false);
 
         var body = new ContentTypeQueryResourceBuilder("blogPost")
                 .WithField("contentItemId").Build() +
@@ -25,12 +25,12 @@ public class BlogPostApiControllerContext : SiteContext
              new ContentTypeQueryResourceBuilder("taxonomy")
                 .WithField("contentItemId").Build();
 
-        var result = await GraphQLClient.Content.Query(body);
+        var result = await GraphQLClient.Content.Query(body).ConfigureAwait(false);
 
         var blogPostContentItemId = result["data"]["blogPost"].AsArray()[0]["contentItemId"].ToString();
 
-        var content = await Client.GetAsync($"api/content/{blogPostContentItemId}");
-        BlogPost = await content.Content.ReadAsAsync<ContentItem>();
+        var content = await Client.GetAsync($"api/content/{blogPostContentItemId}").ConfigureAwait(false);
+        BlogPost = await content.Content.ReadAsAsync<ContentItem>().ConfigureAwait(false);
 
         BlogContentItemId = result["data"]["blog"].AsArray()[0]["contentItemId"].ToString();
 

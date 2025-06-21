@@ -14,7 +14,7 @@ public class FeatureProfilesService : IFeatureProfilesService
 
     public async Task<IDictionary<string, FeatureProfile>> GetFeatureProfilesAsync()
     {
-        var document = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
+        var document = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync().ConfigureAwait(false);
 
         return document.FeatureProfiles;
     }

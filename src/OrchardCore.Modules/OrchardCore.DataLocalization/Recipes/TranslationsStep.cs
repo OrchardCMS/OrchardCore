@@ -33,7 +33,7 @@ public class TranslationsStep : IRecipeStepHandler
                 continue;
             }
 
-            await _translationsManager.UpdateTranslationAsync(importedTranslation.Name, new[] { importedTranslation.Translation });
+            await _translationsManager.UpdateTranslationAsync(importedTranslation.Name, new[] { importedTranslation.Translation }).ConfigureAwait(false);
         }
     }
 

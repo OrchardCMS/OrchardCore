@@ -115,17 +115,17 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     /// <returns><see cref="bool"/>.</returns>
     public async Task<bool> CreateAsync(IndexProfile index)
     {
-        if (await ExistsAsync(index.IndexFullName))
+        if (await ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
             return false;
         }
 
         var context = new IndexCreateContext(index);
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger).ConfigureAwait(false);
 
         var createIndexRequest = GetCreateIndexRequest(index);
-        var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
+        var response = await _elasticClient.Indices.CreateAsync(createIndexRequest).ConfigureAwait(false);
 
         if (!response.IsValidResponse)
         {
@@ -139,7 +139,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             }
         }
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger).ConfigureAwait(false);
 
         return response.Acknowledged;
     }
@@ -150,7 +150,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         var response = await _elasticClient.Indices.GetAsync<GetIndexResponse>(descriptor => descriptor
             .Indices(indexFullName)
-        );
+        ).ConfigureAwait(false);
 
         if (!response.IsValidResponse)
         {
@@ -175,7 +175,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         var response = await _elasticClient.Indices.GetAsync<GetIndexResponse>(descriptor => descriptor
             .Indices(indexFullName)
-        );
+        ).ConfigureAwait(false);
 
         if (!response.IsValidResponse)
         {
@@ -200,11 +200,11 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         var context = new IndexRemoveContext(index.IndexFullName);
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger).ConfigureAwait(false);
 
         var request = new DeleteIndexRequest(index.IndexFullName);
 
-        var response = await _elasticClient.Indices.DeleteAsync(request);
+        var response = await _elasticClient.Indices.DeleteAsync(request).ConfigureAwait(false);
 
         if (!response.IsValidResponse)
         {
@@ -220,7 +220,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             return false;
         }
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger).ConfigureAwait(false);
 
         return response.Acknowledged;
     }
@@ -231,13 +231,13 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         var context = new IndexRebuildContext(index);
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger).ConfigureAwait(false);
 
-        if (await ExistsAsync(index.IndexFullName))
+        if (await ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
             var deleteRequest = new DeleteIndexRequest(index.IndexFullName);
 
-            var deleteResponse = await _elasticClient.Indices.DeleteAsync(deleteRequest);
+            var deleteResponse = await _elasticClient.Indices.DeleteAsync(deleteRequest).ConfigureAwait(false);
 
             if (!deleteResponse.IsValidResponse)
             {
@@ -254,7 +254,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         var createIndexRequest = GetCreateIndexRequest(index);
 
-        var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
+        var response = await _elasticClient.Indices.CreateAsync(createIndexRequest).ConfigureAwait(false);
 
         if (!response.IsValidResponse)
         {
@@ -270,7 +270,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             return false;
         }
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
+        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger).ConfigureAwait(false);
 
         return response.Acknowledged;
     }
@@ -284,7 +284,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         var request = new Elastic.Clients.Elasticsearch.IndexManagement.ExistsRequest(indexFullName);
 
-        var response = await _elasticClient.Indices.ExistsAsync(request);
+        var response = await _elasticClient.Indices.ExistsAsync(request).ConfigureAwait(false);
 
         if (!response.IsValidResponse)
         {
@@ -310,7 +310,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             TopDocs = [],
         };
 
-        if (await ExistsAsync(context.IndexProfile.IndexFullName))
+        if (await ExistsAsync(context.IndexProfile.IndexFullName).ConfigureAwait(false))
         {
             var searchRequest = new SearchRequest(context.IndexProfile.IndexFullName)
             {
@@ -323,7 +323,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
                 Highlight = context.Highlight,
             };
 
-            var searchResponse = await _elasticClient.SearchAsync<JsonObject>(searchRequest);
+            var searchResponse = await _elasticClient.SearchAsync<JsonObject>(searchRequest).ConfigureAwait(false);
 
             if (!searchResponse.IsValidResponse)
             {
@@ -355,9 +355,9 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         ArgumentNullException.ThrowIfNull(index);
         ArgumentNullException.ThrowIfNull(elasticClient);
 
-        if (await ExistsAsync(index.IndexFullName))
+        if (await ExistsAsync(index.IndexFullName).ConfigureAwait(false))
         {
-            await elasticClient(_elasticClient);
+            await elasticClient(_elasticClient).ConfigureAwait(false);
 
             _timestamps[index.IndexFullName] = _clock.UtcNow;
         }
@@ -373,10 +373,10 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             TopDocs = [],
         };
 
-        if (await ExistsAsync(indexProfile.IndexFullName))
+        if (await ExistsAsync(indexProfile.IndexFullName).ConfigureAwait(false))
         {
             var response = await _elasticClient.Transport
-                .RequestAsync<SearchResponse<JsonObject>>(Elastic.Transport.HttpMethod.GET, $"{indexProfile.IndexFullName}/_search", postData: PostData.String(query));
+                .RequestAsync<SearchResponse<JsonObject>>(Elastic.Transport.HttpMethod.GET, $"{indexProfile.IndexFullName}/_search", postData: PostData.String(query)).ConfigureAwait(false);
 
             if (!response.IsValidResponse)
             {

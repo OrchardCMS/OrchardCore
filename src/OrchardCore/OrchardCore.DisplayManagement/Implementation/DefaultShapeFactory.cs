@@ -49,8 +49,8 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
     {
         if (_scopedShapeTable == null)
         {
-            var theme = await _themeManager.GetThemeAsync();
-            _scopedShapeTable = await _shapeTableManager.GetShapeTableAsync(theme?.Id);
+            var theme = await _themeManager.GetThemeAsync().ConfigureAwait(false);
+            _scopedShapeTable = await _shapeTableManager.GetShapeTableAsync(theme?.Id).ConfigureAwait(false);
         }
 
         return _scopedShapeTable;
@@ -59,7 +59,7 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
     public async ValueTask<IShape> CreateAsync(string shapeType, Func<ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
     {
         ShapeDescriptor shapeDescriptor;
-        (await GetShapeTableAsync()).Descriptors.TryGetValue(shapeType, out shapeDescriptor);
+        (await GetShapeTableAsync().ConfigureAwait(false)).Descriptors.TryGetValue(shapeType, out shapeDescriptor);
 
         var creatingContext = new ShapeCreatingContext
         {
@@ -83,7 +83,7 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
         {
             foreach (var ev in shapeDescriptor.CreatingAsync)
             {
-                await ev(creatingContext);
+                await ev(creatingContext).ConfigureAwait(false);
             }
         }
 
@@ -94,7 +94,7 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
             New = creatingContext.New,
             ShapeFactory = creatingContext.ShapeFactory,
             ShapeType = creatingContext.ShapeType,
-            Shape = await creatingContext.CreateAsync(),
+            Shape = await creatingContext.CreateAsync().ConfigureAwait(false),
         };
 
         var shape = createdContext.Shape
@@ -119,13 +119,13 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
         {
             foreach (var ev in shapeDescriptor.CreatedAsync)
             {
-                await ev(createdContext);
+                await ev(createdContext).ConfigureAwait(false);
             }
         }
 
         foreach (var ev in creatingContext.OnCreated)
         {
-            await ev(createdContext);
+            await ev(createdContext).ConfigureAwait(false);
         }
 
         created?.Invoke(createdContext);

@@ -33,7 +33,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             .Query(q => q
                 .MatchAll(new MatchAllQuery())
              )
-        );
+        ).ConfigureAwait(false);
 
         if (!response.IsValidResponse)
         {
@@ -73,7 +73,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
                     )
                 )
             )
-        );
+        ).ConfigureAwait(false);
 
         if (!response.IsValidResponse)
         {
@@ -97,7 +97,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        var mappings = await GetIndexMappingsAsync(index.IndexFullName);
+        var mappings = await GetIndexMappingsAsync(index.IndexFullName).ConfigureAwait(false);
 
         if (mappings?.Meta is null)
         {
@@ -136,7 +136,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
                 {
                     descriptor.Index(CreateElasticDocument(document), i => i.Id(document.Id));
                 }
-            });
+            }).ConfigureAwait(false);
 
             if (response.IsValidResponse)
             {
@@ -164,7 +164,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 
         var response = await _client.Indices.GetMappingAsync<GetMappingResponse>(descriptor => descriptor
             .Indices(indexFullName)
-        );
+        ).ConfigureAwait(false);
 
         if (!response.IsValidResponse)
         {
@@ -301,7 +301,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             Meta = IndexingState,
         };
 
-        var response = await _client.Indices.PutMappingAsync(putMappingRequest);
+        var response = await _client.Indices.PutMappingAsync(putMappingRequest).ConfigureAwait(false);
 
         if (!response.IsValidResponse)
         {

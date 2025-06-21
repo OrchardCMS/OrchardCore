@@ -39,7 +39,7 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var value = await _scriptEvaluator.EvaluateAsync(Value, workflowContext);
+        var value = await _scriptEvaluator.EvaluateAsync(Value, workflowContext).ConfigureAwait(false);
         workflowContext.Properties[PropertyName] = value;
 
         return Outcomes("Done");

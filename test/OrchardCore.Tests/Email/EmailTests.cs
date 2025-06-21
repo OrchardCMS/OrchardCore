@@ -260,7 +260,7 @@ public class EmailTests
         };
         var smtp = CreateSmtpService(options);
 
-        var result = await smtp.SendAsync(message);
+        var result = await smtp.SendAsync(message).ConfigureAwait(false);
 
         Assert.True(result.Succeeded);
 

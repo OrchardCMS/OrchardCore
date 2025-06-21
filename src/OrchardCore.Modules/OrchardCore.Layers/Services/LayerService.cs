@@ -41,7 +41,7 @@ public class LayerService : ILayerService
     public async Task<IEnumerable<LayerMetadata>> GetLayerWidgetsMetadataAsync(
         Expression<Func<ContentItemIndex, bool>> predicate)
     {
-        var allWidgets = await GetLayerWidgetsAsync(predicate);
+        var allWidgets = await GetLayerWidgetsAsync(predicate).ConfigureAwait(false);
 
         return allWidgets
             .Select(x => x.As<LayerMetadata>())
@@ -55,8 +55,8 @@ public class LayerService : ILayerService
     /// </summary>
     public async Task UpdateAsync(LayersDocument layers)
     {
-        var existing = await LoadLayersAsync();
+        var existing = await LoadLayersAsync().ConfigureAwait(false);
         existing.Layers = layers.Layers;
-        await _documentManager.UpdateAsync(layers);
+        await _documentManager.UpdateAsync(layers).ConfigureAwait(false);
     }
 }

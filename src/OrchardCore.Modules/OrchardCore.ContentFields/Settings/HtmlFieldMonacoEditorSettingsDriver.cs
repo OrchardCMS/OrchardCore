@@ -45,7 +45,7 @@ public sealed class HtmlFieldMonacoEditorSettingsDriver : ContentPartFieldDefini
         {
             var model = new MonacoSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
             if (!model.Options.IsJson())
             {

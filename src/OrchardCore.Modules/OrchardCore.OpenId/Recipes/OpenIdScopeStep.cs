@@ -22,14 +22,14 @@ public sealed class OpenIdScopeStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<OpenIdScopeStepModel>();
-        var scope = await _scopeManager.FindByNameAsync(model.ScopeName);
+        var scope = await _scopeManager.FindByNameAsync(model.ScopeName).ConfigureAwait(false);
         var descriptor = new OpenIdScopeDescriptor();
         var isNew = true;
 
         if (scope != null)
         {
             isNew = false;
-            await _scopeManager.PopulateAsync(scope, descriptor);
+            await _scopeManager.PopulateAsync(scope, descriptor).ConfigureAwait(false);
         }
 
         descriptor.Description = model.Description;
@@ -45,11 +45,11 @@ public sealed class OpenIdScopeStep : NamedRecipeStepHandler
 
         if (isNew)
         {
-            await _scopeManager.CreateAsync(descriptor);
+            await _scopeManager.CreateAsync(descriptor).ConfigureAwait(false);
         }
         else
         {
-            await _scopeManager.UpdateAsync(scope, descriptor);
+            await _scopeManager.UpdateAsync(scope, descriptor).ConfigureAwait(false);
         }
     }
 }

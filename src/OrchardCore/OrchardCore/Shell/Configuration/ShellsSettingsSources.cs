@@ -28,7 +28,7 @@ public class ShellsSettingsSources : IShellsSettingsSources
         if (File.Exists(_tenants))
         {
             using var streamReader = File.OpenRead(_tenants);
-            tenantsSettings = await JObject.LoadAsync(streamReader);
+            tenantsSettings = await JObject.LoadAsync(streamReader).ConfigureAwait(false);
         }
         else
         {
@@ -51,7 +51,7 @@ public class ShellsSettingsSources : IShellsSettingsSources
         tenantsSettings[tenant] = settings;
 
         using var streamWriter = File.Create(_tenants);
-        await JsonSerializer.SerializeAsync(streamWriter, tenantsSettings, JOptions.Indented);
+        await JsonSerializer.SerializeAsync(streamWriter, tenantsSettings, JOptions.Indented).ConfigureAwait(false);
     }
 
     public async Task RemoveAsync(string tenant)
@@ -61,13 +61,13 @@ public class ShellsSettingsSources : IShellsSettingsSources
             JsonObject tenantsSettings;
             using (var streamReader = File.OpenRead(_tenants))
             {
-                tenantsSettings = await JObject.LoadAsync(streamReader);
+                tenantsSettings = await JObject.LoadAsync(streamReader).ConfigureAwait(false);
             }
 
             tenantsSettings.Remove(tenant);
 
             using var streamWriter = File.Create(_tenants);
-            await JsonSerializer.SerializeAsync(streamWriter, tenantsSettings, JOptions.Indented);
+            await JsonSerializer.SerializeAsync(streamWriter, tenantsSettings, JOptions.Indented).ConfigureAwait(false);
         }
     }
 }

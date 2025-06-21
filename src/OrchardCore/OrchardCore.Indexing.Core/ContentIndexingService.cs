@@ -88,7 +88,7 @@ public sealed class ContentIndexingService : NamedIndexingService
         if (_publishedContentTypes.Count > 0)
         {
             var contentItems = await _readonlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(_publishedContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds))
-                .ListAsync();
+                .ListAsync().ConfigureAwait(false);
 
             _publishedContentItems = contentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
         }
@@ -96,7 +96,7 @@ public sealed class ContentIndexingService : NamedIndexingService
         if (_latestContentTypes.Count > 0)
         {
             var contentItems = await _readonlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(_latestContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds))
-                .ListAsync();
+                .ListAsync().ConfigureAwait(false);
 
             _latestContentItems = contentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
         }
@@ -132,14 +132,14 @@ public sealed class ContentIndexingService : NamedIndexingService
 
         var buildIndexContext = new BuildDocumentIndexContext(new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], entry.DocumentIndexManager.GetContentIndexSettings());
 
-        await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), Logger);
+        await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), Logger).ConfigureAwait(false);
 
         // Ignore if the culture is not indexed in this index.
         if (!anyCulture)
         {
             if (!_cultureAspects.TryGetValue(contentItem.ContentItemVersionId ?? contentItem.ContentItemId, out var cultureAspect) && buildIndexContext.Record is ContentItem record)
             {
-                cultureAspect = await _contentManager.PopulateAspectAsync<CultureAspect>(record);
+                cultureAspect = await _contentManager.PopulateAspectAsync<CultureAspect>(record).ConfigureAwait(false);
                 _cultureAspects[record.ContentItemVersionId ?? record.ContentItemId] = cultureAspect;
             }
 

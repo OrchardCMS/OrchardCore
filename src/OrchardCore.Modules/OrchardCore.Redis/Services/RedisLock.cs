@@ -31,7 +31,7 @@ public class RedisLock : IDistributedLock
     /// </summary>
     public async Task<ILocker> AcquireLockAsync(string key, TimeSpan? expiration = null)
     {
-        return (await TryAcquireLockAsync(key, TimeSpan.MaxValue, expiration)).locker;
+        return (await TryAcquireLockAsync(key, TimeSpan.MaxValue, expiration).ConfigureAwait(false)).locker;
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ public class RedisLock : IDistributedLock
 
             while (!cts.IsCancellationRequested)
             {
-                var locked = await LockAsync(key, expiration ?? TimeSpan.MaxValue);
+                var locked = await LockAsync(key, expiration ?? TimeSpan.MaxValue).ConfigureAwait(false);
 
                 if (locked)
                 {
@@ -55,7 +55,7 @@ public class RedisLock : IDistributedLock
 
                 try
                 {
-                    await Task.Delay(GetDelay(++retries), cts.Token);
+                    await Task.Delay(GetDelay(++retries), cts.Token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)
                 {
@@ -75,7 +75,7 @@ public class RedisLock : IDistributedLock
     {
         if (_redis.Database == null)
         {
-            await _redis.ConnectAsync();
+            await _redis.ConnectAsync().ConfigureAwait(false);
             if (_redis.Database == null)
             {
                 _logger.LogError("Fails to check whether the named lock '{LockName}' is already acquired.", _prefix + key);
@@ -85,7 +85,7 @@ public class RedisLock : IDistributedLock
 
         try
         {
-            return (await _redis.Database.LockQueryAsync(_prefix + key)).HasValue;
+            return (await _redis.Database.LockQueryAsync(_prefix + key).ConfigureAwait(false)).HasValue;
         }
         catch (Exception e)
         {
@@ -99,7 +99,7 @@ public class RedisLock : IDistributedLock
     {
         if (_redis.Database == null)
         {
-            await _redis.ConnectAsync();
+            await _redis.ConnectAsync().ConfigureAwait(false);
             if (_redis.Database == null)
             {
                 _logger.LogError("Fails to acquire the named lock '{LockName}'.", _prefix + key);
@@ -109,7 +109,7 @@ public class RedisLock : IDistributedLock
 
         try
         {
-            return await _redis.Database.LockTakeAsync(_prefix + key, _hostName, expiry);
+            return await _redis.Database.LockTakeAsync(_prefix + key, _hostName, expiry).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -123,7 +123,7 @@ public class RedisLock : IDistributedLock
     {
         try
         {
-            await _redis.Database.LockReleaseAsync(_prefix + key, _hostName);
+            await _redis.Database.LockReleaseAsync(_prefix + key, _hostName).ConfigureAwait(false);
         }
         catch (Exception e)
         {

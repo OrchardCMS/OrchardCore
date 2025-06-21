@@ -66,7 +66,7 @@ public sealed class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField
 
     public override async Task<IDisplayResult> UpdateAsync(LinkField field, UpdateFieldEditorContext context)
     {
-        var modelUpdated = await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text, f => f.Target);
+        var modelUpdated = await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text, f => f.Target).ConfigureAwait(false);
 
         if (modelUpdated)
         {

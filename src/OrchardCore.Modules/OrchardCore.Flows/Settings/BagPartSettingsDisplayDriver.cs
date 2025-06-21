@@ -38,7 +38,7 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
             model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? []);
             model.CollapseContainedItems = settings.CollapseContainedItems;
 
-            foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
             {
                 model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
             }
@@ -55,7 +55,7 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
             m => m.DisplayType,
             m => m.Source,
             m => m.Stereotypes,
-            m => m.CollapseContainedItems);
+            m => m.CollapseContainedItems).ConfigureAwait(false);
 
         switch (model.Source)
         {

@@ -15,7 +15,7 @@ public class CacheContextManager : ICacheContextManager
 
         foreach (var provider in _cacheContextProviders.Reverse())
         {
-            await provider.PopulateContextEntriesAsync(contexts, entries);
+            await provider.PopulateContextEntriesAsync(contexts, entries).ConfigureAwait(false);
         }
 
         return entries;

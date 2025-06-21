@@ -35,14 +35,14 @@ public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         var templateContext = new TemplateContext(_templateOptions);
         var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);
 
-        await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
+        await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger).ConfigureAwait(false);
 
         // Set WorkflowContext as a local scope property.
         var result = await _liquidTemplateManager.RenderStringAsync(
             expression.Expression,
             encoder ?? NullEncoder.Default,
             new Dictionary<string, FluidValue>() { ["Workflow"] = new ObjectValue(workflowContext) }
-            );
+            ).ConfigureAwait(false);
 
         return string.IsNullOrWhiteSpace(result) ? default : (T)Convert.ChangeType(result, typeof(T));
     }

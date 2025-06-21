@@ -30,11 +30,11 @@ public class LocalClock : ILocalClock
 
     // Caching the result per request.
     public async Task<ITimeZone> GetLocalTimeZoneAsync()
-        => _timeZone ??= await LoadLocalTimeZoneAsync();
+        => _timeZone ??= await LoadLocalTimeZoneAsync().ConfigureAwait(false);
 
     public async Task<DateTimeOffset> ConvertToLocalAsync(DateTimeOffset dateTimeOffSet)
     {
-        var localTimeZone = await GetLocalTimeZoneAsync();
+        var localTimeZone = await GetLocalTimeZoneAsync().ConfigureAwait(false);
         var dateTimeZone = ((TimeZone)localTimeZone).DateTimeZone;
         var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
         var currentCalendar = BclCalendars.GetCalendarByName(await _calendarManager.GetCurrentCalendar());
@@ -46,7 +46,7 @@ public class LocalClock : ILocalClock
 
     public async Task<DateTime> ConvertToUtcAsync(DateTime dateTime)
     {
-        var localTimeZone = await GetLocalTimeZoneAsync();
+        var localTimeZone = await GetLocalTimeZoneAsync().ConfigureAwait(false);
         var dateTimeZone = ((TimeZone)localTimeZone).DateTimeZone;
         var localDate = LocalDateTime.FromDateTime(dateTime);
 
@@ -59,7 +59,7 @@ public class LocalClock : ILocalClock
 
         foreach (var timeZoneSelector in _timeZoneSelectors)
         {
-            var timeZoneResult = await timeZoneSelector.GetTimeZoneAsync();
+            var timeZoneResult = await timeZoneSelector.GetTimeZoneAsync().ConfigureAwait(false);
 
             if (timeZoneResult != null)
             {
@@ -79,7 +79,7 @@ public class LocalClock : ILocalClock
 
         foreach (var result in timeZoneResults)
         {
-            var value = await result.TimeZoneId();
+            var value = await result.TimeZoneId().ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(value))
             {

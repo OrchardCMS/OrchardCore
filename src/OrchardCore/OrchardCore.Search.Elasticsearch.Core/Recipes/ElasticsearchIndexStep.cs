@@ -46,16 +46,16 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                var index = await _indexProfileManager.FindByNameAndProviderAsync(indexName, ElasticsearchConstants.ProviderName);
+                var index = await _indexProfileManager.FindByNameAndProviderAsync(indexName, ElasticsearchConstants.ProviderName).ConfigureAwait(false);
 
                 if (index is null)
                 {
                     var data = item.Value;
                     data[nameof(index.IndexName)] = indexName;
 
-                    index = await _indexProfileManager.NewAsync(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, data);
+                    index = await _indexProfileManager.NewAsync(ElasticsearchConstants.ProviderName, IndexingConstants.ContentsIndexSource, data).ConfigureAwait(false);
 
-                    var validationResult = await _indexProfileManager.ValidateAsync(index);
+                    var validationResult = await _indexProfileManager.ValidateAsync(index).ConfigureAwait(false);
 
                     if (!validationResult.Succeeded)
                     {
@@ -67,19 +67,19 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
                         continue;
                     }
 
-                    await _indexProfileManager.CreateAsync(index);
+                    await _indexProfileManager.CreateAsync(index).ConfigureAwait(false);
                 }
 
-                var exists = await _elasticIndexManager.ExistsAsync(index.IndexFullName);
+                var exists = await _elasticIndexManager.ExistsAsync(index.IndexFullName).ConfigureAwait(false);
 
                 if (!exists)
                 {
-                    exists = await _elasticIndexManager.CreateAsync(index);
+                    exists = await _elasticIndexManager.CreateAsync(index).ConfigureAwait(false);
                 }
 
                 if (exists)
                 {
-                    await _indexProfileManager.SynchronizeAsync(index);
+                    await _indexProfileManager.SynchronizeAsync(index).ConfigureAwait(false);
                 }
             }
         }

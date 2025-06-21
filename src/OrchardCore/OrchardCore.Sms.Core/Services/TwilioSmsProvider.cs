@@ -60,7 +60,7 @@ public class TwilioSmsProvider : ISmsProvider
 
         try
         {
-            var settings = await GetSettingsAsync();
+            var settings = await GetSettingsAsync().ConfigureAwait(false);
             var data = new List<KeyValuePair<string, string>>
             {
                 new ("From", settings.PhoneNumber),
@@ -69,11 +69,11 @@ public class TwilioSmsProvider : ISmsProvider
             };
 
             var client = GetHttpClient(settings);
-            var response = await client.PostAsync($"{settings.AccountSID}/Messages.json", new FormUrlEncodedContent(data));
+            var response = await client.PostAsync($"{settings.AccountSID}/Messages.json", new FormUrlEncodedContent(data)).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<TwilioMessageResponse>(_jsonSerializerOptions);
+                var result = await response.Content.ReadFromJsonAsync<TwilioMessageResponse>(_jsonSerializerOptions).ConfigureAwait(false);
 
                 if (string.Equals(result.Status, "sent", StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(result.Status, "queued", StringComparison.OrdinalIgnoreCase))
@@ -112,7 +112,7 @@ public class TwilioSmsProvider : ISmsProvider
     {
         if (_settings == null)
         {
-            var settings = await _siteService.GetSettingsAsync<TwilioSettings>();
+            var settings = await _siteService.GetSettingsAsync<TwilioSettings>().ConfigureAwait(false);
 
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 

@@ -31,7 +31,7 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("HtmlBodyPart", builder => builder
             .Attachable()
-            .WithDescription("Provides an HTML Body for your content item."));
+            .WithDescription("Provides an HTML Body for your content item.")).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 5;
@@ -55,15 +55,15 @@ public sealed class Migrations : DataMigration
     public async Task<int> UpdateFrom3Async()
     {
         // Update content type definitions
-        foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
+        foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync().ConfigureAwait(false))
         {
             if (contentType.Parts.Any(x => x.PartDefinition.Name == "BodyPart"))
             {
-                await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.RemovePart("BodyPart").WithPart("HtmlBodyPart"));
+                await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.RemovePart("BodyPart").WithPart("HtmlBodyPart")).ConfigureAwait(false);
             }
         }
 
-        await _contentDefinitionManager.DeletePartDefinitionAsync("BodyPart");
+        await _contentDefinitionManager.DeletePartDefinitionAsync("BodyPart").ConfigureAwait(false);
 
         // We are patching all content item versions by moving the Title to DisplayText
         // This step doesn't need to be executed for a brand new site
@@ -72,7 +72,7 @@ public sealed class Migrations : DataMigration
 
         for (; ; )
         {
-            var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
+            var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync().ConfigureAwait(false);
 
             if (!contentItemVersions.Any())
             {
@@ -84,14 +84,14 @@ public sealed class Migrations : DataMigration
             {
                 if (UpdateBody((JsonObject)contentItemVersion.Content))
                 {
-                    await _session.SaveAsync(contentItemVersion);
+                    await _session.SaveAsync(contentItemVersion).ConfigureAwait(false);
                     _logger.LogInformation("A content item version's BodyPart was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                 }
 
                 lastDocumentId = contentItemVersion.Id;
             }
 
-            await _session.FlushAsync();
+            await _session.FlushAsync().ConfigureAwait(false);
         }
 
         static bool UpdateBody(JsonNode content)
@@ -132,14 +132,14 @@ public sealed class Migrations : DataMigration
     public async Task<int> UpdateFrom4Async()
     {
         // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
-        foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
+        foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync().ConfigureAwait(false))
         {
             if (contentType.Parts.Any(x => x.PartDefinition.Name == "HtmlBodyPart"))
             {
                 await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("HtmlBodyPart", part =>
                 {
                     part.MergeSettings<HtmlBodyPartSettings>(x => x.SanitizeHtml = false);
-                }));
+                })).ConfigureAwait(false);
             }
         }
 

@@ -30,16 +30,16 @@ public sealed class TempDirCleanerService : ModularTenantEvents
             {
                 var tempDir = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
 
-                if (await _fileStore.GetDirectoryInfoAsync(tempDir) == null)
+                if (await _fileStore.GetDirectoryInfoAsync(tempDir).ConfigureAwait(false) == null)
                 {
                     return;
                 }
 
-                await foreach (var c in _fileStore.GetDirectoryContentAsync(tempDir))
+                await foreach (var c in _fileStore.GetDirectoryContentAsync(tempDir).ConfigureAwait(false))
                 {
                     var result = c.IsDirectory ?
                         await _fileStore.TryDeleteDirectoryAsync(c.Path)
-                        : await _fileStore.TryDeleteFileAsync(c.Path);
+.ConfigureAwait(false) : await _fileStore.TryDeleteFileAsync(c.Path).ConfigureAwait(false);
 
                     if (!result)
                     {

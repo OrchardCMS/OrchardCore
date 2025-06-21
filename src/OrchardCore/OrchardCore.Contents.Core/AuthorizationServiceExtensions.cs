@@ -53,16 +53,16 @@ public static class AuthorizationServiceExtensions
         {
             var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 
-            var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
+            var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name).ConfigureAwait(false);
             contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (await service.AuthorizeAsync(user, dynamicPermission, contentItem))
+            if (await service.AuthorizeAsync(user, dynamicPermission, contentItem).ConfigureAwait(false))
             {
                 return true;
             }
         }
 
-        return await service.AuthorizeAsync(user, permission);
+        return await service.AuthorizeAsync(user, permission).ConfigureAwait(false);
     }
 
     private static Permission GetOwnerVariation(Permission permission)

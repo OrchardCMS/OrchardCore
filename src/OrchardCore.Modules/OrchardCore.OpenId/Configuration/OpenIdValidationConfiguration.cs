@@ -72,7 +72,7 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
                 return;
             }
 
-            var configuration = await GetServerSettingsAsync(service);
+            var configuration = await GetServerSettingsAsync(service).ConfigureAwait(false);
             if (configuration == null)
             {
                 return;
@@ -129,7 +129,7 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
                 return;
             }
 
-            var configuration = await GetServerSettingsAsync(service);
+            var configuration = await GetServerSettingsAsync(service).ConfigureAwait(false);
             if (configuration == null)
             {
                 return;
@@ -140,13 +140,13 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
             options.Issuer = configuration.Authority;
 
             // Import the signing keys from the OpenID server configuration.
-            foreach (var key in await service.GetSigningKeysAsync())
+            foreach (var key in await service.GetSigningKeysAsync().ConfigureAwait(false))
             {
                 options.Configuration.SigningKeys.Add(key);
             }
 
             // Register the encryption keys used by the OpenID Connect server.
-            foreach (var key in await service.GetEncryptionKeysAsync())
+            foreach (var key in await service.GetEncryptionKeysAsync().ConfigureAwait(false))
             {
                 options.EncryptionCredentials.Add(new EncryptingCredentials(key,
                     SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
@@ -206,7 +206,7 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
                 // relies on a data protection provider whose lifetime is managed by the other tenant.
                 // To make sure the other tenant is not disposed before all the pending requests are
                 // processed by the current tenant, a tenant dependency is manually added.
-                await scope.ShellContext.AddDependentShellAsync(await _shellHost.GetOrCreateShellContextAsync(_shellSettings));
+                await scope.ShellContext.AddDependentShellAsync(await _shellHost.GetOrCreateShellContextAsync(_shellSettings)).ConfigureAwait(false);
 
                 // Note: the data protection provider is always registered as a singleton and thus will
                 // survive the current scope, which is mainly used to prevent the other tenant from being
@@ -241,9 +241,9 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
 
     private async Task<OpenIdServerSettings> GetServerSettingsAsync(IOpenIdServerService service)
     {
-        var settings = await service.GetSettingsAsync();
+        var settings = await service.GetSettingsAsync().ConfigureAwait(false);
 
-        var result = await service.ValidateSettingsAsync(settings);
+        var result = await service.ValidateSettingsAsync(settings).ConfigureAwait(false);
 
         if (result.Any(result => result != ValidationResult.Success))
         {
@@ -266,9 +266,9 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
 
     private async Task<OpenIdValidationSettings> GetValidationSettingsAsync()
     {
-        var settings = await _validationService.GetSettingsAsync();
+        var settings = await _validationService.GetSettingsAsync().ConfigureAwait(false);
 
-        var result = await _validationService.ValidateSettingsAsync(settings);
+        var result = await _validationService.ValidateSettingsAsync(settings).ConfigureAwait(false);
 
         if (result.Any(x => x != ValidationResult.Success))
         {

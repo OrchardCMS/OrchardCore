@@ -42,7 +42,7 @@ public static class CreateEndpoint
         IOptions<DocumentJsonSerializerOptions> options,
         bool draft = false)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi).ConfigureAwait(false))
         {
             return httpContext.ChallengeOrForbid("Api");
         }
@@ -52,30 +52,30 @@ public static class CreateEndpoint
             return TypedResults.BadRequest();
         }
 
-        var contentItem = await contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
+        var contentItem = await contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired).ConfigureAwait(false);
         var modelState = updateModelAccessor.ModelUpdater.ModelState;
 
         if (contentItem == null)
         {
-            if (string.IsNullOrEmpty(model?.ContentType) || await contentDefinitionManager.GetTypeDefinitionAsync(model.ContentType) == null)
+            if (string.IsNullOrEmpty(model?.ContentType) || await contentDefinitionManager.GetTypeDefinitionAsync(model.ContentType).ConfigureAwait(false) == null)
             {
                 return TypedResults.BadRequest();
             }
 
-            contentItem = await contentManager.NewAsync(model.ContentType);
+            contentItem = await contentManager.NewAsync(model.ContentType).ConfigureAwait(false);
             contentItem.Owner = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, contentItem))
+            if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, contentItem).ConfigureAwait(false))
             {
                 return httpContext.ChallengeOrForbid("Api");
             }
             contentItem.Merge(model);
 
-            var result = await contentManager.ValidateAsync(contentItem);
+            var result = await contentManager.ValidateAsync(contentItem).ConfigureAwait(false);
 
             if (result.Succeeded)
             {
-                await contentManager.CreateAsync(contentItem, VersionOptions.Draft);
+                await contentManager.CreateAsync(contentItem, VersionOptions.Draft).ConfigureAwait(false);
             }
             else
             {
@@ -94,15 +94,15 @@ public static class CreateEndpoint
         }
         else
         {
-            if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, contentItem))
+            if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, contentItem).ConfigureAwait(false))
             {
                 return httpContext.ChallengeOrForbid("Api");
             }
 
             contentItem.Merge(model, _updateJsonMergeSettings);
 
-            await contentManager.UpdateAsync(contentItem);
-            var result = await contentManager.ValidateAsync(contentItem);
+            await contentManager.UpdateAsync(contentItem).ConfigureAwait(false);
+            var result = await contentManager.ValidateAsync(contentItem).ConfigureAwait(false);
 
             if (!result.Succeeded)
             {
@@ -122,11 +122,11 @@ public static class CreateEndpoint
 
         if (!draft)
         {
-            await contentManager.PublishAsync(contentItem);
+            await contentManager.PublishAsync(contentItem).ConfigureAwait(false);
         }
         else
         {
-            await contentManager.SaveDraftAsync(contentItem);
+            await contentManager.SaveDraftAsync(contentItem).ConfigureAwait(false);
         }
 
         return Results.Json(contentItem, options.Value.SerializerOptions);

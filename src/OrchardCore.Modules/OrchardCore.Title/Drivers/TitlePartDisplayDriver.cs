@@ -48,7 +48,7 @@ public sealed class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
 
     public override async Task<IDisplayResult> UpdateAsync(TitlePart model, UpdatePartEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Title).ConfigureAwait(false);
         var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
 
         if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))

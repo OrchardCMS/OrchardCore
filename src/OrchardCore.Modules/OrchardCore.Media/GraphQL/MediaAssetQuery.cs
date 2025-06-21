@@ -69,11 +69,11 @@ public sealed class MediaAssetQuery : ISchemaBuilder
 
         if (includeSubDirectories)
         {
-            return await allFiles.ToListAsync();
+            return await allFiles.ToListAsync().ConfigureAwait(false);
         }
         else
         {
-            return await allFiles.Where(x => !x.IsDirectory).ToListAsync();
+            return await allFiles.Where(x => !x.IsDirectory).ToListAsync().ConfigureAwait(false);
         }
     }
 }

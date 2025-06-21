@@ -22,7 +22,7 @@ public sealed class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFi
             var settings = partFieldDefinition.GetSettings<ContentPickerFieldLuceneEditorSettings>();
 
             model.Index = settings.Index;
-            model.Indices = (await _indexProfileStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.Indices = (await _indexProfileStore.GetByProviderAsync(LuceneConstants.ProviderName).ConfigureAwait(false)).Select(x => x.IndexName).ToArray();
         }).Location("Editor");
     }
 
@@ -32,7 +32,7 @@ public sealed class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFi
         {
             var model = new ContentPickerFieldLuceneEditorSettings();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
             context.Builder.WithSettings(model);
         }

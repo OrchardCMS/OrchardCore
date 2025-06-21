@@ -36,6 +36,6 @@ public class LiquidShapes(HtmlEncoder htmlEncoder) : ShapeTableProvider
             new Dictionary<string, FluidValue>()
             {
                 ["ContentItem"] = new ObjectValue(model.ContentItem),
-            });
+            }).ConfigureAwait(false);
     }
 }

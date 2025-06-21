@@ -33,7 +33,7 @@ public sealed class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinit
 
         var viewModel = new AuditTrailPartSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput).ConfigureAwait(false);
 
         context.Builder.WithSettings(new AuditTrailPartSettings
         {

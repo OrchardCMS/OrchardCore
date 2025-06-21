@@ -16,7 +16,7 @@ public sealed class ReplaceContentDefinitionDeploymentSource
 
     protected override async Task ProcessAsync(ReplaceContentDefinitionDeploymentStep step, DeploymentPlanResult result)
     {
-        var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
+        var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync().ConfigureAwait(false);
 
         var contentTypes = step.IncludeAll
             ? contentTypeDefinitionRecord.ContentTypeDefinitionRecords

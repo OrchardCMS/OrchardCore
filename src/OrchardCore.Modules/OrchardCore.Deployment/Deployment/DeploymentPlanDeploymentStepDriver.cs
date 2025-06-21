@@ -29,7 +29,7 @@ public sealed class DeploymentPlanDeploymentStepDriver : DisplayDriver<Deploymen
         {
             model.IncludeAll = step.IncludeAll;
             model.DeploymentPlanNames = step.DeploymentPlanNames;
-            model.AllDeploymentPlanNames = (await _deploymentPlanService.GetAllDeploymentPlanNamesAsync()).ToArray();
+            model.AllDeploymentPlanNames = (await _deploymentPlanService.GetAllDeploymentPlanNamesAsync().ConfigureAwait(false)).ToArray();
         }).Location("Content");
     }
 
@@ -40,7 +40,7 @@ public sealed class DeploymentPlanDeploymentStepDriver : DisplayDriver<Deploymen
         await context.Updater.TryUpdateModelAsync(step,
                                           Prefix,
                                           x => x.DeploymentPlanNames,
-                                          x => x.IncludeAll);
+                                          x => x.IncludeAll).ConfigureAwait(false);
 
         // Don't have the selected option if include all.
         if (step.IncludeAll)

@@ -30,7 +30,7 @@ public sealed class ContentDeploymentStepDriver : DisplayDriver<DeploymentStep, 
         // Initializes the value to empty otherwise the model is not updated if no type is selected.
         step.ContentTypes = [];
 
-        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ContentTypes, x => x.ExportAsSetupRecipe);
+        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ContentTypes, x => x.ExportAsSetupRecipe).ConfigureAwait(false);
 
         return Edit(step, context);
     }

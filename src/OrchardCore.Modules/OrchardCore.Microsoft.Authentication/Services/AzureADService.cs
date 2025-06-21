@@ -24,7 +24,7 @@ public class AzureADService : IAzureADService
 
     public async Task<AzureADSettings> LoadSettingsAsync()
     {
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         return container.As<AzureADSettings>();
     }
 
@@ -32,7 +32,7 @@ public class AzureADService : IAzureADService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var container = await _siteService.LoadSiteSettingsAsync();
+        var container = await _siteService.LoadSiteSettingsAsync().ConfigureAwait(false);
         container.Alter<AzureADSettings>(aspect =>
         {
             aspect.AppId = settings.AppId;
@@ -41,7 +41,7 @@ public class AzureADService : IAzureADService
             aspect.TenantId = settings.TenantId;
         });
 
-        await _siteService.UpdateSiteSettingsAsync(container);
+        await _siteService.UpdateSiteSettingsAsync(container).ConfigureAwait(false);
     }
 
     public IEnumerable<ValidationResult> ValidateSettings(AzureADSettings settings)

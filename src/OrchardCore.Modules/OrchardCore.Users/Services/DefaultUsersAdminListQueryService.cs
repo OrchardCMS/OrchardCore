@@ -61,9 +61,9 @@ public sealed class DefaultUsersAdminListQueryService : IUsersAdminListQueryServ
         // Because admin filters can add a different index to the query this must be added as a Query<User>().
         var query = _session.Query<User>();
 
-        query = await options.FilterResult.ExecuteAsync(new UserQueryContext(_serviceProvider, query));
+        query = await options.FilterResult.ExecuteAsync(new UserQueryContext(_serviceProvider, query)).ConfigureAwait(false);
 
-        await _usersAdminListFilters.InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), options, query, updater, _logger);
+        await _usersAdminListFilters.InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), options, query, updater, _logger).ConfigureAwait(false);
 
         if (defaultOperator != defaultTermNode?.Operation)
         {

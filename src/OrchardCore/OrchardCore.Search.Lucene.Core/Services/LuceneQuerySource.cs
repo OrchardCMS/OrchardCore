@@ -63,7 +63,7 @@ public sealed class LuceneQuerySource : IQuerySource
 
         var metadata = query.As<LuceneQueryMetadata>();
 
-        var index = await _indexStore.FindByIndexNameAndProviderAsync(metadata.Index, LuceneConstants.ProviderName);
+        var index = await _indexStore.FindByIndexNameAndProviderAsync(metadata.Index, LuceneConstants.ProviderName).ConfigureAwait(false);
 
         if (index is null)
         {
@@ -72,7 +72,7 @@ public sealed class LuceneQuerySource : IQuerySource
 
         await _luceneIndexStore.SearchAsync(index, async searcher =>
         {
-            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions)))).ConfigureAwait(false);
 
             var parameterizedQuery = JsonNode.Parse(tokenizedContent, JOptions.Node, JOptions.Document).AsObject();
 
@@ -81,7 +81,7 @@ public sealed class LuceneQuerySource : IQuerySource
             var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
 
             var context = new LuceneQueryContext(searcher, queryMetadata.DefaultVersion, analyzer);
-            var docs = await _queryService.SearchAsync(context, parameterizedQuery);
+            var docs = await _queryService.SearchAsync(context, parameterizedQuery).ConfigureAwait(false);
             result.Count = docs.Count;
 
             if (query.ReturnContentItems)
@@ -91,7 +91,7 @@ public sealed class LuceneQuerySource : IQuerySource
 
                 // Load corresponding content item versions.
                 var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("ContentItemVersionId")).ToArray();
-                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
+                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync().ConfigureAwait(false);
 
                 // Reorder the result to preserve the one from the Lucene query.
                 if (dbContentItems.Any())
@@ -113,7 +113,7 @@ public sealed class LuceneQuerySource : IQuerySource
 
                 result.Items = results;
             }
-        });
+        }).ConfigureAwait(false);
 
         return result;
     }

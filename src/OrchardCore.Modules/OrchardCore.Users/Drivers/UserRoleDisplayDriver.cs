@@ -57,11 +57,11 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
         // This view is always rendered, however there will be no editable roles if the user does not have permission to edit them.
         return Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", async model =>
         {
-            var roles = await _roleService.GetAssignableRolesAsync();
+            var roles = await _roleService.GetAssignableRolesAsync().ConfigureAwait(false);
 
             // When a user is in a role that the current user cannot manage the role is not shown.
-            var authorizedRoleNames = await GetAccessibleRoleNamesAsync(roles);
-            var userRoleNames = await _userRoleStore.GetRolesAsync(user, default);
+            var authorizedRoleNames = await GetAccessibleRoleNamesAsync(roles).ConfigureAwait(false);
+            var userRoleNames = await _userRoleStore.GetRolesAsync(user, default).ConfigureAwait(false);
 
             var roleEntries = new List<RoleEntry>();
             foreach (var roleName in authorizedRoleNames)
@@ -85,24 +85,24 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
     {
         var model = new EditUserRoleViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
-        var roles = await _roleService.GetAssignableRolesAsync();
+        var roles = await _roleService.GetAssignableRolesAsync().ConfigureAwait(false);
 
         // Authorize each role in the model to prevent html injection.
-        var accessibleRoleNames = await GetAccessibleRoleNamesAsync(roles);
-        var currentUserRoleNames = await _userRoleStore.GetRolesAsync(user, default);
+        var accessibleRoleNames = await GetAccessibleRoleNamesAsync(roles).ConfigureAwait(false);
+        var currentUserRoleNames = await _userRoleStore.GetRolesAsync(user, default).ConfigureAwait(false);
 
         var selectedRoleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role);
         var selectedRoles = roles.Where(x => selectedRoleNames.Contains(x.RoleName, StringComparer.OrdinalIgnoreCase));
-        var accessibleAndSelectedRoleNames = await GetAccessibleRoleNamesAsync(selectedRoles);
+        var accessibleAndSelectedRoleNames = await GetAccessibleRoleNamesAsync(selectedRoles).ConfigureAwait(false);
 
         if (context.IsNew)
         {
             // Only add authorized new roles.
             foreach (var role in accessibleAndSelectedRoleNames)
             {
-                await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default);
+                await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default).ConfigureAwait(false);
             }
         }
         else
@@ -123,7 +123,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
             {
                 if (string.Equals(role, OrchardCoreConstants.Roles.Administrator, StringComparison.OrdinalIgnoreCase))
                 {
-                    var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
+                    var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator).ConfigureAwait(false))
                         .Cast<User>()
                         .Where(user => user.IsEnabled)
                         .ToList();
@@ -131,22 +131,22 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
                     // Make sure we always have at least one enabled administrator account.
                     if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                     {
-                        await _notifier.WarningAsync(H["Cannot remove {0} role from the only enabled administrator.", OrchardCoreConstants.Roles.Administrator]);
+                        await _notifier.WarningAsync(H["Cannot remove {0} role from the only enabled administrator.", OrchardCoreConstants.Roles.Administrator]).ConfigureAwait(false);
 
                         continue;
                     }
                 }
 
-                await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeName(role), default);
+                await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeName(role), default).ConfigureAwait(false);
             }
 
             // Add new roles.
             foreach (var role in accessibleAndSelectedRoleNames)
             {
                 var normalizedName = _userManager.NormalizeName(role);
-                if (!await _userRoleStore.IsInRoleAsync(user, normalizedName, default))
+                if (!await _userRoleStore.IsInRoleAsync(user, normalizedName, default).ConfigureAwait(false))
                 {
-                    await _userRoleStore.AddToRoleAsync(user, normalizedName, default);
+                    await _userRoleStore.AddToRoleAsync(user, normalizedName, default).ConfigureAwait(false);
                 }
             }
         }
@@ -160,7 +160,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
 
         foreach (var role in roles)
         {
-            if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.AssignRoleToUsers, role))
+            if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.AssignRoleToUsers, role).ConfigureAwait(false))
             {
                 authorizedRoleNames.Add(role.RoleName);
             }

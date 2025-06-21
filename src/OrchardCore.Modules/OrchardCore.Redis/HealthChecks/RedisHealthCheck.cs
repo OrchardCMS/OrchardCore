@@ -23,12 +23,12 @@ public class RedisHealthCheck : IHealthCheck
 
             if (redisService.Connection == null)
             {
-                await redisService.ConnectAsync();
+                await redisService.ConnectAsync().ConfigureAwait(false);
             }
 
             if (redisService.Connection.IsConnected)
             {
-                var time = await redisService.Database.PingAsync();
+                var time = await redisService.Database.PingAsync().ConfigureAwait(false);
                 if (time > TimeSpan.FromSeconds(Timeout))
                 {
                     return HealthCheckResult.Unhealthy(description: $"The Redis server couldn't be reached within {Timeout} seconds and might be offline or have degraded performance.");

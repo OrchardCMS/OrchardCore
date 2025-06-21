@@ -15,7 +15,7 @@ public class SelectWorkflowTypeViewComponent : ViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync(string selectedWorkflowTypeId, string htmlName)
     {
-        var selections = await WorkflowTypeSelection.BuildAsync(_contentDefinitionManager, selectedWorkflowTypeId);
+        var selections = await WorkflowTypeSelection.BuildAsync(_contentDefinitionManager, selectedWorkflowTypeId).ConfigureAwait(false);
 
         var model = new SelectWorkflowTypeViewModel
         {

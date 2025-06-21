@@ -19,7 +19,7 @@ public sealed class Migrations : DataMigration
         // Form
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormPart", part => part
             .Attachable()
-            .WithDescription("Turns your content item into a form."));
+            .WithDescription("Turns your content item into a form.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Form", type => type
             .WithPart("TitlePart", part => part
@@ -38,34 +38,34 @@ public sealed class Migrations : DataMigration
             .WithPart("FlowPart", part => part
                 .WithPosition("3")
             )
-            .Stereotype("Widget"));
+            .Stereotype("Widget")).ConfigureAwait(false);
 
         // FormElement
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementPart", part => part
-            .WithDescription("Provides attributes common to all form elements."));
+            .WithDescription("Provides attributes common to all form elements.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementLabelPart", part => part
             .Attachable()
             .WithDescription("Provides a way to capture element's label.")
-        );
+        ).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementValidationPart", part => part
             .Attachable()
             .WithDescription("Provides validation options to form elements.")
-        );
+        ).ConfigureAwait(false);
 
         // FormInputElement
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormInputElementPart", part => part
-            .WithDescription("Provides attributes common to all input form elements."));
+            .WithDescription("Provides attributes common to all input form elements.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormInputElementVisibilityPart", part => part
             .Attachable()
             .WithDescription("Provides a way to add advance visibility settings.")
-        );
+        ).ConfigureAwait(false);
 
         // Label
         await _contentDefinitionManager.AlterPartDefinitionAsync("LabelPart", part => part
-            .WithDescription("Provides label properties."));
+            .WithDescription("Provides label properties.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Label", type => type
             .WithPart("TitlePart", part => part
@@ -73,11 +73,11 @@ public sealed class Migrations : DataMigration
             )
             .WithPart("FormElementPart")
             .WithPart("LabelPart")
-            .Stereotype("Widget"));
+            .Stereotype("Widget")).ConfigureAwait(false);
 
         // Input
         await _contentDefinitionManager.AlterPartDefinitionAsync("InputPart", part => part
-            .WithDescription("Provides input field properties."));
+            .WithDescription("Provides input field properties.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Input", type => type
             .WithPart("FormInputElementPart", part => part
@@ -98,11 +98,11 @@ public sealed class Migrations : DataMigration
             .WithPart("FormInputElementVisibilityPart", part => part
                 .WithPosition("6")
             )
-            .Stereotype("Widget"));
+            .Stereotype("Widget")).ConfigureAwait(false);
 
         // TextArea
         await _contentDefinitionManager.AlterPartDefinitionAsync("TextAreaPart", part => part
-            .WithDescription("Provides text area properties."));
+            .WithDescription("Provides text area properties.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("TextArea", type => type
             .WithPart("FormInputElementPart", part => part
@@ -123,11 +123,11 @@ public sealed class Migrations : DataMigration
             .WithPart("FormInputElementVisibilityPart", part => part
                 .WithPosition("6")
             )
-            .Stereotype("Widget"));
+            .Stereotype("Widget")).ConfigureAwait(false);
 
         // Select
         await _contentDefinitionManager.AlterPartDefinitionAsync("SelectPart", part => part
-            .WithDescription("Provides select field properties."));
+            .WithDescription("Provides select field properties.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Select", type => type
             .WithPart("FormInputElementPart", part => part
@@ -148,33 +148,33 @@ public sealed class Migrations : DataMigration
             .WithPart("FormInputElementVisibilityPart", part => part
                 .WithPosition("6")
             )
-            .Stereotype("Widget"));
+            .Stereotype("Widget")).ConfigureAwait(false);
 
         // Button
         await _contentDefinitionManager.AlterPartDefinitionAsync("ButtonPart", part => part
-            .WithDescription("Provides button properties."));
+            .WithDescription("Provides button properties.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Button", type => type
             .WithPart("FormInputElementPart")
             .WithPart("FormElementPart")
             .WithPart("ButtonPart")
-            .Stereotype("Widget"));
+            .Stereotype("Widget")).ConfigureAwait(false);
 
         // Validation Summary
         await _contentDefinitionManager.AlterPartDefinitionAsync("ValidationSummaryPart", part => part
-            .WithDescription("Displays a validation summary."));
+            .WithDescription("Displays a validation summary.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("ValidationSummary", type => type
             .WithPart("ValidationSummaryPart")
-            .Stereotype("Widget"));
+            .Stereotype("Widget")).ConfigureAwait(false);
 
         // Validation
         await _contentDefinitionManager.AlterPartDefinitionAsync("ValidationPart", part => part
-            .WithDescription("Displays a field validation error."));
+            .WithDescription("Displays a field validation error.")).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Validation", type => type
             .WithPart("ValidationPart")
-            .Stereotype("Widget"));
+            .Stereotype("Widget")).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 5;
@@ -185,11 +185,11 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Form", type => type
             .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
-        );
+        ).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Label", type => type
             .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
-        );
+        ).ConfigureAwait(false);
 
         return 2;
     }
@@ -204,7 +204,7 @@ public sealed class Migrations : DataMigration
             .WithPart("FormElementPart", part =>
                part.WithPosition("1")
             )
-        );
+        ).ConfigureAwait(false);
 
         return 3;
     }
@@ -215,12 +215,12 @@ public sealed class Migrations : DataMigration
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementLabelPart", part => part
             .Attachable()
             .WithDescription("Provides a way to capture element's label.")
-        );
+        ).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementValidationPart", part => part
             .Attachable()
             .WithDescription("Provides validation options to form elements.")
-        );
+        ).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Select", type => type
             .WithPart("FormInputElementPart", part => part
@@ -238,7 +238,7 @@ public sealed class Migrations : DataMigration
             .WithPart("FormElementValidationPart", part => part
                 .WithPosition("5")
             )
-        );
+        ).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Input", type => type
             .WithPart("FormInputElementPart", part => part
@@ -256,7 +256,7 @@ public sealed class Migrations : DataMigration
             .WithPart("FormElementValidationPart", part => part
                 .WithPosition("5")
             )
-        );
+        ).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("TextArea", type => type
             .WithPart("FormInputElementPart", part => part
@@ -274,7 +274,7 @@ public sealed class Migrations : DataMigration
             .WithPart("FormElementValidationPart", part => part
                 .WithPosition("5")
             )
-        );
+        ).ConfigureAwait(false);
 
         return 4;
     }
@@ -284,22 +284,22 @@ public sealed class Migrations : DataMigration
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormInputElementVisibilityPart", part => part
             .Attachable()
             .WithDescription("Provides a way to add advanced visibility settings.")
-        );
+        ).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Select", type => type
             .WithPart("FormInputElementVisibilityPart", part => part
             .WithPosition("6"))
-        );
+        ).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Input", type => type
             .WithPart("FormInputElementVisibilityPart", part => part
             .WithPosition("6"))
-        );
+        ).ConfigureAwait(false);
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("TextArea", type => type
             .WithPart("FormInputElementVisibilityPart", part => part
             .WithPosition("6"))
-        );
+        ).ConfigureAwait(false);
 
         return 5;
     }

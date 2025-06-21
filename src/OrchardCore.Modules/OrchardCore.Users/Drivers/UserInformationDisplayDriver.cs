@@ -37,13 +37,13 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user).ConfigureAwait(false))
         {
             return null;
         }
 
-        var settings = await _siteService.GetSettingsAsync<LoginSettings>();
-        var canEditUserInfo = await CanEditUserInfoAsync(user);
+        var settings = await _siteService.GetSettingsAsync<LoginSettings>().ConfigureAwait(false);
+        var canEditUserInfo = await CanEditUserInfoAsync(user).ConfigureAwait(false);
         return Combine(
             Initialize<EditUserNameViewModel>("UserName_Edit", model =>
             {
@@ -74,7 +74,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user).ConfigureAwait(false))
         {
             return null;
         }
@@ -91,15 +91,15 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
         if (context.IsNew)
         {
-            await context.Updater.TryUpdateModelAsync(userNameModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(userNameModel, Prefix).ConfigureAwait(false);
 
             user.UserName = userNameModel.UserName;
 
-            await context.Updater.TryUpdateModelAsync(emailModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(emailModel, Prefix).ConfigureAwait(false);
 
             user.Email = emailModel.Email;
 
-            await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix).ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
             {
@@ -112,21 +112,21 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
         }
         else
         {
-            var settings = await _siteService.GetSettingsAsync<LoginSettings>();
+            var settings = await _siteService.GetSettingsAsync<LoginSettings>().ConfigureAwait(false);
 
-            if (await CanEditUserInfoAsync(user))
+            if (await CanEditUserInfoAsync(user).ConfigureAwait(false))
             {
-                if (settings.AllowChangingUsername && await context.Updater.TryUpdateModelAsync(userNameModel, Prefix))
+                if (settings.AllowChangingUsername && await context.Updater.TryUpdateModelAsync(userNameModel, Prefix).ConfigureAwait(false))
                 {
                     user.UserName = userNameModel.UserName;
                 }
 
-                if (settings.AllowChangingEmail && await context.Updater.TryUpdateModelAsync(emailModel, Prefix))
+                if (settings.AllowChangingEmail && await context.Updater.TryUpdateModelAsync(emailModel, Prefix).ConfigureAwait(false))
                 {
                     user.Email = emailModel.Email;
                 }
 
-                if (settings.AllowChangingPhoneNumber && await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
+                if (settings.AllowChangingPhoneNumber && await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix).ConfigureAwait(false))
                 {
                     if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
                     {
@@ -140,12 +140,12 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
             }
         }
 
-        return await EditAsync(user, context);
+        return await EditAsync(user, context).ConfigureAwait(false);
     }
 
     private async Task<bool> CanEditUserInfoAsync(User user)
     {
-        return !IsCurrentUser(user) || await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditOwnUser);
+        return !IsCurrentUser(user) || await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditOwnUser).ConfigureAwait(false);
     }
 
     private bool IsCurrentUser(User user)

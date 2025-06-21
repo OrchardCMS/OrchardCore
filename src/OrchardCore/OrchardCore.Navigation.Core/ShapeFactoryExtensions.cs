@@ -15,7 +15,7 @@ public static class ShapeFactoryExtensions
 
     public static async ValueTask<IShape> PagerAsync(this IShapeFactory shapeFactory, Pager pager, int totalItemCount, RouteData routeData)
     {
-        var pagerShape = await shapeFactory.PagerAsync(pager, totalItemCount);
+        var pagerShape = await shapeFactory.PagerAsync(pager, totalItemCount).ConfigureAwait(false);
 
         if (routeData != null)
         {
@@ -43,7 +43,7 @@ public static class ShapeFactoryExtensions
             pager.Before,
             pager.After,
             pager.PageSize,
-        }));
+        })).ConfigureAwait(false);
 
         if (values != null && values.Count > 0)
         {

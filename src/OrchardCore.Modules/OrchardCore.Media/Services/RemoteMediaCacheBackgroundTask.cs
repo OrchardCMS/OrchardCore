@@ -71,7 +71,7 @@ public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
                 var path = Path.GetRelativePath(_cachePath, directoryInfo.FullName);
 
                 // Check if the remote directory doesn't exist.
-                var entry = await _mediaFileStore.GetDirectoryInfoAsync(path);
+                var entry = await _mediaFileStore.GetDirectoryInfoAsync(path).ConfigureAwait(false);
                 if (entry is null)
                 {
                     Directory.Delete(directoryInfo.FullName, true);
@@ -92,7 +92,7 @@ public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
                 var path = Path.GetRelativePath(_cachePath, fileInfo.FullName);
 
                 // Check if the remote media doesn't exist or was updated.
-                var entry = await _mediaFileStore.GetFileInfoAsync(path);
+                var entry = await _mediaFileStore.GetFileInfoAsync(path).ConfigureAwait(false);
                 if (entry is null ||
                     (entry.LastModifiedUtc > fileInfo.LastWriteTimeUtc &&
                     entry.LastModifiedUtc < minWriteTimeUtc))

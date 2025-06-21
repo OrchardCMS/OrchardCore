@@ -39,7 +39,7 @@ public class AliasPartIndexProvider : ContentHandlerBase, IIndexProvider, IScope
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             // Search for this part.
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType).ConfigureAwait(false);
             if (contentTypeDefinition?.Parts is not null && !contentTypeDefinition.Parts.Any(ctd => string.Equals(ctd.Name, nameof(AliasPart), StringComparison.Ordinal)))
             {
                 context.ContentItem.Remove<AliasPart>();

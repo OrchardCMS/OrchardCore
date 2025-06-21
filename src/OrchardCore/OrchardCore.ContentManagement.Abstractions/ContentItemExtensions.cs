@@ -141,7 +141,7 @@ public static class ContentItemExtensions
     public static async Task<ContentItem> AlterAsync<TPart>(this ContentItem contentItem, Func<TPart, Task> action) where TPart : ContentPart, new()
     {
         var part = contentItem.GetOrCreate<TPart>();
-        await action(part);
+        await action(part).ConfigureAwait(false);
         contentItem.Apply(part);
 
         return contentItem;

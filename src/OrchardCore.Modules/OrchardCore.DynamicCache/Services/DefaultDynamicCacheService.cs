@@ -53,16 +53,16 @@ public class DefaultDynamicCacheService : IDynamicCacheService
             return null;
         }
 
-        var cacheKey = await GetCacheKey(context);
+        var cacheKey = await GetCacheKey(context).ConfigureAwait(false);
 
-        context = await GetCachedContextAsync(cacheKey);
+        context = await GetCachedContextAsync(cacheKey).ConfigureAwait(false);
         if (context == null)
         {
             // We don't know the context, so we must treat this as a cache miss
             return null;
         }
 
-        var content = await GetCachedStringAsync(cacheKey);
+        var content = await GetCachedStringAsync(cacheKey).ConfigureAwait(false);
 
         return content;
     }
@@ -74,7 +74,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
             return;
         }
 
-        var cacheKey = await GetCacheKey(context);
+        var cacheKey = await GetCacheKey(context).ConfigureAwait(false);
 
         _localCache[cacheKey] = value;
         var esi = JConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
@@ -82,7 +82,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
         await Task.WhenAll(
             SetCachedValueAsync(cacheKey, value, context),
             SetCachedValueAsync(GetCacheContextCacheKey(cacheKey), esi, context)
-        );
+        ).ConfigureAwait(false);
     }
 
     public Task TagRemovedAsync(string tag, IEnumerable<string> keys)
@@ -115,7 +115,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
         try
         {
-            await _dynamicCache.SetAsync(cacheKey, bytes, options);
+            await _dynamicCache.SetAsync(cacheKey, bytes, options).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -131,14 +131,14 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
         // Lazy load to prevent cyclic dependency
         _tagcache ??= _serviceProvider.GetRequiredService<ITagCache>();
-        await _tagcache.TagAsync(cacheKey, context.Tags.ToArray());
+        await _tagcache.TagAsync(cacheKey, context.Tags.ToArray()).ConfigureAwait(false);
     }
 
     private async Task<string> GetCacheKey(CacheContext context)
     {
         var cacheEntries = context.Contexts.Count > 0
             ? await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts)
-            : [];
+.ConfigureAwait(false) : [];
 
         if (!cacheEntries.Any())
         {
@@ -169,7 +169,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
         try
         {
-            var bytes = await _dynamicCache.GetAsync(cacheKey);
+            var bytes = await _dynamicCache.GetAsync(cacheKey).ConfigureAwait(false);
             if (bytes == null)
             {
                 return null;
@@ -192,7 +192,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
     private async Task<CacheContext> GetCachedContextAsync(string cacheKey)
     {
-        var cachedValue = await GetCachedStringAsync(GetCacheContextCacheKey(cacheKey));
+        var cachedValue = await GetCachedStringAsync(GetCacheContextCacheKey(cacheKey)).ConfigureAwait(false);
 
         if (cachedValue == null)
         {

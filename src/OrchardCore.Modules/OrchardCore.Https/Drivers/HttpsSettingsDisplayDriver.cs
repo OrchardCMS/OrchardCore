@@ -42,7 +42,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
     public override async Task<IDisplayResult> EditAsync(ISite site, HttpsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps).ConfigureAwait(false))
         {
             return null;
         }
@@ -55,7 +55,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 
             if (!isHttpsRequest)
             {
-                await _notifier.WarningAsync(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
+                await _notifier.WarningAsync(H["For safety, Enabling require HTTPS over HTTP has been prevented."]).ConfigureAwait(false);
             }
 
             model.EnableStrictTransportSecurity = settings.EnableStrictTransportSecurity;
@@ -73,14 +73,14 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
     public override async Task<IDisplayResult> UpdateAsync(ISite site, HttpsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new HttpsSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.EnableStrictTransportSecurity = model.EnableStrictTransportSecurity;
         settings.RequireHttps = model.RequireHttps;
@@ -89,6 +89,6 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 
         _shellReleaseManager.RequestRelease();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

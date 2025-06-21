@@ -35,12 +35,12 @@ public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplay
     public override async Task<IDisplayResult> EditAsync(ISite site, TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies).ConfigureAwait(false))
         {
             return null;
         }
 
-        var taxonomies = await _session.Query<ContentItem, ContentItemIndex>(q => q.ContentType == "Taxonomy" && q.Published).ListAsync();
+        var taxonomies = await _session.Query<ContentItem, ContentItemIndex>(q => q.ContentType == "Taxonomy" && q.Published).ListAsync().ConfigureAwait(false);
 
         var entries = taxonomies.Select(x => new TaxonomyEntry
         {
@@ -60,10 +60,10 @@ public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplay
     {
         var model = new TaxonomyContentsAdminListSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         settings.TaxonomyContentItemIds = model.TaxonomyEntries.Where(e => e.IsChecked).Select(e => e.ContentItemId).ToArray();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(site, settings, context).ConfigureAwait(false);
     }
 }

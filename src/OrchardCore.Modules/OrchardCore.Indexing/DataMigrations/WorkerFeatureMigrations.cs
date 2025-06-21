@@ -16,20 +16,20 @@ internal sealed class WorkerFeatureMigrations : DataMigration
         {
             var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
 
-            if (await featuresManager.IsFeatureEnabledAsync(IndexingConstants.Feature.Worker))
+            if (await featuresManager.IsFeatureEnabledAsync(IndexingConstants.Feature.Worker).ConfigureAwait(false))
             {
                 return;
             }
 
             var shouldEnabled = await featuresManager.IsFeatureEnabledAsync("OrchardCore.Search.Elasticsearch.Worker")
-                || await featuresManager.IsFeatureEnabledAsync("OrchardCore.Search.Lucene.Worker");
+.ConfigureAwait(false) || await featuresManager.IsFeatureEnabledAsync("OrchardCore.Search.Lucene.Worker").ConfigureAwait(false);
 
             if (!shouldEnabled)
             {
                 return;
             }
 
-            await featuresManager.EnableFeaturesAsync(IndexingConstants.Feature.Worker);
+            await featuresManager.EnableFeaturesAsync(IndexingConstants.Feature.Worker).ConfigureAwait(false);
         });
 
         return 1;

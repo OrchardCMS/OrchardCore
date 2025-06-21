@@ -112,7 +112,7 @@ public sealed class LiquidStartup : StartupBase
                     var displayManager = context.Services.GetRequiredService<IDisplayManager<Navbar>>();
                     var updateModelAccessor = context.Services.GetRequiredService<IUpdateModelAccessor>();
 
-                    var shape = await displayManager.BuildDisplayAsync(updateModelAccessor.ModelUpdater);
+                    var shape = await displayManager.BuildDisplayAsync(updateModelAccessor.ModelUpdater).ConfigureAwait(false);
 
                     return FluidValue.Create(shape, ctx.Options);
                 }

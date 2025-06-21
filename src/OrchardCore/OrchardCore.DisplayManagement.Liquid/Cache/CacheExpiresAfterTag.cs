@@ -22,7 +22,7 @@ public class CacheExpiresAfterTag
         }
 
         TimeSpan value;
-        var input = await argument.EvaluateAsync(context);
+        var input = await argument.EvaluateAsync(context).ConfigureAwait(false);
 
         if (input.Type == FluidValues.String)
         {

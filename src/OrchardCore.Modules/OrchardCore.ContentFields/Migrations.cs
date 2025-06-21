@@ -26,7 +26,7 @@ public sealed class Migrations : DataMigration
     {
         if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.ContentFields"))
         {
-            await UpgradeAsync();
+            await UpgradeAsync().ConfigureAwait(false);
         }
 
         // Shortcut other migration steps on new content definition schemas.
@@ -37,52 +37,52 @@ public sealed class Migrations : DataMigration
     private async Task UpgradeAsync()
     {
         // Boolean field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<BooleanField, BooleanFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<BooleanField, BooleanFieldSettings>().ConfigureAwait(false);
 
         // Content picker field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<ContentPickerField, ContentPickerFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<ContentPickerField, ContentPickerFieldSettings>().ConfigureAwait(false);
 
         // Date field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<DateField, DateFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<DateField, DateFieldSettings>().ConfigureAwait(false);
 
         // Date time field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<DateTimeField, DateTimeFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<DateTimeField, DateTimeFieldSettings>().ConfigureAwait(false);
 
         // Html field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<HtmlField, HtmlFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<HtmlField, HtmlFieldSettings>().ConfigureAwait(false);
 
         // Link field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<LinkField, LinkFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<LinkField, LinkFieldSettings>().ConfigureAwait(false);
 
         // Localization set content picker field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<LocalizationSetContentPickerField, LocalizationSetContentPickerFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<LocalizationSetContentPickerField, LocalizationSetContentPickerFieldSettings>().ConfigureAwait(false);
 
         // MultiText field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<MultiTextField, MultiTextFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<MultiTextField, MultiTextFieldSettings>().ConfigureAwait(false);
 
         // Numeric field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<NumericField, NumericFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<NumericField, NumericFieldSettings>().ConfigureAwait(false);
 
         // Text field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldHeaderDisplaySettings>();
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldPredefinedListEditorSettings>();
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldHeaderDisplaySettings>().ConfigureAwait(false);
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldPredefinedListEditorSettings>().ConfigureAwait(false);
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldSettings>().ConfigureAwait(false);
 
         // Time field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<TimeField, TimeFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<TimeField, TimeFieldSettings>().ConfigureAwait(false);
 
         // YouTube field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<YoutubeField, YoutubeFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<YoutubeField, YoutubeFieldSettings>().ConfigureAwait(false);
 
         // Keep in sync the upgrade process.
-        await UpdateFrom1Async();
+        await UpdateFrom1Async().ConfigureAwait(false);
     }
 
     // This step is part of the upgrade process.
     public async Task<int> UpdateFrom1Async()
     {
         // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
-        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
+        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync().ConfigureAwait(false);
         foreach (var partDefinition in partDefinitions)
         {
             if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "HtmlField"))
@@ -96,7 +96,7 @@ public sealed class Migrations : DataMigration
                             fieldBuilder.MergeSettings<HtmlFieldSettings>(x => x.SanitizeHtml = false);
                         });
                     }
-                });
+                }).ConfigureAwait(false);
             }
         }
 

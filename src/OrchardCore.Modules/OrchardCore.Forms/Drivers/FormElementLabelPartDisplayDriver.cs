@@ -27,7 +27,7 @@ public sealed class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver
     {
         var viewModel = new FormElementLabelPartViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
 
         part.Label = viewModel.Label;
         part.Option = viewModel.LabelOption;

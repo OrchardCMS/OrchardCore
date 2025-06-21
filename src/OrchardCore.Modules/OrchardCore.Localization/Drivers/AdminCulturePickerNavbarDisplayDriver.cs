@@ -23,7 +23,7 @@ public sealed class AdminCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar
 
     public override async Task<IDisplayResult> DisplayAsync(Navbar model, BuildDisplayContext context)
     {
-        var supportedCultures = (await _localizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
+        var supportedCultures = (await _localizationService.GetSupportedCulturesAsync().ConfigureAwait(false)).Select(c => CultureInfo.GetCultureInfo(c));
 
         return Initialize<AdminCulturePickerViewModel>("AdminCulturePicker", model =>
         {

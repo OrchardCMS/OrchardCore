@@ -26,7 +26,7 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(context);
 
-        var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
+        var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync().ConfigureAwait(false);
 
         using var session = _store.CreateSession(withTracking: false);
 
@@ -66,6 +66,6 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
             .ThenBy(x => x.Id)
             .Take(take ?? 0)
             .Skip(skip ?? 0)
-            .ListAsync();
+            .ListAsync().ConfigureAwait(false);
     }
 }

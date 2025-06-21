@@ -15,7 +15,7 @@ public class MediaProfileService : IMediaProfileService
 
     public async Task<IDictionary<string, string>> GetMediaProfileCommands(string name)
     {
-        var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
+        var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync().ConfigureAwait(false);
 
         if (mediaProfilesDocument.MediaProfiles.TryGetValue(name, out var mediaProfile))
         {

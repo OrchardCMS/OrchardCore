@@ -35,7 +35,7 @@ public sealed class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPar
     public override async Task<IDisplayResult> UpdateAsync(SelectPart part, UpdatePartEditorContext context)
     {
         var viewModel = new SelectPartEditViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix).ConfigureAwait(false);
         part.DefaultValue = viewModel.DefaultValue;
 
         try

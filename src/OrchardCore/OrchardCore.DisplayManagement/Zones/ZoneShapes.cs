@@ -109,7 +109,7 @@ public class ZoneShapes : IShapeAttributeProvider
             {
                 m.Identifier = identifier;
                 m.Groupings = orderedGroupings;
-            });
+            }).ConfigureAwait(false);
 
             container.Classes.Add("accordion");
 
@@ -119,14 +119,14 @@ public class ZoneShapes : IShapeAttributeProvider
                 {
                     m.Identifier = identifier;
                     m.Grouping = orderedGrouping;
-                });
+                }).ConfigureAwait(false);
 
                 foreach (var item in orderedGrouping)
                 {
-                    await groupingShape.AddAsync(item);
+                    await groupingShape.AddAsync(item).ConfigureAwait(false);
                 }
 
-                await container.AddAsync(groupingShape);
+                await container.AddAsync(groupingShape).ConfigureAwait(false);
             }
 
             htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
@@ -138,7 +138,7 @@ public class ZoneShapes : IShapeAttributeProvider
             {
                 m.Identifier = identifier;
                 m.Grouping = groupings.ElementAt(0);
-            });
+            }).ConfigureAwait(false);
 
             htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(cardGrouping));
         }
@@ -204,7 +204,7 @@ public class ZoneShapes : IShapeAttributeProvider
             var container = (GroupViewModel)await ShapeFactory.CreateAsync<GroupViewModel>("CardContainer", m =>
             {
                 m.Identifier = Shape.Identifier;
-            });
+            }).ConfigureAwait(false);
 
             container.Classes.Add("accordion");
 
@@ -214,14 +214,14 @@ public class ZoneShapes : IShapeAttributeProvider
                 {
                     m.Identifier = Shape.Identifier;
                     m.Grouping = orderedGrouping;
-                });
+                }).ConfigureAwait(false);
 
                 foreach (var item in orderedGrouping)
                 {
-                    await groupingShape.AddAsync(item);
+                    await groupingShape.AddAsync(item).ConfigureAwait(false);
                 }
 
-                await container.AddAsync(groupingShape);
+                await container.AddAsync(groupingShape).ConfigureAwait(false);
             }
 
             htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
@@ -233,7 +233,7 @@ public class ZoneShapes : IShapeAttributeProvider
             {
                 m.Identifier = Shape.Identifier;
                 m.Grouping = Shape.Grouping;
-            });
+            }).ConfigureAwait(false);
 
             htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(groupingShape));
         }
@@ -299,7 +299,7 @@ public class ZoneShapes : IShapeAttributeProvider
             var container = (GroupViewModel)await ShapeFactory.CreateAsync<GroupViewModel>("ColumnContainer", m =>
             {
                 m.Identifier = Shape.Identifier;
-            });
+            }).ConfigureAwait(false);
 
             foreach (var orderedGrouping in orderedGroupings)
             {
@@ -307,7 +307,7 @@ public class ZoneShapes : IShapeAttributeProvider
                 {
                     m.Identifier = Shape.Identifier;
                     m.Grouping = orderedGrouping;
-                });
+                }).ConfigureAwait(false);
 
                 groupingShape.Classes.Add("ta-col-grouping");
                 groupingShape.Classes.Add("column-" + orderedGrouping.Key.HtmlClassify());
@@ -331,9 +331,9 @@ public class ZoneShapes : IShapeAttributeProvider
 
                 foreach (var item in orderedGrouping)
                 {
-                    await groupingShape.AddAsync(item);
+                    await groupingShape.AddAsync(item).ConfigureAwait(false);
                 }
-                await container.AddAsync(groupingShape);
+                await container.AddAsync(groupingShape).ConfigureAwait(false);
             }
 
             htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));

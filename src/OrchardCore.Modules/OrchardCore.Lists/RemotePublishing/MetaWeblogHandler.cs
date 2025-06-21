@@ -70,7 +70,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         {
             var result = await MetaWeblogGetUserBlogsAsync(context,
                 Convert.ToString(context.RpcMethodCall.Params[1].Value),
-                Convert.ToString(context.RpcMethodCall.Params[2].Value));
+                Convert.ToString(context.RpcMethodCall.Params[2].Value)).ConfigureAwait(false);
 
             context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
         }
@@ -83,7 +83,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
                 Convert.ToString(context.RpcMethodCall.Params[1].Value),
                 Convert.ToString(context.RpcMethodCall.Params[2].Value),
                 Convert.ToInt32(context.RpcMethodCall.Params[3].Value),
-                context.Drivers);
+                context.Drivers).ConfigureAwait(false);
 
             context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
         }
@@ -96,7 +96,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
                 Convert.ToString(context.RpcMethodCall.Params[2].Value),
                 (XRpcStruct)context.RpcMethodCall.Params[3].Value,
                 Convert.ToBoolean(context.RpcMethodCall.Params[4].Value),
-                context.Drivers);
+                context.Drivers).ConfigureAwait(false);
 
             context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
         }
@@ -108,7 +108,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
                 Convert.ToString(context.RpcMethodCall.Params[0].Value),
                 Convert.ToString(context.RpcMethodCall.Params[1].Value),
                 Convert.ToString(context.RpcMethodCall.Params[2].Value),
-                context.Drivers);
+                context.Drivers).ConfigureAwait(false);
             context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
         }
 
@@ -120,7 +120,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
                 Convert.ToString(context.RpcMethodCall.Params[2].Value),
                 (XRpcStruct)context.RpcMethodCall.Params[3].Value,
                 Convert.ToBoolean(context.RpcMethodCall.Params[4].Value),
-                context.Drivers);
+                context.Drivers).ConfigureAwait(false);
             context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
         }
 
@@ -130,7 +130,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
                 Convert.ToString(context.RpcMethodCall.Params[1].Value),
                 Convert.ToString(context.RpcMethodCall.Params[2].Value),
                 Convert.ToString(context.RpcMethodCall.Params[3].Value),
-                context.Drivers);
+                context.Drivers).ConfigureAwait(false);
             context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
         }
 
@@ -139,14 +139,14 @@ public class MetaWeblogHandler : IXmlRpcHandler
             var result = await MetaWeblogNewMediaObjectAsync(
                 Convert.ToString(context.RpcMethodCall.Params[1].Value),
                 Convert.ToString(context.RpcMethodCall.Params[2].Value),
-                (XRpcStruct)context.RpcMethodCall.Params[3].Value);
+                (XRpcStruct)context.RpcMethodCall.Params[3].Value).ConfigureAwait(false);
             context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
         }
     }
 
     private async Task<XRpcStruct> MetaWeblogNewMediaObjectAsync(string userName, string password, XRpcStruct file)
     {
-        _ = await ValidateUserAsync(userName, password);
+        _ = await ValidateUserAsync(userName, password).ConfigureAwait(false);
 
         var name = file.Optional<string>("name");
         var bits = file.Optional<byte[]>("bits");
@@ -157,7 +157,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         try
         {
             stream = new MemoryStream(bits);
-            filePath = await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream);
+            filePath = await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream).ConfigureAwait(false);
         }
         finally
         {
@@ -175,24 +175,24 @@ public class MetaWeblogHandler : IXmlRpcHandler
 
     private async Task<XRpcArray> MetaWeblogGetUserBlogsAsync(XmlRpcContext context, string userName, string password)
     {
-        var user = await ValidateUserAsync(userName, password);
+        var user = await ValidateUserAsync(userName, password).ConfigureAwait(false);
 
         var array = new XRpcArray();
 
         // Look for all types using ListPart.
-        foreach (var type in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+        foreach (var type in await _contentDefinitionManager.ListTypeDefinitionsAsync().ConfigureAwait(false))
         {
             if (!type.Parts.Any(x => x.Name == nameof(ListPart)))
             {
                 continue;
             }
 
-            foreach (var list in await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == type.Name).ListAsync())
+            foreach (var list in await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == type.Name).ListAsync().ConfigureAwait(false))
             {
                 // User needs to at least have permission to edit its own blog posts to access the service.
-                if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, list))
+                if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, list).ConfigureAwait(false))
                 {
-                    var metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(list);
+                    var metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(list).ConfigureAwait(false);
                     var displayRouteValues = metadata.DisplayRouteValues;
 
                     array.Add(new XRpcStruct()
@@ -214,12 +214,12 @@ public class MetaWeblogHandler : IXmlRpcHandler
         int numberOfPosts,
         IEnumerable<IXmlRpcDriver> drivers)
     {
-        var user = await ValidateUserAsync(userName, password);
+        var user = await ValidateUserAsync(userName, password).ConfigureAwait(false);
 
         // User needs to at least have permission to edit its own blog posts to access the service.
-        await CheckAccessAsync(CommonPermissions.EditContent, user, null);
+        await CheckAccessAsync(CommonPermissions.EditContent, user, null).ConfigureAwait(false);
 
-        var list = (await _contentManager.GetAsync(contentItemId))
+        var list = (await _contentManager.GetAsync(contentItemId).ConfigureAwait(false))
             ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
         var array = new XRpcArray();
@@ -229,11 +229,11 @@ public class MetaWeblogHandler : IXmlRpcHandler
             .With<ContentItemIndex>(x => x.Latest)
             .OrderByDescending(x => x.CreatedUtc)
             .Take(numberOfPosts)
-            .ListAsync();
+            .ListAsync().ConfigureAwait(false);
 
         foreach (var contentItem in contentItems)
         {
-            var postStruct = await CreateBlogStructAsync(context, contentItem);
+            var postStruct = await CreateBlogStructAsync(context, contentItem).ConfigureAwait(false);
 
             foreach (var driver in drivers)
             {
@@ -254,16 +254,16 @@ public class MetaWeblogHandler : IXmlRpcHandler
         bool publish,
         IEnumerable<IXmlRpcDriver> drivers)
     {
-        var user = await ValidateUserAsync(userName, password);
+        var user = await ValidateUserAsync(userName, password).ConfigureAwait(false);
 
         // User needs permission to edit or publish its own blog posts.
-        await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, null);
+        await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, null).ConfigureAwait(false);
 
-        var list = (await _contentManager.GetAsync(contentItemId))
+        var list = (await _contentManager.GetAsync(contentItemId).ConfigureAwait(false))
             ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
-        var postType = (await GetContainedContentTypesAsync(list)).FirstOrDefault();
-        var contentItem = await _contentManager.NewAsync(postType.Name);
+        var postType = (await GetContainedContentTypesAsync(list).ConfigureAwait(false)).FirstOrDefault();
+        var contentItem = await _contentManager.NewAsync(postType.Name).ConfigureAwait(false);
 
         contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
         contentItem.Alter<ContainedPart>(x => x.ListContentItemId = list.ContentItemId);
@@ -273,7 +273,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
             driver.EditPost(content, contentItem);
         }
 
-        await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
+        await _contentManager.CreateAsync(contentItem, VersionOptions.Draft).ConfigureAwait(false);
 
         // Try to get the UTC time zone by default.
         var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
@@ -290,11 +290,11 @@ public class MetaWeblogHandler : IXmlRpcHandler
 
         if (publish && (publishedUtc == null || publishedUtc <= DateTime.UtcNow))
         {
-            await _contentManager.PublishAsync(contentItem);
+            await _contentManager.PublishAsync(contentItem).ConfigureAwait(false);
         }
         else
         {
-            await _contentManager.SaveDraftAsync(contentItem);
+            await _contentManager.SaveDraftAsync(contentItem).ConfigureAwait(false);
         }
 
         if (publishedUtc != null)
@@ -317,14 +317,14 @@ public class MetaWeblogHandler : IXmlRpcHandler
         string password,
         IEnumerable<IXmlRpcDriver> drivers)
     {
-        var user = await ValidateUserAsync(userName, password);
+        var user = await ValidateUserAsync(userName, password).ConfigureAwait(false);
 
-        var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest))
+        var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest).ConfigureAwait(false))
             ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
-        await CheckAccessAsync(CommonPermissions.EditContent, user, contentItem);
+        await CheckAccessAsync(CommonPermissions.EditContent, user, contentItem).ConfigureAwait(false);
 
-        var postStruct = await CreateBlogStructAsync(context, contentItem);
+        var postStruct = await CreateBlogStructAsync(context, contentItem).ConfigureAwait(false);
 
         foreach (var driver in _metaWeblogDrivers)
         {
@@ -347,12 +347,12 @@ public class MetaWeblogHandler : IXmlRpcHandler
         bool publish,
         IEnumerable<IXmlRpcDriver> drivers)
     {
-        var user = await ValidateUserAsync(userName, password);
+        var user = await ValidateUserAsync(userName, password).ConfigureAwait(false);
 
-        var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired))
+        var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired).ConfigureAwait(false))
             ?? throw new Exception(S["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
 
-        await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, contentItem);
+        await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, contentItem).ConfigureAwait(false);
 
         foreach (var driver in _metaWeblogDrivers)
         {
@@ -374,11 +374,11 @@ public class MetaWeblogHandler : IXmlRpcHandler
 
         if (publish && (publishedUtc == null || publishedUtc <= DateTime.UtcNow))
         {
-            await _contentManager.PublishAsync(contentItem);
+            await _contentManager.PublishAsync(contentItem).ConfigureAwait(false);
         }
         else
         {
-            await _contentManager.SaveDraftAsync(contentItem);
+            await _contentManager.SaveDraftAsync(contentItem).ConfigureAwait(false);
         }
 
         if (publishedUtc != null)
@@ -400,12 +400,12 @@ public class MetaWeblogHandler : IXmlRpcHandler
         string password,
         IEnumerable<IXmlRpcDriver> drivers)
     {
-        var user = await ValidateUserAsync(userName, password);
+        var user = await ValidateUserAsync(userName, password).ConfigureAwait(false);
 
-        var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest))
+        var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest).ConfigureAwait(false))
             ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
-        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem))
+        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem).ConfigureAwait(false))
         {
             throw new InvalidOperationException(S["Not authorized to delete this content"].Value);
         }
@@ -415,30 +415,30 @@ public class MetaWeblogHandler : IXmlRpcHandler
             driver.Process(contentItem.ContentItemId);
         }
 
-        await _contentManager.RemoveAsync(contentItem);
+        await _contentManager.RemoveAsync(contentItem).ConfigureAwait(false);
         return true;
     }
 
     private async Task<ClaimsPrincipal> ValidateUserAsync(string userName, string password)
     {
-        if (!await _membershipService.CheckPasswordAsync(userName, password))
+        if (!await _membershipService.CheckPasswordAsync(userName, password).ConfigureAwait(false))
         {
             throw new InvalidOperationException(S["The username or e-mail or password provided is incorrect."].Value);
         }
 
-        var storeUser = await _membershipService.GetUserAsync(userName);
+        var storeUser = await _membershipService.GetUserAsync(userName).ConfigureAwait(false);
 
         if (storeUser == null)
         {
             return null;
         }
 
-        return await _membershipService.CreateClaimsPrincipal(storeUser);
+        return await _membershipService.CreateClaimsPrincipal(storeUser).ConfigureAwait(false);
     }
 
     private async Task<XRpcStruct> CreateBlogStructAsync(XmlRpcContext context, ContentItem contentItem)
     {
-        var metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+        var metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem).ConfigureAwait(false);
 
         var url = context.Url.Action(
             metadata.DisplayRouteValues["action"].ToString(),
@@ -472,7 +472,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
 
     private async Task CheckAccessAsync(Permission permission, ClaimsPrincipal user, ContentItem contentItem)
     {
-        if (!await _authorizationService.AuthorizeAsync(user, permission, contentItem))
+        if (!await _authorizationService.AuthorizeAsync(user, permission, contentItem).ConfigureAwait(false))
         {
             throw new InvalidOperationException(S["Not authorized to delete this content"].Value);
         }
@@ -480,7 +480,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
 
     private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentItem contentItem)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false);
         var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
         var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
         var contentTypes = settings.ContainedContentTypes ?? [];
@@ -489,7 +489,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
 
         foreach (var contentType in contentTypes)
         {
-            var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+            var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType).ConfigureAwait(false);
 
             if (definition == null)
             {

@@ -45,7 +45,7 @@ public class SuperUserHandler : IAuthorizationHandler
             return;
         }
 
-        var site = await _siteService.GetSiteSettingsAsync();
+        var site = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
 
         if (string.Equals(userId, site.SuperUser, StringComparison.OrdinalIgnoreCase))
         {

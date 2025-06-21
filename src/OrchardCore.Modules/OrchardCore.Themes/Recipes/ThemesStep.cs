@@ -29,12 +29,12 @@ public sealed class ThemesStep : NamedRecipeStepHandler
 
         if (!string.IsNullOrEmpty(model.Site))
         {
-            await _siteThemeService.SetSiteThemeAsync(model.Site);
+            await _siteThemeService.SetSiteThemeAsync(model.Site).ConfigureAwait(false);
         }
 
         if (!string.IsNullOrEmpty(model.Admin))
         {
-            await _adminThemeService.SetAdminThemeAsync(model.Admin);
+            await _adminThemeService.SetAdminThemeAsync(model.Admin).ConfigureAwait(false);
         }
     }
 }

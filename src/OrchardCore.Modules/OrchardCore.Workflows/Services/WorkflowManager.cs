@@ -100,12 +100,12 @@ public class WorkflowManager : IWorkflowManager
             }
 
             return CreateActivityExecutionContextAsync(x, activityState);
-        }));
+        })).ConfigureAwait(false);
 
-        var mergedInput = (await DeserializeAsync(state.Input)).Merge(input ?? new Dictionary<string, object>());
-        var properties = await DeserializeAsync(state.Properties);
-        var output = await DeserializeAsync(state.Output);
-        var lastResult = await DeserializeAsync(state.LastResult);
+        var mergedInput = (await DeserializeAsync(state.Input).ConfigureAwait(false)).Merge(input ?? new Dictionary<string, object>());
+        var properties = await DeserializeAsync(state.Properties).ConfigureAwait(false);
+        var output = await DeserializeAsync(state.Output).ConfigureAwait(false);
+        var lastResult = await DeserializeAsync(state.LastResult).ConfigureAwait(false);
         var executedActivities = state.ExecutedActivities;
 
         return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery);
@@ -144,7 +144,7 @@ public class WorkflowManager : IWorkflowManager
         var triggerdWorkflows = new List<WorkflowExecutionContext>();
 
         // Resume workflow instances halted on this kind of activity for the specified target.
-        var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId, isAlwaysCorrelated);
+        var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId, isAlwaysCorrelated).ConfigureAwait(false);
         foreach (var workflow in haltedWorkflows)
         {
             // Don't allow scope recursion per workflow instance id.
@@ -159,16 +159,18 @@ public class WorkflowManager : IWorkflowManager
             }
 
             // If atomic, try to acquire a lock per workflow instance.
-            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
+            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow).ConfigureAwait(false);
             if (!locked)
             {
                 continue;
             }
 
-            await using var acquiredLock = locker;
+            var acquiredLock = locker;
+            await using (acquiredLock.ConfigureAwait(false))
+            {
 
-            // If atomic, check if the workflow still exists and is still correlated.
-            var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.Id) : workflow;
+                // If atomic, check if the workflow still exists and is still correlated.
+                var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.Id).ConfigureAwait(false) : workflow;
             if (haltedWorkflow == null || (!isAlwaysCorrelated && haltedWorkflow.CorrelationId != (correlationId ?? "")))
             {
                 continue;
@@ -184,13 +186,14 @@ public class WorkflowManager : IWorkflowManager
             var blockingActivities = haltedWorkflow.BlockingActivities.Where(x => x.Name == name).ToArray();
             foreach (var blockingActivity in blockingActivities)
             {
-                var context = await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input);
+                var context = await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input).ConfigureAwait(false);
                 triggerdWorkflows.Add(context);
+            }
             }
         }
 
         // Start new workflows whose types have a corresponding starting activity.
-        var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(name);
+        var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(name).ConfigureAwait(false);
         foreach (var workflowType in workflowTypesToStart)
         {
             // Don't allow scope recursion per workflow type id.
@@ -205,16 +208,18 @@ public class WorkflowManager : IWorkflowManager
             }
 
             // If a singleton or the event is exclusive, try to acquire a lock per workflow type.
-            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType, isExclusive);
+            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType, isExclusive).ConfigureAwait(false);
             if (!locked)
             {
                 continue;
             }
 
-            await using var acquiredLock = locker;
+            var acquiredLock = locker;
+            await using (acquiredLock.ConfigureAwait(false))
+            {
 
-            // Check if this is a workflow singleton and there's already an halted instance on any activity.
-            if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                // Check if this is a workflow singleton and there's already an halted instance on any activity.
+                if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
             {
                 continue;
             }
@@ -236,6 +241,7 @@ public class WorkflowManager : IWorkflowManager
             var startActivity = workflowType.Activities.First(x => x.IsStart && x.Name == name);
             var context = await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
             triggerdWorkflows.Add(context);
+            }
         }
         return triggerdWorkflows;
     }
@@ -246,15 +252,15 @@ public class WorkflowManager : IWorkflowManager
 
         ArgumentNullException.ThrowIfNull(awaitingActivity);
 
-        var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+        var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId).ConfigureAwait(false);
         var activityRecord = workflowType.Activities.SingleOrDefault(x => x.ActivityId == awaitingActivity.ActivityId);
-        var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
+        var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input).ConfigureAwait(false);
 
         workflowContext.Status = WorkflowStatus.Resuming;
 
         // Signal every activity that the workflow is about to be resumed.
-        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input));
-        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowResumingAsync(workflowContext, workflowContext.CancellationToken));
+        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input)).ConfigureAwait(false);
+        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowResumingAsync(workflowContext, workflowContext.CancellationToken)).ConfigureAwait(false);
 
         if (workflowContext.CancellationToken.IsCancellationRequested)
         {
@@ -263,7 +269,7 @@ public class WorkflowManager : IWorkflowManager
 
         // Check if the current activity can execute.
         var activityContext = workflowContext.GetActivity(activityRecord.ActivityId);
-        if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
+        if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext).ConfigureAwait(false))
         {
             workflowContext.Status = WorkflowStatus.Halted;
 
@@ -271,21 +277,21 @@ public class WorkflowManager : IWorkflowManager
         }
 
         // Signal every activity that the workflow is resumed.
-        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowResumedAsync(workflowContext));
+        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowResumedAsync(workflowContext)).ConfigureAwait(false);
 
         // Remove the blocking activity.
         workflowContext.Workflow.BlockingActivities.Remove(awaitingActivity);
 
         // Resume the workflow at the specified blocking activity.
-        await ExecuteWorkflowAsync(workflowContext, activityRecord);
+        await ExecuteWorkflowAsync(workflowContext, activityRecord).ConfigureAwait(false);
 
         if (workflowContext.Status == WorkflowStatus.Finished && workflowType.DeleteFinishedWorkflows)
         {
-            await _workflowStore.DeleteAsync(workflowContext.Workflow);
+            await _workflowStore.DeleteAsync(workflowContext.Workflow).ConfigureAwait(false);
         }
         else
         {
-            await PersistAsync(workflowContext);
+            await PersistAsync(workflowContext).ConfigureAwait(false);
         }
 
         return workflowContext;
@@ -302,15 +308,15 @@ public class WorkflowManager : IWorkflowManager
         var workflow = NewWorkflow(workflowType, correlationId);
 
         // Create a workflow context.
-        var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
+        var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input).ConfigureAwait(false);
         workflowContext.Status = WorkflowStatus.Starting;
 
         // Signal every activity that the workflow is about to start.
         // This should be called prior OnInputReceivedAsync.
-        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowRestartingAsync(workflowContext, workflowContext.CancellationToken));
+        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowRestartingAsync(workflowContext, workflowContext.CancellationToken)).ConfigureAwait(false);
 
         // Signal every activity about available input.
-        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input));
+        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input)).ConfigureAwait(false);
 
         if (workflowContext.CancellationToken.IsCancellationRequested)
         {
@@ -319,7 +325,7 @@ public class WorkflowManager : IWorkflowManager
 
         // Check if the current activity can execute.
         var activityContext = workflowContext.GetActivity(startActivity.ActivityId);
-        if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
+        if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext).ConfigureAwait(false))
         {
             workflowContext.Status = WorkflowStatus.Idle;
 
@@ -327,15 +333,15 @@ public class WorkflowManager : IWorkflowManager
         }
 
         // Signal every activity that the workflow has started.
-        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowRestartedAsync(workflowContext));
+        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowRestartedAsync(workflowContext)).ConfigureAwait(false);
 
         // Execute the activity.
-        await ExecuteWorkflowAsync(workflowContext, startActivity);
+        await ExecuteWorkflowAsync(workflowContext, startActivity).ConfigureAwait(false);
 
         if (workflowContext.Status != WorkflowStatus.Finished || !workflowType.DeleteFinishedWorkflows)
         {
             // Serialize state.
-            await PersistAsync(workflowContext);
+            await PersistAsync(workflowContext).ConfigureAwait(false);
         }
 
         return workflowContext;
@@ -352,14 +358,14 @@ public class WorkflowManager : IWorkflowManager
         var workflow = NewWorkflow(workflowType, correlationId);
 
         // Create a workflow context.
-        var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
+        var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input).ConfigureAwait(false);
         workflowContext.Status = WorkflowStatus.Starting;
 
         // Signal every activity about available input.
-        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input));
+        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input)).ConfigureAwait(false);
 
         // Signal every activity that the workflow is about to start.
-        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowStartingAsync(workflowContext, workflowContext.CancellationToken));
+        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowStartingAsync(workflowContext, workflowContext.CancellationToken)).ConfigureAwait(false);
 
         if (workflowContext.CancellationToken.IsCancellationRequested)
         {
@@ -368,7 +374,7 @@ public class WorkflowManager : IWorkflowManager
 
         // Check if the current activity can execute.
         var activityContext = workflowContext.GetActivity(startActivity.ActivityId);
-        if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
+        if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext).ConfigureAwait(false))
         {
             workflowContext.Status = WorkflowStatus.Idle;
 
@@ -376,15 +382,15 @@ public class WorkflowManager : IWorkflowManager
         }
 
         // Signal every activity that the workflow has started.
-        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowStartedAsync(workflowContext));
+        await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowStartedAsync(workflowContext)).ConfigureAwait(false);
 
         // Execute the activity.
-        await ExecuteWorkflowAsync(workflowContext, startActivity);
+        await ExecuteWorkflowAsync(workflowContext, startActivity).ConfigureAwait(false);
 
         if (workflowContext.Status != WorkflowStatus.Finished || !workflowType.DeleteFinishedWorkflows)
         {
             // Serialize state.
-            await PersistAsync(workflowContext);
+            await PersistAsync(workflowContext).ConfigureAwait(false);
         }
 
         return workflowContext;
@@ -411,7 +417,7 @@ public class WorkflowManager : IWorkflowManager
             var activityContext = workflowContext.GetActivity(activity.ActivityId);
 
             // Signal every activity that the activity is about to be executed.
-            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnActivityExecutingAsync(workflowContext, activityContext, workflowContext.CancellationToken));
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnActivityExecutingAsync(workflowContext, activityContext, workflowContext.CancellationToken)).ConfigureAwait(false);
 
             if (workflowContext.CancellationToken.IsCancellationRequested)
             {
@@ -427,12 +433,12 @@ public class WorkflowManager : IWorkflowManager
                 if (!isResuming)
                 {
                     // Execute the current activity.
-                    result = await activityContext.Activity.ExecuteAsync(workflowContext, activityContext);
+                    result = await activityContext.Activity.ExecuteAsync(workflowContext, activityContext).ConfigureAwait(false);
                 }
                 else
                 {
                     // Resume the current activity.
-                    result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext);
+                    result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext).ConfigureAwait(false);
                     isResuming = false;
                 }
 
@@ -441,7 +447,7 @@ public class WorkflowManager : IWorkflowManager
                     if (isFirstPass)
                     {
                         // Resume immediately when this is the first pass.
-                        result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext);
+                        result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext).ConfigureAwait(false);
                         isFirstPass = false;
                         outcomes = result.Outcomes;
 
@@ -472,13 +478,13 @@ public class WorkflowManager : IWorkflowManager
                 // Decrement the workflow scope recursion count.
                 DecrementRecursion(workflowContext.Workflow);
 
-                await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
+                await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex).ConfigureAwait(false);
 
                 return blocking.Distinct();
             }
 
             // Signal every activity that the activity is executed.
-            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnActivityExecutedAsync(workflowContext, activityContext));
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnActivityExecutedAsync(workflowContext, activityContext)).ConfigureAwait(false);
 
             foreach (var outcome in outcomes)
             {
@@ -538,15 +544,15 @@ public class WorkflowManager : IWorkflowManager
     {
         var state = workflowContext.Workflow.State.ToObject<WorkflowState>(_jsonSerializerOptions);
 
-        state.Input = await SerializeAsync(workflowContext.Input);
-        state.Output = await SerializeAsync(workflowContext.Output);
-        state.Properties = await SerializeAsync(workflowContext.Properties);
-        state.LastResult = await SerializeAsync(workflowContext.LastResult);
+        state.Input = await SerializeAsync(workflowContext.Input).ConfigureAwait(false);
+        state.Output = await SerializeAsync(workflowContext.Output).ConfigureAwait(false);
+        state.Properties = await SerializeAsync(workflowContext.Properties).ConfigureAwait(false);
+        state.LastResult = await SerializeAsync(workflowContext.LastResult).ConfigureAwait(false);
         state.ExecutedActivities = workflowContext.ExecutedActivities.ToList();
         state.ActivityStates = workflowContext.Activities.ToDictionary(x => x.Key, x => x.Value.Activity.Properties);
 
         workflowContext.Workflow.State = JObject.FromObject(state, _jsonSerializerOptions);
-        await _workflowStore.SaveAsync(workflowContext.Workflow);
+        await _workflowStore.SaveAsync(workflowContext.Workflow).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -562,7 +568,7 @@ public class WorkflowManager : IWorkflowManager
         var copy = new Dictionary<string, object>(dictionary.Count);
         foreach (var item in dictionary)
         {
-            copy[item.Key] = await SerializeAsync(item.Value);
+            copy[item.Key] = await SerializeAsync(item.Value).ConfigureAwait(false);
         }
         return copy;
     }
@@ -572,7 +578,7 @@ public class WorkflowManager : IWorkflowManager
         var copy = new Dictionary<string, object>(dictionary.Count);
         foreach (var item in dictionary)
         {
-            copy[item.Key] = await DeserializeAsync(item.Value);
+            copy[item.Key] = await DeserializeAsync(item.Value).ConfigureAwait(false);
         }
         return copy;
     }
@@ -580,14 +586,14 @@ public class WorkflowManager : IWorkflowManager
     private async Task<object> SerializeAsync(object value)
     {
         var context = new SerializeWorkflowValueContext(value);
-        await _workflowValueSerializers.Resolve().InvokeAsync((s, context) => s.SerializeValueAsync(context), context, _logger);
+        await _workflowValueSerializers.Resolve().InvokeAsync((s, context) => s.SerializeValueAsync(context), context, _logger).ConfigureAwait(false);
         return context.Output;
     }
 
     private async Task<object> DeserializeAsync(object value)
     {
         var context = new SerializeWorkflowValueContext(value);
-        await _workflowValueSerializers.Resolve().InvokeAsync((s, context) => s.DeserializeValueAsync(context), context, _logger);
+        await _workflowValueSerializers.Resolve().InvokeAsync((s, context) => s.DeserializeValueAsync(context), context, _logger).ConfigureAwait(false);
         return context.Output;
     }
 }

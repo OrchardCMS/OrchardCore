@@ -36,7 +36,7 @@ public class JavaScriptWorkflowScriptEvaluator : IWorkflowScriptEvaluator
             var directive = $"js:{expression}";
             var expressionContext = new WorkflowExecutionScriptContext(workflowContext);
 
-            await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingScriptAsync(expressionContext), expressionContext, _logger);
+            await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingScriptAsync(expressionContext), expressionContext, _logger).ConfigureAwait(false);
 
             var methodProviders = scopedMethodProviders.Concat(expressionContext.ScopedMethodProviders);
 

@@ -37,7 +37,7 @@ public class LocalizationPartHandler : ContentPartHandler<LocalizationPart>
         {
             await context.ContentItem.AlterAsync<LocalizationPart>(async p =>
                 p.Culture = await _localizationService.GetDefaultCultureAsync()
-            );
+.ConfigureAwait(false)).ConfigureAwait(false);
         }
     }
 

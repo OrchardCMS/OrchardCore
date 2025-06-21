@@ -11,7 +11,7 @@ public static class ShellsConfigurationSourcesExtensions
 {
     public static async Task<IConfigurationBuilder> AddSourcesAsync(this IConfigurationBuilder builder, IShellsConfigurationSources sources)
     {
-        await sources.AddSourcesAsync(builder);
+        await sources.AddSourcesAsync(builder).ConfigureAwait(false);
         return builder;
     }
 }

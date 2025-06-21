@@ -20,7 +20,7 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("ListPart", builder => builder
             .Attachable()
-            .WithDescription("Add a list behavior."));
+            .WithDescription("Add a list behavior.")).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<ContainedPartIndex>(table => table
             .Column<string>("ContentItemId", column => column.WithLength(26))
@@ -31,7 +31,7 @@ public sealed class Migrations : DataMigration
             .Column<bool>("Published")
             .Column<bool>("Latest")
 
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
             .CreateIndex("IDX_ContainedPartIndex_DocumentId",
@@ -44,7 +44,7 @@ public sealed class Migrations : DataMigration
                 "ListContentType",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 4;
@@ -54,7 +54,7 @@ public sealed class Migrations : DataMigration
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom1Async()
     {
-        await _contentDefinitionManager.MigratePartSettingsAsync<ListPart, ListPartSettings>();
+        await _contentDefinitionManager.MigratePartSettingsAsync<ListPart, ListPartSettings>().ConfigureAwait(false);
 
         return 2;
     }
@@ -67,7 +67,7 @@ public sealed class Migrations : DataMigration
             "DocumentId",
             "ListContentItemId",
             "Order")
-        );
+        ).ConfigureAwait(false);
 
         return 3;
     }
@@ -77,26 +77,26 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
             .AddColumn<string>("ContentItemId", column => column.WithLength(26))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
             .AddColumn<string>("ListContentType")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
             .AddColumn<string>("DisplayText", column => column.WithLength(ContainedPartIndex.MaxDisplayTextSize))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
             .AddColumn<bool>("Published")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
             .AddColumn<bool>("Latest")
-        );
+        ).ConfigureAwait(false);
         await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
             .DropIndex("IDX_ContainedPartIndex_DocumentId")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
             .CreateIndex("IDX_ContainedPartIndex_DocumentId",
@@ -109,7 +109,7 @@ public sealed class Migrations : DataMigration
                 "ListContentType",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         return 4;
     }

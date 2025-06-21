@@ -41,7 +41,7 @@ public sealed class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPar
     {
         var viewModel = new LiquidPartViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid).ConfigureAwait(false);
 
         if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
         {

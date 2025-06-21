@@ -202,7 +202,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     public static async Task UsingChildScopeAsync(Func<ShellScope, Task> execute, bool activateShell = true)
     {
-        await (await CreateChildScopeAsync()).UsingAsync(execute, activateShell);
+        await (await CreateChildScopeAsync().ConfigureAwait(false)).UsingAsync(execute, activateShell).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -210,7 +210,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute, bool activateShell = true)
     {
-        await (await CreateChildScopeAsync(settings)).UsingAsync(execute, activateShell);
+        await (await CreateChildScopeAsync(settings).ConfigureAwait(false)).UsingAsync(execute, activateShell).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     public static async Task UsingChildScopeAsync(string tenant, Func<ShellScope, Task> execute, bool activateShell = true)
     {
-        await (await CreateChildScopeAsync(tenant)).UsingAsync(execute, activateShell);
+        await (await CreateChildScopeAsync(tenant).ConfigureAwait(false)).UsingAsync(execute, activateShell).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -248,11 +248,11 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         if (Current == this)
         {
-            await execute(Current);
+            await execute(Current).ConfigureAwait(false);
             return;
         }
 
-        await using (this)
+        await using (this.ConfigureAwait(false))
         {
             StartAsyncFlow();
             try
@@ -261,24 +261,24 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                 {
                     if (activateShell)
                     {
-                        await ActivateShellInternalAsync();
+                        await ActivateShellInternalAsync().ConfigureAwait(false);
                     }
 
-                    await execute(this);
+                    await execute(this).ConfigureAwait(false);
                 }
                 finally
                 {
-                    await TerminateShellInternalAsync();
+                    await TerminateShellInternalAsync().ConfigureAwait(false);
                 }
             }
             catch (Exception e)
             {
-                await HandleExceptionAsync(e);
+                await HandleExceptionAsync(e).ConfigureAwait(false);
                 throw;
             }
             finally
             {
-                await BeforeDisposeAsync();
+                await BeforeDisposeAsync().ConfigureAwait(false);
             }
         }
     }
@@ -288,11 +288,11 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     internal async Task TerminateShellAsync()
     {
-        await using (this)
+        await using (this.ConfigureAwait(false))
         {
             StartAsyncFlow();
-            await TerminateShellInternalAsync();
-            await BeforeDisposeAsync();
+            await TerminateShellInternalAsync().ConfigureAwait(false);
+            await BeforeDisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -312,7 +312,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         }
 
         // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
-        (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
+        (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync().ConfigureAwait(false);
         if (!locked)
         {
             // The retry logic increases the delay between 2 attempts (max of 10s), so if there are too
@@ -326,10 +326,12 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
             throw new TimeoutException($"Failed to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
         }
 
-        await using var acquiredLock = locker;
+        var acquiredLock = locker;
+        await using (acquiredLock.ConfigureAwait(false))
+        {
 
-        // The tenant gets activated here.
-        if (!ShellContext.IsActivated)
+            // The tenant gets activated here.
+            if (!ShellContext.IsActivated)
         {
             await new ShellScope(ShellContext).UsingAsync(async scope =>
             {
@@ -346,6 +348,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
             }, activateShell: false);
 
             ShellContext.IsActivated = true;
+        }
         }
     }
 
@@ -433,7 +436,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
         foreach (var callback in _exceptionHandlers)
         {
-            await callback(this, e);
+            await callback(this, e).ConfigureAwait(false);
         }
     }
 
@@ -447,7 +450,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         {
             foreach (var callback in _beforeDispose)
             {
-                await callback(this);
+                await callback(this).ConfigureAwait(false);
             }
         }
 
@@ -461,7 +464,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
             var signal = ShellContext.ServiceProvider.GetRequiredService<ISignal>();
             foreach (var key in _deferredSignals)
             {
-                await signal.SignalTokenAsync(key);
+                await signal.SignalTokenAsync(key).ConfigureAwait(false);
             }
         }
 
@@ -476,7 +479,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                 try
                 {
                     // May fail if a shell was released before being disabled.
-                    scope = await shellHost.GetScopeAsync(ShellContext.Settings);
+                    scope = await shellHost.GetScopeAsync(ShellContext.Settings).ConfigureAwait(false);
                 }
                 catch
                 {
@@ -492,7 +495,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
                     try
                     {
-                        await task(scope);
+                        await task(scope).ConfigureAwait(false);
                     }
                     catch (Exception e)
                     {
@@ -500,10 +503,10 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                             "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
                             task.GetType().FullName, ShellContext.Settings.Name);
 
-                        await scope.HandleExceptionAsync(e);
+                        await scope.HandleExceptionAsync(e).ConfigureAwait(false);
                     }
                 },
-                activateShell: false);
+                activateShell: false).ConfigureAwait(false);
             }
         }
     }
@@ -522,17 +525,17 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
         // If the shell context is released and in its last shell scope, according to the ref counter value,
         // the terminate event handlers are called, and the shell will be disposed at the end of the last scope.
-        if (await ShellContext.TerminateShellContextAsync())
+        if (await ShellContext.TerminateShellContextAsync().ConfigureAwait(false))
         {
             var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
             foreach (var tenantEvent in tenantEvents)
             {
-                await tenantEvent.TerminatingAsync();
+                await tenantEvent.TerminatingAsync().ConfigureAwait(false);
             }
 
             foreach (var tenantEvent in tenantEvents.Reverse())
             {
-                await tenantEvent.TerminatedAsync();
+                await tenantEvent.TerminatedAsync().ConfigureAwait(false);
             }
         }
     }
@@ -565,11 +568,11 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
         _state |= ShellScopeStates.IsDisposed;
 
-        await _serviceScope.DisposeAsync();
+        await _serviceScope.DisposeAsync().ConfigureAwait(false);
 
         if (ShellContext.Release())
         {
-            await ShellContext.DisposeAsync();
+            await ShellContext.DisposeAsync().ConfigureAwait(false);
         }
 
         Terminate();

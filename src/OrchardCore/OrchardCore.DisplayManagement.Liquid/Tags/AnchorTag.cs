@@ -43,19 +43,19 @@ public class AnchorTag : IAnchorTag
         {
             switch (argument.Name)
             {
-                case "action": action = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "controller": controller = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "area": area = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "page": page = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "page_handler": pageHandler = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "fragment": fragment = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "host": host = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "protocol": protocol = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "route": route = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "action": action = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "controller": controller = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "area": area = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "page": page = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "page_handler": pageHandler = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "fragment": fragment = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "host": host = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "protocol": protocol = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
+                case "route": route = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
 
                 case "all_route_data":
 
-                    var objectValue = (await argument.Expression.EvaluateAsync(context)).ToObjectValue();
+                    var objectValue = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToObjectValue();
 
                     if (objectValue is IFluidIndexable allRouteData)
                     {
@@ -73,19 +73,19 @@ public class AnchorTag : IAnchorTag
 
                     break;
 
-                case "href": href = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "href": href = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue(); break;
 
                 default:
 
                     if (argument.Name.StartsWith("route_"))
                     {
                         routeValues ??= [];
-                        routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
                     }
                     else
                     {
                         customAttributes ??= [];
-                        customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context).ConfigureAwait(false)).ToStringValue();
                     }
 
                     break;
@@ -184,7 +184,7 @@ public class AnchorTag : IAnchorTag
 
         if (statements != null && statements.Count > 0)
         {
-            var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+            var completion = await statements.RenderStatementsAsync(writer, encoder, context).ConfigureAwait(false);
 
             if (completion != Completion.Normal)
             {

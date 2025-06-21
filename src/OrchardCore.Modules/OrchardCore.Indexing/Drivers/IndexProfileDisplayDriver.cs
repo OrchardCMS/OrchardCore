@@ -56,7 +56,7 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
     {
         var model = new EditIndexProfileViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (context.IsNew)
         {
@@ -66,7 +66,7 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["The index name is a required field."]);
             }
-            else if (await _indexProfileStore.FindByIndexNameAndProviderAsync(model.IndexName, indexProfile.ProviderName) is not null)
+            else if (await _indexProfileStore.FindByIndexNameAndProviderAsync(model.IndexName, indexProfile.ProviderName).ConfigureAwait(false) is not null)
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["There is already another index with the same name."]);
             }
@@ -90,7 +90,7 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
         }
         else
         {
-            var existing = await _indexProfileStore.FindByNameAsync(model.Name);
+            var existing = await _indexProfileStore.FindByNameAsync(model.Name).ConfigureAwait(false);
 
             if (existing is not null && existing.Id != indexProfile.Id)
             {

@@ -29,7 +29,7 @@ public sealed class Migrations : DataMigration
             .Column<string>("Owner", column => column.Nullable().WithLength(ContentItemIndex.MaxOwnerSize))
             .Column<string>("Author", column => column.Nullable().WithLength(ContentItemIndex.MaxAuthorSize))
             .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_DocumentId",
@@ -38,7 +38,7 @@ public sealed class Migrations : DataMigration
                 "ContentItemVersionId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
@@ -49,7 +49,7 @@ public sealed class Migrations : DataMigration
                 "PublishedUtc",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
@@ -57,7 +57,7 @@ public sealed class Migrations : DataMigration
                 "Owner",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
@@ -65,7 +65,7 @@ public sealed class Migrations : DataMigration
                 "Author",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
@@ -73,7 +73,7 @@ public sealed class Migrations : DataMigration
                 "DisplayText",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 6;
@@ -83,7 +83,7 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .AddColumn<string>("ContentItemVersionId", c => c.WithLength(26))
-        );
+        ).ConfigureAwait(false);
 
         return 2;
     }
@@ -92,7 +92,7 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .AddColumn<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
-        );
+        ).ConfigureAwait(false);
 
         return 3;
     }
@@ -101,7 +101,7 @@ public sealed class Migrations : DataMigration
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom3Async()
     {
-        var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
+        var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync().ConfigureAwait(false);
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
             var existingContentTypeSettings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
@@ -134,7 +134,7 @@ public sealed class Migrations : DataMigration
                         partBuilder.WithSettings(existingTypePartSettings);
                     });
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         return 4;
@@ -144,7 +144,7 @@ public sealed class Migrations : DataMigration
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom4Async()
     {
-        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
+        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync().ConfigureAwait(false);
         foreach (var partDefinition in partDefinitions)
         {
             var existingPartSettings = partDefinition.Settings.ToObject<ContentPartSettings>();
@@ -177,7 +177,7 @@ public sealed class Migrations : DataMigration
                         fieldBuilder.WithSettings(existingFieldSettings);
                     });
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         return 5;
@@ -193,7 +193,7 @@ public sealed class Migrations : DataMigration
                 "ContentItemVersionId",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
@@ -204,7 +204,7 @@ public sealed class Migrations : DataMigration
                 "PublishedUtc",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
@@ -212,7 +212,7 @@ public sealed class Migrations : DataMigration
                 "Owner",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
@@ -220,7 +220,7 @@ public sealed class Migrations : DataMigration
                 "Author",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
@@ -228,7 +228,7 @@ public sealed class Migrations : DataMigration
                 "DisplayText",
                 "Published",
                 "Latest")
-        );
+        ).ConfigureAwait(false);
 
         return 6;
     }

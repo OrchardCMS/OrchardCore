@@ -13,7 +13,7 @@ public sealed class Migrations : DataMigration
             .Column<string>("Name")
             .Column<bool>("IsEnabled")
             .Column<bool>("HasStart")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeIndex>(table => table
             .CreateIndex("IDX_WorkflowTypeIndex_DocumentId",
@@ -22,7 +22,7 @@ public sealed class Migrations : DataMigration
                 "Name",
                 "IsEnabled",
                 "HasStart")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeStartActivitiesIndex>(table => table
             .Column<string>("WorkflowTypeId")
@@ -30,7 +30,7 @@ public sealed class Migrations : DataMigration
             .Column<bool>("IsEnabled")
             .Column<string>("StartActivityId")
             .Column<string>("StartActivityName")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeStartActivitiesIndex>(table => table
             .CreateIndex("IDX_WorkflowTypeStartActivitiesIndex_DocumentId",
@@ -39,14 +39,14 @@ public sealed class Migrations : DataMigration
                 "StartActivityId",
                 "StartActivityName",
                 "IsEnabled")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<WorkflowIndex>(table => table
             .Column<string>("WorkflowTypeId", c => c.WithLength(26))
             .Column<string>("WorkflowId", c => c.WithLength(26))
             .Column<string>("WorkflowStatus", c => c.WithLength(26))
             .Column<DateTime>("CreatedUtc")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
             .CreateIndex("IDX_WorkflowIndex_DocumentId",
@@ -55,7 +55,7 @@ public sealed class Migrations : DataMigration
                 "WorkflowId",
                 "WorkflowStatus",
                 "CreatedUtc")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
             .Column<string>("ActivityId")
@@ -64,7 +64,7 @@ public sealed class Migrations : DataMigration
             .Column<string>("WorkflowTypeId")
             .Column<string>("WorkflowId")
             .Column<string>("WorkflowCorrelationId")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
             .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityId",
@@ -72,7 +72,7 @@ public sealed class Migrations : DataMigration
                 "ActivityId",
                 "WorkflowTypeId",
                 "WorkflowId")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
             .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityName",
@@ -80,7 +80,7 @@ public sealed class Migrations : DataMigration
                 "ActivityName",
                 "WorkflowTypeId",
                 "WorkflowCorrelationId")
-        );
+        ).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 3;
@@ -92,7 +92,7 @@ public sealed class Migrations : DataMigration
         await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
         {
             table.AddColumn<string>("WorkflowStatus");
-        });
+        }).ConfigureAwait(false);
 
         return 2;
     }
@@ -107,7 +107,7 @@ public sealed class Migrations : DataMigration
                 "Name",
                 "IsEnabled",
                 "HasStart")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeStartActivitiesIndex>(table => table
             .CreateIndex("IDX_WorkflowTypeStartActivitiesIndex_DocumentId",
@@ -116,7 +116,7 @@ public sealed class Migrations : DataMigration
                 "StartActivityId",
                 "StartActivityName",
                 "IsEnabled")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
             .CreateIndex("IDX_WorkflowIndex_DocumentId",
@@ -125,7 +125,7 @@ public sealed class Migrations : DataMigration
                 "WorkflowId",
                 "WorkflowStatus",
                 "CreatedUtc")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
             .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityId",
@@ -133,7 +133,7 @@ public sealed class Migrations : DataMigration
                 "ActivityId",
                 "WorkflowTypeId",
                 "WorkflowId")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
             .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityName",
@@ -141,7 +141,7 @@ public sealed class Migrations : DataMigration
                 "ActivityName",
                 "WorkflowTypeId",
                 "WorkflowCorrelationId")
-        );
+        ).ConfigureAwait(false);
 
         return 3;
     }

@@ -42,14 +42,14 @@ public sealed class ExternalLoginSettingsDisplayDriver : SiteDisplayDriver<Exter
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ExternalLoginSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers).ConfigureAwait(false))
         {
             return null;
         }
 
         var valueBefore = settings.UseExternalProviderIfOnlyOneDefined;
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        await context.Updater.TryUpdateModelAsync(settings, Prefix).ConfigureAwait(false);
 
         if (valueBefore != settings.UseExternalProviderIfOnlyOneDefined)
         {

@@ -30,7 +30,7 @@ public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<C
     public override async Task<IDisplayResult> EditAsync(ISite site, ContentAuditTrailSettings section, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -45,15 +45,15 @@ public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<C
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ContentAuditTrailSettings section, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new ContentAuditTrailSettings();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
         section.AllowedContentTypes = model.AllowedContentTypes;
 
-        return await EditAsync(site, section, context);
+        return await EditAsync(site, section, context).ConfigureAwait(false);
     }
 }

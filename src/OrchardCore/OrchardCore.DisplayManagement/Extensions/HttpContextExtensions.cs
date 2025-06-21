@@ -32,7 +32,7 @@ public static class HttpContextExtensions
 
         foreach (var filter in filters)
         {
-            await filter.OnActionExecutionAsync(actionContext);
+            await filter.OnActionExecutionAsync(actionContext).ConfigureAwait(false);
         }
 
         return actionContext;

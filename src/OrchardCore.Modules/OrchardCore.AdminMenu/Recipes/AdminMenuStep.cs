@@ -41,7 +41,7 @@ public sealed class AdminMenuStep : NamedRecipeStepHandler
                 adminMenu.Id = IdGenerator.GenerateId();
             }
 
-            await _adminMenuService.SaveAsync(adminMenu);
+            await _adminMenuService.SaveAsync(adminMenu).ConfigureAwait(false);
         }
     }
 }

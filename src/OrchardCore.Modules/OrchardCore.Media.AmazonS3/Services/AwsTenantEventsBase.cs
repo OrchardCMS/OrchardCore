@@ -45,7 +45,7 @@ public abstract class AwsTenantEventsBase : ModularTenantEvents
 
         try
         {
-            var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName);
+            var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName).ConfigureAwait(false);
             if (bucketExists)
             {
                 _logger.LogInformation("Amazon S3 Bucket {BucketName} already exists.", _options.BucketName);
@@ -60,7 +60,7 @@ public abstract class AwsTenantEventsBase : ModularTenantEvents
             };
 
             // Trying to create bucket.
-            var response = await _amazonS3Client.PutBucketAsync(bucketRequest);
+            var response = await _amazonS3Client.PutBucketAsync(bucketRequest).ConfigureAwait(false);
 
             if (!response.IsSuccessful())
             {
@@ -82,7 +82,7 @@ public abstract class AwsTenantEventsBase : ModularTenantEvents
             {
                 PublicAccessBlockConfiguration = blockConfiguration,
                 BucketName = _options.BucketName,
-            });
+            }).ConfigureAwait(false);
 
             _logger.LogDebug("Amazon S3 Bucket {BucketName} created.", _options.BucketName);
         }
@@ -101,7 +101,7 @@ public abstract class AwsTenantEventsBase : ModularTenantEvents
 
         try
         {
-            var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName);
+            var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3Client, _options.BucketName).ConfigureAwait(false);
             if (!bucketExists)
             {
                 return;
@@ -114,7 +114,7 @@ public abstract class AwsTenantEventsBase : ModularTenantEvents
             };
 
             // Trying to delete bucket.
-            var response = await _amazonS3Client.DeleteBucketAsync(bucketRequest);
+            var response = await _amazonS3Client.DeleteBucketAsync(bucketRequest).ConfigureAwait(false);
             if (!response.IsSuccessful())
             {
                 _logger.LogError("Failed to remove the Amazon S3 Bucket {BucketName}", _options.BucketName);

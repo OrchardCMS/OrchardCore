@@ -18,7 +18,7 @@ public class BackgroundTaskSettingsProvider : IBackgroundTaskSettingsProvider
 
     public async Task<BackgroundTaskSettings> GetSettingsAsync(IBackgroundTask task)
     {
-        var document = await _backgroundTaskManager.GetDocumentAsync();
+        var document = await _backgroundTaskManager.GetDocumentAsync().ConfigureAwait(false);
 
         if (document.Settings.TryGetValue(task.GetTaskName(), out var settings))
         {

@@ -23,7 +23,7 @@ public class ListPartLocalizationHandler : ContentLocalizationPartHandlerBase<Li
     public override async Task LocalizedAsync(LocalizationContentContext context, ListPart part)
     {
         var containedList = await _session.Query<ContentItem, ContainedPartIndex>(
-            x => x.ListContentItemId == context.Original.ContentItemId).ListAsync();
+            x => x.ListContentItemId == context.Original.ContentItemId).ListAsync().ConfigureAwait(false);
 
         if (!containedList.Any())
         {
@@ -38,7 +38,7 @@ public class ListPartLocalizationHandler : ContentLocalizationPartHandlerBase<Li
                 var cp = item.As<ContainedPart>();
                 cp.ListContentItemId = context.ContentItem.ContentItemId;
                 cp.Apply();
-                await _session.SaveAsync(item);
+                await _session.SaveAsync(item).ConfigureAwait(false);
             }
         }
     }

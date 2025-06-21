@@ -48,7 +48,7 @@ public sealed class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<Youtub
     {
         var model = new EditYoutubeFieldViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
         var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
 
         if (settings.Required && string.IsNullOrWhiteSpace(model.RawAddress))

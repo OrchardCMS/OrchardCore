@@ -60,8 +60,8 @@ public sealed class SiteCulturesQuery : ISchemaBuilder
     {
         var localizationService = resolveContext.RequestServices.GetService<ILocalizationService>();
 
-        var defaultCulture = await localizationService.GetDefaultCultureAsync();
-        var supportedCultures = await localizationService.GetSupportedCulturesAsync();
+        var defaultCulture = await localizationService.GetDefaultCultureAsync().ConfigureAwait(false);
+        var supportedCultures = await localizationService.GetSupportedCulturesAsync().ConfigureAwait(false);
 
         var cultures = supportedCultures.Select(culture =>
            new SiteCulture

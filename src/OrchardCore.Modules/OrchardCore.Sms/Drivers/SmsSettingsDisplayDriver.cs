@@ -57,14 +57,14 @@ public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new SmsSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         if (settings.DefaultProviderName != model.DefaultProvider)
         {

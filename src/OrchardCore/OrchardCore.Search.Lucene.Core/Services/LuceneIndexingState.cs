@@ -32,14 +32,14 @@ public sealed class LuceneIndexingState : ILuceneIndexingState
     {
         ArgumentNullException.ThrowIfNull(indexFullName);
 
-        await EnsureContentIsSetAsync();
+        await EnsureContentIsSetAsync().ConfigureAwait(false);
 
         if (_stateDocument.TryGetPropertyValue(indexFullName, out var value))
         {
             return value.Value<long>();
         }
 
-        await SetLastTaskIdAsync(indexFullName, 0);
+        await SetLastTaskIdAsync(indexFullName, 0).ConfigureAwait(false);
 
         return 0;
     }
@@ -48,15 +48,15 @@ public sealed class LuceneIndexingState : ILuceneIndexingState
     {
         ArgumentNullException.ThrowIfNull(indexFullName);
 
-        await EnsureContentIsSetAsync();
+        await EnsureContentIsSetAsync().ConfigureAwait(false);
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         _stateDocument[indexFullName] = taskId > 0 ? taskId : 0;
 
         try
         {
-            await File.WriteAllTextAsync(_stateFileName, _stateDocument.ToJsonString(JOptions.Indented));
+            await File.WriteAllTextAsync(_stateFileName, _stateDocument.ToJsonString(JOptions.Indented)).ConfigureAwait(false);
         }
         finally
         {
@@ -71,7 +71,7 @@ public sealed class LuceneIndexingState : ILuceneIndexingState
             return;
         }
 
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -84,7 +84,7 @@ public sealed class LuceneIndexingState : ILuceneIndexingState
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_stateFileName));
 
-                await File.WriteAllTextAsync(_stateFileName, new JsonObject().ToJsonString(JOptions.Indented));
+                await File.WriteAllTextAsync(_stateFileName, new JsonObject().ToJsonString(JOptions.Indented)).ConfigureAwait(false);
             }
 
             _stateDocument = JObject.Parse(await File.ReadAllTextAsync(_stateFileName));

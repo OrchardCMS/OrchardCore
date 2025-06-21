@@ -34,7 +34,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings).ConfigureAwait(false))
         {
             return null;
         }
@@ -55,14 +55,14 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings).ConfigureAwait(false))
         {
             return null;
         }
 
         var model = new OpenIdValidationSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix).ConfigureAwait(false);
 
         var hasAuthority = !string.IsNullOrEmpty(model.Authority);
 
@@ -82,6 +82,6 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Authority), S["A tenant or authority value is required."]);
         }
 
-        return await EditAsync(settings, context);
+        return await EditAsync(settings, context).ConfigureAwait(false);
     }
 }

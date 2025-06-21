@@ -36,7 +36,7 @@ public sealed class ReCaptchaShape : IShapeAttributeProvider
     [Shape]
     public async Task<IHtmlContent> ReCaptcha(string language, string onload)
     {
-        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
+        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>().ConfigureAwait(false);
 
         if (!settings.ConfigurationExists())
         {
@@ -58,7 +58,7 @@ public sealed class ReCaptchaShape : IShapeAttributeProvider
     private async Task<string> GetReCaptchaScriptUrlAsync(string reCaptchaScriptUri, string language, string onload)
     {
         var query = new QueryString();
-        var cultureInfo = await GetCultureAsync(language);
+        var cultureInfo = await GetCultureAsync(language).ConfigureAwait(false);
         if (cultureInfo != null)
         {
             query = query.Add("hl", cultureInfo.TwoLetterISOLanguageName);
@@ -83,7 +83,7 @@ public sealed class ReCaptchaShape : IShapeAttributeProvider
 
         if (string.IsNullOrWhiteSpace(language))
         {
-            language = await _localizationService.GetDefaultCultureAsync();
+            language = await _localizationService.GetDefaultCultureAsync().ConfigureAwait(false);
         }
 
         try

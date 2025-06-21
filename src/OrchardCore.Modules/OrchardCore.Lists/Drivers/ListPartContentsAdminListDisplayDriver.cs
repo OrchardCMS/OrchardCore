@@ -21,7 +21,7 @@ public sealed class ListPartContentsAdminListDisplayDriver : DisplayDriver<Conte
     public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)
     {
         var viewModel = new ListPartContentsAdminFilterViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
+        await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart)).ConfigureAwait(false);
 
         if (viewModel.ShowListContentTypes)
         {

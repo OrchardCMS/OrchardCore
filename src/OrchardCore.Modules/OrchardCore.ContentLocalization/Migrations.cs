@@ -23,7 +23,7 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(LocalizationPart), builder => builder
             .Attachable()
-            .WithDescription("Provides a way to create localized version of content."));
+            .WithDescription("Provides a way to create localized version of content.")).ConfigureAwait(false);
 
         await SchemaBuilder.CreateMapIndexTableAsync<LocalizedContentItemIndex>(table => table
             .Column<string>("LocalizationSet", col => col.WithLength(26))
@@ -31,7 +31,7 @@ public sealed class Migrations : DataMigration
             .Column<string>("ContentItemId", c => c.WithLength(26))
             .Column<bool>("Published")
             .Column<bool>("Latest")
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
             .CreateIndex("IDX_LocalizationPartIndex_DocumentId",
@@ -41,7 +41,7 @@ public sealed class Migrations : DataMigration
             "ContentItemId",
             "Published",
             "Latest")
-        );
+        ).ConfigureAwait(false);
 
         // Shortcut other migration steps on new content definition schemas.
         return 4;
@@ -51,7 +51,7 @@ public sealed class Migrations : DataMigration
     public async Task<int> UpdateFrom1Async()
     {
         await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
-            .AddColumn<bool>(nameof(LocalizedContentItemIndex.Published)));
+            .AddColumn<bool>(nameof(LocalizedContentItemIndex.Published))).ConfigureAwait(false);
 
         return 2;
     }
@@ -61,7 +61,7 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
             .AddColumn<bool>(nameof(LocalizedContentItemIndex.Latest))
-        );
+        ).ConfigureAwait(false);
 
         await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
             .CreateIndex("IDX_LocalizationPartIndex_DocumentId",
@@ -71,7 +71,7 @@ public sealed class Migrations : DataMigration
             "ContentItemId",
             "Published",
             "Latest")
-        );
+        ).ConfigureAwait(false);
 
         return 3;
     }
@@ -85,12 +85,12 @@ public sealed class Migrations : DataMigration
         ShellScope.AddDeferredTask(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
-            var localizedContentItems = await session.Query<ContentItem, LocalizedContentItemIndex>().ListAsync();
+            var localizedContentItems = await session.Query<ContentItem, LocalizedContentItemIndex>().ListAsync().ConfigureAwait(false);
 
             foreach (var localizedContentItem in localizedContentItems)
             {
                 localizedContentItem.Latest = localizedContentItem.ContentItem.Latest;
-                await session.SaveAsync(localizedContentItem);
+                await session.SaveAsync(localizedContentItem).ConfigureAwait(false);
             }
         });
 
