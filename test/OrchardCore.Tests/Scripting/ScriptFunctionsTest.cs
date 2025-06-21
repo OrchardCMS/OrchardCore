@@ -8,7 +8,7 @@ public class ScriptFunctionsTest
     [Fact]
     public async Task TheScriptingEngineShouldBeAbleToHandleJsonObject()
     {
-        using var context = new SiteContext();
+        await using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(scope =>
         {

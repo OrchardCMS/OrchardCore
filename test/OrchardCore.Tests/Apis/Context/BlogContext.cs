@@ -10,10 +10,6 @@ public class BlogContext : SiteContext
 
     public string BlogContentItemId { get; private set; }
 
-    static BlogContext()
-    {
-    }
-
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();

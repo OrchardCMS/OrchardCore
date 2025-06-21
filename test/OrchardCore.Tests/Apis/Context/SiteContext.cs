@@ -11,18 +11,18 @@ using OrchardCore.Search.Lucene;
 
 namespace OrchardCore.Tests.Apis.Context;
 
-public class SiteContext : IDisposable
+public class SiteContext : IDisposable, IAsyncDisposable
 {
     private const int DeferredTasksTimeoutSeconds = 60;
     private const int HttpBackgroundJobsTimeoutSeconds = 90;
     private const int WaitDelayMilliseconds = 10;
 
     private static readonly TablePrefixGenerator _tablePrefixGenerator = new();
-    public static OrchardTestFixture<SiteStartup> Site { get; }
-    public static IShellHost ShellHost { get; private set; }
-    public static IShellSettingsManager ShellSettingsManager { get; private set; }
-    public static IHttpContextAccessor HttpContextAccessor { get; }
-    public static HttpClient DefaultTenantClient { get; }
+    public OrchardTestFixture<SiteStartup> Site { get; }
+    public IShellHost ShellHost { get; private set; }
+    public IShellSettingsManager ShellSettingsManager { get; private set; }
+    public IHttpContextAccessor HttpContextAccessor { get; }
+    public HttpClient DefaultTenantClient { get; }
 
     public string RecipeName { get; set; } = "Blog";
     public string DatabaseProvider { get; set; } = "Sqlite";
@@ -33,9 +33,16 @@ public class SiteContext : IDisposable
     public string TenantName { get; private set; }
     public OrchardGraphQLClient GraphQLClient { get; private set; }
 
-    static SiteContext()
+    public SiteContext()
     {
         Site = new OrchardTestFixture<SiteStartup>();
+
+        var contentRoot = Path.Combine(Directory.GetCurrentDirectory(), Site.ContentRoot);
+        if (!Directory.Exists(contentRoot))
+        {
+            Directory.CreateDirectory(contentRoot);
+        }
+
         ShellHost = Site.Services.GetRequiredService<IShellHost>();
         ShellSettingsManager = Site.Services.GetRequiredService<IShellSettingsManager>();
         HttpContextAccessor = Site.Services.GetRequiredService<IHttpContextAccessor>();
@@ -217,11 +224,76 @@ public class SiteContext : IDisposable
         return Client.DeleteAsync("api/content/" + contentItemId);
     }
 
-#pragma warning disable CA1816 // Change SiteContext.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.
-    public void Dispose()
-#pragma warning restore CA1816
+    ~SiteContext()
     {
+        Dispose(false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore();
+        Dispose(false);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Site?.Dispose();
+
+            Client?.Dispose();
+
+            // Clean up the content root directory.
+            var contentRoot = Path.Combine(Directory.GetCurrentDirectory(), Site.ContentRoot);
+
+            try
+            {
+                if (Directory.Exists(contentRoot))
+                {
+                    // Delete the content root directory and all its contents.
+                    Directory.Delete(contentRoot, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                TestContext.Current.AddWarning($"Error deleting content root directory: {ex.Message}");
+            }
+        }
+    }
+
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+        if (Site is not null)
+        {
+            // TODO: Wait for HTTP background tasks to complete if necessary.
+
+            await Site.DisposeAsync();
+        }
+
         Client?.Dispose();
+
+        // Clean up the content root directory.
+        var contentRoot = Path.Combine(Directory.GetCurrentDirectory(), Site.ContentRoot);
+
+        try
+        {
+            if (Directory.Exists(contentRoot))
+            {
+                // Delete the content root directory and all its contents.
+                Directory.Delete(contentRoot, true);
+            }
+        }
+        catch (Exception ex)
+        {
+            TestContext.Current.AddWarning($"Error deleting content root directory: {ex.Message}");
+        }
     }
 }
 

@@ -9,10 +9,6 @@ namespace OrchardCore.Modules.Tenants.Services.Tests;
 
 public class TenantValidatorTests : SiteContext
 {
-    static TenantValidatorTests()
-    {
-    }
-
     [Theory]
     [InlineData("Tenant1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
     [InlineData("tEnAnT1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
@@ -98,7 +94,7 @@ public class TenantValidatorTests : SiteContext
         }
     }
 
-    private static TenantValidator CreateTenantValidator(bool defaultTenant = true)
+    private TenantValidator CreateTenantValidator(bool defaultTenant = true)
     {
         var featureProfilesServiceMock = new Mock<IFeatureProfilesService>();
         featureProfilesServiceMock.Setup(fp => fp.GetFeatureProfilesAsync())
@@ -133,7 +129,7 @@ public class TenantValidatorTests : SiteContext
             );
     }
 
-    private static async Task SeedTenantsAsync()
+    private async Task SeedTenantsAsync()
     {
         await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant1", RequestUrlPrefix = "tenant1" }.AsUninitialized());
         await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = string.Empty, RequestUrlHost = "example2.com" }.AsUninitialized());

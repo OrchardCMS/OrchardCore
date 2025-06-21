@@ -10,7 +10,7 @@ public class BlogPostUpdateDeploymentPlanTests
     [Fact]
     public async Task ShouldUpdateExistingContentItemVersion()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();
@@ -39,7 +39,7 @@ public class BlogPostUpdateDeploymentPlanTests
     [Fact]
     public async Task ShouldDiscardDraftThenUpdateExistingContentItemVersion()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();
@@ -77,7 +77,7 @@ public class BlogPostUpdateDeploymentPlanTests
     [Fact]
     public async Task ShouldUpdateDraftThenPublishExistingContentItemVersion()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();

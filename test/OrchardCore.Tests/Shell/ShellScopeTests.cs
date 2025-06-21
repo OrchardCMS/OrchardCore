@@ -9,7 +9,7 @@ public class ShellScopeTests
     [Fact]
     public static async Task ShellScopeConcurrencyTest()
     {
-        var context = new SiteContext()
+        await using var context = new SiteContext()
             .WithRecipe("SaaS");
         await context.InitializeAsync();
 

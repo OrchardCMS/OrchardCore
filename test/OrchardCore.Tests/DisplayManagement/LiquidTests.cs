@@ -12,7 +12,7 @@ public class LiquidTests
     [Fact]
     public async Task ComparingTextField_ReturnsCorrectValue()
     {
-        var context = new SiteContext();
+        await using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -45,7 +45,7 @@ public class LiquidTests
     [Fact]
     public async Task ComparingDateTimeField_ReturnsCorrectValue()
     {
-        var context = new SiteContext();
+        await using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -80,7 +80,7 @@ public class LiquidTests
     [Fact]
     public async Task ComparingNumericField_ReturnsCorrectValue()
     {
-        var context = new SiteContext();
+        await using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -113,7 +113,7 @@ public class LiquidTests
     [Fact]
     public async Task SortingContentItems_ShouldSortTheArrayOnIntegerField()
     {
-        var context = new SiteContext();
+        await using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -139,7 +139,7 @@ public class LiquidTests
     [Fact]
     public async Task FilteringContentItems_ShouldFilterTheArrayOnBooleanField()
     {
-        var context = new SiteContext();
+        await using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -165,7 +165,7 @@ public class LiquidTests
     [Fact]
     public async Task FilteringAndSortingContentItems_ShouldFilterAndSortTheArrayOnContentFields()
     {
-        var context = new SiteContext();
+        await using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {

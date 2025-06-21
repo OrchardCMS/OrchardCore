@@ -936,7 +936,7 @@ public class JsonDynamicTests
     public async Task SerializingJsonDynamicValueInScripting()
     {
         // Arrange
-        using var context = new SiteContext();
+        await using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(scope =>
         {

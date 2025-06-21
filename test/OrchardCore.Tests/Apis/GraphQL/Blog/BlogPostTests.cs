@@ -15,7 +15,7 @@ public class BlogPostTests
 
     public async Task ShouldListAllBlogs()
     {
-        using var context = new BlogContext();
+        await using var context = new BlogContext();
         await context.InitializeAsync();
 
         var result = await context
@@ -34,7 +34,7 @@ public class BlogPostTests
     [Fact]
     public async Task ShouldQueryByBlogPostAutoroutePart()
     {
-        using var context = new BlogContext();
+        await using var context = new BlogContext();
         await context.InitializeAsync();
 
         var blogPostContentItemId1 = await context
@@ -95,7 +95,7 @@ public class BlogPostTests
     [Fact]
     public async Task WhenThePartHasTheSameNameAsTheContentTypeShouldCollapseFieldsToContentType()
     {
-        using var context = new BlogContext();
+        await using var context = new BlogContext();
         await context.InitializeAsync();
 
         var result = await context
@@ -114,7 +114,7 @@ public class BlogPostTests
     [Fact]
     public async Task WhenCreatingABlogPostShouldBeAbleToPopulateField()
     {
-        using var context = new BlogContext();
+        await using var context = new BlogContext();
         await context.InitializeAsync();
 
         var blogPostContentItemId = await context
@@ -164,7 +164,7 @@ public class BlogPostTests
     [Fact]
     public async Task ShouldQueryByStatus()
     {
-        using var context = new BlogContext();
+        await using var context = new BlogContext();
         await context.InitializeAsync();
 
         var draft = await context
@@ -202,7 +202,7 @@ public class BlogPostTests
     [Fact]
     public async Task ShouldNotBeAbleToExecuteAnyQueriesWithoutPermission()
     {
-        using var context = new SiteContext()
+        await using var context = new SiteContext()
             .WithPermissionsContext(new PermissionsContext { UsePermissionsContext = true });
 
         await context.InitializeAsync();
@@ -214,7 +214,7 @@ public class BlogPostTests
     [Fact]
     public async Task ShouldReturnBlogsWithViewBlogContentPermission()
     {
-        using var context = new SiteContext()
+        await using var context = new SiteContext()
             .WithPermissionsContext(new PermissionsContext
             {
                 UsePermissionsContext = true,
@@ -239,7 +239,7 @@ public class BlogPostTests
     [Fact]
     public async Task ShouldNotReturnBlogsWithViewOwnBlogContentPermission()
     {
-        using var context = new SiteContext()
+        await using var context = new SiteContext()
             .WithPermissionsContext(new PermissionsContext
             {
                 UsePermissionsContext = true,
@@ -264,7 +264,7 @@ public class BlogPostTests
     [Fact]
     public async Task ShouldNotReturnBlogsWithoutViewBlogContentPermission()
     {
-        using var context = new SiteContext()
+        await using var context = new SiteContext()
             .WithPermissionsContext(new PermissionsContext
             {
                 UsePermissionsContext = true,
@@ -288,7 +288,7 @@ public class BlogPostTests
     [Fact]
     public async Task ShouldQueryContainedPart()
     {
-        using var context = new BlogContext();
+        await using var context = new BlogContext();
         await context.InitializeAsync();
 
         var result = await context

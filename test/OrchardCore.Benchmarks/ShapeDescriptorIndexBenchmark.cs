@@ -16,13 +16,14 @@ namespace OrchardCore.Benchmarks;
 public class ShapeDescriptorIndexBenchmark
 {
     private readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new();
+    private BlogContext _context;
 
     [GlobalSetup]
     public async Task SetupAsync()
     {
-        using var content = new BlogContext();
-        await content.InitializeAsync();
-        await content.UsingTenantScopeAsync(async scope =>
+        _context = new BlogContext();
+        await _context.InitializeAsync();
+        await _context.UsingTenantScopeAsync(async scope =>
         {
             var bindingStrategies = scope.ServiceProvider.GetRequiredService<IEnumerable<IShapeTableProvider>>();
             var typeFeatureProvider = scope.ServiceProvider.GetRequiredService<ITypeFeatureProvider>();

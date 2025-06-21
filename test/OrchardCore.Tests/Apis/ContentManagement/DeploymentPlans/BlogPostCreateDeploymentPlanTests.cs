@@ -12,7 +12,7 @@ public class BlogPostCreateDeploymentPlanTests
     [Fact]
     public async Task ShouldCreateNewPublishedContentItemVersion()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();
@@ -49,7 +49,7 @@ public class BlogPostCreateDeploymentPlanTests
     [Fact]
     public async Task ShouldDiscardDraftThenCreateNewPublishedContentItemVersion()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();
@@ -92,7 +92,7 @@ public class BlogPostCreateDeploymentPlanTests
     [Fact]
     public async Task ShouldDiscardDraftThenCreateNewDraftContentItemVersion()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();
@@ -137,7 +137,7 @@ public class BlogPostCreateDeploymentPlanTests
     [Fact]
     public async Task ShouldCreateNewPublishedContentItem()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();
@@ -167,7 +167,7 @@ public class BlogPostCreateDeploymentPlanTests
     [Fact]
     public async Task ShouldIgnoreDuplicateContentItems()
     {
-        using var context = new BlogPostDeploymentContext();
+        await using var context = new BlogPostDeploymentContext();
 
         // Setup
         await context.InitializeAsync();

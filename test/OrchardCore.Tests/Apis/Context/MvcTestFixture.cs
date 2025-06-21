@@ -3,16 +3,13 @@ namespace OrchardCore.Tests.Apis.Context;
 public class OrchardTestFixture<TStartup> : WebApplicationFactory<TStartup>
     where TStartup : class
 {
+    public string ContentRoot { get; } = Guid.NewGuid().ToString("N");
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        var shellsApplicationDataPath = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
-
-        if (Directory.Exists(shellsApplicationDataPath))
-        {
-            Directory.Delete(shellsApplicationDataPath, true);
-        }
-
-        builder.UseContentRoot(Directory.GetCurrentDirectory());
+        var contentRoot = Path.Combine(Directory.GetCurrentDirectory(), ContentRoot);
+        builder.UseContentRoot(contentRoot);
+        builder.UseWebRoot(Path.Combine(contentRoot, "wwwroot"));
     }
 
     protected override IWebHostBuilder CreateWebHostBuilder()

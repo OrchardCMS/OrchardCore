@@ -18,7 +18,7 @@ public class OpenIdAuthenticationTests
     [Fact]
     public async Task OpenId_CodeFlow_CanExchangeAuthorizationCodeForAccessTokenOnlyOnce()
     {
-        var context = new SiteContext();
+        await using var context = new SiteContext();
 
         await context.InitializeAsync();
 
@@ -175,7 +175,7 @@ public class OpenIdAuthenticationTests
     [Fact]
     public async Task OpenId_CodeFlowWithPushedAuthorizationRequests_CanExchangeAuthorizationCodeForAccessTokenOnlyOnce()
     {
-        var context = new SiteContext();
+        await using var context = new SiteContext();
 
         await context.InitializeAsync();
 

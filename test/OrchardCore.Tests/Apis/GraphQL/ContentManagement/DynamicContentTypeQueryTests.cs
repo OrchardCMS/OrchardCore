@@ -5,7 +5,7 @@ public class DynamicContentTypeQueryTests
     [Fact]
     public async Task ShouldQueryContentFields()
     {
-        using var context = new DynamicContentTypeContext();
+        await using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
 
         var result = await context
@@ -30,7 +30,7 @@ public class DynamicContentTypeQueryTests
     [Fact]
     public async Task ShouldQueryCollapsedContentFields()
     {
-        using var context = new DynamicContentTypeContext();
+        await using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
 
         var result = await context
@@ -55,7 +55,7 @@ public class DynamicContentTypeQueryTests
     [Fact]
     public async Task ShouldQueryCollapsedContentFieldsWithPreventCollision()
     {
-        using var context = new DynamicContentTypeContext();
+        await using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
 
         var result = await context
@@ -80,7 +80,7 @@ public class DynamicContentTypeQueryTests
     [Fact]
     public async Task ShouldQueryMultipleContentFields()
     {
-        using var context = new DynamicContentTypeContext();
+        await using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
 
         var result = await context
@@ -113,7 +113,7 @@ public class DynamicContentTypeQueryTests
     [Fact]
     public async Task ShouldOrderByCreatedUtc()
     {
-        using var context = new DynamicContentTypeContext();
+        await using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
 
         var resultAsc = await context
@@ -141,7 +141,7 @@ public class DynamicContentTypeQueryTests
     [Fact]
     public async Task ShouldQuerySimilarNamedContentFields()
     {
-        using var context = new DynamicContentTypeContext();
+        await using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
 
         var numberResult = await context
@@ -172,7 +172,7 @@ public class DynamicContentTypeQueryTests
     [Fact]
     public async Task ShouldDistinquishMultipleNamedContentFields()
     {
-        using var context = new DynamicContentTypeContext();
+        await using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
 
         // Make sure values of field2 are not included by querying field1

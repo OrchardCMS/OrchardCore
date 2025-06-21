@@ -14,10 +14,6 @@ public class BlogPostDeploymentContext : SiteContext
     public ContentItem OriginalBlogPost { get; private set; }
     public string OriginalBlogPostVersionId { get; private set; }
 
-    static BlogPostDeploymentContext()
-    {
-    }
-
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();

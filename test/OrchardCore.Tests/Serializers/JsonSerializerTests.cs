@@ -53,7 +53,7 @@ public class JsonSerializerTests
     [Fact]
     public async Task DefaultContentSerializer_SerializeAndDeserialize_UserWithUserLoginInfo()
     {
-        using var context = new SiteContext();
+        await using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
