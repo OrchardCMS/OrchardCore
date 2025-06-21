@@ -17,7 +17,7 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.1" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.3.0" />
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.17.4" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.18.3" />
     <PackageVersion Include="Fluid.Core" Version="2.24.0" />
     <PackageVersion Include="GraphQL" Version="8.5.0" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.5.0" />
@@ -35,7 +35,7 @@
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00017" />
     <PackageVersion Include="MailKit" Version="4.12.1" />
     <PackageVersion Include="Markdig" Version="0.41.2" />
-    <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.11.0" />
+    <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.12.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.9.3" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.12.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
@@ -66,11 +66,11 @@
     <PackageVersion Include="xunit.v3" Version="2.0.3" />
     <PackageVersion Include="xunit.analyzers" Version="1.22.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1" />
-    <PackageVersion Include="YesSql" Version="5.3.0" />
-    <PackageVersion Include="YesSql.Abstractions" Version="5.3.0" />
-    <PackageVersion Include="YesSql.Core" Version="5.3.0" />
-    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.3.0" />
-    <PackageVersion Include="YesSql.Filters.Query" Version="5.3.0" />
+    <PackageVersion Include="YesSql" Version="5.4.1" />
+    <PackageVersion Include="YesSql.Abstractions" Version="5.4.1" />
+    <PackageVersion Include="YesSql.Core" Version="5.4.1" />
+    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.4.1" />
+    <PackageVersion Include="YesSql.Filters.Query" Version="5.4.1" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>

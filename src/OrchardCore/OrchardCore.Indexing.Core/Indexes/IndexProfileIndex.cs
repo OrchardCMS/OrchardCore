@@ -4,8 +4,6 @@ namespace OrchardCore.Indexing.Core.Indexes;
 
 public sealed class IndexProfileIndex : MapIndex
 {
-    public long DocumentId { get; set; }
-
     public string IndexProfileId { get; set; }
 
     public string Name { get; set; }

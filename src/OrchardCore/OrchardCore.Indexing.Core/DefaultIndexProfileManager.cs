@@ -19,7 +19,7 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
         ILogger<DefaultIndexProfileManager> logger)
     {
         _store = store;
-        _handlers = handlers.Reverse();
+        _handlers = handlers;
         _logger = logger;
     }
 
@@ -70,7 +70,6 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
 
         return null;
     }
-
 
     public async ValueTask<IndexProfile> FindByNameAndProviderAsync(string indexName, string providerName)
     {

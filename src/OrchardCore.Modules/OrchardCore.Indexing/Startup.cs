@@ -28,14 +28,19 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddIndexingCore();
+        services.AddDataMigration<RecordIndexingTaskMigrations>();
+
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddDataMigration<Migrations>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         services.AddNavigationProvider<AdminMenu>();
         services.AddDisplayDriver<IndexProfile, IndexProfileDisplayDriver>();
         services.AddPermissionProvider<IndexingPermissionsProvider>();
         services.AddDataMigration<PreviewIndexingMigrations>();
 
-        services.AddIndexProvider<IndexProfileIndexProvider>()
+        services
+            .AddIndexProvider<IndexProfileIndexProvider>()
             .AddDataMigration<IndexingMigrations>();
     }
 }

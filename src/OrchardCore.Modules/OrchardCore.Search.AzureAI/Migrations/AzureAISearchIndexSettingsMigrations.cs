@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Entities;
@@ -26,26 +27,10 @@ namespace OrchardCore.Search.AzureAI.Migrations;
 internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 {
     private readonly ShellSettings _shellSettings;
-    private readonly IStore _store;
-    private readonly IDbConnectionAccessor _dbConnectionAccessor;
-    private readonly IIndexProfileManager _indexProfileManager;
-    private readonly ISiteService _siteService;
-    private readonly IIndexNameProvider _indexNameProvider;
 
-    public AzureAISearchIndexSettingsMigrations(
-        ShellSettings shellSettings,
-        IStore store,
-        IDbConnectionAccessor dbConnectionAccessor,
-        IIndexProfileManager indexProfileManager,
-        ISiteService siteService,
-        [FromKeyedServices(AzureAISearchConstants.ProviderName)] IIndexNameProvider indexNameProvider)
+    public AzureAISearchIndexSettingsMigrations(ShellSettings shellSettings)
     {
         _shellSettings = shellSettings;
-        _store = store;
-        _dbConnectionAccessor = dbConnectionAccessor;
-        _indexProfileManager = indexProfileManager;
-        _siteService = siteService;
-        _indexNameProvider = indexNameProvider;
     }
 
 #pragma warning disable CA1822 // Mark members as static
@@ -55,7 +40,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
         return 2;
     }
 
-    public async Task<int> UpdateFrom1Async()
+    public int UpdateFrom1()
     {
         var stepNumber = 2;
 
@@ -64,192 +49,209 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
             return stepNumber;
         }
 
-        var documentTableName = _store.Configuration.TableNameConvention.GetDocumentTable();
-        var table = $"{_store.Configuration.TablePrefix}{documentTableName}";
-        var dialect = _store.Configuration.SqlDialect;
-        var quotedTableName = dialect.QuoteForTableName(table, _store.Configuration.Schema);
-        var quotedContentColumnName = dialect.QuoteForColumnName("Content");
-        var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
-
-        var sqlBuilder = new SqlBuilder(_store.Configuration.TablePrefix, _store.Configuration.SqlDialect);
-        sqlBuilder.AddSelector(quotedContentColumnName);
-        sqlBuilder.From(quotedTableName);
-        sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Search.AzureAI.Models.AzureAISearchIndexSettingsDocument, OrchardCore.Search.AzureAI.Core' ");
-        sqlBuilder.Take("1");
-
-        await using var connection = _dbConnectionAccessor.CreateConnection();
-        await connection.OpenAsync();
-        var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString());
-
-        if (string.IsNullOrEmpty(jsonContent))
+        ShellScope.AddDeferredTask(async scope =>
         {
-            return stepNumber;
-        }
+            // This logic must be deferred to ensure that other migrations create the necessary database tables first.
 
-        var jsonObject = JsonNode.Parse(jsonContent);
+            var store = scope.ServiceProvider.GetRequiredService<IStore>();
+            var documentTableName = store.Configuration.TableNameConvention.GetDocumentTable();
+            var table = $"{store.Configuration.TablePrefix}{documentTableName}";
+            var dialect = store.Configuration.SqlDialect;
+            var quotedTableName = dialect.QuoteForTableName(table, store.Configuration.Schema);
+            var quotedContentColumnName = dialect.QuoteForColumnName("Content");
+            var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
 
-        if (jsonObject["IndexSettings"] is not JsonObject indexesObject)
-        {
-            return stepNumber;
-        }
+            var sqlBuilder = new SqlBuilder(store.Configuration.TablePrefix, store.Configuration.SqlDialect);
+            sqlBuilder.AddSelector(quotedContentColumnName);
+            sqlBuilder.From(quotedTableName);
+            sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Search.AzureAI.Models.AzureAISearchIndexSettingsDocument, OrchardCore.Search.AzureAI.Core' ");
+            sqlBuilder.Take("1");
 
-        var site = await _siteService.GetSiteSettingsAsync();
+            var dbConnectionAccessor = scope.ServiceProvider.GetRequiredService<IDbConnectionAccessor>();
 
-        var defaultSearchProvider = site.Properties["SearchSettings"]?["ProviderName"]?.GetValue<string>();
+            await using var connection = dbConnectionAccessor.CreateConnection();
+            await connection.OpenAsync();
+            var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString());
 
-        var azureAISearchSettings = site.Properties["AzureAISearchSettings"] ?? new JsonObject();
-
-        var defaultSearchIndexName = azureAISearchSettings["SearchIndex"]?.GetValue<string>();
-
-        var defaultSearchFields = GetDefaultSearchFields(azureAISearchSettings);
-
-        foreach (var indexObject in indexesObject)
-        {
-            var indexName = indexObject.Value["IndexName"]?.GetValue<string>();
-
-            if (string.IsNullOrEmpty(indexName))
+            if (string.IsNullOrEmpty(jsonContent))
             {
-                indexName = indexObject.Key;
+                return;
             }
 
-            var source = indexObject.Value["Source"]?.GetValue<string>();
+            var jsonObject = JsonNode.Parse(jsonContent);
 
-            if (source == "Contents")
+            if (jsonObject["IndexSettings"] is not JsonObject indexesObject)
             {
-                source = IndexingConstants.ContentsIndexSource;
+                return;
             }
 
-            var indexProfile = await _indexProfileManager.NewAsync(AzureAISearchConstants.ProviderName, source ?? IndexingConstants.ContentsIndexSource);
-            indexProfile.IndexName = indexName;
-            indexProfile.IndexFullName = _indexNameProvider.GetFullIndexName(indexName);
-            indexProfile.Name = indexName;
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+            var site = await siteService.LoadSiteSettingsAsync();
 
-            var counter = 1;
+            var defaultSearchProvider = site.Properties["SearchSettings"]?["ProviderName"]?.GetValue<string>();
 
-            var properties = indexObject.Value[nameof(indexProfile.Properties)]?.AsObject();
+            var azureAISearchSettings = site.Properties["AzureAISearchSettings"] ?? new JsonObject();
 
-            if (properties is not null && properties.Count > 0)
+            var defaultSearchIndexName = azureAISearchSettings["SearchIndex"]?.GetValue<string>();
+
+            var defaultSearchFields = GetDefaultSearchFields(azureAISearchSettings);
+
+            var indexProfileManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
+            var indexNameProvider = scope.ServiceProvider.GetRequiredKeyedService<IIndexNameProvider>(AzureAISearchConstants.ProviderName);
+            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<AzureAISearchDocumentIndexManager>();
+
+            foreach (var indexObject in indexesObject)
             {
-                indexProfile.Properties = properties.Clone();
-            }
+                var indexName = indexObject.Value["IndexName"]?.GetValue<string>();
 
-            while (await _indexProfileManager.FindByNameAsync(indexProfile.Name) is not null)
-            {
-                indexProfile.Name = $"{indexName}{counter++}";
-
-                if (counter > 50)
+                if (string.IsNullOrEmpty(indexName))
                 {
-                    throw new InvalidOperationException($"Unable to create a unique index name for '{indexName}' after 50 attempts.");
+                    indexName = indexObject.Key;
                 }
-            }
 
-            var id = indexObject.Value["Id"]?.GetValue<string>();
+                var source = indexObject.Value["Source"]?.GetValue<string>();
 
-            if (!string.IsNullOrEmpty(id))
-            {
-                indexProfile.Id = id;
-            }
-
-            var metadata = indexProfile.As<ContentIndexMetadata>();
-
-            if (string.IsNullOrEmpty(metadata.Culture))
-            {
-                metadata.Culture = indexObject.Value[nameof(metadata.Culture)]?.GetValue<string>();
-            }
-
-            var indexLatest = indexObject.Value[nameof(metadata.IndexLatest)]?.GetValue<bool>();
-
-            if (indexLatest.HasValue)
-            {
-                metadata.IndexLatest = indexLatest.Value;
-            }
-
-            var indexContentTypes = indexObject.Value[nameof(metadata.IndexedContentTypes)]?.AsArray();
-
-            if (indexContentTypes is null || indexContentTypes.Count == 0)
-            {
-                indexContentTypes = indexObject.Value["Properties"]?["ContentIndexMetadata"]?["IndexedContentTypes"]?.AsArray();
-            }
-
-            if (indexContentTypes is not null)
-            {
-                var items = new HashSet<string>();
-
-                foreach (var indexContentType in indexContentTypes)
+                if (source == "Contents")
                 {
-                    var value = indexContentType.GetValue<string>();
+                    source = IndexingConstants.ContentsIndexSource;
+                }
 
-                    if (!string.IsNullOrEmpty(value))
+                var indexProfile = await indexProfileManager.NewAsync(AzureAISearchConstants.ProviderName, source ?? IndexingConstants.ContentsIndexSource);
+                indexProfile.IndexName = indexName;
+                indexProfile.IndexFullName = indexNameProvider.GetFullIndexName(indexName);
+                indexProfile.Name = indexName;
+
+                var counter = 1;
+
+                var properties = indexObject.Value[nameof(indexProfile.Properties)]?.AsObject();
+
+                if (properties is not null && properties.Count > 0)
+                {
+                    indexProfile.Properties = properties.Clone();
+                }
+
+                while (await indexProfileManager.FindByNameAsync(indexProfile.Name) is not null)
+                {
+                    indexProfile.Name = $"{indexName}{counter++}";
+
+                    if (counter > 50)
                     {
-                        items.Add(value);
+                        throw new InvalidOperationException($"Unable to create a unique index name for '{indexName}' after 50 attempts.");
                     }
                 }
 
-                metadata.IndexedContentTypes = items.ToArray();
-            }
+                var id = indexObject.Value["Id"]?.GetValue<string>();
 
-            indexProfile.Put(metadata);
-
-            var azureMetadata = indexProfile.As<AzureAISearchIndexMetadata>();
-
-            if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
-            {
-                azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
-            }
-
-            var indexMappings = indexObject.Value[nameof(azureMetadata.IndexMappings)]?.AsArray();
-
-            if (indexMappings is not null && indexMappings.Count > 0)
-            {
-                foreach (var indexMapping in indexMappings)
+                if (!string.IsNullOrEmpty(id))
                 {
-                    var map = indexMapping.ToObject<AzureAISearchIndexMap>();
+                    indexProfile.Id = id;
+                }
 
-                    if (azureMetadata.IndexMappings.Any(map => map.AzureFieldKey.EqualsOrdinalIgnoreCase(map.AzureFieldKey)))
+                var metadata = indexProfile.As<ContentIndexMetadata>();
+
+                if (string.IsNullOrEmpty(metadata.Culture))
+                {
+                    metadata.Culture = indexObject.Value[nameof(metadata.Culture)]?.GetValue<string>();
+                }
+
+                var indexLatest = indexObject.Value[nameof(metadata.IndexLatest)]?.GetValue<bool>();
+
+                if (indexLatest.HasValue)
+                {
+                    metadata.IndexLatest = indexLatest.Value;
+                }
+
+                var indexContentTypes = indexObject.Value[nameof(metadata.IndexedContentTypes)]?.AsArray();
+
+                if (indexContentTypes is null || indexContentTypes.Count == 0)
+                {
+                    indexContentTypes = indexObject.Value["Properties"]?["ContentIndexMetadata"]?["IndexedContentTypes"]?.AsArray();
+                }
+
+                if (indexContentTypes is not null)
+                {
+                    var items = new HashSet<string>();
+
+                    foreach (var indexContentType in indexContentTypes)
                     {
-                        continue;
+                        var value = indexContentType.GetValue<string>();
+
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            items.Add(value);
+                        }
                     }
 
-                    azureMetadata.IndexMappings.Add(map);
+                    metadata.IndexedContentTypes = items.ToArray();
                 }
-            }
 
-            indexProfile.Put(azureMetadata);
+                indexProfile.Put(metadata);
 
-            var queryMetadata = indexProfile.As<AzureAISearchDefaultQueryMetadata>();
+                var azureMetadata = indexProfile.As<AzureAISearchIndexMetadata>();
 
-            if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
-            {
-                queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
-            }
-
-            if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
-            {
-                queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
-            }
-
-            if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
-            {
-                queryMetadata.DefaultSearchFields = defaultSearchFields;
-            }
-
-            indexProfile.Put(queryMetadata);
-
-            await _indexProfileManager.CreateAsync(indexProfile);
-
-            if (indexName == defaultSearchIndexName && defaultSearchProvider == "Azure AI Search")
-            {
-                ShellScope.AddDeferredTask(async scope =>
+                if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
                 {
-                    var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
-                    var site = await siteService.LoadSiteSettingsAsync();
+                    azureMetadata.AnalyzerName = indexObject.Value[nameof(azureMetadata.AnalyzerName)]?.GetValue<string>();
+                }
 
+                var indexMappings = indexObject.Value[nameof(azureMetadata.IndexMappings)]?.AsArray();
+
+                if (indexMappings is not null && indexMappings.Count > 0)
+                {
+                    foreach (var indexMapping in indexMappings)
+                    {
+                        var map = indexMapping.ToObject<AzureAISearchIndexMap>();
+
+                        if (azureMetadata.IndexMappings.Any(map => map.AzureFieldKey.EqualsOrdinalIgnoreCase(map.AzureFieldKey)))
+                        {
+                            continue;
+                        }
+
+                        azureMetadata.IndexMappings.Add(map);
+                    }
+                }
+
+                indexProfile.Put(azureMetadata);
+
+                var queryMetadata = indexProfile.As<AzureAISearchDefaultQueryMetadata>();
+
+                if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
+                {
+                    queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
+                }
+
+                if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
+                {
+                    queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
+                }
+
+                if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
+                {
+                    queryMetadata.DefaultSearchFields = defaultSearchFields;
+                }
+
+                indexProfile.Put(queryMetadata);
+
+                await indexProfileManager.CreateAsync(indexProfile);
+
+                if (indexName == defaultSearchIndexName && defaultSearchProvider == "Azure AI Search")
+                {
                     site.Properties["SearchSettings"]["DefaultIndexProfileName"] = indexProfile.Name;
 
-                    await siteService.UpdateSiteSettingsAsync(site);
-                });
+                    try
+                    {
+                        await siteService.UpdateSiteSettingsAsync(site);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the error but do not throw, as this is not critical to the migration.
+                        var logger = scope.ServiceProvider.GetRequiredService<ILogger<AzureAISearchIndexSettingsMigrations>>();
+
+                        logger.LogError(ex, "An error occurred while updating the default search index profile name in site settings.");
+                    }
+                }
             }
-        }
+        });
 
         return stepNumber;
     }
