@@ -81,7 +81,6 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
             {
                 writer.IsClosing = true;
                 writer.Dispose();
-                removed = true;
             }
 
             if (_indexPools.TryRemove(index.Id, out var reader))
@@ -102,7 +101,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                 catch { }
             }
 
-            _writers.TryRemove(index.Id, out _);
+            removed = _writers.TryRemove(index.Id, out _);
         }
 
         return Task.FromResult(removed);
@@ -170,7 +169,6 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                             }
                         }
 
-                        writer.IsClosing = true;
                         writer.Dispose();
 
                         _timestamps.AddOrUpdate(index.Id, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
@@ -185,11 +183,6 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
         if (writer.IsClosing)
         {
-            if (_writers.TryRemove(index.Id, out var removedWriter))
-            {
-                removedWriter.Dispose();
-            }
-
             return Task.CompletedTask;
         }
 
