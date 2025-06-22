@@ -20,11 +20,10 @@ namespace OrchardCore.Lucene.Core;
 
 public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 {
-    private readonly ConcurrentDictionary<string, IndexReaderPool> _indexPools = new(StringComparer.OrdinalIgnoreCase);
-    private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new(StringComparer.OrdinalIgnoreCase);
-    private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, IndexReaderPool> _indexPools = new();
+    private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new();
+    private readonly ConcurrentDictionary<string, DateTime> _timestamps = new();
 
-    private readonly object _directoryLock = new();
     private readonly object _lock = new();
 
     private readonly string _rootPath;
@@ -77,11 +76,10 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
         lock (_lock)
         {
-            if (_writers.TryRemove(index.Id, out var writer))
+            if (_writers.TryGetValue(index.Id, out var writer))
             {
                 writer.IsClosing = true;
                 writer.Dispose();
-                removed = true;
             }
 
             if (_indexPools.TryRemove(index.Id, out var reader))
@@ -101,6 +99,8 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                 }
                 catch { }
             }
+
+            removed = _writers.TryRemove(index.Id, out _);
         }
 
         return Task.FromResult(removed);
@@ -168,7 +168,6 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                             }
                         }
 
-                        writer.IsClosing = true;
                         writer.Dispose();
 
                         _timestamps.AddOrUpdate(index.Id, _clock.UtcNow, (key, oldValue) => _clock.UtcNow);
@@ -183,11 +182,6 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 
         if (writer.IsClosing)
         {
-            if (_writers.TryRemove(index.Id, out var removedWriter))
-            {
-                removedWriter.Dispose();
-            }
-
             return Task.CompletedTask;
         }
 
@@ -213,11 +207,15 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
         {
             var path = new DirectoryInfo(GetFullPath(index.IndexFullName));
 
-            var directory = FSDirectory.Open(path);
+            // Lucene is not thread safe on this call.
+            lock (_lock)
+            {
+                var directory = FSDirectory.Open(path);
 
-            var reader = DirectoryReader.Open(directory);
+                var reader = DirectoryReader.Open(directory);
 
-            return new IndexReaderPool(reader);
+                return new IndexReaderPool(reader);
+            }
         });
 
         return pool.Acquire();
@@ -237,11 +235,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                 path.Create();
             }
 
-            // Lucene is not thread safe on this call.
-            lock (_directoryLock)
-            {
-                return FSDirectory.Open(path);
-            }
+            return FSDirectory.Open(path);
         }
     }
 

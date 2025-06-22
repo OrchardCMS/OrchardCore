@@ -137,11 +137,13 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             {
                 _logger.LogWarning("There were issues creating an index in Elasticsearch");
             }
+
+            return false;
         }
 
         await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger);
 
-        return response.Acknowledged;
+        return true;
     }
 
     public async Task<string> GetIndexSettingsAsync(string indexFullName)
@@ -162,6 +164,8 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             {
                 _logger.LogWarning("There were issues retrieving index settings from Elasticsearch");
             }
+
+            return null;
         }
 
         var setting = response.Indices[indexFullName].Settings;
@@ -187,6 +191,8 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             {
                 _logger.LogWarning("There were issues retrieving index info from Elasticsearch");
             }
+
+            return null;
         }
 
         var info = response.Indices[indexFullName];
