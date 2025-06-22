@@ -20,9 +20,9 @@ namespace OrchardCore.Lucene.Core;
 
 public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
 {
-    private readonly ConcurrentDictionary<string, IndexReaderPool> _indexPools = new(StringComparer.OrdinalIgnoreCase);
-    private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new(StringComparer.OrdinalIgnoreCase);
-    private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, IndexReaderPool> _indexPools = new();
+    private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new();
+    private readonly ConcurrentDictionary<string, DateTime> _timestamps = new();
 
     private readonly object _lock = new();
 
