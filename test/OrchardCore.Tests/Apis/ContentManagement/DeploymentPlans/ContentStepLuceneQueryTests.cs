@@ -14,6 +14,7 @@ public class ContentStepLuceneQueryTests
 
         // Setup
         await context.InitializeAsync();
+        await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
 
         // Act
         var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
@@ -33,6 +34,7 @@ public class ContentStepLuceneQueryTests
         data.Add(secondContentItem);
 
         await context.PostRecipeAsync(recipe);
+        await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
 
         // Test
         var result = await context
