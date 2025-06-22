@@ -24,7 +24,6 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
 
-    private readonly object _directoryLock = new();
     private readonly object _lock = new();
 
     private readonly string _rootPath;
@@ -209,7 +208,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
             var path = new DirectoryInfo(GetFullPath(index.IndexFullName));
 
             // Lucene is not thread safe on this call.
-            lock (_directoryLock)
+            lock (_lock)
             {
                 var directory = FSDirectory.Open(path);
 
@@ -236,11 +235,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                 path.Create();
             }
 
-            // Lucene is not thread safe on this call.
-            lock (_directoryLock)
-            {
-                return FSDirectory.Open(path);
-            }
+            return FSDirectory.Open(path);
         }
     }
 
