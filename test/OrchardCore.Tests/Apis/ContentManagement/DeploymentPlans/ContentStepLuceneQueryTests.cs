@@ -14,6 +14,7 @@ public class ContentStepLuceneQueryTests
 
         // Setup
         await context.InitializeAsync();
+        await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
 
         // Act
         var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
@@ -33,10 +34,7 @@ public class ContentStepLuceneQueryTests
         data.Add(secondContentItem);
 
         await context.PostRecipeAsync(recipe);
-
-        // Indexing of the content item happens in the deferred-task and may not be immediate available,
-        // so we wait until the indexing is done before querying.
-        await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
+        await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
 
         // Test
         var result = await context
