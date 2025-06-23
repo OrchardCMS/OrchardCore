@@ -35,7 +35,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
     {
         if (await ExistsAsync(indexProfile.IndexFullName))
         {
-            return true;
+            return false;
         }
 
         try
@@ -73,7 +73,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
 
             var response = await client.GetIndexAsync(indexFullName);
 
-            return response?.Value;
+            return response.Value;
         }
         catch (RequestFailedException e)
         {
@@ -131,7 +131,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            if (await ExistsAsync(indexProfile.IndexName))
+            if (await ExistsAsync(indexProfile.IndexFullName))
             {
                 await client.DeleteIndexAsync(indexProfile.IndexFullName);
             }
