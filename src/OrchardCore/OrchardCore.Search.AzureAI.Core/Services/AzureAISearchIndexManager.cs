@@ -131,7 +131,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            if (await ExistsAsync(indexProfile.IndexName))
+            if (await ExistsAsync(indexProfile.IndexFullName))
             {
                 await client.DeleteIndexAsync(indexProfile.IndexFullName);
             }
