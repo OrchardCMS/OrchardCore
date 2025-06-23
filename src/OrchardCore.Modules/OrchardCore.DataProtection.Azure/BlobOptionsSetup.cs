@@ -9,7 +9,7 @@ using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.DataProtection.Azure;
 
-internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
+public sealed class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
 {
     private readonly FluidParser _fluidParser = new();
 
@@ -18,11 +18,11 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
-    public BlobOptionsConfiguration(
+    public BlobOptionsSetup(
         IShellConfiguration configuration,
         IOptions<ShellOptions> shellOptions,
         ShellSettings shellSettings,
-        ILogger<BlobOptionsConfiguration> logger)
+        ILogger<BlobOptionsSetup> logger)
     {
         _configuration = configuration;
         _shellOptions = shellOptions.Value;
@@ -30,16 +30,16 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
         _logger = logger;
     }
 
-    public void Configure(BlobOptions options)
+    public async ValueTask ConfigureAsync(BlobOptions options)
     {
         _logger.LogDebug("Configuring BlobOptions in BlobOptionsSetup");
 
         _configuration.Bind("OrchardCore_DataProtection_Azure", options);
-        ConfigureContainerName(options);
-        ConfigureBlobName(options);
+        await ConfigureContainerNameAsync(options);
+        await ConfigureBlobNameAsync(options);
     }
 
-    private void ConfigureContainerName(BlobOptions options)
+    private async ValueTask ConfigureContainerNameAsync(BlobOptions options)
     {
         _logger.LogDebug("Configuring BlobOptions.ContainerName in BlobOptionsSetup");
 
@@ -54,7 +54,7 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
             var template = _fluidParser.Parse(options.ContainerName);
 
             // Container name must be lowercase.
-            var containerName = template.Render(templateContext, NullEncoder.Default).ToLowerInvariant();
+            var containerName = (await template.RenderAsync(templateContext, NullEncoder.Default)).ToLowerInvariant();
             options.ContainerName = containerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
 
             if (_logger.IsEnabled(LogLevel.Debug))
@@ -74,7 +74,7 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
             {
                 _logger.LogDebug("Testing data protection container {ContainerName} existence", options.ContainerName);
                 var blobContainer = new BlobContainerClient(options.ConnectionString, options.ContainerName);
-                var response = blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).GetAwaiter().GetResult();
+                var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
                 _logger.LogDebug("Data protection container {ContainerName} created.", options.ContainerName);
             }
             catch (Exception e)
@@ -85,7 +85,7 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
         }
     }
 
-    private void ConfigureBlobName(BlobOptions options)
+    private async ValueTask ConfigureBlobNameAsync(BlobOptions options)
     {
         _logger.LogDebug("Configuring BlobOptions.BlobName in BlobOptionsSetup");
 
@@ -111,7 +111,7 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
 
             var template = _fluidParser.Parse(options.BlobName);
 
-            var blobName = template.Render(templateContext, NullEncoder.Default);
+            var blobName = await template.RenderAsync(templateContext, NullEncoder.Default);
             options.BlobName = blobName.Replace("\r", string.Empty).Replace("\n", string.Empty);
 
             if (_logger.IsEnabled(LogLevel.Debug))
