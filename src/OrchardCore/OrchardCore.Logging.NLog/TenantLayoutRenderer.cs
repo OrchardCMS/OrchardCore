@@ -20,7 +20,7 @@ public class TenantLayoutRenderer : AspNetLayoutRendererBase
         var tenantName = ShellScope.Context?.Settings.Name;
 
         // If there is no ShellContext in the Features then the log is rendered from the Host.
-        tenantName ??= HttpContextAccessor.HttpContext?.Features.Get<ShellContextFeature>()
+        tenantName ??= HttpContextAccessor?.HttpContext?.Features.Get<ShellContextFeature>()
             ?.ShellContext.Settings.Name;
 
         builder.Append(tenantName ?? "None");
