@@ -33,7 +33,9 @@ public abstract class NamedIndexingService
 
     public async Task ProcessRecordsForAllIndexesAsync()
     {
-        await ProcessRecordsAsync(await _indexProfileStore.GetByTypeAsync(Name));
+        var indexProfiles = await _indexProfileStore.GetByTypeAsync(Name);
+
+        await ProcessRecordsAsync(indexProfiles);
     }
 
     public async Task ProcessRecordsAsync(IEnumerable<string> indexIds)
@@ -45,7 +47,9 @@ public abstract class NamedIndexingService
             return;
         }
 
-        await ProcessRecordsAsync((await _indexProfileStore.GetByTypeAsync(Name)).Where(x => indexIds.Contains(x.Id)));
+        var indexProfiles = await _indexProfileStore.GetByTypeAsync(Name);
+
+        await ProcessRecordsAsync(indexProfiles.Where(x => indexIds.Contains(x.Id)));
     }
 
     private async Task ProcessRecordsAsync(IEnumerable<IndexProfile> indexProfiles)
