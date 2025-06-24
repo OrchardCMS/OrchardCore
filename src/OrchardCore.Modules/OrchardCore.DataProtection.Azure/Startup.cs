@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 
@@ -34,11 +35,10 @@ public sealed class Startup : StartupBase
             }
 
             services
-                .Configure<BlobOptions, BlobOptionsSetup>()
                 .AddDataProtection()
                 .PersistKeysToAzureBlobStorage(sp =>
                 {
-                    var options = sp.GetRequiredService<BlobOptions>();
+                    var options = sp.GetRequiredService<IOptions<BlobOptions>>().Value;
 
                     var logger = sp.GetRequiredService<ILogger<Startup>>();
 
@@ -52,6 +52,8 @@ public sealed class Startup : StartupBase
                         options.ContainerName,
                         options.BlobName);
                 });
+
+            services.AddSingleton<IConfigureOptions<BlobOptions>, BlobOptionsConfiguration>();
 
             services.AddScoped<IModularTenantEvents, BlobModularTenantEvents>();
         }
