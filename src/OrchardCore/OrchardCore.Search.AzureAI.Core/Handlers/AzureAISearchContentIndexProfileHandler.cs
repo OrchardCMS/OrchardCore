@@ -11,6 +11,7 @@ using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
+using OrchardCore.Search.AzureAI.Services;
 using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
@@ -41,6 +42,32 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
     public override Task InitializingAsync(InitializingContext<IndexProfile> context)
         => SetMappingAsync(context.Model);
 
+    /// <summary>
+    /// Override the creating to allow creating the field mapping after the user selected content types from the UI.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public override async Task CreatingAsync(CreatingContext<IndexProfile> context)
+    {
+        await SetMappingAsync(context.Model);
+
+        var queryMetadata = context.Model.As<AzureAISearchDefaultQueryMetadata>();
+
+        if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
+        {
+            queryMetadata.DefaultSearchFields = [AzureAISearchIndexManager.FullTextKey];
+        }
+
+        var azureMetadata = context.Model.As<AzureAISearchIndexMetadata>();
+
+        if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
+        {
+            queryMetadata.QueryAnalyzerName = azureMetadata.AnalyzerName;
+        }
+
+        context.Model.Put(queryMetadata);
+    }
+
     public override Task UpdatingAsync(UpdatingContext<IndexProfile> context)
         => SetMappingAsync(context.Model);
 
@@ -51,33 +78,37 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
             return;
         }
 
-        var metadata = index.As<ContentIndexMetadata>();
         var azureMetadata = index.As<AzureAISearchIndexMetadata>();
 
         await AddIndexMappingAsync(azureMetadata.IndexMappings, ContentIndexingConstants.ContentItemIdKey, new DocumentIndexEntry(ContentIndexingConstants.ContentItemIdKey, value: null, Types.Text, DocumentIndexOptions.Keyword), index);
         await AddIndexMappingAsync(azureMetadata.IndexMappings, ContentIndexingConstants.ContentItemVersionIdKey, new DocumentIndexEntry(ContentIndexingConstants.ContentItemVersionIdKey, value: null, Types.Text, DocumentIndexOptions.Keyword), index);
 
-        foreach (var contentType in metadata.IndexedContentTypes ?? [])
+        var metadata = index.As<ContentIndexMetadata>();
+
+        if (metadata.IndexedContentTypes is not null)
         {
-            var contentItem = await _contentManager.NewAsync(contentType);
-
-            var document = new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
-            var buildIndexContext = new BuildDocumentIndexContext(document, contentItem, [contentType], new AzureAISearchContentIndexSettings());
-            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
-
-            foreach (var entry in document.Entries)
+            foreach (var contentType in metadata.IndexedContentTypes)
             {
-                if (entry.Name == ContentIndexingConstants.ContentItemIdKey || entry.Name == ContentIndexingConstants.ContentItemVersionIdKey)
-                {
-                    continue;
-                }
+                var contentItem = await _contentManager.NewAsync(contentType);
 
-                if (!AzureAISearchIndexNamingHelper.TryGetSafeFieldName(entry.Name, out var safeFieldName))
-                {
-                    continue;
-                }
+                var document = new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
+                var buildIndexContext = new BuildDocumentIndexContext(document, contentItem, [contentType], new AzureAISearchContentIndexSettings());
+                await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
-                await AddIndexMappingAsync(azureMetadata.IndexMappings, safeFieldName, entry, index);
+                foreach (var entry in document.Entries)
+                {
+                    if (entry.Name == ContentIndexingConstants.ContentItemIdKey || entry.Name == ContentIndexingConstants.ContentItemVersionIdKey)
+                    {
+                        continue;
+                    }
+
+                    if (!AzureAISearchIndexNamingHelper.TryGetSafeFieldName(entry.Name, out var safeFieldName))
+                    {
+                        continue;
+                    }
+
+                    await AddIndexMappingAsync(azureMetadata.IndexMappings, safeFieldName, entry, index);
+                }
             }
         }
 

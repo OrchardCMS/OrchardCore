@@ -58,7 +58,7 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        ShellScope.AddDeferredTask((scope) =>
+        ShellScope.AddDeferredTask(scope =>
         {
             var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
 
