@@ -43,6 +43,8 @@ public class BlogPostDeploymentContext : SiteContext
 
             return remoteClientService.CreateRemoteClientAsync(RemoteDeploymentClientName, RemoteDeploymentApiKey);
         });
+
+        await WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
     }
 
     public static JsonObject GetContentStepRecipe(ContentItem contentItem, Action<JsonObject> mutation)
