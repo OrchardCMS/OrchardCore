@@ -25,8 +25,19 @@ public interface IContentManager
     /// <summary>
     /// Creates (persists) a new content item with the specified version.
     /// </summary>
-    /// <param name="contentItem">The content instance filled with all necessary data.</param>
-    /// <param name="options">The version to create the item with.</param>
+    /// <param name="contentItem">The content item filled with all necessary data.</param>
+    /// <param name="options">The version to create the item with; defaults to <c>null</c>.</param>
+    /// <remarks>
+    /// Creates a content item using the specified versioning option.
+    /// <list type="bullet">
+    /// <item>If the <see cref="VersionOptions.Published" /> version is requested (which is the default if <paramref name="options"/>
+    /// is <c>null</c>), the item is created and immediately published.</item>
+    /// <item>If the <see cref="VersionOptions.Draft" /> version is requested, the method attempts to use an existing draft.
+    /// If no draft is found, a new one is created.</item>
+    /// <item>If the <see cref="VersionOptions.DraftRequired" /> version is requested, a new draft is always created, even
+    /// if an existing draft is present.</item>
+    /// </list>
+    /// </remarks>
     Task CreateAsync(ContentItem contentItem, VersionOptions options = null);
 
     /// <summary>
