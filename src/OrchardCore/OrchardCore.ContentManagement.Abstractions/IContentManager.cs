@@ -38,7 +38,7 @@ public interface IContentManager
     /// if an existing draft is present.</item>
     /// </list>
     /// </remarks>
-    Task CreateAsync(ContentItem contentItem, VersionOptions options = null);
+    Task<bool> CreateAsync(ContentItem contentItem, VersionOptions options = null);
 
     /// <summary>
     /// Creates (puts) a new content item and manages removing and updating existing published or draft items.

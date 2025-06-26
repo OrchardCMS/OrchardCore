@@ -598,7 +598,7 @@ public class DefaultContentManager : IContentManager
         return finalVersions;
     }
 
-    public async Task CreateAsync(ContentItem contentItem, VersionOptions options = null)
+    public async Task<bool> CreateAsync(ContentItem contentItem, VersionOptions options = null)
     {
         if (string.IsNullOrEmpty(contentItem.ContentItemVersionId))
         {
@@ -622,6 +622,24 @@ public class DefaultContentManager : IContentManager
         // invoke handlers to add information to persistent stores.
         await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
 
+        if (context.Cancel)
+        {
+            if (_updateModelAccessor.ModelUpdater is not null)
+            {
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Creating '{0}' was cancelled.", contentItem.DisplayText]);
+                }
+                else
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Creating {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                }
+            }
+
+            return false;
+        }
+
         await _session.SaveAsync(contentItem);
         _contentManagerSession.Store(contentItem);
 
@@ -637,6 +655,8 @@ public class DefaultContentManager : IContentManager
             // invoke handlers to acquire state, or at least establish lazy loading callbacks.
             await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
         }
+
+        return true;
     }
 
     public Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem)
