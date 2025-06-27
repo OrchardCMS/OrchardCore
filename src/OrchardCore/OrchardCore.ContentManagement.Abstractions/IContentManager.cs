@@ -27,6 +27,7 @@ public interface IContentManager
     /// </summary>
     /// <param name="contentItem">The content item filled with all necessary data.</param>
     /// <param name="options">The version to create the item with; defaults to <c>null</c>.</param>
+    /// <returns>A boolean indicated whether the item is created or not.</returns>
     /// <remarks>
     /// Creates a content item using the specified versioning option.
     /// <list type="bullet">
@@ -131,8 +132,18 @@ public interface IContentManager
     /// <param name="contentItem"></param>
     Task SaveDraftAsync(ContentItem contentItem);
 
+    /// <summary>
+    /// Publishes a given content item.
+    /// </summary>
+    /// <param name="contentItem">The <see cref="ContentItem"/> to be published.</param>
+    /// <returns>A boolean indicated whether the item is published or not.</returns>
     Task<bool> PublishAsync(ContentItem contentItem);
 
+    /// <summary>
+    /// Unpublishes a given content item.
+    /// </summary>
+    /// <param name="contentItem">The <see cref="ContentItem"/> to be unpublished.</param>
+    /// <returns>A boolean indicated whether the item is unpublished or not.</returns>
     Task<bool> UnpublishAsync(ContentItem contentItem);
 
     Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect);
