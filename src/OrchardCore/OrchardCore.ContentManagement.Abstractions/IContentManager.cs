@@ -136,14 +136,14 @@ public interface IContentManager
     /// Publishes a given content item.
     /// </summary>
     /// <param name="contentItem">The <see cref="ContentItem"/> to be published.</param>
-    /// <returns>A boolean indicated whether the item is published or not.</returns>
+/// <returns>A <see cref="bool"/> indicating whether the item was actually published or not (due to being canceled).</returns>
     Task<bool> PublishAsync(ContentItem contentItem);
 
     /// <summary>
     /// Unpublishes a given content item.
     /// </summary>
     /// <param name="contentItem">The <see cref="ContentItem"/> to be unpublished.</param>
-    /// <returns>A boolean indicated whether the item is unpublished or not.</returns>
+/// <returns>A <see cref="bool"/> indicating whether the item was actually unpublished or not (due to being canceled).</returns>
     Task<bool> UnpublishAsync(ContentItem contentItem);
 
     Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect);
