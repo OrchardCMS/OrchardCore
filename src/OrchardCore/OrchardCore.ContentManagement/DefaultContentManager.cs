@@ -629,11 +629,11 @@ public class DefaultContentManager : IContentManager
                 var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
                 if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
                 {
-                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Creating '{0}' was cancelled.", contentItem.DisplayText]);
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Creating '{0}' was canceled.", contentItem.DisplayText]);
                 }
                 else
                 {
-                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Creating {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Creating {0} '{1}' was canceled.", typeDefinition.DisplayName, contentItem.DisplayText]);
                 }
             }
 
