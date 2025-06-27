@@ -1,8 +1,8 @@
+using OrchardCore.ContentManagement.Metadata.Settings;
+
 namespace OrchardCore.ContentFields.Settings;
 
-public class TextFieldSettings
+public class TextFieldSettings : FieldSettings
 {
-    public string Hint { get; set; }
-    public bool Required { get; set; }
     public string DefaultValue { get; set; }
 }
