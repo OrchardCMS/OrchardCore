@@ -27,7 +27,7 @@ public interface IContentManager
     /// </summary>
     /// <param name="contentItem">The content item filled with all necessary data.</param>
     /// <param name="options">The version to create the item with; defaults to <c>null</c>.</param>
-    /// <returns>A boolean indicated whether the item is created or not.</returns>
+    /// <returns>A <see cref="bool"/> indicating whether the item was actually created or not (due to being canceled).</returns>
     /// <remarks>
     /// Creates a content item using the specified versioning option.
     /// <list type="bullet">
