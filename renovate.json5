@@ -38,6 +38,14 @@
             matchCurrentVersion: '<9.0.0',
         },
         {
+            // We need to keep this on 8.x for now, see
+            // https://github.com/OrchardCMS/OrchardCore/pull/17942#issuecomment-2903626717.
+            matchPackageNames: [
+                'Elastic.Clients.Elasticsearch',
+            ],
+            allowedVersions: '<9.0.0',
+        },
+        {
             // See the corresponding comment in Directory.Packages.props.
             matchPackageNames: [
                 'System.Drawing.Common',
