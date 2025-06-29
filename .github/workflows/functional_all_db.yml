@@ -132,7 +132,7 @@ jobs:
       image: cypress/included:14.5.0
     services:
       mysql:
-        image: mysql:8
+        image: mysql:9
         ports:
           - 3306
         env:
