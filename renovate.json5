@@ -115,6 +115,17 @@
                 '/^YesSql.*$/',
             ],
         },
+        // These are database engines references in .github/workflows/functional_all_db.yml. They should match the
+        // minimum versions supported by YesSql, see:
+        // https://github.com/sebastienros/yessql/blob/main/.github/workflows/build.yml.
+        {
+            matchPackageNames: [
+                'postgres',
+                'mysql',
+                'mcr.microsoft.com/mssql/server',
+            ],
+            enabled: false,
+        },
     ],
     // With GitHub Actions, concurrency is not really an issue.
     prHourlyLimit: 0,
