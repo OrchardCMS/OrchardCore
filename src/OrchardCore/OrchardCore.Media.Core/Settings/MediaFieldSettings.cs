@@ -1,13 +1,10 @@
 using System.ComponentModel;
+using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.Media.Settings;
 
-public class MediaFieldSettings
+public class MediaFieldSettings : FieldSettings
 {
-    public string Hint { get; set; }
-
-    public bool Required { get; set; }
-
     [DefaultValue(true)]
     public bool Multiple { get; set; } = true;
 
