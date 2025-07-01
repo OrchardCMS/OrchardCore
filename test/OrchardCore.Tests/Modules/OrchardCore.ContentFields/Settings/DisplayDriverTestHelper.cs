@@ -30,7 +30,7 @@ public class DisplayDriverTestHelper
             ValueTask.FromResult<IShape>(new ZoneHolding(() => factory.CreateAsync("ContentZone"))));
         partFieldDefinitionShape.Properties["ContentField"] = partFieldDefinition;
 
-        var editorContext = new BuildEditorContext(partFieldDefinitionShape, "", false, "", factory, null, null);
+        var editorContext = new BuildEditorContext(partFieldDefinitionShape, "", false, "", factory, null, null, null);
 
         var result = await driver.BuildEditorAsync(partFieldDefinition, editorContext);
         await result.ApplyAsync(editorContext);

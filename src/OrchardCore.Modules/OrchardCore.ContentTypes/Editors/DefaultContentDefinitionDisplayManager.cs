@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -17,6 +18,7 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
     private readonly IShapeFactory _shapeFactory;
     private readonly ILayoutAccessor _layoutAccessor;
     private readonly ILogger _logger;
+    private readonly HttpContext _httpContext;
 
     public DefaultContentDefinitionDisplayManager(
         IEnumerable<IContentDefinitionDisplayHandler> handlers,
@@ -24,14 +26,15 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
         IShapeFactory shapeFactory,
         IEnumerable<IShapePlacementProvider> placementProviders,
         ILogger<DefaultContentDefinitionDisplayManager> logger,
-        ILayoutAccessor layoutAccessor
-        ) : base(shapeFactory, placementProviders)
+        ILayoutAccessor layoutAccessor,
+        IHttpContextAccessor httpContextAccessor) : base(shapeFactory, placementProviders)
     {
         _handlers = handlers;
         _contentDefinitionManager = contentDefinitionManager;
         _shapeFactory = shapeFactory;
         _layoutAccessor = layoutAccessor;
         _logger = logger;
+        _httpContext = httpContextAccessor.HttpContext;
     }
 
     public async Task<dynamic> BuildTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
@@ -48,7 +51,8 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
             "",
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
-            updater
+            updater,
+            _httpContext
         );
 
         await BindPlacementAsync(typeContext);
@@ -76,7 +80,8 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
                 false,
                 _shapeFactory,
                 layout,
-                updater
+                updater,
+                _httpContext
             );
 
             await BindPlacementAsync(typeContext);
@@ -100,7 +105,8 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
             "",
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
-            updater
+            updater,
+            _httpContext
         );
 
         await BindPlacementAsync(partContext);
@@ -128,7 +134,8 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
                 false,
                 _shapeFactory,
                 layout,
-                updater
+                updater,
+                _httpContext
             );
 
             await BindPlacementAsync(partContext);
@@ -153,7 +160,8 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
             "",
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
-            updater
+            updater,
+            _httpContext
         );
 
         await BindPlacementAsync(partContext);
@@ -183,7 +191,8 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
                     false,
                     _shapeFactory,
                     layout,
-                    updater
+                    updater,
+                    _httpContext
                 );
 
                 await BindPlacementAsync(partContext);
@@ -209,7 +218,8 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
             "",
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
-            updater
+            updater,
+            _httpContext
         );
 
         await BindPlacementAsync(fieldContext);
@@ -241,7 +251,8 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
                     false,
                     _shapeFactory,
                     layout,
-                    updater
+                    updater,
+                    _httpContext
                 );
 
                 await BindPlacementAsync(fieldContext);

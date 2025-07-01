@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Handlers;
@@ -9,9 +10,16 @@ namespace OrchardCore.DisplayManagement.Handlers;
 public interface IBuildShapeContext
 {
     IShape Shape { get; }
+
     IShapeFactory ShapeFactory { get; }
+
     dynamic New { get; }
+
     IZoneHolding Layout { get; set; }
+
     string GroupId { get; }
+
     FindPlacementDelegate FindPlacement { get; set; }
+
+    HttpContext HttpContext { get; }
 }

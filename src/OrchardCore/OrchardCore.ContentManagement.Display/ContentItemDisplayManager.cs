@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -25,6 +26,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
     private readonly IShapeFactory _shapeFactory;
     private readonly ILayoutAccessor _layoutAccessor;
     private readonly ILogger _logger;
+    private readonly HttpContext _httpContext;
 
     public ContentItemDisplayManager(
         IEnumerable<IContentDisplayHandler> handlers,
@@ -32,14 +34,15 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         IShapeFactory shapeFactory,
         IEnumerable<IShapePlacementProvider> placementProviders,
         ILogger<ContentItemDisplayManager> logger,
-        ILayoutAccessor layoutAccessor
-        ) : base(shapeFactory, placementProviders)
+        ILayoutAccessor layoutAccessor,
+        IHttpContextAccessor httpContextAccessor) : base(shapeFactory, placementProviders)
     {
         _handlers = handlers;
         _contentDefinitionManager = contentDefinitionManager;
         _shapeFactory = shapeFactory;
         _layoutAccessor = layoutAccessor;
         _logger = logger;
+        _httpContext = httpContextAccessor.HttpContext;
     }
 
     public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
@@ -101,7 +104,8 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
             groupId,
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
-            new ModelStateWrapperUpdater(updater)
+            new ModelStateWrapperUpdater(updater),
+            _httpContext
         );
 
         await BindPlacementAsync(context);
@@ -149,7 +153,8 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
             htmlFieldPrefix,
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
-            new ModelStateWrapperUpdater(updater)
+            new ModelStateWrapperUpdater(updater),
+            _httpContext
         );
 
         await BindPlacementAsync(context);
@@ -197,7 +202,8 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
             htmlFieldPrefix,
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
-            new ModelStateWrapperUpdater(updater)
+            new ModelStateWrapperUpdater(updater),
+            _httpContext
         );
 
         await BindPlacementAsync(context);

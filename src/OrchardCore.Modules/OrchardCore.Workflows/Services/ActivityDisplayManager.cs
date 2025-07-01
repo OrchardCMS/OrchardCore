@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
@@ -21,12 +22,13 @@ public class ActivityDisplayManager : IActivityDisplayManager
         IEnumerable<IShapePlacementProvider> placementProviders,
         IEnumerable<IDisplayDriver<IActivity>> displayDrivers,
         ILogger<DisplayManager<IActivity>> displayManagerLogger,
-        ILayoutAccessor layoutAccessor)
+        ILayoutAccessor layoutAccessor,
+        IHttpContextAccessor httpContextAccessor)
     {
         var drivers = workflowOptions.Value.ActivityDisplayDriverTypes
             .Select(x => serviceProvider.CreateInstance<IDisplayDriver<IActivity>>(x))
             .Concat(displayDrivers);
-        _displayManager = new DisplayManager<IActivity>(drivers, shapeFactory, placementProviders, displayManagerLogger, layoutAccessor);
+        _displayManager = new DisplayManager<IActivity>(drivers, shapeFactory, placementProviders, displayManagerLogger, layoutAccessor, httpContextAccessor.HttpContext);
     }
 
     public Task<IShape> BuildDisplayAsync(IActivity model, IUpdateModel updater, string displayType = "", string groupId = "")

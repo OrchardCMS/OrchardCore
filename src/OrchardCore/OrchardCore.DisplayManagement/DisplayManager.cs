@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,19 +14,21 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
     private readonly IShapeFactory _shapeFactory;
     private readonly ILayoutAccessor _layoutAccessor;
     private readonly ILogger _logger;
+    private readonly HttpContext _httpContext;
 
     public DisplayManager(
         IEnumerable<IDisplayDriver<TModel>> drivers,
         IShapeFactory shapeFactory,
         IEnumerable<IShapePlacementProvider> placementProviders,
         ILogger<DisplayManager<TModel>> logger,
-        ILayoutAccessor layoutAccessor
-        ) : base(shapeFactory, placementProviders)
+        ILayoutAccessor layoutAccessor,
+        HttpContext httpContext) : base(shapeFactory, placementProviders)
     {
         _shapeFactory = shapeFactory;
         _layoutAccessor = layoutAccessor;
         _drivers = drivers;
         _logger = logger;
+        _httpContext = httpContext;
     }
 
     public async Task<IShape> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
@@ -51,8 +54,8 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
             group ?? "",
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
-            new ModelStateWrapperUpdater(updater)
-        );
+            new ModelStateWrapperUpdater(updater),
+            _httpContext);
 
         await BindPlacementAsync(context);
 
@@ -85,8 +88,8 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
             htmlPrefix,
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
-            new ModelStateWrapperUpdater(updater)
-        );
+            new ModelStateWrapperUpdater(updater),
+            _httpContext);
 
         await BindPlacementAsync(context);
 
@@ -119,7 +122,8 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
             htmlPrefix,
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
-            new ModelStateWrapperUpdater(updater)
+            new ModelStateWrapperUpdater(updater),
+            _httpContext
         );
 
         await BindPlacementAsync(context);
