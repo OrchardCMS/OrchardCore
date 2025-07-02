@@ -66,6 +66,7 @@ public class ShapeResultTests
 
         serviceCollection.AddScripting()
             .AddLogging()
+            .AddHttpContextAccessor()
             .AddScoped<ILoggerFactory, NullLoggerFactory>()
             .AddScoped<IThemeManager, ThemeManager>()
             .AddScoped<IShapeFactory, DefaultShapeFactory>()
