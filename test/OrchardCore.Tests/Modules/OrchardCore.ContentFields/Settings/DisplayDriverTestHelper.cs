@@ -18,6 +18,9 @@ public class DisplayDriverTestHelper
             .Build();
     }
 
+    public static Task<ShapeResult> GetShapeResultAsync(IContentPartFieldDefinitionDisplayDriver driver, IShapeFactory factory, ContentPartDefinition contentDefinition)
+        => GetShapeResultAsync(factory, contentDefinition, driver);
+
     public static Task<ShapeResult> GetShapeResultAsync<TDriver>(IShapeFactory factory, ContentPartDefinition contentDefinition)
         where TDriver : IContentPartFieldDefinitionDisplayDriver, new()
         => GetShapeResultAsync(factory, contentDefinition, new TDriver());

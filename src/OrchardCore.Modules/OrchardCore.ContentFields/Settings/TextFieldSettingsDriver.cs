@@ -42,7 +42,7 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
         // Prevent accepting color with #XXX format, because the color editor will use black color all the time.
         if (contentPartFieldSettings.Editor == TextFieldColorEditor)
         {
-            if (!HexColor().IsMatch(model.DefaultValue))
+            if (!HexColorRegex().IsMatch(model.DefaultValue))
             {
                 context.Updater.ModelState.AddModelError(Prefix, S["A value for {0} should be in '#XXXXXX' format.", partFieldDefinition.DisplayName()]);
             }
@@ -54,5 +54,5 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
     }
 
     [GeneratedRegex(@"^#(?:[0-9a-fA-F]{6})$")]
-    private static partial Regex HexColor();
+    private static partial Regex HexColorRegex();
 }

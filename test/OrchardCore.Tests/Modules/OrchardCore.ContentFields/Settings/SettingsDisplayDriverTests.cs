@@ -194,7 +194,10 @@ public class SettingsDisplayDriverTests
 
         var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<TextField>(field => field.WithSettings(settings));
 
-        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<TextFieldSettingsDriver>(_shapeFactory, contentDefinition);
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(
+            new TextFieldSettingsDriver(Mock.Of<IStringLocalizer<TextFieldSettingsDriver>>()),
+            _shapeFactory,
+            contentDefinition);
 
         var shape = (TextFieldSettings)shapeResult.Shape;
 
