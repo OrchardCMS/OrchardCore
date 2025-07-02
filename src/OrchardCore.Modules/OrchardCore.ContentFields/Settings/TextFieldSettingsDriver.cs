@@ -39,12 +39,22 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        // Prevent accepting color with #XXX format, because the color editor will use black color all the time.
+        // Convert colors with #RGB format to #RRGGBB, because the color editor will use black color all the time.
         if (contentPartFieldSettings.Editor == TextFieldColorEditor)
         {
             if (!HexColorRegex().IsMatch(model.DefaultValue))
             {
-                context.Updater.ModelState.AddModelError(Prefix, S["A value for {0} should be in '#XXXXXX' format.", partFieldDefinition.DisplayName()]);
+                context.Updater.ModelState.AddModelError(Prefix, S["A value for {0} should be in '#RGB' or '#RRGGBB' formats.", partFieldDefinition.DisplayName()]);
+            }
+
+            if (model.DefaultValue.Length == 4)
+            {
+                var colorChars = model.DefaultValue.ToCharArray();
+                var r = colorChars[1];
+                var g = colorChars[2];
+                var b = colorChars[3];
+
+                model.DefaultValue = $"#{r}{r}{g}{g}{b}{b}";
             }
         }
 
@@ -53,6 +63,6 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
         return Edit(partFieldDefinition, context);
     }
 
-    [GeneratedRegex(@"^#(?:[0-9a-fA-F]{6})$")]
+    [GeneratedRegex(@"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")]
     private static partial Regex HexColorRegex();
 }
