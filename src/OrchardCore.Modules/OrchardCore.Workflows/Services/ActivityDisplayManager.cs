@@ -28,7 +28,7 @@ public class ActivityDisplayManager : IActivityDisplayManager
         var drivers = workflowOptions.Value.ActivityDisplayDriverTypes
             .Select(x => serviceProvider.CreateInstance<IDisplayDriver<IActivity>>(x))
             .Concat(displayDrivers);
-        _displayManager = new DisplayManager<IActivity>(drivers, shapeFactory, placementProviders, displayManagerLogger, layoutAccessor, httpContextAccessor.HttpContext);
+        _displayManager = new DisplayManager<IActivity>(drivers, shapeFactory, placementProviders, displayManagerLogger, layoutAccessor, httpContextAccessor);
     }
 
     public Task<IShape> BuildDisplayAsync(IActivity model, IUpdateModel updater, string displayType = "", string groupId = "")

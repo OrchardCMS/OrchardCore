@@ -22,13 +22,13 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
         IEnumerable<IShapePlacementProvider> placementProviders,
         ILogger<DisplayManager<TModel>> logger,
         ILayoutAccessor layoutAccessor,
-        HttpContext httpContext) : base(shapeFactory, placementProviders)
+        IHttpContextAccessor httpContextAccessor) : base(shapeFactory, placementProviders)
     {
         _shapeFactory = shapeFactory;
         _layoutAccessor = layoutAccessor;
         _drivers = drivers;
         _logger = logger;
-        _httpContext = httpContext;
+        _httpContext = httpContextAccessor.HttpContext;
     }
 
     public async Task<IShape> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
