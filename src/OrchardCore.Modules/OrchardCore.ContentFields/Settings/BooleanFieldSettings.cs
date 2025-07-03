@@ -1,8 +1,10 @@
+using OrchardCore.ContentManagement.Metadata.Settings;
+
 namespace OrchardCore.ContentFields.Settings;
 
-public class BooleanFieldSettings
+public class BooleanFieldSettings : FieldSettings
 {
-    public string Hint { get; set; }
     public string Label { get; set; }
+
     public bool DefaultValue { get; set; }
 }

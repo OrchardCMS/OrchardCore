@@ -1,8 +1,8 @@
+using OrchardCore.ContentManagement.Metadata.Settings;
+
 namespace OrchardCore.ContentFields.Settings;
 
-public class TimeFieldSettings
+public class TimeFieldSettings : FieldSettings
 {
-    public string Hint { get; set; }
-    public bool Required { get; set; }
     public string Step { get; set; }
 }
