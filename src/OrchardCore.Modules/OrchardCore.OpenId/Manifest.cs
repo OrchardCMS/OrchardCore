@@ -33,6 +33,7 @@ using OrchardCore.OpenId;
     Name = "OpenID Connect Management UI",
     Description = "Adds a user interface for managing OpenID Connect applications, scopes and permissions.",
     Category = "OpenID Connect",
+    EnabledByDependencyOnly = true,
     Dependencies =
     [
         OpenIdConstants.Features.Core,
