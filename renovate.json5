@@ -37,7 +37,7 @@
                 'System.Text.Json',
             ],
             allowedVersions: '<9.0.0',
-            matchCurrentVersion: '<9.0.0',
+            matchCurrentVersion: '/^8\\./',
         },
         {
             // We need to keep this on 8.x for now, see
