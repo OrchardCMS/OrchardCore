@@ -794,30 +794,18 @@ ol.media-items-grid .thumb-container {
   border: 2px dashed #ccc;
 }
 
-.sortable-selected { /* A blue border */
-}
-
 [dir] .sortable-selected {
   border: 2px solid #2196f3;
   box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
 }
 
-/* If an item is both single-selected and multi-selected, decide which style to prioritize */
-.media-thumb-item.selected.sortable-selected { /* Example: combined style */
-}
 [dir] .media-thumb-item.selected.sortable-selected {
   border: 2px solid purple;
   box-shadow: 0 0 8px rgba(128, 0, 128, 0.7);
 }
 
-.media-thumb-item { /* Indicates draggable */
-}
-
 [dir] .media-thumb-item {
   cursor: grab;
-}
-
-.media-thumb-item.sortable-selected { /* Indicates active drag of selected items */
 }
 
 [dir] .media-thumb-item.sortable-selected {
