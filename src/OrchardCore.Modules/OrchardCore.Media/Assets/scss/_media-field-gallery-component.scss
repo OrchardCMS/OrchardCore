@@ -1,0 +1,133 @@
+.media-field-gallery {
+  ol.media-field-gallery-cards {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fill, 242px);
+
+    li.sortable-selected .card {
+      border-color: rgba(var(--bs-primary-rgb), 0.4);
+      box-shadow: 0 0 4px var(--bs-primary, blue);
+      cursor: grabbing;
+    }
+
+    .media-field-gallery-choose-btn {
+      cursor: pointer;
+      border: dashed 1px var(--bs-border-color) !important;
+      background-color: rgba(
+        var(--bs-light-rgb),
+        var(--bs-bg-opacity)
+      ) !important;
+    }
+
+    .media-filename {
+      text-align: center;
+    }
+
+    .media-preview img {
+      max-height: 198px;
+      overflow: hidden;
+      background: repeating-conic-gradient(
+          #fff 0 25%,
+          rgba(0, 0, 0, 0.05) 0 50%
+        )
+        50% / 15px 15px;
+    }
+
+    .media-field-gallery-card-actions {
+      padding: 5px;
+      background: #f8f9fa;
+      display: flex;
+      align-items: end;
+      justify-content: flex-end;
+      border-top: solid 1px var(--bs-border-color);
+    }
+
+    &.size-sm {
+      grid-template-columns: repeat(auto-fill, 150px);
+
+      .media-field-gallery-card-actions {
+        padding: 2px;
+      }
+
+      .file-icon [class*="fa-"] {
+        font-size: 2em !important;
+      }
+
+      .media-preview img {
+        max-height: 112px;
+      }
+
+      .media-filename {
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+      }
+
+      .not-found {
+        [class*="fa-"] {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .media-field-gallery-list {
+    .media-preview {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      overflow: hidden;
+
+      [class*="fa-"] {
+        font-size: 1.25em !important;
+      }
+    }
+
+    .media-field-gallery-choose-btn {
+      cursor: pointer;
+      border: dashed 1px var(--bs-border-color) !important;
+      background-color: rgba(
+        var(--bs-light-rgb),
+        var(--bs-bg-opacity)
+      ) !important;
+    }
+
+    li.sortable-selected {
+      background: rgba(var(--bs-primary-rgb), 0.2);
+      border-color: rgba(var(--bs-primary-rgb), 0.4);
+      cursor: grabbing;
+    }
+
+    .media-field-gallery-list-actions {
+      padding: 0 5px;
+      display: flex;
+      align-items: end;
+      justify-content: flex-end;
+      gap: 0;
+
+      .btn-light {
+        background: transparent;
+        border-color: transparent;
+
+        &:hover {
+          background: var(--bs-btn-hover-bg);
+          border-color: var(--bs-btn-hover-border-color);
+        }
+      }
+    }
+  }
+
+  .media-filename {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    width: 100%;
+    font-size: 0.775em;
+    padding: 0 0.5rem;
+  }
+}
