@@ -119,17 +119,17 @@
             <div class="mb-3">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" asp-for="AllowLogoutEndpoint" data-bs-toggle="collapse" data-bs-target="#postLogoutRedirectUris" checked="@Model.AllowLogoutEndpoint">
-                    <label class="form-check-label" asp-for="AllowLogoutEndpoint">@T["Allow Logout Endpoint"]</label>
+                    <label class="form-check-label" asp-for="AllowLogoutEndpoint">@T["Allow End Session Endpoint"]</label>
                 </div>
             </div>
             <div class="mb-3 collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
                 <div class="mb-3" asp-validation-class-for="PostLogoutRedirectUris">
-                    <label asp-for="PostLogoutRedirectUris" class="form-label">@T["Logout Redirect Uris"]</label>
+                    <label asp-for="PostLogoutRedirectUris" class="form-label">@T["Post-Logout Redirect Uris"]</label>
                     <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
                     <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
                 </div>
                 <div class="hint">
-                    @T["Space delimited list of logout redirect URIs."]
+                    @T["Space delimited list of post-logout redirect URIs."]
                 </div>
             </div>
         </div>

@@ -13,8 +13,8 @@ public class OpenIdTokenManager<TToken> : OpenIddictTokenManager<TToken>, IOpenI
         IOpenIddictTokenCache<TToken> cache,
         ILogger<OpenIddictTokenManager<TToken>> logger,
         IOptionsMonitor<OpenIddictCoreOptions> options,
-        IOpenIddictTokenStoreResolver resolver)
-        : base(cache, logger, options, resolver)
+        IOpenIddictTokenStore<TToken> store)
+        : base(cache, logger, options, store)
     {
     }
 
