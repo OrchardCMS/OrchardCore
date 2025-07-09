@@ -1,7 +1,7 @@
 {
-	"recommendations": [
+    "recommendations": [
         "esbenp.prettier-vscode",
         "johnsoncodehk.vscode-vue-preview",
         "ddbaeumer.vscode-eslint"
-	],
+    ],
 }
