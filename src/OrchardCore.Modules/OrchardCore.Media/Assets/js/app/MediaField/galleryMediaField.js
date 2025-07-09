@@ -94,6 +94,9 @@ Vue.component("mediaFieldGalleryCardItem", {
 
         <div class="d-flex flex-column h-100">
           <div class="flex-grow-1 media-preview d-flex justify-content-center align-items-center">
+            <div class="update-media" v-if="!$parent.allowMultiple" v-on:click="$parent.showMediaModal">
+                + Media Library
+            </div>
             <div class="image-wrapper" v-if="media.mime.startsWith('image')">
             <img
             :src="buildMediaUrl(media.url)"
@@ -188,7 +191,7 @@ Vue.component("mediaFieldGalleryContainer", {
     /*html*/
     `
     <div class="media-field-gallery" :id="idPrefix + '_mediaContainerMain'" v-cloak>
-      <div class="pb-2" v-cloak>
+      <div v-if="allowMultiple" class="pb-2" v-cloak>
 
         <div class="me-auto">
           <a
@@ -266,7 +269,7 @@ Vue.component("mediaFieldGalleryContainer", {
             :size="size"
           />
 
-          <li class="add-media-card" v-on:click="showMediaModal">
+          <li class="add-media-card" v-if="allowMultiple || mediaItems.length < 1" v-on:click="showMediaModal">
               <div class="card media-field-gallery-choose-btn text-center overflow-hidden">
               <div class="ratio ratio-1x1 text-center">
                 <div class="hint d-flex align-items-center justify-content-center w-100">+ Media Library</div>
@@ -291,6 +294,7 @@ Vue.component("mediaFieldGalleryContainer", {
     selectedMedia: Object,
     idPrefix: String,
     modalId: String,
+    allowMultiple: Boolean
   },
   created: function created() {
     var self = this;

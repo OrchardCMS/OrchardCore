@@ -26,6 +26,7 @@
           :selected-media="selectedMedia"
           :id-prefix="idPrefix"
           :allow-anchors="allowAnchors"
+          :allow-multiple="@(settings.Multiple ? "true" : "false")"
           @@updated="(newOrder) => {
               mediaItems = newOrder;
           }"

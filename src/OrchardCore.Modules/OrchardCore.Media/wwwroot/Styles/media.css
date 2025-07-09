@@ -416,6 +416,27 @@ ol.media-items-grid .thumb-container {
 [dir] .media-field-gallery ol.media-field-gallery-cards .media-filename {
   text-align: center;
 }
+.media-field-gallery ol.media-field-gallery-cards .update-media {
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  font-size: 0.875em;
+  color: var(--bs-secondary);
+}
+[dir] .media-field-gallery ol.media-field-gallery-cards .update-media {
+  cursor: pointer;
+  background: rgba(var(--bs-light-rgb), 0.9);
+}
+.media-field-gallery ol.media-field-gallery-cards .update-media:hover {
+  opacity: 1;
+}
+.media-field-gallery ol.media-field-gallery-cards .media-preview {
+  position: relative;
+}
 .media-field-gallery ol.media-field-gallery-cards .media-preview img {
   max-height: 198px;
   overflow: hidden;

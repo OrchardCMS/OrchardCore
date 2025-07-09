@@ -23,14 +23,36 @@
       text-align: center;
     }
 
-    .media-preview img {
-      max-height: 198px;
-      overflow: hidden;
-      background: repeating-conic-gradient(
-          #fff 0 25%,
-          rgba(0, 0, 0, 0.05) 0 50%
-        )
-        50% / 15px 15px;
+    .update-media {
+        display: flex;
+        justify-content: center;
+        justify-items: center;
+        align-items: center;
+        position: absolute;
+        inset: 0;
+        cursor: pointer;
+        opacity: 0;
+        font-size: 0.875em;
+        color: var(--bs-secondary);
+        background: rgba(var(--bs-light-rgb), 0.9);
+
+        &:hover {
+        opacity: 1;
+        }
+    }
+
+    .media-preview {
+        position: relative;
+
+        img {
+            max-height: 198px;
+            overflow: hidden;
+            background: repeating-conic-gradient(
+                #fff 0 25%,
+                rgba(0, 0, 0, 0.05) 0 50%
+                )
+                50% / 15px 15px;
+        }
     }
 
     .media-field-gallery-card-actions {
