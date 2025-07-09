@@ -232,7 +232,7 @@ Vue.component("mediaFieldGalleryContainer", {
               <i class="fa-solid fa-expand"></i>
             </button>
           </div>
-          
+
 
 
         </div>
@@ -241,7 +241,7 @@ Vue.component("mediaFieldGalleryContainer", {
 
         <ol ref="mediaContainer" v-if="!gridView" :class="'media-field-gallery-list list-group list-unstyled size-' + size">
           <media-field-gallery-list-item
-            v-for= "media in mediaItems"
+            v-for= "media in mediaItemsNoDuplicates"
             :key="media.vuekey ?? media.name"
             :media="media"
             :canAddMedia="$parent.canAddMedia"
@@ -257,7 +257,7 @@ Vue.component("mediaFieldGalleryContainer", {
 
         <ol ref="mediaContainer" v-if="gridView" :class="'media-field-gallery-cards list-unstyled size-' + size">
           <media-field-gallery-card-item
-            v-for= "media in mediaItems"
+            v-for= "media in mediaItemsNoDuplicates"
             :key="media.vuekey ?? media.name"
             :media="media"
             :canAddMedia="$parent.canAddMedia"
@@ -333,6 +333,13 @@ Vue.component("mediaFieldGalleryContainer", {
       },
     },
   },
+  computed: {
+    mediaItemsNoDuplicates: function mediaItemsNoDuplicates() {
+      const test = this.removeDuplicates(this.mediaItems);
+      console.log("mediaItemsNoDuplicates: ", test);
+      return test;
+    },
+  },
   methods: {
     getLocalStorageState: function getLocalStorageState() {
       if (localStorage.getItem(MEDIA_FIELD_GALLERY)) {
@@ -353,7 +360,7 @@ Vue.component("mediaFieldGalleryContainer", {
       localStorage.setItem(MEDIA_FIELD_GALLERY, parsed);
     },
     initSortable: function initSortable() {
-      if (this.$refs.mediaContainer && this.mediaItems.length > 0) {
+      if (this.$refs.mediaContainer && this.mediaItemsNoDuplicates.length > 0) {
         var self = this;
         this.sortableInstance = Sortable.create(this.$refs.mediaContainer, {
           animation: 150,
@@ -381,7 +388,7 @@ Vue.component("mediaFieldGalleryContainer", {
             return true;
           },
           onUpdate: function (evt) {
-            let newOrder = [...self.mediaItems];
+            let newOrder = [...self.mediaItemsNoDuplicates];
 
             if (evt.oldIndicies && evt.oldIndicies.length > 0) {
               let oldIndices = evt.oldIndicies.sort(
@@ -450,41 +457,12 @@ Vue.component("mediaFieldGalleryContainer", {
       this.multiSelectedItems = [];
     },
     showMediaModal: function () {
-      var self = this;
-
-      var modalBodyElement = document.getElementById(this.modalId);
-      $("#allowedExtensions").val(this.allowedExtensions);
-      $("#fileupload").attr("accept", this.allowedExtensions);
-      $("#mediaApp").appendTo($(modalBodyElement).find(".modal-body"));
-      $("#mediaApp").show();
-
-      mediaApp.refresh();
-
-      var modal = new bootstrap.Modal(modalBodyElement);
-      modal.show();
-
-      $(modalBodyElement)
-        .find(".mediaFieldSelectButton")
-        .off("click")
-        .on("click", function (v) {
-          const seenNames = new Set(self.mediaItems.map((item) => item.name));
-          const uniqueItems = [];
-
-          mediaApp.selectedMedias.forEach((item) => {
-            if (item && item.name !== undefined && item.name !== null) {
-              if (!seenNames.has(item.name)) {
-                uniqueItems.push(item);
-              }
-            } else {
-              console.warn("Item found without a valid name:", item);
-              uniqueItems.push(item);
-            }
-          });
-
-          self.$parent.addMediaFiles(uniqueItems);
-          modal.hide();
-          return true;
-        });
+      this.$parent.showModal();
     },
-  },
+    removeDuplicates: function (array) {
+      return array.filter((obj, index, self) =>
+        index === self.findIndex((o) => o.mediaPath === obj.mediaPath)
+      );
+    },
+  }
 });

@@ -2962,7 +2962,7 @@ Vue.component("mediaFieldGalleryCardItem", {
   }
 });
 Vue.component("mediaFieldGalleryContainer", {
-  template: /*html*/"\n    <div class=\"media-field-gallery\" :id=\"idPrefix + '_mediaContainerMain'\" v-cloak>\n      <div class=\"pb-2\" v-cloak>\n\n        <div class=\"me-auto\">\n          <a\n              type=\"button\"\n              class=\"btn btn-sm btn-primary\"\n              href=\"javascript:;\"\n              v-show=\"$parent.canAddMedia\"\n              v-on:click=\"$parent.showModal\"\n          >\n              <i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i>\n              Media Library\n          </a>\n\n          <a\n            type=\"button\"\n            class=\"btn btn-sm btn-secondary draft me-2\"\n            :class=\"selectedItemCount == 0 ? 'disabled' : ''\"\n            :disabled=\"selectedItemCount == 0\"\n            href=\"javascript:;\"\n            v-on:click=\"deselectAll\"\n          >\n            Deselect All\n          </a>\n\n\n          <div class=\"btn-group\">\n            <button type=\"button\" class=\"btn btn-sm\" :class=\"!gridView ? 'text-primary': ''\" v-on:click=\"gridView = false;\">\n              <span title=\"Gridview\"></span>\n              <i class=\"fa-solid fa-th-list\"></i>\n              </button>\n            <button type=\"button\" class=\"btn btn-sm\" :class=\"gridView ? 'text-primary': ''\" v-on:click=\"gridView = true;\">\n              <span title=\"List\"></span>\n              <i class=\"fa-solid fa-th-large\"></i>\n            </button>\n            <button type=\"button\" class=\"btn btn-sm\" :class=\"size == 'sm' ? 'text-primary': ''\" v-on:click=\"size = 'sm';\" v-show=\"gridView\">\n              <span title=\"Small Thumbs\"></span>\n              <i class=\"fa-solid fa-compress\"></i>\n            </button>\n            <button type=\"button\" class=\"btn btn-sm\" :class=\"size == 'lg' ? 'text-primary': ''\" v-on:click=\"size = 'lg';\" v-show=\"gridView\">\n              <span title=\"Large Thumbs\"></span>\n              <i class=\"fa-solid fa-expand\"></i>\n            </button>\n          </div>\n          \n\n\n        </div>\n\n      </div>\n\n        <ol ref=\"mediaContainer\" v-if=\"!gridView\" :class=\"'media-field-gallery-list list-group list-unstyled size-' + size\">\n          <media-field-gallery-list-item\n            v-for= \"media in mediaItems\"\n            :key=\"media.vuekey ?? media.name\"\n            :media=\"media\"\n            :canAddMedia=\"$parent.canAddMedia\"\n            :allowMediaText=\"$parent.allowMediaText\"\n            :allowAnchors=\"$parent.allowAnchors\"\n            :size=\"size\"\n          />\n\n          <li v-if=\"!mediaItems || mediaItems.length < 1\" class=\"list-group-item text-center hint media-field-gallery-choose-btn\" v-on:click=\"showMediaModal\">\n            + Media Library\n          </li>\n        </ol>\n\n        <ol ref=\"mediaContainer\" v-if=\"gridView\" :class=\"'media-field-gallery-cards list-unstyled size-' + size\">\n          <media-field-gallery-card-item\n            v-for= \"media in mediaItems\"\n            :key=\"media.vuekey ?? media.name\"\n            :media=\"media\"\n            :canAddMedia=\"$parent.canAddMedia\"\n            :allowMediaText=\"$parent.allowMediaText\"\n            :allowAnchors=\"$parent.allowAnchors\"\n            :size=\"size\"\n          />\n\n          <li class=\"add-media-card\" v-on:click=\"showMediaModal\">\n              <div class=\"card media-field-gallery-choose-btn text-center overflow-hidden\">\n              <div class=\"ratio ratio-1x1 text-center\">\n                <div class=\"hint d-flex align-items-center justify-content-center w-100\">+ Media Library</div>\n              </div>\n            </div>\n          </li>\n        </ol>\n    </div>\n  ",
+  template: /*html*/"\n    <div class=\"media-field-gallery\" :id=\"idPrefix + '_mediaContainerMain'\" v-cloak>\n      <div class=\"pb-2\" v-cloak>\n\n        <div class=\"me-auto\">\n          <a\n              type=\"button\"\n              class=\"btn btn-sm btn-primary\"\n              href=\"javascript:;\"\n              v-show=\"$parent.canAddMedia\"\n              v-on:click=\"$parent.showModal\"\n          >\n              <i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i>\n              Media Library\n          </a>\n\n          <a\n            type=\"button\"\n            class=\"btn btn-sm btn-secondary draft me-2\"\n            :class=\"selectedItemCount == 0 ? 'disabled' : ''\"\n            :disabled=\"selectedItemCount == 0\"\n            href=\"javascript:;\"\n            v-on:click=\"deselectAll\"\n          >\n            Deselect All\n          </a>\n\n\n          <div class=\"btn-group\">\n            <button type=\"button\" class=\"btn btn-sm\" :class=\"!gridView ? 'text-primary': ''\" v-on:click=\"gridView = false;\">\n              <span title=\"Gridview\"></span>\n              <i class=\"fa-solid fa-th-list\"></i>\n              </button>\n            <button type=\"button\" class=\"btn btn-sm\" :class=\"gridView ? 'text-primary': ''\" v-on:click=\"gridView = true;\">\n              <span title=\"List\"></span>\n              <i class=\"fa-solid fa-th-large\"></i>\n            </button>\n            <button type=\"button\" class=\"btn btn-sm\" :class=\"size == 'sm' ? 'text-primary': ''\" v-on:click=\"size = 'sm';\" v-show=\"gridView\">\n              <span title=\"Small Thumbs\"></span>\n              <i class=\"fa-solid fa-compress\"></i>\n            </button>\n            <button type=\"button\" class=\"btn btn-sm\" :class=\"size == 'lg' ? 'text-primary': ''\" v-on:click=\"size = 'lg';\" v-show=\"gridView\">\n              <span title=\"Large Thumbs\"></span>\n              <i class=\"fa-solid fa-expand\"></i>\n            </button>\n          </div>\n\n\n\n        </div>\n\n      </div>\n\n        <ol ref=\"mediaContainer\" v-if=\"!gridView\" :class=\"'media-field-gallery-list list-group list-unstyled size-' + size\">\n          <media-field-gallery-list-item\n            v-for= \"media in mediaItemsNoDuplicates\"\n            :key=\"media.vuekey ?? media.name\"\n            :media=\"media\"\n            :canAddMedia=\"$parent.canAddMedia\"\n            :allowMediaText=\"$parent.allowMediaText\"\n            :allowAnchors=\"$parent.allowAnchors\"\n            :size=\"size\"\n          />\n\n          <li v-if=\"!mediaItems || mediaItems.length < 1\" class=\"list-group-item text-center hint media-field-gallery-choose-btn\" v-on:click=\"showMediaModal\">\n            + Media Library\n          </li>\n        </ol>\n\n        <ol ref=\"mediaContainer\" v-if=\"gridView\" :class=\"'media-field-gallery-cards list-unstyled size-' + size\">\n          <media-field-gallery-card-item\n            v-for= \"media in mediaItemsNoDuplicates\"\n            :key=\"media.vuekey ?? media.name\"\n            :media=\"media\"\n            :canAddMedia=\"$parent.canAddMedia\"\n            :allowMediaText=\"$parent.allowMediaText\"\n            :allowAnchors=\"$parent.allowAnchors\"\n            :size=\"size\"\n          />\n\n          <li class=\"add-media-card\" v-on:click=\"showMediaModal\">\n              <div class=\"card media-field-gallery-choose-btn text-center overflow-hidden\">\n              <div class=\"ratio ratio-1x1 text-center\">\n                <div class=\"hint d-flex align-items-center justify-content-center w-100\">+ Media Library</div>\n              </div>\n            </div>\n          </li>\n        </ol>\n    </div>\n  ",
   data: function data() {
     return {
       T: {},
@@ -3021,6 +3021,13 @@ Vue.component("mediaFieldGalleryContainer", {
       }
     }
   },
+  computed: {
+    mediaItemsNoDuplicates: function mediaItemsNoDuplicates() {
+      var test = this.removeDuplicates(this.mediaItems);
+      console.log("mediaItemsNoDuplicates: ", test);
+      return test;
+    }
+  },
   methods: {
     getLocalStorageState: function getLocalStorageState() {
       if (localStorage.getItem(MEDIA_FIELD_GALLERY)) {
@@ -3043,7 +3050,7 @@ Vue.component("mediaFieldGalleryContainer", {
     },
     initSortable: function initSortable() {
       var _this2 = this;
-      if (this.$refs.mediaContainer && this.mediaItems.length > 0) {
+      if (this.$refs.mediaContainer && this.mediaItemsNoDuplicates.length > 0) {
         var self = this;
         this.sortableInstance = Sortable.create(this.$refs.mediaContainer, {
           animation: 150,
@@ -3073,7 +3080,7 @@ Vue.component("mediaFieldGalleryContainer", {
             return true;
           },
           onUpdate: function onUpdate(evt) {
-            var newOrder = _toConsumableArray(self.mediaItems);
+            var newOrder = _toConsumableArray(self.mediaItemsNoDuplicates);
             if (evt.oldIndicies && evt.oldIndicies.length > 0) {
               var oldIndices = evt.oldIndicies.sort(function (a, b) {
                 return a.index - b.index;
@@ -3141,33 +3148,13 @@ Vue.component("mediaFieldGalleryContainer", {
       this.multiSelectedItems = [];
     },
     showMediaModal: function showMediaModal() {
-      var self = this;
-      var modalBodyElement = document.getElementById(this.modalId);
-      $("#allowedExtensions").val(this.allowedExtensions);
-      $("#fileupload").attr("accept", this.allowedExtensions);
-      $("#mediaApp").appendTo($(modalBodyElement).find(".modal-body"));
-      $("#mediaApp").show();
-      mediaApp.refresh();
-      var modal = new bootstrap.Modal(modalBodyElement);
-      modal.show();
-      $(modalBodyElement).find(".mediaFieldSelectButton").off("click").on("click", function (v) {
-        var seenNames = new Set(self.mediaItems.map(function (item) {
-          return item.name;
-        }));
-        var uniqueItems = [];
-        mediaApp.selectedMedias.forEach(function (item) {
-          if (item && item.name !== undefined && item.name !== null) {
-            if (!seenNames.has(item.name)) {
-              uniqueItems.push(item);
-            }
-          } else {
-            console.warn("Item found without a valid name:", item);
-            uniqueItems.push(item);
-          }
+      this.$parent.showModal();
+    },
+    removeDuplicates: function removeDuplicates(array) {
+      return array.filter(function (obj, index, self) {
+        return index === self.findIndex(function (o) {
+          return o.mediaPath === obj.mediaPath;
         });
-        self.$parent.addMediaFiles(uniqueItems);
-        modal.hide();
-        return true;
       });
     }
   }
