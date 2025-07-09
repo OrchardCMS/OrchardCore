@@ -1,4 +1,4 @@
-const MEDIA_FIELD_GALLERY = "mediaFieldGallery";
+const MEDIA_FIELD_GALLERY = "mediaFieldGallery_";
 
 Vue.component("mediaFieldGalleryListItem", {
     template:
@@ -325,13 +325,13 @@ Vue.component("mediaFieldGalleryContainer", {
     },
     methods: {
         getLocalStorageState: function getLocalStorageState() {
-            if (localStorage.getItem(MEDIA_FIELD_GALLERY)) {
+            if (localStorage.getItem(MEDIA_FIELD_GALLERY + this.idPrefix)) {
                 try {
-                    const state = JSON.parse(localStorage.getItem(MEDIA_FIELD_GALLERY));
+                    const state = JSON.parse(localStorage.getItem(MEDIA_FIELD_GALLERY + this.idPrefix));
                     this.size = state.size || "lg";
-                    this.gridView = state.gridView ?? false;
+                    this.gridView = !this.allowMultiple ? true : state.gridView ?? false;
                 } catch (e) {
-                    localStorage.removeItem("cats");
+                    localStorage.removeItem(MEDIA_FIELD_GALLERY + this.idPrefix);
                 }
             }
         },
@@ -340,7 +340,7 @@ Vue.component("mediaFieldGalleryContainer", {
                 size: this.size,
                 gridView: this.gridView,
             });
-            localStorage.setItem(MEDIA_FIELD_GALLERY, parsed);
+            localStorage.setItem(MEDIA_FIELD_GALLERY + this.idPrefix, parsed);
         },
         initSortable: function initSortable() {
             if (this.allowMultiple && this.$refs.mediaContainer && this.mediaItemsNoDuplicates.length > 0) {

@@ -2919,7 +2919,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-var MEDIA_FIELD_GALLERY = "mediaFieldGallery";
+var MEDIA_FIELD_GALLERY = "mediaFieldGallery_";
 Vue.component("mediaFieldGalleryListItem", {
   template: /*html*/"\n        <li class=\"list-group-item d-flex p-0 overflow-hidden align-items-center\" v-if=\"!media.isRemoved\" :class=\"media.mediaPath=='not-found' ? 'text-danger' : ''\">\n            <div class=\"media-preview flex-shrink-0\">\n                <img\n                    v-if=\"media.mime.startsWith('image')\"\n                    :src=\"buildMediaUrl(media.url, media.anchor)\"\n                    :data-mime=\"media.mime\"\n                    class=\"w-100 object-fit-scale\"\n                />\n                <i v-else-if=\"media.mediaPath=='not-found'\" :title=\"media.name\" class=\"fa-solid fa-triangle-exclamation\"></i>\n                <i v-else :class=\"$parent.getfontAwesomeClassNameForFileName(media.name, 'fa-4x card-text')\" :data-mime=\"media.mime\"></i>\n            </div>\n            <div class=\"me-auto flex-shrink-1\">\n                <span v-if=\"media.mediaPath=='not-found'\" class=\"media-filename card-text small\">{{ $parent.T.mediaNotFound }} - {{ $parent.T.discardWarning }}</span>\n                <span v-else class=\"media-filename card-text small\" :title=\"media.name\">{{ media.name }}</span>\n            </div>\n            <div class=\"media-field-gallery-list-actions flex-shrink-0\">\n                <a\n                    v-show=\"allowMediaText && media.mediaPath!=='not-found'\"\n                    class=\"btn btn-light btn-sm inline-media-button view-button\"\n                    v-on:click.prevent.stop=\"$parent.showMediaTextModal(media)\"\n                    href=\"javascript:;\"\n                    title=\"Edit media text\"\n                >\n                    <span v-show=\"!media.mediaText\">\n                        <i class=\"far fa-comment\"></i>\n                    </span>\n                    <span v-show=\"media.mediaText\">\n                        <i class=\"fa-solid fa-comment\"></i>\n                    </span>\n                </a>\n                <a\n                    href=\"javascript:;\"\n                    v-show=\"allowAnchors && media.mime.startsWith('image') && media.mediaPath!=='not-found'\"\n                    v-on:click=\"$parent.showAnchorModal(media)\"\n                    class=\"btn btn-light btn-sm inline-media-button view-button\"\n                    title=\"Set anchor\"\n                >\n                    <i class=\"fa-solid fa-crosshairs\" aria-hidden=\"true\"></i>\n                </a>\n                <a\n                    :href=\"media.url\"\n                    target=\"_blank\"\n                    v-show=\"media.mediaPath!=='not-found'\"\n                    class=\"btn btn-light btn-sm inline-media-button view-button\"\n                    title=\"View media\"\n                >\n                    <i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i>\n                </a>\n                <a\n                    href=\"javascript:;\"\n                    class=\"btn btn-light btn-sm inline-media-button view-button\"\n                    v-on:click.stop=\"$parent.selectAndDeleteMedia(media)\"\n                    title=\"Remove media\"\n                >\n                    <i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i>\n                </a>\n            </div>\n        </li>\n    ",
   props: {
@@ -3026,14 +3026,14 @@ Vue.component("mediaFieldGalleryContainer", {
   },
   methods: {
     getLocalStorageState: function getLocalStorageState() {
-      if (localStorage.getItem(MEDIA_FIELD_GALLERY)) {
+      if (localStorage.getItem(MEDIA_FIELD_GALLERY + this.idPrefix)) {
         try {
           var _state$gridView;
-          var state = JSON.parse(localStorage.getItem(MEDIA_FIELD_GALLERY));
+          var state = JSON.parse(localStorage.getItem(MEDIA_FIELD_GALLERY + this.idPrefix));
           this.size = state.size || "lg";
-          this.gridView = (_state$gridView = state.gridView) !== null && _state$gridView !== void 0 ? _state$gridView : false;
+          this.gridView = !this.allowMultiple ? true : (_state$gridView = state.gridView) !== null && _state$gridView !== void 0 ? _state$gridView : false;
         } catch (e) {
-          localStorage.removeItem("cats");
+          localStorage.removeItem(MEDIA_FIELD_GALLERY + this.idPrefix);
         }
       }
     },
@@ -3042,7 +3042,7 @@ Vue.component("mediaFieldGalleryContainer", {
         size: this.size,
         gridView: this.gridView
       });
-      localStorage.setItem(MEDIA_FIELD_GALLERY, parsed);
+      localStorage.setItem(MEDIA_FIELD_GALLERY + this.idPrefix, parsed);
     },
     initSortable: function initSortable() {
       var _this2 = this;
