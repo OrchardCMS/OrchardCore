@@ -2909,64 +2909,37 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
     }
   }));
 }
-// <media-field-thumbs-container> component 
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+// <media-field-thumbs-container> component
 // different media field editors share this component to present the thumbs.
 Vue.component('mediaFieldThumbsContainer', {
-  template: '\
-       <div :id="idPrefix + \'_mediaContainerMain\'" v-cloak>\
-         <div v-if="mediaItems.length < 1" class="card text-center">\
-             <div class= "card-body" >\
-                <span class="hint">{{T.noImages}}</span>\
-             </div>\
-         </div>\
-         <draggable :list="mediaItems" tag="ol" class="row media-items-grid" >\
-            <li v-for="media in mediaItems"\
-                :key="media.vuekey" \
-                class="media-container-main-list-item card p-0"\
-                :style="{width: thumbSize + 2 + \'px\'}"\
-                :class="{selected: selectedMedia == media}"\
-                v-on:click="selectMedia(media)" v-if="!media.isRemoved">\
-                    <div v-if="media.mediaPath!== \'not-found\'">\
-                        <div class="thumb-container" :style="{height: thumbSize + \'px\'}" >\
-                            <img v-if="media.mime.startsWith(\'image\')" \
-                            :src="buildMediaUrl(media.url, thumbSize)" \
-                            :data-mime="media.mime"\
-                            :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
-                            <i v-else :class="getfontAwesomeClassNameForFileName(media.name, \'fa-4x\')" :data-mime="media.mime"></i>\
-                         </div>\
-                         <div class="media-container-main-item-title card-body">\
-                                <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"\
-                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>\
-                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-end inline-media-button view-button""><i class="fa-solid fa-download" aria-hidden="true"></i></a> \
-                                <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
-                         </div>\
-                    </div>\
-                    <div v-else>\
-                        <div class="thumb-container flex-column" :style="{height: thumbSize + \'px\'}">\
-                            <i class="fa-solid fa-ban text-danger d-block" aria-hidden="true"></i>\
-                            <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>\
-                            <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>\
-                        </div>\
-                        <div class="media-container-main-item-title card-body">\
-                            <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"\
-                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>\
-                            <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
-                        </div>\
-                   </div>\
-            </li>\
-         </draggable>\
-       </div>\
-    ',
+  template: /* html */"\n    <div :id=\"idPrefix + '_mediaContainerMain'\">\n         <div v-if=\"mediaItems.length < 1\" class=\"card text-center\">\n            <div class= \"card-body\">\n                <span class=\"hint\">{{T.noImages}}</span>\n            </div>\n         </div>\n         <ol ref=\"multiDragContainer\" class=\"media-items-grid d-flex flex-row align-items-start flex-wrap\" >\n            <li v-for=\"media in mediaItems\"\n                :key=\"media.vuekey\"\n                class=\"media-thumb-item media-container-main-list-item card overflow\"\n                :style=\"{width: thumbSize + 2 + 'px'}\"\n                v-on:click=\"selectMedia(media)\"\n                v-if=\"!media.isRemoved\">\n                    <div v-if=\"media.mediaPath!== 'not-found'\">\n                        <div class=\"thumb-container\" :style=\"{height: thumbSize + 'px'}\" >\n                            <img v-if=\"media.mime.startsWith('image')\"\n                                :src=\"buildMediaUrl(media.url, thumbSize)\"\n                                :data-mime=\"media.mime\"\n                                width=\"100%\"\n                            />\n                            <i v-else :class=\"getfontAwesomeClassNameForFileName(media.name, 'fa-4x')\" :data-mime=\"media.mime\"></i>\n                        </div>\n                        <div class=\"media-container-main-item-title card-body\">\n                            <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\"\n                                v-on:click.stop=\"selectAndDeleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                            <a :href=\"media.url\" target=\"_blank\" class=\"btn btn-light btn-sm float-end inline-media-button view-button\"\"><i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i></a>\n                            <span class=\"media-filename card-text small\" :title=\"media.mediaPath\">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\n                        </div>\n                    </div>\n                    <div v-else>\n                        <div class=\"thumb-container flex-column\" :style=\"{height: thumbSize + 'px'}\">\n                            <i class=\"fa-solid fa-ban text-danger d-block\" aria-hidden=\"true\"></i>\n                            <span class=\"text-danger small d-block\">{{ T.mediaNotFound }}</span>\n                            <span class=\"text-danger small d-block text-center\">{{ T.discardWarning }}</span>\n                        </div>\n                        <div class=\"media-container-main-item-title card-body\">\n                            <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\"\n                                v-on:click.stop=\"selectAndDeleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                            <span class=\"media-filename card-text small text-danger\" :title=\"media.name\">{{ media.name }}</span>\n                        </div>\n                  </div>\n            </li>\n         </ol>\n    </div>\n    ",
   data: function data() {
     return {
-      T: {}
+      T: {},
+      sortableInstance: null,
+      multiSelectedItems: []
     };
+  },
+  model: {
+    prop: 'mediaItems',
+    event: 'changed'
   },
   props: {
     mediaItems: Array,
     selectedMedia: Object,
     thumbSize: Number,
-    idPrefix: String
+    idPrefix: String,
+    allowMultiple: Boolean
   },
   created: function created() {
     var self = this;
@@ -2976,7 +2949,59 @@ Vue.component('mediaFieldThumbsContainer', {
     self.T.discardWarning = $('#t-discard-warning').val();
     self.T.noImages = $('#t-no-images').val();
   },
+  mounted: function mounted() {
+    if (this.allowMultiple) this.initSortable();
+  },
   methods: {
+    initSortable: function initSortable() {
+      if (this.$refs.multiDragContainer) {
+        var self = this;
+        this.sortableInstance = Sortable.create(this.$refs.multiDragContainer, {
+          animation: 150,
+          ghostClass: 'sortable-ghost',
+          multiDrag: true,
+          selectedClass: 'sortable-selected',
+          preventOnFilter: true,
+          forceHelperSize: true,
+          onUpdate: function onUpdate(evt) {
+            var newOrder = _toConsumableArray(self.mediaItems);
+            if (evt.oldIndicies && evt.oldIndicies.length > 0) {
+              var oldIndices = evt.oldIndicies.sort(function (a, b) {
+                return a.index - b.index;
+              });
+              var newIndices = evt.newIndicies.sort(function (a, b) {
+                return a.index - b.index;
+              });
+              var itemsToMove = oldIndices.map(function (oldIdx) {
+                return self.mediaItems[oldIdx.index];
+              });
+
+              // old out
+              for (var i = oldIndices.length - 1; i >= 0; i--) {
+                newOrder.splice(oldIndices[i].index, 1);
+              }
+
+              // new in
+              for (var _i = 0; _i < newIndices.length; _i++) {
+                newOrder.splice(newIndices[_i].index, 0, itemsToMove[_i]);
+              }
+            } else {
+              // Single item move
+              var _newOrder$splice = newOrder.splice(evt.oldIndex, 1),
+                _newOrder$splice2 = _slicedToArray(_newOrder$splice, 1),
+                movedItem = _newOrder$splice2[0];
+              newOrder.splice(evt.newIndex, 0, movedItem);
+            }
+            self.$emit('changed', newOrder);
+            var selectedElements = self.$refs.multiDragContainer.querySelectorAll('.sortable-selected');
+            selectedElements.forEach(function (el) {
+              Sortable.utils.deselect(el);
+            });
+            self.multiSelectedItems = [];
+          }
+        });
+      }
+    },
     selectAndDeleteMedia: function selectAndDeleteMedia(media) {
       this.$parent.$emit('selectAndDeleteMediaRequested', media);
     },
