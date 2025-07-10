@@ -3376,6 +3376,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "buzznick",
+      "name": "Nick Jackson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6950723?v=4",
+      "profile": "https://buzzinteractive.co.uk/who-we-are/nick-jackson",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
