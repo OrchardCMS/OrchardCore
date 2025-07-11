@@ -51,7 +51,6 @@ public sealed class Startup : StartupBase
             });
 
         services.AddPermissionProvider<Permissions>();
-        services.AddNavigationProvider<ManagementAdminMenu>();
     }
 }
 
@@ -248,6 +247,15 @@ public sealed class ValidationDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<OpenIdValidationDeploymentSource, OpenIdValidationDeploymentStep, OpenIdValidationDeploymentStepDriver>();
+    }
+}
+
+[Feature(OpenIdConstants.Features.Management)]
+public sealed class ManagementStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddNavigationProvider<ManagementAdminMenu>();
     }
 }
 
