@@ -14,9 +14,9 @@ namespace OrchardCore.Users.AuditTrail.Drivers;
 
 public sealed class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDisplayDriver<AuditTrailUserEvent>
 {
-    readonly IAuthorizationService _authorizationService;
-    readonly IHttpContextAccessor _httpContextAccessor;
-    readonly UserManager<IUser> _userManager;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly UserManager<IUser> _userManager;
 
     public AuditTrailUserEventDisplayDriver(
         IAuthorizationService authorizationService,
