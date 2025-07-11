@@ -154,8 +154,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new AnimalPart { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }), context.RequestServices);
 
@@ -193,8 +193,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new AnimalPart { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }), context.RequestServices);
 
@@ -230,8 +230,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new AnimalPart { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var type = new ContentItemsFieldType("Animal",
             new Schema(services),
@@ -269,8 +269,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new Animal { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }), context.RequestServices);
 
@@ -320,10 +320,10 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveAsync(ci1);
-        await session.SaveAsync(ci2);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveAsync(ci1, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveAsync(ci2, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }), context.RequestServices);
 
@@ -359,8 +359,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new AnimalPart { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }), context.RequestServices);
 
@@ -394,8 +394,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new AnimalPart { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }), context.RequestServices);
 
@@ -441,11 +441,11 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                     {
                         Name = "where",
                         Description = "filters the animals",
-                        ResolvedType = where
+                        ResolvedType = where,
                     }
-                ]
+                ],
             },
-            RequestServices = services
+            RequestServices = services,
         };
     }
 
@@ -522,7 +522,7 @@ public class AnimalIndexProvider : IndexProvider<ContentItem>
                 {
                     Name = contentItem.As<Animal>() != null
                         ? contentItem.As<Animal>().Name
-                        : contentItem.As<AnimalPart>().Name
+                        : contentItem.As<AnimalPart>().Name,
                 };
             });
     }
@@ -548,7 +548,7 @@ public class AnimalTraitsIndexProvider : IndexProvider<ContentItem>
                     return new AnimalTraitsIndex
                     {
                         IsHappy = contentItem.As<Animal>().IsHappy,
-                        IsScary = contentItem.As<Animal>().IsScary
+                        IsScary = contentItem.As<Animal>().IsScary,
                     };
                 }
 
@@ -557,7 +557,7 @@ public class AnimalTraitsIndexProvider : IndexProvider<ContentItem>
                 return new AnimalTraitsIndex
                 {
                     IsHappy = animalPartSuffix.IsHappy,
-                    IsScary = animalPartSuffix.IsScary
+                    IsScary = animalPartSuffix.IsScary,
                 };
             });
     }
@@ -571,19 +571,19 @@ public class MultipleAliasIndexProvider : IIndexAliasProvider
         {
             Alias = "cats",
             Index = nameof(AnimalIndex),
-            IndexType = typeof(AnimalIndex)
+            IndexType = typeof(AnimalIndex),
         },
         new IndexAlias
         {
             Alias = "dogs",
             Index = nameof(AnimalIndex),
-            IndexType = typeof(AnimalIndex)
+            IndexType = typeof(AnimalIndex),
         },
         new IndexAlias
         {
             Alias = nameof(AnimalPart),
             Index = nameof(AnimalIndex),
-            IndexType = typeof(AnimalIndex)
+            IndexType = typeof(AnimalIndex),
         }
     ];
 
@@ -601,19 +601,19 @@ public class MultipleIndexesIndexProvider : IIndexAliasProvider
         {
             Alias = "animals.name",
             Index = $"Name",
-            IndexType = typeof(AnimalIndex)
+            IndexType = typeof(AnimalIndex),
         },
         new IndexAlias
         {
             Alias = "animals.isHappy",
             Index = $"IsHappy",
-            IndexType = typeof(AnimalTraitsIndex)
+            IndexType = typeof(AnimalTraitsIndex),
         },
         new IndexAlias
         {
             Alias = "animals.isScary",
             Index = $"IsScary",
-            IndexType = typeof(AnimalTraitsIndex)
+            IndexType = typeof(AnimalTraitsIndex),
         }
     ];
 

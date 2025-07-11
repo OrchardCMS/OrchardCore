@@ -11,7 +11,7 @@ public class MediaEventTests
         var creatingEventHandlers = new List<IMediaCreatingEventHandler>()
         {
             new TestMediaEventHandler(),
-            new TestMediaEventHandler()
+            new TestMediaEventHandler(),
         };
 
         Stream originalStream = null;
@@ -35,7 +35,7 @@ public class MediaEventTests
             {
                 var context = new MediaCreatingContext
                 {
-                    Path = path
+                    Path = path,
                 };
 
                 foreach (var eventHandler in creatingEventHandlers)

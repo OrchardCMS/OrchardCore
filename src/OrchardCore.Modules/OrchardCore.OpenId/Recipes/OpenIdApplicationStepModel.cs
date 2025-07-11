@@ -21,6 +21,7 @@ public class OpenIdApplicationStepModel
     public bool AllowIntrospectionEndpoint { get; set; }
     public bool AllowRevocationEndpoint { get; set; }
     public bool RequireProofKeyForCodeExchange { get; set; }
+    public bool RequirePushedAuthorizationRequests { get; set; }
 
     public class RoleEntry
     {

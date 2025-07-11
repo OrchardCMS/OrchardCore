@@ -29,7 +29,7 @@ public static class PlacementInfoExtensions
                 ShapeType = string.IsNullOrEmpty(second.ShapeType) ? first.ShapeType : second.ShapeType,
                 Location = string.IsNullOrEmpty(second.Location) ? first.Location : second.Location,
                 DefaultPosition = string.IsNullOrEmpty(second.DefaultPosition) ? first.DefaultPosition : second.DefaultPosition,
-                Source = $"{first.Source},{second.Source}"
+                Source = $"{first.Source},{second.Source}",
             };
 
             return combined;

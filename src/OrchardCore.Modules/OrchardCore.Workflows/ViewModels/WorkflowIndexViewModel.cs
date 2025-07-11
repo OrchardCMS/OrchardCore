@@ -51,17 +51,17 @@ public enum WorkflowFilter
 {
     All,
     Finished,
-    Faulted
+    Faulted,
 }
 
 public enum WorkflowOrder
 {
     CreatedDesc,
-    Created
+    Created,
 }
 
 public enum WorkflowBulkAction
 {
     None,
-    Delete
+    Delete,
 }

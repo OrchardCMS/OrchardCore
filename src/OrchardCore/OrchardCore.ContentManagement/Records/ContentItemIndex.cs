@@ -44,7 +44,7 @@ public class ContentItemIndexProvider : IndexProvider<ContentItem>
                     CreatedUtc = contentItem.CreatedUtc,
                     Owner = contentItem.Owner,
                     Author = contentItem.Author,
-                    DisplayText = contentItem.DisplayText
+                    DisplayText = contentItem.DisplayText,
                 };
 
                 if (contentItemIndex.ContentType?.Length > ContentItemIndex.MaxContentTypeSize)

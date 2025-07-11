@@ -49,6 +49,7 @@ app.publish/
 *.log
 *.scc
 project.lock.json
+package-lock.json
 
 # Visual C++ cache files
 ipch/
@@ -198,9 +199,6 @@ node_modules/
 
 #exclude parcel
 .parcel-cache
-
-#exclude .map files
-*.map
 
 wwwroot
 **/Localization/**/*.po

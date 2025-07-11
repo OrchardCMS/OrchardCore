@@ -32,5 +32,5 @@ public enum ContentsBulkAction
     None,
     Reset,
     Rebuild,
-    Remove
+    Remove,
 }

@@ -39,10 +39,9 @@ public class RoleService : IRoleService
         return Task.FromResult<IEnumerable<IRole>>(_roleManager.Roles);
     }
 
+    [Obsolete("This method is deprecated and will be removed in a future version. Use GetRolesAsync() instead.")]
     public Task<IEnumerable<string>> GetRoleNamesAsync()
-    {
-        return Task.FromResult<IEnumerable<string>>(_roleManager.Roles.Select(a => a.RoleName));
-    }
+        => RoleServiceExtensions.GetRoleNamesAsync(this);
 
     public Task<IEnumerable<string>> GetNormalizedRoleNamesAsync()
     {

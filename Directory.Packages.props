@@ -1,90 +1,85 @@
 <Project>
-
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageVersion Include="AngleSharp" Version="1.2.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="3.7.415.4" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
+    <PackageVersion Include="AngleSharp" Version="1.3.0" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.4.1" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.2" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.0.1" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.1" />
-    <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.3.2" />
-    <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.4.0" />
-    <PackageVersion Include="Azure.Identity" Version="1.13.1" />
-    <PackageVersion Include="Azure.Search.Documents" Version="11.6.0" />
-    <PackageVersion Include="Azure.Storage.Blobs" Version="12.23.0" />
-    <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
-    <PackageVersion Include="Castle.Core" Version="5.1.1" />
-    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.2.0" />
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.17.1" />
-    <PackageVersion Include="Fluid.Core" Version="2.17.0" />
-    <PackageVersion Include="GraphQL" Version="8.2.1" />
-    <PackageVersion Include="GraphQL.DataLoader" Version="8.2.1" />
-    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.2.1" />
-    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.2.1" />
-    <PackageVersion Include="Jint" Version="4.1.0" />
+    <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
+    <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.1" />
+    <PackageVersion Include="Azure.Identity" Version="1.14.1" />
+    <PackageVersion Include="Azure.Search.Documents" Version="11.6.1" />
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.24.1" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.2" />
+    <PackageVersion Include="Castle.Core" Version="5.2.1" />
+    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.3.0" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.18.3" />
+    <PackageVersion Include="Fluid.Core" Version="2.24.0" />
+    <PackageVersion Include="GraphQL" Version="8.5.0" />
+    <PackageVersion Include="GraphQL.DataLoader" Version="8.5.0" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.5.0" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.5.0" />
+    <PackageVersion Include="Jint" Version="4.3.0" />
     <PackageVersion Include="JsonPath.Net" Version="2.1.1" />
-    <PackageVersion Include="HtmlSanitizer" Version="8.2.871-beta" />
+    <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
     <PackageVersion Include="Irony" Version="1.5.3" />
-    <PackageVersion Include="libphonenumber-csharp" Version="8.13.55" />
+    <PackageVersion Include="libphonenumber-csharp" Version="9.0.8" />
     <PackageVersion Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.QueryParser" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00017" />
-    <PackageVersion Include="MailKit" Version="4.9.0" />
-    <PackageVersion Include="Markdig" Version="0.39.1" />
-    <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.9.0" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="3.5.0" />
-    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.3.0" />
+    <PackageVersion Include="MailKit" Version="4.13.0" />
+    <PackageVersion Include="Markdig" Version="0.41.3" />
+    <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.12.0" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="3.10.0" />
+    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.12.1" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageVersion Include="MimeKit" Version="4.9.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="MimeKit" Version="4.13.0" />
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="ncrontab" Version="3.3.3" />
-    <PackageVersion Include="NJsonSchema" Version="11.1.0" />
-    <PackageVersion Include="NLog.Web.AspNetCore" Version="5.3.15" />
-    <PackageVersion Include="NodaTime" Version="3.2.1" />
-    <PackageVersion Include="OpenIddict.Core" Version="6.0.0" />
-    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.0.0" />
-    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="6.0.0" />
-    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="6.0.0" />
-    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="6.0.0" />
-    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="6.0.0" />
+    <PackageVersion Include="NJsonSchema" Version="11.3.2" />
+    <PackageVersion Include="NLog.Web.AspNetCore" Version="6.0.1" />
+    <PackageVersion Include="NodaTime" Version="3.2.2" />
+    <PackageVersion Include="OpenIddict.Core" Version="6.4.0" />
+    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.4.0" />
+    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="6.4.0" />
+    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="6.4.0" />
+    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="6.4.0" />
+    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="6.4.0" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="2.1.0" />
-    <PackageVersion Include="PdfPig" Version="0.1.9" />
+    <PackageVersion Include="PdfPig" Version="0.1.10" />
     <PackageVersion Include="Shortcodes" Version="1.3.5" />
-    <PackageVersion Include="SixLabors.ImageSharp.Web" Version="3.1.3" />
-    <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="3.1.3" />
-    <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.AWS" Version="3.1.3" />
-    <PackageVersion Include="StackExchange.Redis" Version="2.8.24" />
+    <PackageVersion Include="SixLabors.ImageSharp.Web" Version="3.1.5" />
+    <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="3.1.5" />
+    <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.AWS" Version="3.1.5" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.8.41" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
-    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
+    <PackageVersion Include="System.Linq.Async" Version="6.0.3" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
-    <PackageVersion Include="xunit.v3" Version="1.0.0" />
-    <PackageVersion Include="xunit.analyzers" Version="1.18.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" />
-    <PackageVersion Include="YesSql" Version="5.2.0" />
-    <PackageVersion Include="YesSql.Abstractions" Version="5.2.0" />
-    <PackageVersion Include="YesSql.Core" Version="5.2.0" />
-    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.2.0" />
-    <PackageVersion Include="YesSql.Filters.Query" Version="5.2.0" />
+    <PackageVersion Include="xunit.v3" Version="2.0.3" />
+    <PackageVersion Include="xunit.analyzers" Version="1.22.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1" />
+    <PackageVersion Include="YesSql" Version="5.4.2" />
+    <PackageVersion Include="YesSql.Abstractions" Version="5.4.2" />
+    <PackageVersion Include="YesSql.Core" Version="5.4.2" />
+    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.4.2" />
+    <PackageVersion Include="YesSql.Filters.Query" Version="5.4.2" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
-
   <ItemGroup>
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-    <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.12.0" />
+    <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.14.0" />
   </ItemGroup>
-
   <!-- These versions are used for tansitive dependency forced upgrades only. E.g. when a package references a vulnerable version. -->
   <!-- To list all vulnerable direct references run 'dotnet list package -vulnerable' (use double dash, just XML comments can't contain it) -->
   <!-- To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it) -->
-
   <!-- The dependency graphs are generated using 'dotnet nuget why <.sln> <package id>' -->
   <ItemGroup>
     <!--
@@ -114,59 +109,51 @@
     <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
     <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'" >
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <!-- Several transitive dependencies on 8.0.4 and lower which is vulnerable -->
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
     <!-- Several transitive dependencies on 8.0.0 which has known vulnerabilities -->
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'" >
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.2" />
+  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.6" />
   </ItemGroup>
-
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.2" />
-
+  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
+    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="9.4.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.6" />
     <!-- dotnet/extensions repository -->
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.1.0" />
-    
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.6.0" />
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.13" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.13" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.13" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.13" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="8.0.13" />
-    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.13" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.13" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.13" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="8.0.13" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.13" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="8.0.13" />
-
+    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="8.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.17" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="8.0.17" />
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
-
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
   </ItemGroup>
-
 </Project>

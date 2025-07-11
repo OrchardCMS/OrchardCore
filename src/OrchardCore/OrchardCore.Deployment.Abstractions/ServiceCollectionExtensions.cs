@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.Deployment;
@@ -48,7 +49,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddDeploymentSource<TSource>(this IServiceCollection services)
         where TSource : IDeploymentSource
     {
-        services.AddTransient(typeof(IDeploymentSource), typeof(TSource));
+        services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IDeploymentSource), typeof(TSource)));
 
         return services;
     }
@@ -56,7 +57,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddDeploymentStep<TStep>(this IServiceCollection services)
         where TStep : DeploymentStep, new()
     {
-        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<TStep>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDeploymentStepFactory>(new DeploymentStepFactory<TStep>()));
 
         // TStep instances are part for DeploymentPlan objects that are serialized to JSON
         services.AddJsonDerivedTypeInfo<TStep, DeploymentStep>();

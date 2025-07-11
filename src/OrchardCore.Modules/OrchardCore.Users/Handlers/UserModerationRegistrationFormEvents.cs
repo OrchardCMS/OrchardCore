@@ -16,7 +16,8 @@ internal sealed class UserModerationRegistrationFormEvents : RegistrationFormEve
     public override Task RegisteringAsync(UserRegisteringContext context)
     {
         if (context.User is User user &&
-            !(_registrationOptions.UsersAreModerated && !user.IsEnabled))
+            _registrationOptions.UsersAreModerated &&
+            !user.IsEnabled)
         {
             context.CancelSignIn = true;
         }

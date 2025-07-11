@@ -23,7 +23,7 @@ public class TwitterClientTests
             AccessToken = "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
             AccessTokenSecret = "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE",
             ConsumerKey = "xvz1evFS4wEEPTGEFPHBog",
-            ConsumerSecret = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw"
+            ConsumerSecret = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw",
         };
 
         settings.AccessTokenSecret = fakeDataProtector.Protect(settings.AccessTokenSecret);

@@ -23,7 +23,7 @@ public class TwitterClient
         {
             var parameters = new Dictionary<string, string>
             {
-                { "status", status }
+                { "status", status },
             };
 
             if (optionalParameters is not null)

@@ -60,7 +60,7 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
 
         // The default Markdown option is to entity escape html
         // so filters must be run after the markdown has been processed.
-        var html = markdownService.ToHtml(ctx.Source.Markdown);
+        var html = markdownService.ToHtml(ctx.Source.Markdown ?? string.Empty);
 
         // The liquid rendering is for backwards compatibility and can be removed in a future version.
         if (!settings.SanitizeHtml)
@@ -74,7 +74,7 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
                 Html = html,
                 Field = ctx.Source,
                 Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
-                PartFieldDefinition = contentPartFieldDefinition
+                PartFieldDefinition = contentPartFieldDefinition,
             };
 
             html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
@@ -85,7 +85,7 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
             new Context
             {
                 ["ContentItem"] = ctx.Source.ContentItem,
-                ["PartFieldDefinition"] = contentPartFieldDefinition
+                ["PartFieldDefinition"] = contentPartFieldDefinition,
             });
 
         if (settings.SanitizeHtml)

@@ -3,7 +3,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.FileProviders;
 
-namespace OrchardCore.Benchmark.Support;
+namespace OrchardCore.Benchmarks.Support;
 
 internal sealed class FakeFileProvider : IFileProvider
 {

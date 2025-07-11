@@ -23,7 +23,7 @@ public class CacheContextModel
             Tags = cacheContext.Tags,
             ExpiresOn = cacheContext.ExpiresOn,
             ExpiresAfter = cacheContext.ExpiresAfter,
-            ExpiresSliding = cacheContext.ExpiresSliding
+            ExpiresSliding = cacheContext.ExpiresSliding,
         };
     }
 

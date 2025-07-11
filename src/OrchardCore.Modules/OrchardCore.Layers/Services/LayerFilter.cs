@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Admin;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -29,7 +31,6 @@ public sealed class LayerFilter : IAsyncResultFilter
     private readonly IRuleService _ruleService;
     private readonly IMemoryCache _memoryCache;
     private readonly IThemeManager _themeManager;
-    private readonly IAdminThemeService _adminThemeService;
     private readonly IAuthorizationService _authorizationService;
     private readonly ILayerService _layerService;
     private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
@@ -43,7 +44,6 @@ public sealed class LayerFilter : IAsyncResultFilter
         IRuleService ruleService,
         IMemoryCache memoryCache,
         IThemeManager themeManager,
-        IAdminThemeService adminThemeService,
         IAuthorizationService authorizationService,
         IVolatileDocumentManager<LayerState> layerStateManager)
     {
@@ -55,7 +55,6 @@ public sealed class LayerFilter : IAsyncResultFilter
         _ruleService = ruleService;
         _memoryCache = memoryCache;
         _themeManager = themeManager;
-        _adminThemeService = adminThemeService;
         _authorizationService = authorizationService;
         _layerStateManager = layerStateManager;
     }
@@ -68,7 +67,11 @@ public sealed class LayerFilter : IAsyncResultFilter
             // Even if the Admin attribute is not applied we might be using the admin theme, for instance in Login views.
             // In this case don't render Layers.
             var selectedTheme = (await _themeManager.GetThemeAsync())?.Id;
-            var adminTheme = await _adminThemeService.GetAdminThemeNameAsync();
+
+            var _adminThemeService = context.HttpContext.RequestServices.GetService<IAdminThemeService>();
+
+            var adminTheme = await _adminThemeService?.GetAdminThemeNameAsync();
+
             if (selectedTheme == adminTheme)
             {
                 await next.Invoke();
@@ -82,7 +85,7 @@ public sealed class LayerFilter : IAsyncResultFilter
                 cacheEntry = new CacheEntry()
                 {
                     Identifier = layerState.Identifier,
-                    Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
+                    Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published),
                 };
 
                 _memoryCache.Set(WidgetsKey, cacheEntry);
@@ -124,18 +127,21 @@ public sealed class LayerFilter : IAsyncResultFilter
                 if (widgetDefinitions.TryGetValue(widget.ContentItem.ContentType, out var definition) &&
                     (!definition.IsSecurable() || await _authorizationService.AuthorizeAsync(context.HttpContext.User, CommonPermissions.ViewContent, widget.ContentItem)))
                 {
-                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
+                    // Note: We clone the cached content item to avoid sharing the same instance across threads when rendering widgets.
+                    var contentItem = widget.ContentItem.Clone();
+
+                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, updater);
 
                     widgetContent.Classes.Add("widget");
-                    widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+                    widgetContent.Classes.Add("widget-" + contentItem.ContentType.HtmlClassify());
 
                     var wrapper = new WidgetWrapper
                     {
-                        Widget = widget.ContentItem,
-                        Content = widgetContent
+                        Widget = contentItem,
+                        Content = widgetContent,
                     };
 
-                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
+                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + contentItem.ContentType);
                     wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
 
                     var contentZone = layout.Zones[widget.Zone];

@@ -228,4 +228,29 @@ public static class ContentItemExtensions
 
         return contentItem;
     }
+
+    /// <summary>
+    /// Creates an in-memory clone of a content item.
+    /// </summary>
+    /// <param name="contentItem"></param>
+    /// <returns></returns>
+    public static ContentItem Clone(this ContentItem contentItem)
+    {
+        return new ContentItem
+        {
+            Id = contentItem.Id,
+            ContentItemId = contentItem.ContentItemId,
+            ContentItemVersionId = contentItem.ContentItemVersionId,
+            ContentType = contentItem.ContentType,
+            DisplayText = contentItem.DisplayText,
+            Owner = contentItem.Owner,
+            Author = contentItem.Author,
+            Published = contentItem.Published,
+            Latest = contentItem.Latest,
+            CreatedUtc = contentItem.CreatedUtc,
+            ModifiedUtc = contentItem.ModifiedUtc,
+            PublishedUtc = contentItem.PublishedUtc,
+            Data = contentItem.Data.Clone(),
+        };
+    }
 }

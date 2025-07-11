@@ -11,7 +11,7 @@ public class RssFeedBuilderProvider : IFeedBuilderProvider
             return new FeedBuilderMatch
             {
                 FeedBuilder = new RssFeedBuilder(),
-                Priority = -5
+                Priority = -5,
             };
         }
 

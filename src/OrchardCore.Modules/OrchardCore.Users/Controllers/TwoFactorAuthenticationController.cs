@@ -25,8 +25,6 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 {
     private readonly ILogger _logger;
     private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
-    private readonly IdentityOptions _identityOptions;
-    private readonly IShapeFactory _shapeFactory;
     private readonly IDisplayManager<TwoFactorMethod> _twoFactorDisplayManager;
 
     public TwoFactorAuthenticationController(
@@ -40,9 +38,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         IEnumerable<ILoginFormEvent> loginFormEvents,
         INotifier notifier,
         IDistributedCache distributedCache,
-        IOptions<IdentityOptions> identityOptions,
         ITwoFactorAuthenticationHandlerCoordinator twoFactorHandlerCoordinator,
-        IShapeFactory shapeFactory,
         IDisplayManager<TwoFactorMethod> twoFactorDisplayManager)
         : base(userManager,
             distributedCache,
@@ -56,8 +52,6 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
     {
         _logger = logger;
         _loginFormEvents = loginFormEvents;
-        _identityOptions = identityOptions.Value;
-        _shapeFactory = shapeFactory;
         _twoFactorDisplayManager = twoFactorDisplayManager;
     }
 
@@ -250,7 +244,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             {
                 u.Put(new TwoFactorPreference()
                 {
-                    DefaultProvider = model.PreferredProvider
+                    DefaultProvider = model.PreferredProvider,
                 });
 
                 await UserManager.UpdateAsync(u);

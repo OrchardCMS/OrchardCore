@@ -15,7 +15,7 @@ using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
 
-namespace OrchardCore.Benchmark;
+namespace OrchardCore.Benchmarks;
 
 [MemoryDiagnoser]
 public class ShapeFactoryBenchmark

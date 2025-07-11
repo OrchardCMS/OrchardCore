@@ -158,7 +158,7 @@ public class LocalizationEntries : ILocalizationEntries
                         DocumentId = i.DocumentId,
                         ContentItemId = i.ContentItemId,
                         LocalizationSet = i.LocalizationSet,
-                        Culture = i.Culture.ToLowerInvariant()
+                        Culture = i.Culture.ToLowerInvariant(),
                     });
 
                 RemoveEntries(entriesToRemove);
@@ -198,7 +198,7 @@ public class LocalizationEntries : ILocalizationEntries
                     DocumentId = i.DocumentId,
                     ContentItemId = i.ContentItemId,
                     LocalizationSet = i.LocalizationSet,
-                    Culture = i.Culture.ToLowerInvariant()
+                    Culture = i.Culture.ToLowerInvariant(),
                 });
 
                 AddEntries(entries);

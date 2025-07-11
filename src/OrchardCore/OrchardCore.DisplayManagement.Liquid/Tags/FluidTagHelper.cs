@@ -41,7 +41,7 @@ public static class FluidTagHelper
         {
             var args = new List<FilterArgument>(arguments)
             {
-                [0] = new FilterArgument(mapping, arguments[0].Expression)
+                [0] = new FilterArgument(mapping, arguments[0].Expression),
             };
 
             arguments = args;
@@ -78,7 +78,6 @@ public static class FluidTagHelper
             }
         }
 
-        Interlocked.CompareExchange(ref _uniqueId, long.MaxValue, 0);
         var id = Interlocked.Increment(ref _uniqueId);
 
         var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), id.ToString());

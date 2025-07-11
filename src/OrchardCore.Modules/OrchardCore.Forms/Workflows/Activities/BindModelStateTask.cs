@@ -42,7 +42,22 @@ public class BindModelStateTask : TaskActivity<BindModelStateTask>
 
         foreach (var item in httpContext.Request.Form)
         {
-            updater.ModelState.SetModelValue(item.Key, item.Value, item.Value);
+            // Avoid creating a new array for rawValue if there's only one value.
+            object rawValue;
+            if (item.Value.Count == 0)
+            {
+                rawValue = null;
+            }
+            else if (item.Value.Count == 1)
+            {
+                rawValue = item.Value[0];
+            }
+            else
+            {
+                rawValue = item.Value.ToArray();
+            }
+
+            updater.ModelState.SetModelValue(item.Key, rawValue, item.Value.ToString());
         }
 
         return Outcomes("Done");

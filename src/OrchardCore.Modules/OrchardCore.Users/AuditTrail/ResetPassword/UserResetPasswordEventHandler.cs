@@ -12,7 +12,7 @@ public sealed class UserResetPasswordEventHandler : PasswordRecoveryFormEvents
 {
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IServiceProvider _serviceProvider;
-    
+
     private UserManager<IUser> _userManager;
 
     public UserResetPasswordEventHandler(

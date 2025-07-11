@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Users.Events;
+namespace OrchardCore.Users.Events;
 
 public abstract class PasswordRecoveryFormEvents : IPasswordRecoveryFormEvents
 {

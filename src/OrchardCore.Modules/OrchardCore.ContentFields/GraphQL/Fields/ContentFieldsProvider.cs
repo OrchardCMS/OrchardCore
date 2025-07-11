@@ -65,7 +65,7 @@ public class ContentFieldsProvider : IContentFieldProvider
                 UnderlyingType = typeof(NumericField),
                 FieldAccessor = field => ((NumericField)field).Value,
                 IndexType = typeof(NumericFieldIndex),
-                IndexProperty = nameof(NumericFieldIndex.Numeric)
+                IndexProperty = nameof(NumericFieldIndex.Numeric),
             }
         },
         {
@@ -78,7 +78,7 @@ public class ContentFieldsProvider : IContentFieldProvider
                 UnderlyingType = typeof(TextField),
                 FieldAccessor = field => ((TextField)field).Text,
                 IndexType = typeof(TextFieldIndex),
-                IndexProperty = nameof(TextFieldIndex.Text)
+                IndexProperty = nameof(TextFieldIndex.Text),
             }
         },
         {
@@ -91,7 +91,7 @@ public class ContentFieldsProvider : IContentFieldProvider
                 UnderlyingType = typeof(TimeField),
                 FieldAccessor = field => ((TimeField)field).Value,
                 IndexType = typeof(TimeFieldIndex),
-                IndexProperty = nameof(TimeFieldIndex.Time)
+                IndexProperty = nameof(TimeFieldIndex.Time),
             }
         },
         {
@@ -104,7 +104,7 @@ public class ContentFieldsProvider : IContentFieldProvider
                 UnderlyingType = typeof(MultiTextField),
                 FieldAccessor = field => ((MultiTextField)field).Values,
             }
-        }
+        },
     }.ToFrozenDictionary();
 
     protected readonly IStringLocalizer S;
@@ -160,7 +160,7 @@ public class ContentFieldsProvider : IContentFieldProvider
         {
             AliasName = $"{field.PartDefinition.Name.ToFieldName()}:{field.Name.ToCamelCase()}:{fieldDescriptor.IndexProperty}",
             Index = fieldDescriptor.IndexType.Name,
-            IndexType = fieldDescriptor.IndexType
+            IndexType = fieldDescriptor.IndexType,
         };
     }
 

@@ -128,7 +128,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
             failover = true;
             _memoryCache.Set(FailoverKey, failover, new MemoryCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency
+                AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency,
             });
         }
 
@@ -294,7 +294,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
         {
             AbsoluteExpiration = _options.AbsoluteExpiration,
             AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
-            SlidingExpiration = _options.SlidingExpiration
+            SlidingExpiration = _options.SlidingExpiration,
         });
 
         // Remove the id from the one second cache.
@@ -316,7 +316,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
         {
             AbsoluteExpiration = _options.AbsoluteExpiration,
             AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
-            SlidingExpiration = _options.SlidingExpiration
+            SlidingExpiration = _options.SlidingExpiration,
         });
 
         if (failover)
@@ -324,7 +324,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
             // Cache the id locally so that the memory cache is used during the 'FailoverRetryLatency'.
             _memoryCache.Set(_options.CacheIdKey, document.Identifier ?? "NULL", new MemoryCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency
+                AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency,
             });
 
             return;

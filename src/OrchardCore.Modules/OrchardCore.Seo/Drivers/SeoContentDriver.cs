@@ -65,7 +65,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
 
         var shortCodeContext = new Context
         {
-            ["ContentItem"] = contentItem
+            ["ContentItem"] = contentItem,
         };
 
         if (!string.IsNullOrEmpty(aspect.PageTitle))
@@ -78,7 +78,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Name = "description",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaDescription, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaDescription, shortCodeContext)),
             });
         }
 
@@ -87,7 +87,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Name = "keywords",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaKeywords, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaKeywords, shortCodeContext)),
             });
         }
 
@@ -96,7 +96,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterLink(new LinkEntry
             {
                 Href = aspect.Canonical,
-                Rel = "canonical"
+                Rel = "canonical",
             });
         }
 
@@ -105,7 +105,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Name = "robots",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaRobots, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaRobots, shortCodeContext)),
             });
         }
 
@@ -126,7 +126,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "og:type",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphType, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphType, shortCodeContext)),
             });
         }
 
@@ -135,7 +135,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "og:title",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphTitle, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphTitle, shortCodeContext)),
             });
         }
 
@@ -144,7 +144,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "og:description",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphDescription, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphDescription, shortCodeContext)),
             });
         }
 
@@ -153,7 +153,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "og:image",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphImage, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphImage, shortCodeContext)),
             });
         }
 
@@ -162,7 +162,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "og:image:alt",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphImageAlt, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphImageAlt, shortCodeContext)),
             });
         }
 
@@ -171,7 +171,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "og:url",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphUrl, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphUrl, shortCodeContext)),
             });
         }
 
@@ -180,7 +180,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "og:site_name",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphSiteName, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphSiteName, shortCodeContext)),
             });
         }
 
@@ -189,7 +189,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "fb:app_id",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphAppId, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphAppId, shortCodeContext)),
             });
         }
 
@@ -198,7 +198,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "og:locale",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphLocale, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphLocale, shortCodeContext)),
             });
         }
 
@@ -208,7 +208,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "twitter:card",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterCard, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterCard, shortCodeContext)),
             });
         }
 
@@ -217,7 +217,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Property = "twitter:site",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterSite, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterSite, shortCodeContext)),
             });
         }
 
@@ -226,7 +226,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Name = "twitter:title",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterTitle, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterTitle, shortCodeContext)),
             });
         }
 
@@ -235,7 +235,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Name = "twitter:description",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterDescription, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterDescription, shortCodeContext)),
             });
         }
 
@@ -244,7 +244,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Name = "twitter:image",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterImage, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterImage, shortCodeContext)),
             });
         }
 
@@ -253,7 +253,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Name = "twitter:image:alt",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterImageAlt, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterImageAlt, shortCodeContext)),
             });
         }
 
@@ -262,7 +262,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Name = "twitter:creator",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterCreator, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterCreator, shortCodeContext)),
             });
         }
 
@@ -271,7 +271,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
             _resourceManager.RegisterMeta(new MetaEntry
             {
                 Name = "twitter:url",
-                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterUrl, shortCodeContext))
+                Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterUrl, shortCodeContext)),
             });
         }
 

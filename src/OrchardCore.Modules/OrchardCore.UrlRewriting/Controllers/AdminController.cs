@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -19,14 +18,11 @@ namespace OrchardCore.UrlRewriting.Controllers;
 [Admin("UrlRewriting/{action}/{id?}", "UrlRewriting{action}")]
 public sealed class AdminController : Controller
 {
-    private const string _optionsSearch = "Options.Search";
-
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly IDisplayManager<RewriteRule> _rewriteRuleDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger _logger;
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IEnumerable<IUrlRewriteRuleSource> _urlRewritingRuleSources;
     private readonly IRewriteRulesManager _rewriteRulesManager;
@@ -43,7 +39,6 @@ public sealed class AdminController : Controller
         IRewriteRulesManager rewriteRulesManager,
         IUpdateModelAccessor updateModelAccessor,
         IServiceProvider serviceProvider,
-        ILogger<AdminController> logger,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer
         )
@@ -56,7 +51,6 @@ public sealed class AdminController : Controller
         _rewriteRulesManager = rewriteRulesManager;
         _updateModelAccessor = updateModelAccessor;
         _serviceProvider = serviceProvider;
-        _logger = logger;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -82,7 +76,7 @@ public sealed class AdminController : Controller
             model.Rules.Add(new RewriteRuleEntry
             {
                 Rule = rule,
-                Shape = await _rewriteRuleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)
+                Shape = await _rewriteRuleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin),
             });
         }
 

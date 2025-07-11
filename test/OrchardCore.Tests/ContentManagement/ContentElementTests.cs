@@ -11,7 +11,7 @@ public class ContentElementTests
         var contentItem = new ContentItem();
         var titlePart = new TitlePart
         {
-            Title = "test"
+            Title = "test",
         };
 
         contentItem.Weld(titlePart);
@@ -42,7 +42,7 @@ public class ContentElementTests
         var contentItem = new ContentItem();
         var titlePart = new TitlePart
         {
-            Title = "test"
+            Title = "test",
         };
 
         contentItem.Weld(titlePart);

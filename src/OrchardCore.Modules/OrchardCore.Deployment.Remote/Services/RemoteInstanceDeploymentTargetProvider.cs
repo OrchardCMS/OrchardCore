@@ -30,7 +30,7 @@ public class RemoteInstanceDeploymentTargetProvider : IDeploymentTargetProvider
                         area = "OrchardCore.Deployment.Remote",
                         controller = "ExportRemoteInstance",
                         action = "Execute",
-                        remoteInstanceId = x.Id
+                        remoteInstanceId = x.Id,
                     })
                 )
             ).ToArray();

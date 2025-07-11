@@ -134,8 +134,8 @@ public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IS
                         ContentItemId = contentItem.ContentItemId,
                         Path = !partRemoved && !part.Disabled ? part.Path : null,
                         Published = contentItem.Published,
-                        Latest = contentItem.Latest
-                    }
+                        Latest = contentItem.Latest,
+                    },
                 };
 
                 if (partRemoved || !part.RouteContainedItems || part.Disabled || itemRemoved)

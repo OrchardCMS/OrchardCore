@@ -65,7 +65,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         await DistributedCache.SetAsync(key, data,
             new DistributedCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 0, 5)
+                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 0, 5),
             });
     }
 

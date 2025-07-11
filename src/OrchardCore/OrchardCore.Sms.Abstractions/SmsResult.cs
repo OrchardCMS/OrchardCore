@@ -9,7 +9,7 @@ public class SmsResult
     /// </summary>
     public static readonly SmsResult Success = new()
     {
-        Succeeded = true
+        Succeeded = true,
     };
 
     /// <summary>

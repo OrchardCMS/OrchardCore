@@ -27,21 +27,28 @@
     "action": "parcel",
     "name": "workflow-editor-js",
     "source": "Assets/Scripts/workflow-editor.ts",
-    "dest": "wwwroot/Scripts/Workflows/",
+    "dest": "wwwroot/Scripts/Workflows/editor/",
     "tags": ["workflows", "js"]
   },
   {
     "action": "parcel",
     "name": "workflow-viewer-js",
     "source": "Assets/Scripts/workflow-viewer.ts",
-    "dest": "wwwroot/Scripts/Workflows/",
+    "dest": "wwwroot/Scripts/Workflows/viewer/",
     "tags": ["workflows", "js"]
   },
   {
     "action": "parcel",
     "name": "workflow-url-generator-js",
     "source": "Assets/Scripts/workflow-url-generator.ts",
-    "dest": "wwwroot/Scripts/Workflows/",
+    "dest": "wwwroot/Scripts/Workflows/url-generator/",
+    "tags": ["workflows", "js"]
+  },
+  {
+    "action": "min",
+    "name": "crossbrowserclipboardcopy",
+    "source": "Assets/Scripts/crossbrowserclipboardcopy.js",
+    "dest": "wwwroot/Scripts/",
     "tags": ["workflows", "js"]
   }
 ]

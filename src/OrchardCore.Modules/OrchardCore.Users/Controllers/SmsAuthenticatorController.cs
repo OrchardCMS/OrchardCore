@@ -15,7 +15,6 @@ using OrchardCore.Settings;
 using OrchardCore.Sms;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
@@ -24,8 +23,6 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.SmsAuthenticator)]
 public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 {
-    private readonly IdentityOptions _identityOptions;
-    private readonly IUserService _userService;
     private readonly ISmsService _smsService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
@@ -38,10 +35,8 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IOptions<TwoFactorOptions> twoFactorOptions,
-        IOptions<IdentityOptions> identityOptions,
         INotifier notifier,
         IDistributedCache distributedCache,
-        IUserService userService,
         ISmsService smsService,
         ILiquidTemplateManager liquidTemplateManager,
         IPhoneFormatValidator phoneFormatValidator,
@@ -58,8 +53,6 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
             stringLocalizer,
             twoFactorOptions)
     {
-        _identityOptions = identityOptions.Value;
-        _userService = userService;
         _smsService = smsService;
         _liquidTemplateManager = liquidTemplateManager;
         _phoneFormatValidator = phoneFormatValidator;
@@ -229,7 +222,7 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
         await DistributedCache.SetAsync(key, data,
             new DistributedCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 10, 0)
+                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 10, 0),
             });
     }
 

@@ -92,7 +92,7 @@ public sealed class MediaProfilesController : Controller
         var model = new MediaProfileIndexViewModel
         {
             MediaProfiles = mediaProfiles.Select(x => new MediaProfileEntry { Name = x.Key, MediaProfile = x.Value }).ToList(),
-            Pager = pagerShape
+            Pager = pagerShape,
         };
 
         model.Options.ContentsBulkAction =
@@ -108,7 +108,7 @@ public sealed class MediaProfilesController : Controller
     public ActionResult IndexFilterPOST(MediaProfileIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create()
@@ -163,7 +163,7 @@ public sealed class MediaProfilesController : Controller
                 Mode = model.SelectedMode,
                 Format = model.SelectedFormat,
                 Quality = model.Quality,
-                BackgroundColor = model.BackgroundColor
+                BackgroundColor = model.BackgroundColor,
             };
 
             await _mediaProfilesManager.UpdateMediaProfileAsync(model.Name, mediaProfile);
@@ -213,7 +213,7 @@ public sealed class MediaProfilesController : Controller
             SelectedMode = mediaProfile.Mode,
             SelectedFormat = mediaProfile.Format,
             Quality = mediaProfile.Quality,
-            BackgroundColor = mediaProfile.BackgroundColor
+            BackgroundColor = mediaProfile.BackgroundColor,
         };
 
         BuildViewModel(model);
@@ -257,7 +257,7 @@ public sealed class MediaProfilesController : Controller
                 Mode = model.SelectedMode,
                 Format = model.SelectedFormat,
                 Quality = model.Quality,
-                BackgroundColor = model.BackgroundColor
+                BackgroundColor = model.BackgroundColor,
             };
 
             await _mediaProfilesManager.RemoveMediaProfileAsync(sourceName);

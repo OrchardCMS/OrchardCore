@@ -97,10 +97,17 @@ public sealed class AdminController : Controller
             await _mediaFileStore.TryCreateDirectoryAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User)));
         }
 
-        var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
-            .WhereAwait(async e => e.IsDirectory && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path));
+        var allowed = new List<IFileStoreEntry>();
 
-        return Ok(await allowed.Select(folder =>
+        await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path))
+        {
+            if (e.IsDirectory && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path))
+            {
+                allowed.Add(e);
+            }
+        }
+
+        return Ok(allowed.Select(folder =>
         {
             var isSpecial = IsSpecialFolder(folder.Path);
             return new MediaFolderViewModel()
@@ -112,9 +119,9 @@ public sealed class AdminController : Controller
                 LastModifiedUtc = folder.LastModifiedUtc,
                 Length = folder.Length,
                 CanCreateFolder = !isSpecial,
-                CanDeleteFolder = !isSpecial
+                CanDeleteFolder = !isSpecial,
             };
-        }).ToListAsync());
+        }));
     }
 
     public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path, string extensions)
@@ -137,14 +144,19 @@ public sealed class AdminController : Controller
 
         var allowedExtensions = GetRequestedExtensions(extensions, false);
 
-        var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
-            .WhereAwait(async e =>
-                !e.IsDirectory
+        var allowed = new List<object>();
+
+        await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path))
+        {
+            if (!e.IsDirectory
                 && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path)))
                 && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path))
-            .Select(e => CreateFileResult(e));
+            {
+                allowed.Add(CreateFileResult(e));
+            }
+        }
 
-        return Ok(await allowed.ToListAsync());
+        return Ok(allowed);
     }
 
     public async Task<ActionResult<object>> GetMediaItem(string path)
@@ -189,84 +201,90 @@ public sealed class AdminController : Controller
             (_, _, _) => Task.FromResult<IActionResult>(Ok(new { })),
             async (files) =>
             {
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = string.Empty;
-                }
-
-                var result = new List<object>();
-
-                // Loop through each file in the request.
-                foreach (var file in files)
-                {
-                    var extension = Path.GetExtension(file.FileName);
-
-                    if (!allowedExtensions.Contains(extension))
-                    {
-                        result.Add(new
-                        {
-                            name = file.FileName,
-                            size = file.Length,
-                            folder = path,
-                            error = S["This file extension is not allowed: {0}", extension].ToString()
-                        });
-
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogInformation("File extension not allowed: '{File}'", file.FileName);
-                        }
-
-                        continue;
-                    }
-
-                    var fileName = _mediaNameNormalizerService.NormalizeFileName(file.FileName);
-
-                    Stream stream = null;
-                    try
-                    {
-                        var mediaFilePath = _mediaFileStore.Combine(path, fileName);
-                        stream = file.OpenReadStream();
-                        mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
-
-                        var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
-
-                        // The .NET AWS SDK, and only that from the built-in ones (but others maybe too), disposes
-                        // the stream. There's no better way to check for that than handling the exception. An
-                        // alternative would be to re-read the file for every other storage provider as well but
-                        // that would be wasteful.
-                        try
-                        {
-                            stream.Position = 0;
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                            stream = null;
-                        }
-
-                        await PreCacheRemoteMedia(mediaFile, stream);
-
-                        result.Add(CreateFileResult(mediaFile));
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "An error occurred while uploading a media");
-
-                        result.Add(new
-                        {
-                            name = fileName,
-                            size = file.Length,
-                            folder = path,
-                            error = ex.Message
-                        });
-                    }
-                    finally
-                    {
-                        stream?.Dispose();
-                    }
-                }
+                var result = await ProcessMediaUploadAsync(path, files, allowedExtensions);
 
                 return Ok(new { files = result.ToArray() });
             });
+    }
+
+    private async Task<List<object>> ProcessMediaUploadAsync(string path, IEnumerable<IFormFile> files, HashSet<string> allowedExtensions)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            path = string.Empty;
+        }
+
+        var result = new List<object>();
+
+        // Loop through each file in the request.
+        foreach (var file in files)
+        {
+            var extension = Path.GetExtension(file.FileName);
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                result.Add(new
+                {
+                    name = file.FileName,
+                    size = file.Length,
+                    folder = path,
+                    error = S["This file extension is not allowed: {0}", extension].ToString(),
+                });
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("File extension not allowed: '{File}'", file.FileName);
+                }
+
+                continue;
+            }
+
+            var fileName = _mediaNameNormalizerService.NormalizeFileName(file.FileName);
+
+            Stream stream = null;
+            try
+            {
+                var mediaFilePath = _mediaFileStore.Combine(path, fileName);
+                stream = file.OpenReadStream();
+                mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+
+                var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
+
+                await PreCacheRemoteMedia(mediaFile);
+
+                result.Add(CreateFileResult(mediaFile));
+            }
+            catch (ExistsFileStoreException ex)
+            {
+                _logger.LogWarning(ex, "An error occurred while uploading a media");
+
+                result.Add(new
+                {
+                    name = fileName,
+                    size = file.Length,
+                    folder = path,
+                    error = ex.Message,
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while uploading a media");
+
+                result.Add(new
+                {
+                    name = fileName,
+                    size = file.Length,
+                    folder = path,
+                    error = ex.Message,
+                });
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
+        }
+
+        return result;
     }
 
     [HttpPost]
@@ -494,7 +512,7 @@ public sealed class AdminController : Controller
             mime = contentType ?? "application/octet-stream",
             mediaText = string.Empty,
             anchor = new { x = 0.5f, y = 0.5f },
-            attachedFileName = string.Empty
+            attachedFileName = string.Empty,
         };
     }
 
@@ -548,7 +566,7 @@ public sealed class AdminController : Controller
     // this, the Media Library page will try to load the thumbnail without a cache busting parameter, since
     // ShellFileVersionProvider won't find it in the local cache.
     // This is not required for files moved across folders, because the folder will be reopened anyway.
-    private async Task PreCacheRemoteMedia(IFileStoreEntry mediaFile, Stream stream = null)
+    private async Task PreCacheRemoteMedia(IFileStoreEntry mediaFile)
     {
         var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
         if (mediaFileStoreCache == null)
@@ -556,16 +574,11 @@ public sealed class AdminController : Controller
             return;
         }
 
-        Stream localStream = null;
-
-        if (stream == null)
-        {
-            stream = localStream = await _mediaFileStore.GetFileStreamAsync(mediaFile);
-        }
+        var localStream = await _mediaFileStore.GetFileStreamAsync(mediaFile);
 
         try
         {
-            await mediaFileStoreCache.SetCacheAsync(stream, mediaFile, HttpContext.RequestAborted);
+            await mediaFileStoreCache.SetCacheAsync(localStream, mediaFile, HttpContext.RequestAborted);
         }
         finally
         {

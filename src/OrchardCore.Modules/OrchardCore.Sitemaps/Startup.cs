@@ -42,7 +42,7 @@ public sealed class Startup : StartupBase
                 {
                     {"Area", "OrchardCore.Sitemaps"},
                     {"Controller", "Sitemap"},
-                    {"Action", "Index"}
+                    {"Action", "Index"},
                 };
 
                 options.SitemapIdKey = "sitemapId";

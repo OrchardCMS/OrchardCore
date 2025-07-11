@@ -23,15 +23,15 @@ public sealed class Startup : StartupBase
                             new("TestContentPartA")
                             {
                                 Collapse = false,
-                                Hidden = false
+                                Hidden = false,
                             },
                             new GraphQLContentPartOption<TestContentPartA>
                             {
                                 Collapse = false,
-                                Hidden = false
-                            }
-                        }
-                    }
+                                Hidden = false,
+                            },
+                        },
+                    },
                 }
             );
 
@@ -56,7 +56,7 @@ public sealed class Startup : StartupBase
             // Ignore Fields on GraphQL Objects
             options.HiddenFields = options.HiddenFields.Union(new[] {
                 new GraphQLField<TestQueryObjectType>("lineIgnored"),
-                new GraphQLField<TestQueryObjectType>("lineOtherIgnored")
+                new GraphQLField<TestQueryObjectType>("lineOtherIgnored"),
             });
 
             options
@@ -68,13 +68,13 @@ public sealed class Startup : StartupBase
                 new GraphQLContentPartOption("TestContentPartA")
                 {
                     Collapse = false,
-                    Hidden = false
+                    Hidden = false,
                 },
                 new GraphQLContentPartOption<TestContentPartA>
                 {
                     Collapse = false,
-                    Hidden = false
-                }
+                    Hidden = false,
+                },
             });
 
             options

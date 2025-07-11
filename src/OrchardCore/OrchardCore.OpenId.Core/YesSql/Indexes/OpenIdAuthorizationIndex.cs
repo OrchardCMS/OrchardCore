@@ -30,7 +30,7 @@ public class OpenIdAuthorizationIndexProvider : IndexProvider<OpenIdAuthorizatio
                 CreationDate = authorization.CreationDate,
                 Status = authorization.Status,
                 Subject = authorization.Subject,
-                Type = authorization.Type
+                Type = authorization.Type,
             });
     }
 }

@@ -32,7 +32,8 @@ Here are the available SMTP settings
 You may configure the Default SMTP provider by the configuration provider using the following settings:
 
 ```json
-"OrchardCore_Email_Smtp": {
+{
+  "OrchardCore_Email_Smtp": {
     "DefaultSender": "",
     "DeliveryMethod": "Network",
     "PickupDirectoryLocation": "",
@@ -41,12 +42,13 @@ You may configure the Default SMTP provider by the configuration provider using 
     // Uncomment if SMTP server runs through a proxy server
     //"ProxyHost": "proxy.domain.com",
     //"ProxyPort": 5050,
-    "EncryptionMethod": "SSLTLS",
+    "EncryptionMethod": "SslTls",
     "AutoSelectEncryption": false,
     "UseDefaultCredentials": false,
     "RequireCredentials": true,
     "Username": "",
     "Password": ""
+  }
 }
 ```
 

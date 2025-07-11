@@ -32,7 +32,7 @@ public class SelectStringOperationViewComponent : ViewComponent
         var model = new SelectStringOperationViewModel
         {
             HtmlName = htmlName,
-            Items = items
+            Items = items,
         };
 
         return View(model);

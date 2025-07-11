@@ -3,9 +3,9 @@
 @model FormInputElementPartEditViewModel
 
 <div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
+    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["HTML Name"]</label>
     <div class="@Orchard.GetEndClasses()">
         <input asp-for="Name" type="text" class="form-control content-preview-text content-caption-text" />
-        <span class="hint">@T["The name to render on this form element."]</span>
+        <span class="hint">@T["The valid characters for the HTML input name attribute are letters (a-z, A-Z), digits (0-9), hyphen (-), underscore (_), period (.), and square brackets ([ ])."]</span>
     </div>
 </div>

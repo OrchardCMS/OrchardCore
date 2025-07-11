@@ -62,7 +62,7 @@ public class CompositionStrategy : ICompositionStrategy
         {
             Settings = settings,
             Descriptor = descriptor,
-            Dependencies = entries
+            Dependencies = entries,
         };
 
         if (_logger.IsEnabled(LogLevel.Debug))

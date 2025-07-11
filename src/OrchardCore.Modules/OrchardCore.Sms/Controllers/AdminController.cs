@@ -55,7 +55,6 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Test(SmsTestViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SmsPermissions.ManageSmsSettings))
@@ -80,7 +79,7 @@ public sealed class AdminController : Controller
                 var result = await provider.SendAsync(new SmsMessage()
                 {
                     To = model.PhoneNumber,
-                    Body = S["This is a test SMS message."]
+                    Body = S["This is a test SMS message."],
                 });
 
                 if (result.Succeeded)

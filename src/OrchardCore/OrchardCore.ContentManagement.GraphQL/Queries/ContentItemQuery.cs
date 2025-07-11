@@ -39,7 +39,7 @@ public sealed class ContentItemQuery : ISchemaBuilder
                     Description = S["Content item id"],
                 }
             ),
-            Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync)
+            Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync),
         };
 
         schema.Query.AddField(field);

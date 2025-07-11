@@ -93,10 +93,10 @@ public sealed class FeatureProfilesController : Controller
             {
                 Name = x.Value.Name ?? x.Key,
                 FeatureProfile = x.Value,
-                Id = x.Key
+                Id = x.Key,
             }).ToList(),
             Options = options,
-            Pager = pagerShape
+            Pager = pagerShape,
         };
 
         model.Options.ContentsBulkAction =
@@ -112,7 +112,7 @@ public sealed class FeatureProfilesController : Controller
     public ActionResult IndexFilterPOST(FeatureProfilesIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create()

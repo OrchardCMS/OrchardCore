@@ -44,7 +44,7 @@ public sealed class AdminController : Controller
         {
             BucketName = _options.BucketName,
             BasePath = _options.BasePath,
-            CreateBucket = _options.CreateBucket
+            CreateBucket = _options.CreateBucket,
         };
 
         return View(model);

@@ -11,7 +11,7 @@ public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
         {
             Alias = "autoroutePart",
             Index = nameof(AutoroutePartIndex),
-            IndexType = typeof(AutoroutePartIndex)
+            IndexType = typeof(AutoroutePartIndex),
         }
     ];
 

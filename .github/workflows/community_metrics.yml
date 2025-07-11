@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   generate-community-metrics:
+    # To enable this workflow on a fork, comment out:
+    if: github.repository == 'OrchardCMS/OrchardCore'
     name: Generate Community Metrics
     runs-on: ubuntu-24.04
     steps:

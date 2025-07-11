@@ -31,22 +31,22 @@ public class UserByRoleNameIndexProvider : IndexProvider<User>
                     {
                         new() {
                             RoleName = NormalizeKey(OrchardCoreConstants.Roles.Authenticated),
-                            Count = 1
-                        }
+                            Count = 1,
+                        },
                     };
                 }
 
                 return user.RoleNames.Select(x => new UserByRoleNameIndex
                 {
                     RoleName = NormalizeKey(x),
-                    Count = 1
+                    Count = 1,
                 });
             })
             .Group(index => index.RoleName)
             .Reduce(group => new UserByRoleNameIndex
             {
                 RoleName = group.Key,
-                Count = group.Sum(x => x.Count)
+                Count = group.Sum(x => x.Count),
             })
             .Delete((index, map) =>
             {

@@ -72,7 +72,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
         if (metadata.IsCaseInsensitive)
         {
             AppendFlag(builder, "NC");
-        };
+        }
 
         if (metadata.QueryStringPolicy == QueryStringPolicy.Append)
         {

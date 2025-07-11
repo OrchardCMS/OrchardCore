@@ -14,5 +14,5 @@ using OrchardCore.Modules.Manifest;
     [
         "OrchardCore.Sms",
     ],
-    Category = "SMS"
+    Category = "Communication"
 )]

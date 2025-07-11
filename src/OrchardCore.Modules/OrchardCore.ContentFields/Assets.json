@@ -2,49 +2,55 @@
   {
     "action": "min",
     "name": "contentfields",
-    "source": "Assets/js/vue-multiselect-wrapper.js",
-    "tags": ["admin", "dashboard", "js"]
-  },
-  {
-    "action": "min",
-    "name": "contentfields",
     "source": "Assets/js/vue-multiselect-userpicker.js",
-    "tags": ["admin", "dashboard", "js"]
+    "tags": [ "admin", "dashboard", "js" ]
   },
   {
     "action": "min",
     "name": "contentfields",
     "source": "Assets/js/vue-multiselect-multitextfieldpicker.js",
-    "tags": ["admin", "dashboard", "js"]
+    "tags": [ "admin", "dashboard", "js" ]
   },
   {
     "action": "sass",
     "name": "contentfields",
     "source": "Assets/scss/optionsEditor.scss",
-    "tags": ["admin", "dashboard", "css"]
+    "tags": [ "admin", "dashboard", "css" ]
   },
   {
     "action": "sass",
     "name": "contentfields",
     "source": "Assets/scss/fontawesome-iconpicker.scss",
-    "tags": ["admin", "dashboard", "css"]
+    "tags": [ "admin", "dashboard", "css" ]
   },
   {
     "action": "min",
     "name": "contentfields",
     "source": "Assets/js/OptionsEditor/*.js",
-    "tags": ["admin", "dashboard", "js"]
+    "tags": [ "admin", "dashboard", "js" ]
   },
   {
     "action": "min",
     "name": "contentfields",
     "source": "Assets/js/trumbowyg.media.tag.js",
-    "tags": ["admin", "dashboard", "js"]
+    "tags": [ "admin", "dashboard", "js" ]
   },
   {
     "action": "min",
     "name": "contentfields",
     "source": "Assets/js/trumbowyg.media.url.js",
-    "tags": ["admin", "dashboard", "js"]
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "copy",
+    "name": "contentfields",
+    "source": "Assets/js/iconpicker-custom.js",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "copy",
+    "name": "contentfields",
+    "source": "Assets/scss/iconpicker-custom.css",
+    "tags": [ "admin", "dashboard", "css" ]
   }
 ]

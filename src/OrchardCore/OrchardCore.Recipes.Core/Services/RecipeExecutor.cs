@@ -80,7 +80,7 @@ public class RecipeExecutor : IRecipeExecutor
                                 Step = child,
                                 ExecutionId = executionId,
                                 Environment = environment,
-                                RecipeDescriptor = recipeDescriptor
+                                RecipeDescriptor = recipeDescriptor,
                             };
 
                             if (cancellationToken.IsCancellationRequested)
