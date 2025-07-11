@@ -4,32 +4,37 @@
 
 @if (string.IsNullOrWhiteSpace(returnUrl))
 {
-    <button type="submit" name="submit.Publish" class="btn btn-success publish mb-1" value="submit.Publish" onclick="expandCardsWithInvalidInputs(event)">@T["Publish"]</button>
+    <button type="submit" name="submit.Publish" class="btn btn-success publish mb-1" value="submit.Publish">@T["Publish"]</button>
 }
 else
 {
     <div class="btn-group mb-1">
-        <button class="btn btn-success publish" type="submit" name="submit.Publish" value="submit.Publish" onclick="expandCardsWithInvalidInputs(event)">@T["Publish"]</button>
+        <button class="btn btn-success publish" type="submit" name="submit.Publish" value="submit.Publish">@T["Publish"]</button>
         <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="visually-hidden">@T["Toggle Dropdown"]</span>
         </button>
         <div class="dropdown-menu">
-            <button class="dropdown-item publish-continue" type="submit" name="submit.Publish" value="submit.PublishAndContinue" onclick="expandCardsWithInvalidInputs(event)">@T["and continue"]</button>
+            <button class="dropdown-item publish-continue" type="submit" name="submit.Publish" value="submit.PublishAndContinue">@T["and continue"]</button>
         </div>
     </div>
 }
 
-<script>
-    function expandCardsWithInvalidInputs(event) {
-        const elements = event.target.form.querySelectorAll(`input`);
-        Array.from(elements).filter(element => !element.checkValidity()).forEach(current => {
-          current = current.parentElement;
-          while (current) {
-            if (current.matches('.widget.widget-editor.card.collapsed')) {
-              current.classList.remove('collapsed');
-            }
-            current = current.parentElement;
-          }
-        });
-    }
+<script at="Foot">
+  function expandCardsWithInvalidInputs(event) {
+    const elements = event.target.form.querySelectorAll(`input`);
+    Array.from(elements).filter(element => !element.checkValidity()).forEach(current => {
+      current = current.parentElement;
+      while (current) {
+        if (current.matches('.widget.widget-editor.card.collapsed')) {
+          current.classList.remove('collapsed');
+        }
+        current = current.parentElement;
+      }
+    });
+  }
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('button[name="submit.Publish"]').forEach(button => {
+      button.addEventListener('click', (event) => expandCardsWithInvalidInputs(event));
+    });
+  });
 </script>
