@@ -23,7 +23,7 @@
     <PackageVersion Include="GraphQL.DataLoader" Version="8.5.0" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.5.0" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.5.0" />
-    <PackageVersion Include="Jint" Version="4.2.2" />
+    <PackageVersion Include="Jint" Version="4.3.0" />
     <PackageVersion Include="JsonPath.Net" Version="2.1.1" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
     <PackageVersion Include="Irony" Version="1.5.3" />
@@ -36,7 +36,7 @@
     <PackageVersion Include="MailKit" Version="4.13.0" />
     <PackageVersion Include="Markdig" Version="0.41.3" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.12.0" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="3.9.4" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="3.10.0" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.12.1" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
