@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Zones;
 
@@ -7,8 +8,15 @@ public class BuildEditorContext : BuildShapeContext
 {
     public bool IsNew { get; set; }
 
-    public BuildEditorContext(IShape shape, string groupId, bool isNew, string htmlFieldPrefix, IShapeFactory shapeFactory, IZoneHolding layout, IUpdateModel updater)
-        : base(shape, groupId, shapeFactory, layout, updater)
+    public BuildEditorContext(
+        IShape shape,
+        string groupId,
+        bool isNew,
+        string htmlFieldPrefix,
+        IShapeFactory shapeFactory,
+        IZoneHolding layout,
+        IUpdateModel updater,
+        HttpContext httpContext) : base(shape, groupId, shapeFactory, layout, updater, httpContext)
     {
         HtmlFieldPrefix = htmlFieldPrefix;
         IsNew = isNew;
