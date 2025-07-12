@@ -222,7 +222,6 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Scripts/jquery-ui-i18n.js"
             )
             .SetCdn(
-                "https://code.jquery.com/ui/1.7.2/i18n/jquery-ui-i18n.min.js",
                 "https://code.jquery.com/ui/1.7.2/i18n/jquery-ui-i18n.min.js"
             )
             .SetCdnIntegrity(
