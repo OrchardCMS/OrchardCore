@@ -23,7 +23,7 @@
     <PackageVersion Include="GraphQL.DataLoader" Version="8.5.0" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.5.0" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.5.0" />
-    <PackageVersion Include="Jint" Version="4.3.0" />
+    <PackageVersion Include="Jint" Version="4.4.0" />
     <PackageVersion Include="JsonPath.Net" Version="2.1.1" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
     <PackageVersion Include="Irony" Version="1.5.3" />
@@ -64,7 +64,7 @@
     <PackageVersion Include="System.Linq.Async" Version="6.0.3" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
     <PackageVersion Include="xunit.v3" Version="2.0.3" />
-    <PackageVersion Include="xunit.analyzers" Version="1.22.0" />
+    <PackageVersion Include="xunit.analyzers" Version="1.23.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1" />
     <PackageVersion Include="YesSql" Version="5.4.2" />
     <PackageVersion Include="YesSql.Abstractions" Version="5.4.2" />
@@ -134,7 +134,7 @@
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.7" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.7" />
     <!-- dotnet/extensions repository -->
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.6.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.7.0" />
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
   </ItemGroup>
