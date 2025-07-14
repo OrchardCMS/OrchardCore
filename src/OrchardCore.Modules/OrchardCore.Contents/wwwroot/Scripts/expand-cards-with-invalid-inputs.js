@@ -13,7 +13,7 @@
         });
     }
     document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll('button[name="submit.Publish"]').forEach(button => {
+        document.querySelectorAll('button[name="submit.Publish"],button[name="submit.Save"]').forEach(button => {
             button.addEventListener('click', (event) => expandCardsWithInvalidInputs(event));
         });
     });
