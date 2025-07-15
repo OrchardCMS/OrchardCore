@@ -1,7 +1,9 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Contents.Workflows.Activities;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -9,64 +11,92 @@ namespace OrchardCore.Contents.Workflows.Handlers;
 
 public class ContentsHandler : ContentHandlerBase
 {
-    private readonly IWorkflowManager _workflowManager;
+    private Dictionary<(string name, string id), ContentItem> _contentItemEvents;
+    private bool _taskAdded;
 
-    public ContentsHandler(IWorkflowManager workflowManager)
+    public ContentsHandler()
     {
-        _workflowManager = workflowManager;
     }
 
     public override Task CreatedAsync(CreateContentContext context)
     {
-        return TriggerWorkflowEventAsync(nameof(ContentCreatedEvent), context.ContentItem);
+        return AddEventAsync(nameof(ContentCreatedEvent), context.ContentItem);
     }
 
     public override Task UpdatedAsync(UpdateContentContext context)
     {
-        return TriggerWorkflowEventAsync(nameof(ContentUpdatedEvent), context.ContentItem);
+        return AddEventAsync(nameof(ContentUpdatedEvent), context.ContentItem);
     }
 
     public override Task DraftSavedAsync(SaveDraftContentContext context)
     {
-        return TriggerWorkflowEventAsync(nameof(ContentDraftSavedEvent), context.ContentItem);
+        return AddEventAsync(nameof(ContentDraftSavedEvent), context.ContentItem);
     }
 
     public override Task PublishedAsync(PublishContentContext context)
     {
-        return TriggerWorkflowEventAsync(nameof(ContentPublishedEvent), context.ContentItem);
+        return AddEventAsync(nameof(ContentPublishedEvent), context.ContentItem);
     }
 
     public override Task UnpublishedAsync(PublishContentContext context)
     {
-        return TriggerWorkflowEventAsync(nameof(ContentUnpublishedEvent), context.ContentItem);
+        return AddEventAsync(nameof(ContentUnpublishedEvent), context.ContentItem);
     }
 
     public override Task RemovedAsync(RemoveContentContext context)
     {
-        return TriggerWorkflowEventAsync(nameof(ContentDeletedEvent), context.ContentItem);
+        return AddEventAsync(nameof(ContentDeletedEvent), context.ContentItem);
     }
 
     public override Task VersionedAsync(VersionContentContext context)
     {
-        return TriggerWorkflowEventAsync(nameof(ContentVersionedEvent), context.ContentItem);
+        return AddEventAsync(nameof(ContentVersionedEvent), context.ContentItem);
     }
 
-    private Task<IEnumerable<WorkflowExecutionContext>> TriggerWorkflowEventAsync(string name, ContentItem contentItem)
+    private Task AddEventAsync(string name, ContentItem contentItem)
     {
-        var contentEvent = new ContentEventContext()
-        {
-            Name = name,
-            ContentType = contentItem.ContentType,
-            ContentItemId = contentItem.ContentItemId,
-            ContentItemVersionId = contentItem.ContentItemVersionId,
-        };
+        _contentItemEvents ??= [];
+        _contentItemEvents[(name, contentItem.ContentItemId)] = contentItem;
 
-        var input = new Dictionary<string, object>
-        {
-            { ContentEventConstants.ContentItemInputKey, contentItem },
-            { ContentEventConstants.ContentEventInputKey, contentEvent },
-        };
+        AddDeferredTask();
 
-        return _workflowManager.TriggerEventAsync(name, input, correlationId: contentItem.ContentItemId);
+        return Task.CompletedTask;
+    }
+
+    // We use a deferred task to ensure that the workflow events are triggered after all content handlers have been executed.
+    private void AddDeferredTask()
+    {
+        if (_taskAdded)
+        {
+            return;
+        }
+
+        _taskAdded = true;
+
+        // Using a local variable prevents the lambda from holding a ref on this scoped service.
+        var contentItemEvents = _contentItemEvents;
+
+        ShellScope.AddDeferredTask(scope => TriggerWorkflowEventsAsync(scope, contentItemEvents));
+    }
+
+    private static Task<IEnumerable<WorkflowExecutionContext>[]> TriggerWorkflowEventsAsync(ShellScope scope, Dictionary<(string name, string id), ContentItem> contentItemEvents)
+    {
+        var workflowManager = scope.ServiceProvider.GetRequiredService<IWorkflowManager>();
+
+        var tasks = contentItemEvents
+            .Select(kvp => workflowManager.TriggerEventAsync(kvp.Key.name, new Dictionary<string, object>
+            {
+                { ContentEventConstants.ContentItemInputKey, kvp.Value },
+                { ContentEventConstants.ContentEventInputKey, new ContentEventContext
+                    {
+                        Name = kvp.Key.name,
+                        ContentType = kvp.Value.ContentType,
+                        ContentItemId = kvp.Value.ContentItemId,
+                        ContentItemVersionId = kvp.Value.ContentItemVersionId,
+                    }
+                },
+            }, correlationId: kvp.Value.ContentItemId));
+
+        return Task.WhenAll(tasks);
     }
 }
