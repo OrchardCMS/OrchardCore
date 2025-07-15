@@ -29,7 +29,7 @@ public sealed class ScheduledPublishingBackgroundTask : IBackgroundTask
         var itemsToPublish = await serviceProvider
             .GetRequiredService<ISession>()
             .QueryIndex<PublishLaterPartIndex>(index => index.Latest && !index.Published && index.ScheduledPublishDateTimeUtc < _clock.UtcNow)
-            .ListAsync();
+            .ListAsync(cancellationToken);
 
         if (!itemsToPublish.Any())
         {
