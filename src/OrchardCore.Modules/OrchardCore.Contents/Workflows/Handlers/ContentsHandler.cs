@@ -19,39 +19,25 @@ public class ContentsHandler : ContentHandlerBase
     }
 
     public override Task CreatedAsync(CreateContentContext context)
-    {
-        return AddEventAsync(nameof(ContentCreatedEvent), context.ContentItem);
-    }
+        => AddEventAsync(nameof(ContentCreatedEvent), context.ContentItem);
 
     public override Task UpdatedAsync(UpdateContentContext context)
-    {
-        return AddEventAsync(nameof(ContentUpdatedEvent), context.ContentItem);
-    }
+        => AddEventAsync(nameof(ContentUpdatedEvent), context.ContentItem);
 
     public override Task DraftSavedAsync(SaveDraftContentContext context)
-    {
-        return AddEventAsync(nameof(ContentDraftSavedEvent), context.ContentItem);
-    }
+        => AddEventAsync(nameof(ContentDraftSavedEvent), context.ContentItem);
 
     public override Task PublishedAsync(PublishContentContext context)
-    {
-        return AddEventAsync(nameof(ContentPublishedEvent), context.ContentItem);
-    }
+        => AddEventAsync(nameof(ContentPublishedEvent), context.ContentItem);
 
     public override Task UnpublishedAsync(PublishContentContext context)
-    {
-        return AddEventAsync(nameof(ContentUnpublishedEvent), context.ContentItem);
-    }
+        => AddEventAsync(nameof(ContentUnpublishedEvent), context.ContentItem);
 
     public override Task RemovedAsync(RemoveContentContext context)
-    {
-        return AddEventAsync(nameof(ContentDeletedEvent), context.ContentItem);
-    }
+        => AddEventAsync(nameof(ContentDeletedEvent), context.ContentItem);
 
     public override Task VersionedAsync(VersionContentContext context)
-    {
-        return AddEventAsync(nameof(ContentVersionedEvent), context.ContentItem);
-    }
+        => AddEventAsync(nameof(ContentVersionedEvent), context.ContentItem);
 
     private Task AddEventAsync(string name, ContentItem contentItem)
     {
