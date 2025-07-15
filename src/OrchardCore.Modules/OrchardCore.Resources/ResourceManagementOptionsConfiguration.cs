@@ -218,17 +218,10 @@ public sealed class ResourceManagementOptionsConfiguration
             .DefineScript("jQuery-ui-i18n")
             .SetDependencies("jQuery-ui")
             .SetUrl(
-                "~/OrchardCore.Resources/Scripts/jquery-ui-i18n.min.js",
-                "~/OrchardCore.Resources/Scripts/jquery-ui-i18n.js"
+                "~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/jquery-ui-i18n.min.js",
+                "~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/jquery-ui-i18n.js"
             )
-            .SetCdn(
-                "https://code.jquery.com/ui/1.7.2/i18n/jquery-ui-i18n.min.js"
-            )
-            .SetCdnIntegrity(
-                "sha384-0rV7y4NH7acVmq+7Y9GM6evymvReojk9li+7BYb/ug61uqPSsXJ4uIScVY+N9qtd",
-                "sha384-0rV7y4NH7acVmq+7Y9GM6evymvReojk9li+7BYb/ug61uqPSsXJ4uIScVY+N9qtd"
-            )
-            .SetVersion("1.7.2");
+            .SetVersion("1.12.1");
 
         manifest
             .DefineScript("jQuery.nestedSortable")
