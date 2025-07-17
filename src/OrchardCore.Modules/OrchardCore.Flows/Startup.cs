@@ -61,4 +61,3 @@ public sealed class DeploymentStartup : StartupBase
         services.AddScoped<IAzureAISearchFieldIndexEvents, BagPartAzureAISearchFieldIndexEvents>();
     }
 }
-

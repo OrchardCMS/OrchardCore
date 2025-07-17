@@ -1,3 +1,5 @@
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Flows.Models;
 using OrchardCore.Indexing;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Models;
@@ -9,7 +11,8 @@ internal sealed class BagPartAzureAISearchFieldIndexEvents : AzureAISearchFieldI
     public override Task MappingAsync(SearchIndexDefinition context)
     {
         if (context.IndexEntry.Type == DocumentIndex.Types.Complex &&
-            context.IndexEntry.Metadata?.TryGetValue("BagPartDefinition", out _) == true)
+            context.IndexEntry.Metadata?.TryGetValue(nameof(ContentTypePartDefinition), out var definition) == true &&
+            definition is ContentTypePartDefinition contentTypePartDefinition && contentTypePartDefinition.PartDefinition.Name == nameof(BagPart))
         {
             context.Map.SubFields ??= new List<AzureAISearchIndexMap>();
 

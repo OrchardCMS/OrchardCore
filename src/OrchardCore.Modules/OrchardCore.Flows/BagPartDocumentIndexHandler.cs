@@ -1,3 +1,4 @@
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Flows.Models;
 using OrchardCore.Indexing;
 
@@ -14,7 +15,7 @@ internal sealed class BagPartDocumentIndexHandler : ContentPartIndexHandler<BagP
 
         context.DocumentIndex.Set(context.ContentTypePartDefinition.Name, part, DocumentIndexOptions.Store, new Dictionary<string, object>
         {
-            { "BagPartDefinition", context.ContentTypePartDefinition },
+            { nameof(ContentTypePartDefinition), context.ContentTypePartDefinition },
         });
 
         return Task.CompletedTask;
