@@ -80,6 +80,9 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
 
         var azureMetadata = index.As<AzureAISearchIndexMetadata>();
 
+        // Clear the existing mapping to ensure that only fields from the current definitions are included.
+        azureMetadata.IndexMappings.Clear();
+
         await AddIndexMappingAsync(azureMetadata.IndexMappings, ContentIndexingConstants.ContentItemIdKey, new DocumentIndexEntry(ContentIndexingConstants.ContentItemIdKey, value: null, Types.Text, DocumentIndexOptions.Keyword), index);
         await AddIndexMappingAsync(azureMetadata.IndexMappings, ContentIndexingConstants.ContentItemVersionIdKey, new DocumentIndexEntry(ContentIndexingConstants.ContentItemVersionIdKey, value: null, Types.Text, DocumentIndexOptions.Keyword), index);
 

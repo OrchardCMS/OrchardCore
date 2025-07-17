@@ -171,33 +171,14 @@ public sealed class AzureAISearchIndexManager : IIndexManager
                 suggesterFieldNames.Add(indexMap.AzureFieldKey);
             }
 
-            var fieldType = GetFieldType(indexMap.Type);
+            var field = GetSearchFieldTemplate(indexMap, metadata.AnalyzerName);
 
-            if (indexMap.IsSearchable)
+            if (field is null)
             {
-                searchFields.Add(new SearchableField(indexMap.AzureFieldKey, collection: indexMap.IsCollection)
-                {
-                    AnalyzerName = !string.IsNullOrEmpty(metadata.AnalyzerName)
-                    ? metadata.AnalyzerName
-                    : AzureAISearchDefaultOptions.DefaultAnalyzer,
-                    IsKey = indexMap.IsKey,
-                    IsFilterable = indexMap.IsFilterable,
-                    IsSortable = indexMap.IsSortable,
-                    IsHidden = indexMap.IsHidden,
-                    IsFacetable = indexMap.IsFacetable,
-                });
+                continue;
             }
-            else
-            {
-                searchFields.Add(new SimpleField(indexMap.AzureFieldKey, fieldType)
-                {
-                    IsKey = indexMap.IsKey,
-                    IsFilterable = indexMap.IsFilterable,
-                    IsSortable = indexMap.IsSortable,
-                    IsHidden = indexMap.IsHidden,
-                    IsFacetable = indexMap.IsFacetable,
-                });
-            }
+
+            searchFields.Add(field);
         }
 
         var searchIndex = new SearchIndex(indexProfile.IndexFullName)
@@ -213,6 +194,65 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         return searchIndex;
     }
 
+    private static SearchFieldTemplate GetSearchFieldTemplate(AzureAISearchIndexMap indexMap, string analyzerName)
+    {
+        if (indexMap.IsSearchable)
+        {
+            return new SearchableField(indexMap.AzureFieldKey, collection: indexMap.IsCollection)
+            {
+                AnalyzerName = !string.IsNullOrEmpty(analyzerName)
+                ? analyzerName
+                : AzureAISearchDefaultOptions.DefaultAnalyzer,
+                IsKey = indexMap.IsKey,
+                IsFilterable = indexMap.IsFilterable,
+                IsSortable = indexMap.IsSortable,
+                IsHidden = indexMap.IsHidden,
+                IsFacetable = indexMap.IsFacetable,
+            };
+        }
+
+        var fieldType = GetFieldType(indexMap.Type);
+
+        if (fieldType == SearchFieldDataType.Complex)
+        {
+            if (indexMap.SubFields is null || indexMap.SubFields.Count == 0)
+            {
+                return null;
+            }
+
+            var field = new ComplexField(indexMap.AzureFieldKey, collection: indexMap.IsCollection);
+
+            foreach (var subField in indexMap.SubFields)
+            {
+                var subFieldTemplate = GetSearchFieldTemplate(subField, analyzerName);
+
+                if (subFieldTemplate is null)
+                {
+                    continue;
+                }
+
+                field.Fields.Add(subFieldTemplate);
+            }
+
+            if (field.Fields.Count == 0)
+            {
+                // Complex fields must have at least one sub-field defined.
+                return null;
+            }
+
+            return field;
+        }
+
+        return new SimpleField(indexMap.AzureFieldKey, fieldType)
+        {
+            IsKey = indexMap.IsKey,
+            IsFilterable = indexMap.IsFilterable,
+            IsSortable = indexMap.IsSortable,
+            IsHidden = indexMap.IsHidden,
+            IsFacetable = indexMap.IsFacetable,
+        };
+    }
+
     private static SearchFieldDataType GetFieldType(Types type)
         => type switch
         {
@@ -222,6 +262,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
             Types.Integer => SearchFieldDataType.Int64,
             Types.GeoPoint => SearchFieldDataType.GeographyPoint,
             Types.Text => SearchFieldDataType.String,
+            Types.Complex => SearchFieldDataType.Complex,
             _ => throw new ArgumentOutOfRangeException(nameof(type), $"The type '{type}' is not support by Azure AI Search")
         };
 }

@@ -321,6 +321,10 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
                     }
                     break;
 
+                case DocumentIndex.Types.Complex:
+                    // Lucene does not support complex objects directly.
+                    break;
+
                 case DocumentIndex.Types.Text:
                     if (entry.Value != null && !string.IsNullOrEmpty(Convert.ToString(entry.Value)))
                     {

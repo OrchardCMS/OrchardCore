@@ -9,7 +9,7 @@ public sealed class DefaultAzureAISearchFieldIndexEvents : IAzureAISearchFieldIn
 {
     public Task MappingAsync(SearchIndexDefinition context)
     {
-        if (context.IndexEntry.Type == ContentItemDocumentIndex.Types.Text)
+        if (context.IndexEntry.Type == DocumentIndex.Types.Text)
         {
             context.Map.IsCollection = !context.IndexEntry.Options.HasFlag(DocumentIndexOptions.Keyword);
             context.Map.IsSearchable = true;

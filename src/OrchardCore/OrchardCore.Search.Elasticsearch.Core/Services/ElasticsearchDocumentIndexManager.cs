@@ -4,6 +4,7 @@ using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Logging;
+using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
@@ -232,6 +233,11 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
                     }
                     break;
 
+                case DocumentIndex.Types.Complex:
+
+                    entries[entry.Name] = entry.Value;
+                    break;
+
                 case DocumentIndex.Types.Text:
                     if (entry.Value != null)
                     {
@@ -262,14 +268,14 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 
     private static void AddValue(Dictionary<string, object> entries, string key, object value)
     {
-        if (entries.TryAdd(key, value))
+        if (value is null || entries.TryAdd(key, value))
         {
             return;
         }
 
-        // At this point, we know that a value already exists.
         if (entries[key] is List<object> list)
         {
+            // At this point, we know that a value already exists.
             list.Add(value);
 
             entries[key] = list;
