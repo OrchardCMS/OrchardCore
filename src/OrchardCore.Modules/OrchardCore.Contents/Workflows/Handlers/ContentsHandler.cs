@@ -14,10 +14,6 @@ public class ContentsHandler : ContentHandlerBase
     private Dictionary<(string name, string id), ContentItem> _contentItemEvents;
     private bool _taskAdded;
 
-    public ContentsHandler()
-    {
-    }
-
     public override Task CreatedAsync(CreateContentContext context)
         => AddEventAsync(nameof(ContentCreatedEvent), context.ContentItem);
 
@@ -65,12 +61,13 @@ public class ContentsHandler : ContentHandlerBase
         ShellScope.AddDeferredTask(scope => TriggerWorkflowEventsAsync(scope, contentItemEvents));
     }
 
-    private static Task<IEnumerable<WorkflowExecutionContext>[]> TriggerWorkflowEventsAsync(ShellScope scope, Dictionary<(string name, string id), ContentItem> contentItemEvents)
+    private static async Task TriggerWorkflowEventsAsync(ShellScope scope, Dictionary<(string name, string id), ContentItem> contentItemEvents)
     {
         var workflowManager = scope.ServiceProvider.GetRequiredService<IWorkflowManager>();
 
-        var tasks = contentItemEvents
-            .Select(kvp => workflowManager.TriggerEventAsync(kvp.Key.name, new Dictionary<string, object>
+        foreach (var kvp in contentItemEvents)
+        {
+            await workflowManager.TriggerEventAsync(kvp.Key.name, new Dictionary<string, object>
             {
                 { ContentEventConstants.ContentItemInputKey, kvp.Value },
                 { ContentEventConstants.ContentEventInputKey, new ContentEventContext
@@ -81,8 +78,7 @@ public class ContentsHandler : ContentHandlerBase
                         ContentItemVersionId = kvp.Value.ContentItemVersionId,
                     }
                 },
-            }, correlationId: kvp.Value.ContentItemId));
-
-        return Task.WhenAll(tasks);
+            }, correlationId: kvp.Value.ContentItemId);
+        }
     }
 }
