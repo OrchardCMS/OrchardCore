@@ -26,7 +26,7 @@ public sealed class MenuItemPermissionPartDisplayDriver : ContentPartDisplayDriv
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description
+                    DisplayText = p.Description,
                 }).ToArray();
 
             var permissions = await _permissionService.GetPermissionsAsync();
@@ -35,7 +35,7 @@ public sealed class MenuItemPermissionPartDisplayDriver : ContentPartDisplayDriv
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description
+                    DisplayText = p.Description,
                 }).ToArray();
         });
     }

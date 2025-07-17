@@ -22,6 +22,7 @@ public class OpenIdServerSettingsViewModel
     public bool EnableLogoutEndpoint { get; set; }
     public bool EnableUserInfoEndpoint { get; set; }
     public bool EnableIntrospectionEndpoint { get; set; }
+    public bool EnablePushedAuthorizationEndpoint { get; set; }
     public bool EnableRevocationEndpoint { get; set; }
     public bool AllowPasswordFlow { get; set; }
     public bool AllowClientCredentialsFlow { get; set; }
@@ -32,6 +33,7 @@ public class OpenIdServerSettingsViewModel
     public bool DisableRollingRefreshTokens { get; set; }
     public bool UseReferenceAccessTokens { get; set; }
     public bool RequireProofKeyForCodeExchange { get; set; }
+    public bool RequirePushedAuthorizationRequests { get; set; }
 
     public class CertificateInfo
     {

@@ -88,7 +88,7 @@ public sealed class FileProviderStartup : StartupBase
             OnPrepareResponse = ctx =>
             {
                 ctx.Context.Response.Headers[HeaderNames.CacheControl] = $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
-            }
+            },
         });
     }
 

@@ -11,7 +11,7 @@ public class HttpRequestEventViewModel
             "PUT",
             "PATCH",
             "DELETE",
-            "OPTIONS"
+            "OPTIONS",
         };
 
     public string HttpMethod { get; set; }

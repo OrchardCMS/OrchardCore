@@ -266,7 +266,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
                     entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.GetNormalizedPath())
                     {
-                        DocumentId = contentItem.Id
+                        DocumentId = contentItem.Id,
                     });
                 }
 
@@ -304,7 +304,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                         jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
                         {
                             MergeArrayHandling = MergeArrayHandling.Replace,
-                            MergeNullValueHandling = MergeNullValueHandling.Merge
+                            MergeNullValueHandling = MergeNullValueHandling.Merge,
                         });
                     }
                     else
@@ -322,7 +322,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                             jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
                             {
                                 MergeArrayHandling = MergeArrayHandling.Replace,
-                                MergeNullValueHandling = MergeNullValueHandling.Merge
+                                MergeNullValueHandling = MergeNullValueHandling.Merge,
                             });
                         }
 

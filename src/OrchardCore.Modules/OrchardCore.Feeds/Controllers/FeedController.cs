@@ -71,7 +71,7 @@ public sealed class FeedController : Controller
                     contextualizer(new ContextualizeContext
                     {
                         ServiceProvider = _serviceProvider,
-                        Url = Url
+                        Url = Url,
                     });
                 }
             }

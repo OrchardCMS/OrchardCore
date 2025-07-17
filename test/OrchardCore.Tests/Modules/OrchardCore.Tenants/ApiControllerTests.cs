@@ -17,7 +17,7 @@ public class ApiControllerTests
     private readonly Mock<IClock> _clockMock = new();
     private readonly Dictionary<string, FeatureProfile> _featureProfiles = new()
     {
-        { "Feature Profile", new FeatureProfile() }
+        { "Feature Profile", new FeatureProfile() },
     };
 
     private delegate void TryGetSettingsCallback(string name, out ShellSettings settings);
@@ -33,7 +33,7 @@ public class ApiControllerTests
             RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
             FeatureProfiles = ["Feature Profile"],
-            IsNewTenant = true
+            IsNewTenant = true,
         };
 
         // Act & Assert
@@ -74,7 +74,7 @@ public class ApiControllerTests
             RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
             FeatureProfiles = ["Feature Profile"],
-            IsNewTenant = true
+            IsNewTenant = true,
         };
 
         // Act & Assert
@@ -176,7 +176,7 @@ public class ApiControllerTests
             Mock.Of<IStringLocalizer<TenantApiController>>(),
             Mock.Of<ILogger<TenantApiController>>())
         {
-            ControllerContext = new ControllerContext { HttpContext = CreateHttpContext() }
+            ControllerContext = new ControllerContext { HttpContext = CreateHttpContext() },
         };
     }
 
@@ -184,12 +184,12 @@ public class ApiControllerTests
     {
         var httpContext = new DefaultHttpContext
         {
-            User = new ClaimsPrincipal()
+            User = new ClaimsPrincipal(),
         };
 
         httpContext.Features.Set(new ShellContextFeature
         {
-            OriginalPathBase = PathString.Empty
+            OriginalPathBase = PathString.Empty,
         });
 
         httpContext.User.AddIdentity(new ClaimsIdentity());

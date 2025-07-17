@@ -83,38 +83,25 @@ glob(config.source).then((files) => {
                         await swc
                             .minify(reader.replace(/(\r?\n|\r)/gm, "\n"), {
                                 compress: true,
+                                mangle: true,
                                 sourceMap: mode === "production",
                             })
                             .then((output) => {
                                 const minifiedTarget = path.join(dest, path.parse(target).name + ".min.js");
 
-                                fs.outputFile(minifiedTarget, output.code);
-                                console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
+                                fs.outputFile(minifiedTarget, output.code + "\n");
+                                console.log(`Minified for prod from (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
 
                                 if (mode === "production" && output.map) {
                                     const mappedTarget = path.join(dest, path.parse(target).name + ".map");
-                                    let normalized = output.map.replace(/(?:\\[rn])+/g, "\\n");
+                                    let normalized = output.map.replace(/(?:\\r\\n)/g, "\\n");
                                     fs.outputFile(mappedTarget, normalized + "\n");
                                     console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(mappedTarget));
                                 }
-                            });
 
-                        let sourceFile = reader.toString().replace(/(?:\\[rn])+/g, "\\n");
-                        
-                        // Remove last line from sourceFile if it is a newline
-                        let sourceLines = sourceFile.split("\n");
-                        if (sourceLines[sourceLines.length - 1] === "") {
-                            sourceLines.pop();
-                        }
-                        sourceFile = sourceLines.join("\n");
-                        sourceFile = sourceFile + "\n";
-
-                        await fs
-                            .outputFile(target, sourceFile)
-                            .then(() => console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target)))
-                            .catch((err) => {
-                                console.log(`${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target), chalk.red(err));
-                                throw err;
+                                fs.outputFile(target, output.code + "\n" + "//# sourceMappingURL=" + path.parse(target).name + ".map");
+                                console.log(`Minified for dev from (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target));
+                                
                             });
                     } else if (fileInfo.ext === ".css") {
                         let reader = await fs.readFile(file, "utf8");

@@ -74,7 +74,7 @@ public sealed class UserPickerAdminController : Controller
             Query = query,
             DisplayAllUsers = fieldSettings.DisplayAllUsers,
             Roles = fieldSettings.DisplayedRoles,
-            PartFieldDefinition = partFieldDefinition
+            PartFieldDefinition = partFieldDefinition,
         });
 
         return new ObjectResult(results.Select(r => new VueMultiselectUserViewModel() { Id = r.UserId, DisplayText = r.DisplayText, IsEnabled = r.IsEnabled }));

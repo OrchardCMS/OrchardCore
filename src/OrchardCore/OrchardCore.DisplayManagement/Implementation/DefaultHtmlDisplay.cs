@@ -78,7 +78,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         {
             Shape = shape,
             DisplayContext = localContext,
-            ServiceProvider = _serviceProvider
+            ServiceProvider = _serviceProvider,
         };
 
         try

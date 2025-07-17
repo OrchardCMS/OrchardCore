@@ -7,8 +7,7 @@
 <div class="row recipes" asp-validation-class-for="RecipeName">
     <div class="mb-3 col-md-6">
         <select asp-for="RecipeName" class="form-select">
-
-            <option value=""></option>
+            <option value="">@T["Select a recipe"]</option>
             @foreach (var recipe in Model.Recipes)
             {
                 <option value="@recipe.Name" selected="@(Model.RecipeName == recipe.Name)">

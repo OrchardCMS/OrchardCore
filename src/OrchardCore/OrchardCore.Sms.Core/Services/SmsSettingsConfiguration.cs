@@ -14,9 +14,7 @@ public class SmsSettingsConfiguration : IPostConfigureOptions<SmsSettings>
 
     public void PostConfigure(string name, SmsSettings options)
     {
-        var settings = _siteService.GetSettingsAsync<SmsSettings>()
-            .GetAwaiter()
-            .GetResult();
+        var settings = _siteService.GetSettings<SmsSettings>();
 
         options.DefaultProviderName = settings.DefaultProviderName;
     }

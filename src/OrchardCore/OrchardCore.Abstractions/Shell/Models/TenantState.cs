@@ -28,5 +28,5 @@ public enum TenantState
     /// <summary>
     /// The tenant settings are invalid.
     /// </summary>
-    Invalid
+    Invalid,
 }

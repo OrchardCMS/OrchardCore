@@ -56,7 +56,7 @@ public abstract class AwsTenantEventsBase : ModularTenantEvents
             var bucketRequest = new PutBucketRequest
             {
                 BucketName = _options.BucketName,
-                UseClientRegion = true
+                UseClientRegion = true,
             };
 
             // Trying to create bucket.
@@ -75,13 +75,13 @@ public abstract class AwsTenantEventsBase : ModularTenantEvents
                 BlockPublicAcls = true,
                 BlockPublicPolicy = true,
                 IgnorePublicAcls = true,
-                RestrictPublicBuckets = true
+                RestrictPublicBuckets = true,
             };
 
             await _amazonS3Client.PutPublicAccessBlockAsync(new PutPublicAccessBlockRequest
             {
                 PublicAccessBlockConfiguration = blockConfiguration,
-                BucketName = _options.BucketName
+                BucketName = _options.BucketName,
             });
 
             _logger.LogDebug("Amazon S3 Bucket {BucketName} created.", _options.BucketName);
@@ -110,7 +110,7 @@ public abstract class AwsTenantEventsBase : ModularTenantEvents
             var bucketRequest = new DeleteBucketRequest
             {
                 BucketName = _options.BucketName,
-                UseClientRegion = true
+                UseClientRegion = true,
             };
 
             // Trying to delete bucket.

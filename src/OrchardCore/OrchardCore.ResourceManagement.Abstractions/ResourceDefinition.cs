@@ -262,8 +262,8 @@ public class ResourceDefinition
                     tagBuilder = new TagBuilder("style")
                     {
                         Attributes = {
-                            { "type", "text/css" }
-                        }
+                            { "type", "text/css" },
+                        },
                     };
                 }
                 else
@@ -274,8 +274,8 @@ public class ResourceDefinition
                         TagRenderMode = TagRenderMode.SelfClosing,
                         Attributes = {
                             { "type", "text/css" },
-                            { "rel", "stylesheet" }
-                        }
+                            { "rel", "stylesheet" },
+                        },
                     };
                     filePathAttributeName = "href";
                 }

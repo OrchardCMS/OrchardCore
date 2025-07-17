@@ -23,7 +23,7 @@ public class AutorouteEntriesTests
             var initialEntries = new List<AutorouteEntry>()
             {
                 new("container", "container-path"),
-                new("container", "contained-path", "contained")
+                new("container", "contained-path", "contained"),
             };
 
             entries.AddEntries(initialEntries);
@@ -57,7 +57,7 @@ public class AutorouteEntriesTests
             var initialEntries = new List<AutorouteEntry>()
             {
                 new("container", "container-path"),
-                new("container", "contained-path", "contained")
+                new("container", "contained-path", "contained"),
             };
 
             entries.AddEntries(initialEntries);
@@ -91,7 +91,7 @@ public class AutorouteEntriesTests
             var initialEntries = new List<AutorouteEntry>()
             {
                 new("container", "container-path"),
-                new("container", "contained-path", "contained")
+                new("container", "contained-path", "contained"),
             };
 
             entries.AddEntries(initialEntries);
@@ -127,7 +127,7 @@ public class AutorouteEntriesTests
             {
                 new("container", "container-path"),
                 new("container", "contained-path1", "contained1"),
-                new("container", "contained-path2", "contained2")
+                new("container", "contained-path2", "contained2"),
             };
 
             entries.AddEntries(initialEntries);
@@ -135,7 +135,7 @@ public class AutorouteEntriesTests
             var updatedEntries = new List<AutorouteEntry>()
             {
                 new("container", "container-path"),
-                new("container", "contained-path1", "contained1")
+                new("container", "contained-path1", "contained1"),
             };
 
             entries.AddEntries(updatedEntries);
@@ -168,7 +168,7 @@ public class AutorouteEntriesTests
             var initialEntries = new List<AutorouteEntry>()
             {
                 new("container", "container-path"),
-                new("container", "contained-path-old", "contained")
+                new("container", "contained-path-old", "contained"),
             };
 
             entries.AddEntries(initialEntries);
@@ -176,7 +176,7 @@ public class AutorouteEntriesTests
             var updatedEntries = new List<AutorouteEntry>()
             {
                 new("container", "container-path"),
-                new("container", "contained-path-new", "contained")
+                new("container", "contained-path-new", "contained"),
             };
 
             entries.AddEntries(updatedEntries);
@@ -229,7 +229,7 @@ public class AutorouteEntriesTests
         return new ShellContext()
         {
             Settings = new ShellSettings().AsDefaultShell().AsRunning(),
-            ServiceProvider = CreateServiceProvider()
+            ServiceProvider = CreateServiceProvider(),
         };
     }
 

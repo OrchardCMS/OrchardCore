@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
-using Amazon.S3;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Configuration;
@@ -45,7 +44,7 @@ public static class AwsStorageOptionsExtension
         {
             // Binding AWS Options. Using the AmazonS3Config type parameter is necessary to be able to configure
             // S3-specific properties like ForcePathStyle via the configuration provider.
-            options.AwsOptions = shellConfiguration.GetAWSOptions<AmazonS3Config>("OrchardCore_Media_AmazonS3");
+            options.AwsOptions = shellConfiguration.GetAWSOptions("OrchardCore_Media_AmazonS3");
 
             // In case Credentials sections was specified, trying to add BasicAWSCredential to AWSOptions
             // since by design GetAWSOptions skips Credential section while parsing config.

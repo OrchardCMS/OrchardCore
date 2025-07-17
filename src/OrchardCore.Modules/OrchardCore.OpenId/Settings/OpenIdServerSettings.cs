@@ -26,6 +26,8 @@ public class OpenIdServerSettings
 
     public PathString IntrospectionEndpointPath { get; set; }
 
+    public PathString PushedAuthorizationEndpointPath { get; set; }
+
     public PathString RevocationEndpointPath { get; set; }
 
     public bool AllowPasswordFlow { get; set; }
@@ -41,9 +43,11 @@ public class OpenIdServerSettings
 
     public bool RequireProofKeyForCodeExchange { get; set; }
 
+    public bool RequirePushedAuthorizationRequests { get; set; }
+
     public enum TokenFormat
     {
         DataProtection = 0,
-        JsonWebToken = 1
+        JsonWebToken = 1,
     }
 }

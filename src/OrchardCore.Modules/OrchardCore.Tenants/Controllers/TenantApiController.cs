@@ -404,7 +404,7 @@ public sealed class TenantApiController : ControllerBase
             {
                 FileProvider = fileProvider,
                 BasePath = string.Empty,
-                RecipeFileInfo = fileProvider.GetFileInfo(Path.GetFileName(tempFilename))
+                RecipeFileInfo = fileProvider.GetFileInfo(Path.GetFileName(tempFilename)),
             };
         }
         else
@@ -435,7 +435,7 @@ public sealed class TenantApiController : ControllerBase
                 { SetupConstants.DatabaseConnectionString, connectionString },
                 { SetupConstants.DatabaseTablePrefix, tablePrefix },
                 { SetupConstants.DatabaseSchema, schema },
-            }
+            },
         };
 
         var executionId = await _setupService.SetupAsync(setupContext);

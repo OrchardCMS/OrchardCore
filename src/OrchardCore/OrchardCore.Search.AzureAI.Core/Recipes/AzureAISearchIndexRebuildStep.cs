@@ -1,10 +1,10 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
+using OrchardCore.Indexing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.AzureAI.Deployment;
-using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
@@ -31,25 +31,21 @@ public sealed class AzureAISearchIndexRebuildStep : NamedRecipeStepHandler
 
         await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
         {
-            var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
-            var indexSettingsService = scope.ServiceProvider.GetService<AzureAISearchIndexSettingsService>();
-            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<AzureAIIndexDocumentManager>();
-            var indexManager = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexManager>();
+            var indexProfileManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
+            var indexManager = scope.ServiceProvider.GetKeyedService<IIndexManager>(AzureAISearchConstants.ProviderName);
 
-            var indexSettings = model.IncludeAll
-            ? await indexSettingsService.GetSettingsAsync()
-            : (await indexSettingsService.GetSettingsAsync()).Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
+            var indexProfiles = model.IncludeAll
+            ? await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName)
+            : (await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName))
+                .Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
 
-            foreach (var settings in indexSettings)
+            foreach (var indexProfile in indexProfiles)
             {
-                settings.SetLastTaskId(0);
-                settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings);
-                await indexSettingsService.UpdateAsync(settings);
-
-                await indexManager.RebuildAsync(settings);
+                await indexProfileManager.ResetAsync(indexProfile);
+                await indexProfileManager.UpdateAsync(indexProfile);
+                await indexManager.RebuildAsync(indexProfile);
+                await indexProfileManager.SynchronizeAsync(indexProfile);
             }
-
-            await searchIndexingService.ProcessContentItemsAsync(indexSettings.Select(settings => settings.IndexName).ToArray());
         });
     }
 }

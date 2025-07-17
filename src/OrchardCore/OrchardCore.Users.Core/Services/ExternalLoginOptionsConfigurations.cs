@@ -15,9 +15,7 @@ public sealed class ExternalLoginOptionsConfigurations : IConfigureOptions<Exter
 
     public void Configure(ExternalLoginOptions options)
     {
-        var settings = _siteService.GetSettingsAsync<ExternalLoginSettings>()
-            .GetAwaiter()
-            .GetResult();
+        var settings = _siteService.GetSettings<ExternalLoginSettings>();
 
         options.UseExternalProviderIfOnlyOneDefined = settings.UseExternalProviderIfOnlyOneDefined;
     }

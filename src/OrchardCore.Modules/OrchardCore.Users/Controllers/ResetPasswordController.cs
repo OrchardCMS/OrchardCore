@@ -6,9 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -19,8 +17,6 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.ResetPassword)]
 public sealed class ResetPasswordController : Controller
 {
-    private static readonly string _controllerName = typeof(ResetPasswordController).ControllerName();
-
     private readonly IUserService _userService;
     private readonly UserManager<IUser> _userManager;
     private readonly ISiteService _siteService;
@@ -31,7 +27,6 @@ public sealed class ResetPasswordController : Controller
     private readonly IDisplayManager<ForgotPasswordForm> _forgotPasswordDisplayManager;
     private readonly UserEmailService _userEmailService;
     private readonly IDisplayManager<ResetPasswordForm> _resetPasswordDisplayManager;
-    private readonly IShellFeaturesManager _shellFeaturesManager;
 
     internal readonly IStringLocalizer S;
 
@@ -44,7 +39,6 @@ public sealed class ResetPasswordController : Controller
         IDisplayManager<ForgotPasswordForm> forgotPasswordDisplayManager,
         UserEmailService userEmailService,
         IDisplayManager<ResetPasswordForm> resetPasswordDisplayManager,
-        IShellFeaturesManager shellFeaturesManager,
         IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
         IOptions<RegistrationOptions> registrationOptions,
         IStringLocalizer<ResetPasswordController> stringLocalizer)
@@ -57,7 +51,6 @@ public sealed class ResetPasswordController : Controller
         _forgotPasswordDisplayManager = forgotPasswordDisplayManager;
         _userEmailService = userEmailService;
         _resetPasswordDisplayManager = resetPasswordDisplayManager;
-        _shellFeaturesManager = shellFeaturesManager;
         _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
         _registrationOptions = registrationOptions.Value;
         S = stringLocalizer;
@@ -149,7 +142,6 @@ public sealed class ResetPasswordController : Controller
 
     [HttpPost]
     [AllowAnonymous]
-    [ValidateAntiForgeryToken]
     [ActionName(nameof(ResetPassword))]
     public async Task<IActionResult> ResetPasswordPOST()
     {

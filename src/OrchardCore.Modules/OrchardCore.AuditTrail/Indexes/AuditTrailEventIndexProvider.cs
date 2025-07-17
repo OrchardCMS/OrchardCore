@@ -19,7 +19,7 @@ public class AuditTrailEventIndexProvider : IndexProvider<AuditTrailEvent>
                     CorrelationId = auditTrailEvent.CorrelationId,
                     UserId = auditTrailEvent.UserId,
                     NormalizedUserName = auditTrailEvent.NormalizedUserName,
-                    CreatedUtc = auditTrailEvent.CreatedUtc
+                    CreatedUtc = auditTrailEvent.CreatedUtc,
                 };
             });
 }

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NJsonSchema;
 using OrchardCore.Environment.Shell.Models;
@@ -30,7 +29,7 @@ public class FeatureProfilesSchemaService : IFeatureProfilesSchemaService
             var ruleProperty = new JsonSchema()
             {
                 Type = JsonObjectType.String,
-                Description = "The rule to apply to this expression"
+                Description = "The rule to apply to this expression",
             };
 
             foreach (var ruleOption in _featureProfilesRuleOptions.Rules.Keys)

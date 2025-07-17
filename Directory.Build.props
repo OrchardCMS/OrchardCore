@@ -2,6 +2,10 @@
 
   <Import Project="src\OrchardCore.Build\TargetFrameworks.props" />
   
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" />
+  </ItemGroup>
+
   <PropertyGroup>
     <!-- https://aka.ms/vs-build-acceleration -->
     <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
@@ -10,6 +14,9 @@
   <PropertyGroup Label="Analysis rules">
 
     <AnalysisLevel>latest-Recommended</AnalysisLevel>
+
+    <!-- Only treat analyzer warnings as errors -->
+    <WarningsAsErrors>$(WarningsAsErrors);CS*;CA*</WarningsAsErrors>
 
     <!-- The behavior could vary based on the current user's locale setting -->
     <NoWarn>$(NoWarn);CA1304;CA1305;CA1310</NoWarn>
@@ -49,6 +56,8 @@
 
     <!-- CA1861: Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array -->
     <NoWarn>$(NoWarn);CA1861</NoWarn>
+
+    <NoWarn>$(NoWarn),SA0001,CS1573,CS1591,CS1712</NoWarn>
 
   </PropertyGroup>
 

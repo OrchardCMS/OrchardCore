@@ -50,7 +50,7 @@ public sealed class TextFieldMonacoEditorSettingsDriver : ContentPartFieldDefini
             {
                 var settings = new TextFieldMonacoEditorSettings
                 {
-                    Options = model.Options
+                    Options = model.Options,
                 };
                 context.Builder.WithSettings(settings);
             }

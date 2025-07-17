@@ -10,10 +10,8 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
-using OrchardCore.Entities;
 using OrchardCore.Queries;
 using OrchardCore.Search.Elasticsearch.Core.Services;
-using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries;
 
@@ -68,7 +66,6 @@ public sealed class ElasticsearchQueryFieldTypeProvider : ISchemaBuilder
                 FieldType fieldType;
 
                 var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
-                var metadata = query.As<ElasticsearchQueryMetadata>();
                 if (query.ReturnContentItems &&
                     type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                 {
@@ -102,7 +99,7 @@ public sealed class ElasticsearchQueryFieldTypeProvider : ISchemaBuilder
 
         var typeType = new ObjectGraphType<JsonObject>
         {
-            Name = fieldTypeName
+            Name = fieldTypeName,
         };
 
         foreach (var child in properties)
@@ -158,7 +155,7 @@ public sealed class ElasticsearchQueryFieldTypeProvider : ISchemaBuilder
             Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
             ResolvedType = new ListGraphType(typeType),
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
-            Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
+            Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>),
         };
 
         async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
@@ -199,7 +196,7 @@ public sealed class ElasticsearchQueryFieldTypeProvider : ISchemaBuilder
             Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
             ResolvedType = typeType.ResolvedType,
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
-            Type = typeType.Type
+            Type = typeType.Type,
         };
 
         async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)

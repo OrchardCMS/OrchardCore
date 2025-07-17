@@ -71,7 +71,7 @@ public sealed class AdminController : Controller
 
         return View("List", new ListContentTypesViewModel
         {
-            Types = await _contentDefinitionService.GetTypesAsync()
+            Types = await _contentDefinitionService.GetTypesAsync(),
         });
     }
 
@@ -169,9 +169,10 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName("Edit")]
-    [FormValueRequired("submit.Save")]
-    public async Task<ActionResult> EditPOST(string id, EditTypeViewModel viewModel)
+    public async Task<ActionResult> EditPost(
+        string id, EditTypeViewModel viewModel, [Bind(Prefix = "submit.Save")] string submitSave)
     {
+        var stayOnSamePage = submitSave == "SaveAndContinue";
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
@@ -202,11 +203,15 @@ public sealed class AdminController : Controller
             {
                 await _contentDefinitionService.AlterPartFieldsOrderAsync(ownedPartDefinition, viewModel.OrderedFieldNames);
             }
+
             await _contentDefinitionService.AlterTypePartsOrderAsync(contentTypeDefinition, viewModel.OrderedPartNames);
-            await _notifier.SuccessAsync(H["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
+
+            await _notifier.SuccessAsync(H["Content type updated successfully."]);
         }
 
-        return RedirectToAction(nameof(Edit), new { id });
+        return stayOnSamePage
+            ? RedirectToAction(nameof(Edit), new { id })
+            : RedirectToAction(nameof(List));
     }
 
     [HttpPost, ActionName("Edit")]
@@ -255,7 +260,7 @@ public sealed class AdminController : Controller
             PartSelections = (await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: false))
                 .Where(cpd => !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) && cpd.PartDefinition != null && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable)
                 .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
-                .ToList()
+                .ToList(),
         };
 
         return View(viewModel);
@@ -287,7 +292,7 @@ public sealed class AdminController : Controller
             PartSelections = reusableParts
                 .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                 .ToList(),
-            SelectedPartName = reusableParts.FirstOrDefault()?.Name
+            SelectedPartName = reusableParts.FirstOrDefault()?.Name,
         };
 
         return View(viewModel);
@@ -449,7 +454,7 @@ public sealed class AdminController : Controller
         return View(new ListContentPartsViewModel
         {
             // Only user-defined parts (not code as they are not configurable).
-            Parts = await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: true)
+            Parts = await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: true),
         });
     }
 
@@ -625,7 +630,7 @@ public sealed class AdminController : Controller
         var viewModel = new AddFieldViewModel
         {
             Part = partViewModel.PartDefinition,
-            Fields = fields.Select(field => field.Name).OrderBy(name => name).ToList()
+            Fields = fields.Select(field => field.Name).OrderBy(name => name).ToList(),
         };
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -744,7 +749,7 @@ public sealed class AdminController : Controller
             DisplayMode = partFieldDefinition.DisplayMode(),
             DisplayName = partFieldDefinition.DisplayName(),
             PartFieldDefinition = partFieldDefinition,
-            Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, _updateModelAccessor.ModelUpdater)
+            Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, _updateModelAccessor.ModelUpdater),
         };
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -913,7 +918,7 @@ public sealed class AdminController : Controller
             DisplayName = typePartDefinition.DisplayName(),
             Description = typePartDefinition.Description(),
             TypePartDefinition = typePartDefinition,
-            Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, _updateModelAccessor.ModelUpdater)
+            Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, _updateModelAccessor.ModelUpdater),
         };
 
         return View(typePartViewModel);

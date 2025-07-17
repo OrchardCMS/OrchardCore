@@ -43,9 +43,9 @@ public sealed class Startup : StartupBase
                 {
                     [HealthStatus.Healthy] = StatusCodes.Status200OK,
                     [HealthStatus.Degraded] = StatusCodes.Status200OK,
-                    [HealthStatus.Unhealthy] = StatusCodes.Status200OK
+                    [HealthStatus.Unhealthy] = StatusCodes.Status200OK,
                 },
-                ResponseWriter = healthChecksResponseWriter.WriteResponseAsync
+                ResponseWriter = healthChecksResponseWriter.WriteResponseAsync,
             });
         }
         else

@@ -134,7 +134,7 @@ public class ModuleService : IModuleService
         return new ModuleFeature
         {
             Descriptor = featureInfo,
-            IsEnabled = isEnabled
+            IsEnabled = isEnabled,
         };
     }
 

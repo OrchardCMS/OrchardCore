@@ -1,0 +1,12 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Indexing.Models
+
+@model ShapeViewModel<IndexProfile>
+
+<span class="badge ta-badge bg-warning-subtle font-weight-normal" data-bs-toggle="tooltip" title="@T["Provider"]">
+    <i class="text-secondary me-1" aria-hidden="true"></i>@Model.Value.ProviderName
+</span>
+
+<span class="badge ta-badge bg-primary-subtle font-weight-normal" data-bs-toggle="tooltip" title="@T["Type"]">
+    <i class="text-secondary me-1" aria-hidden="true"></i>@Model.Value.Type
+</span>

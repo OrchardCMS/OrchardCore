@@ -21,7 +21,7 @@ public class SelectRolesViewComponent : ViewComponent
         var model = new SelectRolesViewModel
         {
             HtmlName = htmlName,
-            RoleSelections = roleSelections
+            RoleSelections = roleSelections,
         };
 
         return View(model);
@@ -39,7 +39,7 @@ public class SelectRolesViewComponent : ViewComponent
         return roleNames.Select(x => new Selection<string>
         {
             IsSelected = selectedRoles.Contains(x),
-            Item = x
+            Item = x,
         })
         .OrderBy(x => x.Item)
         .ToList();

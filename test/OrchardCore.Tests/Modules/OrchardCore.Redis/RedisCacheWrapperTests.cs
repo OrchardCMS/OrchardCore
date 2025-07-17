@@ -1,5 +1,5 @@
-using OrchardCore.Redis.Services;
 using Microsoft.Extensions.Caching.Distributed;
+using OrchardCore.Redis.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Redis;
 

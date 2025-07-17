@@ -24,7 +24,7 @@ public enum BulkAction
 {
     Disable,
     Enable,
-    Remove
+    Remove,
 }
 
 public class ShellSettingsEntry
@@ -72,7 +72,7 @@ public enum TenantsState
     All,
     Running,
     Disabled,
-    Uninitialized
+    Uninitialized,
 }
 
 public enum TenantsBulkAction
@@ -80,11 +80,11 @@ public enum TenantsBulkAction
     None,
     Disable,
     Enable,
-    Remove
+    Remove,
 }
 
 public enum TenantsOrder
 {
     Name,
-    State
+    State,
 }

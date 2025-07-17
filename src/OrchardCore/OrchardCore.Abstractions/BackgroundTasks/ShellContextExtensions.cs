@@ -16,7 +16,7 @@ public static class ShellContextExtensions
         {
             ShellContext = shell,
             OriginalPathBase = PathString.Empty,
-            OriginalPath = "/"
+            OriginalPath = "/",
         });
 
         return context;

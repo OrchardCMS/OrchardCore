@@ -23,7 +23,7 @@ public class OpenIdScopeStepTests
         {
             Name = name,
             DisplayName = $"Test Scope {suffix}",
-            Description = $"Unit test scope {suffix}."
+            Description = $"Unit test scope {suffix}.",
         };
         scope.Resources.UnionWith(resources);
         return scope;
@@ -96,7 +96,7 @@ public class OpenIdScopeStepTests
         var dbActual = new OpenIdScope
         {
             Name = actual.Name,
-            Resources = actual.Resources.ToImmutableArray()
+            Resources = actual.Resources.ToImmutableArray(),
         };
         var scopeManagerMock = new Mock<IOpenIdScopeManager>(MockBehavior.Strict);
 

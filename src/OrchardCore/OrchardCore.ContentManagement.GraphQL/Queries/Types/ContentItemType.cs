@@ -106,7 +106,7 @@ public sealed class ContentItemType : ObjectGraphType<ContentItem>
         if (schema is IServiceProvider serviceProvider)
         {
             var initializers = serviceProvider.GetServices<IContentItemTypeInitializer>();
-            
+
             foreach (var initializer in initializers)
             {
                 initializer.Initialize(this, schema);

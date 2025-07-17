@@ -46,7 +46,7 @@ public sealed class DeploymentPlansRecipeStep : NamedRecipeStepHandler
         {
             var deploymentPlan = new DeploymentPlan
             {
-                Name = plan.Name
+                Name = plan.Name,
             };
 
             foreach (var step in plan.Steps)

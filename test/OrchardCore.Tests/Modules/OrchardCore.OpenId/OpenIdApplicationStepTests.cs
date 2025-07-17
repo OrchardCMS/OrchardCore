@@ -75,14 +75,14 @@ public class OpenIdApplicationStepTests
         var expected = new OpenIdApplicationDescriptor
         {
             ClientId = clientId,
-            DisplayName = "Expected Name"
+            DisplayName = "Expected Name",
         };
         expected.RedirectUris.UnionWith(new[] { new Uri("https://localhost/redirect") });
 
         var actual = new OpenIdApplicationDescriptor
         {
             ClientId = clientId,
-            DisplayName = "Actual Name"
+            DisplayName = "Actual Name",
         };
         actual.RedirectUris.UnionWith(new[] { new Uri("https://localhost/x") });
         actual.Roles.UnionWith(new[] { "x" });
@@ -94,7 +94,7 @@ public class OpenIdApplicationStepTests
             DisplayName = actual.DisplayName,
             RedirectUris = actual.RedirectUris.Select(u => u.AbsoluteUri).ToImmutableArray(),
             Roles = actual.Roles.ToImmutableArray(),
-            Permissions = actual.Permissions.ToImmutableArray()
+            Permissions = actual.Permissions.ToImmutableArray(),
         };
 
         var appManagerMock = new Mock<IOpenIdApplicationManager>(MockBehavior.Strict);

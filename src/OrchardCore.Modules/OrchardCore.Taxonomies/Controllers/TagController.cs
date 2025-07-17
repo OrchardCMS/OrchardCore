@@ -112,7 +112,7 @@ public sealed class TagController : Controller, IUpdateModel
         var viewModel = new CreatedTagViewModel
         {
             ContentItemId = contentItem.ContentItemId,
-            DisplayText = contentItem.DisplayText
+            DisplayText = contentItem.DisplayText,
         };
 
         return Ok(viewModel);

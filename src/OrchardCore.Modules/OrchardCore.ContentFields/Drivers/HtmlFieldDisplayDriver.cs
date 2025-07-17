@@ -59,7 +59,7 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
                 new Context
                 {
                     ["ContentItem"] = field.ContentItem,
-                    ["PartFieldDefinition"] = context.PartFieldDefinition
+                    ["PartFieldDefinition"] = context.PartFieldDefinition,
                 });
 
         })

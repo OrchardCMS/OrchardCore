@@ -50,7 +50,7 @@ public sealed class AdminController : Controller
         return Query(new AdminQueryViewModel
         {
             DecodedQuery = query,
-            FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName
+            FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName,
         });
     }
 

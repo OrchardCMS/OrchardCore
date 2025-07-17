@@ -2,7 +2,7 @@
   "name": "@orchardcore/root",
   "private": true,
   "version": "1.0.0",
-  "packageManager": "yarn@4.7.0",
+  "packageManager": "yarn@4.9.2",
   "scripts": {
     "gulp-build": "gulp build",
     "gulp-watch": "gulp watch",
@@ -31,7 +31,7 @@
     "@orchardcore/assets-manager": "workspace:^",
     "@popperjs/core": "2.11.8",
     "all-contributors-cli": "^6.26.1",
-    "bootstrap": "5.3.3",
+    "bootstrap": "5.3.7",
     "child_process": "^1.0.2",
     "es6-promise": "4.2.8",
     "eslint": "^9.21.0",

@@ -16,7 +16,7 @@ public class ListPartHandler : ContentPartHandler<ListPart>
                 {"Area", "OrchardCore.Contents"},
                 {"Controller", "Admin"},
                 {"Action", "Display"},
-                {"ContentItemId", context.ContentItem.ContentItemId}
+                {"ContentItemId", context.ContentItem.ContentItemId},
             };
 
             return Task.CompletedTask;

@@ -73,7 +73,7 @@ public static class OrchardCoreBuilderExtensions
                 {
                     case DatabaseProviderValue.SqlConnection:
                         storeConfiguration
-                            .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
+                            .UseSqlServer(shellSettings["ConnectionString"], yesSqlOptions.IsolationLevel, shellSettings["Schema"])
                             .UseBlockIdGenerator();
                         break;
                     case DatabaseProviderValue.Sqlite:
@@ -86,17 +86,17 @@ public static class OrchardCoreBuilderExtensions
                         var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings);
 
                         storeConfiguration
-                            .UseSqLite(connectionString, IsolationLevel.ReadUncommitted)
+                            .UseSqLite(connectionString, yesSqlOptions.IsolationLevel)
                             .UseDefaultIdGenerator();
                         break;
                     case DatabaseProviderValue.MySql:
                         storeConfiguration
-                            .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
+                            .UseMySql(shellSettings["ConnectionString"], yesSqlOptions.IsolationLevel, shellSettings["Schema"])
                             .UseBlockIdGenerator();
                         break;
                     case DatabaseProviderValue.Postgres:
                         storeConfiguration
-                            .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
+                            .UsePostgreSql(shellSettings["ConnectionString"], yesSqlOptions.IsolationLevel, shellSettings["Schema"])
                             .UseBlockIdGenerator();
                         break;
                     default:
@@ -151,19 +151,25 @@ public static class OrchardCoreBuilderExtensions
 
                 session.RegisterIndexes(scopedServices.ToArray());
 
-                ShellScope.Current
-                    .RegisterBeforeDispose(scope =>
-                    {
-                        return scope.ServiceProvider
-                            .GetRequiredService<IDocumentStore>()
-                            .CommitAsync();
-                    })
-                    .AddExceptionHandler((scope, e) =>
-                    {
-                        return scope.ServiceProvider
-                            .GetRequiredService<IDocumentStore>()
-                            .CancelAsync();
-                    });
+                // Register automated document store commit and rollback when the ISession is used
+                // on the DI scope of the shell. All other scopes will not be automatically committed.
+                var shellScope = ShellScope.Current;
+                if (sp == shellScope?.ServiceProvider)
+                {
+                    shellScope
+                        .RegisterBeforeDispose(scope =>
+                        {
+                            return scope.ServiceProvider
+                                .GetRequiredService<IDocumentStore>()
+                                .CommitAsync();
+                        })
+                        .AddExceptionHandler((scope, e) =>
+                        {
+                            return scope.ServiceProvider
+                                .GetRequiredService<IDocumentStore>()
+                                .CancelAsync();
+                        });
+                }
 
                 return session;
             });
@@ -192,6 +198,7 @@ public static class OrchardCoreBuilderExtensions
             IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
             Logger = loggerFactory.CreateLogger("YesSql"),
             ContentSerializer = new DefaultContentJsonSerializer(serializerOptions.Value.SerializerOptions),
+            IsolationLevel = yesSqlOptions.IsolationLevel,
         };
 
         if (yesSqlOptions.IdGenerator != null)

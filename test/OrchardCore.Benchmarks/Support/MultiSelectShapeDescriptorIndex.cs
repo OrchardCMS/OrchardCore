@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 
-namespace OrchardCore.Benchmark.Support;
+namespace OrchardCore.Benchmarks.Support;
 
 public class MultiSelectShapeDescriptorIndex : ShapeDescriptor
 {

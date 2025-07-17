@@ -13,7 +13,7 @@ public static class ResolveFieldContextExtensions
         if (source.Arguments?.ContainsKey(argumentName) ?? false)
         {
             return !string.IsNullOrEmpty(source.Arguments[argumentName].Value?.ToString());
-        };
+        }
 
         return false;
     }
@@ -23,7 +23,7 @@ public static class ResolveFieldContextExtensions
         if (source.Arguments?.ContainsKey(argumentName) ?? false)
         {
             return !string.IsNullOrEmpty(source.Arguments[argumentName].Value?.ToString());
-        };
+        }
 
         return false;
     }

@@ -72,7 +72,7 @@ public sealed class DashboardController : Controller
                 wrappers.Add(new DashboardWrapper
                 {
                     Dashboard = widget,
-                    Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.DetailAdmin)
+                    Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.DetailAdmin),
                 });
             }
 
@@ -93,7 +93,7 @@ public sealed class DashboardController : Controller
         // Set Manage Dashboard Feature.
         Request.HttpContext.Features.Set(new DashboardFeature()
         {
-            IsManageRequest = true
+            IsManageRequest = true,
         });
 
         var dashboardCreatable = new List<SelectListItem>();
@@ -124,7 +124,7 @@ public sealed class DashboardController : Controller
             var wrapper = new DashboardWrapper
             {
                 Dashboard = widget,
-                Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.DetailAdmin)
+                Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.DetailAdmin),
             };
 
             wrappers.Add(wrapper);
@@ -133,7 +133,7 @@ public sealed class DashboardController : Controller
         var model = new AdminDashboardViewModel
         {
             Dashboards = wrappers.ToArray(),
-            Creatable = dashboardCreatable
+            Creatable = dashboardCreatable,
         };
 
         return View(model);

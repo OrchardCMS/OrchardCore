@@ -40,7 +40,7 @@ public class ScriptFunctionsTest
                     """;
 
                     return JObject.Parse(jsonData);
-                }
+                },
             };
 
             var scriptingEngine = scope.ServiceProvider.GetRequiredService<IScriptingEngine>();
