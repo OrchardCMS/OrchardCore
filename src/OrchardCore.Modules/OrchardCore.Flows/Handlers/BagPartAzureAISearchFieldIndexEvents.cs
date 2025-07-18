@@ -26,7 +26,7 @@ internal sealed class BagPartAzureAISearchFieldIndexEvents : AzureAISearchFieldI
 
     public override async Task MappingAsync(SearchIndexDefinition context)
     {
-        // Lazily resolve the handler to avoid circular dependencies.
+        // Lazily resolve the mapper to avoid circular dependencies.
         _fieldsMapper ??= _serviceProvider.GetService<AzureAISearchContentFieldMapper>();
 
         if (context.IndexEntry.Type == DocumentIndex.Types.Complex &&
