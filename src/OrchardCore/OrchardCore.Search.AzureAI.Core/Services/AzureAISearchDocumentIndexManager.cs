@@ -415,7 +415,10 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
                     var propValue = prop.GetValue(value);
                     result[subField.AzureFieldKey] = GetNestedValue(propValue, subField);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "An error occurred while processing property '{PropertyName}' for field '{FieldKey}'.", prop.Name, subField.AzureFieldKey);
+                }
             }
 
             return result;
