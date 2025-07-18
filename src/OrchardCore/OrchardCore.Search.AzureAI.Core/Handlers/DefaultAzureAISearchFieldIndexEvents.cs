@@ -16,8 +16,8 @@ public sealed class DefaultAzureAISearchFieldIndexEvents : IAzureAISearchFieldIn
         }
         else
         {
-            context.Map.IsFilterable = context.IsRoolField;
-            context.Map.IsSortable = context.IsRoolField;
+            context.Map.IsFilterable = context.IsRootField;
+            context.Map.IsSortable = context.IsRootField;
         }
 
         return Task.CompletedTask;
@@ -29,7 +29,7 @@ public sealed class DefaultAzureAISearchFieldIndexEvents : IAzureAISearchFieldIn
         {
             context.Map.IsSearchable = true;
             context.Map.IsCollection = false;
-            context.Map.IsSuggester = context.IsRoolField;
+            context.Map.IsSuggester = context.IsRootField;
         }
         else if (context.Map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey)
         {
@@ -38,15 +38,15 @@ public sealed class DefaultAzureAISearchFieldIndexEvents : IAzureAISearchFieldIn
         }
         else if (context.Map.AzureFieldKey == ContentIndexingConstants.ContentItemIdKey)
         {
-            context.Map.IsKey = context.IsRoolField; // Only the root field should be marked as a key.
-            context.Map.IsFilterable = context.IsRoolField;
-            context.Map.IsSortable = context.IsRoolField;
+            context.Map.IsKey = context.IsRootField; // Only the root field should be marked as a key.
+            context.Map.IsFilterable = context.IsRootField;
+            context.Map.IsSortable = context.IsRootField;
         }
         else if (context.Map.AzureFieldKey == ContentIndexingConstants.ContentItemVersionIdKey ||
             context.Map.AzureFieldKey == ContentIndexingConstants.OwnerKey)
         {
-            context.Map.IsFilterable = context.IsRoolField;
-            context.Map.IsSortable = context.IsRoolField;
+            context.Map.IsFilterable = context.IsRootField;
+            context.Map.IsSortable = context.IsRootField;
         }
 
         return Task.CompletedTask;

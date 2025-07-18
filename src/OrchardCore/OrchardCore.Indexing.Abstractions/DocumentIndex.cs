@@ -50,6 +50,15 @@ public class DocumentIndex
         });
     }
 
+    public void Set(string name, float[] value, int dimensions, DocumentIndexOptions options, Dictionary<string, object> metadata = null)
+    {
+        Entries.Add(new DocumentIndexEntry(name, value, Types.Vector, options)
+        {
+            Metadata = metadata,
+            Dimensions = dimensions,
+        });
+    }
+
     public void Set(string name, double? value, DocumentIndexOptions options)
     {
         Entries.Add(new DocumentIndexEntry(name, value, Types.Number, options));
@@ -74,6 +83,7 @@ public class DocumentIndex
         Number,
         GeoPoint,
         Complex,
+        Vector,
     }
 
     public class GeoPoint
@@ -91,6 +101,8 @@ public class DocumentIndex
         public Types Type { get; } = type;
 
         public DocumentIndexOptions Options { get; } = options;
+
+        public int Dimensions { get; set; }
 
         public Dictionary<string, object> Metadata { get; set; }
     }

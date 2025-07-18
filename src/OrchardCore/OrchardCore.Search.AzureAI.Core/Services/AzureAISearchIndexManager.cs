@@ -194,6 +194,16 @@ public sealed class AzureAISearchIndexManager : IIndexManager
 
     private static SearchFieldTemplate GetSearchFieldTemplate(AzureAISearchIndexMap indexMap, string analyzerName)
     {
+        if (indexMap.Type == Types.Vector)
+        {
+            if (indexMap.VectorInfo is null || indexMap.VectorInfo.Dimensions <= 0)
+            {
+                return null;
+            }
+
+            return new VectorSearchField(indexMap.AzureFieldKey, indexMap.VectorInfo.Dimensions, indexMap.VectorInfo.VectorSearchConfiguration);
+        }
+
         if (indexMap.IsSearchable)
         {
             return new SearchableField(indexMap.AzureFieldKey, collection: indexMap.IsCollection)
@@ -261,6 +271,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
             Types.GeoPoint => SearchFieldDataType.GeographyPoint,
             Types.Text => SearchFieldDataType.String,
             Types.Complex => SearchFieldDataType.Complex,
+            Types.Vector => SearchFieldDataType.Single,
             _ => throw new ArgumentOutOfRangeException(nameof(type), $"The type '{type}' is not support by Azure AI Search")
         };
 }

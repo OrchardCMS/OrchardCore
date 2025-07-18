@@ -89,13 +89,29 @@ public sealed class AzureAISearchContentFieldMapper
                 IndexingKey = entry.Name,
             };
 
+            if (entry.Type == Types.Vector)
+            {
+                indexMap.IsCollection = true;
+                indexMap.VectorInfo = new AzureAISearchIndexMapVectorInfo
+                {
+                    Dimensions = entry.Dimensions,
+                    VectorSearchConfiguration = "default",
+                };
+
+                if (entry.Metadata?.TryGetValue("VectorSearchConfiguration", out var vectorSearchConfig) == true &&
+                    vectorSearchConfig is string vectorSearchConfiguration)
+                {
+                    indexMap.VectorInfo.VectorSearchConfiguration = vectorSearchConfiguration;
+                }
+            }
+
             // Only add the mapping if it doesn't already exist. Otherwise, we update the mapping that already exists.
             indexMappings.Add(indexMap);
         }
 
         var context = new SearchIndexDefinition(indexMap, entry, index)
         {
-            IsRoolField = isRootField,
+            IsRootField = isRootField,
         };
 
         await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappingAsync(ctx), context, _logger);

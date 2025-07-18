@@ -238,6 +238,11 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
                     entries[entry.Name] = entry.Value;
                     break;
 
+                case DocumentIndex.Types.Vector:
+
+                    entries[entry.Name] = entry.Value;
+                    break;
+
                 case DocumentIndex.Types.Text:
                     if (entry.Value != null)
                     {

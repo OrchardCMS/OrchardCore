@@ -308,13 +308,13 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
                     break;
 
                 case Types.Complex:
-                    var nestedValue = GetNestedValue(entry.Value, map);
 
-                    if (nestedValue is not null)
-                    {
-                        doc.TryAdd(map.AzureFieldKey, value: nestedValue);
-                    }
+                    doc.TryAdd(map.AzureFieldKey, GetNestedValue(entry.Value, map));
+                    break;
 
+                case Types.Vector:
+
+                    doc.TryAdd(map.AzureFieldKey, entry.Value);
                     break;
 
                 case Types.GeoPoint:

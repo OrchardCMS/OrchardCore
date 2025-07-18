@@ -20,5 +20,6 @@ public sealed class SearchIndexDefinition
     public DocumentIndexEntry IndexEntry { get; }
 
     public IndexProfile IndexProfile { get; }
-    public bool IsRoolField { get; internal set; }
+
+    public bool IsRootField { get; set; }
 }

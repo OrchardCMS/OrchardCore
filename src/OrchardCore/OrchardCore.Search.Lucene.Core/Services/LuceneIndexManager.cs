@@ -322,7 +322,11 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
                     break;
 
                 case DocumentIndex.Types.Complex:
-                    // Lucene does not support complex objects directly.
+                    // Lucene.Net does not support complex objects directly.
+                    break;
+
+                case DocumentIndex.Types.Vector:
+                    // Lucene.Net does not support vectors directly.
                     break;
 
                 case DocumentIndex.Types.Text:
