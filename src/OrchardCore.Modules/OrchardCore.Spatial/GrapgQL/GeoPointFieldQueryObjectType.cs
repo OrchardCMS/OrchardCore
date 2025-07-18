@@ -10,9 +10,9 @@ public class GeoPointFieldQueryObjectType : ObjectGraphType<GeoPointField>
         Name = nameof(GeoPointField);
 
         Field(x => x.Latitude, nullable: true)
-            .Description(S["the longitude of the geo point"]);
+            .Description(S["the latitude of the geo point"]);
 
         Field(x => x.Longitude, nullable: true)
-            .Description(S["the latitude of the geo point"]);
+            .Description(S["the longitude of the geo point"]);
     }
 }
