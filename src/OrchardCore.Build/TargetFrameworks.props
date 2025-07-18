@@ -8,7 +8,7 @@
 
     <!-- TFMs used to build the abstractions and modules, by convention the default TFM is at the first position -->
     <!-- In a cross-targeting build, some assets are only copied on the first TFM, by convention the default TFM -->
-    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net8.0;net9.0</CommonTargetFrameworks>
+    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net9.0</CommonTargetFrameworks>
   </PropertyGroup>
 
   <!-- Detect if the solution is opened in VS to limit the TFMs that are analyzed by Roslyn for performance reasons -->
