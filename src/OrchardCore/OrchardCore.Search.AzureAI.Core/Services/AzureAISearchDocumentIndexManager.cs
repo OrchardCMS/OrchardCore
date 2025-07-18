@@ -401,11 +401,11 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         {
             var result = new SearchDocument();
             var props = value.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var propsDictionary = props.ToDictionary(p => p.Name, StringComparer.Ordinal);
 
             foreach (var subField in map.SubFields)
             {
-                var prop = props.FirstOrDefault(p => p.Name.Equals(subField.AzureFieldKey, StringComparison.Ordinal));
-                if (prop is null)
+                if (!propsDictionary.TryGetValue(subField.AzureFieldKey, out var prop))
                 {
                     continue;
                 }
