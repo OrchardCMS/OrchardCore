@@ -238,7 +238,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         return keyName;
     }
 
-    private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
+    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
     {
         foreach (var indexDocument in indexDocuments)
         {
@@ -246,7 +246,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         }
     }
 
-    private static SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
+    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
     {
         var doc = new SearchDocument();
 
@@ -358,7 +358,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         return doc;
     }
 
-    private static object GetNestedValue(object value, AzureAISearchIndexMap map)
+    private object GetNestedValue(object value, AzureAISearchIndexMap map)
     {
         if (value is null)
         {
