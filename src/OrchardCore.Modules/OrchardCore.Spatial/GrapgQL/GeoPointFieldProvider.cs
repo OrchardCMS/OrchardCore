@@ -20,7 +20,7 @@ public class GeoPointFieldProvider : IContentFieldProvider
         S = stringLocalizer;
     }
 
-    private static object handleFieldResolving(ContentElement field)
+    private static object HandleFieldResolving(ContentElement field)
         => new { Latitude = ((GeoPointField)field).Latitude, Longitude = ((GeoPointField)field).Longitude };
 
     public FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName = null)
@@ -44,7 +44,7 @@ public class GeoPointFieldProvider : IContentFieldProvider
 
                 contentField ??= context.Source.Get(typeof(GeoPointField), field.Name);
 
-                return contentField == null ? null : handleFieldResolving(contentField);
+                return contentField == null ? null : HandleFieldResolving(contentField);
             }),
         };
     }
