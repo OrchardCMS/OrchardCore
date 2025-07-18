@@ -11,7 +11,64 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
 
-export class Client {
+namespace Bloom.Services {
+
+export interface IClient {
+    /**
+     * @return OK
+     */
+    liquidIntellisense_js(): Promise<void>;
+    /**
+     * @return OK
+     */
+    contentGET(contentItemId: string): Promise<void>;
+    /**
+     * @return OK
+     */
+    contentDELETE(contentItemId: string): Promise<void>;
+    /**
+     * @param draft (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    contentPOST(draft: boolean | undefined, body: ContentItem | undefined): Promise<void>;
+    /**
+     * @param parameters (optional) 
+     * @return OK
+     */
+    queriesPOST(name: string, parameters: string | undefined): Promise<void>;
+    /**
+     * @param parameters (optional) 
+     * @return OK
+     */
+    queriesGET(name: string, parameters: string | undefined): Promise<void>;
+    /**
+     * @return OK
+     */
+    create(body: TenantApiModel): Promise<void>;
+    /**
+     * @return OK
+     */
+    edit(body: TenantApiModel): Promise<void>;
+    /**
+     * @return OK
+     */
+    disable(tenantName: string): Promise<void>;
+    /**
+     * @return OK
+     */
+    enable(tenantName: string): Promise<void>;
+    /**
+     * @return OK
+     */
+    remove(tenantName: string): Promise<void>;
+    /**
+     * @return OK
+     */
+    setup(body: SetupApiViewModel): Promise<void>;
+}
+
+export class Client implements IClient {
     protected instance: AxiosInstance;
     protected baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -911,4 +968,6 @@ function throwException(message: string, status: number, response: string, heade
 
 function isAxiosError(obj: any): obj is AxiosError {
     return obj && obj.isAxiosError === true;
+}
+
 }
