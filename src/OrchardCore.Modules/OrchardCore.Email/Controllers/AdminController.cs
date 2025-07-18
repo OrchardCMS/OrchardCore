@@ -119,7 +119,7 @@ public sealed class AdminController : Controller
 
         if (!string.IsNullOrWhiteSpace(testSettings.From))
         {
-            message.Sender = testSettings.From;
+            message.From = testSettings.From;
         }
 
         if (!string.IsNullOrWhiteSpace(testSettings.Subject))
