@@ -12,8 +12,6 @@ namespace OrchardCore.Search.AzureAI.Services;
 
 public sealed class AzureAISearchIndexManager : IIndexManager
 {
-    public const string OwnerKey = "Content__ContentItem__Owner";
-    public const string AuthorKey = "Content__ContentItem__Author";
     public const string FullTextKey = "Content__ContentItem__FullText";
     public const string DisplayTextAnalyzedKey = "Content__ContentItem__DisplayText__Analyzed";
 
