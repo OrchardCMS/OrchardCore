@@ -273,11 +273,17 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 
     private static void AddValue(Dictionary<string, object> entries, string key, object value)
     {
-        if (value is null || entries.TryAdd(key, value))
+        if (value is null)
         {
+            // Log a warning or handle null values as needed.
+            // For now, we simply return to skip processing null values.
             return;
         }
 
+        if (entries.TryAdd(key, value))
+        {
+            return;
+        }
         if (entries[key] is List<object> list)
         {
             // At this point, we know that a value already exists.
