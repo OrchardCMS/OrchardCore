@@ -35,10 +35,11 @@ public sealed class Startup : StartupBase
 [RequireFeatures("OrchardCore.Workflows")]
 public sealed class ContentHandlerStartup : StartupBase
 {
-    // The order is set to OrchardCoreConstants.ConfigureOrder.WorkflowsContentHandlers to ensure the workflows content handler is registered first in the DI container.
-    // This causes the workflows content handler to be invoked last when content events are triggered, allowing it to access
-    // the final state of the content item after all other content handlers have executed. Note: handlers are resolved in reverse order,
-    // so setting this constant ensures this handler runs last during content item created, updated, etc. events.
+    // The order is set to OrchardCoreConstants.ConfigureOrder.WorkflowsContentHandlers to ensure the workflows content
+    // handler is registered first in the DI container. This causes the workflows content handler to be invoked last
+    // when content events are triggered, allowing it to access the final state of the content item after all other
+    // content handlers have executed. Note: handlers are resolved in reverse order, so setting this constant ensures
+    // this handler runs last during content item created, updated, etc. events.
     public override int Order => OrchardCoreConstants.ConfigureOrder.WorkflowsContentHandlers;
 
     public override void ConfigureServices(IServiceCollection services)
