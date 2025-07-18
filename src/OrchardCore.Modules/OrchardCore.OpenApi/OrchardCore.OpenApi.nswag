@@ -67,7 +67,7 @@
       "templateDirectory": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "Models/TsClient.ts",
+      "output": "../../../.scripts/bloom/services/OpenApiClient.ts",
       "newLineBehavior": "Auto"
     },
     "openApiToCSharpClient": {
@@ -158,7 +158,7 @@
       "templateDirectory": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "Models/CsClient.cs",
+      "output": "Services/OpenApiClient.cs",
       "newLineBehavior": "Auto"
     }
   }
