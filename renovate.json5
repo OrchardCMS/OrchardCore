@@ -5,6 +5,8 @@
     $schema: 'https://docs.renovatebot.com/renovate-schema.json',
     extends: [
         'config:recommended',
+        // See https://docs.renovatebot.com/semantic-commits/.
+        ':semanticCommitsDisabled',
     ],
     // See https://docs.renovatebot.com/configuration-options/#configmigration.
     configMigration: true,
@@ -35,7 +37,15 @@
                 'System.Text.Json',
             ],
             allowedVersions: '<9.0.0',
-            matchCurrentVersion: '<9.0.0',
+            matchCurrentVersion: '/^8\\./',
+        },
+        {
+            // We need to keep this on 8.x for now, see
+            // https://github.com/OrchardCMS/OrchardCore/pull/17942#issuecomment-2903626717.
+            matchPackageNames: [
+                'Elastic.Clients.Elasticsearch',
+            ],
+            allowedVersions: '<9.0.0',
         },
         {
             // See the corresponding comment in Directory.Packages.props.
@@ -114,6 +124,17 @@
             matchPackageNames: [
                 '/^YesSql.*$/',
             ],
+        },
+        // These are database engines references in .github/workflows/functional_all_db.yml. They should match the
+        // minimum versions supported by YesSql, see:
+        // https://github.com/sebastienros/yessql/blob/main/.github/workflows/build.yml.
+        {
+            matchPackageNames: [
+                'postgres',
+                'mysql',
+                'mcr.microsoft.com/mssql/server',
+            ],
+            enabled: false,
         },
     ],
     // With GitHub Actions, concurrency is not really an issue.
