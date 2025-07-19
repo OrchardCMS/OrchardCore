@@ -11,6 +11,9 @@ public class DefaultLocalizationService : ILocalizationService
     private static readonly Task<string[]> _supportedCultures = Task.FromResult(new[] { CultureInfo.InstalledUICulture.Name });
 
     /// <inheritdocs />
+    public bool FallBackToParentCultures => true;
+
+    /// <inheritdocs />
     public Task<string> GetDefaultCultureAsync() => _defaultCulture;
 
     /// <inheritdocs />
