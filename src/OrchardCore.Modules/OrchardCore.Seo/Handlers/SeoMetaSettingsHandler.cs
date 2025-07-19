@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Entities;
 using OrchardCore.Media;
 using OrchardCore.Mvc.Core.Utilities;
@@ -20,7 +20,6 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
 {
     private readonly IMediaFileStore _mediaFileStore;
     private readonly ISiteService _siteService;
-    private readonly IActionContextAccessor _actionContextAccessor;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUrlHelperFactory _urlHelperFactory;
     private IContentManager _contentManager;
@@ -28,14 +27,12 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
     public SeoMetaSettingsHandler(
         IMediaFileStore mediaFileStore,
         ISiteService siteService,
-        IActionContextAccessor actionContextAccessor,
         IHttpContextAccessor httpContextAccessor,
         IUrlHelperFactory urlHelperFactory
         )
     {
         _mediaFileStore = mediaFileStore;
         _siteService = siteService;
-        _actionContextAccessor = actionContextAccessor;
         _httpContextAccessor = httpContextAccessor;
         _urlHelperFactory = urlHelperFactory;
     }
@@ -49,9 +46,7 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var metaSettings = siteSettings.As<ContentItem>("SocialMetaSettings");
 
-            var actionContext = _actionContextAccessor.ActionContext;
-
-            actionContext ??= await GetActionContextAsync(_httpContextAccessor.HttpContext);
+            var actionContext = await _httpContextAccessor.HttpContext.GetActionContextAsync();
 
             var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
             var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(context.ContentItem);
@@ -203,21 +198,5 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
                 aspect.GoogleSchema = googleSchema;
             }
         });
-    }
-
-    internal static async Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
-    {
-        var routeData = new RouteData();
-        routeData.Routers.Add(new RouteCollection());
-
-        var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-        var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
-
-        foreach (var filter in filters)
-        {
-            await filter.OnActionExecutionAsync(actionContext);
-        }
-
-        return actionContext;
     }
 }

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,13 +11,7 @@ public static class HttpContextExtensions
     public static Task<ActionContext> GetActionContextAsync(this IHttpContextAccessor httpContextAccessor)
     {
         var httpContext = httpContextAccessor.HttpContext;
-        var actionContext = httpContext.RequestServices.GetService<IActionContextAccessor>()?.ActionContext;
-
-        if (actionContext != null)
-        {
-            return Task.FromResult(actionContext);
-        }
-
+        
         return GetActionContextAsync(httpContext);
     }
 
