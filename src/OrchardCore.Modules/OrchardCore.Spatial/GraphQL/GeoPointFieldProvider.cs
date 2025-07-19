@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.Localization;
@@ -11,7 +6,7 @@ using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Spatial.Fields;
 
-namespace OrchardCore.Spatial.GrapgQL;
+namespace OrchardCore.Spatial.GraphQL;
 public class GeoPointFieldProvider : IContentFieldProvider
 {
     protected readonly IStringLocalizer S;

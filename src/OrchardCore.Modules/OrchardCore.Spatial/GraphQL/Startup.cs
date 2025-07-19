@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.Modules;
 using OrchardCore.Spatial.Fields;
 
-namespace OrchardCore.Spatial.GrapgQL;
+namespace OrchardCore.Spatial.GraphQL;
 
 [RequireFeatures("OrchardCore.Apis.GraphQL")]
 public class Startup : StartupBase

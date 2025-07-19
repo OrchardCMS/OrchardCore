@@ -2,7 +2,7 @@ using System.Text.Json;
 using GraphQL.Types;
 using OrchardCore.Spatial.Fields;
 
-namespace OrchardCore.Spatial.GrapgQL;
+namespace OrchardCore.Spatial.GraphQL;
 public class GeoPointGraphType : ScalarGraphType
 {
     public GeoPointGraphType()
