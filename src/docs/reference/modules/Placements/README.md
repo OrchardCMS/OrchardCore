@@ -6,7 +6,7 @@ The placements module allows editors to add custom placement logic.
 
 Custom placements can be provided by themes and modules using a `placement.json` file, which only affects the front-end shape, like `MyPart`on the themes and modules.
 
-The placements module provides a way to define placements from the admin panel which can also affect the backend shape like ThePart_Edit on the TheAdmin theme.
+The placements module provides a way to define placements from the admin panel, which can also affect the backend shape, such as `MyPart_Edit` on the `TheAdmin` theme.
 
 ### Placement precedence
 
