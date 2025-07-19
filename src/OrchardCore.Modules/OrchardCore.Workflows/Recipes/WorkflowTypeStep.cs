@@ -78,7 +78,7 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
     private async Task<IUrlHelper> GetUrlHelperAsync()
     {
         var httpContext = _httpContextAccessor.HttpContext;
-        if (httpContext == null)
+        if (httpContext is null)
         {
             return null;
         }
