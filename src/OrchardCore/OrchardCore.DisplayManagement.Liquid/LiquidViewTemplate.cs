@@ -5,7 +5,6 @@ using Fluid.Accessors;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -183,13 +182,8 @@ public static class LiquidViewTemplateExtensions
 
     public static async Task<ViewContext> GetViewContextAsync(LiquidTemplateContext context)
     {
-        var actionContext = context.Services.GetService<IActionContextAccessor>()?.ActionContext;
-
-        if (actionContext == null)
-        {
-            var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            actionContext = await httpContext.GetActionContextAsync();
-        }
+        var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
+        var actionContext = await httpContext.GetActionContextAsync();
 
         return GetViewContext(actionContext);
     }

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -16,7 +15,6 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
 {
     private readonly IMediaFileStore _mediaFileStore;
     private readonly ISiteService _siteService;
-    private readonly IActionContextAccessor _actionContextAccessor;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUrlHelperFactory _urlHelperFactory;
     private readonly IContentManager _contentManager;
@@ -24,7 +22,6 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
     public SeoMetaPartHandler(
         IMediaFileStore mediaFileStore,
         ISiteService siteService,
-        IActionContextAccessor actionContextAccessor,
         IHttpContextAccessor httpContextAccessor,
         IUrlHelperFactory urlHelperFactory,
         IContentManager contentManager
@@ -32,7 +29,6 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
     {
         _mediaFileStore = mediaFileStore;
         _siteService = siteService;
-        _actionContextAccessor = actionContextAccessor;
         _httpContextAccessor = httpContextAccessor;
         _urlHelperFactory = urlHelperFactory;
         _contentManager = contentManager;
@@ -68,9 +64,7 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            var actionContext = _actionContextAccessor.ActionContext;
-
-            actionContext ??= await _httpContextAccessor.GetActionContextAsync();
+            var actionContext = await _httpContextAccessor.HttpContext.GetActionContextAsync();
 
             var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
 
