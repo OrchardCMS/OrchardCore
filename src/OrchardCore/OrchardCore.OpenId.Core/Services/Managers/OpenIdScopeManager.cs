@@ -13,8 +13,8 @@ public class OpenIdScopeManager<TScope> : OpenIddictScopeManager<TScope>, IOpenI
         IOpenIddictScopeCache<TScope> cache,
         ILogger<OpenIddictScopeManager<TScope>> logger,
         IOptionsMonitor<OpenIddictCoreOptions> options,
-        IOpenIddictScopeStoreResolver resolver)
-        : base(cache, logger, options, resolver)
+        IOpenIddictScopeStore<TScope> store)
+        : base(cache, logger, options, store)
     {
     }
 
