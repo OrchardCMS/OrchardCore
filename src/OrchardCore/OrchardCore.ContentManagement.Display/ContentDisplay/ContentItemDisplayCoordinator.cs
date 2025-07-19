@@ -164,7 +164,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                 contentPartShape.Properties[partTypeName] = part.Content;
                 contentPartShape.Properties["ContentItem"] = part.ContentItem;
 
-                context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater)
+                context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater, context.HttpContext)
                 {
                     // With a new display context we have the default FindPlacementDelegate that returns null, so we reuse the delegate from the temp context.
                     FindPlacement = tempContext.FindPlacement,
