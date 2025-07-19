@@ -1,11 +1,10 @@
 using System.Text.Json.Serialization;
+using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentFields.Settings;
 
-public class MultiTextFieldSettings
+public class MultiTextFieldSettings : FieldSettings
 {
-    public string Hint { get; set; }
-    public bool Required { get; set; }
     public MultiTextFieldValueOption[] Options { get; set; } = [];
 }
 
