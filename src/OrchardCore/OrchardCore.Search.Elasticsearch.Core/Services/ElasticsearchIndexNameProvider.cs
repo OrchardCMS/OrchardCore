@@ -32,7 +32,7 @@ public sealed class ElasticsearchIndexNameProvider : IIndexNameProvider
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(indexName);
 
-        return $"{GetIndexPrefix()}{_separator}{indexName}";
+        return $"{GetIndexPrefix()}{_separator}{ToSafeIndexName(indexName)}";
     }
 
     private string GetIndexPrefix()

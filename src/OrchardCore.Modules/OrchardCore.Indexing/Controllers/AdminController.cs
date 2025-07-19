@@ -196,9 +196,16 @@ public sealed class AdminController : Controller
         {
             foreach (var error in validate.Errors)
             {
-                foreach (var memberName in error.MemberNames)
+                if (error.MemberNames.Any())
                 {
-                    ModelState.TryAddModelError(memberName, error.ErrorMessage);
+                    foreach (var memberName in error.MemberNames)
+                    {
+                        ModelState.TryAddModelError(memberName, error.ErrorMessage);
+                    }
+                }
+                else
+                {
+                    ModelState.TryAddModelError(string.Empty, error.ErrorMessage);
                 }
             }
         }
@@ -290,9 +297,16 @@ public sealed class AdminController : Controller
         {
             foreach (var error in validate.Errors)
             {
-                foreach (var memberName in error.MemberNames)
+                if (error.MemberNames.Any())
                 {
-                    ModelState.TryAddModelError(memberName, error.ErrorMessage);
+                    foreach (var memberName in error.MemberNames)
+                    {
+                        ModelState.TryAddModelError(memberName, error.ErrorMessage);
+                    }
+                }
+                else
+                {
+                    ModelState.TryAddModelError(string.Empty, error.ErrorMessage);
                 }
             }
         }
@@ -438,10 +452,11 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        await _indexProfileManager.ResetAsync(indexProfile);
+        await _indexProfileManager.UpdateAsync(indexProfile);
+
         if (await indexManager.RebuildAsync(indexProfile))
         {
-            await _indexProfileManager.ResetAsync(indexProfile);
-            await _indexProfileManager.UpdateAsync(indexProfile);
             await _indexProfileManager.SynchronizeAsync(indexProfile);
 
             await _notifier.SuccessAsync(H["An index has been rebuilt successfully. The synchronizing process was triggered in the background."]);
