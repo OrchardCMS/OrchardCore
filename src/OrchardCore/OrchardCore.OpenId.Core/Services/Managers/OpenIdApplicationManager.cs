@@ -18,8 +18,8 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
         IOpenIddictApplicationCache<TApplication> cache,
         ILogger<OpenIdApplicationManager<TApplication>> logger,
         IOptionsMonitor<OpenIddictCoreOptions> options,
-        IOpenIddictApplicationStoreResolver resolver)
-        : base(cache, logger, options, resolver)
+        IOpenIddictApplicationStore<TApplication> store)
+        : base(cache, logger, options, store)
     {
     }
 

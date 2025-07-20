@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
-    <VersionPrefix>2.1.7</VersionPrefix>
+    <VersionPrefix>2.2.0</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
