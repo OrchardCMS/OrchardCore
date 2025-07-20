@@ -35,6 +35,7 @@ namespace OrchardCore.Tests.ContentDefinition;
             var contentDefinitionService = new ContentDefinitionService(
                 serviceProvider.GetService<IContentDefinitionManager>(),
                 serviceProvider.GetServices<IContentDefinitionEventHandler>(),
+                serviceProvider.GetServices<IContentDefinitionHandler>(),
                 Array.Empty<ContentPart>(),
                 Array.Empty<ContentField>(),
                 serviceProvider.GetService<IOptions<ContentOptions>>(),
@@ -48,13 +49,10 @@ namespace OrchardCore.Tests.ContentDefinition;
             // Assert
             Assert.True(oldEventHandler.ContentTypeCreatedCalled, "Old event handler should have been called");
             Assert.True(newHandler.ContentTypeCreatedCalled, "New handler should have been called");
-            Assert.True(mockContentDefinitionManager.TriggerContentTypeCreatedCalled, "ContentDefinitionManager trigger should have been called");
         }
 
         private class MockContentDefinitionManager : IContentDefinitionManager
         {
-            public bool TriggerContentTypeCreatedCalled { get; private set; }
-            
             public Task<IEnumerable<ContentTypeDefinition>> LoadTypeDefinitionsAsync() => Task.FromResult(Enumerable.Empty<ContentTypeDefinition>());
             public Task<IEnumerable<ContentTypeDefinition>> ListTypeDefinitionsAsync() => Task.FromResult(Enumerable.Empty<ContentTypeDefinition>());
             public Task<IEnumerable<ContentPartDefinition>> LoadPartDefinitionsAsync() => Task.FromResult(Enumerable.Empty<ContentPartDefinition>());
@@ -68,28 +66,6 @@ namespace OrchardCore.Tests.ContentDefinition;
             public Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition) => Task.CompletedTask;
             public Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition) => Task.CompletedTask;
             public Task<string> GetIdentifierAsync() => Task.FromResult("test-identifier");
-
-            public void TriggerContentTypeCreated(ContentTypeCreatedContext context)
-            {
-                TriggerContentTypeCreatedCalled = true;
-            }
-
-            public void TriggerContentTypeUpdated(ContentTypeUpdatedContext context) { }
-            public void TriggerContentTypeRemoved(ContentTypeRemovedContext context) { }
-            public void TriggerContentTypeImporting(ContentTypeImportingContext context) { }
-            public void TriggerContentTypeImported(ContentTypeImportedContext context) { }
-            public void TriggerContentPartCreated(ContentPartCreatedContext context) { }
-            public void TriggerContentPartUpdated(ContentPartUpdatedContext context) { }
-            public void TriggerContentPartRemoved(ContentPartRemovedContext context) { }
-            public void TriggerContentPartAttached(ContentPartAttachedContext context) { }
-            public void TriggerContentPartDetached(ContentPartDetachedContext context) { }
-            public void TriggerContentPartImporting(ContentPartImportingContext context) { }
-            public void TriggerContentPartImported(ContentPartImportedContext context) { }
-            public void TriggerContentTypePartUpdated(ContentTypePartUpdatedContext context) { }
-            public void TriggerContentFieldAttached(ContentFieldAttachedContext context) { }
-            public void TriggerContentFieldUpdated(ContentFieldUpdatedContext context) { }
-            public void TriggerContentFieldDetached(ContentFieldDetachedContext context) { }
-            public void TriggerContentPartFieldUpdated(ContentPartFieldUpdatedContext context) { }
         }
 
         private class MockContentDefinitionEventHandler : IContentDefinitionEventHandler
@@ -119,7 +95,7 @@ namespace OrchardCore.Tests.ContentDefinition;
             public void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context) { }
         }
 
-        private class MockContentDefinitionHandler : IContentDefinitionHandler, IContentTypeEventHandler
+        private class MockContentDefinitionHandler : IContentDefinitionHandler
         {
             public bool ContentTypeCreatedCalled { get; private set; }
 

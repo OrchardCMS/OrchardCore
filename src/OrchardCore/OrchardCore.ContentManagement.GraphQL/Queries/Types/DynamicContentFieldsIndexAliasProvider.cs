@@ -4,7 +4,7 @@ using OrchardCore.ContentTypes.Events;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionHandler, IContentTypeEventHandler, IContentPartEventHandler, IContentFieldEventHandler
+public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionHandler
 {
     private static readonly string _cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
 

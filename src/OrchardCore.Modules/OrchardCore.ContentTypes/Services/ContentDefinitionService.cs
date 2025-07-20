@@ -644,9 +644,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentTypeCreated(ContentTypeCreatedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentTypeEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
@@ -654,9 +653,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentTypeUpdated(ContentTypeUpdatedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentTypeEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
@@ -664,9 +662,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentTypeRemoved(ContentTypeRemovedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentTypeEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
@@ -674,9 +671,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentPartCreated(ContentPartCreatedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentPartEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
@@ -684,9 +680,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentPartUpdated(ContentPartUpdatedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentPartEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
@@ -694,9 +689,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentPartRemoved(ContentPartRemovedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentPartEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
@@ -704,9 +698,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentPartAttached(ContentPartAttachedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentPartEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
@@ -714,9 +707,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentPartDetached(ContentPartDetachedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentPartEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
@@ -724,9 +716,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentTypePartUpdated(ContentTypePartUpdatedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentFieldEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
@@ -734,9 +725,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentFieldAttached(ContentFieldAttachedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentFieldEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
@@ -744,9 +734,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentFieldDetached(ContentFieldDetachedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentFieldEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
@@ -754,9 +743,8 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
     {
-        // Trigger event on handlers that implement the new optional event interfaces
-        _contentDefinitionHandlers.OfType<IContentFieldEventHandler>()
-            .Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
+        // Trigger event on unified interface
+        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
         
         // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
