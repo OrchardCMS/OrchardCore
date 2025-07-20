@@ -20,13 +20,14 @@ namespace OrchardCore.Tests.ContentDefinition;
             // Arrange
             var services = new ServiceCollection();
             
-            var mockContentDefinitionManager = new MockContentDefinitionManager();
             var oldEventHandler = new MockContentDefinitionEventHandler();
             var newHandler = new MockContentDefinitionHandler();
+            var mockContentDefinitionManager = new MockContentDefinitionManager(
+                new[] { oldEventHandler }, 
+                new[] { newHandler }
+            );
             
             services.AddSingleton<IContentDefinitionManager>(mockContentDefinitionManager);
-            services.AddSingleton<IContentDefinitionEventHandler>(oldEventHandler);
-            services.AddSingleton<IContentDefinitionHandler>(newHandler);
             services.AddSingleton<ILogger<IContentDefinitionService>>(NullLogger<IContentDefinitionService>.Instance);
             services.AddSingleton<IStringLocalizer<ContentDefinitionService>>(new MockStringLocalizer());
             services.AddSingleton<IOptions<ContentOptions>>(Options.Create(new ContentOptions()));
@@ -34,8 +35,6 @@ namespace OrchardCore.Tests.ContentDefinition;
             var serviceProvider = services.BuildServiceProvider();
             var contentDefinitionService = new ContentDefinitionService(
                 serviceProvider.GetService<IContentDefinitionManager>(),
-                serviceProvider.GetServices<IContentDefinitionEventHandler>(),
-                serviceProvider.GetServices<IContentDefinitionHandler>(),
                 Array.Empty<ContentPart>(),
                 Array.Empty<ContentField>(),
                 serviceProvider.GetService<IOptions<ContentOptions>>(),
@@ -53,6 +52,21 @@ namespace OrchardCore.Tests.ContentDefinition;
 
         private class MockContentDefinitionManager : IContentDefinitionManager
         {
+            private readonly IEnumerable<IContentDefinitionEventHandler> _eventHandlers;
+            private readonly IEnumerable<IContentDefinitionHandler> _handlers;
+
+            public MockContentDefinitionManager()
+            {
+                _eventHandlers = new List<IContentDefinitionEventHandler>();
+                _handlers = new List<IContentDefinitionHandler>();
+            }
+
+            public MockContentDefinitionManager(IEnumerable<IContentDefinitionEventHandler> eventHandlers, IEnumerable<IContentDefinitionHandler> handlers)
+            {
+                _eventHandlers = eventHandlers;
+                _handlers = handlers;
+            }
+
             public Task<IEnumerable<ContentTypeDefinition>> LoadTypeDefinitionsAsync() => Task.FromResult(Enumerable.Empty<ContentTypeDefinition>());
             public Task<IEnumerable<ContentTypeDefinition>> ListTypeDefinitionsAsync() => Task.FromResult(Enumerable.Empty<ContentTypeDefinition>());
             public Task<IEnumerable<ContentPartDefinition>> LoadPartDefinitionsAsync() => Task.FromResult(Enumerable.Empty<ContentPartDefinition>());
@@ -66,6 +80,150 @@ namespace OrchardCore.Tests.ContentDefinition;
             public Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition) => Task.CompletedTask;
             public Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition) => Task.CompletedTask;
             public Task<string> GetIdentifierAsync() => Task.FromResult("test-identifier");
+
+            public void TriggerContentTypeCreated(ContentTypeCreatedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentTypeCreated(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentTypeCreated(context);
+                }
+            }
+
+            public void TriggerContentTypeUpdated(ContentTypeUpdatedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentTypeUpdated(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentTypeUpdated(context);
+                }
+            }
+
+            public void TriggerContentTypeRemoved(ContentTypeRemovedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentTypeRemoved(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentTypeRemoved(context);
+                }
+            }
+
+            public void TriggerContentPartCreated(ContentPartCreatedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentPartCreated(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentPartCreated(context);
+                }
+            }
+
+            public void TriggerContentPartUpdated(ContentPartUpdatedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentPartUpdated(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentPartUpdated(context);
+                }
+            }
+
+            public void TriggerContentPartRemoved(ContentPartRemovedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentPartRemoved(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentPartRemoved(context);
+                }
+            }
+
+            public void TriggerContentPartAttached(ContentPartAttachedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentPartAttached(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentPartAttached(context);
+                }
+            }
+
+            public void TriggerContentPartDetached(ContentPartDetachedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentPartDetached(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentPartDetached(context);
+                }
+            }
+
+            public void TriggerContentTypePartUpdated(ContentTypePartUpdatedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentTypePartUpdated(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentTypePartUpdated(context);
+                }
+            }
+
+            public void TriggerContentFieldAttached(ContentFieldAttachedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentFieldAttached(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentFieldAttached(context);
+                }
+            }
+
+            public void TriggerContentFieldDetached(ContentFieldDetachedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentFieldDetached(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentFieldDetached(context);
+                }
+            }
+
+            public void TriggerContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
+            {
+                foreach (var handler in _handlers)
+                {
+                    handler.ContentPartFieldUpdated(context);
+                }
+                foreach (var eventHandler in _eventHandlers)
+                {
+                    eventHandler.ContentPartFieldUpdated(context);
+                }
+            }
         }
 
         private class MockContentDefinitionEventHandler : IContentDefinitionEventHandler
