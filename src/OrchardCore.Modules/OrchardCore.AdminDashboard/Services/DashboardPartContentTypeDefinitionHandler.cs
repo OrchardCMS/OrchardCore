@@ -93,8 +93,4 @@ public sealed class DashboardPartContentTypeDefinitionHandler : ContentDefinitio
             },
         };
     }
-
-    public override void ContentPartFieldBuilding(ContentPartFieldBuildingContext context)
-    {
-    }
 }

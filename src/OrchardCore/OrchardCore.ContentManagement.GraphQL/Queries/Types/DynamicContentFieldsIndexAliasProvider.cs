@@ -131,12 +131,4 @@ public sealed class DynamicContentFieldsIndexAliasProvider : ContentDefinitionHa
 
     public override void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
         => InvalidateInternal();
-
-    public override void ContentTypeImporting(ContentTypeImportingContext context)
-    {
-    }
-
-    public override void ContentPartImporting(ContentPartImportingContext context)
-    {
-    }
 }
