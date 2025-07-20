@@ -19,6 +19,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
+    private readonly IEnumerable<IContentDefinitionHandler> _contentDefinitionHandlers;
     private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
@@ -26,6 +27,7 @@ public class ContentDefinitionService : IContentDefinitionService
     public ContentDefinitionService(
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers,
+            IEnumerable<IContentDefinitionHandler> contentDefinitionHandlers,
             IEnumerable<ContentPart> contentParts,
             IEnumerable<ContentField> contentFields,
             IOptions<ContentOptions> contentOptions,
@@ -34,6 +36,8 @@ public class ContentDefinitionService : IContentDefinitionService
     {
         _contentDefinitionManager = contentDefinitionManager;
         _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
+        _contentDefinitionHandlers = contentDefinitionHandlers;
+        _logger = logger;
 
         // Log deprecation warning if any IContentDefinitionEventHandler implementations are registered
         if (contentDefinitionEventHandlers.Any())
@@ -59,7 +63,6 @@ public class ContentDefinitionService : IContentDefinitionService
         _contentFieldTypes = contentFields.Select(cf => cf.GetType())
             .Union(contentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type));
 
-        _logger = logger;
         S = stringLocalizer;
     }
 
@@ -641,73 +644,121 @@ public class ContentDefinitionService : IContentDefinitionService
     
     private void TriggerContentTypeCreated(ContentTypeCreatedContext context)
     {
-        _contentDefinitionManager.TriggerContentTypeCreated(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentTypeEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
     }
     
     private void TriggerContentTypeUpdated(ContentTypeUpdatedContext context)
     {
-        TriggerContentTypeUpdated(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentTypeEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
     }
     
     private void TriggerContentTypeRemoved(ContentTypeRemovedContext context)
     {
-        _contentDefinitionManager.TriggerContentTypeRemoved(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentTypeEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
     }
     
     private void TriggerContentPartCreated(ContentPartCreatedContext context)
     {
-        TriggerContentPartCreated(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentPartEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
     }
     
     private void TriggerContentPartUpdated(ContentPartUpdatedContext context)
     {
-        _contentDefinitionManager.TriggerContentPartUpdated(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentPartEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
     }
     
     private void TriggerContentPartRemoved(ContentPartRemovedContext context)
     {
-        TriggerContentPartRemoved(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentPartEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
     }
     
     private void TriggerContentPartAttached(ContentPartAttachedContext context)
     {
-        TriggerContentPartAttached(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentPartEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
     }
     
     private void TriggerContentPartDetached(ContentPartDetachedContext context)
     {
-        TriggerContentPartDetached(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentPartEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
     }
     
     private void TriggerContentTypePartUpdated(ContentTypePartUpdatedContext context)
     {
-        TriggerContentTypePartUpdated(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentFieldEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
     }
     
     private void TriggerContentFieldAttached(ContentFieldAttachedContext context)
     {
-        _contentDefinitionManager.TriggerContentFieldAttached(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentFieldEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
     }
     
     private void TriggerContentFieldDetached(ContentFieldDetachedContext context)
     {
-        TriggerContentFieldDetached(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentFieldEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
     }
     
     private void TriggerContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
     {
-        TriggerContentPartFieldUpdated(context);
+        // Trigger event on handlers that implement the new optional event interfaces
+        _contentDefinitionHandlers.OfType<IContentFieldEventHandler>()
+            .Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
     }
 }

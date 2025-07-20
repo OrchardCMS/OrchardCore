@@ -11,8 +11,7 @@ using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Modules;
 using Xunit;
 
-namespace OrchardCore.Tests.ContentDefinition
-{
+namespace OrchardCore.Tests.ContentDefinition;
     public class ContentDefinitionEventMigrationTests
     {
         [Fact]
@@ -120,7 +119,7 @@ namespace OrchardCore.Tests.ContentDefinition
             public void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context) { }
         }
 
-        private class MockContentDefinitionHandler : IContentDefinitionHandler
+        private class MockContentDefinitionHandler : IContentDefinitionHandler, IContentTypeEventHandler
         {
             public bool ContentTypeCreatedCalled { get; private set; }
 
@@ -138,18 +137,6 @@ namespace OrchardCore.Tests.ContentDefinition
             public void ContentTypeRemoved(ContentTypeRemovedContext context) { }
             public void ContentTypeImporting(ContentTypeImportingContext context) { }
             public void ContentTypeImported(ContentTypeImportedContext context) { }
-            public void ContentPartCreated(ContentPartCreatedContext context) { }
-            public void ContentPartUpdated(ContentPartUpdatedContext context) { }
-            public void ContentPartRemoved(ContentPartRemovedContext context) { }
-            public void ContentPartAttached(ContentPartAttachedContext context) { }
-            public void ContentPartDetached(ContentPartDetachedContext context) { }
-            public void ContentPartImporting(ContentPartImportingContext context) { }
-            public void ContentPartImported(ContentPartImportedContext context) { }
-            public void ContentTypePartUpdated(ContentTypePartUpdatedContext context) { }
-            public void ContentFieldAttached(ContentFieldAttachedContext context) { }
-            public void ContentFieldUpdated(ContentFieldUpdatedContext context) { }
-            public void ContentFieldDetached(ContentFieldDetachedContext context) { }
-            public void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context) { }
         }
 
         private class MockStringLocalizer : IStringLocalizer<ContentDefinitionService>
@@ -159,4 +146,3 @@ namespace OrchardCore.Tests.ContentDefinition
             public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => Enumerable.Empty<LocalizedString>();
         }
     }
-}
