@@ -187,6 +187,159 @@ public class ContentDefinitionManager : IContentDefinitionManager
     public async Task<string> GetIdentifierAsync()
         => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
 
+    /// <summary>
+    /// Triggers the ContentTypeCreated event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content type that was created.</param>
+    public void TriggerContentTypeCreated(ContentTypeCreatedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentTypeUpdated event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content type that was updated.</param>
+    public void TriggerContentTypeUpdated(ContentTypeUpdatedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentTypeRemoved event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content type that was removed.</param>
+    public void TriggerContentTypeRemoved(ContentTypeRemovedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentTypeImporting event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content type being imported.</param>
+    public void TriggerContentTypeImporting(ContentTypeImportingContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentTypeImporting(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentTypeImported event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content type that was imported.</param>
+    public void TriggerContentTypeImported(ContentTypeImportedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentTypeImported(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentPartCreated event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content part that was created.</param>
+    public void TriggerContentPartCreated(ContentPartCreatedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentPartUpdated event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content part that was updated.</param>
+    public void TriggerContentPartUpdated(ContentPartUpdatedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentPartRemoved event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content part that was removed.</param>
+    public void TriggerContentPartRemoved(ContentPartRemovedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentPartAttached event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content part that was attached.</param>
+    public void TriggerContentPartAttached(ContentPartAttachedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentPartDetached event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content part that was detached.</param>
+    public void TriggerContentPartDetached(ContentPartDetachedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentPartImporting event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content part being imported.</param>
+    public void TriggerContentPartImporting(ContentPartImportingContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentPartImporting(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentPartImported event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content part that was imported.</param>
+    public void TriggerContentPartImported(ContentPartImportedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentPartImported(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentTypePartUpdated event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content type part that was updated.</param>
+    public void TriggerContentTypePartUpdated(ContentTypePartUpdatedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentFieldAttached event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content field that was attached.</param>
+    public void TriggerContentFieldAttached(ContentFieldAttachedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentFieldUpdated event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content field that was updated.</param>
+    public void TriggerContentFieldUpdated(ContentFieldUpdatedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentFieldUpdated(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentFieldDetached event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content field that was detached.</param>
+    public void TriggerContentFieldDetached(ContentFieldDetachedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
+    }
+
+    /// <summary>
+    /// Triggers the ContentPartFieldUpdated event through registered handlers.
+    /// </summary>
+    /// <param name="context">The context for the content part field that was updated.</param>
+    public void TriggerContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
+    {
+        _handlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
+    }
+
     private ContentTypeDefinition LoadTypeDefinition(ContentDefinitionRecord document, string name) =>
         _scopedTypeDefinitions.TryGetValue(name, out var typeDefinition)
         ? typeDefinition

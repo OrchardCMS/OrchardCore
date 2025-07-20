@@ -4,7 +4,7 @@ using OrchardCore.ContentTypes.Events;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionEventHandler
+public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionHandler
 {
     private static readonly string _cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
 
@@ -86,6 +86,14 @@ public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider
 
     private void InvalidateInternal()
         => _memoryCache.Remove(_cacheKey);
+
+    // IContentDefinitionHandler building methods - not needed for this implementation
+    public void ContentTypeBuilding(ContentTypeBuildingContext context) { }
+    public void ContentPartBuilding(ContentPartBuildingContext context) { }
+    public void ContentTypePartBuilding(ContentTypePartBuildingContext context) { }
+    public void ContentPartFieldBuilding(ContentPartFieldBuildingContext context) { }
+
+    // Event handler methods for cache invalidation
 
     public void ContentFieldAttached(ContentFieldAttachedContext context)
         => InvalidateInternal();

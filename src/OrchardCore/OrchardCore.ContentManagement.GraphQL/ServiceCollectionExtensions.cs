@@ -36,7 +36,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<DynamicContentFieldsIndexAliasProvider>()
             .AddScoped<IIndexAliasProvider>(sp => sp.GetService<DynamicContentFieldsIndexAliasProvider>())
-            .AddScoped<IContentDefinitionEventHandler>(sp => sp.GetService<DynamicContentFieldsIndexAliasProvider>());
+            .AddScoped<IContentDefinitionHandler>(sp => sp.GetService<DynamicContentFieldsIndexAliasProvider>())
+            .AddScoped<IContentDefinitionEventHandler>(sp => sp.GetService<DynamicContentFieldsIndexAliasProvider>()); // Backward compatibility
 
         services.AddSingleton<IIndexPropertyProvider, DefaultDynamicIndexPropertyProvider>();
         services.AddScoped<IContentTypeBuilder, DynamicContentTypeWhereInputBuilder>();

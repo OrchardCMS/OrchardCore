@@ -35,6 +35,12 @@ public class ContentDefinitionService : IContentDefinitionService
         _contentDefinitionManager = contentDefinitionManager;
         _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
 
+        // Log deprecation warning if any IContentDefinitionEventHandler implementations are registered
+        if (contentDefinitionEventHandlers.Any())
+        {
+            logger.LogWarning("IContentDefinitionEventHandler is obsolete. Please migrate to IContentDefinitionHandler which is now used by ContentDefinitionManager.");
+        }
+
         foreach (var element in contentParts.Select(x => x.GetType()))
         {
             logger.LogWarning("The content part '{ContentPart}' should not be registered in DI. Use AddContentPart<T> instead.", element);
@@ -132,7 +138,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
+        TriggerContentTypeCreated(context);
 
         return contentTypeDefinition;
     }
@@ -173,7 +179,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentTypeDefinition = typeDefinition,
         };
 
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
+        TriggerContentTypeRemoved(context);
     }
 
     public async Task AddPartToTypeAsync(string partName, string typeName)
@@ -185,7 +191,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = partName,
         };
 
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
+        TriggerContentPartAttached(context);
     }
 
     public async Task AddReusablePartToTypeAsync(string name, string displayName, string description, string partName, string typeName)
@@ -204,7 +210,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = partName,
         };
 
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
+        TriggerContentPartAttached(context);
     }
 
     public async Task RemovePartFromTypeAsync(string partName, string typeName)
@@ -238,7 +244,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = partName,
         };
 
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
+        TriggerContentPartDetached(context);
     }
 
     public async Task<IEnumerable<EditPartViewModel>> LoadPartsAsync(bool metadataPartsOnly)
@@ -358,7 +364,7 @@ public class ContentDefinitionService : IContentDefinitionService
                 ContentPartDefinition = partDefinition,
             };
 
-            _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
+            TriggerContentPartCreated(context);
 
             return new EditPartViewModel(partDefinition);
         }
@@ -395,7 +401,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartDefinition = partDefinition,
         };
 
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
+        TriggerContentPartRemoved(context);
     }
 
     public Task<IEnumerable<Type>> GetFieldsAsync()
@@ -425,13 +431,13 @@ public class ContentDefinitionService : IContentDefinitionService
         await _contentDefinitionManager.AlterPartDefinitionAsync(partName,
             partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName)));
 
-        _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentFieldAttached(context), new ContentFieldAttachedContext
+        TriggerContentFieldAttached(new ContentFieldAttachedContext
         {
             ContentPartName = partName,
             ContentFieldTypeName = fieldTypeName,
             ContentFieldName = fieldName,
             ContentFieldDisplayName = displayName,
-        }, _logger);
+        });
     }
 
     public async Task RemoveFieldFromPartAsync(string fieldName, string partName)
@@ -458,7 +464,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentFieldName = fieldName,
         };
 
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
+        TriggerContentFieldDetached(context);
     }
 
     public async Task AlterFieldAsync(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)
@@ -479,7 +485,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentFieldName = fieldViewModel.Name,
         };
 
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
+        TriggerContentPartFieldUpdated(context);
     }
 
     public async Task AlterTypePartAsync(EditTypePartViewModel typePartViewModel)
@@ -503,7 +509,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = typePartViewModel.Name,
         };
 
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
+        TriggerContentTypePartUpdated(context);
     }
 
     public async Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames)
@@ -536,7 +542,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentTypeDefinition = typeDefinition,
         };
 
-        _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentTypeUpdated(context), context, _logger);
+        TriggerContentTypeUpdated(context);
     }
 
     public async Task AlterPartFieldsOrderAsync(ContentPartDefinition partDefinition, string[] fieldNames)
@@ -558,10 +564,10 @@ public class ContentDefinitionService : IContentDefinitionService
             }
         });
 
-        _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartUpdated(context), new ContentPartUpdatedContext
+        TriggerContentPartUpdated(new ContentPartUpdatedContext
         {
             ContentPartDefinition = partDefinition,
-        }, _logger);
+        });
     }
 
     public async Task<string> GenerateContentTypeNameFromDisplayNameAsync(string displayName)
@@ -629,5 +635,79 @@ public class ContentDefinitionService : IContentDefinitionService
         }
 
         return string.Format("{0}-{1}", name, version);
+    }
+
+    // Helper methods to trigger events via both new and old patterns for backward compatibility
+    
+    private void TriggerContentTypeCreated(ContentTypeCreatedContext context)
+    {
+        _contentDefinitionManager.TriggerContentTypeCreated(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
+    }
+    
+    private void TriggerContentTypeUpdated(ContentTypeUpdatedContext context)
+    {
+        TriggerContentTypeUpdated(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
+    }
+    
+    private void TriggerContentTypeRemoved(ContentTypeRemovedContext context)
+    {
+        _contentDefinitionManager.TriggerContentTypeRemoved(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
+    }
+    
+    private void TriggerContentPartCreated(ContentPartCreatedContext context)
+    {
+        TriggerContentPartCreated(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
+    }
+    
+    private void TriggerContentPartUpdated(ContentPartUpdatedContext context)
+    {
+        _contentDefinitionManager.TriggerContentPartUpdated(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
+    }
+    
+    private void TriggerContentPartRemoved(ContentPartRemovedContext context)
+    {
+        TriggerContentPartRemoved(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
+    }
+    
+    private void TriggerContentPartAttached(ContentPartAttachedContext context)
+    {
+        TriggerContentPartAttached(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
+    }
+    
+    private void TriggerContentPartDetached(ContentPartDetachedContext context)
+    {
+        TriggerContentPartDetached(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
+    }
+    
+    private void TriggerContentTypePartUpdated(ContentTypePartUpdatedContext context)
+    {
+        TriggerContentTypePartUpdated(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
+    }
+    
+    private void TriggerContentFieldAttached(ContentFieldAttachedContext context)
+    {
+        _contentDefinitionManager.TriggerContentFieldAttached(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
+    }
+    
+    private void TriggerContentFieldDetached(ContentFieldDetachedContext context)
+    {
+        TriggerContentFieldDetached(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
+    }
+    
+    private void TriggerContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
+    {
+        TriggerContentPartFieldUpdated(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
     }
 }
