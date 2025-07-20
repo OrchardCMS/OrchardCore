@@ -144,7 +144,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
                 ContentTypeDefinition = typeDefinition,
             };
 
-            _handlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
+            await _handlers.InvokeAsync((handler, ctx) => handler.ContentTypeRemovedAsync(ctx), context, _logger);
         }
     }
 
@@ -182,7 +182,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
                 ContentPartDefinition = partDefinition,
             };
 
-            _handlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
+            await _handlers.InvokeAsync((handler, ctx) => handler.ContentPartRemovedAsync(ctx), context, _logger);
         }
     }
 
@@ -205,7 +205,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
                 ContentTypeDefinition = contentTypeDefinition,
             };
 
-            _handlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
+            await _handlers.InvokeAsync((handler, ctx) => handler.ContentTypeCreatedAsync(ctx), context, _logger);
 
             return;
         }
@@ -215,7 +215,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        _handlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
+        await _handlers.InvokeAsync((handler, ctx) => handler.ContentTypeUpdatedAsync(ctx), context, _logger);
     }
 
     public async Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition)
@@ -237,7 +237,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
                 ContentPartDefinition = contentPartDefinition,
             };
 
-            _handlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
+            await _handlers.InvokeAsync((handler, ctx) => handler.ContentPartCreatedAsync(ctx), context, _logger);
 
             return;
         }
@@ -247,7 +247,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
             ContentPartDefinition = contentPartDefinition,
         };
 
-        _handlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);        
+        await _handlers.InvokeAsync((handler, ctx) => handler.ContentPartUpdatedAsync(ctx), context, _logger);        
     }
 
     public async Task<string> GetIdentifierAsync()

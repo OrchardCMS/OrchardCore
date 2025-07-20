@@ -268,6 +268,42 @@ public static class InvokeExtensions
         return results;
     }
 
+    /// <summary>
+    /// Safely invoke ValueTask methods by catching non fatal exceptions and logging them.
+    /// </summary>
+    public static async Task InvokeAsync<TEvents>(this IEnumerable<TEvents> events, Func<TEvents, ValueTask> dispatch, ILogger logger)
+    {
+        foreach (var sink in events)
+        {
+            try
+            {
+                await dispatch(sink);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Safely invoke ValueTask methods by catching non fatal exceptions and logging them.
+    /// </summary>
+    public static async Task InvokeAsync<TEvents, T1>(this IEnumerable<TEvents> events, Func<TEvents, T1, ValueTask> dispatch, T1 arg1, ILogger logger)
+    {
+        foreach (var sink in events)
+        {
+            try
+            {
+                await dispatch(sink, arg1);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+            }
+        }
+    }
+
     public static void HandleException(Exception ex, ILogger logger, string sourceType, string method)
     {
         if (IsLogged(ex))

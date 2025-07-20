@@ -35,108 +35,229 @@ public interface IContentDefinitionHandler
     /// <param name="context">The context for the content part field being built.</param>
     void ContentPartFieldBuilding(ContentPartFieldBuildingContext context);
 
-    // Content Definition Lifecycle Events
+    // Content Definition Lifecycle Events - Async Versions
+
+    /// <summary>
+    /// Asynchronously invoked when a content type is created.
+    /// </summary>
+    /// <param name="context">The context for the content type that was created.</param>
+    ValueTask ContentTypeCreatedAsync(ContentTypeCreatedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content type is updated.
+    /// </summary>
+    /// <param name="context">The context for the content type that was updated.</param>
+    ValueTask ContentTypeUpdatedAsync(ContentTypeUpdatedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content type is removed.
+    /// </summary>
+    /// <param name="context">The context for the content type that was removed.</param>
+    ValueTask ContentTypeRemovedAsync(ContentTypeRemovedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content type is being imported.
+    /// </summary>
+    /// <param name="context">The context for the content type being imported.</param>
+    ValueTask ContentTypeImportingAsync(ContentTypeImportingContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content type has been imported.
+    /// </summary>
+    /// <param name="context">The context for the content type that was imported.</param>
+    ValueTask ContentTypeImportedAsync(ContentTypeImportedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content part is created.
+    /// </summary>
+    /// <param name="context">The context for the content part that was created.</param>
+    ValueTask ContentPartCreatedAsync(ContentPartCreatedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content part is updated.
+    /// </summary>
+    /// <param name="context">The context for the content part that was updated.</param>
+    ValueTask ContentPartUpdatedAsync(ContentPartUpdatedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content part is removed.
+    /// </summary>
+    /// <param name="context">The context for the content part that was removed.</param>
+    ValueTask ContentPartRemovedAsync(ContentPartRemovedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content part is attached to a content type.
+    /// </summary>
+    /// <param name="context">The context for the content part that was attached.</param>
+    ValueTask ContentPartAttachedAsync(ContentPartAttachedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content part is detached from a content type.
+    /// </summary>
+    /// <param name="context">The context for the content part that was detached.</param>
+    ValueTask ContentPartDetachedAsync(ContentPartDetachedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content part is being imported.
+    /// </summary>
+    /// <param name="context">The context for the content part being imported.</param>
+    ValueTask ContentPartImportingAsync(ContentPartImportingContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content part has been imported.
+    /// </summary>
+    /// <param name="context">The context for the content part that was imported.</param>
+    ValueTask ContentPartImportedAsync(ContentPartImportedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content type part is updated.
+    /// </summary>
+    /// <param name="context">The context for the content type part that was updated.</param>
+    ValueTask ContentTypePartUpdatedAsync(ContentTypePartUpdatedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content field is attached.
+    /// </summary>
+    /// <param name="context">The context for the content field that was attached.</param>
+    ValueTask ContentFieldAttachedAsync(ContentFieldAttachedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content field is updated.
+    /// </summary>
+    /// <param name="context">The context for the content field that was updated.</param>
+    ValueTask ContentFieldUpdatedAsync(ContentFieldUpdatedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content field is detached.
+    /// </summary>
+    /// <param name="context">The context for the content field that was detached.</param>
+    ValueTask ContentFieldDetachedAsync(ContentFieldDetachedContext context) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Asynchronously invoked when a content part field is updated.
+    /// </summary>
+    /// <param name="context">The context for the content part field that was updated.</param>
+    ValueTask ContentPartFieldUpdatedAsync(ContentPartFieldUpdatedContext context) => ValueTask.CompletedTask;
+
+    // Content Definition Lifecycle Events - Obsolete Sync Versions
 
     /// <summary>
     /// Invoked when a content type is created.
     /// </summary>
     /// <param name="context">The context for the content type that was created.</param>
-    void ContentTypeCreated(ContentTypeCreatedContext context) { }
+    [Obsolete("Use ContentTypeCreatedAsync instead. This method will be removed in a future version.")]
+    void ContentTypeCreated(ContentTypeCreatedContext context) => ContentTypeCreatedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content type is updated.
     /// </summary>
     /// <param name="context">The context for the content type that was updated.</param>
-    void ContentTypeUpdated(ContentTypeUpdatedContext context) { }
+    [Obsolete("Use ContentTypeUpdatedAsync instead. This method will be removed in a future version.")]
+    void ContentTypeUpdated(ContentTypeUpdatedContext context) => ContentTypeUpdatedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content type is removed.
     /// </summary>
     /// <param name="context">The context for the content type that was removed.</param>
-    void ContentTypeRemoved(ContentTypeRemovedContext context) { }
+    [Obsolete("Use ContentTypeRemovedAsync instead. This method will be removed in a future version.")]
+    void ContentTypeRemoved(ContentTypeRemovedContext context) => ContentTypeRemovedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content type is being imported.
     /// </summary>
     /// <param name="context">The context for the content type being imported.</param>
-    void ContentTypeImporting(ContentTypeImportingContext context) { }
+    [Obsolete("Use ContentTypeImportingAsync instead. This method will be removed in a future version.")]
+    void ContentTypeImporting(ContentTypeImportingContext context) => ContentTypeImportingAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content type has been imported.
     /// </summary>
     /// <param name="context">The context for the content type that was imported.</param>
-    void ContentTypeImported(ContentTypeImportedContext context) { }
+    [Obsolete("Use ContentTypeImportedAsync instead. This method will be removed in a future version.")]
+    void ContentTypeImported(ContentTypeImportedContext context) => ContentTypeImportedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content part is created.
     /// </summary>
     /// <param name="context">The context for the content part that was created.</param>
-    void ContentPartCreated(ContentPartCreatedContext context) { }
+    [Obsolete("Use ContentPartCreatedAsync instead. This method will be removed in a future version.")]
+    void ContentPartCreated(ContentPartCreatedContext context) => ContentPartCreatedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content part is updated.
     /// </summary>
     /// <param name="context">The context for the content part that was updated.</param>
-    void ContentPartUpdated(ContentPartUpdatedContext context) { }
+    [Obsolete("Use ContentPartUpdatedAsync instead. This method will be removed in a future version.")]
+    void ContentPartUpdated(ContentPartUpdatedContext context) => ContentPartUpdatedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content part is removed.
     /// </summary>
     /// <param name="context">The context for the content part that was removed.</param>
-    void ContentPartRemoved(ContentPartRemovedContext context) { }
+    [Obsolete("Use ContentPartRemovedAsync instead. This method will be removed in a future version.")]
+    void ContentPartRemoved(ContentPartRemovedContext context) => ContentPartRemovedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content part is attached to a content type.
     /// </summary>
     /// <param name="context">The context for the content part that was attached.</param>
-    void ContentPartAttached(ContentPartAttachedContext context) { }
+    [Obsolete("Use ContentPartAttachedAsync instead. This method will be removed in a future version.")]
+    void ContentPartAttached(ContentPartAttachedContext context) => ContentPartAttachedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content part is detached from a content type.
     /// </summary>
     /// <param name="context">The context for the content part that was detached.</param>
-    void ContentPartDetached(ContentPartDetachedContext context) { }
+    [Obsolete("Use ContentPartDetachedAsync instead. This method will be removed in a future version.")]
+    void ContentPartDetached(ContentPartDetachedContext context) => ContentPartDetachedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content part is being imported.
     /// </summary>
     /// <param name="context">The context for the content part being imported.</param>
-    void ContentPartImporting(ContentPartImportingContext context) { }
+    [Obsolete("Use ContentPartImportingAsync instead. This method will be removed in a future version.")]
+    void ContentPartImporting(ContentPartImportingContext context) => ContentPartImportingAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content part has been imported.
     /// </summary>
     /// <param name="context">The context for the content part that was imported.</param>
-    void ContentPartImported(ContentPartImportedContext context) { }
+    [Obsolete("Use ContentPartImportedAsync instead. This method will be removed in a future version.")]
+    void ContentPartImported(ContentPartImportedContext context) => ContentPartImportedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content type part is updated.
     /// </summary>
     /// <param name="context">The context for the content type part that was updated.</param>
-    void ContentTypePartUpdated(ContentTypePartUpdatedContext context) { }
+    [Obsolete("Use ContentTypePartUpdatedAsync instead. This method will be removed in a future version.")]
+    void ContentTypePartUpdated(ContentTypePartUpdatedContext context) => ContentTypePartUpdatedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content field is attached.
     /// </summary>
     /// <param name="context">The context for the content field that was attached.</param>
-    void ContentFieldAttached(ContentFieldAttachedContext context) { }
+    [Obsolete("Use ContentFieldAttachedAsync instead. This method will be removed in a future version.")]
+    void ContentFieldAttached(ContentFieldAttachedContext context) => ContentFieldAttachedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content field is updated.
     /// </summary>
     /// <param name="context">The context for the content field that was updated.</param>
-    void ContentFieldUpdated(ContentFieldUpdatedContext context) { }
+    [Obsolete("Use ContentFieldUpdatedAsync instead. This method will be removed in a future version.")]
+    void ContentFieldUpdated(ContentFieldUpdatedContext context) => ContentFieldUpdatedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content field is detached.
     /// </summary>
     /// <param name="context">The context for the content field that was detached.</param>
-    void ContentFieldDetached(ContentFieldDetachedContext context) { }
+    [Obsolete("Use ContentFieldDetachedAsync instead. This method will be removed in a future version.")]
+    void ContentFieldDetached(ContentFieldDetachedContext context) => ContentFieldDetachedAsync(context).GetAwaiter().GetResult();
 
     /// <summary>
     /// Invoked when a content part field is updated.
     /// </summary>
     /// <param name="context">The context for the content part field that was updated.</param>
-    void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context) { }
+    [Obsolete("Use ContentPartFieldUpdatedAsync instead. This method will be removed in a future version.")]
+    void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context) => ContentPartFieldUpdatedAsync(context).GetAwaiter().GetResult();
 }
 
