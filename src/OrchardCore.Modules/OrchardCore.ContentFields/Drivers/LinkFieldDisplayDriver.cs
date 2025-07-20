@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -16,22 +15,19 @@ namespace OrchardCore.ContentFields.Drivers;
 
 public sealed class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField>
 {
-    private readonly IUrlHelperFactory _urlHelperFactory;
-    private readonly IActionContextAccessor _actionContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly HtmlEncoder _htmlencoder;
 
     internal readonly IStringLocalizer S;
 
     public LinkFieldDisplayDriver(
-        IUrlHelperFactory urlHelperFactory,
-        IActionContextAccessor actionContextAccessor,
+        IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<LinkFieldDisplayDriver> localizer,
         IHtmlSanitizerService htmlSanitizerService,
         HtmlEncoder htmlencoder)
     {
-        _urlHelperFactory = urlHelperFactory;
-        _actionContextAccessor = actionContextAccessor;
+        _httpContextAccessor = httpContextAccessor;
         S = localizer;
         _htmlSanitizerService = htmlSanitizerService;
         _htmlencoder = htmlencoder;
@@ -83,8 +79,9 @@ public sealed class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField
 
                 if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
                 {
-                    var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
-                    urlToValidate = urlHelper.Content(urlToValidate);
+                    // Replace ~ with the application's path base, similar to IUrlHelper.Content()
+                    var pathBase = _httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;
+                    urlToValidate = pathBase + urlToValidate[1..];
                 }
 
                 urlToValidate = urlToValidate.ToUriComponents();
