@@ -18,12 +18,14 @@ public class ContentDefinitionService : IContentDefinitionService
     private readonly IEnumerable<Type> _contentFieldTypes;
 
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
     private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
 
     public ContentDefinitionService(
             IContentDefinitionManager contentDefinitionManager,
+            IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers,
             IEnumerable<ContentPart> contentParts,
             IEnumerable<ContentField> contentFields,
             IOptions<ContentOptions> contentOptions,
@@ -31,7 +33,7 @@ public class ContentDefinitionService : IContentDefinitionService
             IStringLocalizer<ContentDefinitionService> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _logger = logger;
+        _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
 
         foreach (var element in contentParts.Select(x => x.GetType()))
         {
@@ -130,7 +132,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        _contentDefinitionManager.TriggerContentTypeCreated(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
 
         return contentTypeDefinition;
     }
@@ -171,7 +173,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentTypeDefinition = typeDefinition,
         };
 
-        _contentDefinitionManager.TriggerContentTypeRemoved(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
     }
 
     public async Task AddPartToTypeAsync(string partName, string typeName)
@@ -183,7 +185,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = partName,
         };
 
-        _contentDefinitionManager.TriggerContentPartAttached(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
     }
 
     public async Task AddReusablePartToTypeAsync(string name, string displayName, string description, string partName, string typeName)
@@ -202,7 +204,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = partName,
         };
 
-        _contentDefinitionManager.TriggerContentPartAttached(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
     }
 
     public async Task RemovePartFromTypeAsync(string partName, string typeName)
@@ -236,7 +238,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = partName,
         };
 
-        _contentDefinitionManager.TriggerContentPartDetached(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
     }
 
     public async Task<IEnumerable<EditPartViewModel>> LoadPartsAsync(bool metadataPartsOnly)
@@ -356,7 +358,7 @@ public class ContentDefinitionService : IContentDefinitionService
                 ContentPartDefinition = partDefinition,
             };
 
-            _contentDefinitionManager.TriggerContentPartCreated(context);
+            _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
 
             return new EditPartViewModel(partDefinition);
         }
@@ -393,7 +395,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartDefinition = partDefinition,
         };
 
-        _contentDefinitionManager.TriggerContentPartRemoved(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
     }
 
     public Task<IEnumerable<Type>> GetFieldsAsync()
@@ -423,13 +425,13 @@ public class ContentDefinitionService : IContentDefinitionService
         await _contentDefinitionManager.AlterPartDefinitionAsync(partName,
             partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName)));
 
-        _contentDefinitionManager.TriggerContentFieldAttached(new ContentFieldAttachedContext
+        _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentFieldAttached(context), new ContentFieldAttachedContext
         {
             ContentPartName = partName,
             ContentFieldTypeName = fieldTypeName,
             ContentFieldName = fieldName,
             ContentFieldDisplayName = displayName,
-        });
+        }, _logger);
     }
 
     public async Task RemoveFieldFromPartAsync(string fieldName, string partName)
@@ -456,7 +458,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentFieldName = fieldName,
         };
 
-        _contentDefinitionManager.TriggerContentFieldDetached(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
     }
 
     public async Task AlterFieldAsync(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)
@@ -477,7 +479,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentFieldName = fieldViewModel.Name,
         };
 
-        _contentDefinitionManager.TriggerContentPartFieldUpdated(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
     }
 
     public async Task AlterTypePartAsync(EditTypePartViewModel typePartViewModel)
@@ -501,7 +503,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = typePartViewModel.Name,
         };
 
-        _contentDefinitionManager.TriggerContentTypePartUpdated(context);
+        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
     }
 
     public async Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames)
@@ -534,7 +536,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentTypeDefinition = typeDefinition,
         };
 
-        _contentDefinitionManager.TriggerContentTypeUpdated(context);
+        _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentTypeUpdated(context), context, _logger);
     }
 
     public async Task AlterPartFieldsOrderAsync(ContentPartDefinition partDefinition, string[] fieldNames)
@@ -556,10 +558,10 @@ public class ContentDefinitionService : IContentDefinitionService
             }
         });
 
-        _contentDefinitionManager.TriggerContentPartUpdated(new ContentPartUpdatedContext
+        _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartUpdated(context), new ContentPartUpdatedContext
         {
             ContentPartDefinition = partDefinition,
-        });
+        }, _logger);
     }
 
     public async Task<string> GenerateContentTypeNameFromDisplayNameAsync(string displayName)
