@@ -141,13 +141,14 @@ public class ContentDefinitionManager : IContentDefinitionManager
             document.ContentTypeDefinitionRecords.Remove(record);
             await UpdateContentDefinitionRecordAsync(document);
 
-            // Trigger event on unified interface
+            // Trigger event on unified interface and obsolete interface for backward compatibility
             var context = new ContentTypeRemovedContext
             {
                 ContentTypeDefinition = typeDefinition,
             };
 
             _handlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
+            _eventHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
         }
     }
 
@@ -179,13 +180,14 @@ public class ContentDefinitionManager : IContentDefinitionManager
             document.ContentPartDefinitionRecords.Remove(record);
             await UpdateContentDefinitionRecordAsync(document);
 
-            // Trigger event on unified interface
+            // Trigger event on unified interface and obsolete interface for backward compatibility
             var context = new ContentPartRemovedContext
             {
                 ContentPartDefinition = partDefinition,
             };
 
             _handlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
+            _eventHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
         }
     }
 
@@ -200,7 +202,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
         await UpdateContentDefinitionRecordAsync(document);
 
-        // Trigger appropriate event on unified interface
+        // Trigger appropriate event on unified interface and obsolete interface for backward compatibility
         if (isNew)
         {
             var context = new ContentTypeCreatedContext
@@ -209,6 +211,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
             };
 
             _handlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
+            _eventHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
         }
         else
         {
@@ -218,6 +221,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
             };
 
             _handlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
+            _eventHandlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
         }
     }
 
@@ -232,7 +236,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
         await UpdateContentDefinitionRecordAsync(document);
 
-        // Trigger appropriate event on unified interface
+        // Trigger appropriate event on unified interface and obsolete interface for backward compatibility
         if (isNew)
         {
             var context = new ContentPartCreatedContext
@@ -241,6 +245,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
             };
 
             _handlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
+            _eventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
         }
         else
         {
@@ -250,6 +255,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
             };
 
             _handlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
+            _eventHandlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
         }
     }
 
