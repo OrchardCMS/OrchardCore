@@ -16,7 +16,6 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     private readonly IContentDefinitionStore _contentDefinitionStore;
     private readonly IEnumerable<IContentDefinitionHandler> _handlers;
-    private readonly IEnumerable<IContentDefinitionEventHandler> _eventHandlers;
     private readonly ILogger _logger;
     private readonly IMemoryCache _memoryCache;
 
@@ -29,13 +28,11 @@ public class ContentDefinitionManager : IContentDefinitionManager
     public ContentDefinitionManager(
         IContentDefinitionStore contentDefinitionStore,
         IEnumerable<IContentDefinitionHandler> handlers,
-        IEnumerable<IContentDefinitionEventHandler> eventHandlers,
         ILogger<ContentDefinitionManager> logger,
         IMemoryCache memoryCache)
     {
         _contentDefinitionStore = contentDefinitionStore;
         _handlers = handlers;
-        _eventHandlers = eventHandlers;
         _logger = logger;
         _memoryCache = memoryCache;
 
@@ -148,7 +145,6 @@ public class ContentDefinitionManager : IContentDefinitionManager
             };
 
             _handlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
-            _eventHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
         }
     }
 
@@ -187,7 +183,6 @@ public class ContentDefinitionManager : IContentDefinitionManager
             };
 
             _handlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
-            _eventHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
         }
     }
 
@@ -211,18 +206,16 @@ public class ContentDefinitionManager : IContentDefinitionManager
             };
 
             _handlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
-            _eventHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
-        }
-        else
-        {
-            var context = new ContentTypeUpdatedContext
-            {
-                ContentTypeDefinition = contentTypeDefinition,
-            };
 
-            _handlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
-            _eventHandlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
+            return;
         }
+
+        var context = new ContentTypeUpdatedContext
+        {
+            ContentTypeDefinition = contentTypeDefinition,
+        };
+
+        _handlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
     }
 
     public async Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition)
@@ -245,18 +238,16 @@ public class ContentDefinitionManager : IContentDefinitionManager
             };
 
             _handlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
-            _eventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
-        }
-        else
-        {
-            var context = new ContentPartUpdatedContext
-            {
-                ContentPartDefinition = contentPartDefinition,
-            };
 
-            _handlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
-            _eventHandlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
+            return;
         }
+        
+        var context = new ContentPartUpdatedContext
+        {
+            ContentPartDefinition = contentPartDefinition,
+        };
+
+        _handlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);        
     }
 
     public async Task<string> GetIdentifierAsync()

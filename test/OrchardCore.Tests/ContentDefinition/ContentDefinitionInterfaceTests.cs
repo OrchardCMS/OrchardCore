@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.ContentDefinition;
 /// Test to verify that IContentDefinitionEventHandler is properly marked as obsolete
 /// and that the new IContentDefinitionHandler interface is working correctly with event methods.
 /// </summary>
-public class ContentDefinitionInterfaceTests
+public sealed class ContentDefinitionInterfaceTests
 {
     [Fact]
     public void IContentDefinitionHandler_Has_All_Required_Methods()
