@@ -16,6 +16,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     private readonly IContentDefinitionStore _contentDefinitionStore;
     private readonly IEnumerable<IContentDefinitionHandler> _handlers;
+    private readonly IEnumerable<IContentDefinitionEventHandler> _eventHandlers;
     private readonly ILogger _logger;
     private readonly IMemoryCache _memoryCache;
 
@@ -28,11 +29,13 @@ public class ContentDefinitionManager : IContentDefinitionManager
     public ContentDefinitionManager(
         IContentDefinitionStore contentDefinitionStore,
         IEnumerable<IContentDefinitionHandler> handlers,
+        IEnumerable<IContentDefinitionEventHandler> eventHandlers,
         ILogger<ContentDefinitionManager> logger,
         IMemoryCache memoryCache)
     {
         _contentDefinitionStore = contentDefinitionStore;
         _handlers = handlers;
+        _eventHandlers = eventHandlers;
         _logger = logger;
         _memoryCache = memoryCache;
 
@@ -454,5 +457,115 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
             _memoryCache.Set(CacheKey, cacheEntry);
         }
+    }
+
+    // Helper methods to trigger events via both new and old patterns for backward compatibility
+    
+    public void TriggerContentTypeCreated(ContentTypeCreatedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
+    }
+    
+    public void TriggerContentTypeUpdated(ContentTypeUpdatedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
+    }
+    
+    public void TriggerContentTypeRemoved(ContentTypeRemovedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
+    }
+    
+    public void TriggerContentPartCreated(ContentPartCreatedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
+    }
+    
+    public void TriggerContentPartUpdated(ContentPartUpdatedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
+    }
+    
+    public void TriggerContentPartRemoved(ContentPartRemovedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
+    }
+    
+    public void TriggerContentPartAttached(ContentPartAttachedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
+    }
+    
+    public void TriggerContentPartDetached(ContentPartDetachedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
+    }
+    
+    public void TriggerContentTypePartUpdated(ContentTypePartUpdatedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
+    }
+    
+    public void TriggerContentFieldAttached(ContentFieldAttachedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
+    }
+    
+    public void TriggerContentFieldDetached(ContentFieldDetachedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
+    }
+    
+    public void TriggerContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
+    {
+        // Trigger event on unified interface
+        _handlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
+        
+        // Trigger event on obsolete interface for backward compatibility
+        _eventHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
     }
 }

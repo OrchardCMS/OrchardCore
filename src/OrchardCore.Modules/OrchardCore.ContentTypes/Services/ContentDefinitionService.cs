@@ -18,16 +18,12 @@ public class ContentDefinitionService : IContentDefinitionService
     private readonly IEnumerable<Type> _contentFieldTypes;
 
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
-    private readonly IEnumerable<IContentDefinitionHandler> _contentDefinitionHandlers;
     private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
 
     public ContentDefinitionService(
             IContentDefinitionManager contentDefinitionManager,
-            IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers,
-            IEnumerable<IContentDefinitionHandler> contentDefinitionHandlers,
             IEnumerable<ContentPart> contentParts,
             IEnumerable<ContentField> contentFields,
             IOptions<ContentOptions> contentOptions,
@@ -35,15 +31,7 @@ public class ContentDefinitionService : IContentDefinitionService
             IStringLocalizer<ContentDefinitionService> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
-        _contentDefinitionHandlers = contentDefinitionHandlers;
         _logger = logger;
-
-        // Log deprecation warning if any IContentDefinitionEventHandler implementations are registered
-        if (contentDefinitionEventHandlers.Any())
-        {
-            logger.LogWarning("IContentDefinitionEventHandler is obsolete. Please migrate to IContentDefinitionHandler which is now used by ContentDefinitionManager.");
-        }
 
         foreach (var element in contentParts.Select(x => x.GetType()))
         {
@@ -63,6 +51,7 @@ public class ContentDefinitionService : IContentDefinitionService
         _contentFieldTypes = contentFields.Select(cf => cf.GetType())
             .Union(contentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type));
 
+        _logger = logger;
         S = stringLocalizer;
     }
 
@@ -141,7 +130,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        TriggerContentTypeCreated(context);
+        _contentDefinitionManager.TriggerContentTypeCreated(context);
 
         return contentTypeDefinition;
     }
@@ -182,7 +171,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentTypeDefinition = typeDefinition,
         };
 
-        TriggerContentTypeRemoved(context);
+        _contentDefinitionManager.TriggerContentTypeRemoved(context);
     }
 
     public async Task AddPartToTypeAsync(string partName, string typeName)
@@ -194,7 +183,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = partName,
         };
 
-        TriggerContentPartAttached(context);
+        _contentDefinitionManager.TriggerContentPartAttached(context);
     }
 
     public async Task AddReusablePartToTypeAsync(string name, string displayName, string description, string partName, string typeName)
@@ -213,7 +202,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = partName,
         };
 
-        TriggerContentPartAttached(context);
+        _contentDefinitionManager.TriggerContentPartAttached(context);
     }
 
     public async Task RemovePartFromTypeAsync(string partName, string typeName)
@@ -247,7 +236,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = partName,
         };
 
-        TriggerContentPartDetached(context);
+        _contentDefinitionManager.TriggerContentPartDetached(context);
     }
 
     public async Task<IEnumerable<EditPartViewModel>> LoadPartsAsync(bool metadataPartsOnly)
@@ -367,7 +356,7 @@ public class ContentDefinitionService : IContentDefinitionService
                 ContentPartDefinition = partDefinition,
             };
 
-            TriggerContentPartCreated(context);
+            _contentDefinitionManager.TriggerContentPartCreated(context);
 
             return new EditPartViewModel(partDefinition);
         }
@@ -404,7 +393,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartDefinition = partDefinition,
         };
 
-        TriggerContentPartRemoved(context);
+        _contentDefinitionManager.TriggerContentPartRemoved(context);
     }
 
     public Task<IEnumerable<Type>> GetFieldsAsync()
@@ -434,7 +423,7 @@ public class ContentDefinitionService : IContentDefinitionService
         await _contentDefinitionManager.AlterPartDefinitionAsync(partName,
             partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName)));
 
-        TriggerContentFieldAttached(new ContentFieldAttachedContext
+        _contentDefinitionManager.TriggerContentFieldAttached(new ContentFieldAttachedContext
         {
             ContentPartName = partName,
             ContentFieldTypeName = fieldTypeName,
@@ -467,7 +456,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentFieldName = fieldName,
         };
 
-        TriggerContentFieldDetached(context);
+        _contentDefinitionManager.TriggerContentFieldDetached(context);
     }
 
     public async Task AlterFieldAsync(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)
@@ -488,7 +477,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentFieldName = fieldViewModel.Name,
         };
 
-        TriggerContentPartFieldUpdated(context);
+        _contentDefinitionManager.TriggerContentPartFieldUpdated(context);
     }
 
     public async Task AlterTypePartAsync(EditTypePartViewModel typePartViewModel)
@@ -512,7 +501,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = typePartViewModel.Name,
         };
 
-        TriggerContentTypePartUpdated(context);
+        _contentDefinitionManager.TriggerContentTypePartUpdated(context);
     }
 
     public async Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames)
@@ -545,7 +534,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentTypeDefinition = typeDefinition,
         };
 
-        TriggerContentTypeUpdated(context);
+        _contentDefinitionManager.TriggerContentTypeUpdated(context);
     }
 
     public async Task AlterPartFieldsOrderAsync(ContentPartDefinition partDefinition, string[] fieldNames)
@@ -567,7 +556,7 @@ public class ContentDefinitionService : IContentDefinitionService
             }
         });
 
-        TriggerContentPartUpdated(new ContentPartUpdatedContext
+        _contentDefinitionManager.TriggerContentPartUpdated(new ContentPartUpdatedContext
         {
             ContentPartDefinition = partDefinition,
         });
@@ -638,115 +627,5 @@ public class ContentDefinitionService : IContentDefinitionService
         }
 
         return string.Format("{0}-{1}", name, version);
-    }
-
-    // Helper methods to trigger events via both new and old patterns for backward compatibility
-    
-    private void TriggerContentTypeCreated(ContentTypeCreatedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeCreated(ctx), context, _logger);
-    }
-    
-    private void TriggerContentTypeUpdated(ContentTypeUpdatedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeUpdated(ctx), context, _logger);
-    }
-    
-    private void TriggerContentTypeRemoved(ContentTypeRemovedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypeRemoved(ctx), context, _logger);
-    }
-    
-    private void TriggerContentPartCreated(ContentPartCreatedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
-    }
-    
-    private void TriggerContentPartUpdated(ContentPartUpdatedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartUpdated(ctx), context, _logger);
-    }
-    
-    private void TriggerContentPartRemoved(ContentPartRemovedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartRemoved(ctx), context, _logger);
-    }
-    
-    private void TriggerContentPartAttached(ContentPartAttachedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartAttached(ctx), context, _logger);
-    }
-    
-    private void TriggerContentPartDetached(ContentPartDetachedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
-    }
-    
-    private void TriggerContentTypePartUpdated(ContentTypePartUpdatedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
-    }
-    
-    private void TriggerContentFieldAttached(ContentFieldAttachedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldAttached(ctx), context, _logger);
-    }
-    
-    private void TriggerContentFieldDetached(ContentFieldDetachedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
-    }
-    
-    private void TriggerContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
-    {
-        // Trigger event on unified interface
-        _contentDefinitionHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
-        
-        // Trigger event on obsolete interface for backward compatibility
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
     }
 }

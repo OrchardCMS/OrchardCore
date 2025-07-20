@@ -1,4 +1,5 @@
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Events;
 
 namespace OrchardCore.ContentManagement.Metadata;
 
@@ -37,4 +38,18 @@ public interface IContentDefinitionManager
     /// Returns an unique identifier that is updated when content definitions have changed.
     /// </summary>
     Task<string> GetIdentifierAsync();
+
+    // Event trigger methods
+    void TriggerContentTypeCreated(ContentTypeCreatedContext context);
+    void TriggerContentTypeUpdated(ContentTypeUpdatedContext context);
+    void TriggerContentTypeRemoved(ContentTypeRemovedContext context);
+    void TriggerContentPartCreated(ContentPartCreatedContext context);
+    void TriggerContentPartUpdated(ContentPartUpdatedContext context);
+    void TriggerContentPartRemoved(ContentPartRemovedContext context);
+    void TriggerContentPartAttached(ContentPartAttachedContext context);
+    void TriggerContentPartDetached(ContentPartDetachedContext context);
+    void TriggerContentTypePartUpdated(ContentTypePartUpdatedContext context);
+    void TriggerContentFieldAttached(ContentFieldAttachedContext context);
+    void TriggerContentFieldDetached(ContentFieldDetachedContext context);
+    void TriggerContentPartFieldUpdated(ContentPartFieldUpdatedContext context);
 }
