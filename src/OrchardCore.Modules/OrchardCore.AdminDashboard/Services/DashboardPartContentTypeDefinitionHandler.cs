@@ -7,13 +7,13 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.AdminDashboard.Services;
 
-public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefinitionHandler
+public sealed class DashboardPartContentTypeDefinitionHandler : ContentDefinitionHandler
 {
     /// <summary>
     /// Adds the <see cref="DashboardPart"/> to the content type definition when the stereotype is set to 'DashboardWidget'.
     /// This occurs during the content type building process, allowing the content type to function as a dashboard widget.
     /// </summary>
-    public void ContentTypeBuilding(ContentTypeBuildingContext context)
+    public override void ContentTypeBuilding(ContentTypeBuildingContext context)
     {
         if (context?.Record?.Settings is null || !context.Record.Settings.TryGetPropertyValue(nameof(ContentTypeSettings), out var node))
         {
@@ -50,7 +50,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
     /// Marks the part on the content type as a system type to prevent its removal.
     /// This ensures that the part remains integral to the content type and cannot be deleted.
     /// </summary>
-    public void ContentTypePartBuilding(ContentTypePartBuildingContext context)
+    public override void ContentTypePartBuilding(ContentTypePartBuildingContext context)
     {
         if (context?.Record?.Settings is null || !context.Record.PartName.EqualsOrdinalIgnoreCase(nameof(DashboardPart)))
         {
@@ -69,7 +69,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
     /// Creates a definition if the Record is null and the part name is 'DashboardPart'.
     /// This ensures that the 'DashboardPart' has a valid definition when it is missing.
     /// </summary>
-    public void ContentPartBuilding(ContentPartBuildingContext context)
+    public override void ContentPartBuilding(ContentPartBuildingContext context)
     {
         if (context.Record is not null || context.PartName != nameof(DashboardPart))
         {
@@ -94,7 +94,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
         };
     }
 
-    public void ContentPartFieldBuilding(ContentPartFieldBuildingContext context)
+    public override void ContentPartFieldBuilding(ContentPartFieldBuildingContext context)
     {
     }
 }

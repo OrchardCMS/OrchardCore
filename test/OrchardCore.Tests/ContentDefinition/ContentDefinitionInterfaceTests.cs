@@ -34,27 +34,17 @@ public sealed class ContentDefinitionInterfaceTests
         Assert.True(handler.EventCalled);
     }
 
-    private class TestContentDefinitionHandler : IContentDefinitionHandler
+    private class TestContentDefinitionHandler : ContentDefinitionHandler
     {
-        // Only building methods are required - event methods have default implementations
-        public void ContentTypeBuilding(ContentTypeBuildingContext context) { }
-        public void ContentPartBuilding(ContentPartBuildingContext context) { }
-        public void ContentTypePartBuilding(ContentTypePartBuildingContext context) { }
-        public void ContentPartFieldBuilding(ContentPartFieldBuildingContext context) { }
+        // Only building methods need to be overridden if needed - event methods have default implementations
     }
 
-    private class TestContentDefinitionHandlerWithEvents : IContentDefinitionHandler
+    private class TestContentDefinitionHandlerWithEvents : ContentDefinitionHandler
     {
         public bool EventCalled { get; private set; }
 
-        // Building methods (required)
-        public void ContentTypeBuilding(ContentTypeBuildingContext context) { }
-        public void ContentPartBuilding(ContentPartBuildingContext context) { }
-        public void ContentTypePartBuilding(ContentTypePartBuildingContext context) { }
-        public void ContentPartFieldBuilding(ContentPartFieldBuildingContext context) { }
-
         // Event methods (optional override)
-        public void ContentTypeCreated(ContentTypeCreatedContext context)
+        public override void ContentTypeCreated(ContentTypeCreatedContext context)
         {
             EventCalled = true;
         }

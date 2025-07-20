@@ -254,24 +254,14 @@ public class ContentDefinitionEventMigrationTests
         public void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context) { }
     }
 
-    private sealed class MockContentDefinitionHandler : IContentDefinitionHandler
+    private sealed class MockContentDefinitionHandler : ContentDefinitionHandler
     {
         public bool ContentTypeCreatedCalled { get; private set; }
 
-        public void ContentTypeBuilding(ContentTypeBuildingContext context) { }
-        public void ContentPartBuilding(ContentPartBuildingContext context) { }
-        public void ContentTypePartBuilding(ContentTypePartBuildingContext context) { }
-        public void ContentPartFieldBuilding(ContentPartFieldBuildingContext context) { }
-
-        public void ContentTypeCreated(ContentTypeCreatedContext context)
+        public override void ContentTypeCreated(ContentTypeCreatedContext context)
         {
             ContentTypeCreatedCalled = true;
         }
-
-        public void ContentTypeUpdated(ContentTypeUpdatedContext context) { }
-        public void ContentTypeRemoved(ContentTypeRemovedContext context) { }
-        public void ContentTypeImporting(ContentTypeImportingContext context) { }
-        public void ContentTypeImported(ContentTypeImportedContext context) { }
     }
 
     private sealed class MockStringLocalizer : IStringLocalizer<ContentDefinitionService>
