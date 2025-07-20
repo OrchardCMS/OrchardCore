@@ -25,6 +25,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Search.AzureAI.Core\OrchardCore.Search.AzureAI.Core.csproj" />
   </ItemGroup>
 
 </Project>
