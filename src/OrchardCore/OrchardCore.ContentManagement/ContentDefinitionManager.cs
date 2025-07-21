@@ -133,8 +133,18 @@ public class ContentDefinitionManager : IContentDefinitionManager
         // Deletes the content type record associated.
         if (record is not null)
         {
+            var typeDefinition = LoadTypeDefinition(document, name);
+            
             document.ContentTypeDefinitionRecords.Remove(record);
             await UpdateContentDefinitionRecordAsync(document);
+
+            // Trigger event on unified interface and obsolete interface for backward compatibility
+            var context = new ContentTypeRemovedContext
+            {
+                ContentTypeDefinition = typeDefinition,
+            };
+
+            await _handlers.InvokeAsync((handler, ctx) => handler.ContentTypeRemovedAsync(ctx), context, _logger);
         }
     }
 
@@ -161,8 +171,18 @@ public class ContentDefinitionManager : IContentDefinitionManager
         var record = document.ContentPartDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(name));
         if (record is not null)
         {
+            var partDefinition = LoadPartDefinition(document, name);
+            
             document.ContentPartDefinitionRecords.Remove(record);
             await UpdateContentDefinitionRecordAsync(document);
+
+            // Trigger event on unified interface and obsolete interface for backward compatibility
+            var context = new ContentPartRemovedContext
+            {
+                ContentPartDefinition = partDefinition,
+            };
+
+            await _handlers.InvokeAsync((handler, ctx) => handler.ContentPartRemovedAsync(ctx), context, _logger);
         }
     }
 
@@ -170,18 +190,64 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
+        var existingRecord = document.ContentTypeDefinitionRecords.FirstOrDefault(x => x.Name.EqualsOrdinalIgnoreCase(contentTypeDefinition.Name));
+        var isNew = existingRecord == null;
+
         Apply(contentTypeDefinition, Acquire(document, contentTypeDefinition));
 
         await UpdateContentDefinitionRecordAsync(document);
+
+        // Trigger appropriate event on unified interface and obsolete interface for backward compatibility
+        if (isNew)
+        {
+            var context = new ContentTypeCreatedContext
+            {
+                ContentTypeDefinition = contentTypeDefinition,
+            };
+
+            await _handlers.InvokeAsync((handler, ctx) => handler.ContentTypeCreatedAsync(ctx), context, _logger);
+
+            return;
+        }
+
+        var context = new ContentTypeUpdatedContext
+        {
+            ContentTypeDefinition = contentTypeDefinition,
+        };
+
+        await _handlers.InvokeAsync((handler, ctx) => handler.ContentTypeUpdatedAsync(ctx), context, _logger);
     }
 
     public async Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition)
     {
         var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
+        var existingRecord = document.ContentPartDefinitionRecords.FirstOrDefault(x => x.Name.EqualsOrdinalIgnoreCase(contentPartDefinition.Name));
+        var isNew = existingRecord == null;
+
         Apply(contentPartDefinition, Acquire(document, contentPartDefinition));
 
         await UpdateContentDefinitionRecordAsync(document);
+
+        // Trigger appropriate event on unified interface and obsolete interface for backward compatibility
+        if (isNew)
+        {
+            var context = new ContentPartCreatedContext
+            {
+                ContentPartDefinition = contentPartDefinition,
+            };
+
+            await _handlers.InvokeAsync((handler, ctx) => handler.ContentPartCreatedAsync(ctx), context, _logger);
+
+            return;
+        }
+        
+        var context = new ContentPartUpdatedContext
+        {
+            ContentPartDefinition = contentPartDefinition,
+        };
+
+        await _handlers.InvokeAsync((handler, ctx) => handler.ContentPartUpdatedAsync(ctx), context, _logger);        
     }
 
     public async Task<string> GetIdentifierAsync()
@@ -344,7 +410,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var context = new ContentTypeBuildingContext(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.ContentTypeBuilding(ctx), context, _logger);
+        _handlers.InvokeAsync((handler, ctx) => handler.ContentTypeBuildingAsync(ctx), context, _logger).GetAwaiter().GetResult();
 
         if (context.Record is null)
         {
@@ -367,7 +433,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var context = new ContentTypePartBuildingContext(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.ContentTypePartBuilding(ctx), context, _logger);
+        _handlers.InvokeAsync((handler, ctx) => handler.ContentTypePartBuildingAsync(ctx), context, _logger).GetAwaiter().GetResult();
 
         if (context.Record is null)
         {
@@ -384,7 +450,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var context = new ContentPartBuildingContext(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.ContentPartBuilding(ctx), context, _logger);
+        _handlers.InvokeAsync((handler, ctx) => handler.ContentPartBuildingAsync(ctx), context, _logger).GetAwaiter().GetResult();
 
         if (context.Record is null)
         {
@@ -401,7 +467,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var context = new ContentPartFieldBuildingContext(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.ContentPartFieldBuilding(ctx), context, _logger);
+        _handlers.InvokeAsync((handler, ctx) => handler.ContentPartFieldBuildingAsync(ctx), context, _logger).GetAwaiter().GetResult();
 
         if (context.Record is null)
         {
