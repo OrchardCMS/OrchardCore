@@ -28,7 +28,7 @@
                 </button>
                 <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa-solid fa-plus" aria-hidden="true"></i></a>
                 <a href="javascript:;" v-show="allowMediaText" v-on:click="showMediaTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="far fa-comment" aria-hidden="true"></i></a>
-                <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
+                <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia || !selectedMedia.mime.startsWith('image') }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
                 <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash-alt" aria-hidden="true"></i></a>
             </div>
             <label class="selected-media-name form-label">
@@ -36,7 +36,7 @@
             </label>
         </div>
 
-        <media-field-thumbs-container :media-items="mediaItems" :thumb-size="thumbSize" :selected-media="selectedMedia" :id-prefix="idPrefix" :allow-anchors="allowAnchors"></media-field-thumbs-container>
+        <media-field-thumbs-container v-model="mediaItems" :thumb-size="thumbSize" :selected-media="selectedMedia" :id-prefix="idPrefix" :allow-multiple="@(settings.Multiple ? "true" : "false")"></media-field-thumbs-container>
 
         <partial name="Shared/MediaFieldEditMediaTextModal.cshtml" />
         <partial name="Shared/MediaFieldEditAnchorModal.cshtml" />
