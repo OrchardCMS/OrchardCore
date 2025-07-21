@@ -43,7 +43,6 @@ public class LinkFieldHandler : ContentFieldHandler<LinkField>
 
             if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
             {
-                // Replace ~ with the application's path base, similar to IUrlHelper.Content()
                 var pathBase = _httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;
                 urlToValidate = pathBase + urlToValidate[1..];
             }
