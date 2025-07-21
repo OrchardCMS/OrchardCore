@@ -15,9 +15,9 @@ public static class InvokeExtensions
             {
                 dispatch(sink);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
     }
@@ -33,9 +33,9 @@ public static class InvokeExtensions
             {
                 dispatch(sink, arg1);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
     }
@@ -51,9 +51,9 @@ public static class InvokeExtensions
                 var result = dispatch(sink);
                 results.Add(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
 
@@ -71,9 +71,9 @@ public static class InvokeExtensions
                 var result = dispatch(sink, arg1);
                 results.Add(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
 
@@ -91,9 +91,9 @@ public static class InvokeExtensions
                 var result = dispatch(sink);
                 results.AddRange(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
 
@@ -111,9 +111,9 @@ public static class InvokeExtensions
             {
                 await dispatch(sink);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
     }
@@ -129,9 +129,9 @@ public static class InvokeExtensions
             {
                 await dispatch(sink, arg1);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
     }
@@ -147,9 +147,9 @@ public static class InvokeExtensions
             {
                 await dispatch(sink, arg1, arg2);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
     }
@@ -165,9 +165,9 @@ public static class InvokeExtensions
             {
                 await dispatch(sink, arg1, arg2, arg3);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
     }
@@ -183,9 +183,9 @@ public static class InvokeExtensions
             {
                 await dispatch(sink, arg1, arg2, arg3, arg4);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
     }
@@ -201,9 +201,9 @@ public static class InvokeExtensions
             {
                 await dispatch(sink, arg1, arg2, arg3, arg4, arg5);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
     }
@@ -219,9 +219,9 @@ public static class InvokeExtensions
                 var result = await dispatch(sink);
                 results.Add(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
 
@@ -239,9 +239,9 @@ public static class InvokeExtensions
                 var result = await dispatch(sink, arg1);
                 results.Add(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
 
@@ -259,15 +259,16 @@ public static class InvokeExtensions
                 var result = await dispatch(sink);
                 results.AddRange(result);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
             }
         }
 
         return results;
     }
 
+    [Obsolete("This method throws a new exception instead of rethrowing, which loses the original call stack. It is not recommended for new code. Use ExceptionExtensions.LogException instead, which only logs exceptions without rethrowing.")]
     public static void HandleException(Exception ex, ILogger logger, string sourceType, string method)
     {
         if (IsLogged(ex))
@@ -283,6 +284,7 @@ public static class InvokeExtensions
             throw ex;
         }
     }
+
     private static bool IsLogged(Exception ex)
     {
         return !ex.IsFatal();
