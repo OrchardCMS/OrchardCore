@@ -268,7 +268,8 @@ public static class InvokeExtensions
         return results;
     }
 
-    [Obsolete("This method throws a new exception instead of rethrowing, which loses the original call stack. It is not recommended for new code. Use ExceptionExtensions.LogException instead, which only logs exceptions without rethrowing.")]
+    [Obsolete("This method rethrows the given exception, which loses the original call stack. It is not recommended for new code. " +
+        "Use ExceptionExtensions.LogException instead, which only logs exceptions without rethrowing.")]
     public static void HandleException(Exception ex, ILogger logger, string sourceType, string method)
     {
         if (IsLogged(ex))
