@@ -7,11 +7,58 @@ namespace OrchardCore.ContentTypes.Events;
 /// </summary>
 public interface IContentDefinitionHandler
 {
+    // Content Definition Building Events - Async Versions
+
+    /// <summary>
+    /// Asynchronously invoked during the building of a content type.
+    /// Allows modifications or custom logic to be applied to the content type being created.
+    /// </summary>
+    /// <param name="context">The context for the content type being built.</param>
+    ValueTask ContentTypeBuildingAsync(ContentTypeBuildingContext context)
+    {
+        ContentTypeBuilding(context);
+        return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Asynchronously invoked during the building of a content part definition.
+    /// Allows modification or customization of content parts before they are finalized in the content definition.
+    /// </summary>
+    /// <param name="context">The context for the content part definition being built.</param>
+    ValueTask ContentPartBuildingAsync(ContentPartBuildingContext context)
+    {
+        ContentPartBuilding(context);
+        return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Asynchronously invoked during the building of a part on a content type.
+    /// Enables modification or customization of the content part as it is attached to a content type.
+    /// </summary>
+    /// <param name="context">The context for the content type part being built.</param>
+    ValueTask ContentTypePartBuildingAsync(ContentTypePartBuildingContext context)
+    {
+        ContentTypePartBuilding(context);
+        return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Asynchronously invoked during the building of a field on a content part.
+    /// Allows customization of fields added to content parts before the final definition is created.
+    /// </summary>
+    /// <param name="context">The context for the content part field being built.</param>
+    ValueTask ContentPartFieldBuildingAsync(ContentPartFieldBuildingContext context)
+    {
+        ContentPartFieldBuilding(context);
+        return ValueTask.CompletedTask;
+    }
+
     /// <summary>
     /// Invoked during the building of a content type.
     /// Allows modifications or custom logic to be applied to the content type being created.
     /// </summary>
     /// <param name="context">The context for the content type being built.</param>
+    [Obsolete("Use ContentTypeBuildingAsync instead. This method will be removed in a future version.")]
     void ContentTypeBuilding(ContentTypeBuildingContext context);
 
     /// <summary>
@@ -19,6 +66,7 @@ public interface IContentDefinitionHandler
     /// Allows modification or customization of content parts before they are finalized in the content definition.
     /// </summary>
     /// <param name="context">The context for the content part definition being built.</param>
+    [Obsolete("Use ContentPartBuildingAsync instead. This method will be removed in a future version.")]
     void ContentPartBuilding(ContentPartBuildingContext context);
 
     /// <summary>
@@ -26,6 +74,7 @@ public interface IContentDefinitionHandler
     /// Enables modification or customization of the content part as it is attached to a content type.
     /// </summary>
     /// <param name="context">The context for the content type part being built.</param>
+    [Obsolete("Use ContentTypePartBuildingAsync instead. This method will be removed in a future version.")]
     void ContentTypePartBuilding(ContentTypePartBuildingContext context);
 
     /// <summary>
@@ -33,6 +82,7 @@ public interface IContentDefinitionHandler
     /// Allows customization of fields added to content parts before the final definition is created.
     /// </summary>
     /// <param name="context">The context for the content part field being built.</param>
+    [Obsolete("Use ContentPartFieldBuildingAsync instead. This method will be removed in a future version.")]
     void ContentPartFieldBuilding(ContentPartFieldBuildingContext context);
 
     // Content Definition Lifecycle Events - Async Versions
@@ -299,11 +349,58 @@ public interface IContentDefinitionHandler
 /// </summary>
 public class ContentDefinitionHandler : IContentDefinitionHandler
 {
+    // Content Definition Building Events - Async Versions
+
+    /// <summary>
+    /// Asynchronously invoked during the building of a content type.
+    /// Allows modifications or custom logic to be applied to the content type being created.
+    /// </summary>
+    /// <param name="context">The context for the content type being built.</param>
+    public virtual ValueTask ContentTypeBuildingAsync(ContentTypeBuildingContext context)
+    {
+        ContentTypeBuilding(context);
+        return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Asynchronously invoked during the building of a content part definition.
+    /// Allows modification or customization of content parts before they are finalized in the content definition.
+    /// </summary>
+    /// <param name="context">The context for the content part definition being built.</param>
+    public virtual ValueTask ContentPartBuildingAsync(ContentPartBuildingContext context)
+    {
+        ContentPartBuilding(context);
+        return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Asynchronously invoked during the building of a part on a content type.
+    /// Enables modification or customization of the content part as it is attached to a content type.
+    /// </summary>
+    /// <param name="context">The context for the content type part being built.</param>
+    public virtual ValueTask ContentTypePartBuildingAsync(ContentTypePartBuildingContext context)
+    {
+        ContentTypePartBuilding(context);
+        return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Asynchronously invoked during the building of a field on a content part.
+    /// Allows customization of fields added to content parts before the final definition is created.
+    /// </summary>
+    /// <param name="context">The context for the content part field being built.</param>
+    public virtual ValueTask ContentPartFieldBuildingAsync(ContentPartFieldBuildingContext context)
+    {
+        ContentPartFieldBuilding(context);
+        return ValueTask.CompletedTask;
+    }
+
     /// <summary>
     /// Invoked during the building of a content type.
     /// Allows modifications or custom logic to be applied to the content type being created.
     /// </summary>
     /// <param name="context">The context for the content type being built.</param>
+    [Obsolete("Use ContentTypeBuildingAsync instead. This method will be removed in a future version.")]
     public virtual void ContentTypeBuilding(ContentTypeBuildingContext context)
     {
     }
@@ -313,6 +410,7 @@ public class ContentDefinitionHandler : IContentDefinitionHandler
     /// Allows modification or customization of content parts before they are finalized in the content definition.
     /// </summary>
     /// <param name="context">The context for the content part definition being built.</param>
+    [Obsolete("Use ContentPartBuildingAsync instead. This method will be removed in a future version.")]
     public virtual void ContentPartBuilding(ContentPartBuildingContext context)
     {
     }
@@ -322,6 +420,7 @@ public class ContentDefinitionHandler : IContentDefinitionHandler
     /// Enables modification or customization of the content part as it is attached to a content type.
     /// </summary>
     /// <param name="context">The context for the content type part being built.</param>
+    [Obsolete("Use ContentTypePartBuildingAsync instead. This method will be removed in a future version.")]
     public virtual void ContentTypePartBuilding(ContentTypePartBuildingContext context)
     {
     }
@@ -331,6 +430,7 @@ public class ContentDefinitionHandler : IContentDefinitionHandler
     /// Allows customization of fields added to content parts before the final definition is created.
     /// </summary>
     /// <param name="context">The context for the content part field being built.</param>
+    [Obsolete("Use ContentPartFieldBuildingAsync instead. This method will be removed in a future version.")]
     public virtual void ContentPartFieldBuilding(ContentPartFieldBuildingContext context)
     {
     }

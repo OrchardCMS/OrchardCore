@@ -410,7 +410,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var context = new ContentTypeBuildingContext(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.ContentTypeBuilding(ctx), context, _logger);
+        _handlers.InvokeAsync((handler, ctx) => handler.ContentTypeBuildingAsync(ctx), context, _logger).GetAwaiter().GetResult();
 
         if (context.Record is null)
         {
@@ -433,7 +433,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var context = new ContentTypePartBuildingContext(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.ContentTypePartBuilding(ctx), context, _logger);
+        _handlers.InvokeAsync((handler, ctx) => handler.ContentTypePartBuildingAsync(ctx), context, _logger).GetAwaiter().GetResult();
 
         if (context.Record is null)
         {
@@ -450,7 +450,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var context = new ContentPartBuildingContext(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.ContentPartBuilding(ctx), context, _logger);
+        _handlers.InvokeAsync((handler, ctx) => handler.ContentPartBuildingAsync(ctx), context, _logger).GetAwaiter().GetResult();
 
         if (context.Record is null)
         {
@@ -467,7 +467,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var context = new ContentPartFieldBuildingContext(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.ContentPartFieldBuilding(ctx), context, _logger);
+        _handlers.InvokeAsync((handler, ctx) => handler.ContentPartFieldBuildingAsync(ctx), context, _logger).GetAwaiter().GetResult();
 
         if (context.Record is null)
         {

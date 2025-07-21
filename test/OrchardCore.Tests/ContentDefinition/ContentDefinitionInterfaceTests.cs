@@ -30,8 +30,23 @@ public sealed class ContentDefinitionInterfaceTests
         
         // Test that overridden methods work
         var createdContext = new ContentTypeCreatedContext { ContentTypeDefinition = null };
-        handler.ContentTypeCreated(createdContext);
+        handler.ContentTypeCreatedAsync(createdContext).GetAwaiter().GetResult();
         Assert.True(handler.EventCalled);
+    }
+
+    [Fact]
+    public void IContentDefinitionHandler_Can_Override_Building_Methods()
+    {
+        // Arrange & Act
+        var handler = new TestContentDefinitionHandlerWithBuilding();
+
+        // Assert - This test verifies that handlers can override building methods
+        Assert.NotNull(handler);
+        
+        // Test that overridden async building method works
+        var buildingContext = new ContentTypeBuildingContext("TestType", null);
+        handler.ContentTypeBuildingAsync(buildingContext).GetAwaiter().GetResult();
+        Assert.True(handler.BuildingCalled);
     }
 
     private class TestContentDefinitionHandler : ContentDefinitionHandler
@@ -43,10 +58,23 @@ public sealed class ContentDefinitionInterfaceTests
     {
         public bool EventCalled { get; private set; }
 
-        // Event methods (optional override)
-        public override void ContentTypeCreated(ContentTypeCreatedContext context)
+        // Event methods (optional override) - use async version
+        public override ValueTask ContentTypeCreatedAsync(ContentTypeCreatedContext context)
         {
             EventCalled = true;
+            return ValueTask.CompletedTask;
+        }
+    }
+
+    private class TestContentDefinitionHandlerWithBuilding : ContentDefinitionHandler
+    {
+        public bool BuildingCalled { get; private set; }
+
+        // Building methods (optional override) - use async version
+        public override ValueTask ContentTypeBuildingAsync(ContentTypeBuildingContext context)
+        {
+            BuildingCalled = true;
+            return ValueTask.CompletedTask;
         }
     }
 }
