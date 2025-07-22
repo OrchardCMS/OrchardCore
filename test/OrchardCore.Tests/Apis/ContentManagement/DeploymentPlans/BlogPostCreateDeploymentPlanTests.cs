@@ -31,7 +31,7 @@ public class BlogPostCreateDeploymentPlanTests
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                x.ContentType == "BlogPost").ListAsync();
+                x.ContentType == "BlogPost").ListAsync(CancellationToken.None);
 
             Assert.Equal(2, blogPosts.Count());
 
@@ -71,7 +71,7 @@ public class BlogPostCreateDeploymentPlanTests
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                x.ContentType == "BlogPost").ListAsync();
+                x.ContentType == "BlogPost").ListAsync(CancellationToken.None);
 
             Assert.Equal(3, blogPosts.Count());
             var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
@@ -115,7 +115,7 @@ public class BlogPostCreateDeploymentPlanTests
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                x.ContentType == "BlogPost").ListAsync();
+                x.ContentType == "BlogPost").ListAsync(CancellationToken.None);
 
             Assert.Equal(3, blogPosts.Count());
 
@@ -158,7 +158,7 @@ public class BlogPostCreateDeploymentPlanTests
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var blogPostsCount = await session.Query<ContentItem, ContentItemIndex>(x =>
-                x.ContentType == "BlogPost").CountAsync();
+                x.ContentType == "BlogPost").CountAsync(CancellationToken.None);
 
             Assert.Equal(2, blogPostsCount);
         });
@@ -202,7 +202,7 @@ public class BlogPostCreateDeploymentPlanTests
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var blogPostsCount = await session.Query<ContentItem, ContentItemIndex>(x =>
-                x.ContentType == "BlogPost" && x.ContentItemVersionId == "dupversion").CountAsync();
+                x.ContentType == "BlogPost" && x.ContentItemVersionId == "dupversion").CountAsync(CancellationToken.None);
 
             Assert.Equal(1, blogPostsCount);
         });
