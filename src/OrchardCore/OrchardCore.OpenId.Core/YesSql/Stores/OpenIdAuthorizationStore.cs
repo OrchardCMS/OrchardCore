@@ -102,7 +102,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         cancellationToken.ThrowIfCancellationRequested();
 
         var authorizations = _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-            query, collection: OpenIdCollection).ToAsyncEnumerable();
+            query, collection: OpenIdCollection).ToAsyncEnumerable(cancellationToken);
 
         await foreach (var authorization in authorizations)
         {
@@ -299,7 +299,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
                                  authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
                                      token => token.AuthorizationId,
                                      token => token.Id != 0),
-                collection: OpenIdCollection).Take(100).ListAsync()).ToList();
+                collection: OpenIdCollection).Take(100).ListAsync(CancellationToken.None)).ToList();
 
             if (authorizations.Count is 0)
             {
@@ -379,7 +379,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         cancellationToken.ThrowIfCancellationRequested();
 
         var authorizations = (await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-            query, collection: OpenIdCollection).ListAsync()).ToList();
+            query, collection: OpenIdCollection).ListAsync(CancellationToken.None)).ToList();
 
         if (authorizations.Count is 0)
         {
@@ -392,10 +392,10 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
             authorization.Status = Statuses.Revoked;
 
-            await _session.SaveAsync(authorization, checkConcurrency: false, collection: OpenIdCollection);
+            await _session.SaveAsync(authorization, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
         }
 
-        await _session.SaveChangesAsync();
+        await _session.SaveChangesAsync(cancellationToken);
 
         return authorizations.Count;
     }
@@ -412,7 +412,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         cancellationToken.ThrowIfCancellationRequested();
 
         var authorizations = (await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-            token => token.ApplicationId == identifier, collection: OpenIdCollection).ListAsync()).ToList();
+            token => token.ApplicationId == identifier, collection: OpenIdCollection).ListAsync(CancellationToken.None)).ToList();
 
         if (authorizations.Count is 0)
         {
@@ -425,10 +425,10 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
             authorization.Status = Statuses.Revoked;
 
-            await _session.SaveAsync(authorization, checkConcurrency: false, collection: OpenIdCollection);
+            await _session.SaveAsync(authorization, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
         }
 
-        await _session.SaveChangesAsync();
+        await _session.SaveChangesAsync(cancellationToken);
 
         return authorizations.Count;
     }
@@ -445,7 +445,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         cancellationToken.ThrowIfCancellationRequested();
 
         var authorizations = (await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-            token => token.Subject == subject, collection: OpenIdCollection).ListAsync()).ToList();
+            token => token.Subject == subject, collection: OpenIdCollection).ListAsync(CancellationToken.None)).ToList();
 
         if (authorizations.Count is 0)
         {
@@ -458,10 +458,10 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
             authorization.Status = Statuses.Revoked;
 
-            await _session.SaveAsync(authorization, checkConcurrency: false, collection: OpenIdCollection);
+            await _session.SaveAsync(authorization, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
         }
 
-        await _session.SaveChangesAsync();
+        await _session.SaveChangesAsync(cancellationToken);
 
         return authorizations.Count;
     }
