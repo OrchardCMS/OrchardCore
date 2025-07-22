@@ -1,8 +1,4 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Localization;
-using Moq;
+using System.Text.Json.Nodes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Handlers;
 using OrchardCore.ContentFields.Settings;
@@ -10,8 +6,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Infrastructure.Html;
-using System.Text.Encodings.Web;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.ContentFields.Handlers;
 
@@ -29,7 +23,7 @@ public class LinkFieldHandlerTests
         _localizerMock = new Mock<IStringLocalizer<LinkFieldHandler>>();
         _htmlSanitizerServiceMock = new Mock<IHtmlSanitizerService>();
         _htmlEncoder = HtmlEncoder.Default;
-        
+
         _handler = new LinkFieldHandler(
             _httpContextAccessorMock.Object,
             _localizerMock.Object,
@@ -232,7 +226,7 @@ public class LinkFieldHandlerTests
     {
         var httpContextMock = new Mock<HttpContext>();
         var requestMock = new Mock<HttpRequest>();
-        
+
         requestMock.Setup(r => r.PathBase).Returns(new PathString(pathBase));
         httpContextMock.Setup(h => h.Request).Returns(requestMock.Object);
         _httpContextAccessorMock.Setup(h => h.HttpContext).Returns(httpContextMock.Object);
@@ -245,8 +239,12 @@ public class LinkFieldHandlerTests
 
     private static ContentPartFieldDefinition CreatePartFieldDefinition(LinkFieldSettings settings)
     {
-        var settingsDict = new Dictionary<string, object> { { typeof(LinkFieldSettings).Name, settings } };
-        return new ContentPartFieldDefinition("LinkField", "LinkField", settingsDict);
+        var settingsDict = new JsonObject
+        {
+            [typeof(LinkFieldSettings).Name] = JObject.FromObject(settings),
+        };
+
+        return new ContentPartFieldDefinition(new ContentFieldDefinition("LinkField"), "LinkField", settingsDict);
     }
 
     private static ValidateContentFieldContext CreateValidateContext(ContentPartFieldDefinition partFieldDefinition)
@@ -254,7 +252,7 @@ public class LinkFieldHandlerTests
         var contentItem = new ContentItem();
         var context = new ValidateContentFieldContext(contentItem)
         {
-            ContentPartFieldDefinition = partFieldDefinition
+            ContentPartFieldDefinition = partFieldDefinition,
         };
         return context;
     }

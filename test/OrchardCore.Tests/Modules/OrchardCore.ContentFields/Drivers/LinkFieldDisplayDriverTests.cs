@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Localization;
-using Moq;
+using System.Linq.Expressions;
+using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -13,9 +10,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Infrastructure.Html;
-using OrchardCore.Mvc.ModelBinding;
-using System.Text.Encodings.Web;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.ContentFields.Drivers;
 
@@ -33,7 +27,7 @@ public class LinkFieldDisplayDriverTests
         _localizerMock = new Mock<IStringLocalizer<LinkFieldDisplayDriver>>();
         _htmlSanitizerServiceMock = new Mock<IHtmlSanitizerService>();
         _htmlEncoder = HtmlEncoder.Default;
-        
+
         _driver = new LinkFieldDisplayDriver(
             _httpContextAccessorMock.Object,
             _localizerMock.Object,
@@ -172,7 +166,7 @@ public class LinkFieldDisplayDriverTests
     {
         var httpContextMock = new Mock<HttpContext>();
         var requestMock = new Mock<HttpRequest>();
-        
+
         requestMock.Setup(r => r.PathBase).Returns(new PathString(pathBase));
         httpContextMock.Setup(h => h.Request).Returns(requestMock.Object);
         _httpContextAccessorMock.Setup(h => h.HttpContext).Returns(httpContextMock.Object);
@@ -185,20 +179,24 @@ public class LinkFieldDisplayDriverTests
 
     private static ContentPartFieldDefinition CreatePartFieldDefinition(LinkFieldSettings settings)
     {
-        var settingsDict = new Dictionary<string, object> { { typeof(LinkFieldSettings).Name, settings } };
-        return new ContentPartFieldDefinition("LinkField", "LinkField", settingsDict);
+        var settingsDict = new JsonObject
+        {
+            [typeof(LinkFieldSettings).Name] = JObject.FromObject(settings),
+        };
+
+        return new ContentPartFieldDefinition(new ContentFieldDefinition("LinkField"), "LinkField", settingsDict);
     }
 
     private static UpdateFieldEditorContext CreateUpdateContext(ContentPartFieldDefinition partFieldDefinition)
     {
         var updaterMock = new Mock<IUpdateModel>();
-        updaterMock.Setup(u => u.TryUpdateModelAsync(It.IsAny<object>(), It.IsAny<string>(), It.IsAny<Func<LinkField, object>[]>()))
+        updaterMock.Setup(u => u.TryUpdateModelAsync(It.IsAny<object>(), It.IsAny<string>(), It.IsAny<Expression<Func<object, object>>[]>()))
                   .ReturnsAsync(true);
         updaterMock.Setup(u => u.ModelState).Returns(new ModelStateDictionary());
 
         var shapeFactoryMock = new Mock<IShapeFactory>();
         var model = new Mock<IShape>();
-        
+
         var updateEditorContext = new UpdateEditorContext(model.Object, "", false, "", shapeFactoryMock.Object, null, updaterMock.Object);
         return new UpdateFieldEditorContext(null, null, partFieldDefinition, updateEditorContext);
     }
