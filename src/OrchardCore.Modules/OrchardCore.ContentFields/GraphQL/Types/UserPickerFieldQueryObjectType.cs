@@ -53,7 +53,7 @@ public class UserPickerFieldQueryObjectType : ObjectGraphType<UserPickerField>
             }
 
             var session = context.RequestServices.GetService<ISession>();
-            var users = await session.Query<User, UserIndex>(user => user.UserId.IsIn(userIds)).ListAsync();
+            var users = await session.Query<User, UserIndex>(user => user.UserId.IsIn(userIds)).ListAsync(CancellationToken.None);
 
             return users.ToLookup(user => user.UserId);
         });

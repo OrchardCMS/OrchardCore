@@ -18,7 +18,7 @@ public static class UserRazorHelperExtensions
     public static Task<User> GetUserByIdAsync(this IOrchardHelper orchardHelper, string userId)
     {
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
-        return session.Query<User, UserIndex>(x => x.UserId == userId).FirstOrDefaultAsync();
+        return session.Query<User, UserIndex>(x => x.UserId == userId).FirstOrDefaultAsync(CancellationToken.None);
     }
 
     /// <summary>
@@ -30,6 +30,6 @@ public static class UserRazorHelperExtensions
     public static Task<IEnumerable<User>> GetUsersByIdsAsync(this IOrchardHelper orchardHelper, IEnumerable<string> userIds)
     {
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
-        return session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds)).ListAsync();
+        return session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds)).ListAsync(CancellationToken.None);
     }
 }

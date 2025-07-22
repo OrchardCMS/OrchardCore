@@ -24,7 +24,8 @@ public static class DataLoaderExtensions
             return default;
         }
 
-        var contentItemsLoaded = await session.Query<ContentItem, ContentItemIndex>(y => y.ContentItemId.IsIn(contentItemIds) && y.Published).ListAsync();
+        var contentItemsLoaded = await session.Query<ContentItem, ContentItemIndex>(y => y.ContentItemId.IsIn(contentItemIds) && y.Published).ListAsync(CancellationToken.None);
+
         return contentItemsLoaded.ToLookup(k => k.ContentItemId, v => v);
     }
 }

@@ -49,7 +49,7 @@ public sealed class Migrations : DataMigration
 
     public async Task<int> UpdateFrom3Async()
     {
-        var menus = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "Menu").ListAsync();
+        var menus = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "Menu").ListAsync(CancellationToken.None);
 
         foreach (var menu in menus)
         {
@@ -60,7 +60,7 @@ public sealed class Migrations : DataMigration
                 menu.Apply(menuItemsListPart);
             }
 
-            await _session.SaveAsync(menu);
+            await _session.SaveAsync(menu, false, null, CancellationToken.None);
         }
 
         return 4;

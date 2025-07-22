@@ -187,7 +187,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
                 continue;
             }
 
-            foreach (var list in await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == type.Name).ListAsync())
+            foreach (var list in await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == type.Name).ListAsync(CancellationToken.None))
             {
                 // User needs to at least have permission to edit its own blog posts to access the service.
                 if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, list))
@@ -229,7 +229,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
             .With<ContentItemIndex>(x => x.Latest)
             .OrderByDescending(x => x.CreatedUtc)
             .Take(numberOfPosts)
-            .ListAsync();
+            .ListAsync(CancellationToken.None);
 
         foreach (var contentItem in contentItems)
         {

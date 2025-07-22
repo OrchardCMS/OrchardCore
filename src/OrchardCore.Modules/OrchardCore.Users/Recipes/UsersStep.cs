@@ -58,7 +58,7 @@ public sealed class UsersStep : NamedRecipeStepHandler
             user.PhoneNumberConfirmed = importedUser.PhoneNumberConfirmed;
             user.RoleNames = importedUser.RoleNames;
 
-            await _session.SaveAsync(user);
+            await _session.SaveAsync(user, false, null, CancellationToken.None);
         }
     }
 }

@@ -35,7 +35,7 @@ public class ContentTypesSitemapSourceModifiedDateProvider : SitemapSourceModifi
                 .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex))
                 .OrderByDescending(x => x.ModifiedUtc);
 
-            lastModifiedContentItem = await query.FirstOrDefaultAsync();
+            lastModifiedContentItem = await query.FirstOrDefaultAsync(CancellationToken.None);
         }
         else if (source.LimitItems)
         {
@@ -43,7 +43,7 @@ public class ContentTypesSitemapSourceModifiedDateProvider : SitemapSourceModifi
                 .With<ContentItemIndex>(x => x.Published && x.ContentType == source.LimitedContentType.ContentTypeName)
                 .OrderByDescending(x => x.ModifiedUtc);
 
-            lastModifiedContentItem = await query.FirstOrDefaultAsync();
+            lastModifiedContentItem = await query.FirstOrDefaultAsync(CancellationToken.None);
         }
         else
         {
@@ -56,7 +56,7 @@ public class ContentTypesSitemapSourceModifiedDateProvider : SitemapSourceModifi
                 .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex))
                 .OrderByDescending(x => x.ModifiedUtc);
 
-            lastModifiedContentItem = await query.FirstOrDefaultAsync();
+            lastModifiedContentItem = await query.FirstOrDefaultAsync(CancellationToken.None);
         }
 
         return lastModifiedContentItem.ModifiedUtc;

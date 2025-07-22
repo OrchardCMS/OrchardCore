@@ -50,7 +50,7 @@ public class ExportContentToDeploymentTargetDeploymentSource
 
         if (model.ItemIds?.Count() > 0)
         {
-            var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(model.ItemIds) && x.Published).ListAsync();
+            var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(model.ItemIds) && x.Published).ListAsync(CancellationToken.None);
 
             foreach (var contentItem in checkedContentItems)
             {

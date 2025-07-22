@@ -75,7 +75,7 @@ public sealed class LuceneQuerySource : IQuerySource
 
                 // Load corresponding content item versions.
                 var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("ContentItemVersionId")).ToArray();
-                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
+                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync(CancellationToken.None);
 
                 // Reorder the result to preserve the one from the lucene query.
                 if (dbContentItems.Any())

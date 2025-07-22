@@ -40,7 +40,7 @@ public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplay
             return null;
         }
 
-        var taxonomies = await _session.Query<ContentItem, ContentItemIndex>(q => q.ContentType == "Taxonomy" && q.Published).ListAsync();
+        var taxonomies = await _session.Query<ContentItem, ContentItemIndex>(q => q.ContentType == "Taxonomy" && q.Published).ListAsync(CancellationToken.None);
 
         var entries = taxonomies.Select(x => new TaxonomyEntry
         {

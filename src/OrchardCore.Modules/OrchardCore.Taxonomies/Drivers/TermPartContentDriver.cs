@@ -59,7 +59,7 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
                 .OrderBy(x => x.CreatedUtc)
                 .Take(pager.PageSize + 1);
 
-            var containedItems = await query.ListAsync();
+            var containedItems = await query.ListAsync(CancellationToken.None);
 
             if (!containedItems.Any())
             {
@@ -89,7 +89,7 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
                 .OrderByDescending(x => x.CreatedUtc)
                 .Take(pager.PageSize + 1);
 
-            var containedItems = await query.ListAsync();
+            var containedItems = await query.ListAsync(CancellationToken.None);
 
             if (!containedItems.Any())
             {
@@ -116,7 +116,7 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
                 .OrderByDescending(x => x.CreatedUtc)
                 .Take(pager.PageSize + 1);
 
-            var containedItems = await query.ListAsync();
+            var containedItems = await query.ListAsync(CancellationToken.None);
 
             if (!containedItems.Any())
             {

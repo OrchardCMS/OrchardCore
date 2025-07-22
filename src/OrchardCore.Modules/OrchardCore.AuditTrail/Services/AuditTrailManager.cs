@@ -108,7 +108,7 @@ public class AuditTrailManager : IAuditTrailManager
     public Task<AuditTrailEvent> GetEventAsync(string eventId) =>
         _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.EventId == eventId)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(CancellationToken.None);
 
     public async Task<int> TrimEventsAsync(TimeSpan retentionPeriod)
     {
@@ -116,7 +116,7 @@ public class AuditTrailManager : IAuditTrailManager
 
         var events = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.CreatedUtc <= dateThreshold)
-            .ListAsync();
+            .ListAsync(CancellationToken.None);
 
         var deletedEvents = 0;
         foreach (var auditTrailEvent in events)

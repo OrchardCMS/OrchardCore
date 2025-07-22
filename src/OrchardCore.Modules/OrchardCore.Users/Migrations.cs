@@ -133,11 +133,11 @@ public sealed class Migrations : DataMigration
         ShellScope.AddDeferredTask(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
-            var users = await session.Query<User>().ListAsync();
+            var users = await session.Query<User>().ListAsync(CancellationToken.None);
             foreach (var user in users)
             {
                 user.UserId = user.UserName;
-                await session.SaveAsync(user);
+                await session.SaveAsync(user, false, null, CancellationToken.None);
             }
         });
 
@@ -163,12 +163,12 @@ public sealed class Migrations : DataMigration
         ShellScope.AddDeferredTask(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
-            var users = await session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains('@')).ListAsync();
+            var users = await session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains('@')).ListAsync(CancellationToken.None);
             foreach (var user in users)
             {
                 user.UserName = user.UserName.Replace('@', '+');
                 user.NormalizedUserName = user.NormalizedUserName.Replace('@', '+');
-                await session.SaveAsync(user);
+                await session.SaveAsync(user, false, null, CancellationToken.None);
             }
         });
 

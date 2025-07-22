@@ -85,7 +85,7 @@ public class EditModel : PageModel
         }
 
         contentItem.Content.TestContentPartA.Line = Text;
-        await _session.SaveAsync(contentItem);
+        await _session.SaveAsync(contentItem, false, null, CancellationToken.None);
 
         return RedirectToPage("/Foo/List");
     }

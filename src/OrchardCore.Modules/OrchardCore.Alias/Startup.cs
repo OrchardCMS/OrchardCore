@@ -41,7 +41,7 @@ public sealed class Startup : StartupBase
 
 #pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
                     var contentItem = await session.Query<ContentItem, AliasPartIndex>(x =>
-                        x.Published && x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
+                        x.Published && x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync(CancellationToken.None);
 #pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 
                     if (contentItem == null)

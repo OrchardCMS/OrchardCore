@@ -47,7 +47,7 @@ public static class MarkAsReadEndpoints
 
         var userId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var notification = await session.Query<Notification, NotificationIndex>(x => x.NotificationId == model.MessageId && x.UserId == userId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+        var notification = await session.Query<Notification, NotificationIndex>(x => x.NotificationId == model.MessageId && x.UserId == userId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync(CancellationToken.None);
 
         if (notification == null)
         {

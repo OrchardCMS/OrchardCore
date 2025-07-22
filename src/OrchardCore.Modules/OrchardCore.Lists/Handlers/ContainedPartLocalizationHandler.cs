@@ -26,8 +26,8 @@ public class ContainedPartLocalizationHandler : ContentLocalizationPartHandlerBa
         // todo: remove this check and change the handler to target ContainedPart when issue 3890 is fixed
         if (containedPart != null)
         {
-            var list = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId).FirstOrDefaultAsync();
-            var localizedList = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == list.LocalizationSet && i.Culture == context.Culture).FirstOrDefaultAsync();
+            var list = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId).FirstOrDefaultAsync(CancellationToken.None);
+            var localizedList = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == list.LocalizationSet && i.Culture == context.Culture).FirstOrDefaultAsync(CancellationToken.None);
 
             if (localizedList != null)
             {
@@ -55,8 +55,8 @@ public class LocalizationContainedPartHandler : ContentPartHandler<LocalizationP
         var containedPart = context.ContentItem.As<ContainedPart>();
         if (containedPart != null)
         {
-            var list = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId).FirstOrDefaultAsync();
-            var localizedList = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == list.LocalizationSet && i.Culture == instance.Culture).FirstOrDefaultAsync();
+            var list = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId).FirstOrDefaultAsync(CancellationToken.None);
+            var localizedList = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == list.LocalizationSet && i.Culture == instance.Culture).FirstOrDefaultAsync(CancellationToken.None);
 
             if (localizedList != null)
             {

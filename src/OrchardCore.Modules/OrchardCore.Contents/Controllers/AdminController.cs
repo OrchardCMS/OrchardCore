@@ -186,7 +186,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var itemsPerPage = pagerOptions.Value.MaxPagedCount > 0
             ? pagerOptions.Value.MaxPagedCount
-            : await query.CountAsync();
+            : await query.CountAsync(CancellationToken.None);
 
         var pagerShape = await shapeFactory.PagerAsync(pager, itemsPerPage, options.RouteValues);
 
@@ -763,7 +763,8 @@ public sealed class AdminController : Controller, IUpdateModel
         if (showSelectAll)
         {
             items.Add(new SelectListItem(S["All content types"], string.Empty));
-        };
+        }
+        ;
 
         foreach (var definition in definitions)
         {

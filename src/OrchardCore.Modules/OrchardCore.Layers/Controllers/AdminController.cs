@@ -300,7 +300,7 @@ public sealed class AdminController : Controller
 
         contentItem.Apply(layerMetadata);
 
-        await _session.SaveAsync(contentItem);
+        await _session.SaveAsync(contentItem, false, null, CancellationToken.None);
 
         // In case the moved contentItem is the draft for a published contentItem we update it's position too.
         // We do that because we want the position of published and draft version to be the same.
@@ -321,7 +321,7 @@ public sealed class AdminController : Controller
 
                 publishedContentItem.Apply(layerMetadata);
 
-                await _session.SaveAsync(publishedContentItem);
+                await _session.SaveAsync(publishedContentItem, false, null, CancellationToken.None);
             }
         }
 

@@ -40,7 +40,7 @@ public class ListModel : PageModel
         var query = _session.Query<ContentItem, ContentItemIndex>()
             .With<ContentItemIndex>(x => x.ContentType == "Foo" && x.Published);
 
-        var contentItems = await query.ListAsync();
+        var contentItems = await query.ListAsync(CancellationToken.None);
         var updater = _updateModelAccessor.ModelUpdater;
 
         Items = [];

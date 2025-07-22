@@ -94,7 +94,7 @@ public sealed class TagController : Controller, IUpdateModel
         }
         else
         {
-            await _session.SaveAsync(taxonomy);
+            await _session.SaveAsync(taxonomy, false, null, CancellationToken.None);
         }
 
         var viewModel = new CreatedTagViewModel

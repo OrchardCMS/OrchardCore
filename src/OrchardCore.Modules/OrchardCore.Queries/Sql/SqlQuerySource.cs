@@ -131,7 +131,7 @@ public sealed class SqlQuerySource : IQuerySource
 
         if (documentIds.Length > 0)
         {
-            sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds);
+            sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds, null, CancellationToken.None);
         }
 
         return sqlQueryResults;

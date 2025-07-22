@@ -68,7 +68,7 @@ public sealed class LocalizationSetContentPickerAdminController : Controller
             dbQuery.With<ContentItemIndex>(x => x.DisplayText.Contains(query) || x.ContentType.Contains(query));
         }
 
-        var contentItems = await dbQuery.Take(40).ListAsync();
+        var contentItems = await dbQuery.Take(40).ListAsync(CancellationToken.None);
 
         // if 2 search results have the same set, select one based on the current culture
         var cleanedContentItems = await _contentLocalizationManager.DeduplicateContentItemsAsync(contentItems);

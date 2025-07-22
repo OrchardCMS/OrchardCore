@@ -460,7 +460,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         path = path.Trim('/');
         var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
 
-        var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
+        var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync(CancellationToken.None);
         if (possibleConflicts.Any(x => x.ContentItemId != contentItemId && x.ContainedContentItemId != contentItemId))
         {
             return false;

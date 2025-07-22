@@ -66,6 +66,6 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
             .ThenBy(x => x.Id)
             .Take(take ?? 0)
             .Skip(skip ?? 0)
-            .ListAsync();
+            .ListAsync(CancellationToken.None);
     }
 }

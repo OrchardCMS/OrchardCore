@@ -84,7 +84,7 @@ public static class ContentRazorHelperExtensions
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
 
-        var contentItems = await query(session.Query<ContentItem, ContentItemIndex>()).ListAsync();
+        var contentItems = await query(session.Query<ContentItem, ContentItemIndex>()).ListAsync(CancellationToken.None);
 
         return await contentManager.LoadAsync(contentItems);
     }

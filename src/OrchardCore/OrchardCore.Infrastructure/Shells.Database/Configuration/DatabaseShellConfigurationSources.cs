@@ -46,7 +46,7 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-            var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
+            var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync(CancellationToken.None);
             if (document is not null)
             {
                 configurations = document.ShellConfigurations;
@@ -66,7 +66,7 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
 
                 document.ShellConfigurations = configurations;
 
-                await session.SaveAsync(document, checkConcurrency: true);
+                await session.SaveAsync(document, checkConcurrency: true, null, CancellationToken.None);
             }
         });
 
@@ -85,7 +85,7 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-            var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
+            var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync(CancellationToken.None);
 
             JsonObject configurations;
             if (document is not null)
@@ -114,7 +114,7 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
             configurations[tenant] = configData.ToJsonObject();
             document.ShellConfigurations = configurations;
 
-            await session.SaveAsync(document, checkConcurrency: true);
+            await session.SaveAsync(document, checkConcurrency: true, null, CancellationToken.None);
         });
     }
 
@@ -125,11 +125,11 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-            var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
+            var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync(CancellationToken.None);
             if (document is not null)
             {
                 document.ShellConfigurations.Remove(tenant);
-                await session.SaveAsync(document, checkConcurrency: true);
+                await session.SaveAsync(document, checkConcurrency: true, null, CancellationToken.None);
             }
         });
     }

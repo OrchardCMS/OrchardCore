@@ -162,7 +162,7 @@ public sealed class SearchController : Controller
         await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
 
         // Sort the content items by their position in the search results returned by search service.
-        var containedItems = await query.Take(pager.PageSize + 1).ListAsync();
+        var containedItems = await query.Take(pager.PageSize + 1).ListAsync(CancellationToken.None);
 
         // Set the PagerSlim before and after links.
         if (pagerParameters.After != null || pagerParameters.Before != null)

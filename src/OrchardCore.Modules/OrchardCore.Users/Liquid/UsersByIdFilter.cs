@@ -33,13 +33,13 @@ public class UsersByIdFilter : ILiquidFilter
                     }
                 }
 
-                var cachedUsers = await _session.GetAsync<User>(items.Keys.ToArray());
+                var cachedUsers = await _session.GetAsync<User>(items.Keys.ToArray(), null, CancellationToken.None);
 
                 var cachedUserIds = cachedUsers.Select(x => x.UserId).ToHashSet();
 
                 var missingUserIds = items.Values.Where(userId => !cachedUserIds.Contains(userId)).ToList();
 
-                var missingUsers = await _session.Query<User, UserIndex>(x => x.UserId.IsIn(missingUserIds)).ListAsync();
+                var missingUsers = await _session.Query<User, UserIndex>(x => x.UserId.IsIn(missingUserIds)).ListAsync(CancellationToken.None);
 
                 return FluidValue.Create(missingUsers.Concat(cachedUsers).ToList(), ctx.Options);
             }
@@ -52,11 +52,11 @@ public class UsersByIdFilter : ILiquidFilter
             // List of user ids
             var userIds = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
 
-            return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds)).ListAsync(), ctx.Options);
+            return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds)).ListAsync(CancellationToken.None), ctx.Options);
         }
 
         var userId = input.ToStringValue();
 
-        return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId == userId).FirstOrDefaultAsync(), ctx.Options);
+        return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId == userId).FirstOrDefaultAsync(CancellationToken.None), ctx.Options);
     }
 }

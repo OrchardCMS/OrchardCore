@@ -64,7 +64,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-            var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
+            var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync(CancellationToken.None);
 
             JsonObject tenantsSettings;
             if (document is not null)
@@ -94,7 +94,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
             tenantsSettings[tenant] = settings;
             document.ShellsSettings = tenantsSettings;
 
-            await session.SaveAsync(document, checkConcurrency: true);
+            await session.SaveAsync(document, checkConcurrency: true, null, CancellationToken.None);
         });
     }
 
@@ -105,11 +105,11 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-            var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
+            var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync(CancellationToken.None);
             if (document is not null)
             {
                 document.ShellsSettings.Remove(tenant);
-                await session.SaveAsync(document, checkConcurrency: true);
+                await session.SaveAsync(document, checkConcurrency: true, null, CancellationToken.None);
             }
         });
     }
@@ -123,7 +123,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-            document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
+            document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync(CancellationToken.None);
             if (document is null)
             {
                 document = new DatabaseShellsSettings();
@@ -132,7 +132,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
                     return;
                 }
 
-                await session.SaveAsync(document, checkConcurrency: true);
+                await session.SaveAsync(document, checkConcurrency: true, null, CancellationToken.None);
             }
         });
 

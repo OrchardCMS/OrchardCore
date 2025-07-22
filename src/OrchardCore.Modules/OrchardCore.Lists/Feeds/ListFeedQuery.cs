@@ -104,7 +104,7 @@ public class ListFeedQuery : IFeedQueryProvider, IFeedQuery
                 .With<ContentItemIndex>(x => x.Published)
                 .OrderByDescending(x => x.CreatedUtc)
                 .Take(itemsCount)
-                .ListAsync();
+                .ListAsync(CancellationToken.None);
 
         foreach (var item in items)
         {

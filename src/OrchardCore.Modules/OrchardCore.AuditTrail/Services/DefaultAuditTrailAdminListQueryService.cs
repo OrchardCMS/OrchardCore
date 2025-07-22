@@ -43,7 +43,7 @@ public class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminListQueryS
 
         query = await options.FilterResult.ExecuteAsync(new AuditTrailQueryContext(_serviceProvider, query));
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(CancellationToken.None);
 
         if (pageSize > 0)
         {
@@ -55,7 +55,7 @@ public class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminListQueryS
             query = query.Take(pageSize);
         }
 
-        var events = await query.ListAsync();
+        var events = await query.ListAsync(CancellationToken.None);
 
         var result = new AuditTrailEventQueryResult
         {

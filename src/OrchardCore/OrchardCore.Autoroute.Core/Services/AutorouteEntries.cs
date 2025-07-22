@@ -159,7 +159,7 @@ public class AutorouteEntries : IAutorouteEntries
                 var indexes = await Session
                     .QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId)
                     .OrderBy(i => i.Id)
-                    .ListAsync();
+                    .ListAsync(CancellationToken.None);
 
                 // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                 // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
@@ -214,7 +214,7 @@ public class AutorouteEntries : IAutorouteEntries
                 var indexes = await Session
                     .QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null)
                     .OrderBy(i => i.Id)
-                    .ListAsync();
+                    .ListAsync(CancellationToken.None);
 
                 var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
                 {

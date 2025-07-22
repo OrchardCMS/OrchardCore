@@ -16,7 +16,7 @@ public static class ContentQueryOfTIndexExtensions
     public static async Task<ContentItem> FirstOrDefaultAsync<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
         where TIndex : class, IIndex
     {
-        var contentItem = await query.FirstOrDefaultAsync();
+        var contentItem = await query.FirstOrDefaultAsync(CancellationToken.None);
 
         if (contentItem == null)
         {
@@ -32,7 +32,7 @@ public static class ContentQueryOfTIndexExtensions
     /// </summary>
     public static async Task<IEnumerable<ContentItem>> ListAsync<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
         where TIndex : class, IIndex
-        => await contentManager.LoadAsync(await query.ListAsync());
+        => await contentManager.LoadAsync(await query.ListAsync(CancellationToken.None));
 
     /// <summary>
     /// Executes this <see cref="IQuery{ContentItem, TIndex}"/> to return all matching <see cref="ContentItem"/>s
@@ -40,5 +40,5 @@ public static class ContentQueryOfTIndexExtensions
     /// </summary>
     public static IAsyncEnumerable<ContentItem> ToAsyncEnumerable<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
         where TIndex : class, IIndex
-        => contentManager.LoadAsync(query.ToAsyncEnumerable());
+        => contentManager.LoadAsync(query.ToAsyncEnumerable(CancellationToken.None));
 }

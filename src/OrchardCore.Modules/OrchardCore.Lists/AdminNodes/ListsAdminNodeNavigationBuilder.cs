@@ -113,7 +113,7 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
         return (await _session.Query<ContentItem, ContentItemIndex>()
             .With<ContentItemIndex>(x => x.Latest && x.ContentType == _node.ContentType)
             .Take(MaxItemsInNode)
-            .ListAsync())
+            .ListAsync(CancellationToken.None))
             .OrderBy(x => x.DisplayText)
             .ToList();
     }
