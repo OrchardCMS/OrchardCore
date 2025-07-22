@@ -30,9 +30,9 @@ public class CompositionStrategy : ICompositionStrategy
             _logger.LogDebug("Composing blueprint");
         }
 
-        var featureNames = descriptor.Features.Select(x => x.Id).ToArray();
+        var featureNames = descriptor.Features.Select(x => x.Id).ToHashSet();
 
-        var features = await _extensionManager.LoadFeaturesAsync(featureNames);
+        var features = await _extensionManager.LoadFeaturesAsync(featureNames.ToArray());
 
         var entries = new Dictionary<Type, IEnumerable<IFeatureInfo>>();
 
@@ -42,19 +42,20 @@ public class CompositionStrategy : ICompositionStrategy
             {
                 var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(exportedType);
 
-                if (requiredFeatures.All(x => featureNames.Contains(x)))
+                if (!requiredFeatures.All(x => featureNames.Contains(x)))
                 {
-                    if (entries.TryGetValue(exportedType, out var featureDependencies))
-                    {
-                        featureDependencies = featureDependencies.Append(feature).ToArray();
-                    }
-                    else
-                    {
-                        featureDependencies = [feature];
-                    }
-
-                    entries[exportedType] = featureDependencies;
+                    continue;
                 }
+
+                if (entries.TryGetValue(exportedType, out var featureDependencies))
+                {
+                    entries[exportedType] = featureDependencies.Append(feature).ToArray();
+                }
+                else
+                {
+                    entries[exportedType] = [feature];
+                }
+
             }
         }
 
