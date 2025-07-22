@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Moq;
@@ -9,6 +11,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Infrastructure.Html;
 using System.Text.Encodings.Web;
+using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.ContentFields.Handlers;
 
