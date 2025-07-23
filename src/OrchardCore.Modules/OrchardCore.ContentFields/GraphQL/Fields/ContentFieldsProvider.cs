@@ -1,6 +1,8 @@
 using System.Collections.Frozen;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Queries.Types;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing.SQL;
@@ -18,85 +20,99 @@ public class ContentFieldsProvider : IContentFieldProvider
             nameof(BooleanField),
             new FieldTypeDescriptor
             {
-                Description = "Boolean field",
+                Description = S => S["Boolean field"],
                 FieldType = typeof(BooleanGraphType),
+                ResolvedType = new BooleanGraphType(),
                 UnderlyingType = typeof(BooleanField),
                 FieldAccessor = field => ((BooleanField)field).Value,
                 IndexType = typeof(BooleanFieldIndex),
-                Index = nameof(BooleanFieldIndex.Boolean)
+                IndexProperty = nameof(BooleanFieldIndex.Boolean),
             }
         },
         {
             nameof(DateField),
             new FieldTypeDescriptor
             {
-                Description = "Date field",
+                Description = S => S["Date field"],
                 FieldType = typeof(DateGraphType),
+                ResolvedType = new DateGraphType(),
                 UnderlyingType = typeof(DateField),
                 FieldAccessor = field => ((DateField)field).Value,
                 IndexType = typeof(DateFieldIndex),
-                Index = nameof(DateFieldIndex.Date)
+                IndexProperty = nameof(DateFieldIndex.Date),
             }
         },
         {
             nameof(DateTimeField),
             new FieldTypeDescriptor
             {
-                Description = "Date & time field",
+                Description = S => S["Date & time field"],
                 FieldType = typeof(DateTimeGraphType),
+                ResolvedType = new DateTimeGraphType(),
                 UnderlyingType = typeof(DateTimeField),
                 FieldAccessor = field => ((DateTimeField)field).Value,
                 IndexType = typeof(DateTimeFieldIndex),
-                Index = nameof(DateTimeFieldIndex.DateTime)
+                IndexProperty = nameof(DateTimeFieldIndex.DateTime),
             }
         },
         {
             nameof(NumericField),
             new FieldTypeDescriptor
             {
-                Description = "Numeric field",
+                Description = S => S["Numeric field"],
                 FieldType = typeof(DecimalGraphType),
+                ResolvedType = new DecimalGraphType(),
                 UnderlyingType = typeof(NumericField),
                 FieldAccessor = field => ((NumericField)field).Value,
                 IndexType = typeof(NumericFieldIndex),
-                Index = nameof(NumericFieldIndex.Numeric)
+                IndexProperty = nameof(NumericFieldIndex.Numeric),
             }
         },
         {
             nameof(TextField),
             new FieldTypeDescriptor
             {
-                Description = "Text field",
+                Description = S => S["Text field"],
                 FieldType = typeof(StringGraphType),
+                ResolvedType = new StringGraphType(),
                 UnderlyingType = typeof(TextField),
                 FieldAccessor = field => ((TextField)field).Text,
                 IndexType = typeof(TextFieldIndex),
-                Index = nameof(TextFieldIndex.Text)
+                IndexProperty = nameof(TextFieldIndex.Text),
             }
         },
         {
             nameof(TimeField),
             new FieldTypeDescriptor
             {
-                Description = "Time field",
+                Description = S => S["Time field"],
                 FieldType = typeof(TimeSpanGraphType),
+                ResolvedType = new TimeSpanGraphType(),
                 UnderlyingType = typeof(TimeField),
                 FieldAccessor = field => ((TimeField)field).Value,
                 IndexType = typeof(TimeFieldIndex),
-                Index = nameof(TimeFieldIndex.Time)
+                IndexProperty = nameof(TimeFieldIndex.Time),
             }
         },
         {
             nameof(MultiTextField),
             new FieldTypeDescriptor
             {
-                Description = "Multi text field",
+                Description = S => S["Multi text field"],
                 FieldType = typeof(ListGraphType<StringGraphType>),
+                ResolvedType = new ListGraphType(new StringGraphType()),
                 UnderlyingType = typeof(MultiTextField),
                 FieldAccessor = field => ((MultiTextField)field).Values,
             }
-        }
+        },
     }.ToFrozenDictionary();
+
+    protected readonly IStringLocalizer S;
+
+    public ContentFieldsProvider(IStringLocalizer<ContentFieldsProvider> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
 
     public FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
     {
@@ -107,9 +123,10 @@ public class ContentFieldsProvider : IContentFieldProvider
 
         return new FieldType
         {
-            Name = customFieldName ?? field.Name,
-            Description = fieldDescriptor.Description,
+            Name = customFieldName ?? schema.NameConverter.NameForField(field.Name, null),
+            Description = fieldDescriptor.Description(S),
             Type = fieldDescriptor.FieldType,
+            ResolvedType = fieldDescriptor.ResolvedType,
             Resolver = new FuncFieldResolver<ContentElement, object>(context =>
             {
                 // Check if part has been collapsed by trying to get the parent part.
@@ -127,7 +144,8 @@ public class ContentFieldsProvider : IContentFieldProvider
         };
     }
 
-    public bool HasField(ISchema schema, ContentPartFieldDefinition field) => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
+    public bool HasField(ISchema schema, ContentPartFieldDefinition field)
+        => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
 
     public FieldTypeIndexDescriptor GetFieldIndex(ContentPartFieldDefinition field)
     {
@@ -140,23 +158,31 @@ public class ContentFieldsProvider : IContentFieldProvider
 
         return new FieldTypeIndexDescriptor
         {
-            Index = fieldDescriptor.Index,
-            IndexType = fieldDescriptor.IndexType
+            AliasName = $"{field.PartDefinition.Name.ToFieldName()}:{field.Name.ToCamelCase()}:{fieldDescriptor.IndexProperty}",
+            Index = fieldDescriptor.IndexType.Name,
+            IndexType = fieldDescriptor.IndexType,
         };
     }
 
-    public bool HasFieldIndex(ContentPartFieldDefinition field) =>
-        _contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldTypeDescriptor) &&
+    public bool HasFieldIndex(ContentPartFieldDefinition field)
+        => _contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldTypeDescriptor) &&
         fieldTypeDescriptor.IndexType != null &&
-        !string.IsNullOrWhiteSpace(fieldTypeDescriptor.Index);
+        !string.IsNullOrWhiteSpace(fieldTypeDescriptor.IndexProperty);
 
     private sealed class FieldTypeDescriptor
     {
-        public string Description { get; set; }
+        public Func<IStringLocalizer, string> Description { get; set; }
+
         public Type FieldType { get; set; }
+
         public Type UnderlyingType { get; set; }
+
+        public required IGraphType ResolvedType { get; set; }
+
         public Func<ContentElement, object> FieldAccessor { get; set; }
-        public string Index { get; set; }
+
+        public string IndexProperty { get; set; }
+
         public Type IndexType { get; set; }
     }
 }

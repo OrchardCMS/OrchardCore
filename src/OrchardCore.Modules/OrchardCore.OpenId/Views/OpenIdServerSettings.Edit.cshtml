@@ -22,10 +22,18 @@
         </div>
     </div>
 
+    <div class="mb-3" asp-validation-class-for="EnablePushedAuthorizationEndpoint">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="EnablePushedAuthorizationEndpoint">
+            <label class="form-check-label" asp-for="EnablePushedAuthorizationEndpoint">@T["Enable Pushed Authorization Endpoint"]</label>
+            <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/par</code>
+        </div>
+    </div>
+
     <div class="mb-3" asp-validation-class-for="EnableLogoutEndpoint">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="EnableLogoutEndpoint">
-            <label class="form-check-label" asp-for="EnableLogoutEndpoint">@T["Enable Logout Endpoint"]</label>
+            <label class="form-check-label" asp-for="EnableLogoutEndpoint">@T["Enable End Session Endpoint"]</label>
             <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/logout</code>
         </div>
     </div>
@@ -116,6 +124,19 @@
         </div>
         <div class="hint">
             @T["A global setting that enforces PKCE for all registered clients, regardless of whether the 'Require PKCE' option is enabled for individual client applications."]
+        </div>
+    </div>
+</div>
+
+<div class="mb-4">
+    <h3>@T["Pushed Authorization Requests"]</h3>
+    <div class="mb-3" asp-validation-class-for="RequirePushedAuthorizationRequests">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="RequirePushedAuthorizationRequests">
+            <label class="form-check-label" asp-for="RequirePushedAuthorizationRequests">@T["Require Pushed Authorization Requests"]</label>
+        </div>
+        <div class="hint">
+            @T["A global setting that enforces PAR for all registered clients, regardless of whether the 'Require PAR' option is enabled for individual client applications."]
         </div>
     </div>
 </div>

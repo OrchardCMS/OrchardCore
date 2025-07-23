@@ -1,20 +1,32 @@
 [
   {
-    "inputs": [
-      "Assets/scss/menu.scss"
-    ],
-    "output": "wwwroot/Styles/menu.css"
+    "action": "sass",
+    "name": "menu",
+    "source": "Assets/scss/menu.scss",
+    "tags": ["admin", "dashboard", "css"]
   },
   {
-    "inputs": [
-      "Assets/js/jquery.mjs.nestedSortable.js"
-    ],
-    "output": "wwwroot/Scripts/menu.js"
+    "action": "min",
+    "name": "menu",
+    "source": "Assets/js/menu.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/activate-links.js"
-    ],
-    "output": "wwwroot/Scripts/activate-links.js"
+    "action": "min",
+    "name": "activate-links",
+    "source": "Assets/js/activate-links.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "sass",
+    "name": "menu-permission-picker",
+    "source": "Assets/scss/menu-permission-picker.scss",
+    "tags": ["admin", "dashboard", "css"]
+  },
+  {
+    "action": "min",
+    "name": "menu-permission-picker",
+    "source": "Assets/js/menu-permission-picker.js",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

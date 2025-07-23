@@ -1,6 +1,6 @@
 using BenchmarkDotNet.Running;
 
-namespace OrchardCore.Benchmark;
+namespace OrchardCore.Benchmarks;
 
 public static class Program
 {

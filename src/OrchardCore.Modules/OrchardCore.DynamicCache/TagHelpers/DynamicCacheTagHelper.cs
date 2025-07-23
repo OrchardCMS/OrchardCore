@@ -227,7 +227,7 @@ public class DynamicCacheTagHelper : TagHelper
 
                         var formattingContext = new DistributedCacheTagHelperFormattingContext
                         {
-                            Html = new HtmlString(html)
+                            Html = new HtmlString(html),
                         };
 
                         await _dynamicCacheService.SetCachedValueAsync(cacheContext, html);

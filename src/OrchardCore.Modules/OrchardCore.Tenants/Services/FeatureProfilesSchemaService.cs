@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NJsonSchema;
 using OrchardCore.Environment.Shell.Models;
@@ -11,13 +10,9 @@ namespace OrchardCore.Tenants.Services;
 public class FeatureProfilesSchemaService : IFeatureProfilesSchemaService
 {
     private readonly FeatureProfilesRuleOptions _featureProfilesRuleOptions;
-    private readonly IHostEnvironment _hostEnvironment;
 
-    public FeatureProfilesSchemaService(
-        IOptions<FeatureProfilesRuleOptions> options,
-        IHostEnvironment hostEnvironment)
+    public FeatureProfilesSchemaService(IOptions<FeatureProfilesRuleOptions> options)
     {
-        _hostEnvironment = hostEnvironment;
         _featureProfilesRuleOptions = options.Value;
     }
 
@@ -34,7 +29,7 @@ public class FeatureProfilesSchemaService : IFeatureProfilesSchemaService
             var ruleProperty = new JsonSchema()
             {
                 Type = JsonObjectType.String,
-                Description = "The rule to apply to this expression"
+                Description = "The rule to apply to this expression",
             };
 
             foreach (var ruleOption in _featureProfilesRuleOptions.Rules.Keys)
@@ -44,11 +39,6 @@ public class FeatureProfilesSchemaService : IFeatureProfilesSchemaService
 
             schema.Definitions.Add(nameof(FeatureRule.Rule), ruleProperty);
             rule.Reference = ruleProperty;
-        }
-
-        if (_hostEnvironment.IsDevelopment())
-        {
-            return schema.ToJson();
         }
 
         return schema.ToJson();

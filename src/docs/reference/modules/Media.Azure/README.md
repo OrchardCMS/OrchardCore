@@ -36,7 +36,7 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
-Refer also to the [Configuration Section](../../core/Configuration/README.md),
+Refer also to the [Configuration Section](../Configuration/README.md),
 and the [Media Section](../Media/README.md) for other Media related configuration settings.
 
 If the `CreateContainer` option is set to `true` an activating event will check on `Startup` for a
@@ -148,7 +148,9 @@ The following configuration values are used by default and can be customized:
         // Activates an event to create the container if it does not already exist.
         "CreateContainer": true,
         // Whether the 'Container' is deleted if the tenant is removed, false by default.
-        "RemoveContainer": true
+        "RemoveContainer": true,
+        // Indicates whether to delete all files under the specified base path when the tenant is removed. This setting only takes effect if 'RemoveContainer' is set to false. Defaults to false.
+        "RemoveFilesFromBasePath": true
     }
   }
 }

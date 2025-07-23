@@ -1,10 +1,21 @@
+using Xunit.v3;
 using SystemEnvironment = System.Environment;
+
+#nullable enable
 
 namespace OrchardCore.Tests;
 
-public class CIFactAttribute : FactAttribute
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+public class CIFactAttribute : Attribute, IFactAttribute
 {
-    public override string Skip
+    /// <inheritdoc/>
+    public string? DisplayName { get; set; }
+
+    /// <inheritdoc/>
+    public bool Explicit { get; set; }
+
+    /// <inheritdoc/>
+    public string? Skip
     {
         get
         {
@@ -19,4 +30,18 @@ public class CIFactAttribute : FactAttribute
             return null!;
         }
     }
+
+    /// <inheritdoc/>
+    public Type? SkipType { get; set; }
+
+    /// <inheritdoc/>
+    public string? SkipUnless { get; set; }
+
+    /// <inheritdoc/>
+    public string? SkipWhen { get; set; }
+
+    /// <inheritdoc/>
+    public int Timeout { get; set; }
+
+    public Type[]? SkipExceptions => Array.Empty<Type>();
 }

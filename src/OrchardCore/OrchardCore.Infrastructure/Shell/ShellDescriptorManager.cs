@@ -116,7 +116,7 @@ public class ShellDescriptorManager : IShellDescriptorManager
 
             var installed = new InstalledShellFeature(feature)
             {
-                SerialNumber = shellDescriptor.SerialNumber
+                SerialNumber = shellDescriptor.SerialNumber,
             };
 
             shellDescriptor.Installed.Add(installed);

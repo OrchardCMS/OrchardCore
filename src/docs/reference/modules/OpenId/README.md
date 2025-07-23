@@ -83,14 +83,18 @@ A sample of OpenID Connect Settings recipe step:
       "EncryptionCertificateThumbprint": "BC34460ABEA2D576EA68E8FFCFEEB3F45C94FB0F",
       "EnableTokenEndpoint": true,
       "EnableAuthorizationEndpoint": false,
+      "EnableIntrospectionEndpoint": false,
       "EnableLogoutEndpoint": true,
+      "EnablePushedAuthorizationEndpoint": false,
+      "EnableRevocationEndpoint": false,
       "EnableUserInfoEndpoint": true,
       "AllowPasswordFlow": true,
       "AllowClientCredentialsFlow": false,
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
       "AllowImplicitFlow": false,
-      "RequireProofKeyForCodeExchange" : false
+      "RequireProofKeyForCodeExchange": false,
+      "RequirePushedAuthorizationRequests": false
 }
 ```
 
@@ -140,7 +144,8 @@ A sample of OpenID Connect App recipe step:
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
       "AllowImplicitFlow": false,
-      "RequireProofKeyForCodeExchange": false
+      "RequireProofKeyForCodeExchange": false,
+      "RequirePushedAuthorizationRequests": false
 }
 ```
 
@@ -150,12 +155,12 @@ Scopes can be set through OpenID Connect Scopes menu in the admin dashboard (thr
 
 OpenID Connect Scopes require the following configuration.
 
-| Property | Description |
-| -------- | ----------- |
-| Name | Unique name of the scope. |
-| Display Name | Display name associated with the current scope. |
-| Description | Describe how this scope is used in the system. |
-| Tenants | Build the audience based on tenants names. |
+| Property             | Description                                                       |
+|----------------------|-------------------------------------------------------------------|
+| Name                 | Unique name of the scope.                                         |
+| Display Name         | Display name associated with the current scope.                   |
+| Description          | Describe how this scope is used in the system.                    |
+| Tenants              | Build the audience based on tenants names.                        |
 | Additional resources | Build the audience based on the space separated strings provided. |
 
 A sample of OpenID Connect Scope recipe step:
@@ -255,11 +260,11 @@ To use the certificate on an Azure hosted site.
 
 Token Validation require the following configuration.
 
-| Property | Description |
-| -------- | ----------- |
+| Property                    | Description                                                                                                      |
+|-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | Authorization server tenant | The tenant that runs OpenID Connect Server. If none is selected, then the following properties must be provided. |
-| Authority | The address of the remote OpenID Connect server that issued the token. |
-| Audience | Defines the intended recipient of the token that must be checked. |
+| Authority                   | The address of the remote OpenID Connect server that issued the token.                                           |
+| Audience                    | Defines the intended recipient of the token that must be checked.                                                |
 
 A sample of Token Validation Settings recipe step:
 

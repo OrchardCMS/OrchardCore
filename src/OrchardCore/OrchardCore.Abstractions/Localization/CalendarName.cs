@@ -11,5 +11,5 @@ public enum CalendarName
     Julian,
     Persian,
     UmAlQura,
-    Unknown
+    Unknown,
 }

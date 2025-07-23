@@ -13,7 +13,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Services;
 
-public class DefaultContentsAdminListFilterProvider : IContentsAdminListFilterProvider
+public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListFilterProvider
 {
     public void Build(QueryEngineBuilder<ContentItem> builder)
     {
@@ -90,7 +90,7 @@ public class DefaultContentsAdminListFilterProvider : IContentsAdminListFilterPr
                             case ContentsOrder.Title:
                                 query.With<ContentItemIndex>().OrderBy(cr => cr.DisplayText).ThenBy(cr => cr.Id);
                                 break;
-                        };
+                        }
                     }
                     else
                     {

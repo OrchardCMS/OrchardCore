@@ -53,7 +53,7 @@ public sealed class MenuController : Controller
 
     public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -116,12 +116,12 @@ public sealed class MenuController : Controller
     public ActionResult IndexFilterPOST(AdminMenuListViewModel model)
         => RedirectToAction(nameof(List), new RouteValueDictionary
         {
-            {_optionsSearch, model.Options.Search }
+            {_optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -134,7 +134,7 @@ public sealed class MenuController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(AdminMenuCreateViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -153,7 +153,7 @@ public sealed class MenuController : Controller
 
     public async Task<IActionResult> Edit(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -169,7 +169,7 @@ public sealed class MenuController : Controller
         var model = new AdminMenuEditViewModel
         {
             Id = adminMenu.Id,
-            Name = adminMenu.Name
+            Name = adminMenu.Name,
         };
 
         return View(model);
@@ -178,7 +178,7 @@ public sealed class MenuController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(AdminMenuEditViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -208,7 +208,7 @@ public sealed class MenuController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -240,7 +240,7 @@ public sealed class MenuController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -272,7 +272,7 @@ public sealed class MenuController : Controller
     [HttpPost]
     public async Task<IActionResult> Toggle(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }

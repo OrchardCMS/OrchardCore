@@ -67,11 +67,11 @@ This feature supports either single-tenant or multi-tenant app registrations. Be
 
 When you register and configure an application, you can configure it to be single-tenant or multi-tenant by setting the audience and tenant ID as follows:
 
-| Audience | Single/multi-tenant | Tenant ID | Who can sign in |
-|----------|---------------------|-----------|-----------------|
-| Accounts in your directory only | Single tenant | Use the "Directory (tenant) ID" from the Azure Portal. | All user and guest accounts in your directory can authenticate. Use this option if your target audience is internal to your organization. |
-| Accounts in any Microsoft Entra directory | Multi-tenant | `organizations` | All users and guests with a work or school account from Microsoft can authenticate. This includes schools and businesses that use Microsoft 365. Use this option if your target audience is business or educational customers. |
-| Accounts in any Microsoft Entra directory and personal Microsoft accounts (such as Skype, Xbox, Outlook.com) | Multi-tenant | `common` | All users with a work or school, or personal Microsoft account can authenticate. It includes schools and businesses that use Microsoft 365 as well as personal accounts that are used to sign in to services like Xbox and Skype. Use this option to target the widest set of Microsoft accounts. |
+| Audience                                                                                                     | Single/multi-tenant | Tenant ID                                              | Who can sign in                                                                                                                                                                                                                                                                                   |
+|--------------------------------------------------------------------------------------------------------------|---------------------|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Accounts in your directory only                                                                              | Single tenant       | Use the "Directory (tenant) ID" from the Azure Portal. | All user and guest accounts in your directory can authenticate. Use this option if your target audience is internal to your organization.                                                                                                                                                         |
+| Accounts in any Microsoft Entra directory                                                                    | Multi-tenant        | `organizations`                                        | All users and guests with a work or school account from Microsoft can authenticate. This includes schools and businesses that use Microsoft 365. Use this option if your target audience is business or educational customers.                                                                    |
+| Accounts in any Microsoft Entra directory and personal Microsoft accounts (such as Skype, Xbox, Outlook.com) | Multi-tenant        | `common`                                               | All users with a work or school, or personal Microsoft account can authenticate. It includes schools and businesses that use Microsoft 365 as well as personal accounts that are used to sign in to services like Xbox and Skype. Use this option to target the widest set of Microsoft accounts. |
 
 !!! warning
     When configuring your application for multitenancy, it's crucial to be aware of the security implications. Allowing users from any Microsoft Entra directory and personal Microsoft accounts to authenticate can significantly broaden the potential user base. 
@@ -102,12 +102,14 @@ The `OrchardCore.Microsoft.Authentication` module allows the user to use configu
 The following configuration values can be customized:
 
 ```json
-    "OrchardCore_Microsoft_Authentication_MicrosoftAccount": {
-      "AppId": "",
-      "AppSecret": "",
-      "CallbackPath": "/signin-microsoft",
-      "SaveTokens": false
-    }
+{
+  "OrchardCore_Microsoft_Authentication_MicrosoftAccount": {
+    "AppId": "",
+    "AppSecret": "",
+    "CallbackPath": "/signin-microsoft",
+    "SaveTokens": false
+  }
+}
 ```
 
 ```json
@@ -120,4 +122,4 @@ The following configuration values can be customized:
     }
 ```
 
-For more information please refer to [Configuration](../../core/Configuration/README.md).
+For more information please refer to [Configuration](../../modules/Configuration/README.md).

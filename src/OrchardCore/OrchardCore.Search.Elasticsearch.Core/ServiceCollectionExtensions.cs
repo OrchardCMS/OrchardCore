@@ -1,10 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.Modules;
+using OrchardCore.Indexing.Core;
 using OrchardCore.Queries;
-using OrchardCore.Recipes;
-using OrchardCore.Search.Elasticsearch.Core.Handlers;
-using OrchardCore.Search.Elasticsearch.Core.Recipes;
+using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch;
@@ -14,22 +11,20 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Adds Elastic services.
     /// </summary>
-    public static IServiceCollection AddElasticServices(this IServiceCollection services)
+    public static IServiceCollection AddElasticsearchServices(this IServiceCollection services)
     {
-        services.AddSingleton<ElasticIndexSettingsService>();
-        services.AddSingleton<ElasticIndexManager>();
-        services.AddScoped<ElasticIndexingService>();
-        services.AddScoped<IModularTenantEvents, ElasticIndexInitializerService>();
-        services.AddScoped<IElasticSearchQueryService, ElasticSearchQueryService>();
-        services.AddScoped<IElasticQueryService, ElasticQueryService>();
-        services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
+        services.AddScoped<ElasticsearchQueryService>();
 
-        services.AddQuerySource<ElasticQuerySource>(ElasticQuerySource.SourceName);
+        services.AddQuerySource<ElasticsearchQuerySource>(ElasticsearchQuerySource.SourceName);
 
-        services.AddRecipeExecutionStep<ElasticIndexStep>();
-        services.AddRecipeExecutionStep<ElasticSettingsStep>();
-        services.AddRecipeExecutionStep<ElasticIndexRebuildStep>();
-        services.AddRecipeExecutionStep<ElasticIndexResetStep>();
+        return services;
+    }
+
+    public static IServiceCollection AddElasticsearchIndexingSource(this IServiceCollection services, string implementationType, Action<IndexingOptionsEntry> action = null)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(implementationType);
+
+        services.AddIndexingSource<ElasticsearchIndexManager, ElasticsearchDocumentIndexManager, ElasticsearchIndexNameProvider, ElasticsearchConnectionOptions>(ElasticsearchConstants.ProviderName, implementationType, action);
 
         return services;
     }

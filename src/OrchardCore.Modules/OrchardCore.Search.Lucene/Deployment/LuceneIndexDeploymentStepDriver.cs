@@ -1,25 +1,28 @@
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Indexing;
 using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
 public sealed class LuceneIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexDeploymentStep>
 {
-    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+    private readonly IIndexProfileStore _indexStore;
 
-    public LuceneIndexDeploymentStepDriver(LuceneIndexSettingsService luceneIndexSettingsService)
+    public LuceneIndexDeploymentStepDriver(IIndexProfileStore indexStore)
     {
-        _luceneIndexSettingsService = luceneIndexSettingsService;
+        _indexStore = indexStore;
     }
 
     public override Task<IDisplayResult> DisplayAsync(LuceneIndexDeploymentStep step, BuildDisplayContext context)
     {
         return
             CombineAsync(
-                View("LuceneIndexDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("LuceneIndexDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                View("LuceneIndexDeploymentStep_Fields_Summary", step)
+                    .Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
+                View("LuceneIndexDeploymentStep_Fields_Thumbnail", step)
+                    .Location("Thumbnail", "Content")
             );
     }
 
@@ -29,7 +32,7 @@ public sealed class LuceneIndexDeploymentStepDriver : DisplayDriver<DeploymentSt
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
-            model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 

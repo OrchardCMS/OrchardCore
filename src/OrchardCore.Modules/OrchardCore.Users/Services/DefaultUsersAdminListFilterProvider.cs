@@ -8,7 +8,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Users.Services;
 
-public class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterProvider
+public sealed class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterProvider
 {
     public void Build(QueryEngineBuilder<User> builder)
     {
@@ -61,7 +61,7 @@ public class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterProvider
                             case UsersOrder.Email:
                                 query.With<UserIndex>().OrderBy(u => u.NormalizedEmail);
                                 break;
-                        };
+                        }
                     }
                     else
                     {

@@ -41,40 +41,43 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentDisplayDriver, FormContentDisplayDriver>();
 
         services.AddContentPart<FormPart>()
-                .UseDisplayDriver<FormPartDisplayDriver>();
+            .UseDisplayDriver<FormPartDisplayDriver>();
 
         services.AddContentPart<FormElementPart>()
-                .UseDisplayDriver<FormElementPartDisplayDriver>();
+            .UseDisplayDriver<FormElementPartDisplayDriver>();
 
         services.AddContentPart<FormInputElementPart>()
-                .UseDisplayDriver<FormInputElementPartDisplayDriver>();
+            .UseDisplayDriver<FormInputElementPartDisplayDriver>();
+
+        services.AddContentPart<FormInputElementVisibilityPart>()
+            .UseDisplayDriver<FormInputElementVisibilityPartDisplayDriver>();
 
         services.AddContentPart<LabelPart>()
-                .UseDisplayDriver<LabelPartDisplayDriver>();
+            .UseDisplayDriver<LabelPartDisplayDriver>();
 
         services.AddContentPart<ButtonPart>()
-                .UseDisplayDriver<ButtonPartDisplayDriver>();
+            .UseDisplayDriver<ButtonPartDisplayDriver>();
 
         services.AddContentPart<InputPart>()
-                .UseDisplayDriver<InputPartDisplayDriver>();
+            .UseDisplayDriver<InputPartDisplayDriver>();
 
         services.AddContentPart<SelectPart>()
             .UseDisplayDriver<SelectPartDisplayDriver>();
 
         services.AddContentPart<TextAreaPart>()
-                .UseDisplayDriver<TextAreaPartDisplayDriver>();
+            .UseDisplayDriver<TextAreaPartDisplayDriver>();
 
         services.AddContentPart<ValidationSummaryPart>()
-                .UseDisplayDriver<ValidationSummaryPartDisplayDriver>();
+            .UseDisplayDriver<ValidationSummaryPartDisplayDriver>();
 
         services.AddContentPart<ValidationPart>()
-                .UseDisplayDriver<ValidationPartDisplayDriver>();
+            .UseDisplayDriver<ValidationPartDisplayDriver>();
 
         services.AddContentPart<FormElementLabelPart>()
-                .UseDisplayDriver<FormElementLabelPartDisplayDriver>();
+            .UseDisplayDriver<FormElementLabelPartDisplayDriver>();
 
         services.AddContentPart<FormElementValidationPart>()
-                .UseDisplayDriver<FormElementValidationPartDisplayDriver>();
+            .UseDisplayDriver<FormElementValidationPartDisplayDriver>();
 
         services.AddDataMigration<Migrations>();
         services.AddShapeTableProvider<FormShapeTableProvider>();

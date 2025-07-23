@@ -19,7 +19,7 @@ public class WorkflowTrimmingViewModel
             .Select(status => new WorkflowStatusItem
             {
                 Status = status,
-                IsSelected = false
+                IsSelected = false,
             })
             .ToArray();
     }

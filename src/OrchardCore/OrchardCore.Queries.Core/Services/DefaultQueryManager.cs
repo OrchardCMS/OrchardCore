@@ -154,7 +154,7 @@ public sealed class DefaultQueryManager : IQueryManager
         var result = new ListQueryResult
         {
             Count = records.Count(),
-            Records = records.Skip(skip).Take(pageSize).ToArray()
+            Records = records.Skip(skip).Take(pageSize).ToArray(),
         };
 
         foreach (var record in result.Records)
@@ -269,6 +269,13 @@ public sealed class DefaultQueryManager : IQueryManager
         if (returnContentItems != null)
         {
             query.ReturnContentItems = returnContentItems.GetValue<bool>();
+        }
+
+        var properties = data[nameof(Query.Properties)]?.AsObject();
+
+        if (properties is not null)
+        {
+            query.Properties = properties.Clone();
         }
     }
 }

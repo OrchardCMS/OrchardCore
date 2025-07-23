@@ -216,7 +216,7 @@ public class DataMigrationManager : IDataMigrationManager
 
                 while (lookupTable.TryGetValue(current, out var methodInfo))
                 {
-                    _logger.LogInformation("Applying migration for '{FeatureName}' from version {Version}.", featureId, current);
+                    _logger.LogInformation("Applying migration for '{Migration}' in '{FeatureId}' from version {Version}.", migration.GetType().FullName, featureId, current);
 
                     current = await InvokeMethodAsync(methodInfo, migration);
                 }
@@ -231,7 +231,7 @@ public class DataMigrationManager : IDataMigrationManager
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while running migration version {Version} for '{FeatureName}'.", current, featureId);
+                _logger.LogError(ex, "Error while running migration version {Version} for '{Migration}' in '{FeatureId}'.", current, migration.GetType().FullName, featureId);
 
                 await _session.CancelAsync();
             }

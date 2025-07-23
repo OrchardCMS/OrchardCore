@@ -15,7 +15,7 @@ internal sealed class OpenIdApplicationStepTestsData
                 ClientSecret = "test-secret",
                 ClientType = "confidential",
                 ConsentType = "explicit",
-                DisplayName = "Test Application"
+                DisplayName = "Test Application",
             },
             new[] { new Uri("https://localhost:111/logout-redirect"), new Uri("https://localhost:222/logout-redirect") },
             new[] { new Uri("https://localhost:111/redirect"), new Uri("https://localhost:222/redirect") },
@@ -24,7 +24,8 @@ internal sealed class OpenIdApplicationStepTestsData
                 OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
                 OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
                 OpenIddictConstants.Permissions.Endpoints.Authorization,
-                OpenIddictConstants.Permissions.Endpoints.Logout,
+                OpenIddictConstants.Permissions.Endpoints.EndSession,
+                OpenIddictConstants.Permissions.Endpoints.PushedAuthorization,
                 OpenIddictConstants.Permissions.Endpoints.Token,
                 OpenIddictConstants.Permissions.ResponseTypes.Code,
             });
@@ -37,7 +38,7 @@ internal sealed class OpenIdApplicationStepTestsData
                 ClientSecret = "test-secret",
                 ClientType = "confidential",
                 ConsentType = "explicit",
-                DisplayName = "Test Application"
+                DisplayName = "Test Application",
             },
             new[] { new Uri("https://localhost/logout-redirect") },
             new[] { new Uri("https://localhost/redirect") },
@@ -45,7 +46,7 @@ internal sealed class OpenIdApplicationStepTestsData
             new[] {
                 OpenIddictConstants.Permissions.GrantTypes.ClientCredentials,
                 OpenIddictConstants.Permissions.Endpoints.Token,
-                $"{OpenIddictConstants.Permissions.Prefixes.Scope}scope1"
+                $"{OpenIddictConstants.Permissions.Prefixes.Scope}scope1",
             });
     }
 

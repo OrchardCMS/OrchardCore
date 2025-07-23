@@ -7,7 +7,7 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Recipes;
 
-public class VariablesMethodProvider : IGlobalMethodProvider
+public sealed class VariablesMethodProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _globalMethod;
     private const string GlobalMethodName = "variables";

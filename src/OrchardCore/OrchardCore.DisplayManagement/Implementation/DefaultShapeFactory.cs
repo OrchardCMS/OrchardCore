@@ -68,7 +68,7 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
             ShapeFactory = this,
             ShapeType = shapeType,
             OnCreated = [],
-            CreateAsync = shapeFactory
+            CreateAsync = shapeFactory,
         };
 
         creating?.Invoke(creatingContext);
@@ -94,7 +94,7 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
             New = creatingContext.New,
             ShapeFactory = creatingContext.ShapeFactory,
             ShapeType = creatingContext.ShapeType,
-            Shape = await creatingContext.CreateAsync()
+            Shape = await creatingContext.CreateAsync(),
         };
 
         var shape = createdContext.Shape

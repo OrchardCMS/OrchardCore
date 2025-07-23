@@ -11,7 +11,7 @@ public class JoinTask : TaskActivity<JoinTask>
     public enum JoinMode
     {
         WaitAll,
-        WaitAny
+        WaitAny,
     }
 
     public JoinTask(IStringLocalizer<JoinTask> localizer)

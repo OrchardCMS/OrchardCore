@@ -46,12 +46,12 @@ public sealed class AccessController : Controller
     public async Task<IActionResult> Authorize()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -61,20 +61,47 @@ public sealed class AccessController : Controller
             return NotFound();
         }
 
-        // Retrieve the claims stored in the authentication cookie.
-        // If they can't be extracted, redirect the user to the login page.
+        // Try to retrieve the user principal stored in the authentication cookie and redirect
+        // the user agent to the login page (or to an external provider) in the following cases:
+        //
+        //  - If the user principal can't be extracted or the cookie is too old.
+        //  - If prompt=login was specified by the client application.
+        //  - If max_age=0 was specified by the client application (max_age=0 is equivalent to prompt=login).
+        //  - If a max_age parameter was provided and the authentication cookie is not considered "fresh" enough.
         var result = await HttpContext.AuthenticateAsync();
-        if (result == null || !result.Succeeded || request.HasPrompt(Prompts.Login))
+        if (result is not { Succeeded: true } ||
+            ((request.HasPromptValue(PromptValues.Login) || request.MaxAge is 0 ||
+             (request.MaxAge is not null && result.Properties?.IssuedUtc is not null &&
+              TimeProvider.System.GetUtcNow() - result.Properties.IssuedUtc > TimeSpan.FromSeconds(request.MaxAge.Value))) &&
+            TempData["IgnoreAuthenticationChallenge"] is null or false))
         {
-            return RedirectToLoginPage(request);
-        }
+            // If the client application requested promptless authentication,
+            // return an error indicating that the user is not logged in.
+            if (request.HasPromptValue(PromptValues.None))
+            {
+                return Forbid(
+                    authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
+                    properties: new AuthenticationProperties(new Dictionary<string, string>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is not logged in.",
+                    }));
+            }
 
-        // If a max_age parameter was provided, ensure that the cookie is not too old.
-        // If it's too old, automatically redirect the user agent to the login page.
-        if (request.MaxAge != null && result.Properties.IssuedUtc != null &&
-            DateTimeOffset.UtcNow - result.Properties.IssuedUtc > TimeSpan.FromSeconds(request.MaxAge.Value))
-        {
-            return RedirectToLoginPage(request);
+            // To avoid endless login endpoint -> authorization endpoint redirects, a special temp data entry is
+            // used to skip the challenge if the user agent has already been redirected to the login endpoint.
+            //
+            // Note: this flag doesn't guarantee that the user has accepted to re-authenticate. If such a guarantee
+            // is needed, the existing authentication cookie MUST be deleted AND revoked (e.g using ASP.NET Core
+            // Identity's security stamp feature with an extremely short revalidation time span) before triggering
+            // a challenge to redirect the user agent to the login endpoint.
+            TempData["IgnoreAuthenticationChallenge"] = true;
+
+            return Challenge(new AuthenticationProperties
+            {
+                RedirectUri = Request.PathBase + Request.Path + QueryString.Create(
+                    Request.HasFormContentType ? Request.Form : Request.Query),
+            });
         }
 
         var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
@@ -94,12 +121,12 @@ public sealed class AccessController : Controller
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The logged in user is not allowed to access this client application."
+                        "The logged in user is not allowed to access this client application.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
             case ConsentTypes.Implicit:
             case ConsentTypes.External when authorizations.Count > 0:
-            case ConsentTypes.Explicit when authorizations.Count > 0 && !request.HasPrompt(Prompts.Consent):
+            case ConsentTypes.Explicit when authorizations.Count > 0 && !request.HasPromptValue(PromptValues.Consent):
                 var identity = new ClaimsIdentity(result.Principal.Claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
@@ -123,49 +150,20 @@ public sealed class AccessController : Controller
 
                 return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
-            case ConsentTypes.Explicit when request.HasPrompt(Prompts.None):
+            case ConsentTypes.Explicit when request.HasPromptValue(PromptValues.None):
                 return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "Interactive user consent is required."
+                        "Interactive user consent is required.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
             default:
                 return View(new AuthorizeViewModel
                 {
                     ApplicationName = await _applicationManager.GetLocalizedDisplayNameAsync(application),
-                    RequestId = request.RequestId,
-                    Scope = request.Scope
+                    Scope = request.Scope,
                 });
-        }
-
-        IActionResult RedirectToLoginPage(OpenIddictRequest request)
-        {
-            // If the client application requested promptless authentication,
-            // return an error indicating that the user is not logged in.
-            if (request.HasPrompt(Prompts.None))
-            {
-                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                {
-                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
-                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is not logged in."
-                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-            }
-
-            string GetRedirectUrl()
-            {
-                // Override the prompt parameter to prevent infinite authentication/authorization loops.
-                var parameters = Request.Query.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                parameters[Parameters.Prompt] = "continue";
-
-                return Request.PathBase + Request.Path + QueryString.Create(parameters);
-            }
-
-            return Challenge(new AuthenticationProperties
-            {
-                RedirectUri = GetRedirectUrl()
-            });
         }
     }
 
@@ -203,12 +201,12 @@ public sealed class AccessController : Controller
         // get codes/tokens without the user explicitly approving the authorization demand.
 
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -238,7 +236,7 @@ public sealed class AccessController : Controller
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The logged in user is not allowed to access this client application."
+                        "The logged in user is not allowed to access this client application.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
             default:
@@ -272,12 +270,12 @@ public sealed class AccessController : Controller
     public IActionResult AuthorizeDeny()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -294,12 +292,12 @@ public sealed class AccessController : Controller
     public async Task<IActionResult> Logout()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -320,10 +318,7 @@ public sealed class AccessController : Controller
             }
         }
 
-        return View(new LogoutViewModel
-        {
-            RequestId = request.RequestId
-        });
+        return View();
     }
 
     [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
@@ -331,12 +326,12 @@ public sealed class AccessController : Controller
     public async Task<IActionResult> LogoutAccept()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -368,12 +363,12 @@ public sealed class AccessController : Controller
     public IActionResult LogoutDeny()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
-        if (response != null)
+        if (response is not null)
         {
             return View("Error", new ErrorViewModel
             {
                 Error = response.Error,
-                ErrorDescription = response.ErrorDescription
+                ErrorDescription = response.ErrorDescription,
             });
         }
 
@@ -429,7 +424,7 @@ public sealed class AccessController : Controller
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidScope,
                 [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                    "The 'offline_access' scope is not allowed when using the client credentials grant."
+                    "The 'offline_access' scope is not allowed when using the client credentials grant.",
             }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
@@ -461,7 +456,7 @@ public sealed class AccessController : Controller
             identity.AddClaim(new Claim(identity.RoleClaimType, role)
                 .SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
 
-            if (roleService != null)
+            if (roleService is not null)
             {
                 foreach (var claim in await roleService.GetRoleClaimsAsync(role))
                 {
@@ -491,7 +486,7 @@ public sealed class AccessController : Controller
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnsupportedGrantType,
                 [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                    "The resource owner password credentials grant is not supported."
+                    "The resource owner password credentials grant is not supported.",
             }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
@@ -502,7 +497,7 @@ public sealed class AccessController : Controller
             return Forbid(new AuthenticationProperties(new Dictionary<string, string>
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = error
+                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = error,
             }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
@@ -524,7 +519,7 @@ public sealed class AccessController : Controller
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The logged in user is not allowed to access this client application."
+                        "The logged in user is not allowed to access this client application.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
@@ -567,7 +562,7 @@ public sealed class AccessController : Controller
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnauthorizedClient,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The refresh token grant type is not allowed for refresh tokens retrieved using the client credentials flow."
+                        "The refresh token grant type is not allowed for refresh tokens retrieved using the client credentials flow.",
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
         }
@@ -578,10 +573,10 @@ public sealed class AccessController : Controller
         // If the user service is available, try to refresh the principal by retrieving
         // the user object from the database and creating a new claims-based principal.
         var service = HttpContext.RequestServices.GetService<IUserService>();
-        if (service != null)
+        if (service is not null)
         {
             var user = await service.GetUserByUniqueIdAsync(principal.GetUserIdentifier());
-            if (user != null)
+            if (user is not null)
             {
                 principal = await service.CreatePrincipalAsync(user);
                 // Copy the granted scopes and resources from the original authorization code/refresh token principal
@@ -625,7 +620,7 @@ public sealed class AccessController : Controller
                 return new[]
                 {
                     Destinations.AccessToken,
-                    Destinations.IdentityToken
+                    Destinations.IdentityToken,
                 };
 
             default: return new[] { Destinations.AccessToken };
@@ -639,7 +634,7 @@ public sealed class AccessController : Controller
         // located in the current tenant without having to explicitly register a scope.
         var resources = new List<string>()
         {
-            OpenIdConstants.Prefixes.Tenant + _shellSettings.Name
+            OpenIdConstants.Prefixes.Tenant + _shellSettings.Name,
         };
 
         await foreach (var resource in _scopeManager.ListResourcesAsync(scopes))

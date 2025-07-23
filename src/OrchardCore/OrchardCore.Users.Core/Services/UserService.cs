@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
@@ -13,33 +14,42 @@ namespace OrchardCore.Users.Services;
 /// <summary>
 /// Implements <see cref="IUserService"/> by using the ASP.NET Core Identity packages.
 /// </summary>
-public class UserService : IUserService
+public sealed class UserService : IUserService
 {
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
     private readonly IdentityOptions _identityOptions;
     private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
+    private readonly IEnumerable<IRegistrationFormEvents> _registrationFormEvents;
+    private readonly RegistrationOptions _registrationOptions;
     private readonly ISiteService _siteService;
+    private readonly IEnumerable<IUserEventHandler> _handlers;
     private readonly ILogger _logger;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public UserService(
         SignInManager<IUser> signInManager,
         UserManager<IUser> userManager,
         IOptions<IdentityOptions> identityOptions,
         IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
-        IStringLocalizer<UserService> stringLocalizer,
+        IEnumerable<IRegistrationFormEvents> registrationFormEvents,
+        IOptions<RegistrationOptions> registrationOptions,
         ISiteService siteService,
-        ILogger<UserService> logger)
+        IEnumerable<IUserEventHandler> handlers,
+        ILogger<UserService> logger,
+        IStringLocalizer<UserService> stringLocalizer)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _identityOptions = identityOptions.Value;
         _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
-        S = stringLocalizer;
+        _registrationFormEvents = registrationFormEvents;
+        _registrationOptions = registrationOptions.Value;
         _siteService = siteService;
+        _handlers = handlers;
         _logger = logger;
+        S = stringLocalizer;
     }
 
     public async Task<IUser> AuthenticateAsync(string usernameOrEmail, string password, Action<string, string> reportError)
@@ -111,14 +121,36 @@ public class UserService : IUserService
             throw new ArgumentException("Expected a User instance.", nameof(user));
         }
 
+        var hasPassword = !string.IsNullOrWhiteSpace(password);
+
         // Accounts can be created with no password.
-        var identityResult = string.IsNullOrWhiteSpace(password)
-            ? await _userManager.CreateAsync(user)
-            : await _userManager.CreateAsync(user, password);
+        var identityResult = hasPassword
+            ? await _userManager.CreateAsync(user, password)
+            : await _userManager.CreateAsync(user);
+
         if (!identityResult.Succeeded)
         {
+            if (hasPassword)
+            {
+                _logger.LogInformation("Unable to create a new account with password.");
+            }
+            else
+            {
+                _logger.LogInformation("Unable to create a new account with no password.");
+            }
+
             ProcessValidationErrors(identityResult.Errors, newUser, reportError);
+
             return null;
+        }
+
+        if (hasPassword)
+        {
+            _logger.LogInformation("User created a new account with password.");
+        }
+        else
+        {
+            _logger.LogInformation("User created a new account with no password.");
         }
 
         return user;
@@ -163,14 +195,14 @@ public class UserService : IUserService
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
-            return await Task.FromResult<IUser>(null);
+            return null;
         }
 
         var user = await GetUserAsync(userId);
 
         if (user == null)
         {
-            return await Task.FromResult<IUser>(null);
+            return null;
         }
 
         if (user is User u)
@@ -310,5 +342,99 @@ public class UserService : IUserService
                     break;
             }
         }
+    }
+
+    public async Task<IUser> RegisterAsync(RegisterUserForm model, Action<string, string> reportError)
+    {
+        await _registrationFormEvents.InvokeAsync((e, report) => e.RegistrationValidationAsync((key, message) => report(key, message)), reportError, _logger);
+
+        var user = await CreateUserAsync(new User
+        {
+            UserName = model.UserName,
+            Email = model.Email,
+            EmailConfirmed = !_registrationOptions.UsersMustValidateEmail,
+            IsEnabled = !_registrationOptions.UsersAreModerated,
+        }, model.Password, reportError);
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        var context = new UserRegisteringContext(user);
+
+        await _registrationFormEvents.InvokeAsync((e, ctx) => e.RegisteringAsync(ctx), context, _logger);
+
+        if (!context.CancelSignIn)
+        {
+            await _signInManager.SignInAsync(user, isPersistent: false);
+        }
+
+        await _registrationFormEvents.InvokeAsync((e, user) => e.RegisteredAsync(user), user, _logger);
+
+        return user;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> EnableAsync(IUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            if (u.IsEnabled)
+            {
+                return true;
+            }
+
+            u.IsEnabled = true;
+        }
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            var userContext = new UserContext(user);
+            await _handlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger);
+        }
+
+        return result.Succeeded;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> DisableAsync(IUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
+            .Cast<User>()
+            .Where(user => user.IsEnabled)
+            .Take(2)
+            .ToList();
+
+        if (enabledUsersOfAdminRole.Count == 1 && user.UserName == enabledUsersOfAdminRole.First().UserName)
+        {
+            return false;
+        }
+
+        if (user is User u)
+        {
+            if (!u.IsEnabled)
+            {
+                return true;
+            }
+
+            u.IsEnabled = false;
+        }
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            var userContext = new UserContext(user);
+            await _handlers.InvokeAsync((handler, context) => handler.DisabledAsync(context), userContext, _logger);
+        }
+
+        return result.Succeeded;
     }
 }

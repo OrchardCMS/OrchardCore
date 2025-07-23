@@ -8,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
@@ -31,7 +30,6 @@ public sealed class AdminController : Controller
     private readonly IShellHost _shellHost;
     private readonly IShellSettingsManager _shellSettingsManager;
     private readonly IShellRemovalManager _shellRemovalManager;
-    private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly IAuthorizationService _authorizationService;
     private readonly ShellSettings _currentShellSettings;
     private readonly IFeatureProfilesService _featureProfilesService;
@@ -52,7 +50,6 @@ public sealed class AdminController : Controller
         IShellHost shellHost,
         IShellSettingsManager shellSettingsManager,
         IShellRemovalManager shellRemovalManager,
-        IEnumerable<DatabaseProvider> databaseProviders,
         IAuthorizationService authorizationService,
         ShellSettings currentShellSettings,
         IFeatureProfilesService featureProfilesService,
@@ -71,7 +68,6 @@ public sealed class AdminController : Controller
         _shellHost = shellHost;
         _shellSettingsManager = shellSettingsManager;
         _shellRemovalManager = shellRemovalManager;
-        _databaseProviders = databaseProviders;
         _authorizationService = authorizationService;
         _currentShellSettings = currentShellSettings;
         _featureProfilesService = featureProfilesService;
@@ -177,7 +173,7 @@ public sealed class AdminController : Controller
         {
             ShellSettingsEntries = results,
             Options = options,
-            Pager = pagerShape
+            Pager = pagerShape,
         };
 
         // We populate the SelectLists
@@ -224,7 +220,7 @@ public sealed class AdminController : Controller
             { "Options.Status", model.Options.Status },
             { "Options.OrderBy", model.Options.OrderBy },
             { "Options.Search", model.Options.Search },
-            { "Options.TenantsStates", model.Options.TenantsStates }
+            { "Options.TenantsStates", model.Options.TenantsStates },
         });
 
     [HttpPost]
@@ -390,7 +386,7 @@ public sealed class AdminController : Controller
                 {
                     Name = shellSettings.Name,
                     ShellSettings = shellSettings,
-                    Token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)))
+                    Token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0))),
                 };
 
                 return Redirect(HttpContext.GetEncodedUrl(entry));
@@ -437,7 +433,7 @@ public sealed class AdminController : Controller
             RequestUrlHost = shellSettings.RequestUrlHost,
             RequestUrlPrefix = shellSettings.RequestUrlPrefix,
             FeatureProfiles = currentFeatureProfiles,
-            FeatureProfilesItems = featureProfiles
+            FeatureProfilesItems = featureProfiles,
         };
 
         // The user can change the 'preset' database information only if the

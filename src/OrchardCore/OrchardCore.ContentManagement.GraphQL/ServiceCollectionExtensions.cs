@@ -22,7 +22,6 @@ public static class ServiceCollectionExtensions
 
         services.AddPermissionProvider<Permissions>();
 
-        services.AddTransient<DynamicPartGraphType>();
         services.AddScoped<IContentTypeBuilder, TypedContentTypeBuilder>();
         services.AddScoped<IContentTypeBuilder, DynamicContentTypeQueryBuilder>();
 
@@ -39,6 +38,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IIndexAliasProvider>(sp => sp.GetService<DynamicContentFieldsIndexAliasProvider>())
             .AddScoped<IContentDefinitionEventHandler>(sp => sp.GetService<DynamicContentFieldsIndexAliasProvider>());
 
+        services.AddSingleton<IIndexPropertyProvider, DefaultDynamicIndexPropertyProvider>();
         services.AddScoped<IContentTypeBuilder, DynamicContentTypeWhereInputBuilder>();
 
         return services;

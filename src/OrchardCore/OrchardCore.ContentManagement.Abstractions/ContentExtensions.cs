@@ -15,7 +15,7 @@ public static class ContentExtensions
     private static readonly JsonMergeSettings _jsonMergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
-        MergeNullValueHandling = MergeNullValueHandling.Merge
+        MergeNullValueHandling = MergeNullValueHandling.Merge,
     };
 
     private static readonly JsonSerializerOptions _jsonReadExistingObjectSettings = new(JOptions.Default)
@@ -225,13 +225,13 @@ public static class ContentExtensions
         if (contentElement.Data is not null)
         {
             contentElement.Data.Merge(JObject.FromObject(element.Data), _jsonMergeSettings);
+            contentElement.Elements.Clear();
         }
         else
         {
             contentElement.Data = JObject.FromObject(element.Data);
         }
 
-        contentElement.Elements.Clear();
         return contentElement;
     }
 

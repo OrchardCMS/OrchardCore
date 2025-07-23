@@ -34,7 +34,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings))
         {
             return null;
         }
@@ -55,7 +55,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings))
         {
             return null;
         }
@@ -72,11 +72,11 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
         settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
         settings.Tenant = model.Tenant;
 
-        if (!string.IsNullOrEmpty(model.Tenant) && 
+        if (!string.IsNullOrEmpty(model.Tenant) &&
         (!_shellHost.TryGetShellContext(model.Tenant, out var shellContext) || !shellContext.Settings.IsRunning()))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Tenant), S["Invalid tenant value."]);
-        } 
+        }
         else if (!hasAuthority)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Authority), S["A tenant or authority value is required."]);

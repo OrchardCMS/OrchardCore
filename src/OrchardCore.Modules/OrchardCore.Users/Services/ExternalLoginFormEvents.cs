@@ -11,7 +11,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
 
-public sealed class ExternalLoginFormEvents : ILoginFormEvent
+public sealed class ExternalLoginFormEvents : LoginFormEventBase
 {
     private const string ExternalLoginAutoRedirectKeyName = "ELAR";
 
@@ -35,10 +35,7 @@ public sealed class ExternalLoginFormEvents : ILoginFormEvent
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public Task IsLockedOutAsync(IUser user)
-        => Task.CompletedTask;
-
-    public Task LoggedInAsync(IUser user)
+    public override Task LoggedInAsync(IUser user)
     {
         var tempData = _tempDataDictionaryFactory.GetTempData(_httpContextAccessor.HttpContext);
         tempData.Remove(ExternalLoginAutoRedirectKeyName);
@@ -46,7 +43,7 @@ public sealed class ExternalLoginFormEvents : ILoginFormEvent
         return Task.CompletedTask;
     }
 
-    public async Task<IActionResult> LoggingInAsync()
+    public override async Task<IActionResult> LoggingInAsync()
     {
         if (!_externalLoginOptions.UseExternalProviderIfOnlyOneDefined)
         {
@@ -88,13 +85,4 @@ public sealed class ExternalLoginFormEvents : ILoginFormEvent
 
         return null;
     }
-
-    public Task LoggingInAsync(string userName, Action<string, string> reportError)
-        => Task.CompletedTask;
-
-    public Task LoggingInFailedAsync(string userName)
-        => Task.CompletedTask;
-
-    public Task LoggingInFailedAsync(IUser user)
-        => Task.CompletedTask;
 }

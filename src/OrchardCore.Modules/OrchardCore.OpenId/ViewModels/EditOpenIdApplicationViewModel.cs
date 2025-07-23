@@ -50,6 +50,8 @@ public class EditOpenIdApplicationViewModel
 
     public bool RequireProofKeyForCodeExchange { get; set; }
 
+    public bool RequirePushedAuthorizationRequests { get; set; }
+
     public class RoleEntry
     {
         public string Name { get; set; }

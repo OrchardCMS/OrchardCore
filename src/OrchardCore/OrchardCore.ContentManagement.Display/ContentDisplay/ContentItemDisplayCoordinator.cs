@@ -58,9 +58,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                     await result.ApplyAsync(context);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
+                ex.LogException(_logger, displayDriver.GetType(), nameof(BuildDisplayAsync));
             }
         }
 
@@ -90,9 +90,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                         await result.ApplyAsync(context);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!ex.IsFatal())
                 {
-                    InvokeExtensions.HandleException(ex, _logger, partDisplayDrivers.GetType().Name, nameof(BuildDisplayAsync));
+                    ex.LogException(_logger, partDisplayDrivers.GetType(), nameof(BuildDisplayAsync));
                 }
             }
             var tempContext = context;
@@ -102,7 +102,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
             if (part.GetType() == typeof(ContentPart) && partTypeName != contentTypePartDefinition.ContentTypeDefinition.Name)
             {
-                var shapeType = context.DisplayType != "Detail" ? "ContentPart_" + context.DisplayType : "ContentPart";
+                var shapeType = context.DisplayType != OrchardCoreConstants.DisplayType.Detail ? "ContentPart_" + context.DisplayType : "ContentPart";
 
                 var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => ValueTask.FromResult<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
                 shapeResult.Differentiator(partName);
@@ -154,6 +154,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
                 var contentPartShape = shapeResult.Shape;
 
+                if (contentPartShape == null)
+                {
+                    // Part is explicitly hidden in placement.
+                    continue;
+                }
+
                 // Make the ContentPart property available on the shape
                 contentPartShape.Properties[partTypeName] = part.Content;
                 contentPartShape.Properties["ContentItem"] = part.ContentItem;
@@ -178,9 +184,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                             await result.ApplyAsync(context);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (!ex.IsFatal())
                     {
-                        InvokeExtensions.HandleException(ex, _logger, fieldDisplayDriver.GetType().Name, nameof(BuildDisplayAsync));
+                        ex.LogException(_logger, fieldDisplayDriver.GetType(), nameof(BuildDisplayAsync));
                     }
                 }
             }
@@ -201,7 +207,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
             Arguments.From(new
             {
-                Identifier = contentItem.ContentItemId
+                Identifier = contentItem.ContentItemId,
             }));
 
         contentShape.Zones["Parts"] = partsShape;
@@ -216,9 +222,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                     await result.ApplyAsync(context);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(BuildEditorAsync));
+                ex.LogException(_logger, displayDriver.GetType(), nameof(BuildEditorAsync));
             }
         }
 
@@ -292,7 +298,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
             Arguments.From(new
             {
-                Identifier = contentItem.ContentItemId
+                Identifier = contentItem.ContentItemId,
             }));
 
         contentShape.Zones["Parts"] = partsShape;
@@ -307,9 +313,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                     await result.ApplyAsync(context);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(UpdateEditorAsync));
+                ex.LogException(_logger, displayDriver.GetType(), nameof(UpdateEditorAsync));
             }
         }
 

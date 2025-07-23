@@ -23,9 +23,27 @@ Alternatively, you can configure the Azure Search AI service for all your tenant
 }
 ```
 
-Then navigate to `Search` > `Indexing` > `Azure AI Indices` to add an index.
+Then navigate to `Search` > `Indexes` to add an index.
 
 ![image](images/management.gif)
+
+## Indexing custom data
+
+The indexing module supports multiple sources for indexing. This allows you to create indexes based on different data sources, such as content items or custom data.
+
+To register a new source, you can add the following code to your `Startup.cs` file:
+
+```csharp
+services.AddAzureAISearchIndexingSource("CustomSource", o =>
+{
+    o.DisplayName = S["Custom Source in Provider"];
+    o.Description = S["Create a Provider index based on custom source."];
+});
+```
+
+Next, you need to implement the `IIndexProfileHandler` interface. In the `CreatingAsync` and `UpdatingAsync` methods, populate or update the `context.Model.Put(new AzureAISearchIndexMetadata() { IndexMappings = new ElasticsearchIndexMap() })` to define the index fields and their types. You may use `IndexProfileHandlerBase` to simplify your implementation. 
+
+If you want the UI to capture custom data related to your source, implement `DisplayDriver<IndexEntity>`.  
 
 ## Recipes 
 
@@ -40,6 +58,7 @@ The `Create Index Step` create an Azure AI Search index if one does not already 
       "name":"azureai-index-create",
       "Indices":[
         {
+            "Source": "Contents",
             "IndexName": "articles",
             "IndexLatest": false,
             "IndexedContentTypes": [
@@ -49,6 +68,7 @@ The `Create Index Step` create an Azure AI Search index if one does not already 
             "Culture": "any"
         },
         {
+            "Source": "Contents",
             "IndexName": "blogs",
             "IndexLatest": false,
             "IndexedContentTypes": [
@@ -57,6 +77,45 @@ The `Create Index Step` create an Azure AI Search index if one does not already 
             "AnalyzerName":"standard.lucene",
             "Culture": "any"
         }
+      ]
+    }
+  ]
+}
+```
+
+!!! note
+    It's recommended to use the `CreateOrUpdateIndexProfile` recipe step instead as the `azureai-index-create` step is obsolete. 
+
+Here is an example of how to create `AzureAISearch` index profile using the `IndexProfile` for Content items.
+
+```json
+{
+  "steps":[
+    {
+      "name":"CreateOrUpdateIndexProfile",
+      "indexes": [
+	    {
+		    "Name": "BlogPostsAI",
+            "IndexName": "blogposts",
+		    "ProviderName": "AzureAISearch",
+		    "Type": "Content",
+		    "Properties": {
+			    "ContentIndexMetadata": {
+				    "IndexLatest": false,
+				    "IndexedContentTypes": ["BlogPosts"],
+				    "Culture": "any"
+			    },
+                "AzureAISearchIndexMetadata": {
+                    "AnalyzerName": "standard"
+                },
+                "AzureAISearchDefaultQueryMetadata": {
+                    "QueryAnalyzerName": "standard.lucene",
+                    "DefaultSearchFields": [
+                        "Content__ContentItem__FullText"
+                    ]
+                }
+		    }
+	    }
       ]
     }
   ]
@@ -94,6 +153,9 @@ To reset all indices:
 }
 ```
 
+!!! note
+    It's recommended to use the `ResetIndex` recipe step instead as the `azureai-index-reset` step is obsolete. 
+
 ### Rebuild Azure AI Search Index Step
 
 The `Rebuild Index Step` rebuilds an Azure AI Search index. It deletes and recreates the full index content.
@@ -125,11 +187,14 @@ To rebuild all indices:
 }
 ```
 
+!!! note
+    It's recommended to use the `RebuildIndex` recipe step instead as the `azureai-index-rebuild` step is obsolete. 
+
 ## Search Module (`OrchardCore.Search`)
 
 When the Search module is enabled along with Azure AI Search, you'll be able to use run the frontend site search against your Azure AI Search indices.
 
-To configure the frontend site search settings, navigate to `Search` >> `Settings`. On the `Content` tab, change the default search provider to `Azure AI Search`. Then click on the `Azure AI Search` tab select the default search index to use.
+To configure the frontend site search settings, navigate to `Settings` >> `Search` >> `Site Search`. Select the default index to use.
 
 ### Using the Search Feature to Perform Full-Text Search
 ![image](images/frontend-search.gif)

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.Benchmark.Support;
+namespace OrchardCore.Benchmarks.Support;
 
 internal sealed class FakeWebHostEnvironment : IWebHostEnvironment
 {

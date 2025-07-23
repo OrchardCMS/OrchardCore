@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Facebook.Drivers;
+using OrchardCore.Facebook.Endpoints;
 using OrchardCore.Facebook.Filters;
 using OrchardCore.Facebook.Recipes;
 using OrchardCore.Facebook.Services;
@@ -12,7 +13,6 @@ using OrchardCore.Facebook.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Facebook;
@@ -21,7 +21,7 @@ public sealed class Startup : StartupBase
 {
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        builder.UseMiddleware<ScriptsMiddleware>();
+        routes.AddSdkEndpoints();
     }
 
     public override void ConfigureServices(IServiceCollection services)
@@ -33,7 +33,7 @@ public sealed class Startup : StartupBase
         services.AddSiteDisplayDriver<FacebookSettingsDisplayDriver>();
         services.AddRecipeExecutionStep<FacebookSettingsStep>();
 
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddTransient<IConfigureOptions<FacebookSettings>, FacebookSettingsConfiguration>();
 
         services.Configure<MvcOptions>((options) =>

@@ -48,7 +48,7 @@ public class ConfiguredFeaturesShellDescriptorManager : IShellDescriptorManager
             {
                 Features = features
                     .Concat(missingDependencies)
-                    .ToList()
+                    .ToList(),
             };
         }
 

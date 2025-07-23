@@ -7,7 +7,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentLocalization.Security;
 
-public class LocalizeContentAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class LocalizeContentAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider;
     private IAuthorizationService _authorizationService;
@@ -58,9 +58,9 @@ public class LocalizeContentAuthorizationHandler : AuthorizationHandler<Permissi
 
     private static Permission GetOwnerVariation(Permission permission)
     {
-        if (permission.Name == Permissions.LocalizeContent.Name)
+        if (permission.Name == ContentLocalizationPermissions.LocalizeContent.Name)
         {
-            return Permissions.LocalizeOwnContent;
+            return ContentLocalizationPermissions.LocalizeOwnContent;
         }
 
         return null;

@@ -1,12 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
-    <RootNamespace>OrchardCore.Benchmark</RootNamespace>
     <IsPackable>false</IsPackable>
+    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
+    <IsTestProject>false</IsTestProject>
+    <TestProject>false</TestProject>
     <OutputType>Exe</OutputType>
     <!-- Remove the underscores from member name -->
     <NoWarn>$(NoWarn);CA1707;EnableGenerateDocumentationFile</NoWarn>
+    <!-- Without this, we get an "error CS0017: Program has more than one entry point defined." due to
+    BenchmarkDotNet's auto-generated entry point. -->
+    <StartupObject>OrchardCore.Benchmarks.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

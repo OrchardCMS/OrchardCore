@@ -49,7 +49,7 @@ public class SitemapEntries
     {
         var document = new SitemapRouteDocument()
         {
-            Identifier = identifier
+            Identifier = identifier,
         };
 
         var sitemaps = await _sitemapManager.GetSitemapsAsync();

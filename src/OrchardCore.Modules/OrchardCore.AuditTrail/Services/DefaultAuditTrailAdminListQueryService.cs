@@ -10,7 +10,7 @@ using YesSql;
 
 namespace OrchardCore.AuditTrail.Services;
 
-public class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminListQueryService
+public sealed class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminListQueryService
 {
     private const string DateFormat = "yyyy-MM-dd";
     private readonly IAuditTrailManager _auditTrailManager;
@@ -18,7 +18,8 @@ public class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminListQueryS
     private readonly AuditTrailAdminListOptions _adminListOptions;
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
-    protected readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public DefaultAuditTrailAdminListQueryService(
         IAuditTrailManager auditTrailManager,
@@ -60,7 +61,7 @@ public class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminListQueryS
         var result = new AuditTrailEventQueryResult
         {
             Events = events,
-            TotalCount = totalCount
+            TotalCount = totalCount,
         };
 
         options.AuditTrailSorts = _adminListOptions.SortOptions.Values.Where(x => x.SelectListItem != null).Select(opt => opt.SelectListItem(_serviceProvider, opt, options)).ToList();

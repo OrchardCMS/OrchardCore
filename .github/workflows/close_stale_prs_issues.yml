@@ -11,7 +11,9 @@ on:
 
 jobs:
   close-stale-prs-issues:
-    runs-on: ubuntu-latest
+    # To enable this workflow on a fork, comment out:
+    if: github.repository == 'OrchardCMS/OrchardCore'
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/stale@v9
         with:

@@ -15,10 +15,10 @@
     <div class="col-sm-6">
         <label asp-for="Options" class="form-label">@T["Options"]</label>
         <select asp-for="Options" class="form-select">
-            <option value="@TitlePartOptions.Editable" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
-            <option value="@TitlePartOptions.EditableRequired" selected="@(Model.Options == TitlePartOptions.EditableRequired)">@T["Title is editable and required"]</option>
-            <option value="@TitlePartOptions.GeneratedDisabled" selected="@(Model.Options == TitlePartOptions.GeneratedDisabled)">@T["Title is generated and input is disabled"]</option>
-            <option value="@TitlePartOptions.GeneratedHidden" selected="@(Model.Options == TitlePartOptions.GeneratedHidden)">@T["Title is generated and input is hidden"]</option>
+            <option value="@nameof(TitlePartOptions.Editable)" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
+            <option value="@nameof(TitlePartOptions.EditableRequired)" selected="@(Model.Options == TitlePartOptions.EditableRequired)">@T["Title is editable and required"]</option>
+            <option value="@nameof(TitlePartOptions.GeneratedDisabled)" selected="@(Model.Options == TitlePartOptions.GeneratedDisabled)">@T["Title is generated and input is disabled"]</option>
+            <option value="@nameof(TitlePartOptions.GeneratedHidden)" selected="@(Model.Options == TitlePartOptions.GeneratedHidden)">@T["Title is generated and input is hidden"]</option>
         </select>
     </div>
 </div>
@@ -30,7 +30,7 @@
     </div>
 </div>
 
-<div class="row mb-3">
+<div class="row mb-3" id="patternEditor">
     <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
         <label asp-for="Pattern" class="form-label">@T["Pattern"]</label>
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
@@ -38,8 +38,8 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="jquery">
-    $(function () {
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
             autoRefresh: true,
             lineNumbers: true,
@@ -47,5 +47,25 @@
             matchBrackets: true,
             mode: { name: "liquid" },
         });
+
+        setPatternVisibility();
+
+        document.getElementById('@Html.IdFor(x => x.Options)').addEventListener('change', function () {
+            setPatternVisibility();
+        });
     });
+
+    function setPatternVisibility() {
+        var selectedValue = document.getElementById('@Html.IdFor(x => x.Options)').value;
+        var patternEditor = document.getElementById('patternEditor');
+        switch (selectedValue) {
+            case '@nameof(TitlePartOptions.GeneratedDisabled)':
+            case '@nameof(TitlePartOptions.GeneratedHidden)':
+                patternEditor.classList.remove('d-none');
+                break;
+            default:
+                patternEditor.classList.add('d-none');
+                break;
+        }
+    }
 </script>

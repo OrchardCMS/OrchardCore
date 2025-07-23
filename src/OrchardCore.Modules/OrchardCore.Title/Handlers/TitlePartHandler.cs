@@ -14,8 +14,9 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
 {
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    protected readonly IStringLocalizer S;
     private readonly HashSet<ContentItem> _contentItems = [];
+
+    protected readonly IStringLocalizer S;
 
     public TitlePartHandler(
         ILiquidTemplateManager liquidTemplateManager,
@@ -85,7 +86,7 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
             var title = await _liquidTemplateManager.RenderStringAsync(settings.Pattern, NullEncoder.Default, model,
                 new Dictionary<string, FluidValue>()
                 {
-                    ["ContentItem"] = new ObjectValue(model.ContentItem)
+                    ["ContentItem"] = new ObjectValue(model.ContentItem),
                 });
 
             title = title.Replace("\r", string.Empty).Replace("\n", string.Empty);

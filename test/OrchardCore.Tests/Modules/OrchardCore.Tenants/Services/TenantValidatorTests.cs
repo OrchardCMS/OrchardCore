@@ -47,7 +47,7 @@ public class TenantValidatorTests : SiteContext
             RequestUrlPrefix = urlPrefix,
             RequestUrlHost = hostName,
             FeatureProfiles = [featureProfile],
-            IsNewTenant = true
+            IsNewTenant = true,
         };
 
         var errors = await tenantValidator.ValidateAsync(viewModel);
@@ -78,7 +78,7 @@ public class TenantValidatorTests : SiteContext
             RequestUrlPrefix = "tenant4",
             RequestUrlHost = "example5.com",
             FeatureProfiles = ["Feature Profile"],
-            IsNewTenant = isNewTenant
+            IsNewTenant = isNewTenant,
         };
 
         // Act
@@ -104,7 +104,7 @@ public class TenantValidatorTests : SiteContext
         featureProfilesServiceMock.Setup(fp => fp.GetFeatureProfilesAsync())
             .Returns(Task.FromResult((IDictionary<string, FeatureProfile>)new Dictionary<string, FeatureProfile>
             {
-                { "Feature Profile", new FeatureProfile() }
+                { "Feature Profile", new FeatureProfile() },
             }));
 
         var stringLocalizerMock = new Mock<IStringLocalizer<TenantValidator>>();

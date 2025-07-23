@@ -15,11 +15,16 @@ public class UpdateUserContext : UserContextBase
     /// <param name="loginProvider">The login provider.</param>
     /// <param name="externalClaims">The user claims.</param>
     /// <param name="userProperties">The user properties.</param>
-    public UpdateUserContext(IUser user, string loginProvider, IEnumerable<SerializableClaim> externalClaims, JsonObject userProperties) : base(user)
+    public UpdateUserContext(
+        IUser user,
+        string loginProvider,
+        IEnumerable<SerializableClaim> externalClaims,
+        JsonObject userProperties)
+        : base(user)
     {
-        ExternalClaims = externalClaims.AsEnumerable();
+        ExternalClaims = externalClaims;
         LoginProvider = loginProvider;
-        UserProperties = userProperties.DeepClone() as JsonObject;
+        UserProperties = userProperties;
     }
 
     /// <summary>

@@ -46,6 +46,8 @@ public sealed class OpenIdServerSettingsStep : NamedRecipeStepHandler
             new PathString("/connect/userinfo") : PathString.Empty;
         settings.IntrospectionEndpointPath = model.EnableIntrospectionEndpoint ?
             new PathString("/connect/introspect") : PathString.Empty;
+        settings.PushedAuthorizationEndpointPath = model.EnablePushedAuthorizationEndpoint ?
+            new PathString("/connect/par") : PathString.Empty;
         settings.RevocationEndpointPath = model.EnableRevocationEndpoint ?
             new PathString("/connect/revoke") : PathString.Empty;
 
@@ -60,6 +62,7 @@ public sealed class OpenIdServerSettingsStep : NamedRecipeStepHandler
         settings.DisableRollingRefreshTokens = model.DisableRollingRefreshTokens;
         settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
         settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
+        settings.RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests;
 
         await _serverService.UpdateSettingsAsync(settings);
     }

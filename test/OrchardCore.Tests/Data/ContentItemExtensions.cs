@@ -48,12 +48,12 @@ public class ContentItemExtensions
         // Setup
         var contentItem = new ContentItem
         {
-            DisplayText = "original value"
+            DisplayText = "original value",
         };
 
         var newContentItem = new ContentItem
         {
-            DisplayText = "merged value"
+            DisplayText = "merged value",
         };
 
         // Act
@@ -69,12 +69,12 @@ public class ContentItemExtensions
         // Setup
         var contentItem = new ContentItem
         {
-            DisplayText = "original value"
+            DisplayText = "original value",
         };
 
         var newContentItem = new ContentItem
         {
-            DisplayText = "merged value"
+            DisplayText = "merged value",
         };
 
         // Act
@@ -95,7 +95,7 @@ public class ContentItemExtensions
 
         var newContentItem = new ContentItem
         {
-            Id = 2
+            Id = 2,
         };
 
         // Act

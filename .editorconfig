@@ -83,6 +83,7 @@ dotnet_diagnostic.IDE0130.severity                         = silent         # Na
 dotnet_style_prefer_conditional_expression_over_assignment = silent   # Remove redundant equality, e.g. Disabled == false
 
 dotnet_diagnostic.CA2263.severity                         = warning         # Prefer generic overload when type is known
+dotnet_diagnostic.CA1816.severity                         = none         # Dispose methods should call SuppressFinalize
 
 # Sort using and Import directives with System.* appearing first
 dotnet_sort_system_directives_first                        = true
@@ -276,7 +277,7 @@ dotnet_diagnostic.SA1409.severity = none            # Remove unnecessary code.
 dotnet_diagnostic.SA1410.severity = none            # Remove delegate parenthesis when possible.
 dotnet_diagnostic.SA1411.severity = none            # Attribute constructor should not use unnecessary parenthesis.
 dotnet_diagnostic.SA1412.severity = none            # Store files as UTF-8 with byte order mark.
-dotnet_diagnostic.SA1413.severity = none            # Use trailing comma in multi-line initializers.
+dotnet_diagnostic.SA1413.severity = warning            # Use trailing comma in multi-line initializers.
 
 # StyleCop: Layout Rules
 dotnet_diagnostic.SA1500.severity = none            # Braces for multi-line statements should not share line.

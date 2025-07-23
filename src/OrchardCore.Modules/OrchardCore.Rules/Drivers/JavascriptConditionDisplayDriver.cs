@@ -36,7 +36,7 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
     {
         return
             CombineAsync(
-                View("JavascriptCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("JavascriptCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("JavascriptCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }
@@ -71,7 +71,7 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
             {
                 ConditionId = condition.ConditionId,
                 Name = condition.Name,
-                Script = model.Script
+                Script = model.Script,
             });
             condition.Script = model.Script;
         }

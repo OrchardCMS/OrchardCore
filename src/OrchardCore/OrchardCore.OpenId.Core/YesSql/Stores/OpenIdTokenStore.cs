@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -29,7 +30,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TToken>(collection: OpenIdCollection).CountAsync();
+        return await _session.Query<TToken>(collection: OpenIdCollection).CountAsync(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -43,8 +44,8 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _session.SaveAsync(token, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.SaveAsync(token, collection: OpenIdCollection, cancellationToken: cancellationToken);
+        await _session.FlushAsync(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -55,50 +56,50 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(token, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
-    }
-
-    /// <inheritdoc/>
-    public virtual IAsyncEnumerable<TToken> FindAsync(
-        string subject, string client, CancellationToken cancellationToken)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(subject);
-        ArgumentException.ThrowIfNullOrEmpty(client);
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        return _session.Query<TToken, OpenIdTokenIndex>(
-            index => index.ApplicationId == client && index.Subject == subject, collection: OpenIdCollection).ToAsyncEnumerable();
-    }
-
-    /// <inheritdoc/>
-    public virtual IAsyncEnumerable<TToken> FindAsync(
-        string subject, string client, string status, CancellationToken cancellationToken)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(subject);
-        ArgumentException.ThrowIfNullOrEmpty(client);
-        ArgumentException.ThrowIfNullOrEmpty(status);
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        return _session.Query<TToken, OpenIdTokenIndex>(
-            index => index.ApplicationId == client && index.Subject == subject && index.Status == status, collection: OpenIdCollection).ToAsyncEnumerable();
+        await _session.FlushAsync(cancellationToken);
     }
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TToken> FindAsync(
         string subject, string client, string status, string type, CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrEmpty(subject);
-        ArgumentException.ThrowIfNullOrEmpty(client);
-        ArgumentException.ThrowIfNullOrEmpty(status);
-        ArgumentException.ThrowIfNullOrEmpty(type);
+        Expression<Func<OpenIdTokenIndex, bool>> query = index => true;
+
+        if (!string.IsNullOrEmpty(subject))
+        {
+            Expression<Func<OpenIdTokenIndex, bool>> filter = index => index.Subject == subject;
+
+            query = Expression.Lambda<Func<OpenIdTokenIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(client))
+        {
+            Expression<Func<OpenIdTokenIndex, bool>> filter = index => index.ApplicationId == client;
+
+            query = Expression.Lambda<Func<OpenIdTokenIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            Expression<Func<OpenIdTokenIndex, bool>> filter = index => index.Status == status;
+
+            query = Expression.Lambda<Func<OpenIdTokenIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(type))
+        {
+            Expression<Func<OpenIdTokenIndex, bool>> filter = index => index.Type == type;
+
+            query = Expression.Lambda<Func<OpenIdTokenIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return _session.Query<TToken, OpenIdTokenIndex>(
-            index => index.ApplicationId == client && index.Subject == subject &&
-                     index.Status == status && index.Type == type, collection: OpenIdCollection).ToAsyncEnumerable();
+        return _session.Query<TToken, OpenIdTokenIndex>(query, collection: OpenIdCollection).ToAsyncEnumerable(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -108,7 +109,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return _session.Query<TToken, OpenIdTokenIndex>(index => index.ApplicationId == identifier, collection: OpenIdCollection).ToAsyncEnumerable();
+        return _session.Query<TToken, OpenIdTokenIndex>(index => index.ApplicationId == identifier, collection: OpenIdCollection).ToAsyncEnumerable(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -118,7 +119,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return _session.Query<TToken, OpenIdTokenIndex>(index => index.AuthorizationId == identifier, collection: OpenIdCollection).ToAsyncEnumerable();
+        return _session.Query<TToken, OpenIdTokenIndex>(index => index.AuthorizationId == identifier, collection: OpenIdCollection).ToAsyncEnumerable(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -128,7 +129,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TToken, OpenIdTokenIndex>(index => index.ReferenceId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
+        return await _session.Query<TToken, OpenIdTokenIndex>(index => index.ReferenceId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -138,7 +139,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await _session.Query<TToken, OpenIdTokenIndex>(index => index.TokenId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
+        return await _session.Query<TToken, OpenIdTokenIndex>(index => index.TokenId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -158,7 +159,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return _session.Query<TToken, OpenIdTokenIndex>(index => index.Subject == subject, collection: OpenIdCollection).ToAsyncEnumerable();
+        return _session.Query<TToken, OpenIdTokenIndex>(index => index.Subject == subject, collection: OpenIdCollection).ToAsyncEnumerable(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -310,7 +311,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
             query = query.Take(count.Value);
         }
 
-        return query.ToAsyncEnumerable();
+        return query.ToAsyncEnumerable(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -340,7 +341,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
                          token.AuthorizationId.IsNotIn<OpenIdAuthorizationIndex>(
                             authorization => authorization.AuthorizationId,
                             authorization => authorization.Status == Statuses.Valid) ||
-                         token.ExpirationDate < DateTime.UtcNow), collection: OpenIdCollection).Take(100).ListAsync()).ToList();
+                         token.ExpirationDate < DateTime.UtcNow), collection: OpenIdCollection).Take(100).ListAsync(cancellationToken)).ToList();
 
             if (tokens.Count is 0)
             {
@@ -354,7 +355,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
             try
             {
-                await _session.SaveChangesAsync();
+                await _session.FlushAsync(cancellationToken);
             }
             catch (Exception exception)
             {
@@ -376,8 +377,74 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask<long> RevokeByAuthorizationIdAsync(string identifier, CancellationToken cancellationToken)
+    public virtual async ValueTask<long> RevokeAsync(
+        string subject, string client, string status, string type, CancellationToken cancellationToken)
     {
+        Expression<Func<OpenIdTokenIndex, bool>> query = index => true;
+
+        if (!string.IsNullOrEmpty(subject))
+        {
+            Expression<Func<OpenIdTokenIndex, bool>> filter = index => index.Subject == subject;
+
+            query = Expression.Lambda<Func<OpenIdTokenIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(client))
+        {
+            Expression<Func<OpenIdTokenIndex, bool>> filter = index => index.ApplicationId == client;
+
+            query = Expression.Lambda<Func<OpenIdTokenIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            Expression<Func<OpenIdTokenIndex, bool>> filter = index => index.Status == status;
+
+            query = Expression.Lambda<Func<OpenIdTokenIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(type))
+        {
+            Expression<Func<OpenIdTokenIndex, bool>> filter = index => index.Type == type;
+
+            query = Expression.Lambda<Func<OpenIdTokenIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        // Note: YesSql doesn't support set-based updates, which prevents updating entities
+        // in a single command without having to retrieve and materialize them first.
+        // To work around this limitation, entities are manually listed and updated.
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(query, collection: OpenIdCollection).ListAsync(cancellationToken)).ToList();
+        if (tokens.Count is 0)
+        {
+            return 0;
+        }
+
+        foreach (var token in tokens)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            token.Status = Statuses.Revoked;
+
+            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
+        }
+
+        await _session.SaveChangesAsync(cancellationToken);
+
+        return tokens.Count;
+    }
+
+    /// <inheritdoc/>
+    public virtual async ValueTask<long> RevokeByApplicationIdAsync(string identifier, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(identifier);
+
         // Note: YesSql doesn't support set-based updates, which prevents updating entities
         // in a single command without having to retrieve and materialize them first.
         // To work around this limitation, entities are manually listed and updated.
@@ -385,7 +452,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
         cancellationToken.ThrowIfCancellationRequested();
 
         var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(
-            token => token.AuthorizationId == identifier, collection: OpenIdCollection).ListAsync()).ToList();
+            token => token.ApplicationId == identifier, collection: OpenIdCollection).ListAsync(cancellationToken)).ToList();
 
         if (tokens.Count is 0)
         {
@@ -394,12 +461,79 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         foreach (var token in tokens)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             token.Status = Statuses.Revoked;
 
-            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection);
+            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
         }
 
-        await _session.SaveChangesAsync();
+        await _session.SaveChangesAsync(cancellationToken);
+
+        return tokens.Count;
+    }
+
+    /// <inheritdoc/>
+    public virtual async ValueTask<long> RevokeByAuthorizationIdAsync(string identifier, CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(identifier);
+
+        // Note: YesSql doesn't support set-based updates, which prevents updating entities
+        // in a single command without having to retrieve and materialize them first.
+        // To work around this limitation, entities are manually listed and updated.
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(
+            token => token.AuthorizationId == identifier, collection: OpenIdCollection).ListAsync(cancellationToken)).ToList();
+
+        if (tokens.Count is 0)
+        {
+            return 0;
+        }
+
+        foreach (var token in tokens)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            token.Status = Statuses.Revoked;
+
+            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
+        }
+
+        await _session.FlushAsync(cancellationToken);
+
+        return tokens.Count;
+    }
+
+    public virtual async ValueTask<long> RevokeBySubjectAsync(string subject, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(subject);
+
+        // Note: YesSql doesn't support set-based updates, which prevents updating entities
+        // in a single command without having to retrieve and materialize them first.
+        // To work around this limitation, entities are manually listed and updated.
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(
+            token => token.Subject == subject, collection: OpenIdCollection).ListAsync(cancellationToken)).ToList();
+
+        if (tokens.Count is 0)
+        {
+            return 0;
+        }
+
+        foreach (var token in tokens)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            token.Status = Statuses.Revoked;
+
+            await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
+        }
+
+        await _session.SaveChangesAsync(cancellationToken);
 
         return tokens.Count;
     }
@@ -542,11 +676,11 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _session.SaveAsync(token, checkConcurrency: true, collection: OpenIdCollection);
+        await _session.SaveAsync(token, checkConcurrency: true, collection: OpenIdCollection, cancellationToken: cancellationToken);
 
         try
         {
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync(cancellationToken);
         }
         catch (ConcurrencyException exception)
         {

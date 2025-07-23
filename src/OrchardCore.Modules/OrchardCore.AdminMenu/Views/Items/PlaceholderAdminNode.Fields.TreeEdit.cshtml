@@ -2,12 +2,11 @@
 @using System.Text.Json
 @using System.Text.Json.Nodes
 
-<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
-<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head"></style>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head"></style>
 
 <script asp-name="vuejs" at="Foot" version="2"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="jQuery-ui"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="jQuery"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="bootstrap, jQuery, jQuery.nestedSortable, fontawesome-iconpicker"></script>
 
 <h5>@T["Placeholder"]</h5>
 
@@ -67,8 +66,8 @@
         var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
     }
 
-    <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs:2,vue-multiselect"></script>
-    <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css" depends-on="vue-multiselect"></style>
+    <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
+    <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css" depends-on="vue-multiselect:2"></style>
 
     <label asp-for="SelectedPermissionNames" class="form-label">@T["Permissions"]</label>
 
@@ -115,7 +114,11 @@
             </div>
         </div>
     </div>
-    <script at="Foot" depends-on="admin-menu-permission-picker">initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"))</script>
+    <script at="Foot" depends-on="admin-menu-permission-picker">
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"))
+        });
+    </script>
 </div>
 
 <script at="Foot">

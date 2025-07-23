@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Users.Handlers;
+namespace OrchardCore.Users.Handlers;
 
 public enum UserConfirmationType
 {

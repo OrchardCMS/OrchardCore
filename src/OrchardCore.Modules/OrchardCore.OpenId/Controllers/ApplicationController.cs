@@ -60,7 +60,7 @@ public sealed class ApplicationController : Controller
     [Admin("OpenId/Application", "OpenIdApplication")]
     public async Task<ActionResult> Index(PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
@@ -75,7 +75,7 @@ public sealed class ApplicationController : Controller
             applications.Add(new OpenIdApplicationEntry
             {
                 DisplayName = await _applicationManager.GetDisplayNameAsync(application),
-                Id = await _applicationManager.GetPhysicalIdAsync(application)
+                Id = await _applicationManager.GetPhysicalIdAsync(application),
             });
         }
 
@@ -93,7 +93,7 @@ public sealed class ApplicationController : Controller
     [HttpGet]
     public async Task<IActionResult> Create(string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
@@ -107,7 +107,7 @@ public sealed class ApplicationController : Controller
             {
                 model.RoleEntries.Add(new CreateOpenIdApplicationViewModel.RoleEntry
                 {
-                    Name = role
+                    Name = role,
                 });
             }
         }
@@ -120,7 +120,7 @@ public sealed class ApplicationController : Controller
         {
             model.ScopeEntries.Add(new CreateOpenIdApplicationViewModel.ScopeEntry
             {
-                Name = await _scopeManager.GetNameAsync(scope)
+                Name = await _scopeManager.GetNameAsync(scope),
             });
         }
 
@@ -132,7 +132,7 @@ public sealed class ApplicationController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateOpenIdApplicationViewModel model, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
@@ -180,7 +180,8 @@ public sealed class ApplicationController : Controller
             Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Type = model.Type,
-            RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
+            RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange,
+            RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests,
         };
 
         await _applicationManager.UpdateDescriptorFromSettings(settings);
@@ -195,7 +196,7 @@ public sealed class ApplicationController : Controller
 
     public async Task<IActionResult> Edit(string id, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
@@ -232,7 +233,8 @@ public sealed class ApplicationController : Controller
 
             AllowPasswordFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Password),
             AllowRefreshTokenFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.RefreshToken),
-            AllowLogoutEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Logout),
+            AllowLogoutEndpoint = await HasPermissionAsync("ept:logout") || // Still allowed for backcompat reasons.
+                                  await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.EndSession),
             AllowIntrospectionEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Introspection),
             AllowRevocationEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Revocation),
             ClientId = await _applicationManager.GetClientIdAsync(application),
@@ -242,7 +244,8 @@ public sealed class ApplicationController : Controller
             PostLogoutRedirectUris = string.Join(" ", await _applicationManager.GetPostLogoutRedirectUrisAsync(application)),
             RedirectUris = string.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
             Type = await _applicationManager.GetClientTypeAsync(application),
-            RequireProofKeyForCodeExchange = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange)
+            RequireProofKeyForCodeExchange = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange),
+            RequirePushedAuthorizationRequests = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.PushedAuthorizationRequests),
         };
 
         var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
@@ -255,7 +258,7 @@ public sealed class ApplicationController : Controller
                 model.RoleEntries.Add(new EditOpenIdApplicationViewModel.RoleEntry
                 {
                     Name = role,
-                    Selected = roles.Contains(role, StringComparer.OrdinalIgnoreCase)
+                    Selected = roles.Contains(role, StringComparer.OrdinalIgnoreCase),
                 });
             }
         }
@@ -271,7 +274,7 @@ public sealed class ApplicationController : Controller
             model.ScopeEntries.Add(new EditOpenIdApplicationViewModel.ScopeEntry
             {
                 Name = scopeName,
-                Selected = await _applicationManager.HasPermissionAsync(application, OpenIddictConstants.Permissions.Prefixes.Scope + scopeName)
+                Selected = await _applicationManager.HasPermissionAsync(application, OpenIddictConstants.Permissions.Prefixes.Scope + scopeName),
             });
         }
 
@@ -283,7 +286,7 @@ public sealed class ApplicationController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditOpenIdApplicationViewModel model, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
@@ -346,7 +349,8 @@ public sealed class ApplicationController : Controller
             Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Type = model.Type,
-            RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
+            RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange,
+            RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests,
         };
 
         await _applicationManager.UpdateDescriptorFromSettings(settings, application);
@@ -362,7 +366,7 @@ public sealed class ApplicationController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }

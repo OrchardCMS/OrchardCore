@@ -10,6 +10,7 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Users.Controllers;
 
@@ -19,6 +20,7 @@ public sealed class EmailConfirmationController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
+    private readonly UserEmailService _userEmailService;
     private readonly ILogger _logger;
 
     internal readonly IHtmlLocalizer H;
@@ -29,6 +31,7 @@ public sealed class EmailConfirmationController : Controller
         IAuthorizationService authorizationService,
         INotifier notifier,
         IEnumerable<IUserEventHandler> userEventHandlers,
+        UserEmailService userEmailService,
         ILogger<EmailConfirmationController> logger,
         IHtmlLocalizer<EmailConfirmationController> htmlLocalizer,
         IStringLocalizer<EmailConfirmationController> stringLocalizer)
@@ -37,6 +40,7 @@ public sealed class EmailConfirmationController : Controller
         _authorizationService = authorizationService;
         _notifier = notifier;
         _userEventHandlers = userEventHandlers;
+        _userEmailService = userEmailService;
         _logger = logger;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -76,7 +80,6 @@ public sealed class EmailConfirmationController : Controller
 
     [Authorize]
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> SendVerificationEmail(string id = null, string returnUrl = null)
     {
         var currentUserId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -92,7 +95,7 @@ public sealed class EmailConfirmationController : Controller
         }
 
         // Allow users to verify their own email without the 'ManageUsers' permission.
-        if (id != currentUserId && !await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
+        if (id != currentUserId && !await _authorizationService.AuthorizeAsync(User, UsersPermissions.ManageUsers))
         {
             return Forbid();
         }
@@ -104,7 +107,7 @@ public sealed class EmailConfirmationController : Controller
             return NotFound();
         }
 
-        await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
+        await _userEmailService.SendEmailConfirmationAsync(user);
 
         await _notifier.SuccessAsync(H["Verification email sent."]);
 

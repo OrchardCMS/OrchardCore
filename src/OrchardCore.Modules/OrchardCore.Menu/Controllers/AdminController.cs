@@ -11,7 +11,6 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Menu.Models;
-using YesSql;
 
 namespace OrchardCore.Menu.Controllers;
 
@@ -22,14 +21,12 @@ public sealed class AdminController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly ISession _session;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
-        ISession session,
         IContentManager contentManager,
         IAuthorizationService authorizationService,
         IContentItemDisplayManager contentItemDisplayManager,
@@ -42,7 +39,6 @@ public sealed class AdminController : Controller
         _authorizationService = authorizationService;
         _contentItemDisplayManager = contentItemDisplayManager;
         _contentDefinitionManager = contentDefinitionManager;
-        _session = session;
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         H = localizer;
@@ -232,7 +228,7 @@ public sealed class AdminController : Controller
         menuItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
         {
             MergeArrayHandling = MergeArrayHandling.Replace,
-            MergeNullValueHandling = MergeNullValueHandling.Merge
+            MergeNullValueHandling = MergeNullValueHandling.Merge,
         });
 
         // Merge doesn't copy the properties.

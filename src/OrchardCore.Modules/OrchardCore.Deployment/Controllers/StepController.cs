@@ -43,7 +43,7 @@ public sealed class StepController : Controller
     [Admin("DeploymentPlan/{id}/Step/Create", "DeploymentPlanCreateStep")]
     public async Task<IActionResult> Create(long id, string type)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -70,7 +70,7 @@ public sealed class StepController : Controller
             DeploymentStep = step,
             DeploymentStepId = step.Id,
             DeploymentStepType = type,
-            Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty)
+            Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty),
         };
 
         model.Editor.DeploymentStep = step;
@@ -81,7 +81,7 @@ public sealed class StepController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(EditDeploymentPlanStepViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -122,7 +122,7 @@ public sealed class StepController : Controller
     [Admin("DeploymentPlan/{id}/Step/{stepId}/Edit", "DeploymentPlanEditStep")]
     public async Task<IActionResult> Edit(long id, string stepId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -147,7 +147,7 @@ public sealed class StepController : Controller
             DeploymentStep = step,
             DeploymentStepId = step.Id,
             DeploymentStepType = step.GetType().Name,
-            Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+            Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
         };
 
         model.Editor.DeploymentStep = step;
@@ -158,7 +158,7 @@ public sealed class StepController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditDeploymentPlanStepViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -198,7 +198,7 @@ public sealed class StepController : Controller
     [Admin("DeploymentPlan/{id}/Step/{stepId}/Delete", "DeploymentPlanDeleteStep")]
     public async Task<IActionResult> Delete(long id, string stepId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -228,7 +228,7 @@ public sealed class StepController : Controller
     [HttpPost]
     public async Task<IActionResult> UpdateOrder(long id, int oldIndex, int newIndex)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }

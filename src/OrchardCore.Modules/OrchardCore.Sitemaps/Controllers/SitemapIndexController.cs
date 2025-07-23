@@ -60,7 +60,7 @@ public sealed class SitemapIndexController : Controller
 
     public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -96,7 +96,7 @@ public sealed class SitemapIndexController : Controller
         {
             SitemapIndexes = results.Select(sm => new SitemapIndexListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
             Options = options,
-            Pager = pagerShape
+            Pager = pagerShape,
         };
 
         model.Options.ContentsBulkAction =
@@ -113,12 +113,12 @@ public sealed class SitemapIndexController : Controller
     public ActionResult ListFilterPOST(ListSitemapIndexViewModel model)
         => RedirectToAction(nameof(List), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -131,14 +131,14 @@ public sealed class SitemapIndexController : Controller
             {
                 SitemapId = s.SitemapId,
                 Name = s.Name,
-                IsChecked = false
+                IsChecked = false,
             })
             .OrderBy(s => s.Name)
             .ToArray();
 
         var model = new CreateSitemapIndexViewModel
         {
-            ContainableSitemaps = containableSitemaps
+            ContainableSitemaps = containableSitemaps,
         };
 
         return View(model);
@@ -147,19 +147,19 @@ public sealed class SitemapIndexController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateSitemapIndexViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
 
         var sitemap = new SitemapIndex
         {
-            SitemapId = _sitemapIdGenerator.GenerateUniqueId()
+            SitemapId = _sitemapIdGenerator.GenerateUniqueId(),
         };
 
         var indexSource = new SitemapIndexSource
         {
-            Id = _sitemapIdGenerator.GenerateUniqueId()
+            Id = _sitemapIdGenerator.GenerateUniqueId(),
         };
 
         sitemap.SitemapSources.Add(indexSource);
@@ -195,7 +195,7 @@ public sealed class SitemapIndexController : Controller
 
     public async Task<IActionResult> Edit(string sitemapId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -217,7 +217,7 @@ public sealed class SitemapIndexController : Controller
             {
                 SitemapId = s.SitemapId,
                 Name = s.Name,
-                IsChecked = indexSource.ContainedSitemapIds.Any(id => id == s.SitemapId)
+                IsChecked = indexSource.ContainedSitemapIds.Any(id => id == s.SitemapId),
             })
             .OrderBy(s => s.Name)
             .ToArray();
@@ -229,7 +229,7 @@ public sealed class SitemapIndexController : Controller
             Enabled = sitemap.Enabled,
             Path = sitemap.Path,
             SitemapIndexSource = indexSource,
-            ContainableSitemaps = containableSitemaps
+            ContainableSitemaps = containableSitemaps,
         };
 
         return View(model);
@@ -238,7 +238,7 @@ public sealed class SitemapIndexController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditSitemapIndexViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -285,7 +285,7 @@ public sealed class SitemapIndexController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string sitemapId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -307,7 +307,7 @@ public sealed class SitemapIndexController : Controller
     [HttpPost]
     public async Task<IActionResult> Toggle(string sitemapId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -332,7 +332,7 @@ public sealed class SitemapIndexController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> ListPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }

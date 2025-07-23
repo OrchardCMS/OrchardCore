@@ -51,7 +51,7 @@ public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
 
                 // The default Markdown option is to entity escape html
                 // so filters must be run after the markdown has been processed.
-                var html = _markdownService.ToHtml(part.Markdown);
+                var html = _markdownService.ToHtml(part.Markdown ?? string.Empty);
 
                 // The liquid rendering is for backwards compatibility and can be removed in a future version.
                 if (!settings.SanitizeHtml)
@@ -72,7 +72,7 @@ public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
                     new Context
                     {
                         ["ContentItem"] = part.ContentItem,
-                        ["TypePartDefinition"] = contentTypePartDefinition
+                        ["TypePartDefinition"] = contentTypePartDefinition,
                     });
 
                 if (settings.SanitizeHtml)

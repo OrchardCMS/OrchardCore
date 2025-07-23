@@ -9,6 +9,7 @@
 
 @{
     var widgetContentTypes = Model.ContainedContentTypeDefinitions;
+    var widgetTypesStringified = string.Join(";", widgetContentTypes);
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
     var parentContentType = Model.FlowPart.ContentItem.ContentType;
@@ -17,7 +18,7 @@
 
 <script asp-name="jQuery-ui" at="Foot"></script>
 <div>
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" data-widget-types="@widgetTypesStringified">
         @{
             var index = 0;
             foreach (var widget in Model.FlowPart.Widgets)
@@ -46,14 +47,11 @@
                     //Input hidden
                     //Prefixes
                     HtmlFieldPrefix: htmlFieldPrefix,
-                    PrefixValue: htmlFieldPrefix + '-' + (index++).ToString(),
-                    PrefixesId: Html.IdFor(x => x.Prefixes),
+                    PrefixValue: Model.Prefixes != null && Model.Prefixes.Length > index ? Model.Prefixes[index++] : htmlFieldPrefix + '-' + (index++).ToString(),
                     PrefixesName: Html.NameFor(x => x.Prefixes),
                     //Content Types
-                    ContentTypesId: Html.IdFor(x => x.ContentTypes),
                     ContentTypesName: Html.NameFor(x => x.ContentTypes),
                     //Content Items
-                    ContentItemsId: Html.IdFor(x => x.ContentItems),
                     ContentItemsName: Html.NameFor(x => x.ContentItems)
                 );
                 @await DisplayAsync(contentCard)
@@ -101,7 +99,7 @@
             var contentItem = await ContentManager.NewAsync(type.Name);
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
-        
+
         <script asp-name="flowpart-edit" at="Foot"></script>
         <style asp-name="flowpart-edit" at="Head"></style>
     }
@@ -121,7 +119,7 @@
         }
 
         @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
-                    if ($('#@widgetTemplatePlaceholderId').length == 1) {
+        if ($('#@widgetTemplatePlaceholderId').length == 1) {
             $("#@widgetTemplatePlaceholderId").sortable({
                 handle: ".widget-editor-handle",
                 cursor: "move",
@@ -140,10 +138,12 @@
                 start: function (event, ui) {
 
                     widgetDragItem = ui.item;
+                    originalContainer = ui.item.parent();
                     lastContainer = ui.item.parent();
                     lastContainer.toggleClass('widget-dropzone-hint');
 
-                    widgetDragItem.find('.card').first().toggleClass('border-primary')
+                    draggedWidget = widgetDragItem.find('.card').first()
+                    draggedWidget.toggleClass('border-primary')
 
                     widgetItemSourceId = widgetDragItem.parent().attr('id');
 
@@ -159,57 +159,71 @@
                     widgetDragItem.find('.card').first().toggleClass('border-primary');
 
                     widgetItemDestId = widgetDragItem.parent().attr('id');
-
                     if (widgetItemDestId !== widgetItemSourceId) {
+                        if (lastContainer[0] != this && this.dataset.widgetTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
+                            var inputs = widgetDragItem.children("input[name*='@partName']");
 
-                        var inputs = widgetDragItem.children("input[name*='FlowPart']");
+                            var destination = $('#' + widgetItemDestId);
+                            var source = $('#' + widgetItemSourceId);
 
-                        var destination = $('#' + widgetItemDestId);
-                        var source = $('#' + widgetItemSourceId);
+                            var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.lastIndexOf('_') + 1);
+                            sourceNameGuid = sourceGuid.replaceAll('_', '.');
 
-                        var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.lastIndexOf('_') + 1);
-                        sourceNameGuid = sourceGuid.replaceAll('_', '.');
+                            if (destination.length > 0) {
 
-                        if (destination.length > 0) {
+                                var destGuid = widgetItemDestId.substring(0, widgetItemDestId.lastIndexOf('_') + 1);
+                                destNameGuid = destGuid.replaceAll('_', '.');
 
-                            var destGuid = widgetItemDestId.substring(0, widgetItemDestId.lastIndexOf('_') + 1);
-                            destNameGuid = destGuid.replaceAll('_', '.');
+                                if (source.length > 0) {
+                                    inputs.each(function (index, item) {
+                                        if ($(this).attr('id') !== undefined) {
+                                            $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
+                                        }
 
-                            if (source.length > 0) {
+                                        $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
+                                    });
+
+                                } else {
+
+                                    inputs.each(function (index, item) {
+                                        if ($(this).attr('id') !== undefined) {
+                                            $(this).attr('id', destGuid + $(this).attr('id'));
+                                        }
+
+                                        $(this).attr('name', destNameGuid + $(this).attr('name'));
+                                    });
+                                }
+                            }
+                            else if (source.length > 0) {
                                 inputs.each(function (index, item) {
-                                    $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
-                                    $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
-                                });
+                                    if ($(this).attr('id') !== undefined) {
+                                        $(this).attr('id', $(this).attr('id').replace(sourceGuid, ''));
+                                    }
 
-                            } else {
-
-                                inputs.each(function (index, item) {
-                                    $(this).attr('id', destGuid + $(this).attr('id'));
-                                    $(this).attr('name', destNameGuid + $(this).attr('name'));
+                                    $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
                                 });
                             }
-
                         }
-                        else if (source.length > 0) {
-                            inputs.each(function (index, item) {
-                                $(this).attr('id', $(this).attr('id').replace(sourceGuid, ''));
-                                $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
-                            });
+                        else {
+                            event.preventDefault();
                         }
-
                     }
 
-                    $(document).trigger('contentpreview:render');
+                    if (lastContainer[0] != this)
+                    {
+                        $(document).trigger('contentpreview:render');
+                    }
 
                     //clear the global variables
                     widgetDragItem = null;
+                    draggedWidget = null;
                     lastContainer = null;
                     widgetItemSourceId = null;
                     widgetItemDestId = null;
                 },
                 over: function (event, ui) {
                     var $self = $(this);
-                    if (lastContainer[0] != this) {
+                    if (lastContainer[0] != this && this.dataset.widgetTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
                         lastContainer.toggleClass('widget-dropzone-hint');
                         lastContainer = $self;
                         $self.toggleClass('widget-dropzone-hint');

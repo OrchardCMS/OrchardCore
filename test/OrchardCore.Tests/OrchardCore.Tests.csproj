@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <!-- Remove the underscores from member name -->
+    <OutputType>Exe</OutputType>
     <NoWarn>$(NoWarn);CA1707;EnableGenerateDocumentationFile</NoWarn>
   </PropertyGroup>
 
@@ -20,7 +21,6 @@
   <ItemGroup>
     <None Remove="Apis\Lucene\Recipes\luceneQueryTest.json" />
     <None Remove="Apis\GraphQL\ContentManagement\Recipes\DynamicContentTypeQueryTest.json" />
-    <None Remove="OrchardCore.Users\Recipes\UserSettingsTest.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
@@ -41,7 +41,6 @@
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
-    <EmbeddedResource Include="OrchardCore.Users\Recipes\UserSettingsTest.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.json" />
@@ -69,14 +68,16 @@
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="Moq" />
-    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.analyzers" />
     <PackageReference Include="xunit.runner.visualstudio" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="$(DotNetXunitVersion)" />
   </ItemGroup>
 
+  <ItemGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))">
+    <PackageReference Include="System.Linq.Async" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>

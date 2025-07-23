@@ -24,7 +24,7 @@ public class PermissionHandlerHelperTests
                 RoleClaims =
                 [
                     RoleClaim.Create("AllowAnonymous"),
-                ]
+                ],
             },
             new Role
             {
@@ -32,7 +32,7 @@ public class PermissionHandlerHelperTests
                 RoleClaims =
                 [
                     RoleClaim.Create("AllowAuthenticated"),
-                ]
+                ],
             }
         );
 
@@ -77,7 +77,7 @@ public class PermissionHandlerHelperTests
                 RoleClaims =
                 [
                     RoleClaim.Create("Implicit2"),
-                ]
+                ],
             }
         );
 
@@ -103,7 +103,7 @@ public class PermissionHandlerHelperTests
                 RoleClaims =
                 [
                     RoleClaim.Create("aLlOwAnOnYmOuS"),
-                ]
+                ],
             },
             new Role
             {
@@ -111,7 +111,7 @@ public class PermissionHandlerHelperTests
                 RoleClaims =
                 [
                     RoleClaim.Create("aLlOwAuThEnTiCaTeD"),
-                ]
+                ],
             }
         );
 

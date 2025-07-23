@@ -55,7 +55,7 @@ public sealed class RemoteClientController : Controller
 
     public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteClients))
         {
             return Forbid();
         }
@@ -88,7 +88,7 @@ public sealed class RemoteClientController : Controller
         {
             RemoteClients = remoteClients,
             Pager = pagerShape,
-            Options = options
+            Options = options,
         };
 
         model.Options.ContentsBulkAction =
@@ -104,12 +104,12 @@ public sealed class RemoteClientController : Controller
     public ActionResult IndexFilterPOST(RemoteClientIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteClients))
         {
             return Forbid();
         }
@@ -122,7 +122,7 @@ public sealed class RemoteClientController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(EditRemoteClientViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteClients))
         {
             return Forbid();
         }
@@ -146,7 +146,7 @@ public sealed class RemoteClientController : Controller
 
     public async Task<IActionResult> Edit(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteClients))
         {
             return Forbid();
         }
@@ -171,7 +171,7 @@ public sealed class RemoteClientController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditRemoteClientViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteClients))
         {
             return Forbid();
         }
@@ -204,7 +204,7 @@ public sealed class RemoteClientController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteClients))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteClients))
         {
             return Forbid();
         }
@@ -227,7 +227,7 @@ public sealed class RemoteClientController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteInstances))
         {
             return Forbid();
         }

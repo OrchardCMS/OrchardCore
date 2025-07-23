@@ -30,7 +30,7 @@ public class FacebookPluginPartHandler : ContentPartHandler<FacebookPluginPart>
                 {
                     Liquid = part.Liquid,
                     FacebookPluginPart = part,
-                    ContentItem = part.ContentItem
+                    ContentItem = part.ContentItem,
                 };
 
                 var result = await _liquidTemplateManager.RenderHtmlContentAsync(part.Liquid, _htmlEncoder, model,

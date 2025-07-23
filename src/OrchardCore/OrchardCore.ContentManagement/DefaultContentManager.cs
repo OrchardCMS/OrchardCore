@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.CompiledQueries;
 using OrchardCore.ContentManagement.Handlers;
@@ -8,6 +9,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
@@ -29,6 +31,9 @@ public class DefaultContentManager : IContentManager
     private readonly IContentManagerSession _contentManagerSession;
     private readonly IContentItemIdGenerator _idGenerator;
     private readonly IClock _clock;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+
+    protected readonly IStringLocalizer S;
 
     public DefaultContentManager(
         IContentDefinitionManager contentDefinitionManager,
@@ -37,7 +42,9 @@ public class DefaultContentManager : IContentManager
         ISession session,
         IContentItemIdGenerator idGenerator,
         ILogger<DefaultContentManager> logger,
-        IClock clock)
+        IClock clock,
+        IUpdateModelAccessor updateModelAccessor,
+        IStringLocalizer<DefaultContentManager> localizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         Handlers = handlers;
@@ -46,6 +53,8 @@ public class DefaultContentManager : IContentManager
         _contentManagerSession = contentManagerSession;
         _logger = logger;
         _clock = clock;
+        _updateModelAccessor = updateModelAccessor;
+        S = localizer;
     }
 
     public IEnumerable<IContentHandler> Handlers { get; private set; }
@@ -361,13 +370,13 @@ public class DefaultContentManager : IContentManager
         await ReversedHandlers.InvokeAsync((handler, context) => handler.DraftSavedAsync(context), context, _logger);
     }
 
-    public async Task PublishAsync(ContentItem contentItem)
+    public async Task<bool> PublishAsync(ContentItem contentItem)
     {
         ArgumentNullException.ThrowIfNull(contentItem);
 
         if (contentItem.Published)
         {
-            return;
+            return true;
         }
 
         // Create a context for the item and it's previous published record
@@ -385,7 +394,20 @@ public class DefaultContentManager : IContentManager
 
         if (context.Cancel)
         {
-            return;
+            if (_updateModelAccessor.ModelUpdater is not null)
+            {
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing '{0}' was cancelled.", contentItem.DisplayText]);
+                }
+                else
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                }
+            }
+
+            return false;
         }
 
         if (previous != null)
@@ -398,9 +420,11 @@ public class DefaultContentManager : IContentManager
         await _session.SaveAsync(contentItem, checkConcurrency: true);
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), context, _logger);
+
+        return true;
     }
 
-    public async Task UnpublishAsync(ContentItem contentItem)
+    public async Task<bool> UnpublishAsync(ContentItem contentItem)
     {
         ArgumentNullException.ThrowIfNull(contentItem);
 
@@ -425,7 +449,7 @@ public class DefaultContentManager : IContentManager
         if (publishedItem == null)
         {
             // No published version exists. no work to perform.
-            return;
+            return true;
         }
 
         // Create a context for the item. the publishing version is null in this case
@@ -433,16 +457,38 @@ public class DefaultContentManager : IContentManager
         // should take this null check into account
         var context = new PublishContentContext(contentItem, publishedItem)
         {
-            PublishingItem = null
+#pragma warning disable CS0618 // Type or member is obsolete
+            PublishingItem = null,
+#pragma warning restore CS0618 // Type or member is obsolete
         };
 
         await Handlers.InvokeAsync((handler, context) => handler.UnpublishingAsync(context), context, _logger);
+
+        if (context.Cancel)
+        {
+            if (_updateModelAccessor.ModelUpdater is not null)
+            {
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing '{0}' was cancelled.", contentItem.DisplayText]);
+                }
+                else
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                }
+            }
+
+            return false;
+        }
 
         publishedItem.Published = false;
         publishedItem.ModifiedUtc = _clock.UtcNow;
         await _session.SaveAsync(publishedItem, checkConcurrency: true);
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.UnpublishedAsync(context), context, _logger);
+
+        return true;
     }
 
     protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
@@ -552,7 +598,7 @@ public class DefaultContentManager : IContentManager
         return finalVersions;
     }
 
-    public async Task CreateAsync(ContentItem contentItem, VersionOptions options = null)
+    public async Task<bool> CreateAsync(ContentItem contentItem, VersionOptions options = null)
     {
         if (string.IsNullOrEmpty(contentItem.ContentItemVersionId))
         {
@@ -576,6 +622,24 @@ public class DefaultContentManager : IContentManager
         // invoke handlers to add information to persistent stores.
         await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
 
+        if (context.Cancel)
+        {
+            if (_updateModelAccessor.ModelUpdater is not null)
+            {
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Creating '{0}' was canceled.", contentItem.DisplayText]);
+                }
+                else
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Creating {0} '{1}' was canceled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                }
+            }
+
+            return false;
+        }
+
         await _session.SaveAsync(contentItem);
         _contentManagerSession.Store(contentItem);
 
@@ -591,6 +655,8 @@ public class DefaultContentManager : IContentManager
             // invoke handlers to acquire state, or at least establish lazy loading callbacks.
             await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
         }
+
+        return true;
     }
 
     public Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem)
@@ -599,9 +665,7 @@ public class DefaultContentManager : IContentManager
     }
 
     public Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion)
-    {
-        return UpdateContentItemVersionAsync(updatingVersion, updatedVersion, null);
-    }
+        => UpdateContentItemVersionAsync(updatingVersion, updatedVersion, null);
 
     public async Task ImportAsync(IEnumerable<ContentItem> contentItems)
     {
@@ -610,6 +674,8 @@ public class DefaultContentManager : IContentManager
         var skip = 0;
 
         var importedVersionIds = new HashSet<string>();
+
+        var importedContentItems = new List<ContentItem>();
 
         var batchedContentItems = contentItems.Take(_importBatchSize);
 
@@ -676,6 +742,8 @@ public class DefaultContentManager : IContentManager
                     // Imported handlers will only be fired if the validation has been successful.
                     // Consumers should implement validated handlers to alter the success of that operation.
                     await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
+
+                    importedContentItems.Add(importingItem);
                 }
                 else
                 {
@@ -729,6 +797,8 @@ public class DefaultContentManager : IContentManager
                     // Imported handlers will only be fired if the validation has been successful.
                     // Consumers should implement validated handlers to alter the success of that operation.
                     await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
+
+                    importedContentItems.Add(importingItem);
                 }
             }
 
@@ -818,7 +888,7 @@ public class DefaultContentManager : IContentManager
         var context = new ContentItemAspectContext
         {
             ContentItem = content.ContentItem,
-            Aspect = aspect
+            Aspect = aspect,
         };
 
         await Handlers.InvokeAsync((handler, context) => handler.GetContentItemAspectAsync(context), context, _logger);
@@ -944,20 +1014,18 @@ public class DefaultContentManager : IContentManager
         var context = new CreateContentContext(contentItem);
         await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
 
+        var result = await ValidateAsync(contentItem);
+        if (!result.Succeeded)
+        {
+            return result;
+        }
+
         // The content item should be placed in the session store so that further calls
         // to ContentManager.Get by a scoped index provider will resolve the imported item correctly.
         await _session.SaveAsync(contentItem);
         _contentManagerSession.Store(contentItem);
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
-
-        await UpdateAsync(contentItem);
-
-        var result = await ValidateAsync(contentItem);
-        if (!result.Succeeded)
-        {
-            return result;
-        }
 
         if (contentItem.Published)
         {

@@ -8,7 +8,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Deployment;
 
-public class AllRolesDeploymentSource
+public sealed class AllRolesDeploymentSource
     : DeploymentSourceBase<AllRolesDeploymentStep>
 {
     private readonly RoleManager<IRole> _roleManager;
@@ -40,7 +40,7 @@ public class AllRolesDeploymentSource
                     {
                         Name = r.RoleName,
                         Description = r.RoleDescription,
-                        Permissions = r.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
+                        Permissions = r.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray(),
                     }));
             }
         }

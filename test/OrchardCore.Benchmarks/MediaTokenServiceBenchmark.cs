@@ -9,7 +9,7 @@ using OrchardCore.Media.Processing;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 
-namespace OrchardCore.Benchmark;
+namespace OrchardCore.Benchmarks;
 
 [MemoryDiagnoser]
 public class MediaTokenServiceBenchmark
@@ -35,7 +35,7 @@ public class MediaTokenServiceBenchmark
             new BackgroundColorWebProcessor(),
             new QualityWebProcessor(),
             new ImageVersionProcessor(),
-            new TokenCommandProcessor()
+            new TokenCommandProcessor(),
         };
 
         _mediaTokenService = new MediaTokenService(memoryCache, options, processors);

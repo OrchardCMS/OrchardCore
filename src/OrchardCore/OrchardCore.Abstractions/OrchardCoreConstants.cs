@@ -76,5 +76,20 @@ public static class OrchardCoreConstants
 
         // The UrlRewriting module should be registered before any other module that deals with URLs.
         public const int UrlRewriting = InfrastructureService + 100;
+
+        // The Workflows content handler should be registered before other content handlers to ensure it
+        // processes content events last.
+        public const int WorkflowsContentHandlers = InfrastructureService + 100;
+    }
+
+    public static class DisplayType
+    {
+        public const string Detail = "Detail";
+
+        public const string Summary = "Summary";
+
+        public const string DetailAdmin = "DetailAdmin";
+
+        public const string SummaryAdmin = "SummaryAdmin";
     }
 }

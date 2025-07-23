@@ -16,7 +16,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
     private static readonly JsonMergeSettings _jsonMergeSettings = new JsonMergeSettings
     {
         MergeArrayHandling = MergeArrayHandling.Union,
-        MergeNullValueHandling = MergeNullValueHandling.Merge
+        MergeNullValueHandling = MergeNullValueHandling.Merge,
     };
 
     public ScriptExternalLoginEventHandler(
@@ -40,7 +40,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
             {
                 userName = string.Empty,
                 loginProvider = provider,
-                externalClaims = claims
+                externalClaims = claims,
             };
 
             var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JConvert.SerializeObject(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";

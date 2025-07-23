@@ -58,7 +58,7 @@ public sealed class AdminController : Controller
 
     public async Task<ActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
         {
             return Forbid();
         }
@@ -85,7 +85,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
         {
             return Forbid();
         }
@@ -98,7 +98,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateRoleViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
         {
             return Forbid();
         }
@@ -149,7 +149,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Edit(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
         {
             return Forbid();
         }
@@ -167,11 +167,17 @@ public sealed class AdminController : Controller
             IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
         };
 
+        var installedPermissions = await GetInstalledPermissionsAsync();
+        var allPermissions = installedPermissions.SelectMany(x => x.Value);
+
+        ViewData["DuplicatedPermissions"] = allPermissions
+            .GroupBy(p => p.Name.ToUpperInvariant())
+            .Where(g => g.Count() > 1)
+            .Select(g => g.First().Name)
+            .ToArray();
+
         if (!await _roleService.IsAdminRoleAsync(role.RoleName))
         {
-            var installedPermissions = await GetInstalledPermissionsAsync();
-            var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
             model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
             model.RoleCategoryPermissions = installedPermissions;
         }
@@ -182,7 +188,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName(nameof(Edit))]
     public async Task<IActionResult> EditPost(string id, string roleDescription)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
         {
             return Forbid();
         }
@@ -221,7 +227,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
         {
             return Forbid();
         }

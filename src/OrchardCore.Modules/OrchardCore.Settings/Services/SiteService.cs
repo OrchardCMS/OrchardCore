@@ -41,7 +41,7 @@ public class SiteService : ISiteService
             return;
         }
 
-        await _documentManager.UpdateAsync(siteSettings);
+        await _documentManager.UpdateAsync(siteSettings, _ => GetSiteSettingsAsync());
 
         // Clear the internal cache to ensure that any other lookup against
         // this document will load the new values until the site is reloaded.
@@ -58,7 +58,7 @@ public class SiteService : ISiteService
             TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
             PageSize = 10,
             MaxPageSize = 100,
-            MaxPagedCount = 0
+            MaxPagedCount = 0,
         });
     }
 }

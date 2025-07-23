@@ -5,7 +5,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Queries.Deployment;
 
-public class QueryBasedContentDeploymentSource
+public sealed class QueryBasedContentDeploymentSource
     : DeploymentSourceBase<QueryBasedContentDeploymentStep>
 {
     private readonly IQueryManager _queryManager;
@@ -26,7 +26,7 @@ public class QueryBasedContentDeploymentSource
             return;
         }
 
-        if (!query.CanReturnContentItems || !query.ReturnContentItems)
+        if (!query.ReturnContentItems)
         {
             return;
         }
@@ -63,7 +63,7 @@ public class QueryBasedContentDeploymentSource
             var jObj = new JsonObject
             {
                 ["name"] = "content",
-                ["data"] = data
+                ["data"] = data,
             };
 
             result.Steps.Add(jObj);

@@ -2,6 +2,9 @@
 
 The Amazon S3 Media module enables support for storing assets in Amazon S3 Buckets.
 
+!!! tip
+    For a scalable Orchard Core setup that is fully deployed on the AWS stack with ECS, you can refer to [the quickstart CloudFormation template](https://github.com/gcl-team/Experiment.OrchardCore.Main/blob/main/Infrastructure.yml).
+
 ## Amazon S3 Media Storage (`OrchardCore.Media.AmazonS3`)
 
 The feature replaces the default App_Data file-based media store with an Amazon Media Storage Provider.
@@ -41,7 +44,7 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
-Refer also to the [Configuration Section](../../core/Configuration/README.md),
+Refer also to the [Configuration Section](../Configuration/README.md),
 and the [Media Section](../Media/README.md) for other Media related configuration settings.
 
 There are two hosting options: inside and outside AWS Cloud.
@@ -189,16 +192,16 @@ For emulators, you'll need to configure a `ServiceURL`. Instead of the default [
 
 The following tools are known to be working with the above settings. Be sure to explore further configuration of these tools, the commands below are just provided for your convenience as a general recommendation.
 
-- [LocalS3](https://github.com/Robothy/local-s3) with Docker:
-
-```
-docker run -d -e MODE=IN_MEMORY -p 9444:80 luofuxiang/local-s3
-```
-
 - [S3Mock](https://github.com/adobe/S3Mock) with Docker:
 
 ```
-docker run -p 9444:9090 -t adobe/s3mock
+docker run -p 9444:9090 -t adobe/s3mock:latest
+```
+
+- [LocalS3](https://github.com/Robothy/local-s3) with Docker:
+
+```
+docker run -d -e MODE=IN_MEMORY -p 9444:80 luofuxiang/local-s3:latest
 ```
 
 ### Media Cache
@@ -249,7 +252,7 @@ The following configuration values are used by default and can be customized:
       "CreateBucket": true,
       "RemoveBucket": true, // Whether the 'Bucket' is deleted if the tenant is removed, false by default.
       "BucketName": "imagesharp" // Set the bucket's name (mandatory).
-    },
+    }
   }
 }
 ```

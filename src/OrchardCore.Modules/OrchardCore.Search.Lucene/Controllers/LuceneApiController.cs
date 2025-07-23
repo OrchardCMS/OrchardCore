@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Entities;
 using OrchardCore.Queries;
-using OrchardCore.Search.Lucene.Model;
+using OrchardCore.Search.Lucene.Models;
 
 namespace OrchardCore.Search.Lucene.Controllers;
 
@@ -29,7 +29,7 @@ public sealed class LuceneApiController : ControllerBase
     [Route("content")]
     public async Task<IActionResult> Content([FromQuery] LuceneQueryModel queryModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.QueryLuceneApi))
         {
             return this.ChallengeOrForbid("Api");
         }
@@ -43,7 +43,7 @@ public sealed class LuceneApiController : ControllerBase
     [Route("content")]
     public async Task<IActionResult> ContentPost(LuceneQueryModel queryModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.QueryLuceneApi))
         {
             return this.ChallengeOrForbid();
         }
@@ -57,7 +57,7 @@ public sealed class LuceneApiController : ControllerBase
     [Route("documents")]
     public async Task<IActionResult> Documents([FromQuery] LuceneQueryModel queryModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.QueryLuceneApi))
         {
             return this.ChallengeOrForbid();
         }
@@ -71,7 +71,7 @@ public sealed class LuceneApiController : ControllerBase
     [Route("documents")]
     public async Task<IActionResult> DocumentsPost(LuceneQueryModel queryModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.QueryLuceneApi))
         {
             return this.ChallengeOrForbid("Api");
         }

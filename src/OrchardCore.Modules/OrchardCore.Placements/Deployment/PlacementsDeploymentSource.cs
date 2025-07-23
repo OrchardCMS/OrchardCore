@@ -7,7 +7,7 @@ using OrchardCore.Placements.Services;
 
 namespace OrchardCore.Placements.Deployment;
 
-public class PlacementsDeploymentSource
+public sealed class PlacementsDeploymentSource
     : DeploymentSourceBase<PlacementsDeploymentStep>
 {
     private readonly PlacementsManager _placementsManager;

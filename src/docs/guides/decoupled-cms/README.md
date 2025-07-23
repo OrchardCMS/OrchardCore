@@ -59,7 +59,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>net8.0</TargetFramework>
+  <TargetFramework>net9.0</TargetFramework>
 </PropertyGroup>
 ```
 
@@ -69,7 +69,7 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="2.1.6" />
+  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="2.1.7" />
 </ItemGroup>
 ```
 

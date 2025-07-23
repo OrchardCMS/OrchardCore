@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
+using OrchardCore.Deployment;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Deployment.Download;
@@ -26,7 +27,7 @@ public sealed class DownloadController : Controller
     [HttpGet]
     public async Task<IActionResult> Display(string contentItemId, bool latest = false)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
         {
             return Forbid();
         }
@@ -48,7 +49,7 @@ public sealed class DownloadController : Controller
         var model = new DisplayJsonContentItemViewModel
         {
             ContentItem = contentItem,
-            ContentItemJson = JObject.FromObject(contentItem).ToString()
+            ContentItemJson = JObject.FromObject(contentItem).ToString(),
         };
 
         return View(model);
@@ -57,7 +58,7 @@ public sealed class DownloadController : Controller
     [HttpPost]
     public async Task<IActionResult> Download(string contentItemId, bool latest = false)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
         {
             return Forbid();
         }

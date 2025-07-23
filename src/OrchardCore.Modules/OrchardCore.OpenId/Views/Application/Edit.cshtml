@@ -37,7 +37,7 @@
         <span asp-validation-for="ClientId" class="text-danger"></span>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="ClientSecret">
+    <div class="mb-3" asp-validation-class-for="ClientSecret" id="ClientSecretWrapper">
         <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
         <div class="input-group">
             <input type="password" asp-for="ClientSecret" placeholder="@T["enter a new value to replace the existing secret"]" class="form-control" autocomplete="new-password" />
@@ -131,17 +131,17 @@
             <div class="mb-3">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" asp-for="AllowLogoutEndpoint" data-bs-toggle="collapse" data-bs-target="#postLogoutRedirectUris" checked="@Model.AllowLogoutEndpoint">
-                    <label class="form-check-label" asp-for="AllowLogoutEndpoint">@T["Allow Logout Endpoint"]</label>
+                    <label class="form-check-label" asp-for="AllowLogoutEndpoint">@T["Allow End Session Endpoint"]</label>
                 </div>
             </div>
             <div class="mb-3 collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
                 <div class="mb-3" asp-validation-class-for="PostLogoutRedirectUris">
-                    <label asp-for="PostLogoutRedirectUris">@T["Post Logout Redirect Uris"]</label>
+                    <label asp-for="PostLogoutRedirectUris">@T["Post-Logout Redirect Uris"]</label>
                     <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
                     <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
                 </div>
                 <div class="hint">
-                    @T["Space delimited list of logout redirect URIs."]
+                    @T["Space delimited list of post-logout redirect URIs."]
                 </div>
             </div>
         </div>
@@ -153,6 +153,16 @@
             </div>
             <div class="hint">
                 @T["Ensure that the client/client library supports PKCE before enabling this option."]
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="RequirePushedAuthorizationRequests" checked="@Model.RequirePushedAuthorizationRequests">
+                <label class="form-check-label" asp-for="RequirePushedAuthorizationRequests">@T["Require Pushed Authorization Requests"]</label>
+            </div>
+            <div class="hint">
+                @T["Ensure that the client/client library supports PAR before enabling this option."]
             </div>
         </div>
 
@@ -249,12 +259,12 @@
     @if (settings == null)
     {
         <text>
-                    $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
-                $("#AllowClientCredentialsFlowFieldSet").collapse("show");
-                $("#AllowImplicitFlowFieldSet").collapse("show");
-                $("#AllowPasswordFlowFieldSet").collapse("show");
-                $("#AllowRefreshTokenFlowFieldSet").collapse("show");
-                $("#AllowLogoutEndpointFieldSet").collapse("show");
+            $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
+            $("#AllowClientCredentialsFlowFieldSet").collapse("show");
+            $("#AllowImplicitFlowFieldSet").collapse("show");
+            $("#AllowPasswordFlowFieldSet").collapse("show");
+            $("#AllowRefreshTokenFlowFieldSet").collapse("show");
+            $("#AllowLogoutEndpointFieldSet").collapse("show");
         </text>
     }
     else
@@ -266,8 +276,8 @@
         else
         {
             <text>
-                        $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
-                    $("#AllowAuthorizationCodeFlow").prop("checked", false);
+                $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
+                $("#AllowAuthorizationCodeFlow").prop("checked", false);
             </text>
         }
 
@@ -278,8 +288,8 @@
         else
         {
             <text>
-                        $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
-                    $("#AllowClientCredentialsFlow").prop("checked", false);
+                $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
+                $("#AllowClientCredentialsFlow").prop("checked", false);
             </text>
         }
 
@@ -290,8 +300,8 @@
         else
         {
             <text>
-                        $("#AllowImplicitFlowFieldSet").collapse("hide");
-                    $("#AllowImplicitFlow").prop("checked", false);
+                $("#AllowImplicitFlowFieldSet").collapse("hide");
+                $("#AllowImplicitFlow").prop("checked", false);
             </text>
         }
 
@@ -302,8 +312,8 @@
         else
         {
             <text>
-                        $("#AllowHybridFlowFieldSet").collapse("hide");
-                    $("#AllowHybridFlowFlow").prop("checked", false);
+                $("#AllowHybridFlowFieldSet").collapse("hide");
+                $("#AllowHybridFlowFlow").prop("checked", false);
             </text>
         }
 
@@ -314,8 +324,8 @@
         else
         {
             <text>
-                        $("#AllowPasswordFlowFieldSet").collapse("hide");
-                    $("#AllowPasswordFlow").prop("checked", false);
+                $("#AllowPasswordFlowFieldSet").collapse("hide");
+                $("#AllowPasswordFlow").prop("checked", false);
             </text>
         }
 
@@ -326,8 +336,8 @@
         else
         {
             <text>
-                        $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
-                    $("#AllowRefreshTokenFlow").prop("checked", false);
+                $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
+                $("#AllowRefreshTokenFlow").prop("checked", false);
             </text>
         }
 
@@ -338,8 +348,8 @@
         else
         {
             <text>
-                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
-                    $("#AllowLogoutEndpointFieldSet").prop("checked", false);
+                $("#AllowLogoutEndpointFieldSet").collapse("hide");
+                $("#AllowLogoutEndpointFieldSet").prop("checked", false);
             </text>
         }
     }
@@ -349,16 +359,16 @@
             refreshClientSecret();
         });
         function refreshClientSecret(defaultType) {
-            var type = $("#Type"), secret = $("#ClientSecret");
+            var type = $("#Type"), secret = $("#ClientSecret"), secretWrapper = $('#ClientSecretWrapper');
 
             var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
             if (type.val() === '@OpenIddictConstants.ClientTypes.Confidential') {
-                secret.parent().show();
+                secretWrapper.show();
                 allowClientCredentialsFlow.removeAttr("disabled");
             }
             else {
                 secret.val("");
-                secret.parent().hide();
+                secretWrapper.hide();
                 allowClientCredentialsFlow.attr('disabled', true);
                 allowClientCredentialsFlow.prop("checked", false);
             }

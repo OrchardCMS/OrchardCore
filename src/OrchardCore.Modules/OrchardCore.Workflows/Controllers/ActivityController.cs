@@ -51,7 +51,7 @@ public sealed class ActivityController : Controller
     [Admin("Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add", "AddActivity")]
     public async Task<IActionResult> Create(string activityName, long workflowTypeId, string returnUrl)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -83,7 +83,7 @@ public sealed class ActivityController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(string activityName, ActivityEditViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -117,7 +117,7 @@ public sealed class ActivityController : Controller
     [Admin("Workflows/Types/{workflowTypeId}/Activity/{activityId}/Edit", "EditActivity")]
     public async Task<IActionResult> Edit(long workflowTypeId, string activityId, string returnUrl)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -144,7 +144,7 @@ public sealed class ActivityController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(ActivityEditViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }

@@ -11,18 +11,18 @@ public class RoleClaimsProvider : IUserClaimsProvider
 {
     private readonly UserManager<IUser> _userManager;
     private readonly RoleManager<IRole> _roleManager;
-    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
     private readonly IdentityOptions _identityOptions;
 
     public RoleClaimsProvider(
         UserManager<IUser> userManager,
         RoleManager<IRole> roleManager,
-        ISystemRoleNameProvider systemRoleNameProvider,
+        ISystemRoleProvider systemRoleProvider,
         IOptions<IdentityOptions> identityOptions)
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _systemRoleNameProvider = systemRoleNameProvider;
+        _systemRoleProvider = systemRoleProvider;
         _identityOptions = identityOptions.Value;
     }
 
@@ -33,13 +33,13 @@ public class RoleClaimsProvider : IUserClaimsProvider
             return;
         }
 
-        var roleNames = await _userManager.GetRolesAsync(user);
-
         var isAdministrator = false;
+
+        var roleNames = await _userManager.GetRolesAsync(user);
 
         foreach (var roleName in roleNames)
         {
-            if (await _systemRoleNameProvider.IsAdminRoleAsync(roleName))
+            if (_systemRoleProvider.IsAdminRole(roleName))
             {
                 isAdministrator = true;
                 break;

@@ -36,7 +36,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -78,7 +78,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -110,7 +110,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -131,7 +131,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -149,7 +149,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -183,7 +183,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -201,7 +201,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -223,7 +223,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -244,7 +244,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -263,7 +263,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -288,7 +288,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     {
         // Arrange
         var handler = CreateHandler();
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(SecureMediaPermissions.ViewMedia, [permission], true, resource);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
 
         // Act
         await handler.HandleAsync(context);
@@ -313,7 +313,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
         mockMediaOptions.Setup(o => o.Value).Returns(new MediaOptions
         {
             AssetsUsersFolder = UsersFolder,
-            AllowedFileExtensions = [".png"]
+            AllowedFileExtensions = [".png"],
         });
 
         var mockUserAssetFolderNameProvider = new Mock<IUserAssetFolderNameProvider>();

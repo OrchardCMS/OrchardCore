@@ -43,7 +43,7 @@ public class WorkflowManagerTests
                     {
                         A = new WorkflowExpression<double>("input(\"A\")"),
                         B = new WorkflowExpression<double>("input(\"B\")"),
-                    })
+                    }),
                 },
                 new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
                 new() { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject(new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
@@ -52,7 +52,7 @@ public class WorkflowManagerTests
             [
                 new() { SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" },
                 new() { SourceActivityId = "2", SourceOutcomeName = "Done", DestinationActivityId = "3" }
-            ]
+            ],
         };
 
         var workflowManager = CreateWorkflowManager(serviceProvider, [addTask, writeLineTask, setOutputTask], workflowType);
@@ -83,7 +83,7 @@ public class WorkflowManagerTests
     private static JavaScriptWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
     {
         var memoryCache = new MemoryCache(new MemoryCacheOptions());
-        var javaScriptEngine = new JavaScriptEngine(memoryCache);
+        var javaScriptEngine = new JavaScriptEngine(memoryCache, Options.Create(new Jint.Options()));
         var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
         var globalMethodProviders = Array.Empty<IGlobalMethodProvider>();
         var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);

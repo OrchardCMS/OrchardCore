@@ -1,20 +1,34 @@
 [
   {
-    "inputs": [
-      "Assets/scss/SelectOptionsEditor/selectOptionsEditor.scss"
-    ],
-    "output": "wwwroot/Styles/selectOptionsEditor.css"
+    "action": "min",
+    "name": "selectOptionsEditor",
+    "source": "Assets/js/SelectOptionsEditor/selectOptionsEditor.js",
+    "tags": [ "admin", "dashboard", "js" ]
   },
   {
-    "inputs": [
-      "Assets/js/SelectOptionsEditor/selectOptionsEditor.js"
-    ],
-    "output": "wwwroot/Scripts/selectOptionsEditor.js"
+    "action": "min",
+    "name": "formElementLabelManager",
+    "source": "Assets/js/formElementLabelManager.js",
+    "tags": [ "admin", "dashboard", "js" ]
   },
   {
     "inputs": [
       "Assets/js/formElementLabelManager.js"
     ],
     "output": "wwwroot/Scripts/formElementLabelManager.js"
+  },
+  {
+    "action": "min",
+    "name": "form-visibility",
+    "source": "Assets/js/form-visibility.js",
+    "output": "wwwroot/Scripts/form-visibility.js",
+    "tags": [ "forms", "js" ]
+  },
+  {
+    "action": "min",
+    "name": "form-visibility-rules",
+    "source": "Assets/js/form-visibility-rules.js",
+    "output": "wwwroot/Scripts/form-visibility-rules.js",
+    "tags": [ "forms", "js" ]
   }
 ]

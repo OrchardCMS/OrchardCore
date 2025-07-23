@@ -58,7 +58,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+        if (!await _authorizationService.AuthorizeAsync(user, LocalizationPermissions.ManageCultures))
         {
             return null;
         }
@@ -74,7 +74,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
                     {
                         Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
                         CultureInfo = cultureInfo,
-                        IsDefault = string.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                        IsDefault = string.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase),
                     };
                 }).ToArray();
 
@@ -91,7 +91,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+        if (!await _authorizationService.AuthorizeAsync(user, LocalizationPermissions.ManageCultures))
         {
             return null;
         }

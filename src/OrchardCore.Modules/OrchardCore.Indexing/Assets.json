@@ -1,0 +1,8 @@
+[
+  {
+    "action": "min",
+    "name": "admin-list-manager",
+    "source": "Assets/js/admin-ui.js",
+    "tags": [ "indexing", "js" ]
+  }
+]

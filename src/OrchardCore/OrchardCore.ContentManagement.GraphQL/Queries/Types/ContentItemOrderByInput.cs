@@ -1,8 +1,9 @@
 using GraphQL.Types;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class ContentItemOrderByInput : InputObjectGraphType
+public sealed class ContentItemOrderByInput : InputObjectGraphType
 {
     public ContentItemOrderByInput(string contentItemName)
     {
@@ -25,16 +26,16 @@ public class ContentItemOrderByInput : InputObjectGraphType
 public enum OrderByDirection
 {
     Ascending,
-    Descending
+    Descending,
 }
 
 public class OrderByDirectionGraphType : EnumerationGraphType
 {
-    public OrderByDirectionGraphType()
+    public OrderByDirectionGraphType(IStringLocalizer<OrderByDirectionGraphType> S)
     {
         Name = "OrderByDirection";
-        Description = "the order by direction";
-        Add("ASC", OrderByDirection.Ascending, "orders content items in ascending order");
-        Add("DESC", OrderByDirection.Descending, "orders content items in descending order");
+        Description = S["the order by direction"];
+        Add("ASC", OrderByDirection.Ascending, S["orders content items in ascending order"]);
+        Add("DESC", OrderByDirection.Descending, S["orders content items in descending order"]);
     }
 }

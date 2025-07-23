@@ -53,7 +53,7 @@ public sealed class TwitterStartup : StartupBase
                         attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
 
                         return ValueTask.CompletedTask;
-                    }
+                    },
                 })
             );
     }
@@ -64,7 +64,7 @@ public sealed class TwitterSigninStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddNavigationProvider<AdminMenuSignin>();
+        services.AddNavigationProvider<AdminMenuSignIn>();
         services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
         services.AddSiteDisplayDriver<TwitterSigninSettingsDisplayDriver>();
 

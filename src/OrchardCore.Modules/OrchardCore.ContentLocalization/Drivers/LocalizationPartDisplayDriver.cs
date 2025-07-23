@@ -30,8 +30,8 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
     public override IDisplayResult Display(LocalizationPart part, BuildPartDisplayContext context)
     {
         return Combine(
-            Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdmin", model => BuildViewModelAsync(model, part)).Location("SummaryAdmin", "Tags:11"),
-            Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdminLinks", model => BuildViewModelAsync(model, part)).Location("SummaryAdmin", "Actions:5")
+            Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdmin", model => BuildViewModelAsync(model, part)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:11"),
+            Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdminLinks", model => BuildViewModelAsync(model, part)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
         );
     }
 
@@ -90,7 +90,7 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
             {
                 IsDeleted = true,
                 Culture = CultureInfo.GetCultureInfo(culture),
-                ContentItemId = ci?.ContentItemId
+                ContentItemId = ci?.ContentItemId,
             };
         }).OfType<LocalizationLinksViewModel>().ToList();
 

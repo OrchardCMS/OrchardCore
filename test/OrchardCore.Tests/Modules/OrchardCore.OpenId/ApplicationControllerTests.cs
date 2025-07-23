@@ -33,7 +33,9 @@ public class ApplicationControllerTests
     {
         var mockOpenIdScopeManager = new Mock<IOpenIdScopeManager>();
         var mockData = Array.Empty<object>();
+#pragma warning disable xUnit1051 // Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken
         mockOpenIdScopeManager.Setup(m => m.ListAsync(null, null, default)).Returns(mockData.ToAsyncEnumerable());
+#pragma warning restore xUnit1051 // Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken
         var controller = new ApplicationController(
             Mock.Of<IShapeFactory>(),
             Mock.Of<IOptions<PagerOptions>>(),
@@ -120,7 +122,7 @@ public class ApplicationControllerTests
             AllowAuthorizationCodeFlow = true,
             ClientId = "123",
             DisplayName = "Name",
-            RedirectUris = uris
+            RedirectUris = uris,
         };
 
         ValidateControllerModel(controller, model);

@@ -18,7 +18,7 @@ public class PortableObjectStringLocalizerTests
     public void LocalizerReturnsTranslationsFromProvidedDictionary()
     {
         SetupDictionary("cs", new[] {
-            new CultureDictionaryRecord("ball", "míč", "míče", "míčů")
+            new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
         });
 
         var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
@@ -35,7 +35,7 @@ public class PortableObjectStringLocalizerTests
     public void LocalizerReturnsOriginalTextIfTranslationsDoesntExistInProvidedDictionary()
     {
         SetupDictionary("cs", new[] {
-            new CultureDictionaryRecord("ball", "míč", "míče", "míčů")
+            new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
         });
 
         var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
@@ -65,11 +65,11 @@ public class PortableObjectStringLocalizerTests
     public void LocalizerFallbacksToParentCultureIfTranslationDoesntExistInSpecificCulture()
     {
         SetupDictionary("cs", new[] {
-            new CultureDictionaryRecord("ball", "míč", "míče", "míčů")
+            new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
         });
 
         SetupDictionary("cs-CZ", new[] {
-            new CultureDictionaryRecord("car", "auto", "auta", "aut")
+            new CultureDictionaryRecord("car", "auto", "auta", "aut"),
         });
 
         var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
@@ -85,11 +85,11 @@ public class PortableObjectStringLocalizerTests
     public void LocalizerReturnsTranslationFromSpecificCultureIfItExists()
     {
         SetupDictionary("cs", new[] {
-            new CultureDictionaryRecord("ball", "míč", "míče", "míčů")
+            new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
         });
 
         SetupDictionary("cs-CZ", new[] {
-            new CultureDictionaryRecord("ball", "balón", "balóny", "balónů")
+            new CultureDictionaryRecord("ball", "balón", "balóny", "balónů"),
         });
 
         var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
@@ -106,7 +106,7 @@ public class PortableObjectStringLocalizerTests
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
-            new CultureDictionaryRecord("ball", "small", ["míček", "míčky", "míčků"])
+            new CultureDictionaryRecord("ball", "small", ["míček", "míčky", "míčků"]),
         });
 
         var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
@@ -123,7 +123,7 @@ public class PortableObjectStringLocalizerTests
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
-            new CultureDictionaryRecord("ball", "big", ["míček", "míčky", "míčků"])
+            new CultureDictionaryRecord("ball", "big", ["míček", "míčky", "míčků"]),
         });
 
         var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
@@ -139,7 +139,7 @@ public class PortableObjectStringLocalizerTests
     public void LocalizerReturnsFormattedTranslation()
     {
         SetupDictionary("cs", new[] {
-            new CultureDictionaryRecord("The page (ID:{0}) was deleted.", "Stránka (ID:{0}) byla smazána.")
+            new CultureDictionaryRecord("The page (ID:{0}) was deleted.", "Stránka (ID:{0}) byla smazána."),
         });
 
         var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
@@ -155,7 +155,7 @@ public class PortableObjectStringLocalizerTests
     public void HtmlLocalizerDoesNotFormatTwiceIfFormattedTranslationContainsCurlyBraces()
     {
         SetupDictionary("cs", new[] {
-            new CultureDictionaryRecord("The page (ID:{0}) was deleted.", "Stránka (ID:{0}) byla smazána.")
+            new CultureDictionaryRecord("The page (ID:{0}) was deleted.", "Stránka (ID:{0}) byla smazána."),
         });
 
         var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
@@ -261,7 +261,7 @@ public class PortableObjectStringLocalizerTests
     {
         SetupDictionary("en", new CultureDictionaryRecord[]
         {
-            new("míč", "ball", "{0} balls")
+            new("míč", "ball", "{0} balls"),
         }, PluralizationRule.English);
 
         var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
@@ -280,7 +280,7 @@ public class PortableObjectStringLocalizerTests
     {
         SetupDictionary("ar", new CultureDictionaryRecord[]
         {
-            new("hello", "مرحبا")
+            new("hello", "مرحبا"),
         }, PluralizationRule.Arabic);
 
         SetupDictionary("ar-YE", Array.Empty<CultureDictionaryRecord>(), PluralizationRule.Arabic);
@@ -304,13 +304,13 @@ public class PortableObjectStringLocalizerTests
             new("Blog", "مدونة"),
             new("Menu", "قائمة"),
             new("Page", "صفحة"),
-            new("Article", "مقالة")
+            new("Article", "مقالة"),
         }, PluralizationRule.Arabic);
 
         SetupDictionary("ar-YE", new CultureDictionaryRecord[]
         {
             new("Blog", "مدونة"),
-            new("Product", "منتج")
+            new("Product", "منتج"),
         }, PluralizationRule.Arabic);
 
         var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, false, _logger.Object);

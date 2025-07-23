@@ -1,32 +1,25 @@
-using GraphQL;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.Events;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionEventHandler
+public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionEventHandler
 {
     private static readonly string _cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
 
     private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IMemoryCache _memoryCache;
-    private readonly GraphQLContentOptions _contentOptions;
-
 
     public DynamicContentFieldsIndexAliasProvider(
         IEnumerable<IContentFieldProvider> contentFieldProviders,
-        IOptions<GraphQLContentOptions> contentOptionsAccessor,
         IContentDefinitionManager contentDefinitionManager,
         IMemoryCache memoryCache)
     {
         _contentFieldProviders = contentFieldProviders;
         _contentDefinitionManager = contentDefinitionManager;
         _memoryCache = memoryCache;
-        _contentOptions = contentOptionsAccessor.Value;
     }
 
     public async ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
@@ -45,10 +38,6 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
         {
             foreach (var field in part.PartDefinition.Fields)
             {
-                var alias = _contentOptions.ShouldCollapse(part) ?
-                    GraphQLContentOptions.GetFieldName(part, part.Name, field.Name) :
-                    $"{field.PartDefinition.Name.ToFieldName()}.{field.Name.ToCamelCase()}";
-
                 foreach (var fieldProvider in _contentFieldProviders)
                 {
                     if (!fieldProvider.HasFieldIndex(field))
@@ -65,9 +54,26 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
 
                     aliases.Add(new IndexAlias
                     {
-                        Alias = alias,
-                        Index = fieldIndex.Index,
-                        IndexType = fieldIndex.IndexType
+                        Alias = fieldIndex.AliasName,
+                        Index = fieldIndex.IndexType.Name,
+                        IndexType = fieldIndex.IndexType,
+                        IsPartial = true,
+                    });
+
+                    aliases.Add(new IndexAlias
+                    {
+                        Alias = $"{fieldIndex.AliasName}:ContentPart",
+                        Index = fieldIndex.IndexType.Name,
+                        IndexType = fieldIndex.IndexType,
+                        IsPartial = true,
+                    });
+
+                    aliases.Add(new IndexAlias
+                    {
+                        Alias = $"{fieldIndex.AliasName}:ContentField",
+                        Index = fieldIndex.IndexType.Name,
+                        IndexType = fieldIndex.IndexType,
+                        IsPartial = true,
                     });
 
                     break;

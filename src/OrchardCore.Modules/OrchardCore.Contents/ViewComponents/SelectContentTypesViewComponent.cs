@@ -28,7 +28,7 @@ public class SelectContentTypesViewComponent : ViewComponent
         var model = new SelectContentTypesViewModel
         {
             HtmlName = htmlName,
-            ContentTypeSelections = contentTypes
+            ContentTypeSelections = contentTypes,
         };
 
         return View(model);

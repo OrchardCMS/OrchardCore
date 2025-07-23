@@ -44,8 +44,8 @@ public sealed class AddToDeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> AddContentItem(long deploymentPlanId, string returnUrl, string contentItemId)
     {
-        if (!(await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan) &&
-            await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export)
+        if (!(await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan) &&
+            await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export)
             ))
         {
             return Forbid();
@@ -95,13 +95,13 @@ public sealed class AddToDeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> AddContentItems(long deploymentPlanId, string returnUrl, IEnumerable<long> itemIds)
     {
-        if (itemIds?.Count() == 0)
+        if (itemIds is null || !itemIds.Any())
         {
             return this.LocalRedirect(returnUrl, true);
         }
 
-        if (!(await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan) &&
-            await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export)
+        if (!(await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan) &&
+            await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export)
             ))
         {
             return Forbid();

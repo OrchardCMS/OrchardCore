@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
@@ -50,10 +51,13 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
             m.FlowPart = flowPart;
             m.BuildPartDisplayContext = context;
         })
-        .Location("Detail", "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)
+        => EditInternal(flowPart, context, null);
+
+    private ShapeResult EditInternal(FlowPart flowPart, BuildPartEditorContext context, string[] prefixes)
     {
         return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), async model =>
         {
@@ -86,6 +90,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
             model.FlowPart = flowPart;
             model.Updater = context.Updater;
             model.ContainedContentTypeDefinitions = containedContentTypes;
+            model.Prefixes = prefixes;
         });
     }
 
@@ -122,7 +127,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
         part.Widgets = contentItems;
 
-        return Edit(part, context);
+        return EditInternal(part, context, model.Prefixes);
     }
 
     private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
@@ -131,11 +136,10 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
         if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
         {
-            return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                .Where(t => t.StereotypeEquals("Widget"));
+            return await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync();
         }
 
-        return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-            .Where(t => settings.ContainedContentTypes.Contains(t.Name) && t.StereotypeEquals("Widget"));
+        return (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync())
+            .Where(t => settings.ContainedContentTypes.Contains(t.Name));
     }
 }

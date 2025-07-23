@@ -58,7 +58,7 @@ public class FeaturesProvider : IFeaturesProvider
                     FeatureDependencyIds = featureDependencyIds,
                     DefaultTenantOnly = featureDefaultTenantOnly,
                     IsAlwaysEnabled = featureIsAlwaysEnabled,
-                    EnabledByDependencyOnly = featureEnabledByDependencyOnly
+                    EnabledByDependencyOnly = featureEnabledByDependencyOnly,
                 };
 
                 foreach (var builder in _featureBuilderEvents)

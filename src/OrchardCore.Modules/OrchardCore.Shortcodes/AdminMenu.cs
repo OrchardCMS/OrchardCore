@@ -18,7 +18,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             .Add(S["Design"], design => design
                 .Add(S["Shortcodes"], S["Shortcodes"].PrefixPosition(), import => import
                     .Action("Index", "Admin", "OrchardCore.Shortcodes")
-                    .Permission(Permissions.ManageShortcodeTemplates)
+                    .Permission(ShortcodesPermissions.ManageShortcodeTemplates)
                     .LocalNav()
                 )
             );

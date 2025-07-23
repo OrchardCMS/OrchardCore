@@ -13,7 +13,7 @@ namespace OrchardCore.Media.Services;
 /// <summary>
 /// Checks if the user has related permission to view media in the path resource which is passed from AuthorizationHandler.
 /// </summary>
-public class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private const char PathSeparator = '/';
 
@@ -55,7 +55,7 @@ public class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<Permissi
             return;
         }
 
-        if (requirement.Permission.Name != SecureMediaPermissions.ViewMedia.Name)
+        if (requirement.Permission.Name != MediaPermissions.ViewMedia.Name)
         {
             return;
         }
@@ -90,7 +90,7 @@ public class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<Permissi
 
         if (IsAuthorizedFolder("/", path))
         {
-            await AuthorizeAsync(context, requirement, SecureMediaPermissions.ViewRootMedia);
+            await AuthorizeAsync(context, requirement, MediaPermissions.ViewRootMedia);
 
             return;
         }
@@ -110,7 +110,7 @@ public class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<Permissi
         }
 
         // Create a dynamic permission for the folder path. This allows to give access to a specific folders only.
-        var template = SecureMediaPermissions.ConvertToDynamicPermission(SecureMediaPermissions.ViewMedia);
+        var template = SecureMediaPermissions.ConvertToDynamicPermission(MediaPermissions.ViewMedia);
         if (template != null)
         {
             var permission = SecureMediaPermissions.CreateDynamicPermission(template, folderPath);
@@ -143,11 +143,11 @@ public class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<Permissi
 
             if (IsAuthorizedFolder(userAssetsFolderName, userId))
             {
-                await AuthorizeAsync(context, requirement, SecureMediaPermissions.ViewOwnMedia);
+                await AuthorizeAsync(context, requirement, MediaPermissions.ViewOwnMedia);
             }
             else
             {
-                await AuthorizeAsync(context, requirement, SecureMediaPermissions.ViewOthersMedia);
+                await AuthorizeAsync(context, requirement, MediaPermissions.ViewOthersMedia);
             }
         }
         else
@@ -171,11 +171,11 @@ public class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<Permissi
         Permission permission;
         if (path.IndexOf(PathSeparator) < 0)
         {
-            permission = SecureMediaPermissions.ViewOwnMedia;
+            permission = MediaPermissions.ViewOwnMedia;
         }
         else
         {
-            permission = SecureMediaPermissions.ViewOthersMedia;
+            permission = MediaPermissions.ViewOthersMedia;
 
             var userFolderName = _userAssetFolderNameProvider.GetUserAssetFolderName(context.User);
             if (!string.IsNullOrEmpty(userFolderName))
@@ -184,7 +184,7 @@ public class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<Permissi
 
                 if (IsAuthorizedFolder(userOwnFolder, path) || IsDescendantOfAuthorizedFolder(userOwnFolder, path))
                 {
-                    permission = SecureMediaPermissions.ViewOwnMedia;
+                    permission = MediaPermissions.ViewOwnMedia;
                 }
             }
         }

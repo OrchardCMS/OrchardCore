@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Search.Abstractions;
+using OrchardCore.Indexing;
 using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Settings;
@@ -19,17 +18,17 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IIndexProfileStore _indexProfileStore;
 
     public SearchSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IServiceProvider serviceProvider
+        IIndexProfileStore indexProfileStore
         )
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _serviceProvider = serviceProvider;
+        _indexProfileStore = indexProfileStore;
     }
 
     protected override string SettingsGroupId
@@ -39,19 +38,19 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SearchPermissions.ManageSearchSettings))
         {
             return null;
         }
 
-        return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", model =>
+        return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", async model =>
         {
-            var searchServices = _serviceProvider.GetServices<ISearchService>();
-
-            model.SearchServices = searchServices.Select(service => new SelectListItem(service.Name, service.Name)).ToList();
+            model.DefaultIndexProfileName = settings.DefaultIndexProfileName;
             model.Placeholder = settings.Placeholder;
             model.PageTitle = settings.PageTitle;
-            model.ProviderName = settings.ProviderName;
+            model.Indexes = (await _indexProfileStore.GetAllAsync())
+                .Select(index => new SelectListItem(index.Name, index.Id))
+                .ToArray();
         }).Location("Content:2")
         .OnGroup(SettingsGroupId);
     }
@@ -60,7 +59,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SearchPermissions.ManageSearchSettings))
         {
             return null;
         }
@@ -69,7 +68,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        section.ProviderName = model.ProviderName;
+        section.DefaultIndexProfileName = model.DefaultIndexProfileName;
         section.Placeholder = model.Placeholder;
         section.PageTitle = model.PageTitle;
 

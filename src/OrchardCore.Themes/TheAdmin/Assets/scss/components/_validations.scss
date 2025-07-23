@@ -38,7 +38,6 @@ span.field-validation-error {
 .input-validation-error {
     // The following fields are coming from bootstrap.
     border-color: var(--bs-form-invalid-border-color);
-    padding-right: calc(1.5em + 0.75rem);
 }
 
 input:not([type='checkbox']):not([type='radio']).input-validation-error {
@@ -98,4 +97,17 @@ textarea.form-control.input-validation-error {
 .input-group > .form-select:not(:focus).input-validation-error,
 .input-group > .form-floating:not(:focus-within).input-validation-error {
     z-index: 4;
+}
+
+.has-validation-error.is-invalid.multiselect {
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    border-color: var(--bs-form-invalid-border-color);
+}
+
+.has-validation-error.is-invalid.term-entries-area {
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    border-color: var(--bs-form-invalid-border-color);
+    padding: 0.375rem 0.75rem;
 }

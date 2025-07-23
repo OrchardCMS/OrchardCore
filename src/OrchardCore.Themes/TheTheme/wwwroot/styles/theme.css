@@ -47,6 +47,10 @@ ul.pager {
   justify-content: center;
 }
 
+.g-recaptcha {
+  margin-bottom: 1rem;
+}
+
 .term-badge > a {
   text-decoration: none;
 }

@@ -28,7 +28,7 @@ public static class TaxonomyFieldDriverHelper
                 ContentItemId = contentItem.ContentItemId,
                 Selected = field.TermContentItemIds.Contains(contentItem.ContentItemId),
                 Level = level,
-                IsLeaf = children.Length == 0
+                IsLeaf = children.Length == 0,
             };
 
             termEntries.Add(termEntry);

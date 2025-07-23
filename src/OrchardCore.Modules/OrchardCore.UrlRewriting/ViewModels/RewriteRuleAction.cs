@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.UrlRewriting.ViewModels;
+namespace OrchardCore.UrlRewriting.ViewModels;
 
 public enum RewriteRuleAction
 {

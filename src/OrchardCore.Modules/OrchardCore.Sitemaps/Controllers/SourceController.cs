@@ -48,7 +48,7 @@ public sealed class SourceController : Controller
     [Admin("SitemapSource/Create/{sitemapId}/{sourceType}", "SitemapsSourceCreate")]
     public async Task<IActionResult> Create(string sitemapId, string sourceType)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -73,7 +73,7 @@ public sealed class SourceController : Controller
             SitemapSource = source,
             SitemapSourceId = source.Id,
             SitemapSourceType = sourceType,
-            Editor = await _displayManager.BuildEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+            Editor = await _displayManager.BuildEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
         };
 
         model.Editor.SitemapSource = source;
@@ -84,7 +84,7 @@ public sealed class SourceController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateSourceViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -126,7 +126,7 @@ public sealed class SourceController : Controller
     [Admin("SitemapSource/Edit/{sitemapId}/{sourceId}", "SitemapsSourceEdit")]
     public async Task<IActionResult> Edit(string sitemapId, string sourceId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -150,7 +150,7 @@ public sealed class SourceController : Controller
             SitemapId = sitemapId,
             SitemapSource = source,
             SitemapSourceId = source.Id,
-            Editor = await _displayManager.BuildEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+            Editor = await _displayManager.BuildEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
         };
 
         model.Editor.SitemapSource = source;
@@ -161,7 +161,7 @@ public sealed class SourceController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditSourceViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -201,7 +201,7 @@ public sealed class SourceController : Controller
     [Admin("SitemapSource/Delete/{sitemapId}/{sourceId}", "SitemapsSourceDelete")]
     public async Task<IActionResult> Delete(string sitemapId, string sourceId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }

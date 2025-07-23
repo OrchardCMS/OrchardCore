@@ -5,7 +5,7 @@ using OrchardCore.Json;
 
 namespace OrchardCore.Deployment.Deployment;
 
-public class DeploymentPlanDeploymentSource
+public sealed class DeploymentPlanDeploymentSource
     : DeploymentSourceBase<DeploymentPlanDeploymentStep>
 {
     private readonly IDeploymentPlanService _deploymentPlanService;
@@ -43,7 +43,7 @@ public class DeploymentPlanDeploymentSource
                                   select new
                                   {
                                       Type = GetStepType(deploymentStepFactories, step),
-                                      Step = step
+                                      Step = step,
                                   }).ToArray(),
                      }).ToArray();
 

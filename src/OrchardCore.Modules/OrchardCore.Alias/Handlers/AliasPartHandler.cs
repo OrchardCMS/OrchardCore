@@ -19,6 +19,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
     private readonly ITagCache _tagCache;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly ISession _session;
+
     protected readonly IStringLocalizer S;
 
     public AliasPartHandler(
@@ -49,43 +50,11 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
         }
     }
 
-    public override async Task UpdatedAsync(UpdateContentContext context, AliasPart part)
-    {
-        // Compute the Alias only if it's empty.
-        if (!string.IsNullOrEmpty(part.Alias))
-        {
-            return;
-        }
+    public override Task CreatedAsync(CreateContentContext context, AliasPart part)
+        => ComputeAliasAsync(part);
 
-        var pattern = await GetPatternAsync(part);
-
-        if (!string.IsNullOrEmpty(pattern))
-        {
-            var model = new AliasPartViewModel()
-            {
-                Alias = part.Alias,
-                AliasPart = part,
-                ContentItem = part.ContentItem
-            };
-
-            part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
-
-            part.Alias = part.Alias.Replace("\r", string.Empty).Replace("\n", string.Empty);
-
-            if (part.Alias?.Length > AliasPart.MaxAliasLength)
-            {
-                part.Alias = part.Alias[..AliasPart.MaxAliasLength];
-            }
-
-            if (!await part.IsAliasUniqueAsync(_session, part.Alias))
-            {
-                part.Alias = await GenerateUniqueAliasAsync(part.Alias, part);
-            }
-
-            part.Apply();
-        }
-    }
+    public override Task UpdatedAsync(UpdateContentContext context, AliasPart part)
+        => ComputeAliasAsync(part);
 
     public override Task PublishedAsync(PublishContentContext context, AliasPart instance)
     {
@@ -113,6 +82,44 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
         clonedPart.Alias = await GenerateUniqueAliasAsync(part.Alias, clonedPart);
 
         clonedPart.Apply();
+    }
+
+    private async Task ComputeAliasAsync(AliasPart part)
+    {
+        // Compute the Alias only if it's empty.
+        if (!string.IsNullOrEmpty(part.Alias))
+        {
+            return;
+        }
+
+        var pattern = await GetPatternAsync(part);
+
+        if (!string.IsNullOrEmpty(pattern))
+        {
+            var model = new AliasPartViewModel()
+            {
+                Alias = part.Alias,
+                AliasPart = part,
+                ContentItem = part.ContentItem,
+            };
+
+            part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
+                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
+
+            part.Alias = part.Alias.Replace("\r", string.Empty).Replace("\n", string.Empty);
+
+            if (part.Alias?.Length > AliasPart.MaxAliasLength)
+            {
+                part.Alias = part.Alias[..AliasPart.MaxAliasLength];
+            }
+
+            if (!await part.IsAliasUniqueAsync(_session, part.Alias))
+            {
+                part.Alias = await GenerateUniqueAliasAsync(part.Alias, part);
+            }
+
+            part.Apply();
+        }
     }
 
     /// <summary>

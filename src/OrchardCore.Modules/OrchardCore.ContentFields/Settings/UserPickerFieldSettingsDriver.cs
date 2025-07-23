@@ -46,7 +46,7 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
         {
             Hint = model.Hint,
             Required = model.Required,
-            Multiple = model.Multiple
+            Multiple = model.Multiple,
         };
 
         var roles = await _roleService.GetAssignableRolesAsync();

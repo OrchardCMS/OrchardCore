@@ -389,7 +389,7 @@ public class BlobFileStore : IFileStore
 
             var headers = new BlobHttpHeaders
             {
-                ContentType = contentType ?? "application/octet-stream"
+                ContentType = contentType ?? "application/octet-stream",
             };
 
             await blob.UploadAsync(inputStream, headers);

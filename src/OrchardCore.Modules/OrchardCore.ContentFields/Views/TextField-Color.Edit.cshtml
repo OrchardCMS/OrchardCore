@@ -4,14 +4,64 @@
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
 }
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndClasses("pt-lg-2")">
-        <input asp-for="Text" class="form-control content-preview-text" type="color" style="min-height: 2.25rem" />
-        <span asp-validation-for="Text"></span>
-        @if (!string.IsNullOrEmpty(settings.Hint))
-        {
-            <span class="hint">@settings.Hint</span>
+<style at="Head">
+    #color_wrapper {
+        background-color: black;
+        display: inline-block;
+        visibility: hidden;
+    }
+
+        #color_wrapper::before {
+            content: "";
+            position: absolute;
+            border-radius: 3px;
+            outline: #dee2e6 solid 2px;
+            border: white solid 3px;
+            height: 2rem;
+            width: 2rem;
+            pointer-events: none;
+            background-color: inherit;
+            visibility: visible;
+            box-sizing: border-box;
         }
+
+    #color {
+        opacity: 0;
+        height: 2rem;
+        width: 2rem;
+        box-sizing: border-box;
+        pointer-events: initial;
+        visibility: visible;
+    }
+
+    #color_opacity {
+        filter: grayscale(100%);
+        visibility: visible;
+    }
+</style>
+
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+    <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required) d-block">@Model.PartFieldDefinition.DisplayName()</label>
+    <div id="color_wrapper">
+        <input id="color" asp-for="Text" oninput="setColor()" type="color">
+        <input id="color_opacity" oninput="setColor()" type="range" min="0" max="255" step="1" value="255" />
     </div>
+    <span asp-validation-for="Text"></span>
+    @if (!string.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 </div>
+
+<script>
+    let colorPicker = document.querySelector('#color');
+    let colorWrapper = document.querySelector('#color_wrapper');
+    let colorOpacity = document.querySelector('#color_opacity');
+
+    function setColor(){
+        var colorAlpha = colorOpacity.value == 255
+            ? ""
+            : parseInt(colorOpacity.value).toString(16).padStart(2, "0");
+        colorWrapper.style.backgroundColor = colorPicker.value + colorAlpha;
+    }
+</script>

@@ -15,7 +15,8 @@ public class LiquidViewParser : FluidParser
     {
         RegisterEmptyTag("render_body", RenderBodyTag.WriteToAsync);
         RegisterParserTag("render_section", ArgumentsList, RenderSectionTag.WriteToAsync);
-        RegisterParserTag("page_title", ArgumentsList, RenderTitleSegmentsTag.WriteToAsync);
+        RegisterParserTag("page_title", ArgumentsList, PageTitleSegmentsTags.WritePageTitleAsync);
+        RegisterParserTag("page_title_add_segment", ArgumentsList, PageTitleSegmentsTags.WriteAddSegmentAsync);
         RegisterEmptyTag("antiforgerytoken", AntiForgeryTokenTag.WriteToAsync);
         RegisterExpressionTag("layout", LayoutTag.WriteToAsync);
 

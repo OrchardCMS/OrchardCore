@@ -68,7 +68,7 @@ public sealed class LocalizationSetContentPickerFieldDisplayDriver : ContentFiel
                 {
                     Id = kvp.Key, // localization set
                     DisplayText = contentItem.ToString(),
-                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
+                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
                 });
             }
         });

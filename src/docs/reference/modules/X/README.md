@@ -46,12 +46,14 @@ The `OrchardCore.Twitter` module allows the user to use configuration values to 
 The following configuration values can be customized:
 
 ```json
-    "OrchardCore_X": {
-      "ConsumerKey": "",
-      "ConsumerSecret": "",
-      "AccessToken": "",
-      "AccessTokenSecret": ""
-    }
+{
+  "OrchardCore_X": {
+    "ConsumerKey": "",
+    "ConsumerSecret": "",
+    "AccessToken": "",
+    "AccessTokenSecret": ""
+  }
+}
 ```
 
-For more information please refer to [Configuration](../../core/Configuration/README.md).
+For more information please refer to [Configuration](../Configuration/README.md).

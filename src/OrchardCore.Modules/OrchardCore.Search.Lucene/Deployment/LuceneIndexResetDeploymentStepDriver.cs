@@ -1,25 +1,28 @@
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Indexing;
 using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
 public sealed class LuceneIndexResetDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexResetDeploymentStep>
 {
-    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+    private readonly IIndexProfileStore _indexStore;
 
-    public LuceneIndexResetDeploymentStepDriver(LuceneIndexSettingsService luceneIndexSettingsService)
+    public LuceneIndexResetDeploymentStepDriver(IIndexProfileStore indexStore)
     {
-        _luceneIndexSettingsService = luceneIndexSettingsService;
+        _indexStore = indexStore;
     }
 
     public override Task<IDisplayResult> DisplayAsync(LuceneIndexResetDeploymentStep step, BuildDisplayContext context)
     {
         return
             CombineAsync(
-                View("LuceneIndexResetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("LuceneIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                View("LuceneIndexResetDeploymentStep_Fields_Summary", step)
+                    .Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
+                View("LuceneIndexResetDeploymentStep_Fields_Thumbnail", step)
+                    .Location("Thumbnail", "Content")
             );
     }
 
@@ -29,7 +32,7 @@ public sealed class LuceneIndexResetDeploymentStepDriver : DisplayDriver<Deploym
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
-            model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 

@@ -10,7 +10,7 @@
 
 @if (!Model.User.EmailConfirmed &&
 RegistrationOptions.Value.UsersMustValidateEmail &&
-await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User))
+await AuthorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, Model.User))
 {
     <li>
         <form method="post" class="d-inline-block" class="no-multisubmit">

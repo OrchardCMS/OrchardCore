@@ -67,8 +67,8 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             if (part.RouteContainedItems)
             {
                 _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
-                var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.PublishingItem);
-                await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, (JsonObject)context.PublishingItem.Content);
+                var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.ContentItem);
+                await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, (JsonObject)context.ContentItem.Content);
             }
 
             // Update entries from the index table after the session is committed.
@@ -132,10 +132,16 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
     }
 
+    public override async Task CreatedAsync(CreateContentContext context, AutoroutePart part)
+    {
+        await GenerateContainerPathFromPatternAsync(part);
+        await GenerateContainedPathsFromPatternAsync(context.ContentItem, part);
+    }
+
     public override async Task UpdatedAsync(UpdateContentContext context, AutoroutePart part)
     {
         await GenerateContainerPathFromPatternAsync(part);
-        await GenerateContainedPathsFromPatternAsync(context.UpdatingItem, part);
+        await GenerateContainedPathsFromPatternAsync(context.ContentItem, part);
     }
 
     public override async Task CloningAsync(CloneContentContext context, AutoroutePart part)
@@ -260,7 +266,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
                     entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.GetNormalizedPath())
                     {
-                        DocumentId = contentItem.Id
+                        DocumentId = contentItem.Id,
                     });
                 }
 
@@ -298,7 +304,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                         jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
                         {
                             MergeArrayHandling = MergeArrayHandling.Replace,
-                            MergeNullValueHandling = MergeNullValueHandling.Merge
+                            MergeNullValueHandling = MergeNullValueHandling.Merge,
                         });
                     }
                     else
@@ -316,7 +322,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                             jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
                             {
                                 MergeArrayHandling = MergeArrayHandling.Replace,
-                                MergeNullValueHandling = MergeNullValueHandling.Merge
+                                MergeNullValueHandling = MergeNullValueHandling.Merge,
                             });
                         }
 

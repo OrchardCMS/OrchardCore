@@ -34,7 +34,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
         {
             return null;
         }
@@ -46,7 +46,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
             model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
             model.UsersAreModerated = settings.UsersAreModerated;
             model.UseSiteTheme = settings.UseSiteTheme;
-        }).Location("Content:5")
+        }).Location("Content:5#General")
         .OnGroup(SettingsGroupId);
     }
 
@@ -54,7 +54,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
         {
             return null;
         }
@@ -63,9 +63,10 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var hasChange = model.UsersMustValidateEmail != settings.UsersMustValidateEmail
-            || model.UsersAreModerated != settings.UsersAreModerated
-            || model.UseSiteTheme != settings.UseSiteTheme;
+        var hasChange =
+            model.UsersMustValidateEmail != settings.UsersMustValidateEmail ||
+            model.UsersAreModerated != settings.UsersAreModerated ||
+            model.UseSiteTheme != settings.UseSiteTheme;
 
         settings.UsersMustValidateEmail = model.UsersMustValidateEmail;
         settings.UsersAreModerated = model.UsersAreModerated;

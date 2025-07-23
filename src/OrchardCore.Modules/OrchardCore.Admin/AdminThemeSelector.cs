@@ -35,7 +35,7 @@ public class AdminThemeSelector : IThemeSelector
             return new ThemeSelectorResult
             {
                 Priority = 100,
-                ThemeName = adminThemeName
+                ThemeName = adminThemeName,
             };
         }
 

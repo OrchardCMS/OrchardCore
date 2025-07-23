@@ -27,9 +27,7 @@ public sealed class SqlQueryHandler : QueryHandlerBase
 
             metadata.Template = template;
             context.Query.Put(metadata);
-        };
-
-        context.Query.CanReturnContentItems = true;
+        }
 
         return Task.CompletedTask;
     }

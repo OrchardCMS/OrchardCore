@@ -11,7 +11,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         { "contentTypeId", "Menu" },
         { "Area", "OrchardCore.Contents" },
         { "Options.SelectedContentType", "Menu" },
-        { "Options.CanCreateSelectedContentType", true }
+        { "Options.CanCreateSelectedContentType", true },
     };
 
     internal readonly IStringLocalizer S;

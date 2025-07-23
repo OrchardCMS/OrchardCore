@@ -35,7 +35,7 @@ public class LiquidShapes(HtmlEncoder htmlEncoder) : ShapeTableProvider
         model.Html = await liquidTemplateManager.RenderStringAsync(model.LiquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
             new Dictionary<string, FluidValue>()
             {
-                ["ContentItem"] = new ObjectValue(model.ContentItem)
+                ["ContentItem"] = new ObjectValue(model.ContentItem),
             });
     }
 }

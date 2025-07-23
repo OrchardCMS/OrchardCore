@@ -5,12 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Benchmark.Support;
+using OrchardCore.Benchmarks.Support;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Tests.Apis.Context;
 
-namespace OrchardCore.Benchmark;
+namespace OrchardCore.Benchmarks;
 
 [MemoryDiagnoser]
 public class ShapeDescriptorIndexBenchmark

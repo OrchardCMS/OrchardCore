@@ -1,7 +1,7 @@
 // Layout 3 : ta-left-sidebar when expanded
 // ----------------------------------------
 @import '../_variables';
-@import '../../../node_modules/bootstrap/scss/mixins/_breakpoints';
+@import '../../../../../../node_modules/bootstrap/scss/mixins/_breakpoints';
 
 body:not(.left-sidebar-compact) {
     #ta-left-sidebar {
@@ -905,7 +905,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 
     &:hover {
         color: rgba(0, 120, 212, 1);
-        color: var(rgba(0, 120, 212, 1));
+        color: rgba(0, 120, 212, 1);
         text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
     }
 

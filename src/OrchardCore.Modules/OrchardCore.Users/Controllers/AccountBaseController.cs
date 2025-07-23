@@ -12,6 +12,7 @@ public abstract class AccountBaseController : Controller
     protected async Task<IActionResult> LoggedInActionResultAsync(IUser user, string returnUrl = null, ExternalLoginInfo info = null)
     {
         var workflowManager = HttpContext.RequestServices.GetService<IWorkflowManager>();
+
         if (workflowManager != null && user is User u)
         {
             var input = new Dictionary<string, object>
@@ -19,10 +20,13 @@ public abstract class AccountBaseController : Controller
                 ["UserName"] = user.UserName,
                 ["ExternalClaims"] = info?.Principal?.GetSerializableClaims() ?? [],
                 ["Roles"] = u.RoleNames,
-                ["Provider"] = info?.LoginProvider
+                ["Provider"] = info?.LoginProvider,
             };
-            await workflowManager.TriggerEventAsync(nameof(Workflows.Activities.UserLoggedInEvent),
-                input: input, correlationId: u.UserId);
+
+            await workflowManager.TriggerEventAsync(
+                name: nameof(Workflows.Activities.UserLoggedInEvent),
+                input: input,
+                correlationId: u.UserId);
         }
 
         return RedirectToLocal(returnUrl);

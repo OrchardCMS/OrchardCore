@@ -81,13 +81,10 @@ public sealed class AdminController : Controller
             // Input hidden
             // Prefixes
             PrefixValue: prefix,
-            PrefixesId: prefixesName.Replace('.', '_'),
             PrefixesName: prefixesName,
             // ContentTypes
-            ContentTypesId: contentTypesName.Replace('.', '_'),
             ContentTypesName: contentTypesName,
             // ContentItems
-            ContentItemsId: contentItemsName.Replace('.', '_'),
             ContentItemsName: contentItemsName
         );
         // Only Add ColumnSize Property if Part has FlowMetadata
@@ -98,7 +95,7 @@ public sealed class AdminController : Controller
 
         var model = new BuildEditorViewModel
         {
-            EditorShape = contentCard
+            EditorShape = contentCard,
         };
         return View("Display", model);
     }
@@ -109,7 +106,7 @@ public sealed class AdminController : Controller
 
         if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
         {
-            return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("Widget"));
+            return await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync();
         }
 
         var definitions = new List<ContentTypeDefinition>();

@@ -63,7 +63,7 @@ public sealed class AdminController : Controller
     [Admin("Shortcodes", "Shortcodes.Index")]
     public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -98,7 +98,7 @@ public sealed class AdminController : Controller
         {
             ShortcodeTemplates = shortcodeTemplates.Select(x => new ShortcodeTemplateEntry { Name = x.Key, ShortcodeTemplate = x.Value }).ToList(),
             Options = options,
-            Pager = pagerShape
+            Pager = pagerShape,
         };
 
         model.Options.ContentsBulkAction =
@@ -114,13 +114,13 @@ public sealed class AdminController : Controller
     public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     [Admin("Shortcodes/Create", "Shortcodes.Create")]
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -131,7 +131,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName(nameof(Create))]
     public async Task<IActionResult> CreatePost(ShortcodeTemplateViewModel model, string submit)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -174,7 +174,7 @@ public sealed class AdminController : Controller
                 Hint = model.Hint,
                 Usage = _htmlSanitizerService.Sanitize(model.Usage),
                 DefaultValue = model.DefaultValue,
-                Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories)
+                Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories),
             };
 
             await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
@@ -194,7 +194,7 @@ public sealed class AdminController : Controller
     [Admin("Shortcodes/Edit/{name}", "Shortcodes.Edit")]
     public async Task<IActionResult> Edit(string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -213,7 +213,7 @@ public sealed class AdminController : Controller
             Hint = template.Hint,
             Usage = template.Usage,
             DefaultValue = template.DefaultValue,
-            Categories = template.Categories
+            Categories = template.Categories,
         };
 
         return View(model);
@@ -222,7 +222,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(string sourceName, ShortcodeTemplateViewModel model, string submit)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -268,7 +268,7 @@ public sealed class AdminController : Controller
                 Hint = model.Hint,
                 Usage = _htmlSanitizerService.Sanitize(model.Usage),
                 DefaultValue = model.DefaultValue,
-                Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories)
+                Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories),
             };
 
             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(sourceName);
@@ -294,7 +294,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -317,7 +317,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }

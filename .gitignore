@@ -49,6 +49,7 @@ app.publish/
 *.log
 *.scc
 project.lock.json
+package-lock.json
 
 # Visual C++ cache files
 ipch/
@@ -192,6 +193,12 @@ nuget.exe
 
 #exclude node modules
 node_modules/
+
+#exclude yarn
+.yarn
+
+#exclude parcel
+.parcel-cache
 
 wwwroot
 **/Localization/**/*.po

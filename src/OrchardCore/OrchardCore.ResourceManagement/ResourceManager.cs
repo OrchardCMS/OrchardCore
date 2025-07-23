@@ -46,7 +46,7 @@ public class ResourceManager : IResourceManager
             settings = new RequireSettings(_options)
             {
                 Type = resourceType,
-                Name = resourceName
+                Name = resourceName,
             };
             _required[key] = settings;
         }
@@ -347,7 +347,7 @@ public class ResourceManager : IResourceManager
             {
                 Settings = settings,
                 Resource = (ResourceDefinition)entry.Key,
-                FileVersionProvider = _fileVersionProvider
+                FileVersionProvider = _fileVersionProvider,
             };
         }
 
@@ -393,7 +393,15 @@ public class ResourceManager : IResourceManager
         // Bar dependency should be too. This behavior only applies to the dependencies.
 
         var dependencySettings = ((RequireSettings)allResources[resource])?.New() ?? new RequireSettings(_options, resource);
-        dependencySettings = isTopLevel ? dependencySettings.Combine(settings) : dependencySettings.AtLocation(settings.Location);
+        if (isTopLevel)
+        {
+            dependencySettings = dependencySettings.Combine(settings);
+        }
+        else
+        {
+            dependencySettings = dependencySettings.AtLocation(settings.Location);
+            dependencySettings.Culture = settings.Culture;
+        }
         dependencySettings = dependencySettings.CombinePosition(settings);
 
         if (dependencies != null)

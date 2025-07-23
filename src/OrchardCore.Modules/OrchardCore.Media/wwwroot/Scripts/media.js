@@ -1029,13 +1029,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             dfd.resolve(files);
           }).fail(errorHandler);
         },
-        readEntries = function readEntries() {
+        _readEntries = function readEntries() {
           dirReader.readEntries(function (results) {
             if (!results.length) {
               successHandler(entries);
             } else {
               entries = entries.concat(results);
-              readEntries();
+              _readEntries();
             }
           }, errorHandler);
         };
@@ -1054,7 +1054,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       } else if (entry.isDirectory) {
         dirReader = entry.createReader();
-        readEntries();
+        _readEntries();
       } else {
         // Return an empty list for file system items
         // other than files or directories:
@@ -1538,20 +1538,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // https://github.com/blueimp/jQuery-File-Upload/wiki/Setup#content-type-negotiation
   $.ajaxSetup({
     converters: {
-      'iframe text': function iframeText(iframe) {
+      'iframe text': function iframe_text(iframe) {
         return iframe && $(iframe[0].body).text();
       },
-      'iframe json': function iframeJson(iframe) {
+      'iframe json': function iframe_json(iframe) {
         return iframe && jsonAPI[jsonParse]($(iframe[0].body).text());
       },
-      'iframe html': function iframeHtml(iframe) {
+      'iframe html': function iframe_html(iframe) {
         return iframe && $(iframe[0].body).html();
       },
-      'iframe xml': function iframeXml(iframe) {
+      'iframe xml': function iframe_xml(iframe) {
         var xmlDoc = iframe && iframe[0];
         return xmlDoc && $.isXMLDoc(xmlDoc) ? xmlDoc : $.parseXML(xmlDoc.XMLDocument && xmlDoc.XMLDocument.xml || $(xmlDoc.body).html());
       },
-      'iframe script': function iframeScript(iframe) {
+      'iframe script': function iframe_script(iframe) {
         return iframe && $.globalEval($(iframe[0].body).text());
       }
     }
@@ -1560,9 +1560,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var initialized;
 var mediaApp;
 var bus = new Vue();
@@ -1931,7 +1931,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                       }
                       //self.selectedMedia = null;
                     },
-
                     error: function error(_error4) {
                       console.error(_error4.responseText);
                     }
@@ -1976,10 +1975,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
           }
         }
       });
-      $('#create-folder-name').keypress(function (e) {
-        var key = e.which;
-        if (key == 13) {
-          // the enter key code
+      $('#create-folder-name').keydown(function (e) {
+        if (e.key == 'Enter') {
           $('#modalFooterOk').click();
           return false;
         }
@@ -2042,10 +2039,12 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
           }
         });
       });
-      if (displayMediaApplication) {
-        document.getElementById('mediaApp').style.display = "";
-      }
       $(document).trigger('mediaApp:ready');
+      if (displayMediaApplication) {
+        setTimeout(function () {
+          document.getElementById("mediaApp").classList.remove("d-none");
+        }, 100);
+      }
     },
     error: function error(_error7) {
       console.error(_error7.responseText);
@@ -2109,9 +2108,9 @@ $(document).bind('dragover', function (e) {
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 // <folder> component
 Vue.component('folder', {
   template: "\n        <li :class=\"{selected: isSelected}\" \n                v-on:dragleave.prevent = \"handleDragLeave($event);\" \n                v-on:dragover.prevent.stop=\"handleDragOver($event);\" \n                v-on:drop.prevent.stop = \"moveMediaToFolder(model, $event)\" >\n            <div :class=\"{folderhovered: isHovered , treeroot: level == 1}\" >\n                <a href=\"javascript:;\" :style=\"{ padding".concat(document.dir == "ltr" ? "Left" : "Right", ":padding + 'px' }\" v-on:click=\"select\"  draggable=\"false\" class=\"folder-menu-item\">\n                  <span v-on:click.stop=\"toggle\" class=\"expand\" :class=\"{opened: open, closed: !open, empty: empty}\"><i v-if=\"open\" class=\"fa-solid fa-chevron-").concat(document.dir == "ltr" ? "right" : "left", "\"></i></span> \n                  <div class=\"folder-name ms-2\">{{model.name}}</div>\n                    <div class=\"btn-group folder-actions\" >\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"createFolder\" v-if=\"canCreateFolder && (isSelected || isRoot)\"><i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i></a>\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"deleteFolder\" v-if=\"canDeleteFolder && isSelected && !isRoot\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                    </div>\n                </a>\n            </div>\n            <ol v-show=\"open\">\n                <folder v-for=\"folder in children\"\n                        :key=\"folder.path\"\n                        :model=\"folder\"\n                        :selected-in-media-app=\"selectedInMediaApp\"\n                        :level=\"level + 1\">\n                </folder>\n            </ol>\n        </li>\n        "),
@@ -2261,7 +2260,6 @@ Vue.component('folder', {
               success: function success() {
                 bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
               },
-
               error: function error(_error2) {
                 console.error(_error2.responseText);
                 bus.$emit('mediaListMoved', _error2.responseText);
@@ -2536,7 +2534,6 @@ Vue.component('pager', {
     sourceItems: function sourceItems() {
       this.current = 0; // resetting current page after receiving a new list of unpaged items
     },
-
     pageSize: function pageSize() {
       this.current = 0;
     }
@@ -2850,7 +2847,6 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
           } else {
             position = position - 8; // Adjust to hit the mouse pointer.
           }
-
           return position + 'px';
         } else {
           return '0';
@@ -2865,7 +2861,6 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
           } else {
             position = position + 5; // Adjust to hit the mouse pointer.
           }
-
           return position + 'px';
         } else {
           return '0';
@@ -2914,64 +2909,37 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
     }
   }));
 }
-// <media-field-thumbs-container> component 
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+// <media-field-thumbs-container> component
 // different media field editors share this component to present the thumbs.
 Vue.component('mediaFieldThumbsContainer', {
-  template: '\
-       <div :id="idPrefix + \'_mediaContainerMain\'" v-cloak>\
-         <div v-if="mediaItems.length < 1" class="card text-center">\
-             <div class= "card-body" >\
-                <span class="hint">{{T.noImages}}</span>\
-             </div>\
-         </div>\
-         <draggable :list="mediaItems" tag="ol" class="row media-items-grid" >\
-            <li v-for="media in mediaItems"\
-                :key="media.vuekey" \
-                class="media-container-main-list-item card p-0"\
-                :style="{width: thumbSize + 2 + \'px\'}"\
-                :class="{selected: selectedMedia == media}"\
-                v-on:click="selectMedia(media)" v-if="!media.isRemoved">\
-                    <div v-if="media.mediaPath!== \'not-found\'">\
-                        <div class="thumb-container" :style="{height: thumbSize + \'px\'}" >\
-                            <img v-if="media.mime.startsWith(\'image\')" \
-                            :src="buildMediaUrl(media.url, thumbSize)" \
-                            :data-mime="media.mime"\
-                            :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
-                            <i v-else :class="getfontAwesomeClassNameForFileName(media.name, \'fa-4x\')" :data-mime="media.mime"></i>\
-                         </div>\
-                         <div class="media-container-main-item-title card-body">\
-                                <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"\
-                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>\
-                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-end inline-media-button view-button""><i class="fa-solid fa-download" aria-hidden="true"></i></a> \
-                                <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
-                         </div>\
-                    </div>\
-                    <div v-else>\
-                        <div class="thumb-container flex-column" :style="{height: thumbSize + \'px\'}">\
-                            <i class="fa-solid fa-ban text-danger d-block" aria-hidden="true"></i>\
-                            <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>\
-                            <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>\
-                        </div>\
-                        <div class="media-container-main-item-title card-body">\
-                            <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"\
-                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>\
-                            <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
-                        </div>\
-                   </div>\
-            </li>\
-         </draggable>\
-       </div>\
-    ',
+  template: /* html */"\n    <div :id=\"idPrefix + '_mediaContainerMain'\">\n         <div v-if=\"mediaItems.length < 1\" class=\"card text-center\">\n            <div class= \"card-body\">\n                <span class=\"hint\">{{T.noImages}}</span>\n            </div>\n         </div>\n         <ol ref=\"multiDragContainer\" class=\"media-items-grid d-flex flex-row align-items-start flex-wrap\" >\n            <li v-for=\"media in mediaItems\"\n                :key=\"media.vuekey\"\n                class=\"media-thumb-item media-container-main-list-item card overflow\"\n                :style=\"{width: thumbSize + 2 + 'px'}\"\n                v-on:click=\"selectMedia(media)\"\n                v-if=\"!media.isRemoved\">\n                    <div v-if=\"media.mediaPath!== 'not-found'\">\n                        <div class=\"thumb-container\" :style=\"{height: thumbSize + 'px'}\" >\n                            <img v-if=\"media.mime.startsWith('image')\"\n                                :src=\"buildMediaUrl(media.url, thumbSize)\"\n                                :data-mime=\"media.mime\"\n                                width=\"100%\"\n                            />\n                            <i v-else :class=\"getfontAwesomeClassNameForFileName(media.name, 'fa-4x')\" :data-mime=\"media.mime\"></i>\n                        </div>\n                        <div class=\"media-container-main-item-title card-body\">\n                            <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\"\n                                v-on:click.stop=\"selectAndDeleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                            <a :href=\"media.url\" target=\"_blank\" class=\"btn btn-light btn-sm float-end inline-media-button view-button\"\"><i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i></a>\n                            <span class=\"media-filename card-text small\" :title=\"media.mediaPath\">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\n                        </div>\n                    </div>\n                    <div v-else>\n                        <div class=\"thumb-container flex-column\" :style=\"{height: thumbSize + 'px'}\">\n                            <i class=\"fa-solid fa-ban text-danger d-block\" aria-hidden=\"true\"></i>\n                            <span class=\"text-danger small d-block\">{{ T.mediaNotFound }}</span>\n                            <span class=\"text-danger small d-block text-center\">{{ T.discardWarning }}</span>\n                        </div>\n                        <div class=\"media-container-main-item-title card-body\">\n                            <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\"\n                                v-on:click.stop=\"selectAndDeleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                            <span class=\"media-filename card-text small text-danger\" :title=\"media.name\">{{ media.name }}</span>\n                        </div>\n                  </div>\n            </li>\n         </ol>\n    </div>\n    ",
   data: function data() {
     return {
-      T: {}
+      T: {},
+      sortableInstance: null,
+      multiSelectedItems: []
     };
+  },
+  model: {
+    prop: 'mediaItems',
+    event: 'changed'
   },
   props: {
     mediaItems: Array,
     selectedMedia: Object,
     thumbSize: Number,
-    idPrefix: String
+    idPrefix: String,
+    allowMultiple: Boolean
   },
   created: function created() {
     var self = this;
@@ -2981,7 +2949,59 @@ Vue.component('mediaFieldThumbsContainer', {
     self.T.discardWarning = $('#t-discard-warning').val();
     self.T.noImages = $('#t-no-images').val();
   },
+  mounted: function mounted() {
+    if (this.allowMultiple) this.initSortable();
+  },
   methods: {
+    initSortable: function initSortable() {
+      if (this.$refs.multiDragContainer) {
+        var self = this;
+        this.sortableInstance = Sortable.create(this.$refs.multiDragContainer, {
+          animation: 150,
+          ghostClass: 'sortable-ghost',
+          multiDrag: true,
+          selectedClass: 'sortable-selected',
+          preventOnFilter: true,
+          forceHelperSize: true,
+          onUpdate: function onUpdate(evt) {
+            var newOrder = _toConsumableArray(self.mediaItems);
+            if (evt.oldIndicies && evt.oldIndicies.length > 0) {
+              var oldIndices = evt.oldIndicies.sort(function (a, b) {
+                return a.index - b.index;
+              });
+              var newIndices = evt.newIndicies.sort(function (a, b) {
+                return a.index - b.index;
+              });
+              var itemsToMove = oldIndices.map(function (oldIdx) {
+                return self.mediaItems[oldIdx.index];
+              });
+
+              // old out
+              for (var i = oldIndices.length - 1; i >= 0; i--) {
+                newOrder.splice(oldIndices[i].index, 1);
+              }
+
+              // new in
+              for (var _i = 0; _i < newIndices.length; _i++) {
+                newOrder.splice(newIndices[_i].index, 0, itemsToMove[_i]);
+              }
+            } else {
+              // Single item move
+              var _newOrder$splice = newOrder.splice(evt.oldIndex, 1),
+                _newOrder$splice2 = _slicedToArray(_newOrder$splice, 1),
+                movedItem = _newOrder$splice2[0];
+              newOrder.splice(evt.newIndex, 0, movedItem);
+            }
+            self.$emit('changed', newOrder);
+            var selectedElements = self.$refs.multiDragContainer.querySelectorAll('.sortable-selected');
+            selectedElements.forEach(function (el) {
+              Sortable.utils.deselect(el);
+            });
+            self.multiSelectedItems = [];
+          }
+        });
+      }
+    },
     selectAndDeleteMedia: function selectAndDeleteMedia(media) {
       this.$parent.$emit('selectAndDeleteMediaRequested', media);
     },
@@ -3008,7 +3028,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
   //when hide modal detach media app to avoid issue on BagPart
   modalBodyElement.addEventListener('hidden.bs.modal', function (event) {
     $("#mediaApp").appendTo('body');
-    $("#mediaApp").hide();
+    document.getElementById("mediaApp").classList.add("d-none");
   });
   mediaFieldApps.push(mediaFieldApp = new Vue({
     el: mediaFieldEditor.get(0),
@@ -3148,12 +3168,14 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
           $('#allowedExtensions').val(this.allowedExtensions);
           $('#fileupload').attr('accept', this.allowedExtensions);
           $("#mediaApp").appendTo($(modalBodyElement).find('.modal-body'));
-          $("#mediaApp").show();
 
           // Reload current folder in case the allowed extensions have changed.
           mediaApp.refresh();
           var modal = new bootstrap.Modal(modalBodyElement);
           modal.show();
+          setTimeout(function () {
+            document.getElementById("mediaApp").classList.remove("d-none");
+          }, 100);
           $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
             self.addMediaFiles(mediaApp.selectedMedias);
 

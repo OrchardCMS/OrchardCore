@@ -3,6 +3,20 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' Role", Model.Name])</h1></zone>
 
+@if (ViewData["DuplicatedPermissions"] is string[] duplicatedPermissions && duplicatedPermissions.Length > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>@T["Duplicate Permissions Detected"]</strong>
+        <p>@T["The following permissions are ambiguous and must be uniquely named across all modules:"]</p>
+        <ul>
+            @foreach (var permission in duplicatedPermissions)
+            {
+                <li>@permission</li>
+            }
+        </ul>
+    </div>
+}
+
 <form asp-action="Edit" method="post" class="no-multisubmit">
 
     <div class="mb-3" asp-validation-class-for="RoleDescription">

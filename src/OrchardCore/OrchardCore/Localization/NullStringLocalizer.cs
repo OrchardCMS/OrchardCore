@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization;
@@ -25,7 +24,7 @@ public class NullStringLocalizer : IStringLocalizer
         {
             var translation = name;
 
-            if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
+            if (arguments is [PluralizationArgument pluralArgument])
             {
                 translation = pluralArgument.Forms[_defaultPluralRule(pluralArgument.Count)];
 
@@ -49,8 +48,4 @@ public class NullStringLocalizer : IStringLocalizer
 
     /// <inheritdoc/>
     public LocalizedString GetString(string name, params object[] arguments) => this[name, arguments];
-
-    /// <inheritdoc/>
-    [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
-    public IStringLocalizer WithCulture(CultureInfo culture) => Instance;
 }

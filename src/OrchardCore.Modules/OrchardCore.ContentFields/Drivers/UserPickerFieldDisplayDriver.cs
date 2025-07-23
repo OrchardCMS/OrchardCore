@@ -62,7 +62,7 @@ public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<Use
                     {
                         Id = user.UserId,
                         DisplayText = user.UserName,
-                        IsEnabled = user.IsEnabled
+                        IsEnabled = user.IsEnabled,
                     });
                 }
             }

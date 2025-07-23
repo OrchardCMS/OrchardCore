@@ -76,7 +76,7 @@ public sealed class AdminController : Controller
             Tags = recipe.Tags,
             IsSetupRecipe = recipe.IsSetupRecipe,
             Feature = features.FirstOrDefault(f => recipe.BasePath.Contains(f.Extension.SubPath))?.Name ?? "Application",
-            Description = recipe.Description
+            Description = recipe.Description,
         }).ToArray();
 
         return View(model);

@@ -60,7 +60,7 @@ public class GraphQLMiddleware : IMiddleware
                 context.User = authenticateResult.Principal;
             }
             var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
-            var authorized = await authorizationService.AuthorizeAsync(context.User, CommonPermissions.ExecuteGraphQL);
+            var authorized = await authorizationService.AuthorizeAsync(context.User, GraphQLPermissions.ExecuteGraphQL);
 
             if (authorized)
             {
@@ -91,12 +91,12 @@ public class GraphQLMiddleware : IMiddleware
 
                 if (mediaType.IsSubsetOf(_jsonMediaType) || mediaType.IsSubsetOf(_graphQlMediaType))
                 {
-                    using var sr = new StreamReader(context.Request.Body);
+                    using var sr = new StreamReader(context.Request.Body, leaveOpen: true);
                     if (mediaType.IsSubsetOf(_graphQlMediaType))
                     {
                         request = new GraphQLNamedQueryRequest
                         {
-                            Query = await sr.ReadToEndAsync()
+                            Query = await sr.ReadToEndAsync(),
                         };
                     }
                     else
@@ -151,13 +151,13 @@ public class GraphQLMiddleware : IMiddleware
             options.Variables = request.Variables;
             options.UserContext = _settings.BuildUserContext?.Invoke(context);
             options.ValidationRules = DocumentValidator.CoreRules
-                .Concat(context.RequestServices.GetServices<IValidationRule>())
-                .Append(new ComplexityValidationRule(new ComplexityConfiguration
-                {
-                    MaxDepth = _settings.MaxDepth,
-                    MaxComplexity = _settings.MaxComplexity,
-                    FieldImpact = _settings.FieldImpact
-                }));
+            .Concat(context.RequestServices.GetServices<IValidationRule>())
+            .Append(new ComplexityValidationRule(new ComplexityOptions
+            {
+                MaxDepth = _settings.MaxDepth,
+                MaxComplexity = _settings.MaxComplexity,
+                DefaultObjectImpact = _settings.FieldImpact ?? 0,
+            }));
             options.Listeners.Add(dataLoaderDocumentListener);
             options.RequestServices = context.RequestServices;
         });
@@ -187,7 +187,7 @@ public class GraphQLMiddleware : IMiddleware
 
         var request = new GraphQLNamedQueryRequest
         {
-            Query = context.Request.Query["query"]
+            Query = context.Request.Query["query"],
         };
 
         if (context.Request.Query.ContainsKey("variables"))

@@ -61,12 +61,12 @@ public sealed class DeploymentPlanController : Controller
 
     public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Export))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
         {
             return Forbid();
         }
@@ -102,7 +102,7 @@ public sealed class DeploymentPlanController : Controller
         {
             DeploymentPlans = results.Select(x => new DeploymentPlanEntry { DeploymentPlan = x }).ToList(),
             Options = options,
-            Pager = pagerShape
+            Pager = pagerShape,
         };
 
         model.Options.DeploymentPlansBulkAction =
@@ -118,14 +118,14 @@ public sealed class DeploymentPlanController : Controller
     public ActionResult IndexFilterPOST(DeploymentPlanIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexBulkActionPOST(ContentOptions options, IEnumerable<long> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -154,7 +154,7 @@ public sealed class DeploymentPlanController : Controller
 
     public async Task<IActionResult> Display(long id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -169,7 +169,7 @@ public sealed class DeploymentPlanController : Controller
         var items = new List<dynamic>();
         foreach (var step in deploymentPlan.DeploymentSteps)
         {
-            var item = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Summary");
+            var item = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.Summary);
             item.Properties["DeploymentStep"] = step;
             items.Add(item);
         }
@@ -195,7 +195,7 @@ public sealed class DeploymentPlanController : Controller
 
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -208,7 +208,7 @@ public sealed class DeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateDeploymentPlanViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -233,7 +233,7 @@ public sealed class DeploymentPlanController : Controller
 
             await _session.SaveAsync(deploymentPlan);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Display), new { id = deploymentPlan.Id });
         }
 
         // If we got this far, something failed, redisplay form
@@ -242,7 +242,7 @@ public sealed class DeploymentPlanController : Controller
 
     public async Task<IActionResult> Edit(long id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -257,7 +257,7 @@ public sealed class DeploymentPlanController : Controller
         var model = new EditDeploymentPlanViewModel
         {
             Id = deploymentPlan.Id,
-            Name = deploymentPlan.Name
+            Name = deploymentPlan.Name,
         };
 
         return View(model);
@@ -266,7 +266,7 @@ public sealed class DeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditDeploymentPlanViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -312,7 +312,7 @@ public sealed class DeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(long id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
