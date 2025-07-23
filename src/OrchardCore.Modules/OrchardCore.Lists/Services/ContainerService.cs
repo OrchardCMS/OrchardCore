@@ -31,7 +31,7 @@ public class ContainerService : IContainerService
     {
         var index = await _session.QueryIndex<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
             .OrderByDescending(x => x.Order)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(CancellationToken.None);
 
         if (index != null)
         {
@@ -76,7 +76,7 @@ public class ContainerService : IContainerService
     {
         // Set initial order for published and drafts if they have never been published.
         var contanerContentItemsQuery = _session.QueryIndex<ContentItemIndex>(x => x.ContentType == contentType && (x.Published || x.Latest));
-        var containerContentItems = await contanerContentItemsQuery.ListAsync();
+        var containerContentItems = await contanerContentItemsQuery.ListAsync(CancellationToken.None);
 
         if (!containerContentItems.Any())
         {
@@ -139,7 +139,7 @@ public class ContainerService : IContainerService
                         }
                     }
 
-                    await _session.SaveAsync(contentItem);
+                    await _session.SaveAsync(contentItem, false, null, CancellationToken.None);
                 }
 
                 i++;

@@ -95,7 +95,7 @@ public sealed class ContentController : Controller
             return View(nameof(Edit), shape);
         }
 
-        await _session.SaveAsync(contentItem);
+        await _session.SaveAsync(contentItem, false, null, CancellationToken.None);
         return RedirectToAction(nameof(Edit), contentItemId);
     }
 }

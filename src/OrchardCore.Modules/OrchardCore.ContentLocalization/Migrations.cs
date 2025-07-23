@@ -85,12 +85,12 @@ public sealed class Migrations : DataMigration
         ShellScope.AddDeferredTask(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
-            var localizedContentItems = await session.Query<ContentItem, LocalizedContentItemIndex>().ListAsync();
+            var localizedContentItems = await session.Query<ContentItem, LocalizedContentItemIndex>().ListAsync(CancellationToken.None);
 
             foreach (var localizedContentItem in localizedContentItems)
             {
                 localizedContentItem.Latest = localizedContentItem.ContentItem.Latest;
-                await session.SaveAsync(localizedContentItem);
+                await session.SaveAsync(localizedContentItem, false, null, CancellationToken.None);
             }
         });
 

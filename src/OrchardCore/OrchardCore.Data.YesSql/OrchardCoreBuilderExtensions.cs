@@ -127,12 +127,12 @@ public static class OrchardCoreBuilderExtensions
                     return;
                 }
 
-                await store.InitializeAsync();
+                await store.InitializeAsync(CancellationToken.None);
 
                 var storeCollectionOptions = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
                 foreach (var collection in storeCollectionOptions.Collections)
                 {
-                    await store.InitializeCollectionAsync(collection);
+                    await store.InitializeCollectionAsync(collection, CancellationToken.None);
                 }
             });
 

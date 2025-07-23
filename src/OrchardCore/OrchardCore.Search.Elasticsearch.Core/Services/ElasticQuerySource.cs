@@ -66,7 +66,7 @@ public sealed class ElasticQuerySource : IQuerySource
             if (topDocs.Count > 0)
             {
                 var indexedContentItemVersionIds = topDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
-                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
+                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync(CancellationToken.None);
 
                 // Reorder the result to preserve the one from the Elasticsearch query.
                 if (dbContentItems.Any())

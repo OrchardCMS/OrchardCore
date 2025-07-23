@@ -87,7 +87,7 @@ public sealed class AddToDeploymentPlanController : Controller
 
         await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
-        await _session.SaveAsync(deploymentPlan);
+        await _session.SaveAsync(deploymentPlan, false, null, CancellationToken.None);
 
         return this.LocalRedirect(returnUrl, true);
     }
@@ -114,7 +114,7 @@ public sealed class AddToDeploymentPlanController : Controller
             return NotFound();
         }
 
-        var contentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Published).ListAsync();
+        var contentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Published).ListAsync(CancellationToken.None);
 
         foreach (var item in contentItems)
         {
@@ -143,7 +143,7 @@ public sealed class AddToDeploymentPlanController : Controller
 
         await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
-        await _session.SaveAsync(deploymentPlan);
+        await _session.SaveAsync(deploymentPlan, false, null, CancellationToken.None);
 
         return this.LocalRedirect(returnUrl, true);
     }

@@ -45,7 +45,7 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                 var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
                     .OrderByDescending(x => x.CreatedAtUtc)
                     .Take(_notificationOptions.TotalUnreadNotifications + 1)
-                    .ListAsync()).ToList();
+                    .ListAsync(CancellationToken.None)).ToList();
 
                 model.Notifications = notifications;
                 model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;

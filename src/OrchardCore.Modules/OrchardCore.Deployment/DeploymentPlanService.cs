@@ -28,7 +28,7 @@ public class DeploymentPlanService : IDeploymentPlanService
         if (_deploymentPlans == null)
         {
             var deploymentPlanQuery = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
-            var deploymentPlans = await deploymentPlanQuery.ListAsync();
+            var deploymentPlans = await deploymentPlanQuery.ListAsync(CancellationToken.None);
             _deploymentPlans = deploymentPlans.ToDictionary(x => x.Name);
         }
 
@@ -91,7 +91,7 @@ public class DeploymentPlanService : IDeploymentPlanService
         var names = deploymentPlans.Select(x => x.Name);
 
         var existingDeploymentPlans = (await _session.Query<DeploymentPlan, DeploymentPlanIndex>(x => x.Name.IsIn(names))
-            .ListAsync())
+            .ListAsync(CancellationToken.None))
             .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 
         foreach (var deploymentPlan in deploymentPlans)
@@ -102,11 +102,11 @@ public class DeploymentPlanService : IDeploymentPlanService
                 existingDeploymentPlan.DeploymentSteps.Clear();
                 existingDeploymentPlan.DeploymentSteps.AddRange(deploymentPlan.DeploymentSteps);
 
-                await _session.SaveAsync(existingDeploymentPlan);
+                await _session.SaveAsync(existingDeploymentPlan, false, null, CancellationToken.None);
             }
             else
             {
-                await _session.SaveAsync(deploymentPlan);
+                await _session.SaveAsync(deploymentPlan, false, null, CancellationToken.None);
             }
         }
     }

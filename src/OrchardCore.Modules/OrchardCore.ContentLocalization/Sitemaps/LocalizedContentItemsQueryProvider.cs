@@ -46,7 +46,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                 .ThenBy(x => x.Id)
                 .Skip(skip ?? 0)
                 .Take(take ?? 0)
-                .ListAsync();
+                .ListAsync(CancellationToken.None);
 
         }
         else if (source.LimitItems)
@@ -75,7 +75,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                     .With<LocalizedContentItemIndex>(x => x.Culture == defaultCulture)
                     .Take(take ?? 0)
                     .Skip(skip ?? 0)
-                    .ListAsync();
+                    .ListAsync(CancellationToken.None);
             }
             else
             {
@@ -85,7 +85,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                     .OrderBy(x => x.CreatedUtc)
                     .Skip(skip ?? 0)
                     .Take(take ?? 0)
-                    .ListAsync();
+                    .ListAsync(CancellationToken.None);
 
             }
         }
@@ -104,7 +104,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                 .ThenBy(x => x.Id)
                 .Skip(skip ?? 0)
                 .Take(take ?? 0)
-                .ListAsync();
+                .ListAsync(CancellationToken.None);
 
         }
 

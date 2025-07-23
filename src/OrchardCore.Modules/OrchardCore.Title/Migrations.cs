@@ -48,7 +48,7 @@ public sealed class Migrations : DataMigration
 
         for (; ; )
         {
-            var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
+            var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync(CancellationToken.None);
 
             if (!contentItemVersions.Any())
             {
@@ -61,14 +61,14 @@ public sealed class Migrations : DataMigration
                 if (string.IsNullOrEmpty(contentItemVersion.DisplayText)
                     && UpdateTitle((JsonObject)contentItemVersion.Content))
                 {
-                    await _session.SaveAsync(contentItemVersion);
+                    await _session.SaveAsync(contentItemVersion, false, null, CancellationToken.None);
                     _logger.LogInformation("A content item version's Title was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                 }
 
                 lastDocumentId = contentItemVersion.Id;
             }
 
-            await _session.FlushAsync();
+            await _session.FlushAsync(CancellationToken.None);
         }
 
         static bool UpdateTitle(JsonNode content)

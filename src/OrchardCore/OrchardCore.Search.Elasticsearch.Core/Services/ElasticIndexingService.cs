@@ -120,14 +120,14 @@ public class ElasticIndexingService
 
             if (indexSettingsList.Any(x => !x.IndexLatest))
             {
-                var publishedContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
+                var publishedContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync(CancellationToken.None);
                 allPublished = publishedContentItems.DistinctBy(x => x.ContentItemId)
                 .ToDictionary(k => k.ContentItemId);
             }
 
             if (indexSettingsList.Any(x => x.IndexLatest))
             {
-                var latestContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
+                var latestContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync(CancellationToken.None);
                 allLatest = latestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
             }
 

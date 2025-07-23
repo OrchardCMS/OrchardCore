@@ -110,12 +110,12 @@ public sealed class AdminController : Controller
 
         var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-        var count = await users.CountAsync();
+        var count = await users.CountAsync(CancellationToken.None);
 
         var results = await users
             .Skip(pager.GetStartIndex())
             .Take(pager.PageSize)
-            .ListAsync();
+            .ListAsync(CancellationToken.None);
 
         var pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
 
@@ -235,7 +235,7 @@ public sealed class AdminController : Controller
 
         if (itemIds != null && itemIds.Any())
         {
-            var checkedUsers = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
+            var checkedUsers = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync(CancellationToken.None);
 
             // Bulk actions require the ManageUsers permission on all the checked users.
             // To prevent html injection we authorize each user before performing any operations.

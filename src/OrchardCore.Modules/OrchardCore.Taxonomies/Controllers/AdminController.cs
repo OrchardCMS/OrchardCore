@@ -155,7 +155,7 @@ public sealed class AdminController : Controller
             taxonomyItems.Add(JObject.FromObject(contentItem));
         }
 
-        await _session.SaveAsync(taxonomy);
+        await _session.SaveAsync(taxonomy, false, null, CancellationToken.None);
 
         return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
     }
@@ -271,7 +271,7 @@ public sealed class AdminController : Controller
         // Merge doesn't copy the properties.
         taxonomyItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
 
-        await _session.SaveAsync(taxonomy);
+        await _session.SaveAsync(taxonomy, false, null, CancellationToken.None);
 
         return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
     }
@@ -322,7 +322,7 @@ public sealed class AdminController : Controller
 
         taxonomy.Apply(updatedPart);
 
-        await _session.SaveAsync(taxonomy);
+        await _session.SaveAsync(taxonomy, false, null, CancellationToken.None);
 
         await _notifier.SuccessAsync(H["Taxonomy item deleted successfully."]);
 

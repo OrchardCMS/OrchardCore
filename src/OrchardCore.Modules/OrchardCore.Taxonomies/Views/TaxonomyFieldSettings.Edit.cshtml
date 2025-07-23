@@ -7,7 +7,7 @@
 @inject ISession Session
 
 @{
-    var taxonomies = await Session.Query<ContentItem, ContentItemIndex>().Where(x => x.ContentType == "Taxonomy" && x.Latest).ListAsync();
+    var taxonomies = await Session.Query<ContentItem, ContentItemIndex>().Where(x => x.ContentType == "Taxonomy" && x.Latest).ListAsync(CancellationToken.None);
 }
 
 <div class="mb-3">

@@ -52,7 +52,7 @@ public class ListQueryObjectType : ObjectGraphType<ListPart>
                                  .OrderBy(o => o.Order)
                                  .Skip(skip)
                                  .Take(count)
-                                 .ListAsync();
+                                 .ListAsync(CancellationToken.None);
 
         return query.ToLookup(k => k.As<ContainedPart>().ListContentItemId);
     }

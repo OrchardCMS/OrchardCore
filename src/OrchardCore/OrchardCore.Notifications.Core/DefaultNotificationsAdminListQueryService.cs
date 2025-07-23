@@ -25,7 +25,7 @@ public class DefaultNotificationsAdminListQueryService : INotificationsAdminList
         query = await options.FilterResult.ExecuteAsync(new NotificationQueryContext(_serviceProvider, query));
 
         // Query the count before applying pagination logic.
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(CancellationToken.None);
 
         if (pageSize > 0)
         {
@@ -39,7 +39,7 @@ public class DefaultNotificationsAdminListQueryService : INotificationsAdminList
 
         return new NotificationQueryResult()
         {
-            Notifications = await query.ListAsync(),
+            Notifications = await query.ListAsync(CancellationToken.None),
             TotalCount = totalCount,
         };
     }

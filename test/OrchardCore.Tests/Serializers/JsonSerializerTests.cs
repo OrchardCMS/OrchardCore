@@ -72,10 +72,10 @@ public class JsonSerializerTests
 
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
 
-            await session.SaveAsync(newUser);
-            await session.SaveChangesAsync();
+            await session.SaveAsync(newUser, false, null, CancellationToken.None);
+            await session.SaveChangesAsync(CancellationToken.None);
 
-            var dbUser = await session.Query<User, UserIndex>(x => x.UserId == "abc").FirstOrDefaultAsync();
+            var dbUser = await session.Query<User, UserIndex>(x => x.UserId == "abc").FirstOrDefaultAsync(CancellationToken.None);
 
             Assert.NotNull(dbUser);
 

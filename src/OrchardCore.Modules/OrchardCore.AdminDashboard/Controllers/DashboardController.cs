@@ -175,7 +175,7 @@ public sealed class DashboardController : Controller
 
             contentItem.Apply(dashboardPart);
 
-            await _session.SaveAsync(contentItem);
+            await _session.SaveAsync(contentItem, false, null, CancellationToken.None);
 
             if (contentItem.IsPublished() == false)
             {
@@ -187,7 +187,7 @@ public sealed class DashboardController : Controller
                     publishedMetaData.Width = partViewModel.Width;
                     publishedMetaData.Height = partViewModel.Height;
                     publishedVersion.Apply(publishedMetaData);
-                    await _session.SaveAsync(publishedVersion);
+                    await _session.SaveAsync(publishedVersion, false, null, CancellationToken.None);
                 }
             }
         }

@@ -68,7 +68,7 @@ public class CustomUserSettingsService
 
     public async Task<Dictionary<string, ContentItem>> GetSettingsAsync(ContentTypeDefinition settingsType, Func<Task> factoryAsync = null)
     {
-        var users = await _session.Query<User>().ListAsync();
+        var users = await _session.Query<User>().ListAsync(CancellationToken.None);
         var contentItems = new Dictionary<string, ContentItem>();
         foreach (var user in users)
         {

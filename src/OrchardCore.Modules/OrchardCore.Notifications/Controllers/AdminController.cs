@@ -174,7 +174,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         if (itemIds?.Count() > 0)
         {
-            var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
+            var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync(CancellationToken.None);
             var utcNow = _clock.UtcNow;
             var counter = 0;
 
@@ -250,7 +250,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && !x.IsRead, collection: NotificationConstants.NotificationCollection).ListAsync();
+        var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && !x.IsRead, collection: NotificationConstants.NotificationCollection).ListAsync(CancellationToken.None);
 
         var utcNow = _clock.UtcNow;
         var counter = 0;
@@ -284,7 +284,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         if (!string.IsNullOrWhiteSpace(notificationId))
         {
-            var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId && x.IsRead != markAsRead, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+            var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId && x.IsRead != markAsRead, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync(CancellationToken.None);
 
             if (notification != null)
             {
@@ -320,7 +320,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         if (!string.IsNullOrWhiteSpace(notificationId))
         {
-            var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+            var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync(CancellationToken.None);
 
             if (notification != null)
             {
