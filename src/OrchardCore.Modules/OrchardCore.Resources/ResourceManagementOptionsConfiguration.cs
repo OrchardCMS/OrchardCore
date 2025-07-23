@@ -793,10 +793,6 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineStyle("font-awesome")
-            .SetUrl(
-                "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/css/all.min.css",
-                "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/css/all.css"
-            )
             .SetCdn(
                 "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css",
                 "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.css"
@@ -809,10 +805,6 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("font-awesome")
-            .SetUrl(
-                "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/all.min.js",
-                "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/all.js"
-            )
             .SetCdn(
                 "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.min.js",
                 "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.js"
@@ -825,10 +817,6 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("font-awesome-v4-shims")
-            .SetUrl(
-                "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/v4-shims.min.js",
-                "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/v4-shims.js"
-            )
             .SetCdn(
                 "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.min.js",
                 "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.js"
@@ -842,7 +830,7 @@ public sealed class ResourceManagementOptionsConfiguration
         manifest
             .DefineStyle("font-awesome")
             .SetUrl(
-                "~/OrchardCore.Resources/Vendor/fontawesome-fre-6.7.2e/css/all.min.css",
+                "~/OrchardCore.Resources/Vendor/fontawesome-free-6.7.2/css/all.min.css",
                 "~/OrchardCore.Resources/Vendor/fontawesome-free-6.7.2/css/all.css"
             )
             .SetCdn(
