@@ -47,14 +47,9 @@ public class CompositionStrategy : ICompositionStrategy
                     continue;
                 }
 
-                if (entries.TryGetValue(exportedType, out var featureDependencies))
-                {
-                    entries[exportedType] = featureDependencies.Append(feature).ToArray();
-                }
-                else
-                {
-                    entries[exportedType] = [feature];
-                }
+                entries[exportedType] = entries.TryGetValue(exportedType, out var featureDependencies)
+                    ? featureDependencies.Append(feature).ToArray()
+                    : [feature];
 
             }
         }
