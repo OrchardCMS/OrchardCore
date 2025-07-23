@@ -1,7 +1,7 @@
 /*!
- * Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
- * Copyright 2024 Fonticons, Inc.
+ * Copyright 2025 Fonticons, Inc.
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory() :
@@ -9,6 +9,14 @@
   (factory());
 }(this, (function () { 'use strict';
 
+  function _arrayLikeToArray(r, a) {
+    (null == a || a > r.length) && (a = r.length);
+    for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+    return n;
+  }
+  function _arrayWithoutHoles(r) {
+    if (Array.isArray(r)) return _arrayLikeToArray(r);
+  }
   function _defineProperty(e, r, t) {
     return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
       value: t,
@@ -16,6 +24,12 @@
       configurable: !0,
       writable: !0
     }) : e[r] = t, e;
+  }
+  function _iterableToArray(r) {
+    if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r);
+  }
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
   function ownKeys(e, r) {
     var t = Object.keys(e);
@@ -38,6 +52,9 @@
     }
     return e;
   }
+  function _toConsumableArray(r) {
+    return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread();
+  }
   function _toPrimitive(t, r) {
     if ("object" != typeof t || !t) return t;
     var e = t[Symbol.toPrimitive];
@@ -52,32 +69,51 @@
     var i = _toPrimitive(t, "string");
     return "symbol" == typeof i ? i : i + "";
   }
+  function _typeof(o) {
+    "@babel/helpers - typeof";
 
-  let _WINDOW = {};
-  let _DOCUMENT = {};
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+      return typeof o;
+    } : function (o) {
+      return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+    }, _typeof(o);
+  }
+  function _unsupportedIterableToArray(r, a) {
+    if (r) {
+      if ("string" == typeof r) return _arrayLikeToArray(r, a);
+      var t = {}.toString.call(r).slice(8, -1);
+      return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
+    }
+  }
+
+  var _WINDOW = {};
+  var _DOCUMENT = {};
   try {
     if (typeof window !== 'undefined') _WINDOW = window;
     if (typeof document !== 'undefined') _DOCUMENT = document;
-  } catch (e) {}
-  const {
-    userAgent = ''
-  } = _WINDOW.navigator || {};
-  const WINDOW = _WINDOW;
-  const DOCUMENT = _DOCUMENT;
-  const IS_BROWSER = !!WINDOW.document;
-  const IS_DOM = !!DOCUMENT.documentElement && !!DOCUMENT.head && typeof DOCUMENT.addEventListener === 'function' && typeof DOCUMENT.createElement === 'function';
-  const IS_IE = ~userAgent.indexOf('MSIE') || ~userAgent.indexOf('Trident/');
+  } catch (e) {} // eslint-disable-line no-empty
 
-  const functions = [];
-  const listener = function () {
-    DOCUMENT.removeEventListener('DOMContentLoaded', listener);
+  var _ref = _WINDOW.navigator || {},
+    _ref$userAgent = _ref.userAgent,
+    userAgent = _ref$userAgent === void 0 ? '' : _ref$userAgent;
+  var WINDOW = _WINDOW;
+  var DOCUMENT = _DOCUMENT;
+  var IS_BROWSER = !!WINDOW.document;
+  var IS_DOM = !!DOCUMENT.documentElement && !!DOCUMENT.head && typeof DOCUMENT.addEventListener === 'function' && typeof DOCUMENT.createElement === 'function';
+  var IS_IE = ~userAgent.indexOf('MSIE') || ~userAgent.indexOf('Trident/');
+
+  var functions = [];
+  var _listener = function listener() {
+    DOCUMENT.removeEventListener('DOMContentLoaded', _listener);
     loaded = 1;
-    functions.map(fn => fn());
+    functions.map(function (fn) {
+      return fn();
+    });
   };
-  let loaded = false;
+  var loaded = false;
   if (IS_DOM) {
     loaded = (DOCUMENT.documentElement.doScroll ? /^loaded|^c/ : /^loaded|^i|^c/).test(DOCUMENT.readyState);
-    if (!loaded) DOCUMENT.addEventListener('DOMContentLoaded', listener);
+    if (!loaded) DOCUMENT.addEventListener('DOMContentLoaded', _listener);
   }
   function domready (fn) {
     if (!IS_DOM) return;
@@ -85,23 +121,21 @@
   }
 
   function report (_ref) {
-    let {
-      nodesTested,
-      nodesFound
-    } = _ref;
-    const timedOutTests = {};
-    for (let key in nodesFound) {
+    var nodesTested = _ref.nodesTested,
+      nodesFound = _ref.nodesFound;
+    var timedOutTests = {};
+    for (var key in nodesFound) {
       if (!(nodesTested.conflict[key] || nodesTested.noConflict[key])) {
         timedOutTests[key] = nodesFound[key];
       }
     }
-    const conflictsCount = Object.keys(nodesTested.conflict).length;
+    var conflictsCount = Object.keys(nodesTested.conflict).length;
     if (conflictsCount > 0) {
       console.info("%cConflict".concat(conflictsCount > 1 ? 's' : '', " found:"), 'color: darkred; font-size: large');
-      const data = {};
-      for (let key in nodesTested.conflict) {
-        const item = nodesTested.conflict[key];
-        data[key] = {
+      var data = {};
+      for (var _key in nodesTested.conflict) {
+        var item = nodesTested.conflict[_key];
+        data[_key] = {
           'tagName': item.tagName,
           'src/href': item.src || item.href || 'n/a',
           'innerText excerpt': item.innerText && item.innerText !== '' ? item.innerText.slice(0, 200) + '...' : '(empty)'
@@ -109,33 +143,33 @@
       }
       console.table(data);
     }
-    const noConflictsCount = Object.keys(nodesTested.noConflict).length;
+    var noConflictsCount = Object.keys(nodesTested.noConflict).length;
     if (noConflictsCount > 0) {
       console.info("%cNo conflict".concat(noConflictsCount > 1 ? 's' : '', " found with ").concat(noConflictsCount === 1 ? 'this' : 'these', ":"), 'color: green; font-size: large');
-      const data = {};
-      for (let key in nodesTested.noConflict) {
-        const item = nodesTested.noConflict[key];
-        data[key] = {
-          'tagName': item.tagName,
-          'src/href': item.src || item.href || 'n/a',
-          'innerText excerpt': item.innerText && item.innerText !== '' ? item.innerText.slice(0, 200) + '...' : '(empty)'
+      var _data = {};
+      for (var _key2 in nodesTested.noConflict) {
+        var _item = nodesTested.noConflict[_key2];
+        _data[_key2] = {
+          'tagName': _item.tagName,
+          'src/href': _item.src || _item.href || 'n/a',
+          'innerText excerpt': _item.innerText && _item.innerText !== '' ? _item.innerText.slice(0, 200) + '...' : '(empty)'
         };
       }
-      console.table(data);
+      console.table(_data);
     }
-    const timeOutCount = Object.keys(timedOutTests).length;
+    var timeOutCount = Object.keys(timedOutTests).length;
     if (timeOutCount > 0) {
       console.info("%cLeftovers--we timed out before collecting test results for ".concat(timeOutCount === 1 ? 'this' : 'these', ":"), 'color: blue; font-size: large');
-      const data = {};
-      for (let key in timedOutTests) {
-        const item = timedOutTests[key];
-        data[key] = {
-          'tagName': item.tagName,
-          'src/href': item.src || item.href || 'n/a',
-          'innerText excerpt': item.innerText && item.innerText !== '' ? item.innerText.slice(0, 200) + '...' : '(empty)'
+      var _data2 = {};
+      for (var _key3 in timedOutTests) {
+        var _item2 = timedOutTests[_key3];
+        _data2[_key3] = {
+          'tagName': _item2.tagName,
+          'src/href': _item2.src || _item2.href || 'n/a',
+          'innerText excerpt': _item2.innerText && _item2.innerText !== '' ? _item2.innerText.slice(0, 200) + '...' : '(empty)'
         };
       }
-      console.table(data);
+      console.table(_data2);
     }
   }
 
@@ -515,51 +549,52 @@
   });
 
   function md5ForNode(node) {
-    if (null === node || 'object' !== typeof node) return undefined;
+    if (null === node || 'object' !== _typeof(node)) return undefined;
     if (node.src) {
       return md5(node.src);
     } else if (node.href) {
       return md5(node.href);
     } else if (node.innerText && '' !== node.innerText) {
-      // eslint-disable-line yoda
       return md5(node.innerText);
     } else {
       return undefined;
     }
   }
 
-  const diagScriptId = 'fa-kits-diag';
-  const nodeUnderTestId = 'fa-kits-node-under-test';
-  const md5Attr = 'data-md5';
-  const detectionIgnoreAttr = 'data-fa-detection-ignore';
-  const timeoutAttr = 'data-fa-detection-timeout';
-  const resultsCollectionMaxWaitAttr = 'data-fa-detection-results-collection-max-wait';
-  const silenceErrors = e => {
+  var diagScriptId = 'fa-kits-diag';
+  var nodeUnderTestId = 'fa-kits-node-under-test';
+  var md5Attr = 'data-md5';
+  var detectionIgnoreAttr = 'data-fa-detection-ignore';
+  var timeoutAttr = 'data-fa-detection-timeout';
+  var resultsCollectionMaxWaitAttr = 'data-fa-detection-results-collection-max-wait';
+  var silenceErrors = function silenceErrors(e) {
     e.preventDefault();
     e.stopPropagation();
   };
   function pollUntil(_ref) {
-    let {
-      fn = () => true,
-      initialDuration = 1,
-      maxDuration = WINDOW.FontAwesomeDetection.timeout,
-      showProgress = false,
-      progressIndicator
-    } = _ref;
+    var _ref$fn = _ref.fn,
+      fn = _ref$fn === void 0 ? function () {
+        return true;
+      } : _ref$fn,
+      _ref$initialDuration = _ref.initialDuration,
+      initialDuration = _ref$initialDuration === void 0 ? 1 : _ref$initialDuration,
+      _ref$maxDuration = _ref.maxDuration,
+      maxDuration = _ref$maxDuration === void 0 ? WINDOW.FontAwesomeDetection.timeout : _ref$maxDuration,
+      _ref$showProgress = _ref.showProgress,
+      showProgress = _ref$showProgress === void 0 ? false : _ref$showProgress,
+      progressIndicator = _ref.progressIndicator;
     return new Promise(function (resolve, reject) {
-      // eslint-disable-line compat/compat
       function poll(duration, cumulativeDuration) {
         setTimeout(function () {
-          const result = fn();
+          var result = fn();
           if (showProgress) {
             console.info(progressIndicator);
           }
-          if (!!result) {
-            // eslint-disable-line no-extra-boolean-cast
+          if (result) {
             resolve(result);
           } else {
-            const nextDuration = 250;
-            const nextCumulativeDuration = nextDuration + cumulativeDuration;
+            var nextDuration = 250;
+            var nextCumulativeDuration = nextDuration + cumulativeDuration;
             if (nextCumulativeDuration <= maxDuration) {
               poll(nextDuration, nextCumulativeDuration);
             } else {
@@ -572,8 +607,10 @@
     });
   }
   function detectWebfontConflicts() {
-    const linkTags = Array.from(DOCUMENT.getElementsByTagName('link')).filter(t => !t.hasAttribute(detectionIgnoreAttr));
-    const styleTags = Array.from(DOCUMENT.getElementsByTagName('style')).filter(t => {
+    var linkTags = Array.from(DOCUMENT.getElementsByTagName('link')).filter(function (t) {
+      return !t.hasAttribute(detectionIgnoreAttr);
+    });
+    var styleTags = Array.from(DOCUMENT.getElementsByTagName('style')).filter(function (t) {
       if (t.hasAttribute(detectionIgnoreAttr)) {
         return false;
       }
@@ -587,15 +624,15 @@
       return true;
     });
     function runDiag(scriptOrLinkTag, md5) {
-      const diagFrame = DOCUMENT.createElement('iframe');
+      var diagFrame = DOCUMENT.createElement('iframe');
       // Using "visibility: hidden; position: absolute" instead of "display: none;" because
       // Firefox will not return the expected results for getComputedStyle if our iframe has display: none.
       diagFrame.setAttribute('style', 'visibility: hidden; position: absolute; height: 0; width: 0;');
-      const testIconId = 'fa-test-icon-' + md5;
-      const iTag = DOCUMENT.createElement('i');
+      var testIconId = 'fa-test-icon-' + md5;
+      var iTag = DOCUMENT.createElement('i');
       iTag.setAttribute('class', 'fa fa-coffee');
       iTag.setAttribute('id', testIconId);
-      const diagScript = DOCUMENT.createElement('script');
+      var diagScript = DOCUMENT.createElement('script');
       diagScript.setAttribute('id', diagScriptId);
 
       // WARNING: this function will be toString()'d and assigned to innerText of the diag script
@@ -605,30 +642,30 @@
       // For example, using single line (double-slash) comments like this one inside that function
       // will probably cause it to choke. Chrome will show an error like this:
       // Uncaught SyntaxError: Unexpected end of input
-      const diagScriptFun = (nodeUnderTestId, testIconId, md5, parentOrigin) => {
+      var diagScriptFun = function diagScriptFun(nodeUnderTestId, testIconId, md5, parentOrigin) {
         parent.FontAwesomeDetection.__pollUntil({
-          fn: () => {
-            const iEl = document.getElementById(testIconId);
-            const computedStyle = window.getComputedStyle(iEl);
-            const fontFamily = computedStyle.getPropertyValue('font-family');
+          fn: function fn() {
+            var iEl = document.getElementById(testIconId);
+            var computedStyle = window.getComputedStyle(iEl);
+            var fontFamily = computedStyle.getPropertyValue('font-family');
             if (!!fontFamily.match(/FontAwesome/) || !!fontFamily.match(/Font Awesome [56]/)) {
               return true;
             } else {
               return false;
             }
           }
-        }).then(() => {
-          const node = document.getElementById(nodeUnderTestId);
+        }).then(function () {
+          var node = document.getElementById(nodeUnderTestId);
           parent.postMessage({
             type: 'fontawesome-conflict',
             technology: 'webfont',
             href: node.href,
             innerText: node.innerText,
             tagName: node.tagName,
-            md5
+            md5: md5
           }, parentOrigin);
         }).catch(function (e) {
-          const node = document.getElementById(nodeUnderTestId);
+          var node = document.getElementById(nodeUnderTestId);
           if (e === 'timeout') {
             parent.postMessage({
               type: 'no-conflict',
@@ -636,14 +673,14 @@
               href: node.src,
               innerText: node.innerText,
               tagName: node.tagName,
-              md5
+              md5: md5
             }, parentOrigin);
           } else {
             console.error(e);
           }
         });
       };
-      const parentOrigin = WINDOW.location.origin === 'file://' ? '*' : WINDOW.location.origin;
+      var parentOrigin = WINDOW.location.origin === 'file://' ? '*' : WINDOW.location.origin;
       diagScript.innerText = "(".concat(diagScriptFun.toString(), ")('").concat(nodeUnderTestId, "', '").concat(testIconId || 'foo', "', '").concat(md5, "', '").concat(parentOrigin, "');");
       diagFrame.onload = function () {
         diagFrame.contentWindow.addEventListener('error', silenceErrors, true);
@@ -651,39 +688,43 @@
         diagFrame.contentDocument.head.appendChild(scriptOrLinkTag);
         diagFrame.contentDocument.body.appendChild(iTag);
       };
-      domready(() => DOCUMENT.body.appendChild(diagFrame));
+      domready(function () {
+        return DOCUMENT.body.appendChild(diagFrame);
+      });
     }
-    const cssByMD5 = {};
-    for (let i = 0; i < linkTags.length; i++) {
-      const linkUnderTest = DOCUMENT.createElement('link');
+    var cssByMD5 = {};
+    for (var i = 0; i < linkTags.length; i++) {
+      var linkUnderTest = DOCUMENT.createElement('link');
       linkUnderTest.setAttribute('id', nodeUnderTestId);
       linkUnderTest.setAttribute('href', linkTags[i].href);
       linkUnderTest.setAttribute('rel', linkTags[i].rel);
-      const md5ForLink = md5ForNode(linkTags[i]);
+      var md5ForLink = md5ForNode(linkTags[i]);
       linkUnderTest.setAttribute(md5Attr, md5ForLink);
       cssByMD5[md5ForLink] = linkTags[i];
       runDiag(linkUnderTest, md5ForLink);
     }
-    for (let i = 0; i < styleTags.length; i++) {
+    for (var _i = 0; _i < styleTags.length; _i++) {
       var styleUnderTest = DOCUMENT.createElement('style');
       styleUnderTest.setAttribute('id', nodeUnderTestId);
-      const md5ForStyle = md5ForNode(styleTags[i]);
+      var md5ForStyle = md5ForNode(styleTags[_i]);
       styleUnderTest.setAttribute(md5Attr, md5ForStyle);
-      styleUnderTest.innerText = styleTags[i].innerText;
-      cssByMD5[md5ForStyle] = styleTags[i];
+      styleUnderTest.innerText = styleTags[_i].innerText;
+      cssByMD5[md5ForStyle] = styleTags[_i];
       runDiag(styleUnderTest, md5ForStyle);
     }
     return cssByMD5;
   }
   function detectSvgConflicts(currentScript) {
-    const scripts = Array.from(DOCUMENT.scripts).filter(t => !t.hasAttribute(detectionIgnoreAttr) && t !== currentScript);
-    const scriptsByMD5 = {};
-    for (let scriptIdx = 0; scriptIdx < scripts.length; scriptIdx++) {
-      const diagFrame = DOCUMENT.createElement('iframe');
+    var scripts = Array.from(DOCUMENT.scripts).filter(function (t) {
+      return !t.hasAttribute(detectionIgnoreAttr) && t !== currentScript;
+    });
+    var scriptsByMD5 = {};
+    var _loop = function _loop() {
+      var diagFrame = DOCUMENT.createElement('iframe');
       diagFrame.setAttribute('style', 'display:none;');
-      const scriptUnderTest = DOCUMENT.createElement('script');
+      var scriptUnderTest = DOCUMENT.createElement('script');
       scriptUnderTest.setAttribute('id', nodeUnderTestId);
-      const md5ForScript = md5ForNode(scripts[scriptIdx]);
+      var md5ForScript = md5ForNode(scripts[scriptIdx]);
       scriptUnderTest.setAttribute(md5Attr, md5ForScript);
       scriptsByMD5[md5ForScript] = scripts[scriptIdx];
       if (scripts[scriptIdx].src !== '') {
@@ -693,23 +734,23 @@
         scriptUnderTest.innerText = scripts[scriptIdx].innerText;
       }
       scriptUnderTest.async = true;
-      const diagScript = DOCUMENT.createElement('script');
+      var diagScript = DOCUMENT.createElement('script');
       diagScript.setAttribute('id', diagScriptId);
-      const parentOrigin = WINDOW.location.origin === 'file://' ? '*' : WINDOW.location.origin;
-      const diagScriptFun = (nodeUnderTestId, md5, parentOrigin) => {
+      var parentOrigin = WINDOW.location.origin === 'file://' ? '*' : WINDOW.location.origin;
+      var diagScriptFun = function diagScriptFun(nodeUnderTestId, md5, parentOrigin) {
         parent.FontAwesomeDetection.__pollUntil({
-          fn: () => {
+          fn: function fn() {
             return !!window.FontAwesomeConfig || !!window.FontAwesomeKitConfig;
           }
         }).then(function () {
-          const scriptNode = document.getElementById(nodeUnderTestId);
+          var scriptNode = document.getElementById(nodeUnderTestId);
           parent.postMessage({
             type: 'fontawesome-conflict',
             technology: 'js',
             src: scriptNode.src,
             innerText: scriptNode.innerText,
             tagName: scriptNode.tagName,
-            md5
+            md5: md5
           }, parentOrigin);
         }).catch(function (e) {
           var scriptNode = document.getElementById(nodeUnderTestId);
@@ -719,7 +760,7 @@
               src: scriptNode.src,
               innerText: scriptNode.innerText,
               tagName: scriptNode.tagName,
-              md5
+              md5: md5
             }, parentOrigin);
           } else {
             console.error(e);
@@ -732,23 +773,26 @@
         diagFrame.contentDocument.head.appendChild(diagScript);
         diagFrame.contentDocument.head.appendChild(scriptUnderTest);
       };
-      domready(() => DOCUMENT.body.appendChild(diagFrame));
+      domready(function () {
+        return DOCUMENT.body.appendChild(diagFrame);
+      });
+    };
+    for (var scriptIdx = 0; scriptIdx < scripts.length; scriptIdx++) {
+      _loop();
     }
     return scriptsByMD5;
   }
   function setDoneResults(_ref2) {
-    let {
-      nodesTested,
-      nodesFound
-    } = _ref2;
+    var nodesTested = _ref2.nodesTested,
+      nodesFound = _ref2.nodesFound;
     WINDOW.FontAwesomeDetection = WINDOW.FontAwesomeDetection || {};
     WINDOW.FontAwesomeDetection.nodesTested = nodesTested;
     WINDOW.FontAwesomeDetection.nodesFound = nodesFound;
     WINDOW.FontAwesomeDetection.detectionDone = true;
   }
   function conflictDetection() {
-    let report$$1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : () => {};
-    const nodesTested = {
+    var report$$1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
+    var nodesTested = {
       conflict: {},
       noConflict: {}
     };
@@ -763,10 +807,10 @@
         }
       }
     };
-    const scriptsToTest = detectSvgConflicts(DOCUMENT.currentScript);
-    const cssToTest = detectWebfontConflicts();
-    const nodesFound = _objectSpread2(_objectSpread2({}, scriptsToTest), cssToTest);
-    const testCount = Object.keys(scriptsToTest).length + Object.keys(cssToTest).length;
+    var scriptsToTest = detectSvgConflicts(DOCUMENT.currentScript);
+    var cssToTest = detectWebfontConflicts();
+    var nodesFound = _objectSpread2(_objectSpread2({}, scriptsToTest), cssToTest);
+    var testCount = Object.keys(scriptsToTest).length + Object.keys(cssToTest).length;
 
     // The resultsCollectionMaxWait allows for the time between when the tests running under
     // child iframes call postMessage with their results, and when the parent window
@@ -774,11 +818,11 @@
     // Making it configurable allows us to test the scenario where this timeout is exceeded.
     // Naming it something very different from "timeout" is to help avoid the potential ambiguity between
     // these two timeout-related settings.
-    const masterTimeout = WINDOW.FontAwesomeDetection.timeout + WINDOW.FontAwesomeDetection.resultsCollectionMaxWait;
+    var masterTimeout = WINDOW.FontAwesomeDetection.timeout + WINDOW.FontAwesomeDetection.resultsCollectionMaxWait;
     console.group('Font Awesome Detector');
     if (testCount === 0) {
       console.info('%cAll Good!', 'color: green; font-size: large');
-      console.info('We didn\'t find anything that needs testing for conflicts. Ergo, no conflicts.');
+      console.info("We didn't find anything that needs testing for conflicts. Ergo, no conflicts.");
     } else {
       console.info("Testing ".concat(testCount, " possible conflicts."));
       console.info("We'll wait about ".concat(Math.round(WINDOW.FontAwesomeDetection.timeout / 10) / 100, " seconds while testing these and\n") + "then up to another ".concat(Math.round(WINDOW.FontAwesomeDetection.resultsCollectionMaxWait / 10) / 100, " to allow the browser time\n") + "to accumulate the results. But we'll probably be outta here way before then.\n\n");
@@ -790,41 +834,41 @@
         maxDuration: masterTimeout,
         showProgress: true,
         progressIndicator: 'waiting...',
-        fn: () => {
+        fn: function fn() {
           return Object.keys(nodesTested.conflict).length + Object.keys(nodesTested.noConflict).length >= testCount;
         }
-      }).then(() => {
+      }).then(function () {
         console.info('DONE!');
         setDoneResults({
-          nodesTested,
-          nodesFound
+          nodesTested: nodesTested,
+          nodesFound: nodesFound
         });
         report$$1({
-          nodesTested,
-          nodesFound
+          nodesTested: nodesTested,
+          nodesFound: nodesFound
         });
         console.groupEnd();
-      }).catch(e => {
+      }).catch(function (e) {
         if (e === 'timeout') {
-          console.info('TIME OUT! We waited until we got tired. Here\'s what we found:');
+          console.info("TIME OUT! We waited until we got tired. Here's what we found:");
           setDoneResults({
-            nodesTested,
-            nodesFound
+            nodesTested: nodesTested,
+            nodesFound: nodesFound
           });
           report$$1({
-            nodesTested,
-            nodesFound
+            nodesTested: nodesTested,
+            nodesFound: nodesFound
           });
         } else {
           console.info('Whoops! We hit an error:', e);
-          console.info('Here\'s what we\'d found up until that error:');
+          console.info("Here's what we'd found up until that error:");
           setDoneResults({
-            nodesTested,
-            nodesFound
+            nodesTested: nodesTested,
+            nodesFound: nodesFound
           });
           report$$1({
-            nodesTested,
-            nodesFound
+            nodesTested: nodesTested,
+            nodesFound: nodesFound
           });
         }
         console.groupEnd();
@@ -833,25 +877,26 @@
   }
 
   // Allow clients to access, and in some cases, override some properties
-  const initialConfig = WINDOW.FontAwesomeDetection || {};
+  var initialConfig = WINDOW.FontAwesomeDetection || {};
 
   // These can be overridden
-  const _default = {
-    report,
-    timeout: +(DOCUMENT.currentScript.getAttribute(timeoutAttr) || "2000"),
-    resultsCollectionMaxWait: +(DOCUMENT.currentScript.getAttribute(resultsCollectionMaxWaitAttr) || "5000")
+  var _default = {
+    report: report,
+    timeout: +(DOCUMENT.currentScript.getAttribute(timeoutAttr) || '2000'),
+    resultsCollectionMaxWait: +(DOCUMENT.currentScript.getAttribute(resultsCollectionMaxWaitAttr) || '5000')
   };
-  const _config = _objectSpread2(_objectSpread2(_objectSpread2({}, _default), initialConfig), {}, {
+  var _config = _objectSpread2(_objectSpread2(_objectSpread2({}, _default), initialConfig), {}, {
     // These cannot be overridden
     __pollUntil: pollUntil,
-    md5ForNode,
+    md5ForNode: md5ForNode,
     detectionDone: false,
     nodesTested: null,
     nodesFound: null
   });
   WINDOW.FontAwesomeDetection = _config;
 
-  var S = {
+  var _so;
+  var z = {
       classic: {
         fa: "solid",
         fas: "solid",
@@ -898,10 +943,84 @@
         "fa-light": "light",
         fasdt: "thin",
         "fa-thin": "thin"
+      },
+      slab: {
+        "fa-regular": "regular",
+        faslr: "regular"
+      },
+      "slab-press": {
+        "fa-regular": "regular",
+        faslpr: "regular"
+      },
+      thumbprint: {
+        "fa-light": "light",
+        fatl: "light"
+      },
+      whiteboard: {
+        "fa-semibold": "semibold",
+        fawsb: "semibold"
+      },
+      notdog: {
+        "fa-solid": "solid",
+        fans: "solid"
+      },
+      "notdog-duo": {
+        "fa-solid": "solid",
+        fands: "solid"
+      },
+      etch: {
+        "fa-solid": "solid",
+        faes: "solid"
+      },
+      jelly: {
+        "fa-regular": "regular",
+        fajr: "regular"
+      },
+      "jelly-fill": {
+        "fa-regular": "regular",
+        fajfr: "regular"
+      },
+      "jelly-duo": {
+        "fa-regular": "regular",
+        fajdr: "regular"
+      },
+      chisel: {
+        "fa-regular": "regular",
+        facr: "regular"
       }
     };
-  var s = "classic";
-  var G = {
+  var a = "classic",
+    o = "duotone",
+    d = "sharp",
+    t = "sharp-duotone",
+    i = "chisel",
+    n = "etch",
+    h = "jelly",
+    s = "jelly-duo",
+    f = "jelly-fill",
+    g = "notdog",
+    l = "notdog-duo",
+    u = "slab",
+    p = "slab-press",
+    e = "thumbprint",
+    w = "whiteboard",
+    m = "Classic",
+    y = "Duotone",
+    x = "Sharp",
+    c = "Sharp Duotone",
+    I = "Chisel",
+    b = "Etch",
+    F = "Jelly",
+    v = "Jelly Duo",
+    S = "Jelly Fill",
+    A = "Notdog",
+    P = "Notdog Duo",
+    j = "Slab",
+    B = "Slab Press",
+    N = "Thumbprint",
+    k = "Whiteboard",
+    so = (_so = {}, _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_so, a, m), o, y), d, x), t, c), i, I), n, b), h, F), s, v), f, S), g, A), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_so, l, P), u, j), p, B), e, N), w, k));
+  var io = {
       classic: {
         900: "fas",
         400: "far",
@@ -926,36 +1045,102 @@
         400: "fasdr",
         300: "fasdl",
         100: "fasdt"
+      },
+      slab: {
+        400: "faslr"
+      },
+      "slab-press": {
+        400: "faslpr"
+      },
+      whiteboard: {
+        600: "fawsb"
+      },
+      thumbprint: {
+        300: "fatl"
+      },
+      notdog: {
+        900: "fans"
+      },
+      "notdog-duo": {
+        900: "fands"
+      },
+      etch: {
+        900: "faes"
+      },
+      chisel: {
+        400: "facr"
+      },
+      jelly: {
+        400: "fajr"
+      },
+      "jelly-fill": {
+        400: "fajfr"
+      },
+      "jelly-duo": {
+        400: "fajdr"
       }
     };
-  var xt = {
+  var Ro = {
+      chisel: {
+        regular: "facr"
+      },
       classic: {
-        solid: "fas",
-        regular: "far",
+        brands: "fab",
         light: "fal",
-        thin: "fat",
-        brands: "fab"
+        regular: "far",
+        solid: "fas",
+        thin: "fat"
       },
       duotone: {
-        solid: "fad",
-        regular: "fadr",
         light: "fadl",
+        regular: "fadr",
+        solid: "fad",
         thin: "fadt"
       },
+      etch: {
+        solid: "faes"
+      },
+      jelly: {
+        regular: "fajr"
+      },
+      "jelly-duo": {
+        regular: "fajdr"
+      },
+      "jelly-fill": {
+        regular: "fajfr"
+      },
+      notdog: {
+        solid: "fans"
+      },
+      "notdog-duo": {
+        solid: "fands"
+      },
       sharp: {
-        solid: "fass",
-        regular: "fasr",
         light: "fasl",
+        regular: "fasr",
+        solid: "fass",
         thin: "fast"
       },
       "sharp-duotone": {
-        solid: "fasds",
-        regular: "fasdr",
         light: "fasdl",
+        regular: "fasdr",
+        solid: "fasds",
         thin: "fasdt"
+      },
+      slab: {
+        regular: "faslr"
+      },
+      "slab-press": {
+        regular: "faslpr"
+      },
+      thumbprint: {
+        light: "fatl"
+      },
+      whiteboard: {
+        semibold: "fawsb"
       }
     };
-  var St = {
+  var Oo = {
       kit: {
         fak: "kit",
         "fa-kit": "kit"
@@ -964,8 +1149,14 @@
         fakd: "kit-duotone",
         "fa-kit-duotone": "kit-duotone"
       }
-    };
-  var Ct = {
+    },
+    Go = ["kit"];
+  var D = "kit",
+    r = "kit-duotone",
+    T = "Kit",
+    C = "Kit Duotone",
+    qo = _defineProperty(_defineProperty({}, D, T), r, C);
+  var Xo = {
     kit: {
       "fa-kit": "fak"
     },
@@ -973,7 +1164,7 @@
       "fa-kit-duotone": "fakd"
     }
   };
-  var Wt = {
+  var et = {
       kit: {
         fak: "fa-kit"
       },
@@ -981,7 +1172,7 @@
         fakd: "fa-kit-duotone"
       }
     };
-  var Et = {
+  var dt = {
       kit: {
         kit: "fak"
       },
@@ -990,7 +1181,50 @@
       }
     };
 
-  var ua = {
+  var _fl;
+  var l$1 = {
+      GROUP: "duotone-group",
+      SWAP_OPACITY: "swap-opacity",
+      PRIMARY: "primary",
+      SECONDARY: "secondary"
+    };
+  var f$1 = "classic",
+    a$1 = "duotone",
+    n$1 = "sharp",
+    t$1 = "sharp-duotone",
+    h$1 = "chisel",
+    g$1 = "etch",
+    u$1 = "jelly",
+    s$1 = "jelly-duo",
+    p$1 = "jelly-fill",
+    y$1 = "notdog",
+    e$1 = "notdog-duo",
+    m$1 = "slab",
+    c$1 = "slab-press",
+    r$1 = "thumbprint",
+    w$1 = "whiteboard",
+    x$1 = "Classic",
+    I$1 = "Duotone",
+    b$1 = "Sharp",
+    F$1 = "Sharp Duotone",
+    v$1 = "Chisel",
+    S$1 = "Etch",
+    A$1 = "Jelly",
+    j$1 = "Jelly Duo",
+    P$1 = "Jelly Fill",
+    B$1 = "Notdog",
+    k$1 = "Notdog Duo",
+    N$1 = "Slab",
+    D$1 = "Slab Press",
+    C$1 = "Thumbprint",
+    T$1 = "Whiteboard",
+    fl = (_fl = {}, _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_fl, f$1, x$1), a$1, I$1), n$1, b$1), t$1, F$1), h$1, v$1), g$1, S$1), u$1, A$1), s$1, j$1), p$1, P$1), y$1, B$1), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_fl, e$1, k$1), m$1, N$1), c$1, D$1), r$1, C$1), w$1, T$1));
+  var L = "kit",
+    d$1 = "kit-duotone",
+    R$1 = "Kit",
+    W$1 = "Kit Duotone",
+    lo$1 = _defineProperty(_defineProperty({}, L, R$1), d$1, W$1);
+  var zo$1 = {
       classic: {
         "fa-brands": "fab",
         "fa-duotone": "fad",
@@ -1015,9 +1249,59 @@
         "fa-regular": "fasdr",
         "fa-light": "fasdl",
         "fa-thin": "fasdt"
+      },
+      slab: {
+        "fa-regular": "faslr"
+      },
+      "slab-press": {
+        "fa-regular": "faslpr"
+      },
+      whiteboard: {
+        "fa-semibold": "fawsb"
+      },
+      thumbprint: {
+        "fa-light": "fatl"
+      },
+      notdog: {
+        "fa-solid": "fans"
+      },
+      "notdog-duo": {
+        "fa-solid": "fands"
+      },
+      etch: {
+        "fa-solid": "faes"
+      },
+      jelly: {
+        "fa-regular": "fajr"
+      },
+      "jelly-fill": {
+        "fa-regular": "fajfr"
+      },
+      "jelly-duo": {
+        "fa-regular": "fajdr"
+      },
+      chisel: {
+        "fa-regular": "facr"
       }
     },
-    ga = {
+    J$1 = {
+      classic: ["fas", "far", "fal", "fat", "fad"],
+      duotone: ["fadr", "fadl", "fadt"],
+      sharp: ["fass", "fasr", "fasl", "fast"],
+      "sharp-duotone": ["fasds", "fasdr", "fasdl", "fasdt"],
+      slab: ["faslr"],
+      "slab-press": ["faslpr"],
+      whiteboard: ["fawsb"],
+      thumbprint: ["fatl"],
+      notdog: ["fans"],
+      "notdog-duo": ["fands"],
+      etch: ["faes"],
+      jelly: ["fajr"],
+      "jelly-fill": ["fajfr"],
+      "jelly-duo": ["fajdr"],
+      chisel: ["facr"]
+    },
+    Go$1 = {
       classic: {
         fab: "fa-brands",
         fad: "fa-duotone",
@@ -1042,56 +1326,99 @@
         fasdr: "fa-regular",
         fasdl: "fa-light",
         fasdt: "fa-thin"
+      },
+      slab: {
+        faslr: "fa-regular"
+      },
+      "slab-press": {
+        faslpr: "fa-regular"
+      },
+      whiteboard: {
+        fawsb: "fa-semibold"
+      },
+      thumbprint: {
+        fatl: "fa-light"
+      },
+      notdog: {
+        fans: "fa-solid"
+      },
+      "notdog-duo": {
+        fands: "fa-solid"
+      },
+      etch: {
+        faes: "fa-solid"
+      },
+      jelly: {
+        fajr: "fa-regular"
+      },
+      "jelly-fill": {
+        fajfr: "fa-regular"
+      },
+      "jelly-duo": {
+        fajdr: "fa-regular"
+      },
+      chisel: {
+        facr: "fa-regular"
       }
-    };
+    },
+    _$1 = ["solid", "regular", "light", "thin", "duotone", "brands", "semibold"],
+    K$1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    M$1 = K$1.concat([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]),
+    O$1 = ["aw", "fw", "pull-left", "pull-right"],
+    Ho$1 = [].concat(_toConsumableArray(Object.keys(J$1)), _$1, O$1, ["2xs", "xs", "sm", "lg", "xl", "2xl", "beat", "border", "fade", "beat-fade", "bounce", "flip-both", "flip-horizontal", "flip-vertical", "flip", "inverse", "layers", "layers-bottom-left", "layers-bottom-right", "layers-counter", "layers-text", "layers-top-left", "layers-top-right", "li", "pull-end", "pull-start", "pulse", "rotate-180", "rotate-270", "rotate-90", "rotate-by", "shake", "spin-pulse", "spin-reverse", "spin", "stack-1x", "stack-2x", "stack", "ul", "width-auto", "width-fixed", l$1.GROUP, l$1.SWAP_OPACITY, l$1.PRIMARY, l$1.SECONDARY]).concat(K$1.map(function (o) {
+      return "".concat(o, "x");
+    })).concat(M$1.map(function (o) {
+      return "w-".concat(o);
+    }));
 
-  const PRODUCTION = (() => {
+  var PRODUCTION = function () {
     try {
       return process.env.NODE_ENV === 'production';
     } catch (e$$1) {
       return false;
     }
-  })();
+  }();
   function familyProxy(obj) {
     // Defaults to the classic family if family is not available
     return new Proxy(obj, {
-      get(target, prop) {
-        return prop in target ? target[prop] : target[s];
+      get: function get(target, prop) {
+        return prop in target ? target[prop] : target[a];
       }
     });
   }
-  const _PREFIX_TO_STYLE = _objectSpread2({}, S);
+  var _PREFIX_TO_STYLE = _objectSpread2({}, z);
 
   // We changed FACSSClassesToStyleId in the icons repo to be canonical and as such, "classic" family does not have any
   // duotone styles.  But we do still need duotone in _PREFIX_TO_STYLE below, so we are manually adding
   // {'fa-duotone': 'duotone'}
-  _PREFIX_TO_STYLE[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+  _PREFIX_TO_STYLE[a] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
     'fa-duotone': 'duotone'
-  }), S[s]), St['kit']), St['kit-duotone']);
-  const PREFIX_TO_STYLE = familyProxy(_PREFIX_TO_STYLE);
-  const _STYLE_TO_PREFIX = _objectSpread2({}, xt);
+  }), z[a]), Oo['kit']), Oo['kit-duotone']);
+  var PREFIX_TO_STYLE = familyProxy(_PREFIX_TO_STYLE);
+  var _STYLE_TO_PREFIX = _objectSpread2({}, Ro);
 
   // We changed FAStyleIdToShortPrefixId in the icons repo to be canonical and as such, "classic" family does not have any
   // duotone styles.  But we do still need duotone in _STYLE_TO_PREFIX below, so we are manually adding {duotone: 'fad'}
-  _STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+  _STYLE_TO_PREFIX[a] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
     duotone: 'fad'
-  }), _STYLE_TO_PREFIX[s]), Et['kit']), Et['kit-duotone']);
-  const STYLE_TO_PREFIX = familyProxy(_STYLE_TO_PREFIX);
-  const _PREFIX_TO_LONG_STYLE = _objectSpread2({}, ga);
-  _PREFIX_TO_LONG_STYLE[s] = _objectSpread2(_objectSpread2({}, _PREFIX_TO_LONG_STYLE[s]), Wt['kit']);
-  const PREFIX_TO_LONG_STYLE = familyProxy(_PREFIX_TO_LONG_STYLE);
-  const _LONG_STYLE_TO_PREFIX = _objectSpread2({}, ua);
-  _LONG_STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2({}, _LONG_STYLE_TO_PREFIX[s]), Ct['kit']);
-  const LONG_STYLE_TO_PREFIX = familyProxy(_LONG_STYLE_TO_PREFIX);
-  const _FONT_WEIGHT_TO_PREFIX = _objectSpread2({}, G);
-  const FONT_WEIGHT_TO_PREFIX = familyProxy(_FONT_WEIGHT_TO_PREFIX);
+  }), _STYLE_TO_PREFIX[a]), dt['kit']), dt['kit-duotone']);
+  var STYLE_TO_PREFIX = familyProxy(_STYLE_TO_PREFIX);
+  var _PREFIX_TO_LONG_STYLE = _objectSpread2({}, Go$1);
+  _PREFIX_TO_LONG_STYLE[a] = _objectSpread2(_objectSpread2({}, _PREFIX_TO_LONG_STYLE[a]), et['kit']);
+  var PREFIX_TO_LONG_STYLE = familyProxy(_PREFIX_TO_LONG_STYLE);
+  var _LONG_STYLE_TO_PREFIX = _objectSpread2({}, zo$1);
+  _LONG_STYLE_TO_PREFIX[a] = _objectSpread2(_objectSpread2({}, _LONG_STYLE_TO_PREFIX[a]), Xo['kit']);
+  var LONG_STYLE_TO_PREFIX = familyProxy(_LONG_STYLE_TO_PREFIX);
+  var _FONT_WEIGHT_TO_PREFIX = _objectSpread2({}, io);
+  var FONT_WEIGHT_TO_PREFIX = familyProxy(_FONT_WEIGHT_TO_PREFIX);
+  var RESERVED_CLASSES = [].concat(_toConsumableArray(Go), _toConsumableArray(Ho$1));
 
   function bunker(fn) {
     try {
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
-      fn(...args);
+      fn.apply(void 0, args);
     } catch (e) {
       if (!PRODUCTION) {
         throw e;
@@ -1099,7 +1426,7 @@
     }
   }
 
-  bunker(() => {
+  bunker(function () {
     if (IS_BROWSER && IS_DOM) {
       conflictDetection(window.FontAwesomeDetection.report);
     }
