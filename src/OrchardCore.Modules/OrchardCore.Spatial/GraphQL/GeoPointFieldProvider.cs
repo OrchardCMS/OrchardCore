@@ -51,7 +51,9 @@ public class GeoPointFieldProvider : IContentFieldProvider
 
     public bool HasField(ISchema schema, ContentPartFieldDefinition field)
     {
-        if (field.FieldDefinition.Name == nameof(GeoPointField)) return true;
+        if (field.FieldDefinition.Name == nameof(GeoPointField)) {
+            return true;
+        }
         return false;
     }
 
