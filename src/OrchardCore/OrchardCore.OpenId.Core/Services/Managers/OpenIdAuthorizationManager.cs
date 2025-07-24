@@ -14,8 +14,8 @@ public class OpenIdAuthorizationManager<TAuthorization> : OpenIddictAuthorizatio
         IOpenIddictAuthorizationCache<TAuthorization> cache,
         ILogger<OpenIddictAuthorizationManager<TAuthorization>> logger,
         IOptionsMonitor<OpenIddictCoreOptions> options,
-        IOpenIddictAuthorizationStoreResolver resolver)
-        : base(cache, logger, options, resolver)
+        IOpenIddictAuthorizationStore<TAuthorization> store)
+        : base(cache, logger, options, store)
     {
     }
 
