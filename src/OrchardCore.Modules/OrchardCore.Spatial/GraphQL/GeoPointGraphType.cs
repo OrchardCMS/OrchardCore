@@ -15,7 +15,7 @@ public class GeoPointGraphType : ScalarGraphType
     {
         return JsonSerializer.Serialize(value);
     }
-    public override object? ParseValue(object? value)
+    public override object ParseValue(object value)
     {
         var location = value?.ToString();
         if (string.IsNullOrWhiteSpace(location))

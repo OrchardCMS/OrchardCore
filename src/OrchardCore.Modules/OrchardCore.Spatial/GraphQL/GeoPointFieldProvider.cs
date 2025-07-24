@@ -35,9 +35,9 @@ public class GeoPointFieldProvider : IContentFieldProvider
                 // Part is not collapsed, access field directly.
                 contentPart ??= context.Source;
 
-                var contentField = contentPart?.Get(typeof(GeoPointField), field.Name);
+                var contentField = contentPart?.Get<GeoPointField>(field.Name);
 
-                contentField ??= context.Source.Get(typeof(GeoPointField), field.Name);
+                contentField ??= context.Source.Get<GeoPointField>(field.Name);
 
                 return contentField == null ? null : HandleFieldResolving(contentField);
             }),
