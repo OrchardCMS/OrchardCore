@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-365-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-367-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -505,6 +505,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="http://amrmoneer21.me/"><img src="https://avatars.githubusercontent.com/u/18468966?v=4?s=100" width="100px;" alt="amrali21"/><br /><sub><b>amrali21</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=amrali21" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/rwxzig"><img src="https://avatars.githubusercontent.com/u/42944941?v=4?s=100" width="100px;" alt="Zig"/><br /><sub><b>Zig</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=rwxzig" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://rdicorp.com/"><img src="https://avatars.githubusercontent.com/u/142545189?v=4?s=100" width="100px;" alt="Jack Telford"/><br /><sub><b>Jack Telford</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=JackTelford" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://buzzinteractive.co.uk/who-we-are/nick-jackson"><img src="https://avatars.githubusercontent.com/u/6950723?v=4?s=100" width="100px;" alt="Nick Jackson"/><br /><sub><b>Nick Jackson</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=buzznick" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Buzz-Al"><img src="https://avatars.githubusercontent.com/u/218998992?v=4?s=100" width="100px;" alt="Buzz-Al"/><br /><sub><b>Buzz-Al</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Buzz-Al" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

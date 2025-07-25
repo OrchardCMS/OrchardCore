@@ -915,6 +915,33 @@ ol.media-items-grid .thumb-container {
   stroke-width: 10;
 }
 
+.sortable-ghost {
+  opacity: 0.5;
+}
+
+[dir] .sortable-ghost {
+  background-color: #f0f0f0;
+  border: 2px dashed #ccc;
+}
+
+[dir] .sortable-selected {
+  border: 2px solid #2196f3;
+  box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
+}
+
+[dir] .media-thumb-item.selected.sortable-selected {
+  border: 2px solid purple;
+  box-shadow: 0 0 8px rgba(128, 0, 128, 0.7);
+}
+
+[dir] .media-thumb-item {
+  cursor: grab;
+}
+
+[dir] .media-thumb-item.sortable-selected {
+  cursor: grabbing;
+}
+
 :root {
   --oc-media-border-content: var(--bs-border-width, 1px) solid var(--bs-border-color, #ccc);
   --oc-media-selected-background-color: var(--bs-primary);

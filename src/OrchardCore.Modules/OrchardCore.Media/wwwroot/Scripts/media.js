@@ -2919,164 +2919,52 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-var MEDIA_FIELD_GALLERY = "mediaFieldGallery_";
-Vue.component("mediaFieldGalleryListItem", {
-  template: /*html*/"\n        <li class=\"list-group-item d-flex p-0 overflow-hidden align-items-center\" v-if=\"!media.isRemoved\" :class=\"media.mediaPath=='not-found' ? 'text-danger' : ''\">\n            <div class=\"media-preview flex-shrink-0\">\n                <img\n                    v-if=\"media.mime.startsWith('image')\"\n                    :src=\"buildMediaUrl(media.url, media.anchor)\"\n                    :data-mime=\"media.mime\"\n                    class=\"w-100 object-fit-scale\"\n                />\n                <i v-else-if=\"media.mediaPath=='not-found'\" :title=\"media.name\" class=\"fa-solid fa-triangle-exclamation\"></i>\n                <i v-else :class=\"$parent.getfontAwesomeClassNameForFileName(media.name, 'fa-4x card-text')\" :data-mime=\"media.mime\"></i>\n            </div>\n            <div class=\"me-auto flex-shrink-1\">\n                <span v-if=\"media.mediaPath=='not-found'\" class=\"media-filename card-text small\">{{ $parent.T.mediaNotFound }} - {{ $parent.T.discardWarning }}</span>\n                <span v-else class=\"media-filename card-text small\" :title=\"media.name\">{{ media.name }}</span>\n            </div>\n            <div class=\"media-field-gallery-list-actions flex-shrink-0\">\n                <a\n                    v-show=\"allowMediaText && media.mediaPath!=='not-found'\"\n                    class=\"btn btn-light btn-sm inline-media-button view-button\"\n                    v-on:click.prevent.stop=\"$parent.showMediaTextModal(media)\"\n                    href=\"javascript:;\"\n                    title=\"Edit media text\"\n                >\n                    <span v-show=\"!media.mediaText\">\n                        <i class=\"far fa-comment\"></i>\n                    </span>\n                    <span v-show=\"media.mediaText\">\n                        <i class=\"fa-solid fa-comment\"></i>\n                    </span>\n                </a>\n                <a\n                    href=\"javascript:;\"\n                    v-show=\"allowAnchors && media.mime.startsWith('image') && media.mediaPath!=='not-found'\"\n                    v-on:click=\"$parent.showAnchorModal(media)\"\n                    class=\"btn btn-light btn-sm inline-media-button view-button\"\n                    title=\"Set anchor\"\n                >\n                    <i class=\"fa-solid fa-crosshairs\" aria-hidden=\"true\"></i>\n                </a>\n                <a\n                    :href=\"media.url\"\n                    target=\"_blank\"\n                    v-show=\"media.mediaPath!=='not-found'\"\n                    class=\"btn btn-light btn-sm inline-media-button view-button\"\n                    title=\"View media\"\n                >\n                    <i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i>\n                </a>\n                <a\n                    href=\"javascript:;\"\n                    class=\"btn btn-light btn-sm inline-media-button view-button\"\n                    v-on:click.stop=\"$parent.selectAndDeleteMedia(media)\"\n                    title=\"Remove media\"\n                >\n                    <i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i>\n                </a>\n            </div>\n        </li>\n    ",
-  props: {
-    media: Object,
-    canAddMedia: Boolean,
-    allowMediaText: Boolean,
-    allowAnchors: Boolean,
-    cols: Number
-  },
-  methods: {
-    fileSize: function fileSize(rawSize) {
-      return Math.round(rawSize / 1024);
-    },
-    buildMediaUrl: function buildMediaUrl(url) {
-      return url + (url.indexOf("?") == -1 ? "?" : "&") + "width=32&height=32";
-    }
-  }
-});
-Vue.component("mediaFieldGalleryCardItem", {
-  template: /*html*/"\n        <li class=\"media-field-gallery-item\" v-if=\"!media.isRemoved\">\n            <div class=\"card ratio ratio-1x1 overflow-hidden\" :class=\"media.mediaPath=='not-found' ? 'text-danger border-danger' : ''\">\n                <div class=\"d-flex flex-column h-100\">\n                    <div class=\"flex-grow-1 media-preview d-flex justify-content-center align-items-center\">\n                        <div class=\"update-media\" v-if=\"!$parent.allowMultiple\" v-on:click=\"$parent.showMediaModal\">\n                            + Media Library\n                        </div>\n                        <div class=\"image-wrapper\" v-if=\"media.mime.startsWith('image')\">\n                            <img\n                                :src=\"buildMediaUrl(media.url)\"\n                                :data-mime=\"media.mime\"\n                                class=\"w-100 h-100 object-fit-scale\"\n                            />\n                        </div>\n                        <div v-else-if=\"media.mediaPath=='not-found'\" class=\"d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon not-found\" :title=\"media.name\">\n                            <i class=\"fa-solid fa-triangle-exclamation fa-2x card-text'\"></i>\n                            <span class=\"card-text small pt-2\" :title=\"media.name\">{{ $parent.T.mediaNotFound }}</span>\n                            <span class=\"card-text small pt-2 px-2 text-center\" :title=\"media.name\">{{ $parent.T.discardWarning }}</span>\n                        </div>\n                        <div v-else class=\"d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon\">\n                            <i :class=\"$parent.getfontAwesomeClassNameForFileName(media.name, 'fa-4x card-text')\" :data-mime=\"media.mime\"></i>\n                            <span class=\"media-filename card-text small pt-2\" :title=\"media.name\">{{ media.name }}</span>\n                        </div>\n                    </div>\n\n                    <div class=\"media-field-gallery-card-actions flex-shrink-0\">\n                        <a\n                            v-show=\"allowMediaText && media.mediaPath!=='not-found'\"\n                            class=\"btn btn-light btn-sm inline-media-button view-button\"\n                            v-on:click.prevent.stop=\"$parent.showMediaTextModal(media)\"\n                            href=\"javascript:;\"\n                            title=\"Edit media text\"\n                        >\n                            <span v-show=\"!media.mediaText\">\n                                <i class=\"far fa-comment\"></i>\n                            </span>\n                            <span v-show=\"media.mediaText\">\n                                <i class=\"fa-solid fa-comment\"></i>\n                            </span>\n                        </a>\n                        <a\n                            href=\"javascript:;\"\n                            v-show=\"allowAnchors && media.mime.startsWith('image') && media.mediaPath!=='not-found'\"\n                            v-on:click=\"$parent.showAnchorModal(media)\"\n                            class=\"btn btn-light btn-sm inline-media-button view-button\"\n                            title=\"Set anchor\"\n                        >\n                            <i class=\"fa-solid fa-crosshairs\" aria-hidden=\"true\"></i>\n                        </a>\n                        <a\n                            :href=\"media.url\"\n                            target=\"_blank\"\n                            v-show=\"media.mediaPath!=='not-found'\"\n                            class=\"btn btn-light btn-sm inline-media-button view-button\"\n                            title=\"View media\"\n                        >\n                            <i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i>\n                        </a>\n                        <a\n                            href=\"javascript:;\"\n                            class=\"btn btn-light btn-sm inline-media-button view-button\"\n                            v-on:click.stop=\"$parent.selectAndDeleteMedia(media)\"\n                            title=\"Remove media\"\n                        >\n                            <i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i>\n                        </a>\n                    </div>\n                </div>\n            </div>\n        </li>\n    ",
-  props: {
-    media: Object,
-    canAddMedia: Boolean,
-    allowAnchors: Boolean,
-    allowMediaText: Boolean
-  },
-  methods: {
-    fileSize: function fileSize(rawSize) {
-      return Math.round(rawSize / 1024);
-    },
-    buildMediaUrl: function buildMediaUrl(url) {
-      return url + (url.indexOf("?") == -1 ? "?" : "&") + "width=240&height=240";
-    }
-  }
-});
-Vue.component("mediaFieldGalleryContainer", {
-  template: /*html*/"\n        <div class=\"media-field-gallery\" :id=\"idPrefix + '_mediaContainerMain'\" v-cloak>\n            <div v-if=\"allowMultiple\" class=\"pb-2\" v-cloak>\n                <div class=\"me-auto\">\n                    <a\n                        type=\"button\"\n                        class=\"btn btn-sm btn-primary\"\n                        href=\"javascript:;\"\n                        v-show=\"$parent.canAddMedia\"\n                        v-on:click=\"$parent.showModal\"\n                    >\n                        <i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i>\n                        Media Library\n                    </a>\n                    <a\n                        type=\"button\"\n                        class=\"btn btn-sm btn-secondary draft me-2\"\n                        :class=\"selectedItemCount == 0 ? 'disabled' : ''\"\n                        :disabled=\"selectedItemCount == 0\"\n                        href=\"javascript:;\"\n                        v-on:click=\"deselectAll\"\n                    >\n                        Deselect All\n                    </a>\n\n                    <div class=\"btn-group\">\n                        <button type=\"button\" class=\"btn btn-sm\" :class=\"!gridView ? 'text-primary': ''\" v-on:click=\"gridView = false;\">\n                            <span title=\"Gridview\"></span>\n                            <i class=\"fa-solid fa-th-list\"></i>\n                        </button>\n                        <button type=\"button\" class=\"btn btn-sm\" :class=\"gridView ? 'text-primary': ''\" v-on:click=\"gridView = true;\">\n                            <span title=\"List\"></span>\n                            <i class=\"fa-solid fa-th-large\"></i>\n                        </button>\n                        <button type=\"button\" class=\"btn btn-sm\" :class=\"size == 'sm' ? 'text-primary': ''\" v-on:click=\"size = 'sm';\" v-show=\"gridView\">\n                            <span title=\"Small Thumbs\"></span>\n                            <i class=\"fa-solid fa-compress\"></i>\n                        </button>\n                        <button type=\"button\" class=\"btn btn-sm\" :class=\"size == 'lg' ? 'text-primary': ''\" v-on:click=\"size = 'lg';\" v-show=\"gridView\">\n                            <span title=\"Large Thumbs\"></span>\n                            <i class=\"fa-solid fa-expand\"></i>\n                        </button>\n                    </div>\n                </div>\n            </div>\n\n            <ol ref=\"mediaContainer\" v-if=\"!gridView\" :class=\"'media-field-gallery-list list-group list-unstyled size-' + size\">\n                <media-field-gallery-list-item\n                    v-for= \"media in mediaItemsNoDuplicates\"\n                    :key=\"media.vuekey ?? media.name\"\n                    :media=\"media\"\n                    :canAddMedia=\"$parent.canAddMedia\"\n                    :allowMediaText=\"$parent.allowMediaText\"\n                    :allowAnchors=\"$parent.allowAnchors\"\n                    :size=\"size\"\n                />\n\n                <li v-if=\"!mediaItems || mediaItems.length < 1\" class=\"list-group-item text-center hint media-field-gallery-choose-btn\" v-on:click=\"showMediaModal\">\n                    + Media Library\n                </li>\n            </ol>\n\n            <ol ref=\"mediaContainer\" v-if=\"gridView\" :class=\"'media-field-gallery-cards list-unstyled size-' + size\">\n                <media-field-gallery-card-item\n                    v-for= \"media in mediaItemsNoDuplicates\"\n                    :key=\"media.vuekey ?? media.name\"\n                    :media=\"media\"\n                    :canAddMedia=\"$parent.canAddMedia\"\n                    :allowMediaText=\"$parent.allowMediaText\"\n                    :allowAnchors=\"$parent.allowAnchors\"\n                    :size=\"size\"\n                />\n\n                <li class=\"add-media-card\" v-if=\"allowMultiple || mediaItems.length < 1\" v-on:click=\"showMediaModal\">\n                    <div class=\"card media-field-gallery-choose-btn text-center overflow-hidden\">\n                        <div class=\"ratio ratio-1x1 text-center\">\n                            <div class=\"hint d-flex align-items-center justify-content-center w-100\">+ Media Library</div>\n                        </div>\n                    </div>\n                </li>\n            </ol>\n        </div>\n    ",
+// <media-field-thumbs-container> component
+// different media field editors share this component to present the thumbs.
+Vue.component('mediaFieldThumbsContainer', {
+  template: /* html */"\n    <div :id=\"idPrefix + '_mediaContainerMain'\">\n         <div v-if=\"mediaItems.length < 1\" class=\"card text-center\">\n            <div class= \"card-body\">\n                <span class=\"hint\">{{T.noImages}}</span>\n            </div>\n         </div>\n         <ol ref=\"multiDragContainer\" class=\"media-items-grid d-flex flex-row align-items-start flex-wrap\" >\n            <li v-for=\"media in mediaItems\"\n                :key=\"media.vuekey\"\n                class=\"media-thumb-item media-container-main-list-item card overflow\"\n                :style=\"{width: thumbSize + 2 + 'px'}\"\n                v-on:click=\"selectMedia(media)\"\n                v-if=\"!media.isRemoved\">\n                    <div v-if=\"media.mediaPath!== 'not-found'\">\n                        <div class=\"thumb-container\" :style=\"{height: thumbSize + 'px'}\" >\n                            <img v-if=\"media.mime.startsWith('image')\"\n                                :src=\"buildMediaUrl(media.url, thumbSize)\"\n                                :data-mime=\"media.mime\"\n                                width=\"100%\"\n                            />\n                            <i v-else :class=\"getfontAwesomeClassNameForFileName(media.name, 'fa-4x')\" :data-mime=\"media.mime\"></i>\n                        </div>\n                        <div class=\"media-container-main-item-title card-body\">\n                            <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\"\n                                v-on:click.stop=\"selectAndDeleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                            <a :href=\"media.url\" target=\"_blank\" class=\"btn btn-light btn-sm float-end inline-media-button view-button\"\"><i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i></a>\n                            <span class=\"media-filename card-text small\" :title=\"media.mediaPath\">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\n                        </div>\n                    </div>\n                    <div v-else>\n                        <div class=\"thumb-container flex-column\" :style=\"{height: thumbSize + 'px'}\">\n                            <i class=\"fa-solid fa-ban text-danger d-block\" aria-hidden=\"true\"></i>\n                            <span class=\"text-danger small d-block\">{{ T.mediaNotFound }}</span>\n                            <span class=\"text-danger small d-block text-center\">{{ T.discardWarning }}</span>\n                        </div>\n                        <div class=\"media-container-main-item-title card-body\">\n                            <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\"\n                                v-on:click.stop=\"selectAndDeleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                            <span class=\"media-filename card-text small text-danger\" :title=\"media.name\">{{ media.name }}</span>\n                        </div>\n                  </div>\n            </li>\n         </ol>\n    </div>\n    ",
   data: function data() {
     return {
       T: {},
       sortableInstance: null,
-      multiSelectedItems: [],
-      selectedItemCount: 0,
-      gridView: true,
-      size: "lg"
+      multiSelectedItems: []
     };
+  },
+  model: {
+    prop: 'mediaItems',
+    event: 'changed'
   },
   props: {
     mediaItems: Array,
     selectedMedia: Object,
+    thumbSize: Number,
     idPrefix: String,
-    modalId: String,
     allowMultiple: Boolean
   },
   created: function created() {
     var self = this;
 
     // retrieving localized strings from view
-    self.T.mediaNotFound = $("#t-media-not-found").val();
-    self.T.discardWarning = $("#t-discard-warning").val();
-    self.T.noImages = $("#t-no-images").val();
+    self.T.mediaNotFound = $('#t-media-not-found').val();
+    self.T.discardWarning = $('#t-discard-warning').val();
+    self.T.noImages = $('#t-no-images').val();
   },
   mounted: function mounted() {
-    this.getLocalStorageState();
-    this.initSortable();
-  },
-  beforeDestroy: function beforeDestroy() {
-    if (this.sortableInstance) {
-      this.sortableInstance.destroy();
-    }
-  },
-  watch: {
-    mediaItems: {
-      handler: function handler() {
-        var _this = this;
-        if (this.sortableInstance) {
-          this.sortableInstance.destroy();
-        }
-        this.$nextTick(function () {
-          _this.initSortable();
-          // as this component is now responsible for inforcing one item only when allowMultiple is false, we emit the last item in the list
-          if (!_this.allowMultiple && _this.mediaItems.length > 1) {
-            _this.$emit("updated", [_this.mediaItems[_this.mediaItems.length - 1]]);
-          }
-        });
-      },
-      deep: true
-    },
-    size: {
-      handler: function handler() {
-        this.setLocalStorageState();
-      }
-    },
-    gridView: {
-      handler: function handler() {
-        this.setLocalStorageState();
-      }
-    }
-  },
-  computed: {
-    mediaItemsNoDuplicates: function mediaItemsNoDuplicates() {
-      return this.removeDuplicates(this.mediaItems);
-    }
+    if (this.allowMultiple) this.initSortable();
   },
   methods: {
-    getLocalStorageState: function getLocalStorageState() {
-      if (localStorage.getItem(MEDIA_FIELD_GALLERY + this.idPrefix)) {
-        try {
-          var _state$gridView;
-          var state = JSON.parse(localStorage.getItem(MEDIA_FIELD_GALLERY + this.idPrefix));
-          this.size = state.size || "lg";
-          this.gridView = !this.allowMultiple ? true : (_state$gridView = state.gridView) !== null && _state$gridView !== void 0 ? _state$gridView : false;
-        } catch (e) {
-          localStorage.removeItem(MEDIA_FIELD_GALLERY + this.idPrefix);
-        }
-      }
-    },
-    setLocalStorageState: function setLocalStorageState() {
-      var parsed = JSON.stringify({
-        size: this.size,
-        gridView: this.gridView
-      });
-      localStorage.setItem(MEDIA_FIELD_GALLERY + this.idPrefix, parsed);
-    },
     initSortable: function initSortable() {
-      var _this2 = this;
-      if (this.allowMultiple && this.$refs.mediaContainer && this.mediaItemsNoDuplicates.length > 0) {
+      if (this.$refs.multiDragContainer) {
         var self = this;
-        this.sortableInstance = Sortable.create(this.$refs.mediaContainer, {
+        this.sortableInstance = Sortable.create(this.$refs.multiDragContainer, {
           animation: 150,
-          ghostClass: "sortable-ghost",
+          ghostClass: 'sortable-ghost',
           multiDrag: true,
-          selectedClass: "sortable-selected",
-          filter: "a, button, .add-media-card",
-          preventOnFilter: false,
-          onSelect: function onSelect() {
-            return _this2.updateSelectedCount();
-          },
-          onDeselect: function onDeselect() {
-            return _this2.updateSelectedCount();
-          },
-          onEnd: function onEnd() {
-            return _this2.updateSelectedCount();
-          },
-          onMove: function onMove(evt) {
-            // Prevent moving the .add-media-card or placing anything after it
-            var dragged = evt.dragged;
-            var related = evt.related;
-
-            // If trying to move the "add" card or drop something after it
-            if (dragged.classList.contains("add-media-card") || related.classList.contains("add-media-card")) {
-              return false; // Cancel the move
-            }
-            return true;
-          },
+          selectedClass: 'sortable-selected',
+          preventOnFilter: true,
+          forceHelperSize: true,
           onUpdate: function onUpdate(evt) {
-            var newOrder = _toConsumableArray(self.mediaItemsNoDuplicates);
+            var newOrder = _toConsumableArray(self.mediaItems);
             if (evt.oldIndicies && evt.oldIndicies.length > 0) {
               var oldIndices = evt.oldIndicies.sort(function (a, b) {
                 return a.index - b.index;
@@ -3104,8 +2992,8 @@ Vue.component("mediaFieldGalleryContainer", {
                 movedItem = _newOrder$splice2[0];
               newOrder.splice(evt.newIndex, 0, movedItem);
             }
-            self.$emit("updated", newOrder);
-            var selectedElements = self.$refs.mediaContainer.querySelectorAll(".sortable-selected");
+            self.$emit('changed', newOrder);
+            var selectedElements = self.$refs.multiDragContainer.querySelectorAll('.sortable-selected');
             selectedElements.forEach(function (el) {
               Sortable.utils.deselect(el);
             });
@@ -3114,115 +3002,6 @@ Vue.component("mediaFieldGalleryContainer", {
         });
       }
     },
-    selectAndDeleteMedia: function selectAndDeleteMedia(media) {
-      this.$parent.$emit("selectAndDeleteMediaRequested", media);
-    },
-    showMediaTextModal: function showMediaTextModal(media) {
-      var _this3 = this;
-      this.$parent.$emit("selectMediaRequested", media);
-      this.$nextTick(function () {
-        return _this3.$emit("updatemediatext");
-      });
-    },
-    showAnchorModal: function showAnchorModal(media) {
-      var _this4 = this;
-      this.$parent.$emit("selectMediaRequested", media);
-      this.$nextTick(function () {
-        return _this4.$emit("updateanchor");
-      });
-    },
-    updateSelectedCount: function updateSelectedCount() {
-      this.selectedItemCount = this.$refs.mediaContainer.querySelectorAll(".sortable-selected").length;
-    },
-    getfontAwesomeClassNameForFileName: function getfontAwesomeClassNameForFilename(filename, thumbsize) {
-      return getClassNameForFilename(filename) + " " + thumbsize;
-    },
-    deselectAll: function deselectAll() {
-      this.$refs.mediaContainer.querySelectorAll(".sortable-selected").forEach(function (el) {
-        Sortable.utils.deselect(el);
-      });
-      this.multiSelectedItems = [];
-    },
-    showMediaModal: function showMediaModal() {
-      this.$parent.showModal();
-    },
-    removeDuplicates: function removeDuplicates(array) {
-      return array.filter(function (obj, index, self) {
-        return index === self.findIndex(function (o) {
-          return o.mediaPath === obj.mediaPath;
-        });
-      });
-    }
-  }
-});
-// <media-field-thumbs-container> component 
-// different media field editors share this component to present the thumbs.
-Vue.component('mediaFieldThumbsContainer', {
-  template: '\
-       <div :id="idPrefix + \'_mediaContainerMain\'" v-cloak>\
-         <div v-if="mediaItems.length < 1" class="card text-center">\
-             <div class= "card-body" >\
-                <span class="hint">{{T.noImages}}</span>\
-             </div>\
-         </div>\
-         <draggable :list="mediaItems" tag="ol" class="row media-items-grid" >\
-            <li v-for="media in mediaItems"\
-                :key="media.vuekey" \
-                class="media-container-main-list-item card p-0"\
-                :style="{width: thumbSize + 2 + \'px\'}"\
-                :class="{selected: selectedMedia == media}"\
-                v-on:click="selectMedia(media)" v-if="!media.isRemoved">\
-                    <div v-if="media.mediaPath!== \'not-found\'">\
-                        <div class="thumb-container" :style="{height: thumbSize + \'px\'}" >\
-                            <img v-if="media.mime.startsWith(\'image\')" \
-                            :src="buildMediaUrl(media.url, thumbSize)" \
-                            :data-mime="media.mime"\
-                            :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
-                            <i v-else :class="getfontAwesomeClassNameForFileName(media.name, \'fa-4x\')" :data-mime="media.mime"></i>\
-                         </div>\
-                         <div class="media-container-main-item-title card-body">\
-                                <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"\
-                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>\
-                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-end inline-media-button view-button""><i class="fa-solid fa-download" aria-hidden="true"></i></a> \
-                                <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
-                         </div>\
-                    </div>\
-                    <div v-else>\
-                        <div class="thumb-container flex-column" :style="{height: thumbSize + \'px\'}">\
-                            <i class="fa-solid fa-ban text-danger d-block" aria-hidden="true"></i>\
-                            <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>\
-                            <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>\
-                        </div>\
-                        <div class="media-container-main-item-title card-body">\
-                            <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"\
-                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>\
-                            <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
-                        </div>\
-                   </div>\
-            </li>\
-         </draggable>\
-       </div>\
-    ',
-  data: function data() {
-    return {
-      T: {}
-    };
-  },
-  props: {
-    mediaItems: Array,
-    selectedMedia: Object,
-    thumbSize: Number,
-    idPrefix: String
-  },
-  created: function created() {
-    var self = this;
-
-    // retrieving localized strings from view
-    self.T.mediaNotFound = $('#t-media-not-found').val();
-    self.T.discardWarning = $('#t-discard-warning').val();
-    self.T.noImages = $('#t-no-images').val();
-  },
-  methods: {
     selectAndDeleteMedia: function selectAndDeleteMedia(media) {
       this.$parent.$emit('selectAndDeleteMediaRequested', media);
     },
