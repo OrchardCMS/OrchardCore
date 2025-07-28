@@ -58,6 +58,8 @@ namespace OrchardCore.Contents;
 
 public sealed class Startup : StartupBase
 {
+    public override int Order { get; } = OrchardCoreConstants.ConfigureOrder.Contents;
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddContentServices();

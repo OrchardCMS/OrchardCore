@@ -48,11 +48,11 @@ public static class OrchardCoreConstants
         public const int Media = Default;
 
         // Image cache overrides Media configurations and services.
-        // The order number should always be greater than Media module. 
+        // The order number should always be greater than Media module.
         public const int ImageSharpCache = Media + 5;
 
         // Image cache overrides Media configurations and services.
-        // The order number should always be greater than Media module. 
+        // The order number should always be greater than Media module.
         public const int AzureImageSharpCache = Media + 5;
 
         // Azure media storage overrides Media configurations and services.
@@ -62,8 +62,13 @@ public static class OrchardCoreConstants
         public const int DataProtection = Default;
 
         // Azure DataProtection will override default data-protection configurations.
-        // The order number should always be greater than data protection modules. 
+        // The order number should always be greater than data protection modules.
         public const int AzureDataProtection = DataProtection + 10;
+
+        public const int Contents = Default;
+
+        // PublishLater should always come after Contents so that it can override the PublishedUtc.
+        public const int PublishLater = Contents + 5;
 
         public const int Autoroute = -100;
 

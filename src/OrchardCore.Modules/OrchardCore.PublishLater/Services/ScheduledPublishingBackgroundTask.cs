@@ -46,9 +46,7 @@ public sealed class ScheduledPublishingBackgroundTask : IBackgroundTask
 
             if (part != null && part.ScheduledPublishUtc.HasValue)
             {
-                contentItem.PublishedUtc = part.ScheduledPublishUtc;
-
-                part.ScheduledPublishUtc = null;
+                part.DoingScheduledPublish = true;
                 part.Apply();
             }
 
