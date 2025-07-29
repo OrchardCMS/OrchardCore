@@ -28,12 +28,7 @@ public class HtmlContentValue : FluidValue
         return _value == other;
     }
 
-    protected override FluidValue GetIndex(FluidValue index, TemplateContext context)
-    {
-        return NilValue.Instance;
-    }
-
-    protected override FluidValue GetValue(string name, TemplateContext context)
+    public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)
     {
         return NilValue.Instance;
     }
@@ -95,5 +90,16 @@ public class HtmlContentValue : FluidValue
     public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
     {
         _value.WriteTo(writer, (HtmlEncoder)encoder);
+    }
+
+    [Obsolete("GetValue is obsolete, prefer the GetValueAsync method.")]
+    protected override FluidValue GetValue(string name, TemplateContext context)
+    {
+        return NilValue.Instance;
+    }
+
+    protected override FluidValue GetIndex(FluidValue index, TemplateContext context)
+    {
+        return NilValue.Instance;
     }
 }
