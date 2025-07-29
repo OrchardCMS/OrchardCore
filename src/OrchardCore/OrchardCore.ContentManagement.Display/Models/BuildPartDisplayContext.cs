@@ -5,8 +5,9 @@ namespace OrchardCore.ContentManagement.Display.Models;
 
 public class BuildPartDisplayContext : BuildDisplayContext
 {
-    public BuildPartDisplayContext(ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
-        : base(context.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater)
+    public BuildPartDisplayContext(
+        ContentTypePartDefinition typePartDefinition,
+        BuildDisplayContext context) : base(context.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater, context.HttpContext)
     {
         TypePartDefinition = typePartDefinition;
     }
