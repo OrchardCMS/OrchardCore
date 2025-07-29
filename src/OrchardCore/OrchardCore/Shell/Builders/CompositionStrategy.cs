@@ -38,6 +38,13 @@ public class CompositionStrategy : ICompositionStrategy
 
         foreach (var feature in features)
         {
+            if (feature.DefaultTenantOnly && !settings.IsDefaultShell())
+            {
+                _logger.LogError("Skipping feature '{FeatureName}' as it is allowed on the default tenant only.", feature.Id);
+
+                continue;
+            }
+
             foreach (var exportedType in _typeFeatureProvider.GetTypesForFeature(feature))
             {
                 var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(exportedType);
@@ -64,6 +71,18 @@ public class CompositionStrategy : ICompositionStrategy
         if (_logger.IsEnabled(LogLevel.Debug))
         {
             _logger.LogDebug("Done composing blueprint");
+
+            foreach (var feature in descriptor.Features)
+            {
+                _logger.LogDebug("Feature '{FeatureName}' is enabled", feature.Id);
+            }
+
+            _logger.LogDebug("Shell Blueprint for tenant '{TenantName}' contains {TypeCount} types", settings.Name, entries.Count);
+
+            foreach (var entry in entries)
+            {
+                _logger.LogDebug("Type '{TypeName}' is required by feature(s): {FeatureNames}", entry.Key.FullName, string.Join(',', entry.Value.Select(f => f.Id)));
+            }
         }
 
         return result;
