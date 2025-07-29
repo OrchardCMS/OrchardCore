@@ -7,7 +7,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Models;
 
-namespace OrchardCore.Flows.Handlers;
+namespace OrchardCore.Search.AzureAI.Flows;
 
 internal sealed class BagPartAzureAISearchFieldIndexEvents : AzureAISearchFieldIndexEventsBase
 {
@@ -35,11 +35,11 @@ internal sealed class BagPartAzureAISearchFieldIndexEvents : AzureAISearchFieldI
         {
             context.Map.SubFields ??= new List<AzureAISearchIndexMap>();
 
-            var contentItemsField = context.Map.SubFields.FirstOrDefault(x => x.AzureFieldKey == "ContentItems");
+            var contentItemsField = context.Map.SubFields.FirstOrDefault(x => x.AzureFieldKey == nameof(BagPart.ContentItems));
 
             if (contentItemsField is null)
             {
-                contentItemsField = new AzureAISearchIndexMap("ContentItems", DocumentIndex.Types.Complex)
+                contentItemsField = new AzureAISearchIndexMap(nameof(BagPart.ContentItems), DocumentIndex.Types.Complex)
                 {
                     IsCollection = true,
                     SubFields = new List<AzureAISearchIndexMap>(),
