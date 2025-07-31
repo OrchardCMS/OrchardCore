@@ -8,7 +8,7 @@ namespace OrchardCore.PublishLater.Handlers;
 /// When a post was set to PublishLater, we want to set its Published date to the actual scheduled time,
 /// not the time the website just happened to run the background task.
 /// </summary>
-public class PublishLaterContentPartHandler : ContentPartHandler<PublishLaterPart>
+public sealed class PublishLaterContentPartHandler : ContentPartHandler<PublishLaterPart>
 {
     public override Task PublishingAsync(PublishContentContext context, PublishLaterPart part)
     {
