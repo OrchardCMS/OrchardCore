@@ -8,6 +8,7 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Drivers;
+using OrchardCore.PublishLater.Handlers;
 using OrchardCore.PublishLater.Indexes;
 using OrchardCore.PublishLater.Models;
 using OrchardCore.PublishLater.Services;
@@ -17,6 +18,8 @@ namespace OrchardCore.PublishLater;
 
 public sealed class Startup : StartupBase
 {
+    public override int Order { get; } = OrchardCoreConstants.ConfigureOrder.PublishLater;
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<TemplateOptions>(o =>
@@ -26,6 +29,7 @@ public sealed class Startup : StartupBase
 
         services
             .AddContentPart<PublishLaterPart>()
+            .AddHandler<PublishLaterContentPartHandler>()
             .UseDisplayDriver<PublishLaterPartDisplayDriver>();
 
         services.AddDataMigration<Migrations>();
