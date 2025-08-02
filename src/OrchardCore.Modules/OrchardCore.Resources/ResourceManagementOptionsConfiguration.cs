@@ -1007,8 +1007,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.js"
             )
             .SetCdnIntegrity(
-                "sha256-xFm6fMjbZcmCWJ+l1kx/9HiHfo5bD9dWgyB87GpOieg=",
-                "sha256-Nw0E5oMsQLilVXzUCx00vxQTGV+x1C83EG8rUPawe8A="
+                "sha384-W/1Fp/LgAYO/oTn9Gs+PbeWuMuq1eQCnUMPCeg8POmMYchhzxctjEqtbiCIxDOON",
+                "sha384-G++pO/TtP6SeNEBuO/CYuppmlcEhA0Rj9IcY5feVJXhyYraEA8CKVZV38iDXLTyJ"
             )
             .SetVersion("3.5.13");
 
@@ -1042,8 +1042,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/vue-multiselect@3.2.0/dist/vue-multiselect.umd.js"
             )
             .SetCdnIntegrity(
-                "sha256-WPNu0JAREY1Irusgtihcuzati2fLtA70vyK1TDs55PY=",
-                "sha256-bgP1jhSlmX0vEY01VGFi6FMuUzU5Vbd1AdXKm9o0i4Q="
+                "sha384-7HofOP/3o+/jDuC4RmU64mOramSz9btGjs7S9tsRd4U6lerpHI0P1jEFjjvxIBi6",
+                "sha384-7EnWodE8EplOPsNbw/n7oUIXVb0xsbUhgfxnzJc+MGgbzzLpJwlA0OccVdY0EU/w"
             )
             .SetVersion("3.2.0");
 
@@ -1165,8 +1165,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdnjs.cloudflare.com/ajax/libs/fontawesome-iconpicker/3.2.0/js/fontawesome-iconpicker.js"
             )
             .SetCdnIntegrity(
-                "sha512-7dlzSK4Ulfm85ypS8/ya0xLf3NpXiML3s6HTLu4qDq7WiJWtLLyrXb9putdP3/1umwTmzIvhuu9EW7gHYSVtCQ==",
-                "sha512-ARPApqjym7fPaYMaezrx4XTD8mGd0JAvugmK2JDkjb/WTog2b33SwzcSlAnnwFTq9PiTas0U2VqCMzuhpzKREA=="
+                "sha384-f79rMAyeEq3Bvj5Pjl48cYqpDhVyoQAJ+vrYoD0MMgTrv25Dy0RS1KDiRPeq8zkF",
+                "sha384-2EkuuraR//RiFSIZRE4gIPPt14JYXgrb4+TzsdwTdZZp5IC5vrZyL3yFLEF3aEp2"
             )
             .SetVersion("3.2.0");
 
