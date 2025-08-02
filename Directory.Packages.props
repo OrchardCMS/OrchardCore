@@ -100,13 +100,6 @@
     -->
     <!-- When removing this, remove the corresponding ignore in renovate.json5 and dependabot.yml too. -->
     <PackageVersion Include="System.Drawing.Common" Version="4.7.2" />
-    <!--
-      YesSql (v5.1.1)
-      └─ YesSql.Provider.SqlServer (v5.1.1)
-          └─ Microsoft.Data.SqlClient (v5.2.1)
-            └─ System.Runtime.Caching (v8.0.0)
-    -->
-    <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
     <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
