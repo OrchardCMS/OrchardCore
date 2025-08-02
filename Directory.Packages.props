@@ -83,14 +83,6 @@
   <!-- The dependency graphs are generated using 'dotnet nuget why <.sln> <package id>' -->
   <ItemGroup>
     <!--
-      MiniProfiler.AspNetCore.Mvc (v4.3.8)
-        └─ MiniProfiler.AspNetCore (v4.3.8)
-           └─ MiniProfiler.Shared (v4.3.8)
-              └─ System.Data.Common (v4.3.0)
-                 └─ System.Text.RegularExpressions (v4.3.0)
-    -->
-    <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <!--
       Azure.Extensions.AspNetCore.DataProtection.Blobs (v1.3.4)
       └─ Microsoft.AspNetCore.DataProtection (v3.1.32)
          └─ System.Security.Cryptography.Xml (v4.7.1)
