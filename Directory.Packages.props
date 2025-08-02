@@ -77,10 +77,12 @@
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.14.0" />
   </ItemGroup>
-  <!-- These versions are used for tansitive dependency forced upgrades only. E.g. when a package references a vulnerable version. -->
-  <!-- To list all vulnerable direct references run 'dotnet list package -vulnerable' (use double dash, just XML comments can't contain it) -->
-  <!-- To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it) -->
-  <!-- The dependency graphs are generated using 'dotnet nuget why <.sln> <package id>' -->
+  <!--
+  These versions are used for tansitive dependency forced upgrades only. E.g. when a package references a vulnerable version.
+  To list all vulnerable direct references run 'dotnet list package -vulnerable' (use double dash, just XML comments can't contain it).
+  To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it).
+  Add dependency graphs generated using 'dotnet nuget why <.sln> <package id>' for easier tracking.
+  -->
   <ItemGroup>
     <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
   </ItemGroup>
