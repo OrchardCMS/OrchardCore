@@ -82,16 +82,6 @@
   <!-- To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it) -->
   <!-- The dependency graphs are generated using 'dotnet nuget why <.sln> <package id>' -->
   <ItemGroup>
-    <!--
-      Azure.Extensions.AspNetCore.DataProtection.Blobs (v1.3.4)
-      └─ Microsoft.AspNetCore.DataProtection (v3.1.32)
-         └─ System.Security.Cryptography.Xml (v4.7.1)
-            └─ System.Security.Permissions (v4.7.0)
-               └─ System.Windows.Extensions (v4.7.0)
-                  └─ System.Drawing.Common (v4.7.0)
-    -->
-    <!-- When removing this, remove the corresponding ignore in renovate.json5 and dependabot.yml too. -->
-    <PackageVersion Include="System.Drawing.Common" Version="4.7.2" />
     <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
