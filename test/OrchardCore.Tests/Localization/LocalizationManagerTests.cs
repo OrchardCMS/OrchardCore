@@ -8,7 +8,7 @@ public class LocalizationManagerTests : IDisposable
 {
     private readonly Mock<IPluralRuleProvider> _pluralRuleProvider;
     private readonly Mock<ITranslationProvider> _translationProvider;
-    private readonly IMemoryCache _memoryCache;
+    private readonly MemoryCache _memoryCache;
 
     public LocalizationManagerTests()
     {
