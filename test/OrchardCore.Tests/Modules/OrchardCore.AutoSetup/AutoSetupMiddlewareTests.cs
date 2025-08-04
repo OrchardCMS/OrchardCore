@@ -9,7 +9,7 @@ using OrchardCore.Setup.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.AutoSetup;
 
-public class AutoSetupMiddlewareTests
+public class AutoSetupMiddlewareTests : IDisposable
 {
     private readonly Mock<IShellHost> _mockShellHost;
     private readonly ShellSettings _shellSettings;
@@ -123,6 +123,8 @@ public class AutoSetupMiddlewareTests
         // Act & Assert
         await Assert.ThrowsAsync<TimeoutException>(() => middleware.InvokeAsync(httpContext));
     }
+
+    public void Dispose() => _shellSettings.Dispose();
 
     private void SetupDistributedLockMock(bool acquireLock)
     {

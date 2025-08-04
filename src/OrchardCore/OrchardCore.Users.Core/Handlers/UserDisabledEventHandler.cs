@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Users.Handlers;
 
-public class UserDisabledEventHandler : UserEventHandlerBase
+public class UserDisabledEventHandler : UserEventHandlerBase, IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -17,4 +17,6 @@ public class UserDisabledEventHandler : UserEventHandlerBase
 
         await _userManager.UpdateSecurityStampAsync(context.User);
     }
+
+    public void Dispose() => _userManager?.Dispose();
 }

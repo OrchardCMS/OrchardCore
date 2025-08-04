@@ -5,7 +5,7 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Sitemaps.Cache;
 
-public class DefaultSitemapCacheProvider : ISitemapCacheProvider
+public class DefaultSitemapCacheProvider : ISitemapCacheProvider, IDisposable
 {
     // Use default stream copy buffer size to stay in gen0 garbage collection.
     private const int StreamCopyBufferSize = 81920;
@@ -180,4 +180,6 @@ public class DefaultSitemapCacheProvider : ISitemapCacheProvider
     {
         return PathExtensions.Combine(webHostEnvironment.WebRootPath, shellSettings.Name, cachePath);
     }
+
+    public void Dispose() => _fileProvider?.Dispose();
 }

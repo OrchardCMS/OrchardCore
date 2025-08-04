@@ -4,7 +4,7 @@ using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Localization;
 
-public class LocalizationManagerTests
+public class LocalizationManagerTests : IDisposable
 {
     private readonly Mock<IPluralRuleProvider> _pluralRuleProvider;
     private readonly Mock<ITranslationProvider> _translationProvider;
@@ -127,4 +127,6 @@ public class LocalizationManagerTests
             return Task.CompletedTask;
         });
     }
+
+    public void Dispose() => _memoryCache?.Dispose();
 }
