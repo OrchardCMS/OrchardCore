@@ -28,7 +28,6 @@ public class LocalizationSettings
     /// </summary>
     public string[] SupportedCultures { get; set; }
 
-
     /// <summary>
     /// Gets or sets whether the culture could fall back to it's parent culture in case the current culture is not determined.
     /// </summary>
