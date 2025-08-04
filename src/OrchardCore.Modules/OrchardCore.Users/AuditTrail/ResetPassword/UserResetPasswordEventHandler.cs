@@ -8,7 +8,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.AuditTrail.ResetPassword;
 
-public sealed class UserResetPasswordEventHandler : PasswordRecoveryFormEvents, IDisposable
+public sealed class UserResetPasswordEventHandler : PasswordRecoveryFormEvents
 {
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IServiceProvider _serviceProvider;
@@ -22,8 +22,6 @@ public sealed class UserResetPasswordEventHandler : PasswordRecoveryFormEvents, 
         _auditTrailManager = auditTrailManager;
         _serviceProvider = serviceProvider;
     }
-
-    public void Dispose() => _userManager?.Dispose();
 
     public override Task PasswordRecoveredAsync(PasswordRecoveryContext context)
         => RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventConfiguration.PasswordRecovered, context.User);

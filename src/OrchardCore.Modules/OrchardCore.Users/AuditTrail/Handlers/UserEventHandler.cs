@@ -12,7 +12,7 @@ using OrchardCore.Users.Handlers;
 
 namespace OrchardCore.Users.AuditTrail.Handlers;
 
-public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent, IDisposable
+public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
 {
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -125,6 +125,4 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent, IDisposab
 
     private string GetCurrentUserId()
         => _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    public void Dispose() => _userManager?.Dispose();
 }
