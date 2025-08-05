@@ -1,4 +1,4 @@
-# Tutorials
+# External Resources
 
 If you want to learn or improve your knowledge about Orchard Core, you can follow some tutorials.
 
@@ -9,6 +9,7 @@ If you want to learn or improve your knowledge about Orchard Core, you can follo
 - [Dojo Course 3 - the full Orchard Core tutorial](https://orcharddojo.net/orchard-training/dojo-course-3-the-full-orchard-core-tutorial)
 - [Orchard Core Training Demo module](https://github.com/Lombiq/Orchard-Training-Demo-Module)
 - [Orchard Core Walkthroughs module](https://github.com/Lombiq/Orchard-Walkthroughs)
+- Test drive Orchard Core with the Walkthroughs module on [DotNest](https://dotnest.com): Just click the "Guided walkthrough" button on the homepage.
 
 !!! warning
     The Orchard Core Training Demo module assumes that you have a good understanding of basic Orchard Core concepts, and that you can get around the Orchard admin area. You should also be familiar with how to use Visual Studio and write C#, as well as the concepts of ASP.NET Core MVC.
