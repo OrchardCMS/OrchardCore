@@ -22,4 +22,9 @@ public class BuildDocumentIndexContext
     public DocumentIndex DocumentIndex { get; }
 
     public IContentIndexSettings Settings { get; }
+
+    /// <summary>
+    /// Provides a dictionary to store additional data that can be used by index providers.
+    /// </summary>
+    public IDictionary<string, object> AdditionalProperties { get; set; }
 }

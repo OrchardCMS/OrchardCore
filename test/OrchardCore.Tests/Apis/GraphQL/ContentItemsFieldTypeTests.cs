@@ -648,8 +648,5 @@ public class FakeServiceCollection : IServiceProvider, IDisposable
         _inner = _services.BuildServiceProvider();
     }
 
-    public void Dispose()
-    {
-        (_inner as IDisposable)?.Dispose();
-    }
+    public void Dispose() => _inner?.Dispose();
 }

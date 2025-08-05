@@ -6,19 +6,19 @@
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.3.0" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.6.2" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.2" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.2.1" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.0.1" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.1" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.1" />
     <PackageVersion Include="Azure.Identity" Version="1.14.2" />
     <PackageVersion Include="Azure.Search.Documents" Version="11.6.1" />
-    <PackageVersion Include="Azure.Storage.Blobs" Version="12.24.1" />
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.25.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.2" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.18.3" />
-    <PackageVersion Include="Fluid.Core" Version="2.24.0" />
+    <PackageVersion Include="Fluid.Core" Version="2.25.0" />
     <PackageVersion Include="GraphQL" Version="8.5.0" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.5.0" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.5.0" />
