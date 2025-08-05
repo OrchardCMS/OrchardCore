@@ -45,6 +45,7 @@
                 'Microsoft.Extensions.Caching.StackExchangeRedis',
                 'Microsoft.Extensions.Http.Resilience',
                 'Serilog.AspNetCore',
+                'System.IO.Hashing',
                 'System.Text.Json',
             ],
             allowedVersions: '<9.0.0',
