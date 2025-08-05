@@ -18,6 +18,7 @@ public class AutoSetupMiddlewareTests : IDisposable
     private readonly Mock<IOptions<AutoSetupOptions>> _mockOptions;
     private readonly Mock<IAutoSetupService> _mockAutoSetupService;
     private bool _nextCalled;
+
     public AutoSetupMiddlewareTests()
     {
         _shellSettings = new ShellSettings();
