@@ -12,7 +12,6 @@ using OrchardCore.Flows.Settings;
 using OrchardCore.Flows.ViewModels;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
-using OrchardCore.Search.AzureAI;
 
 namespace OrchardCore.Flows;
 
@@ -50,14 +49,5 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
 
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
-    }
-}
-
-[RequireFeatures("OrchardCore.Search.AzureAI")]
-public sealed class DeploymentStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddScoped<IAzureAISearchFieldIndexEvents, BagPartAzureAISearchFieldIndexEvents>();
     }
 }
