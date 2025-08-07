@@ -3,8 +3,8 @@
 FROM --platform=$BUILDPLATFORM golang:alpine AS build
 ARG TARGETOS
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809 AS build_windows
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS build_linux
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-nanoserver-1809 AS build_windows
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS build_linux
 FROM build_${TARGETOS} AS aspnet
 
 EXPOSE 80
