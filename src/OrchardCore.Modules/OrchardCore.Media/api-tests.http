@@ -1,0 +1,19 @@
+@baseUrl = https://localhost:44300/blog
+
+# Get media folders
+GET {{baseUrl}}/api/media/folders
+
+###
+
+# Get media folders for the doler "Test 2"
+GET {{baseUrl}}/api/media/folders?path=Test+2
+
+###
+
+# Get all the media inside the root folder
+GET {{baseUrl}}/api/media/list?path=/
+
+###
+
+# Get media details
+GET {{baseUrl}}/api/media?path=about-bg.jpg
