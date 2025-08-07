@@ -1,27 +1,16 @@
 using System.Security.Claims;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
-using System.Threading;
 using OrchardCore.AuditTrail.Services;
-using System.Threading;
 using OrchardCore.AuditTrail.Services.Models;
-using System.Threading;
 using OrchardCore.ContentManagement;
-using System.Threading;
 using OrchardCore.ContentManagement.Handlers;
-using System.Threading;
 using OrchardCore.ContentManagement.Records;
-using System.Threading;
 using OrchardCore.Contents.AuditTrail.Models;
-using System.Threading;
 using OrchardCore.Contents.AuditTrail.Services;
-using System.Threading;
 using OrchardCore.Contents.AuditTrail.Settings;
-using System.Threading;
 using OrchardCore.Settings;
-using System.Threading;
 using YesSql;
-using System.Threading;
 
 namespace OrchardCore.Contents.AuditTrail.Handlers;
 

@@ -1,21 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 using OrchardCore.ContentLocalization.Models;
-using System.Threading;
 using OrchardCore.ContentManagement;
-using System.Threading;
 using OrchardCore.ContentManagement.Metadata;
-using System.Threading;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using System.Threading;
 using OrchardCore.Data.Migration;
-using System.Threading;
 using OrchardCore.Environment.Shell.Scope;
-using System.Threading;
 using YesSql;
-using System.Threading;
 using YesSql.Sql;
-using System.Threading;
 
 namespace OrchardCore.ContentLocalization.Records;
 

@@ -1,25 +1,15 @@
 using Microsoft.AspNetCore.Localization;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using System.Threading;
 using OrchardCore.ContentLocalization.Handlers;
-using System.Threading;
 using OrchardCore.ContentLocalization.Models;
-using System.Threading;
 using OrchardCore.ContentLocalization.Records;
-using System.Threading;
 using OrchardCore.ContentManagement;
-using System.Threading;
 using OrchardCore.Entities;
-using System.Threading;
 using OrchardCore.Localization;
-using System.Threading;
 using OrchardCore.Modules;
-using System.Threading;
 using YesSql;
-using System.Threading;
 using YesSql.Services;
-using System.Threading;
 
 namespace OrchardCore.ContentLocalization;
 

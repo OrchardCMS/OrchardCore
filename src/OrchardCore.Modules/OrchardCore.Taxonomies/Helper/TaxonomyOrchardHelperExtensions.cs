@@ -1,15 +1,10 @@
 using System.Text.Json.Nodes;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading;
 using OrchardCore;
-using System.Threading;
 using OrchardCore.ContentManagement;
-using System.Threading;
 using OrchardCore.Taxonomies.Indexing;
-using System.Threading;
 using YesSql;
-using System.Threading;
 
 #pragma warning disable CA1050 // Declare types in namespaces
 public static class TaxonomyOrchardHelperExtensions
