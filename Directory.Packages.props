@@ -65,11 +65,11 @@
     <PackageVersion Include="xunit.v3" Version="3.0.0" />
     <PackageVersion Include="xunit.analyzers" Version="1.23.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.3" />
-    <PackageVersion Include="YesSql" Version="5.4.5" />
-    <PackageVersion Include="YesSql.Abstractions" Version="5.4.5" />
-    <PackageVersion Include="YesSql.Core" Version="5.4.5" />
-    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.4.5" />
-    <PackageVersion Include="YesSql.Filters.Query" Version="5.4.5" />
+    <PackageVersion Include="YesSql" Version="5.4.6" />
+    <PackageVersion Include="YesSql.Abstractions" Version="5.4.6" />
+    <PackageVersion Include="YesSql.Core" Version="5.4.6" />
+    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.4.6" />
+    <PackageVersion Include="YesSql.Filters.Query" Version="5.4.6" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>
