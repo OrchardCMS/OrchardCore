@@ -73,7 +73,7 @@ public class OpenIdAuthenticationTests
 
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
 
-            var applications = await session.Query<OpenIdApplication, OpenIdApplicationIndex>(OpenIdApplication.OpenIdCollection).ListAsync();
+            var applications = await session.Query<OpenIdApplication, OpenIdApplicationIndex>(OpenIdApplication.OpenIdCollection).ListAsync(CancellationToken.None);
 
             Assert.Single(applications);
 
@@ -231,7 +231,7 @@ public class OpenIdAuthenticationTests
 
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
 
-            var applications = await session.Query<OpenIdApplication, OpenIdApplicationIndex>(OpenIdApplication.OpenIdCollection).ListAsync();
+            var applications = await session.Query<OpenIdApplication, OpenIdApplicationIndex>(OpenIdApplication.OpenIdCollection).ListAsync(CancellationToken.None);
 
             Assert.Single(applications);
 
