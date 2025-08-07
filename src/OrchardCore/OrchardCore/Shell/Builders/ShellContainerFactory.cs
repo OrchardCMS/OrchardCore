@@ -128,6 +128,17 @@ public class ShellContainerFactory : IShellContainerFactory
             // If the startup is not coming from an extension, associate it to the application feature.
             // For instance when Startup classes are registered with Configure<Startup>() from the application.
 
+            // Check RequireFeaturesAttribute: only call ConfigureServices if all required features are enabled
+            var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(startup.GetType());
+            if (requiredFeatures.Count > 0)
+            {
+                var enabledFeatureIds = blueprint.Dependencies.Values.SelectMany(f => f).Select(f => f.Id).ToHashSet();
+                if (!requiredFeatures.All(f => enabledFeatureIds.Contains(f)))
+                {
+                    continue;
+                }
+            }
+
             featureAwareServiceCollection.SetCurrentFeature(feature ?? _applicationFeature);
             startup.ConfigureServices(featureAwareServiceCollection);
         }
