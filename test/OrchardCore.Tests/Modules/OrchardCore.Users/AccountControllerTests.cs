@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Tests.OrchardCore.Users;
 using OrchardCore.Users;
@@ -95,7 +96,7 @@ public class AccountControllerTests
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
             var sam = await session.Query<User, UserByClaimIndex>()
                     .Where(claim => claim.ClaimType == "displayName" && claim.ClaimValue == "Sam Zhang(CEO)")
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(CancellationToken.None);
             Assert.NotNull(sam);
 
             var claimsDict = sam.UserClaims.ToDictionary(claim => claim.ClaimType, claim => claim.ClaimValue);
@@ -153,7 +154,7 @@ public class AccountControllerTests
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
             var userFromDb = await session.Query<User, UserByClaimIndex>()
                          .Where(claim => claim.ClaimType == "displayName" && claim.ClaimValue == "Sam Zhang")
-                         .FirstOrDefaultAsync();
+                         .FirstOrDefaultAsync(CancellationToken.None);
 
             Assert.DoesNotContain("Administrator", userFromDb.RoleNames);
             Assert.DoesNotContain(userFromDb.UserClaims, x => x.ClaimType == "jobTitle" && x.ClaimValue == "CEO");

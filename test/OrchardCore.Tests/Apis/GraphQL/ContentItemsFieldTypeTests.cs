@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using System.Threading;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
@@ -102,7 +103,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     {
         await using (var session = store.CreateSession())
         {
-            var builder = new SchemaBuilder(store.Configuration, await session.BeginTransactionAsync());
+            var builder = new SchemaBuilder(store.Configuration, await session.BeginTransactionAsync(CancellationToken.None));
 
             await builder.CreateMapIndexTableAsync<ContentItemIndex>(table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
@@ -127,7 +128,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                 .Column<bool>(nameof(AnimalTraitsIndex.IsScary))
             );
 
-            await session.SaveChangesAsync();
+            await session.SaveChangesAsync(CancellationToken.None);
         }
 
         store.RegisterIndexes<ContentItemIndexProvider>();

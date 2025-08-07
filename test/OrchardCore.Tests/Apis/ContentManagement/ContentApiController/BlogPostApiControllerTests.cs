@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Models;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Tests.Apis.Context;
+using System.Threading;
 using ISession = YesSql.ISession;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController;
@@ -69,7 +70,7 @@ public class BlogPostApiControllerTests
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                x.ContentType == "BlogPost").ListAsync();
+                x.ContentType == "BlogPost").ListAsync(CancellationToken.None);
 
             Assert.Equal(2, blogPosts.Count());
         });
@@ -244,7 +245,7 @@ public class BlogPostApiControllerTests
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                x.ContentType == "BlogPost").ListAsync();
+                x.ContentType == "BlogPost").ListAsync(CancellationToken.None);
 
             Assert.Single(blogPosts);
         });
@@ -304,7 +305,7 @@ public class BlogPostApiControllerTests
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var newAutoroutePartIndex = await session
                 .QueryIndex<AutoroutePartIndex>(o => o.Published && o.ContentItemId == publishedContentItem.ContentItemId)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(CancellationToken.None);
 
             // The Autoroute part was not welded on, so ContentManager.NewAsync should add it
             // with an empty path and then generate a unique path from the liquid pattern.
