@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using System.Threading;
 using YesSql;
 using YesSql.Services;
 
@@ -80,13 +81,13 @@ public sealed class DeploymentPlanController : Controller
             deploymentPlans = deploymentPlans.Where(x => x.Name.Contains(options.Search));
         }
 
-        var count = await deploymentPlans.CountAsync();
+        var count = await deploymentPlans.CountAsync(cancellationToken: CancellationToken.None);
 
         var results = await deploymentPlans
             .OrderBy(p => p.Name)
             .Skip(pager.GetStartIndex())
             .Take(pager.PageSize)
-            .ListAsync();
+            .ListAsync(cancellationToken: CancellationToken.None);
 
         // Maintain previous route data when generating page links.
         var routeData = new RouteData();
@@ -132,7 +133,7 @@ public sealed class DeploymentPlanController : Controller
 
         if (itemIds?.Count() > 0)
         {
-            var checkedItems = await _session.Query<DeploymentPlan, DeploymentPlanIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
+            var checkedItems = await _session.Query<DeploymentPlan, DeploymentPlanIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync(cancellationToken: CancellationToken.None);
             switch (options.BulkAction)
             {
                 case ContentsBulkAction.None:
@@ -220,7 +221,7 @@ public sealed class DeploymentPlanController : Controller
                 ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["The name is mandatory."]);
             }
 
-            var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name).CountAsync();
+            var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name).CountAsync(cancellationToken: CancellationToken.None);
             if (count > 0)
             {
                 ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["A deployment plan with the same name already exists."]);
@@ -231,7 +232,7 @@ public sealed class DeploymentPlanController : Controller
         {
             var deploymentPlan = new DeploymentPlan { Name = model.Name };
 
-            await _session.SaveAsync(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan, cancellationToken: CancellationToken.None);
 
             return RedirectToAction(nameof(Display), new { id = deploymentPlan.Id });
         }
@@ -286,7 +287,7 @@ public sealed class DeploymentPlanController : Controller
             }
             if (!string.Equals(model.Name, deploymentPlan.Name, StringComparison.OrdinalIgnoreCase))
             {
-                var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name && x.DocumentId != model.Id).CountAsync();
+                var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name && x.DocumentId != model.Id).CountAsync(cancellationToken: CancellationToken.None);
                 if (count > 0)
                 {
                     ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["A deployment plan with the same name already exists."]);
@@ -298,7 +299,7 @@ public sealed class DeploymentPlanController : Controller
         {
             deploymentPlan.Name = model.Name;
 
-            await _session.SaveAsync(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan, cancellationToken: CancellationToken.None);
 
             await _notifier.SuccessAsync(H["Deployment plan updated successfully."]);
 

@@ -6,6 +6,7 @@ using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using System.Threading;
 using YesSql;
 
 namespace OrchardCore.Deployment.Controllers;
@@ -107,7 +108,7 @@ public sealed class StepController : Controller
         {
             step.Id = model.DeploymentStepId;
             deploymentPlan.DeploymentSteps.Add(step);
-            await _session.SaveAsync(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan, cancellationToken: CancellationToken.None);
 
             await _notifier.SuccessAsync(H["Deployment plan step added successfully."]);
             return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
@@ -181,7 +182,7 @@ public sealed class StepController : Controller
 
         if (ModelState.IsValid)
         {
-            await _session.SaveAsync(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan, cancellationToken: CancellationToken.None);
 
             await _notifier.SuccessAsync(H["Deployment plan step updated successfully."]);
             return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
@@ -218,7 +219,7 @@ public sealed class StepController : Controller
         }
 
         deploymentPlan.DeploymentSteps.Remove(step);
-        await _session.SaveAsync(deploymentPlan);
+        await _session.SaveAsync(deploymentPlan, cancellationToken: CancellationToken.None);
 
         await _notifier.SuccessAsync(H["Deployment step deleted successfully."]);
 
@@ -251,7 +252,7 @@ public sealed class StepController : Controller
 
         deploymentPlan.DeploymentSteps.Insert(newIndex, step);
 
-        await _session.SaveAsync(deploymentPlan);
+        await _session.SaveAsync(deploymentPlan, cancellationToken: CancellationToken.None);
 
         return Ok();
     }

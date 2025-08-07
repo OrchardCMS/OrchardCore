@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Deployment.Indexes;
+using System.Threading;
 using YesSql;
 using YesSql.Services;
 
@@ -28,7 +29,7 @@ public class DeploymentPlanService : IDeploymentPlanService
         if (_deploymentPlans == null)
         {
             var deploymentPlanQuery = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
-            var deploymentPlans = await deploymentPlanQuery.ListAsync();
+            var deploymentPlans = await deploymentPlanQuery.ListAsync(cancellationToken: CancellationToken.None);
             _deploymentPlans = deploymentPlans.ToDictionary(x => x.Name);
         }
 
@@ -91,7 +92,7 @@ public class DeploymentPlanService : IDeploymentPlanService
         var names = deploymentPlans.Select(x => x.Name);
 
         var existingDeploymentPlans = (await _session.Query<DeploymentPlan, DeploymentPlanIndex>(x => x.Name.IsIn(names))
-            .ListAsync())
+            .ListAsync(cancellationToken: CancellationToken.None))
             .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 
         foreach (var deploymentPlan in deploymentPlans)
@@ -102,11 +103,11 @@ public class DeploymentPlanService : IDeploymentPlanService
                 existingDeploymentPlan.DeploymentSteps.Clear();
                 existingDeploymentPlan.DeploymentSteps.AddRange(deploymentPlan.DeploymentSteps);
 
-                await _session.SaveAsync(existingDeploymentPlan);
+                await _session.SaveAsync(existingDeploymentPlan, cancellationToken: CancellationToken.None);
             }
             else
             {
-                await _session.SaveAsync(deploymentPlan);
+                await _session.SaveAsync(deploymentPlan, cancellationToken: CancellationToken.None);
             }
         }
     }
