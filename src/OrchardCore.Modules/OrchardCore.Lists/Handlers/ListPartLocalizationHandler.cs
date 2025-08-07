@@ -1,9 +1,15 @@
 using OrchardCore.ContentLocalization.Handlers;
+using System.Threading;
 using OrchardCore.ContentLocalization.Models;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.Lists.Indexes;
+using System.Threading;
 using OrchardCore.Lists.Models;
+using System.Threading;
 using YesSql;
+using System.Threading;
 
 namespace OrchardCore.Lists.Drivers;
 
@@ -23,7 +29,7 @@ public class ListPartLocalizationHandler : ContentLocalizationPartHandlerBase<Li
     public override async Task LocalizedAsync(LocalizationContentContext context, ListPart part)
     {
         var containedList = await _session.Query<ContentItem, ContainedPartIndex>(
-            x => x.ListContentItemId == context.Original.ContentItemId).ListAsync();
+            x => x.ListContentItemId == context.Original.ContentItemId).ListAsync(cancellationToken: CancellationToken.None);
 
         if (!containedList.Any())
         {
@@ -38,7 +44,7 @@ public class ListPartLocalizationHandler : ContentLocalizationPartHandlerBase<Li
                 var cp = item.As<ContainedPart>();
                 cp.ListContentItemId = context.ContentItem.ContentItemId;
                 cp.Apply();
-                await _session.SaveAsync(item);
+                await _session.SaveAsync(item, cancellationToken: CancellationToken.None);
             }
         }
     }

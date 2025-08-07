@@ -1,15 +1,27 @@
 using Fluid;
+using System.Threading;
 using Fluid.Values;
+using System.Threading;
 using OrchardCore.ContentFields.Settings;
+using System.Threading;
 using OrchardCore.ContentLocalization;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.ContentManagement.Metadata;
+using System.Threading;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System.Threading;
 using OrchardCore.ContentManagement.Records;
+using System.Threading;
 using OrchardCore.Liquid;
+using System.Threading;
 using OrchardCore.Localization;
+using System.Threading;
 using YesSql;
+using System.Threading;
 using YesSql.Services;
+using System.Threading;
 
 namespace OrchardCore.ContentFields.Services;
 
@@ -49,7 +61,7 @@ public class DefaultContentPickerResultProvider : IContentPickerResultProvider
             query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query) || x.ContentType.Contains(searchContext.Query));
         }
 
-        var contentItems = await query.Take(50).ListAsync();
+        var contentItems = await query.Take(50).ListAsync(cancellationToken: CancellationToken.None);
 
         var results = new List<ContentPickerResult>();
         var settings = searchContext.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();

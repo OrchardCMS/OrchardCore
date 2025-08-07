@@ -1,9 +1,15 @@
 using System.Text.Json.Nodes;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading;
 using OrchardCore;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.Taxonomies.Indexing;
+using System.Threading;
 using YesSql;
+using System.Threading;
 
 #pragma warning disable CA1050 // Declare types in namespaces
 public static class TaxonomyOrchardHelperExtensions
@@ -61,7 +67,7 @@ public static class TaxonomyOrchardHelperExtensions
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
 
-        var contentItems = await query(session.Query<ContentItem, TaxonomyIndex>()).ListAsync();
+        var contentItems = await query(session.Query<ContentItem, TaxonomyIndex>()).ListAsync(cancellationToken: CancellationToken.None);
 
         return await contentManager.LoadAsync(contentItems);
     }

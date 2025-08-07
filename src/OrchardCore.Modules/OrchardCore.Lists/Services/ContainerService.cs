@@ -1,13 +1,23 @@
 using System.Linq.Expressions;
+using System.Threading;
 using System.Security.Claims;
+using System.Threading;
 using Microsoft.AspNetCore.Http;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.ContentManagement.Records;
+using System.Threading;
 using OrchardCore.Lists.Indexes;
+using System.Threading;
 using OrchardCore.Lists.Models;
+using System.Threading;
 using OrchardCore.Navigation;
+using System.Threading;
 using YesSql;
+using System.Threading;
 using YesSql.Services;
+using System.Threading;
 
 namespace OrchardCore.Lists.Services;
 
@@ -31,7 +41,7 @@ public class ContainerService : IContainerService
     {
         var index = await _session.QueryIndex<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
             .OrderByDescending(x => x.Order)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken: CancellationToken.None);
 
         if (index != null)
         {
@@ -76,7 +86,7 @@ public class ContainerService : IContainerService
     {
         // Set initial order for published and drafts if they have never been published.
         var contanerContentItemsQuery = _session.QueryIndex<ContentItemIndex>(x => x.ContentType == contentType && (x.Published || x.Latest));
-        var containerContentItems = await contanerContentItemsQuery.ListAsync();
+        var containerContentItems = await contanerContentItemsQuery.ListAsync(cancellationToken: CancellationToken.None);
 
         if (!containerContentItems.Any())
         {
@@ -139,7 +149,7 @@ public class ContainerService : IContainerService
                         }
                     }
 
-                    await _session.SaveAsync(contentItem);
+                    await _session.SaveAsync(contentItem, cancellationToken: CancellationToken.None);
                 }
 
                 i++;

@@ -1,3 +1,4 @@
+using System.Threading;
 using YesSql;
 
 namespace OrchardCore.Data.Documents;
@@ -32,7 +33,7 @@ public class DocumentStore : IDocumentStore
             return loaded as T;
         }
 
-        var document = await _session.Query<T>().FirstOrDefaultAsync()
+        var document = await _session.Query<T>().FirstOrDefaultAsync(cancellationToken: CancellationToken.None)
             ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
             ?? new T();
 
@@ -50,7 +51,7 @@ public class DocumentStore : IDocumentStore
             return (false, loaded as T);
         }
 
-        var document = await _session.Query<T>().FirstOrDefaultAsync();
+        var document = await _session.Query<T>().FirstOrDefaultAsync(cancellationToken: CancellationToken.None);
         if (document is not null)
         {
             _session.Detach(document);
@@ -63,7 +64,7 @@ public class DocumentStore : IDocumentStore
     /// <inheritdoc />
     public async Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
     {
-        await _session.SaveAsync(document, checkConcurrency);
+        await _session.SaveAsync(document, checkConcurrency, cancellationToken: CancellationToken.None);
 
         AfterCommitSuccess<T>(() =>
         {
@@ -121,7 +122,7 @@ public class DocumentStore : IDocumentStore
 
         try
         {
-            await _session.SaveChangesAsync();
+            await _session.SaveChangesAsync(cancellationToken: CancellationToken.None);
 
             _loaded.Clear();
 

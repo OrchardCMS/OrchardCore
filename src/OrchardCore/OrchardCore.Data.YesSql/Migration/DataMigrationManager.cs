@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;
@@ -57,12 +58,12 @@ public class DataMigrationManager : IDataMigrationManager
     {
         if (_dataMigrationRecord == null)
         {
-            _dataMigrationRecord = await _session.Query<DataMigrationRecord>().FirstOrDefaultAsync();
+            _dataMigrationRecord = await _session.Query<DataMigrationRecord>().FirstOrDefaultAsync(cancellationToken: CancellationToken.None);
 
             if (_dataMigrationRecord == null)
             {
                 _dataMigrationRecord = new DataMigrationRecord();
-                await _session.SaveAsync(_dataMigrationRecord);
+                await _session.SaveAsync(_dataMigrationRecord, cancellationToken: CancellationToken.None);
             }
         }
 
@@ -174,7 +175,7 @@ public class DataMigrationManager : IDataMigrationManager
         // apply update methods to each migration class for the module
         foreach (var migration in migrations)
         {
-            var schemaBuilder = new SchemaBuilder(_store.Configuration, await _session.BeginTransactionAsync());
+            var schemaBuilder = new SchemaBuilder(_store.Configuration, await _session.BeginTransactionAsync(cancellationToken: CancellationToken.None));
             migration.SchemaBuilder = schemaBuilder;
 
             // Copy the object for the Linq query.
@@ -238,7 +239,7 @@ public class DataMigrationManager : IDataMigrationManager
             finally
             {
                 // Persist data migrations.
-                await _session.SaveAsync(_dataMigrationRecord);
+                await _session.SaveAsync(_dataMigrationRecord, cancellationToken: CancellationToken.None);
             }
         }
     }

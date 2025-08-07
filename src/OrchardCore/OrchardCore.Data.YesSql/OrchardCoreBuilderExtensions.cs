@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Data;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
@@ -127,12 +128,12 @@ public static class OrchardCoreBuilderExtensions
                     return;
                 }
 
-                await store.InitializeAsync();
+                await store.InitializeAsync(cancellationToken: CancellationToken.None);
 
                 var storeCollectionOptions = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
                 foreach (var collection in storeCollectionOptions.Collections)
                 {
-                    await store.InitializeCollectionAsync(collection);
+                    await store.InitializeCollectionAsync(collection, cancellationToken: CancellationToken.None);
                 }
             });
 

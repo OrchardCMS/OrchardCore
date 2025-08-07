@@ -1,12 +1,21 @@
 using Microsoft.AspNetCore.Authorization;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using OrchardCore.Admin;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.ContentManagement.Display;
+using System.Threading;
 using OrchardCore.Contents;
+using System.Threading;
 using OrchardCore.DisplayManagement.ModelBinding;
+using System.Threading;
 using YesSql;
+using System.Threading;
 using IHttpContextAccessor = Microsoft.AspNetCore.Http.IHttpContextAccessor;
+using System.Threading;
 
 namespace OrchardCore.Demo.Controllers;
 
@@ -95,7 +104,7 @@ public sealed class ContentController : Controller
             return View(nameof(Edit), shape);
         }
 
-        await _session.SaveAsync(contentItem);
+        await _session.SaveAsync(contentItem, cancellationToken: CancellationToken.None);
         return RedirectToAction(nameof(Edit), contentItemId);
     }
 }

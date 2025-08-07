@@ -1,14 +1,25 @@
 using Microsoft.AspNetCore.Localization;
+using System.Threading;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using OrchardCore.ContentLocalization.Handlers;
+using System.Threading;
 using OrchardCore.ContentLocalization.Models;
+using System.Threading;
 using OrchardCore.ContentLocalization.Records;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.Entities;
+using System.Threading;
 using OrchardCore.Localization;
+using System.Threading;
 using OrchardCore.Modules;
+using System.Threading;
 using YesSql;
+using System.Threading;
 using YesSql.Services;
+using System.Threading;
 
 namespace OrchardCore.ContentLocalization;
 
@@ -50,18 +61,18 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
                     (i.Published || i.Latest) &&
                     i.LocalizationSet == localizationSet &&
                     i.Culture == invariantCulture)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken: CancellationToken.None);
     }
 
     public Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet)
     {
-        return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == localizationSet).ListAsync();
+        return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == localizationSet).ListAsync(cancellationToken: CancellationToken.None);
     }
 
     public Task<IEnumerable<ContentItem>> GetItemsForSetsAsync(IEnumerable<string> localizationSets, string culture)
     {
         var invariantCulture = culture.ToLowerInvariant();
-        return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets) && i.Culture == invariantCulture).ListAsync();
+        return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets) && i.Culture == invariantCulture).ListAsync(cancellationToken: CancellationToken.None);
     }
 
     public async Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture)
@@ -78,7 +89,7 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
             // If the source content item is not yet localized, define its defaults.
             localizationPart.LocalizationSet = _iidGenerator.GenerateUniqueId();
             localizationPart.Culture = await _localizationService.GetDefaultCultureAsync();
-            await _session.SaveAsync(content);
+            await _session.SaveAsync(content, cancellationToken: CancellationToken.None);
         }
         else
         {
@@ -109,7 +120,7 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
     public async Task<IDictionary<string, ContentItem>> DeduplicateContentItemsAsync(IEnumerable<ContentItem> contentItems)
     {
         var contentItemIds = contentItems.Select(c => c.ContentItemId);
-        var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId.IsIn(contentItemIds)).ListAsync();
+        var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId.IsIn(contentItemIds)).ListAsync(cancellationToken: CancellationToken.None);
 
         var currentCulture = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name.ToLowerInvariant();
         var defaultCulture = (await _localizationService.GetDefaultCultureAsync()).ToLowerInvariant();
@@ -126,7 +137,7 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
 
     public async Task<IDictionary<string, string>> GetFirstItemIdForSetsAsync(IEnumerable<string> localizationSets)
     {
-        var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets)).ListAsync();
+        var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets)).ListAsync(cancellationToken: CancellationToken.None);
 
         var currentCulture = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name.ToLowerInvariant();
         var defaultCulture = (await _localizationService.GetDefaultCultureAsync()).ToLowerInvariant();

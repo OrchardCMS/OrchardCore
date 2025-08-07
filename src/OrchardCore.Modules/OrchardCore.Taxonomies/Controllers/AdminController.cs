@@ -1,17 +1,31 @@
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Text.Json.Settings;
+using System.Threading;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc.Localization;
+using System.Threading;
 using OrchardCore.Admin;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.ContentManagement.Display;
+using System.Threading;
 using OrchardCore.ContentManagement.Metadata;
+using System.Threading;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System.Threading;
 using OrchardCore.DisplayManagement.ModelBinding;
+using System.Threading;
 using OrchardCore.DisplayManagement.Notify;
+using System.Threading;
 using OrchardCore.Taxonomies.Models;
+using System.Threading;
 using YesSql;
+using System.Threading;
 
 namespace OrchardCore.Taxonomies.Controllers;
 
@@ -155,7 +169,7 @@ public sealed class AdminController : Controller
             taxonomyItems.Add(JObject.FromObject(contentItem));
         }
 
-        await _session.SaveAsync(taxonomy);
+        await _session.SaveAsync(taxonomy, cancellationToken: CancellationToken.None);
 
         return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
     }
@@ -271,7 +285,7 @@ public sealed class AdminController : Controller
         // Merge doesn't copy the properties.
         taxonomyItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
 
-        await _session.SaveAsync(taxonomy);
+        await _session.SaveAsync(taxonomy, cancellationToken: CancellationToken.None);
 
         return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
     }
@@ -322,7 +336,7 @@ public sealed class AdminController : Controller
 
         taxonomy.Apply(updatedPart);
 
-        await _session.SaveAsync(taxonomy);
+        await _session.SaveAsync(taxonomy, cancellationToken: CancellationToken.None);
 
         await _notifier.SuccessAsync(H["Taxonomy item deleted successfully."]);
 

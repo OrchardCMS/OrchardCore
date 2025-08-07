@@ -1,18 +1,33 @@
 using Microsoft.AspNetCore.Authorization;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc.Localization;
+using System.Threading;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using OrchardCore.Admin;
+using System.Threading;
 using OrchardCore.AuditTrail.Indexes;
+using System.Threading;
 using OrchardCore.AuditTrail.Models;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.ContentManagement.Display;
+using System.Threading;
 using OrchardCore.Contents.AuditTrail.Models;
+using System.Threading;
 using OrchardCore.DisplayManagement.ModelBinding;
+using System.Threading;
 using OrchardCore.DisplayManagement.Notify;
+using System.Threading;
 using OrchardCore.Entities;
+using System.Threading;
 using OrchardCore.Modules;
+using System.Threading;
 using YesSql;
+using System.Threading;
 
 namespace OrchardCore.Contents.AuditTrail.Controllers;
 
@@ -54,7 +69,7 @@ public sealed class AuditTrailContentController : Controller
     {
         var auditTrailContentEvent = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.EventId == auditTrailEventId)
-            .FirstOrDefaultAsync())
+            .FirstOrDefaultAsync(cancellationToken: CancellationToken.None))
             ?.As<AuditTrailContentEvent>();
 
         if (auditTrailContentEvent == null || auditTrailContentEvent.ContentItem == null)
@@ -94,7 +109,7 @@ public sealed class AuditTrailContentController : Controller
     {
         var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.EventId == auditTrailEventId)
-            .FirstOrDefaultAsync())
+            .FirstOrDefaultAsync(cancellationToken: CancellationToken.None))
             ?.As<AuditTrailContentEvent>()
             ?.ContentItem;
 

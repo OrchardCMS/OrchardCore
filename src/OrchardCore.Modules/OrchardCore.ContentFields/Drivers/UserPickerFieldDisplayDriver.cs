@@ -1,16 +1,29 @@
 using Microsoft.Extensions.Localization;
+using System.Threading;
 using OrchardCore.ContentFields.Fields;
+using System.Threading;
 using OrchardCore.ContentFields.Settings;
+using System.Threading;
 using OrchardCore.ContentFields.ViewModels;
+using System.Threading;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using System.Threading;
 using OrchardCore.ContentManagement.Display.Models;
+using System.Threading;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System.Threading;
 using OrchardCore.DisplayManagement.Views;
+using System.Threading;
 using OrchardCore.Mvc.ModelBinding;
+using System.Threading;
 using OrchardCore.Users.Indexes;
+using System.Threading;
 using OrchardCore.Users.Models;
+using System.Threading;
 using YesSql;
+using System.Threading;
 using YesSql.Services;
+using System.Threading;
 
 namespace OrchardCore.ContentFields.Drivers;
 
@@ -53,7 +66,7 @@ public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<Use
 
             if (field.UserIds.Length > 0)
             {
-                var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync())
+                var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync(cancellationToken: CancellationToken.None))
                     .OrderBy(o => Array.FindIndex(field.UserIds, x => string.Equals(o.UserId, x, StringComparison.OrdinalIgnoreCase)));
 
                 foreach (var user in users)
@@ -89,7 +102,7 @@ public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<Use
             context.Updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
         }
 
-        var users = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync();
+        var users = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync(cancellationToken: CancellationToken.None);
         field.SetUserNames(users.Select(t => t.UserName).ToArray());
 
         return Edit(field, context);

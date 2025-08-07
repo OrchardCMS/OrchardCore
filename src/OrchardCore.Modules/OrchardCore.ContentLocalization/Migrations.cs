@@ -1,12 +1,21 @@
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading;
 using OrchardCore.ContentLocalization.Models;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.ContentManagement.Metadata;
+using System.Threading;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using System.Threading;
 using OrchardCore.Data.Migration;
+using System.Threading;
 using OrchardCore.Environment.Shell.Scope;
+using System.Threading;
 using YesSql;
+using System.Threading;
 using YesSql.Sql;
+using System.Threading;
 
 namespace OrchardCore.ContentLocalization.Records;
 
@@ -85,12 +94,12 @@ public sealed class Migrations : DataMigration
         ShellScope.AddDeferredTask(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
-            var localizedContentItems = await session.Query<ContentItem, LocalizedContentItemIndex>().ListAsync();
+            var localizedContentItems = await session.Query<ContentItem, LocalizedContentItemIndex>().ListAsync(cancellationToken: CancellationToken.None);
 
             foreach (var localizedContentItem in localizedContentItems)
             {
                 localizedContentItem.Latest = localizedContentItem.ContentItem.Latest;
-                await session.SaveAsync(localizedContentItem);
+                await session.SaveAsync(localizedContentItem, cancellationToken: CancellationToken.None);
             }
         });
 

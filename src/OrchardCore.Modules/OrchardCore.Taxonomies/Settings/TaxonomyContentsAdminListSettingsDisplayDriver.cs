@@ -1,13 +1,23 @@
 using Microsoft.AspNetCore.Authorization;
+using System.Threading;
 using Microsoft.AspNetCore.Http;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.ContentManagement.Records;
+using System.Threading;
 using OrchardCore.DisplayManagement.Entities;
+using System.Threading;
 using OrchardCore.DisplayManagement.Handlers;
+using System.Threading;
 using OrchardCore.DisplayManagement.Views;
+using System.Threading;
 using OrchardCore.Settings;
+using System.Threading;
 using OrchardCore.Taxonomies.ViewModels;
+using System.Threading;
 using YesSql;
+using System.Threading;
 
 namespace OrchardCore.Taxonomies.Settings;
 
@@ -40,7 +50,7 @@ public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplay
             return null;
         }
 
-        var taxonomies = await _session.Query<ContentItem, ContentItemIndex>(q => q.ContentType == "Taxonomy" && q.Published).ListAsync();
+        var taxonomies = await _session.Query<ContentItem, ContentItemIndex>(q => q.ContentType == "Taxonomy" && q.Published).ListAsync(cancellationToken: CancellationToken.None);
 
         var entries = taxonomies.Select(x => new TaxonomyEntry
         {

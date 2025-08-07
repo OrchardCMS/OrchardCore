@@ -1,17 +1,31 @@
 using Microsoft.AspNetCore.Http;
+using System.Threading;
 using Microsoft.AspNetCore.Routing;
+using System.Threading;
 using Microsoft.Extensions.Options;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using System.Threading;
 using OrchardCore.ContentManagement.Routing;
+using System.Threading;
 using OrchardCore.DisplayManagement;
+using System.Threading;
 using OrchardCore.DisplayManagement.Handlers;
+using System.Threading;
 using OrchardCore.DisplayManagement.ModelBinding;
+using System.Threading;
 using OrchardCore.DisplayManagement.Views;
+using System.Threading;
 using OrchardCore.Navigation;
+using System.Threading;
 using OrchardCore.Taxonomies.Core;
+using System.Threading;
 using OrchardCore.Taxonomies.Models;
+using System.Threading;
 using OrchardCore.Taxonomies.ViewModels;
+using System.Threading;
 
 namespace OrchardCore.Taxonomies.Drivers;
 
@@ -71,11 +85,11 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
     {
         var query = await _contentsTaxonomyListQueryService.QueryAsync(termPart, pager);
 
-        var containedItems = await query.ListAsync();
+        var containedItems = await query.ListAsync(cancellationToken: CancellationToken.None);
 
         await _contentManager.LoadAsync(containedItems);
 
-        return (await query.CountAsync(), containedItems);
+        return (await query.CountAsync(cancellationToken: CancellationToken.None), containedItems);
     }
 
     private static async Task<Pager> GetPagerAsync(IUpdateModel updater, int pageSize)

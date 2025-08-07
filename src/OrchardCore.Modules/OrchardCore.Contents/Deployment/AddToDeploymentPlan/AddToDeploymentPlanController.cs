@@ -1,14 +1,25 @@
 using Microsoft.AspNetCore.Authorization;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc.Localization;
+using System.Threading;
 using OrchardCore.Admin;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.ContentManagement.Records;
+using System.Threading;
 using OrchardCore.Deployment;
+using System.Threading;
 using OrchardCore.DisplayManagement.Notify;
+using System.Threading;
 using OrchardCore.Modules;
+using System.Threading;
 using YesSql;
+using System.Threading;
 using YesSql.Services;
+using System.Threading;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
@@ -114,7 +125,7 @@ public sealed class AddToDeploymentPlanController : Controller
             return NotFound();
         }
 
-        var contentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Published).ListAsync();
+        var contentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Published).ListAsync(cancellationToken: CancellationToken.None);
 
         foreach (var item in contentItems)
         {

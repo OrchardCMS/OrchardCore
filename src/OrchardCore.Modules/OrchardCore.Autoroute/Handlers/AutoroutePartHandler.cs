@@ -18,6 +18,7 @@ using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Settings;
+using System.Threading;
 using YesSql;
 using YesSql.Services;
 
@@ -466,7 +467,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         path = path.Trim('/');
         var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
 
-        var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
+        var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync(cancellationToken: CancellationToken.None);
         if (possibleConflicts.Any(x => x.ContentItemId != contentItemId && x.ContainedContentItemId != contentItemId))
         {
             return false;

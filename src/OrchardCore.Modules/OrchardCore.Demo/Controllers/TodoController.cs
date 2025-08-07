@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using OrchardCore.Demo.Models;
+using System.Threading;
 using OrchardCore.Demo.ViewModels;
+using System.Threading;
 using YesSql;
+using System.Threading;
 
 namespace OrchardCore.Demo.Controllers;
 
@@ -18,7 +22,7 @@ public sealed class TodoController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var list = (await _session.Query<TodoModel>().ListAsync())
+        var list = (await _session.Query<TodoModel>().ListAsync(cancellationToken: CancellationToken.None))
             .Select(m => new TodoViewModel()
             {
                 TodoId = m.TodoId,
@@ -44,7 +48,7 @@ public sealed class TodoController : Controller
 
     public async Task<IActionResult> Edit(string todoId)
     {
-        var model = (await _session.Query<TodoModel>().ListAsync())
+        var model = (await _session.Query<TodoModel>().ListAsync(cancellationToken: CancellationToken.None))
             .FirstOrDefault(m => m.TodoId == todoId);
 
         if (model == null)
@@ -69,7 +73,7 @@ public sealed class TodoController : Controller
     {
         if (ModelState.IsValid)
         {
-            var model = (await _session.Query<TodoModel>().ListAsync())
+            var model = (await _session.Query<TodoModel>().ListAsync(cancellationToken: CancellationToken.None))
                 .FirstOrDefault(m => m.TodoId == viewModel.TodoId);
 
             model ??= new TodoModel() { TodoId = viewModel.TodoId };
@@ -78,7 +82,7 @@ public sealed class TodoController : Controller
             model.DueDate = viewModel.DueDate;
             model.IsCompleted = viewModel.IsCompleted;
 
-            await _session.SaveAsync(model);
+            await _session.SaveAsync(model, cancellationToken: CancellationToken.None);
 
             if (Url.IsLocalUrl(returnUrl))
             {
@@ -94,7 +98,7 @@ public sealed class TodoController : Controller
 
     public async Task<IActionResult> Delete(string todoId)
     {
-        var model = (await _session.Query<TodoModel>().ListAsync())
+        var model = (await _session.Query<TodoModel>().ListAsync(cancellationToken: CancellationToken.None))
             .FirstOrDefault(m => m.TodoId == todoId);
 
         if (model == null)

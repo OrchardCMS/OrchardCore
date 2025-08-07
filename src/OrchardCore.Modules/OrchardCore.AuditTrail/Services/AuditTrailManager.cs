@@ -1,18 +1,33 @@
 using Microsoft.AspNetCore.Http;
+using System.Threading;
 using Microsoft.AspNetCore.Identity;
+using System.Threading;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using Microsoft.Extensions.Options;
+using System.Threading;
 using OrchardCore.Abstractions.Setup;
+using System.Threading;
 using OrchardCore.AuditTrail.Indexes;
+using System.Threading;
 using OrchardCore.AuditTrail.Models;
+using System.Threading;
 using OrchardCore.AuditTrail.Services.Models;
+using System.Threading;
 using OrchardCore.AuditTrail.Settings;
+using System.Threading;
 using OrchardCore.Entities;
+using System.Threading;
 using OrchardCore.Environment.Shell;
+using System.Threading;
 using OrchardCore.Modules;
+using System.Threading;
 using OrchardCore.Recipes.Models;
+using System.Threading;
 using OrchardCore.Settings;
+using System.Threading;
 using YesSql;
+using System.Threading;
 
 namespace OrchardCore.AuditTrail.Services;
 
@@ -108,7 +123,7 @@ public class AuditTrailManager : IAuditTrailManager
     public Task<AuditTrailEvent> GetEventAsync(string eventId) =>
         _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.EventId == eventId)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken: CancellationToken.None);
 
     public async Task<int> TrimEventsAsync(TimeSpan retentionPeriod)
     {
@@ -116,7 +131,7 @@ public class AuditTrailManager : IAuditTrailManager
 
         var events = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.CreatedUtc <= dateThreshold)
-            .ListAsync();
+            .ListAsync(cancellationToken: CancellationToken.None);
 
         var deletedEvents = 0;
         foreach (var auditTrailEvent in events)

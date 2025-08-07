@@ -1,12 +1,21 @@
 using System.Globalization;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Threading;
 using Microsoft.Extensions.Localization;
+using System.Threading;
 using Microsoft.Extensions.Options;
+using System.Threading;
 using OrchardCore.AuditTrail.Models;
+using System.Threading;
 using OrchardCore.AuditTrail.Services.Models;
+using System.Threading;
 using OrchardCore.AuditTrail.ViewModels;
+using System.Threading;
 using OrchardCore.Modules;
+using System.Threading;
 using YesSql;
+using System.Threading;
 
 namespace OrchardCore.AuditTrail.Services;
 
@@ -44,7 +53,7 @@ public sealed class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminLis
 
         query = await options.FilterResult.ExecuteAsync(new AuditTrailQueryContext(_serviceProvider, query));
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(cancellationToken: CancellationToken.None);
 
         if (pageSize > 0)
         {
@@ -56,7 +65,7 @@ public sealed class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminLis
             query = query.Take(pageSize);
         }
 
-        var events = await query.ListAsync();
+        var events = await query.ListAsync(cancellationToken: CancellationToken.None);
 
         var result = new AuditTrailEventQueryResult
         {

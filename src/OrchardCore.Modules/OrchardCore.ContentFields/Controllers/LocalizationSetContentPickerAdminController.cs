@@ -1,17 +1,31 @@
 using Microsoft.AspNetCore.Authorization;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using OrchardCore.Admin;
+using System.Threading;
 using OrchardCore.ContentFields.Settings;
+using System.Threading;
 using OrchardCore.ContentFields.ViewModels;
+using System.Threading;
 using OrchardCore.ContentLocalization;
+using System.Threading;
 using OrchardCore.ContentManagement;
+using System.Threading;
 using OrchardCore.ContentManagement.Metadata;
+using System.Threading;
 using OrchardCore.ContentManagement.Records;
+using System.Threading;
 using OrchardCore.Contents;
+using System.Threading;
 using OrchardCore.Modules;
+using System.Threading;
 using YesSql;
+using System.Threading;
 using YesSql.Services;
+using System.Threading;
 using IHttpContextAccessor = Microsoft.AspNetCore.Http.IHttpContextAccessor;
+using System.Threading;
 
 namespace OrchardCore.ContentFields.Controllers;
 
@@ -68,7 +82,7 @@ public sealed class LocalizationSetContentPickerAdminController : Controller
             dbQuery.With<ContentItemIndex>(x => x.DisplayText.Contains(query) || x.ContentType.Contains(query));
         }
 
-        var contentItems = await dbQuery.Take(40).ListAsync();
+        var contentItems = await dbQuery.Take(40).ListAsync(cancellationToken: CancellationToken.None);
 
         // if 2 search results have the same set, select one based on the current culture
         var cleanedContentItems = await _contentLocalizationManager.DeduplicateContentItemsAsync(contentItems);
