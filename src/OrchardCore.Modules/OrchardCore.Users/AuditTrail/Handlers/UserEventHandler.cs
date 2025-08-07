@@ -3,12 +3,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.AuditTrail.Indexes;
+using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
+using OrchardCore.Users.Models;
+using YesSql;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Users.AuditTrail.Handlers;
 
@@ -17,17 +22,20 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ISession _session;
 
     private UserManager<IUser> _userManager;
 
     public UserEventHandler(
         IAuditTrailManager auditTrailManager,
         IHttpContextAccessor httpContextAccessor,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        ISession session)
     {
         _auditTrailManager = auditTrailManager;
         _httpContextAccessor = httpContextAccessor;
         _serviceProvider = serviceProvider;
+        _session = session;
     }
 
     public Task LoggedInAsync(IUser user)
@@ -59,21 +67,29 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.LogInFailed, user);
 
     public override Task DisabledAsync(UserContext context)
-        => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Disabled, context.User, GetCurrentUserId(), GetCurrentUserName());
+        => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Disabled, context, _httpContextAccessor);
 
     public override Task EnabledAsync(UserContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Enabled, context.User, GetCurrentUserId(), GetCurrentUserName());
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Enabled, context, _httpContextAccessor);
 
     public override Task CreatedAsync(UserCreateContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Created, context.User, GetCurrentUserId(), GetCurrentUserName());
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Created, context, _httpContextAccessor);
 
     public override Task UpdatedAsync(UserUpdateContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Updated, context.User, GetCurrentUserId(), GetCurrentUserName());
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Updated, context, _httpContextAccessor);
 
     public override Task DeletedAsync(UserDeleteContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Deleted, context.User, GetCurrentUserId(), GetCurrentUserName());
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Deleted, context, _httpContextAccessor);
 
-    private async Task RecordAuditTrailEventAsync(string name, IUser user, string userIdActual = "", string userNameActual = "")
+    public override Task ConfirmedAsync(UserConfirmContext context)
+        => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Confirmed, context, _httpContextAccessor);
+
+    private async Task RecordAuditTrailEventAsync(
+        string name,
+        IUser user,
+        string userIdActual = "",
+        string userNameActual = "",
+        bool storeSnapshot = false)
     {
         var userName = user.UserName;
         _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
@@ -94,7 +110,22 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         {
             UserName = userName,
             UserId = userId,
+            User = storeSnapshot ? user as User : null,
         };
+
+        // If the user is deleted, remove its AuditTrail events as well for legal reasons.
+        if (name == UserAuditTrailEventConfiguration.Deleted)
+        {
+            var events = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(index => index.UserId == userId).ListAsync();
+
+            foreach (var item in events)
+            {
+                _session.Delete(item);
+            }
+
+            // The event for this action will contain the username and ID, but all sensitive data are excluded.
+            userEvent.User = null;
+        }
 
         var context = new AuditTrailContext<AuditTrailUserEvent>
             (
@@ -120,9 +151,11 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         => Task.FromResult<IActionResult>(null);
     #endregion
 
-    private string GetCurrentUserName()
-        => _httpContextAccessor.HttpContext.User?.Identity?.Name;
-
-    private string GetCurrentUserId()
-        => _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+    private Task RecordAuditTrailUserEventAsync(string name, UserContextBase context, IHttpContextAccessor accessor)
+        => RecordAuditTrailEventAsync(
+            name,
+            context.User,
+            accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier),
+            accessor.HttpContext?.User?.Identity?.Name,
+            storeSnapshot: true);
 }
