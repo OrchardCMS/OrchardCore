@@ -18,16 +18,14 @@
     </div>
 </div>
 
-<form method="post">
-    <ul id="list-items" class="list-group">
-        @foreach (var type in Model.Parts)
-        {
-            <li class="list-group-item" data-filter-value="@type.DisplayName" data-type-name="@type.Name">
-                @Html.DisplayFor(m => type)
-            </li>
-        }
-    </ul>
-</form>
+<ul id="list-items" class="list-group">
+    @foreach (var type in Model.Parts)
+    {
+        <li class="list-group-item" data-filter-value="@type.DisplayName" data-type-name="@type.Name">
+            @Html.DisplayFor(m => type)
+        </li>
+    }
+</ul>
 <div id="list-alert" class="alert alert-info d-none" role="alert">
     @T["<strong>Nothing here!</strong> Your search returned no results."]
 </div>
