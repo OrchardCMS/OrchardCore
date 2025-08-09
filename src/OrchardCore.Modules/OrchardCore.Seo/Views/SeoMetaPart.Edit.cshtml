@@ -95,10 +95,10 @@
                     </td>
                     <td class="text-center">
                         <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove element from list"]" class="btn">
-                            <i class="fa-solid fa-times" aria-hidden="true"></i>
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                         </a>
                     </td>
-                    <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div></td>
+                    <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div></td>
                 </tr>
             </draggable>
             <tfoot>
@@ -138,7 +138,7 @@
 
     <div id="@Html.IdFor(m => m)" class="mb-3">
         <label asp-for="CustomMetaTags" class="form-label">@T["Custom Meta Tags"]</label>
-        <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
+        <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i></a>
         <meta-tags-table :data="sharedState"></meta-tags-table>
         <meta-tags-modal :data="sharedState" v-on:reload-data="reloadData()"></meta-tags-modal>
     </div>
