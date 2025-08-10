@@ -17,7 +17,7 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.2" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.3.0" />
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.18.3" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.0" />
     <PackageVersion Include="Fluid.Core" Version="2.25.0" />
     <PackageVersion Include="GraphQL" Version="8.5.0" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.5.0" />
@@ -44,7 +44,7 @@
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="ncrontab" Version="3.3.3" />
-    <PackageVersion Include="NJsonSchema" Version="11.3.2" />
+    <PackageVersion Include="NJsonSchema" Version="11.4.0" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="6.0.2" />
     <PackageVersion Include="NodaTime" Version="3.2.2" />
     <PackageVersion Include="OpenIddict.Core" Version="7.0.0" />
