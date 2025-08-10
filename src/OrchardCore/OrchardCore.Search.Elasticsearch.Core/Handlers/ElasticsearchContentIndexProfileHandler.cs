@@ -103,7 +103,8 @@ public sealed class ElasticsearchContentIndexProfileHandler : IndexProfileHandle
 
         if (!mapping.DynamicTemplates.Any(x => x.Key.Equals(_inheritedPostfixPattern, StringComparison.Ordinal)))
         {
-            var inheritedPostfix = DynamicTemplate.Mapping(new KeywordProperty());
+            ;
+            var inheritedPostfix = new DynamicTemplate() { Mapping = new KeywordProperty() };
             inheritedPostfix.PathMatch = [_inheritedPostfixPattern];
             inheritedPostfix.MatchMappingType = ["string"];
             mapping.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_inheritedPostfixPattern, inheritedPostfix));
@@ -111,7 +112,7 @@ public sealed class ElasticsearchContentIndexProfileHandler : IndexProfileHandle
 
         if (!mapping.DynamicTemplates.Any(x => x.Key.Equals(_idsPostfixPattern, StringComparison.Ordinal)))
         {
-            var idsPostfix = DynamicTemplate.Mapping(new KeywordProperty());
+            var idsPostfix = new DynamicTemplate() { Mapping = new KeywordProperty() };
             idsPostfix.PathMatch = [_idsPostfixPattern];
             idsPostfix.MatchMappingType = ["string"];
             mapping.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_idsPostfixPattern, idsPostfix));
@@ -119,7 +120,7 @@ public sealed class ElasticsearchContentIndexProfileHandler : IndexProfileHandle
 
         if (!mapping.DynamicTemplates.Any(x => x.Key.Equals(_locationPostFixPattern, StringComparison.Ordinal)))
         {
-            var locationPostfix = DynamicTemplate.Mapping(new GeoPointProperty());
+            var locationPostfix = new DynamicTemplate() { Mapping = new GeoPointProperty() };
             locationPostfix.PathMatch = [_locationPostFixPattern];
             locationPostfix.MatchMappingType = ["object"];
             mapping.DynamicTemplates.Add(new KeyValuePair<string, DynamicTemplate>(_locationPostFixPattern, locationPostfix));
