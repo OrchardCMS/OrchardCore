@@ -103,7 +103,6 @@ public sealed class ElasticsearchContentIndexProfileHandler : IndexProfileHandle
 
         if (!mapping.DynamicTemplates.Any(x => x.Key.Equals(_inheritedPostfixPattern, StringComparison.Ordinal)))
         {
-            ;
             var inheritedPostfix = new DynamicTemplate() { Mapping = new KeywordProperty() };
             inheritedPostfix.PathMatch = [_inheritedPostfixPattern];
             inheritedPostfix.MatchMappingType = ["string"];
