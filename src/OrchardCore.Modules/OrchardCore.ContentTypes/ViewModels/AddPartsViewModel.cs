@@ -1,3 +1,5 @@
+using OrchardCore.ContentTypes.Models;
+
 namespace OrchardCore.ContentTypes.ViewModels;
 
 public class AddPartsViewModel
@@ -7,7 +9,7 @@ public class AddPartsViewModel
         PartSelections = [];
     }
 
-    public EditTypeViewModel Type { get; set; }
+    public EditType Type { get; set; }
     public List<PartSelectionViewModel> PartSelections { get; set; }
 }
 
@@ -18,7 +20,7 @@ public class AddReusablePartViewModel
         PartSelections = [];
     }
 
-    public EditTypeViewModel Type { get; set; }
+    public EditType Type { get; set; }
     public string Name { get; set; }
     public string DisplayName { get; set; }
     public string Description { get; set; }

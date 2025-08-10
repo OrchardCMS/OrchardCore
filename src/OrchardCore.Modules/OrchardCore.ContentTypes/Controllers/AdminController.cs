@@ -9,6 +9,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.ContentTypes.Models;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Data.Documents;
@@ -141,7 +142,7 @@ public sealed class AdminController : Controller
 
         var contentTypeDefinition = await _contentDefinitionService.AddTypeAsync(viewModel.Name, viewModel.DisplayName);
 
-        var typeViewModel = new EditTypeViewModel(contentTypeDefinition);
+        var typeViewModel = new EditType(contentTypeDefinition);
 
         await _notifier.SuccessAsync(H["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
 
@@ -170,7 +171,7 @@ public sealed class AdminController : Controller
 
     [HttpPost, ActionName("Edit")]
     public async Task<ActionResult> EditPost(
-        string id, EditTypeViewModel viewModel, [Bind(Prefix = "submit.Save")] string submitSave)
+        string id, EditType viewModel, [Bind(Prefix = "submit.Save")] string submitSave)
     {
         var stayOnSamePage = submitSave == "SaveAndContinue";
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
@@ -214,7 +215,8 @@ public sealed class AdminController : Controller
             : RedirectToAction(nameof(List));
     }
 
-    [HttpPost]
+    [HttpPost, ActionName("Edit")]
+    [FormValueRequired("submit.Delete")]
     public async Task<ActionResult> Delete(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
@@ -465,11 +467,11 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View(new CreatePartViewModel { Name = suggestion.ToSafeName() });
+        return View(new CreatePart { Name = suggestion.ToSafeName() });
     }
 
     [HttpPost, ActionName("CreatePart")]
-    public async Task<ActionResult> CreatePartPOST(CreatePartViewModel viewModel)
+    public async Task<ActionResult> CreatePartPOST(CreatePart viewModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
@@ -536,7 +538,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var viewModel = new EditPartViewModel(contentPartDefinition)
+        var viewModel = new EditPart(contentPartDefinition)
         {
             Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater),
         };
@@ -560,7 +562,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var viewModel = new EditPartViewModel(contentPartDefinition)
+        var viewModel = new EditPart(contentPartDefinition)
         {
             Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater),
         };
@@ -740,7 +742,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var viewModel = new EditFieldViewModel
+        var viewModel = new EditField
         {
             Name = partFieldDefinition.Name,
             Editor = partFieldDefinition.Editor(),
@@ -756,7 +758,7 @@ public sealed class AdminController : Controller
 
     [HttpPost, ActionName("EditField")]
     [FormValueRequired("submit.Save")]
-    public async Task<ActionResult> EditFieldPOST(string id, EditFieldViewModel viewModel, string returnUrl = null)
+    public async Task<ActionResult> EditFieldPOST(string id, EditField viewModel, string returnUrl = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
@@ -908,7 +910,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var typePartViewModel = new EditTypePartViewModel
+        var typePartViewModel = new EditTypePart
         {
             Name = typePartDefinition.Name,
             Editor = typePartDefinition.Editor(),
@@ -924,7 +926,7 @@ public sealed class AdminController : Controller
 
     [HttpPost, ActionName("EditTypePart")]
     [FormValueRequired("submit.Save")]
-    public async Task<ActionResult> EditTypePartPOST(string id, EditTypePartViewModel viewModel)
+    public async Task<ActionResult> EditTypePartPOST(string id, EditTypePart viewModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {

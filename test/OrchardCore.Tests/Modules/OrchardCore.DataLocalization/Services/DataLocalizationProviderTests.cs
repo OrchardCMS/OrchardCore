@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Models;
 using OrchardCore.ContentTypes.Services;
-using OrchardCore.ContentTypes.ViewModels;
 
 namespace OrchardCore.DataLocalization.Services.Tests;
 
@@ -12,7 +12,7 @@ public class DataLocalizationProviderTests
     {
         var contentDefinitionService = new Mock<IContentDefinitionService>();
         contentDefinitionService.Setup(cds => cds.GetTypesAsync())
-            .ReturnsAsync(() => new List<EditTypeViewModel> {
+            .ReturnsAsync(() => new List<EditType> {
                 new() { DisplayName = "Article" },
                 new() { DisplayName = "BlogPost" },
                 new() { DisplayName = "News" },
@@ -29,7 +29,7 @@ public class DataLocalizationProviderTests
     {
         var contentDefinitionService = new Mock<IContentDefinitionService>();
         contentDefinitionService.Setup(cds => cds.GetTypesAsync())
-            .ReturnsAsync(() => new List<EditTypeViewModel>
+            .ReturnsAsync(() => new List<EditType>
             {
                 new()
                 {
