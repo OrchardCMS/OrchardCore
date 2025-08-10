@@ -214,8 +214,7 @@ public sealed class AdminController : Controller
             : RedirectToAction(nameof(List));
     }
 
-    [HttpPost, ActionName("Edit")]
-    [FormValueRequired("submit.Delete")]
+    [HttpPost]
     public async Task<ActionResult> Delete(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
