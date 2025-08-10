@@ -3,13 +3,6 @@
 @using OrchardCore.Security.ViewModels
 @model SecuritySettingsViewModel
 
-@if (Model.FromConfiguration)
-{
-    <p class="alert alert-info">
-        @T["The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."]
-    </p>
-}
-
 <div class="mb-3" asp-validation-class-for="ReferrerPolicy">
     <select asp-for="ReferrerPolicy" class="form-select">
         <option value="@ReferrerPolicyValue.NoReferrer" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.NoReferrer)">

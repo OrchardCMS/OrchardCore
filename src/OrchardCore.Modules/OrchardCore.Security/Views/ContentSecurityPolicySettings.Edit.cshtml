@@ -61,13 +61,6 @@
     }
 }
 
-@if (Model.FromConfiguration)
-{
-    <p class="alert alert-info">
-        @T["The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."]
-    </p>
-}
-
 <div class="mb-3">
     <div class="mb-3" asp-validation-class-for="EnableSandbox">
         <div class="form-check">
