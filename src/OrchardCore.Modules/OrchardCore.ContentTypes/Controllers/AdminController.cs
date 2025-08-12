@@ -545,7 +545,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName("EditPart")]
-    public async Task<ActionResult> EditPartPOST(string id, [Bind(Prefix = "submit.Save")] string submitSave, string[] orderedFieldNames)
+    public async Task<ActionResult> EditPartPOST(string id, string[] orderedFieldNames)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
