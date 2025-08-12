@@ -172,12 +172,6 @@ public sealed class AdminController : Controller
     public async Task<ActionResult> EditPost(
         string id, EditTypeViewModel viewModel, [Bind(Prefix = "submit.Save")] string submitSave)
     {
-        // if the submitSave is null, it means the user clicked on the "Delete" button
-        if (submitSave is null)
-        {
-            return await Delete(id);
-        }
-
         var stayOnSamePage = submitSave == "SaveAndContinue";
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
@@ -553,12 +547,6 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName("EditPart")]
     public async Task<ActionResult> EditPartPOST(string id, [Bind(Prefix = "submit.Save")] string submitSave, string[] orderedFieldNames)
     {
-        // if the submitSave is null, it means the user clicked on the "Delete" button
-        if (submitSave is null)
-        {
-            return await DeletePart(id);
-        }
-
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
