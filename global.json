@@ -1,7 +1,7 @@
 {
   "comment": "We only update the version manually with major SDK updates to keep using any more recent SDK version possible. See https://github.com/OrchardCMS/OrchardCore/pull/17808.",
   "sdk": {
-    "version": "9.0.100",
+    "version": "8.0.118",
     "rollForward": "latestMajor"
   }
 }
