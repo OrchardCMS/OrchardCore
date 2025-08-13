@@ -37,7 +37,7 @@ public class ConfiguredFeaturesShellDescriptorManager : IShellDescriptorManager
                 .Concat(configuredFeatures.Features.Select(id => new ShellFeature(id) { AlwaysEnabled = true }))
                 .Distinct();
 
-            var featureIds = features.Select(sf => sf.Id).ToArray();
+            var featureIds = features.Select(sf => sf.Id);
 
             var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds))
                 .Select(entry => entry.Id)

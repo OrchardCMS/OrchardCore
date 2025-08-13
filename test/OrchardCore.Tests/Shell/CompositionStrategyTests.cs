@@ -19,7 +19,7 @@ public class CompositionStrategyTests
         var feature = featureMock.Object;
 
         var extensionManager = new Mock<IExtensionManager>();
-        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<string[]>()))
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
             .ReturnsAsync(new List<IFeatureInfo> { feature });
 
         var exportedType = typeof(DummyType);
@@ -58,7 +58,7 @@ public class CompositionStrategyTests
         var feature = featureMock.Object;
 
         var extensionManager = new Mock<IExtensionManager>();
-        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<string[]>()))
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
             .ReturnsAsync(new List<IFeatureInfo> { feature });
 
         var exportedType = typeof(TypeWithRequiredFeature);
@@ -93,7 +93,7 @@ public class CompositionStrategyTests
         var feature = featureMock.Object;
 
         var extensionManager = new Mock<IExtensionManager>();
-        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<string[]>()))
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
             .ReturnsAsync(new List<IFeatureInfo> { feature });
 
         var exportedType = typeof(TypeWithMultipleRequiredFeatures);
@@ -134,7 +134,7 @@ public class CompositionStrategyTests
         var featureB = featureBMock.Object;
 
         var extensionManager = new Mock<IExtensionManager>();
-        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<string[]>()))
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
             .ReturnsAsync(new List<IFeatureInfo> { featureA, featureB });
 
         var exportedType = typeof(TypeWithMultipleRequiredFeatures);
@@ -173,7 +173,7 @@ public class CompositionStrategyTests
         var feature = featureMock.Object;
 
         var extensionManager = new Mock<IExtensionManager>();
-        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<string[]>()))
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
             .ReturnsAsync(new List<IFeatureInfo> { feature });
 
         var exportedType = typeof(DummyType);

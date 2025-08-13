@@ -32,7 +32,7 @@ public class CompositionStrategy : ICompositionStrategy
 
         var featureNames = descriptor.Features.Select(x => x.Id).ToHashSet();
 
-        var features = await _extensionManager.LoadFeaturesAsync(featureNames.ToArray());
+        var features = await _extensionManager.LoadFeaturesAsync(featureNames);
 
         var entries = new Dictionary<Type, IEnumerable<IFeatureInfo>>();
 
