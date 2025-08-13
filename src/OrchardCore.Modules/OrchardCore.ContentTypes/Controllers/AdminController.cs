@@ -170,7 +170,7 @@ public sealed class AdminController : Controller
 
     [HttpPost, ActionName("Edit")]
     public async Task<ActionResult> EditPost(
-        string id, EditTypeViewModel viewModel, [Bind(Prefix = "submit.Save")] string submitSave)
+        string id, EditTypeViewModel viewModel, [Bind(Prefix = "submit.Save")] string submitSave, string returnUrl = null)
     {
         var stayOnSamePage = submitSave == "SaveAndContinue";
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
@@ -208,6 +208,8 @@ public sealed class AdminController : Controller
 
             await _notifier.SuccessAsync(H["Content type updated successfully."]);
         }
+
+        ViewData["ReturnUrl"] = returnUrl;
 
         return stayOnSamePage
             ? RedirectToAction(nameof(Edit), new { id })
@@ -545,7 +547,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName("EditPart")]
-    public async Task<ActionResult> EditPartPOST(string id, string[] orderedFieldNames)
+    public async Task<ActionResult> EditPartPOST(string id, string[] orderedFieldNames, string returnUrl = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
@@ -574,6 +576,8 @@ public sealed class AdminController : Controller
             await _contentDefinitionService.AlterPartFieldsOrderAsync(contentPartDefinition, orderedFieldNames);
             await _notifier.SuccessAsync(H["The settings of \"{0}\" have been saved.", contentPartDefinition.Name]);
         }
+
+        ViewData["ReturnUrl"] = returnUrl;
 
         return RedirectToAction(nameof(EditPart), new { id });
     }
