@@ -1,5 +1,4 @@
 using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Fluent;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Clients.Elasticsearch.QueryDsl;
@@ -181,7 +180,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             return null;
         }
 
-        return response.Indices[indexFullName].Mappings;
+        return response.GetMappingFor(indexFullName);
     }
 
     private static Dictionary<string, object> CreateElasticDocument(DocumentIndex documentIndex)
