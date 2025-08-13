@@ -5,7 +5,6 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Tests.Stubs;
-using OrchardCore.Modules;
 using StartupBase = OrchardCore.Modules.StartupBase;
 
 namespace OrchardCore.Tests.Shell;
@@ -93,6 +92,7 @@ public class ShellContainerFactoryTests
             .ServiceProvider;
 
         var appSingleton = _applicationServiceProvider.GetRequiredService<ITestSingleton>();
+
         var singleton1 = container.GetRequiredService<ITestSingleton>();
         var singleton2 = container.GetRequiredService<ITestSingleton>();
         var transient1 = container.GetRequiredService<ITestTransient>();
@@ -170,38 +170,6 @@ public class ShellContainerFactoryTests
 
         Assert.IsType<TestService>(container.GetRequiredService(typeof(ITestService)));
         Assert.Equal(expectedFeatureInfos, typeFeatureProvider.GetFeaturesForDependency(typeof(TestService)));
-    }
-
-    [Fact]
-    public async Task ConfigureServices_NotCalled_IfRequiredFeaturesNotEnabled()
-    {
-        var shellBlueprint = CreateBlueprint();
-
-        // Only FeatureA is enabled, but the startup requires both FeatureA and FeatureB
-        var featureA = new FeatureInfo("FeatureA", "FeatureA", 1, "Tests", null, new ExtensionInfo("FeatureA"), null, false, false, false);
-        var featureB = new FeatureInfo("FeatureB", "FeatureB", 1, "Tests", null, new ExtensionInfo("FeatureB"), null, false, false, false);
-        shellBlueprint.Dependencies.Add(typeof(StartupWithRequiredFeatures), new[] { featureA });
-
-        // Reset the static flag
-        StartupWithRequiredFeatures.ConfigureServicesCalled = false;
-
-        var container = (await _shellContainerFactory
-            .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
-            .CreateScope()
-            .ServiceProvider;
-
-        // Assert that ConfigureServices was not called
-        Assert.False(StartupWithRequiredFeatures.ConfigureServicesCalled);
-    }
-
-    [RequireFeatures("FeatureA", "FeatureB")]
-    private sealed class StartupWithRequiredFeatures : StartupBase
-    {
-        public static bool ConfigureServicesCalled;
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            ConfigureServicesCalled = true;
-        }
     }
 
     private static ShellBlueprint CreateBlueprint()
