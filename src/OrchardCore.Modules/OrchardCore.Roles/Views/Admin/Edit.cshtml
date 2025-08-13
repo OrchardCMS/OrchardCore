@@ -1,7 +1,20 @@
 @model EditRoleViewModel
 @using OrchardCore.Roles.ViewModels
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' Role", Model.Name])</h1></zone>
+<zone Name="Title">
+    <h1>
+        @if (Model.IsCloneRole)
+        {
+            @RenderTitleSegments(T["Clone '{0}' Role", Model.Name])
+        }
+        else
+        {
+            @RenderTitleSegments(T["Edit '{0}' Role", Model.Name])
+        }
+    </h1>
+</zone>
+
+<div asp-validation-summary="ModelOnly"></div>
 
 @if (ViewData["DuplicatedPermissions"] is string[] duplicatedPermissions && duplicatedPermissions.Length > 0)
 {
@@ -17,8 +30,15 @@
     </div>
 }
 
-<form asp-action="Edit" method="post" class="no-multisubmit">
-
+<form asp-action="@(Model.IsCloneRole ? "Clone" : "Edit")" method="post" class="no-multisubmit">
+    @if (!Model.IsAdminRole && Model.IsCloneRole)
+    {
+        <div class="mb-3" asp-validation-class-for="CloneRoleName">
+            <label asp-for="CloneRoleName" class="form-label">@T["Name"]</label>
+            <input asp-for="CloneRoleName" class="form-control" autofocus />
+            <span asp-validation-for="CloneRoleName" class="text-danger"></span>
+        </div>
+    }
     <div class="mb-3" asp-validation-class-for="RoleDescription">
         <label asp-for="RoleDescription" class="form-label">@T["Description"]</label>
         <textarea asp-for="RoleDescription" class="form-control"></textarea>

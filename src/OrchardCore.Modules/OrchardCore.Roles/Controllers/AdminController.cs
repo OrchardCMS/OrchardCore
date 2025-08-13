@@ -103,22 +103,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (ModelState.IsValid)
-        {
-            model.RoleName = model.RoleName.Trim();
-
-            if (model.RoleName.Contains('/'))
-            {
-                ModelState.AddModelError(string.Empty, S["Invalid role name."]);
-            }
-
-            if (await _roleManager.FindByNameAsync(model.RoleName) != null)
-            {
-                ModelState.AddModelError(string.Empty, S["The role is already used."]);
-            }
-        }
-
-        if (ModelState.IsValid)
+        if (ModelState.IsValid && await ValidateRoleNameAsync(model.RoleName))
         {
             var role = new Role
             {
@@ -202,19 +187,8 @@ public sealed class AdminController : Controller
 
         if (!await _roleService.IsAdminRoleAsync(role.RoleName))
         {
-            var rolePermissions = new List<RoleClaim>();
-
-            foreach (var key in Request.Form.Keys)
-            {
-                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
-                {
-                    var permissionName = key["Checkbox.".Length..];
-                    rolePermissions.Add(RoleClaim.Create(permissionName));
-                }
-            }
-
             role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-            role.RoleClaims.AddRange(rolePermissions);
+            role.RoleClaims.AddRange(ExtractSelectedPermissions());
         }
 
         await _roleManager.UpdateAsync(role);
@@ -337,5 +311,130 @@ public sealed class AdminController : Controller
         }
 
         return result;
+    }
+
+    public async Task<IActionResult> Clone(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
+        {
+            return Forbid();
+        }
+
+        if (await _roleManager.FindByIdAsync(id) is not Role role)
+        {
+            return NotFound();
+        }
+
+        var model = await BuildRoleViewModelAsync(role, role.RoleName, role.RoleDescription);
+        return View("Edit", model);
+    }
+
+    [HttpPost, ActionName(nameof(Clone))]
+    public async Task<IActionResult> ClonePost(string id, string cloneRoleName, string roleDescription)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
+        {
+            return Forbid();
+        }
+
+        if (await _roleManager.FindByIdAsync(id) is not Role sourceRole)
+        {
+            return NotFound();
+        }
+
+        cloneRoleName = cloneRoleName?.Trim();
+
+        if (await ValidateRoleNameAsync(cloneRoleName))
+        {
+            var newRole = new Role
+            {
+                RoleName = cloneRoleName,
+                RoleDescription = roleDescription,
+                RoleClaims = await _roleService.IsAdminRoleAsync(cloneRoleName)
+                    ? new List<RoleClaim>()
+                    : ExtractSelectedPermissions(),
+            };
+
+            var result = await _roleManager.CreateAsync(newRole);
+
+            if (result.Succeeded)
+            {
+                await _notifier.SuccessAsync(H["Role cloned successfully."]);
+                return RedirectToAction(nameof(Index));
+            }
+
+            await _documentStore.CancelAsync();
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+        }
+
+        var model = await BuildRoleViewModelAsync(sourceRole, cloneRoleName, roleDescription);
+        return View("Edit", model);
+    }
+
+    // Common role name validation
+    private async Task<bool> ValidateRoleNameAsync(string roleName)
+    {
+        if (string.IsNullOrWhiteSpace(roleName))
+        {
+            ModelState.AddModelError(string.Empty, S["Role name is required."]);
+            return false;
+        }
+
+        roleName = roleName.Trim();
+
+        if (roleName.Contains('/'))
+        {
+            ModelState.AddModelError(string.Empty, S["Invalid role name."]);
+            return false;
+        }
+
+        if (await _roleManager.FindByNameAsync(roleName) != null)
+        {
+            ModelState.AddModelError(string.Empty, S["The role name is already in use."]);
+            return false;
+        }
+
+        return true;
+    }
+
+    // Common permission extraction
+    private List<RoleClaim> ExtractSelectedPermissions()
+    {
+        return Request.Form.Keys
+            .Where(key => key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
+            .Select(key => RoleClaim.Create(key["Checkbox.".Length..]))
+            .ToList();
+    }
+
+    // Common Edit/Clone ViewModel builder
+    private async Task<EditRoleViewModel> BuildRoleViewModelAsync(Role role, string cloneRoleName, string description)
+    {
+        var installedPermissions = await GetInstalledPermissionsAsync();
+        var allPermissions = installedPermissions.SelectMany(x => x.Value);
+        var isAdmin = await _roleService.IsAdminRoleAsync(role.RoleName);
+
+        var model = new EditRoleViewModel
+        {
+            Role = role,
+            Name = role.RoleName,
+            CloneRoleName = cloneRoleName,
+            RoleDescription = description,
+            IsAdminRole = isAdmin,
+            IsCloneRole = true,
+            RoleCategoryPermissions = installedPermissions,
+            EffectivePermissions = !isAdmin ? await GetEffectivePermissions(role, allPermissions) : null,
+        };
+
+        ViewData["DuplicatedPermissions"] = allPermissions
+            .GroupBy(p => p.Name.ToUpperInvariant())
+            .Where(g => g.Count() > 1)
+            .Select(g => g.First().Name)
+            .ToArray();
+
+        return model;
     }
 }

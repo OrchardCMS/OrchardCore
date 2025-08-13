@@ -21,4 +21,6 @@ public class EditRoleViewModel
 
     [BindNever]
     public Role Role { get; set; }
+    public string CloneRoleName { get; set; }
+    public bool IsCloneRole { get; set; }
 }
