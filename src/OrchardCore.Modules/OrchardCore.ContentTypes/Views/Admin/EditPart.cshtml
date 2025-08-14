@@ -78,7 +78,7 @@
     <div class="mb-3">
         <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         <a role="btn-delete" asp-route-action="DeletePart" asp-route-id="@Model.Name" class="btn btn-danger" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content part?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
-        <a class="btn btn-secondary" asp-route-action="ListParts" asp-route-returnUrl="@FullRequestPath">@T["Cancel"]</a>
+        <a class="btn btn-secondary" asp-route-action="ListParts">@T["Cancel"]</a>
     </div>
 </form>
 <script asp-name="Sortable" at="Foot"></script>
