@@ -1,17 +1,17 @@
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.ContentTypes.Models;
 
 namespace OrchardCore.ContentTypes.Services;
 
 public interface IContentDefinitionService
 {
-    Task<IEnumerable<EditTypeViewModel>> LoadTypesAsync();
+    Task<IEnumerable<EditType>> LoadTypesAsync();
 
-    Task<IEnumerable<EditTypeViewModel>> GetTypesAsync();
+    Task<IEnumerable<EditType>> GetTypesAsync();
 
-    Task<EditTypeViewModel> LoadTypeAsync(string name);
+    Task<EditType> LoadTypeAsync(string name);
 
-    Task<EditTypeViewModel> GetTypeAsync(string name);
+    Task<EditType> GetTypeAsync(string name);
 
     Task<ContentTypeDefinition> AddTypeAsync(string name, string displayName);
 
@@ -27,15 +27,15 @@ public interface IContentDefinitionService
 
     Task<string> GenerateFieldNameFromDisplayNameAsync(string partName, string displayName);
 
-    Task<IEnumerable<EditPartViewModel>> LoadPartsAsync(bool metadataPartsOnly);
+    Task<IEnumerable<EditPart>> LoadPartsAsync(bool metadataPartsOnly);
 
-    Task<IEnumerable<EditPartViewModel>> GetPartsAsync(bool metadataPartsOnly);
+    Task<IEnumerable<EditPart>> GetPartsAsync(bool metadataPartsOnly);
 
-    Task<EditPartViewModel> LoadPartAsync(string name);
+    Task<EditPart> LoadPartAsync(string name);
 
-    Task<EditPartViewModel> GetPartAsync(string name);
+    Task<EditPart> GetPartAsync(string name);
 
-    Task<EditPartViewModel> AddPartAsync(CreatePartViewModel partViewModel);
+    Task<EditPart> AddPartAsync(CreatePart part);
 
     Task RemovePartAsync(string name);
 
@@ -47,9 +47,9 @@ public interface IContentDefinitionService
 
     Task RemoveFieldFromPartAsync(string fieldName, string partName);
 
-    Task AlterFieldAsync(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel);
+    Task AlterFieldAsync(EditPart part, EditField field);
 
-    Task AlterTypePartAsync(EditTypePartViewModel partViewModel);
+    Task AlterTypePartAsync(EditTypePart part);
 
     Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames);
 

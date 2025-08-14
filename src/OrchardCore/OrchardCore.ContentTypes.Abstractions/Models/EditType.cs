@@ -2,16 +2,16 @@ using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentTypes.ViewModels;
+namespace OrchardCore.ContentTypes.Models;
 
-public class EditTypeViewModel
+public class EditType
 {
-    public EditTypeViewModel()
+    public EditType()
     {
         Settings = [];
     }
 
-    public EditTypeViewModel(ContentTypeDefinition contentTypeDefinition)
+    public EditType(ContentTypeDefinition contentTypeDefinition)
     {
         Name = contentTypeDefinition.Name;
         DisplayName = contentTypeDefinition.DisplayName;
@@ -20,8 +20,11 @@ public class EditTypeViewModel
     }
 
     public string Name { get; set; }
+
     public string DisplayName { get; set; }
+
     public string[] OrderedFieldNames { get; set; }
+
     public string[] OrderedPartNames { get; set; }
 
     [BindNever]

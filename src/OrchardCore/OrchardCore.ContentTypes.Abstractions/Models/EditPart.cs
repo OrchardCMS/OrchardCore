@@ -4,15 +4,15 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Utilities;
 
-namespace OrchardCore.ContentTypes.ViewModels;
+namespace OrchardCore.ContentTypes.Models;
 
-public class EditPartViewModel
+public class EditPart
 {
-    public EditPartViewModel()
+    public EditPart()
     {
     }
 
-    public EditPartViewModel(ContentPartDefinition contentPartDefinition)
+    public EditPart(ContentPartDefinition contentPartDefinition)
     {
         Name = contentPartDefinition.Name;
         PartDefinition = contentPartDefinition;

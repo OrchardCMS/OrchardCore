@@ -1,5 +1,5 @@
+using OrchardCore.ContentTypes.Models;
 using OrchardCore.ContentTypes.Services;
-using OrchardCore.ContentTypes.ViewModels;
 
 namespace OrchardCore.DataLocalization.Services.Tests;
 
@@ -11,7 +11,7 @@ public class ContentTypeDataLocalizationProviderTests
     {
         var contentDefinitionService = new Mock<IContentDefinitionService>();
         contentDefinitionService.Setup(service => service.GetTypesAsync())
-            .ReturnsAsync(() => new List<EditTypeViewModel> {
+            .ReturnsAsync(() => new List<EditType> {
                 new() { DisplayName = "Article" },
                 new() { DisplayName = "BlogPost" },
                 new() { DisplayName = "News" },
