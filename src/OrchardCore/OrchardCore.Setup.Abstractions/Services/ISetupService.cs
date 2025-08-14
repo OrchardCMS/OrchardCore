@@ -3,7 +3,7 @@ using OrchardCore.Recipes.Models;
 namespace OrchardCore.Setup.Services;
 
 /// <summary>
-/// Contract that represents the setup service.
+/// Represents a contract for the setup service.
 /// </summary>
 public interface ISetupService
 {
