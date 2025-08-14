@@ -142,8 +142,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         // Get installed features that are no more enabled.
         var missingFeatures = _shellDescriptor.Installed
             .Except(_shellDescriptor.Features)
-            .Select(feature => feature.Id)
-            .ToArray();
+            .Select(feature => feature.Id);
 
         // And defining at least one 'IPermissionProvider'.
         rolesDocument.MissingFeaturesByRole[roleName] = (await _extensionManager.LoadFeaturesAsync(missingFeatures))

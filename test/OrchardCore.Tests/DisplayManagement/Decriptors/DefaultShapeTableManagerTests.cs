@@ -259,6 +259,9 @@ public class DefaultShapeTableManagerTests : IDisposable
         }
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
+            => GetFeatures((IEnumerable<string>)featureIdsToLoad);
+
+        public IEnumerable<IFeatureInfo> GetFeatures(IEnumerable<string> featureIdsToLoad)
         {
             return _features.Where(x => featureIdsToLoad.Contains(x.Id));
         }
@@ -274,6 +277,9 @@ public class DefaultShapeTableManagerTests : IDisposable
         }
 
         public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
+            => LoadFeaturesAsync((IEnumerable<string>)featureIdsToLoad);
+
+        public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(IEnumerable<string> featureIdsToLoad)
         {
             throw new NotImplementedException();
         }
