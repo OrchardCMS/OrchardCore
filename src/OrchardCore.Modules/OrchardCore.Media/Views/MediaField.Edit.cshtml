@@ -23,13 +23,13 @@
         <div class="media-field-toolbar mb-1" v-cloak>
             <div class="btn-group">
                 <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
-                    <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fa-solid fa-compress-alt" aria-hidden="true"></i></span>
-                    <span v-show="smallThumbs" title="@T[" Large Thumbs"]"><i class="fa-solid fa-expand-alt" aria-hidden="true"></i></span>
+                    <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fa-solid fa-down-left-and-up-right-to-center" aria-hidden="true"></i></span>
+                    <span v-show="smallThumbs" title="@T[" Large Thumbs"]"><i class="fa-solid fa-up-right-and-down-left-from-center" aria-hidden="true"></i></span>
                 </button>
                 <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa-solid fa-plus" aria-hidden="true"></i></a>
-                <a href="javascript:;" v-show="allowMediaText" v-on:click="showMediaTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="far fa-comment" aria-hidden="true"></i></a>
+                <a href="javascript:;" v-show="allowMediaText" v-on:click="showMediaTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-regular fa-comment" aria-hidden="true"></i></a>
                 <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia || !selectedMedia.mime.startsWith('image') }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
-                <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash-alt" aria-hidden="true"></i></a>
+                <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
             </div>
             <label class="selected-media-name form-label">
                 <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>

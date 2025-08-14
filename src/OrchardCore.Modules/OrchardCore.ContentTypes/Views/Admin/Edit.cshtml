@@ -107,7 +107,7 @@
                             }
                             @if (!string.IsNullOrEmpty(fieldDefinition.Editor()))
                             {
-                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-edit text-info" aria-hidden="true"></i> @fieldDefinition.Editor()</span>
+                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-pen-to-square text-info" aria-hidden="true"></i> @fieldDefinition.Editor()</span>
                             }
                         </div>
                         <input type="hidden" asp-for="OrderedFieldNames" value="@fieldDefinition.Name" />
@@ -169,7 +169,7 @@
                         }
                         @if (!string.IsNullOrEmpty(partDefinition.Editor()))
                         {
-                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-edit text-info" aria-hidden="true"></i> @partDefinition.Editor()</span>
+                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-pen-to-square text-info" aria-hidden="true"></i> @partDefinition.Editor()</span>
                         }
                     </div>
                     <input type="hidden" asp-for="OrderedPartNames" value="@partDefinition.Name" />
