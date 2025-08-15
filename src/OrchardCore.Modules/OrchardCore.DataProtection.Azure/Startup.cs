@@ -33,7 +33,8 @@ public sealed class Startup : StartupBase
                 .AddDataProtection()
                 .PersistKeysToAzureBlobStorage(sp =>
                 {
-                    var options = sp.GetRequiredService<BlobOptions>();
+                    var options = sp.GetRequiredService<IOptions<BlobOptions>>().Value;
+
                     return new BlobClient(
                         options.ConnectionString,
                         options.ContainerName,
