@@ -30,9 +30,10 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
     private readonly ILogger _logger;
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IEnumerable<IContentHandler> _contentHandlers;
+    private readonly IEnumerable<IContentHandler> _reversedContentHandlers;
 
     internal readonly IHtmlLocalizer H;
-    private readonly IEnumerable<IContentHandler> _contentHandlers;
 
     public BagPartDisplayDriver(
         IContentManager contentManager,
@@ -54,6 +55,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
         _notifier = notifier;
         H = htmlLocalizer;
         _contentHandlers = contentHandlers;
+        _reversedContentHandlers = contentHandlers.Reverse();
         _authorizationService = authorizationService;
     }
 
@@ -138,7 +140,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
                 contentItem.Merge(existingContentItem);
 
                 await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
-                await _contentHandlers.Reverse().InvokeAsync((handler, context) => handler.UpdatedAsync(context), updateContentContext, _logger);
+                await _reversedContentHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), updateContentContext, _logger);
             }
             else
             {
@@ -146,7 +148,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
                 await _contentHandlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), createContentContext, _logger);
                 await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
-                await _contentHandlers.Reverse().InvokeAsync((handler, context) => handler.CreatedAsync(context), createContentContext, _logger);
+                await _reversedContentHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), createContentContext, _logger);
             }
 
             contentItems.Add(contentItem);
