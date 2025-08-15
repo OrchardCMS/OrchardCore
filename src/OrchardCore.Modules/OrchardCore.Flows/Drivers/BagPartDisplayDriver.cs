@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
@@ -15,6 +16,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Flows.Drivers;
@@ -30,6 +32,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
     private readonly IAuthorizationService _authorizationService;
 
     internal readonly IHtmlLocalizer H;
+    private readonly IEnumerable<IContentHandler> _contentHandlers;
 
     public BagPartDisplayDriver(
         IContentManager contentManager,
@@ -39,6 +42,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
         ILogger<BagPartDisplayDriver> logger,
         INotifier notifier,
         IHtmlLocalizer<BagPartDisplayDriver> htmlLocalizer,
+        IEnumerable<IContentHandler> contentHandlers,
         IAuthorizationService authorizationService
         )
     {
@@ -49,6 +53,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
         _logger = logger;
         _notifier = notifier;
         H = htmlLocalizer;
+        _contentHandlers = contentHandlers;
         _authorizationService = authorizationService;
     }
 
@@ -124,12 +129,25 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
                     continue;
                 }
 
-                // at this point the user have privileges to edit, merge the data from the request
+                // At this point the user have privileges to edit, merge the data from the request
+                var updateContentContext = new UpdateContentContext(contentItem);
+
+                await _contentHandlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), updateContentContext, _logger);
+
                 contentItem.ContentItemId = model.ContentItems[i];
                 contentItem.Merge(existingContentItem);
-            }
 
-            var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
+                await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
+                await _contentHandlers.Reverse().InvokeAsync((handler, context) => handler.UpdatedAsync(context), updateContentContext, _logger);
+            }
+            else
+            {
+                var createContentContext = new CreateContentContext(contentItem);
+
+                await _contentHandlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), createContentContext, _logger);
+                await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
+                await _contentHandlers.Reverse().InvokeAsync((handler, context) => handler.CreatedAsync(context), createContentContext, _logger);
+            }
 
             contentItems.Add(contentItem);
         }
