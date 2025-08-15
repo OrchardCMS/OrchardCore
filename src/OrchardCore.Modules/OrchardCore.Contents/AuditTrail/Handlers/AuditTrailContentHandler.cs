@@ -78,7 +78,7 @@ public class AuditTrailContentHandler : ContentHandlerBase
 
         var versionNumber = await _session
             .QueryIndex<ContentItemIndex>(index => index.ContentItemId == content.ContentItem.ContentItemId)
-            .CountAsync();
+            .CountAsync(CancellationToken.None);
 
         await _auditTrailManager.RecordEventAsync(
             new AuditTrailContext<AuditTrailContentEvent>

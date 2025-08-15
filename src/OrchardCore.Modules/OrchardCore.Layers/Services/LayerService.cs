@@ -35,7 +35,7 @@ public class LayerService : ILayerService
         return _session
             .Query<ContentItem, LayerMetadataIndex>()
             .With(predicate)
-            .ListAsync();
+            .ListAsync(CancellationToken.None);
     }
 
     public async Task<IEnumerable<LayerMetadata>> GetLayerWidgetsMetadataAsync(

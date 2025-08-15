@@ -25,7 +25,7 @@ public static class AliasPartExtensions
 
     public static async Task<bool> IsAliasUniqueAsync(this AliasPart context, ISession session, string alias)
     {
-        return (await session.QueryIndex<AliasPartIndex>(o => o.Alias == alias && o.ContentItemId != context.ContentItem.ContentItemId).CountAsync()) == 0;
+        return (await session.QueryIndex<AliasPartIndex>(o => o.Alias == alias && o.ContentItemId != context.ContentItem.ContentItemId).CountAsync(CancellationToken.None)) == 0;
     }
 
 }

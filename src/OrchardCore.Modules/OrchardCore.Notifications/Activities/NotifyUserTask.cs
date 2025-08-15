@@ -53,7 +53,7 @@ public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
 
                 foreach (var page in userNames.PagesOf(1000))
                 {
-                    users.AddRange(await _session.Query<User, UserIndex>(user => user.NormalizedUserName.IsIn(page)).ListAsync());
+                    users.AddRange(await _session.Query<User, UserIndex>(user => user.NormalizedUserName.IsIn(page)).ListAsync(CancellationToken.None));
                 }
 
                 return users;

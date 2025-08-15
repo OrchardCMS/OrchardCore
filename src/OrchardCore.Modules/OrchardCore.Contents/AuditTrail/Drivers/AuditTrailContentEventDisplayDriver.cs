@@ -35,7 +35,7 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
         if (!_latestVersionId.TryGetValue(contentItemId, out var latestVersionId))
         {
             latestVersionId = (await _session.QueryIndex<ContentItemIndex>(index => index.ContentItemId == contentItemId && index.Latest)
-                .FirstOrDefaultAsync())
+                .FirstOrDefaultAsync(CancellationToken.None))
                 ?.ContentItemVersionId;
 
             _latestVersionId[contentItemId] = latestVersionId;
@@ -60,7 +60,7 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
                         index.EventId != auditTrailEvent.EventId &&
                         index.CorrelationId == contentEvent.ContentItem.ContentItemId)
                     .OrderByDescending(index => index.Id)
-                    .FirstOrDefaultAsync())?
+                    .FirstOrDefaultAsync(CancellationToken.None))?
                     .As<AuditTrailContentEvent>()
                     .ContentItem;
 
@@ -87,7 +87,7 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
                         index.EventId != auditTrailEvent.EventId &&
                         index.CorrelationId == contentEvent.ContentItem.ContentItemId)
                     .OrderByDescending(index => index.Id)
-                    .FirstOrDefaultAsync())?
+                    .FirstOrDefaultAsync(CancellationToken.None))?
                     .As<AuditTrailContentEvent>()
                     .ContentItem;
 

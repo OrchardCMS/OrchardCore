@@ -30,7 +30,7 @@ public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
         var itemsToArchive = await serviceProvider
             .GetRequiredService<ISession>()
             .QueryIndex<ArchiveLaterPartIndex>(index => index.Latest && index.Published && index.ScheduledArchiveDateTimeUtc < _clock.UtcNow)
-            .ListAsync();
+            .ListAsync(cancellationToken);
 
         if (!itemsToArchive.Any())
         {

@@ -31,7 +31,7 @@ public class BlogPostContentStepIdempotentTests
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
                 var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                    x.ContentType == "BlogPost").ListAsync(CancellationToken.None);
 
                 Assert.Equal(2, blogPosts.Count());
 
@@ -70,7 +70,7 @@ public class BlogPostContentStepIdempotentTests
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
                 var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                    x.ContentType == "BlogPost").ListAsync(CancellationToken.None);
 
                 Assert.Single(blogPosts);
                 var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);

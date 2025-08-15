@@ -13,7 +13,7 @@ internal static class ListQueryHelpers
         return session.Query<ContentItem>()
                 .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
                 .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
-                .CountAsync();
+                .CountAsync(CancellationToken.None);
     }
 
     internal static Task<IEnumerable<ContentItem>> QueryListItemsAsync(ISession session, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)
@@ -21,6 +21,6 @@ internal static class ListQueryHelpers
         return session.Query<ContentItem>()
                 .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
                 .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
-                .ListAsync();
+                .ListAsync(CancellationToken.None);
     }
 }

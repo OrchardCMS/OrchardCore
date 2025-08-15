@@ -134,7 +134,7 @@ public class LocalizationEntries : ILocalizationEntries
                 var indexes = await Session
                     .QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId)
                     .OrderBy(i => i.Id)
-                    .ListAsync();
+                    .ListAsync(CancellationToken.None);
 
                 // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                 // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
@@ -191,7 +191,7 @@ public class LocalizationEntries : ILocalizationEntries
                 var indexes = await Session
                     .QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null)
                     .OrderBy(i => i.Id)
-                    .ListAsync();
+                    .ListAsync(CancellationToken.None);
 
                 var entries = indexes.Select(i => new LocalizationEntry
                 {

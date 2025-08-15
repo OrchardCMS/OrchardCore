@@ -365,8 +365,8 @@ public sealed class OpenIdMigrations : DataMigration
         );
 
         // Retrieve all existing tokens and authorizations from original Document table.
-        var tokens = await _session.Query<OpenIdToken>().ListAsync();
-        var authorizations = await _session.Query<OpenIdAuthorization>().ListAsync();
+        var tokens = await _session.Query<OpenIdToken>().ListAsync(CancellationToken.None);
+        var authorizations = await _session.Query<OpenIdAuthorization>().ListAsync(CancellationToken.None);
 
         // Enlist the old documents in the new collection and remove from the old collections.
         foreach (var token in tokens)
@@ -468,8 +468,8 @@ public sealed class OpenIdMigrations : DataMigration
         );
 
         // Retrieve all existing applications and scopes from original Document table.
-        var applications = await _session.Query<OpenIdApplication>().ListAsync();
-        var scopes = await _session.Query<OpenIdScope>().ListAsync();
+        var applications = await _session.Query<OpenIdApplication>().ListAsync(CancellationToken.None);
+        var scopes = await _session.Query<OpenIdScope>().ListAsync(CancellationToken.None);
 
         // Enlist the old documents in the new collection and remove from the old collections.
         foreach (var application in applications)
@@ -495,7 +495,7 @@ public sealed class OpenIdMigrations : DataMigration
 
         // Flush the saved documents so that the old reduced indexes will be calculated
         // and committed to the transaction before they are then dropped.
-        await _session.FlushAsync();
+        await _session.FlushAsync(CancellationToken.None);
 
         // These can be safely dropped after flushing.
         await SchemaBuilder.DropMapIndexTableAsync<OpenIdApplicationIndex>();

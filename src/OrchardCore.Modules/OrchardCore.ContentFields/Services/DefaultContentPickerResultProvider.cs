@@ -49,7 +49,7 @@ public class DefaultContentPickerResultProvider : IContentPickerResultProvider
             query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query) || x.ContentType.Contains(searchContext.Query));
         }
 
-        var contentItems = await query.Take(50).ListAsync();
+        var contentItems = await query.Take(50).ListAsync(CancellationToken.None);
 
         var results = new List<ContentPickerResult>();
         var settings = searchContext.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();

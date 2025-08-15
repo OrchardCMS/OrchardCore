@@ -28,7 +28,7 @@ public class CustomUserSettingsDeploymentSource
 
         // Todo: check permissions for each settings type
         var userData = new JsonArray();
-        var allUsers = await _session.Query<User>().ListAsync();
+        var allUsers = await _session.Query<User>().ListAsync(CancellationToken.None);
 
         foreach (var user in allUsers)
         {

@@ -101,7 +101,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     {
         await using (var session = store.CreateSession())
         {
-            var builder = new SchemaBuilder(store.Configuration, await session.BeginTransactionAsync());
+            var builder = new SchemaBuilder(store.Configuration, await session.BeginTransactionAsync(CancellationToken.None));
 
             await builder.CreateMapIndexTableAsync<ContentItemIndex>(table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
@@ -126,7 +126,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                 .Column<bool>(nameof(AnimalTraitsIndex.IsScary))
             );
 
-            await session.SaveChangesAsync();
+            await session.SaveChangesAsync(CancellationToken.None);
         }
 
         store.RegisterIndexes<ContentItemIndexProvider>();
@@ -151,8 +151,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new AnimalPart { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, false, null, CancellationToken.None);
+        await session.SaveChangesAsync(CancellationToken.None);
 
         var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -188,8 +188,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new AnimalPart { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, false, null, CancellationToken.None);
+        await session.SaveChangesAsync(CancellationToken.None);
 
         var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -223,8 +223,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new AnimalPart { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, false, null, CancellationToken.None);
+        await session.SaveChangesAsync(CancellationToken.None);
 
         var type = new ContentItemsFieldType("Animal",
             new Schema(services),
@@ -259,8 +259,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new Animal { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, false, null, CancellationToken.None);
+        await session.SaveChangesAsync(CancellationToken.None);
 
         var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -308,10 +308,10 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveAsync(ci1);
-        await session.SaveAsync(ci2);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, false, null, CancellationToken.None);
+        await session.SaveAsync(ci1, false, null, CancellationToken.None);
+        await session.SaveAsync(ci2, false, null, CancellationToken.None);
+        await session.SaveChangesAsync(CancellationToken.None);
 
         var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -345,8 +345,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new AnimalPart { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, false, null, CancellationToken.None);
+        await session.SaveChangesAsync(CancellationToken.None);
 
         var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -378,8 +378,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         ci.Weld(new AnimalPart { Name = "doug" });
 
         var session = context.RequestServices.GetService<ISession>();
-        await session.SaveAsync(ci);
-        await session.SaveChangesAsync();
+        await session.SaveAsync(ci, false, null, CancellationToken.None);
+        await session.SaveChangesAsync(CancellationToken.None);
 
         var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
