@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-367-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-368-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -509,6 +509,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/Buzz-Al"><img src="https://avatars.githubusercontent.com/u/218998992?v=4?s=100" width="100px;" alt="Buzz-Al"/><br /><sub><b>Buzz-Al</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Buzz-Al" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/ShivamGovBuilt"><img src="https://avatars.githubusercontent.com/u/123058863?v=4?s=100" width="100px;" alt="Shivam Pandey"/><br /><sub><b>Shivam Pandey</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ShivamGovBuilt" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
