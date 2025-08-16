@@ -292,9 +292,9 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var model = await BuildRoleViewModelAsync(role, role.RoleName, role.RoleDescription);
+        var model = await GetEditRoleViewModelAsync(role, role.RoleName, role.RoleDescription);
 
-        return View("Edit", model);
+        return View(nameof(Edit), model);
     }
 
     [HttpPost]
@@ -344,9 +344,9 @@ public sealed class AdminController : Controller
             }
         }
 
-        var model = await BuildRoleViewModelAsync(sourceRole, name, roleDescription);
+        var model = await GetEditRoleViewModelAsync(sourceRole, name, roleDescription);
 
-        return View("Edit", model);
+        return View(nameof(Edit), model);
     }
 
     private async Task<bool> ValidateRoleNameAsync(string roleName)
@@ -370,7 +370,6 @@ public sealed class AdminController : Controller
         return true;
     }
 
-
     private PermissionGroupKey GetGroupKey(IFeatureInfo feature, string category)
     {
         if (!string.IsNullOrWhiteSpace(category))
@@ -378,7 +377,9 @@ public sealed class AdminController : Controller
             return new PermissionGroupKey(category, category);
         }
 
-        var title = string.IsNullOrWhiteSpace(feature.Name) ? S["{0} Feature", feature.Id] : feature.Name;
+        var title = string.IsNullOrWhiteSpace(feature.Name)
+            ? S["{0} Feature", feature.Id]
+            : feature.Name;
 
         return new PermissionGroupKey(feature.Id, title)
         {
@@ -390,10 +391,13 @@ public sealed class AdminController : Controller
     {
         // Create a fake user to check the actual permissions. If the role is anonymous
         // IsAuthenticated needs to be false.
-        var fakeIdentity = new ClaimsIdentity([new Claim(ClaimTypes.Role, role.RoleName)],
-            !string.Equals(role.RoleName, OrchardCoreConstants.Roles.Anonymous, StringComparison.OrdinalIgnoreCase) ? "FakeAuthenticationType" : null);
+        var authenticationType = !string.Equals(role.RoleName, OrchardCoreConstants.Roles.Anonymous, StringComparison.OrdinalIgnoreCase)
+            ? "FakeAuthenticationType"
+            : null;
 
-        // Add role claims
+        var fakeIdentity = new ClaimsIdentity([new Claim(ClaimTypes.Role, role.RoleName)], authenticationType);
+
+        // Add role claims.
         fakeIdentity.AddClaims(role.RoleClaims.Select(c => c.ToClaim()));
 
         var fakePrincipal = new ClaimsPrincipal(fakeIdentity);
@@ -412,13 +416,11 @@ public sealed class AdminController : Controller
     }
 
     private IEnumerable<RoleClaim> ExtractSelectedPermissions()
-    {
-        return Request.Form.Keys
+        => Request.Form.Keys
             .Where(key => key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
             .Select(key => RoleClaim.Create(key["Checkbox.".Length..]));
-    }
 
-    private async Task<EditRoleViewModel> BuildRoleViewModelAsync(Role role, string cloneRoleName, string description)
+    private async Task<EditRoleViewModel> GetEditRoleViewModelAsync(Role role, string cloneRoleName, string description)
     {
         var installedPermissions = await GetInstalledPermissionsAsync();
         var allPermissions = installedPermissions.SelectMany(x => x.Value);
