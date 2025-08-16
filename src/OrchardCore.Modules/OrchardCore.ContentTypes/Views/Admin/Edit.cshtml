@@ -55,7 +55,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
 
-<form asp-action="Edit">
+<form method="post">
     @Html.ValidationSummary()
 
     <input type="hidden" asp-for="Name" />
@@ -184,16 +184,28 @@
     </div>
 
     <div class="mb-3">
-        <a class="btn btn-secondary" asp-route-action="List">@T["Cancel"]</a>
         <div class="btn-group">
-            <button class="btn btn-success save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+            <button asp-route-action="Edit" class="btn btn-success save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
             <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="visually-hidden">@T["Toggle Dropdown"]</span>
             </button>
             <div class="dropdown-menu">
-                <button class="dropdown-item save-continue" type="submit" name="submit.Save" value="SaveAndContinue">@T["and continue"]</button>
+                <button asp-route-action="Edit" class="dropdown-item save-continue" type="submit" name="submit.Save" value="SaveAndContinue">@T["and continue"]</button>
             </div>
         </div>
+        @if (contentSettings.IsSystemDefined)
+        {
+            <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined types are integral components of the system and cannot be removed."]">
+                <button type="button" class="btn btn-danger" disabled>
+                    @T["Delete"]
+                </button>
+            </div>
+        }
+        else
+        {
+            <a role="button" asp-route-action="Delete" asp-route-id="@Model.Name" class="btn btn-danger" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content type?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+        }
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
     </div>
 </form>
 <script asp-name="Sortable" at="Foot"></script>

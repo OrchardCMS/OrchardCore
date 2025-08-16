@@ -545,7 +545,6 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName("EditPart")]
-    [FormValueRequired("submit.Save")]
     public async Task<ActionResult> EditPartPOST(string id, string[] orderedFieldNames)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
