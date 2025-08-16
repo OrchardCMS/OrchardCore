@@ -120,7 +120,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
 
-        var contentItems = new Dictionary<string, ContentItem>(StringComparer.OrdinalIgnoreCase);
+        var contentItems = new Dictionary<string, ContentItem>();
         var existsingContentItems = part.Widgets.ToDictionary(x => x.ContentItemId, StringComparer.OrdinalIgnoreCase);
 
         // Handle the content found in the request

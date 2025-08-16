@@ -96,7 +96,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var contentItems = new Dictionary<string, ContentItem>(StringComparer.OrdinalIgnoreCase);
+        var contentItems = new Dictionary<string, ContentItem>();
         var existsingContentItems = part.ContentItems.ToDictionary(x => x.ContentItemId, StringComparer.OrdinalIgnoreCase);
 
         // Handle the content found in the request
