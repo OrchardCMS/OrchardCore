@@ -96,24 +96,27 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var contentItems = new List<ContentItem>();
+        var contentItems = new Dictionary<string, ContentItem>(StringComparer.OrdinalIgnoreCase);
+        var existsingContentItems = part.ContentItems.ToDictionary(x => x.ContentItemId, StringComparer.OrdinalIgnoreCase);
 
         // Handle the content found in the request
         for (var i = 0; i < model.Prefixes.Length; i++)
         {
             var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
 
-            // assign the owner of the item to ensure we can validate access to it later.
+            // Assign the owner of the item to ensure we can validate access to it later.
             contentItem.Owner = GetCurrentOwner();
 
             // Try to match the requested id with an existing id
-            var existingContentItem = part.ContentItems.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
+            ContentItem existingContentItem = null;
+
+            existsingContentItems.TryGetValue(model.ContentItems[i], out existingContentItem);
 
             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
             if (existingContentItem == null && !await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem))
             {
-                // at this point the user is somehow trying to add content with no privileges. ignore the request
+                // At this point the user is somehow trying to add content with no privileges. ignore the request
                 continue;
             }
 
@@ -124,9 +127,9 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
             {
                 if (!await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, existingContentItem))
                 {
-                    // at this point the user is somehow modifying existing content with no privileges.
+                    // At this point, the user is somehow modifying existing content with no privileges.
                     // honor the existing data and ignore the data in the request
-                    contentItems.Add(existingContentItem);
+                    contentItems.Add(existingContentItem.ContentItemId, existingContentItem);
 
                     continue;
                 }
@@ -151,15 +154,15 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
                 await _reversedContentHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), createContentContext, _logger);
             }
 
-            contentItems.Add(contentItem);
+            contentItems.Add(contentItem.ContentItemId, contentItem);
         }
 
-        // at the end, lets add existing readonly contents.
+        // At the end, lets add existing readonly contents.
         foreach (var existingContentItem in part.ContentItems)
         {
-            if (contentItems.Any(x => x.ContentItemId == existingContentItem.ContentItemId))
+            if (contentItems.ContainsKey(existingContentItem.ContentItemId))
             {
-                // item was already added using the edit
+                // Item was already added using the edit.
 
                 continue;
             }
@@ -168,20 +171,20 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
             if (await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, existingContentItem))
             {
-                // at this point the user has permission to delete a securable item or the type isn't securable
-                // if the existing content id isn't in the requested ids, don't add the content item... meaning the user deleted it
+                // At this point, the user has permission to delete a securable item or the type isn't securable
+                // if the existing content id isn't in the requested ids, don't add the content item... meaning the user deleted it.
                 if (!model.ContentItems.Contains(existingContentItem.ContentItemId))
                 {
                     continue;
                 }
             }
 
-            // since the content item isn't editable, lets add it so it's not removed from the collection
-            contentItems.Add(existingContentItem);
+            // Since the content item isn't editable, lets add it so it's not removed from the collection
+            contentItems.Add(existingContentItem.ContentItemId, existingContentItem);
         }
 
         // TODO, some how here contentItems should be sorted by a defined order
-        part.ContentItems = contentItems;
+        part.ContentItems = contentItems.Values.ToList();
 
         return Edit(part, context);
     }
