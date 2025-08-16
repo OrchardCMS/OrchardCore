@@ -41,9 +41,14 @@
                             </span>
                         }
                     </div>
-         
+
                     <div>
                         <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
+
+                        @if (!entry.IsAdminRole)
+                        {
+                            <a class="btn btn-warning btn-sm" asp-action="Clone" asp-route-id="@entry.Name">@T["Clone"]</a>
+                        }
 
                         @if (!entry.IsSystemRole)
                         {
