@@ -42,11 +42,11 @@ public class ConsoleLogFilter : ILiquidFilter
         }
         else if (content is ContentItem contentItem)
         {
-            sb.Append(OrchardRazorHelperExtensions.ConvertContentItem(contentItem).ToString());
+            sb.Append(ContentOrchardRazorHelperExtensions.ConvertContentItem(contentItem).ToString());
         }
         else if (content is ContentPart contentPart)
         {
-            sb.Append(OrchardRazorHelperExtensions.ConvertContentPart(contentPart).ToString());
+            sb.Append(ContentOrchardRazorHelperExtensions.ConvertContentPart(contentPart).ToString());
         }
         else if (content is IShape shape)
         {
