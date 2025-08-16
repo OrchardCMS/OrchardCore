@@ -3,9 +3,9 @@
 
 <zone Name="Title">
     <h1>
-        @if (Model.IsCloneRole)
+        @if (Model.IsCloning)
         {
-            @RenderTitleSegments(T["Clone '{0}' Role", Model.Name])
+            @RenderTitleSegments(T["Clone '{0}' Role", Model.Role.RoleName])
         }
         else
         {
@@ -30,13 +30,13 @@
     </div>
 }
 
-<form asp-action="@(Model.IsCloneRole ? "Clone" : "Edit")" method="post" class="no-multisubmit">
-    @if (!Model.IsAdminRole && Model.IsCloneRole)
+<form asp-action="@(Model.IsCloning ? "Clone" : "Edit")" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit">
+    @if (Model.IsCloning)
     {
-        <div class="mb-3" asp-validation-class-for="CloneRoleName">
-            <label asp-for="CloneRoleName" class="form-label">@T["Name"]</label>
-            <input asp-for="CloneRoleName" class="form-control" autofocus />
-            <span asp-validation-for="CloneRoleName" class="text-danger"></span>
+        <div class="mb-3" asp-validation-class-for="Name">
+            <label asp-for="Name" class="form-label">@T["Role name"]</label>
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
     }
     <div class="mb-3" asp-validation-class-for="RoleDescription">
