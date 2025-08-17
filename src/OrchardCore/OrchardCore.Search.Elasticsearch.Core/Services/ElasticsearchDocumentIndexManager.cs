@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
@@ -104,12 +105,17 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             return 0;
         }
 
-        if (!mappings.Meta.TryGetValue(ElasticsearchConstants.LastTaskIdMetadataKey, out var lastTaskId))
+        if (!mappings.Meta.TryGetValue(ElasticsearchConstants.LastTaskIdMetadataKey, out var lastTaskIdObject))
         {
             return 0;
         }
 
-        return Convert.ToInt64(lastTaskId);
+        if (lastTaskIdObject is not JsonElement element || element.ValueKind != JsonValueKind.Number || !element.TryGetInt64(out var lastTaskId))
+        {
+            return 0;
+        }
+
+        return lastTaskId;
     }
 
     public async Task<bool> AddOrUpdateDocumentsAsync(IndexProfile index, IEnumerable<DocumentIndex> documents)
