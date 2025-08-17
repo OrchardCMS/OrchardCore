@@ -133,7 +133,7 @@ public class ExtensionManagerTests
     [Fact]
     public void GetFeaturesWithAIdShouldReturnThatFeatureWithDependenciesOrdered()
     {
-        var features = _moduleScopedExtensionManager.GetFeatures(["Sample2"]);
+        var features = _moduleScopedExtensionManager.GetFeatures((IEnumerable<string>)["Sample2"]);
 
         Assert.Equal(2, features.Count());
         Assert.Equal("Sample1", features.ElementAt(0).Id);
@@ -143,7 +143,7 @@ public class ExtensionManagerTests
     [Fact]
     public void GetFeaturesWithAIdShouldReturnThatFeatureWithDependenciesOrderedWithNoDuplicates()
     {
-        var features = _moduleScopedExtensionManager.GetFeatures(["Sample2", "Sample3"]);
+        var features = _moduleScopedExtensionManager.GetFeatures((IEnumerable<string>)["Sample2", "Sample3"]);
 
         Assert.Equal(3, features.Count());
         Assert.Equal("Sample1", features.ElementAt(0).Id);
@@ -154,7 +154,7 @@ public class ExtensionManagerTests
     [Fact]
     public void GetFeaturesWithAIdShouldNotReturnFeaturesTheHaveADependencyOutsideOfGraph()
     {
-        var features = _moduleScopedExtensionManager.GetFeatures(["Sample4"]);
+        var features = _moduleScopedExtensionManager.GetFeatures((IEnumerable<string>)["Sample4"]);
 
         Assert.Equal(3, features.Count());
         Assert.Equal("Sample1", features.ElementAt(0).Id);
@@ -167,7 +167,7 @@ public class ExtensionManagerTests
     [Fact]
     public void GetFeaturesShouldReturnCorrectThemeHierarchy()
     {
-        var features = _themeScopedExtensionManager.GetFeatures(["DerivedThemeSample"]);
+        var features = _themeScopedExtensionManager.GetFeatures((IEnumerable<string>)["DerivedThemeSample"]);
 
         Assert.Equal(2, features.Count());
         Assert.Equal("BaseThemeSample", features.ElementAt(0).Id);
@@ -204,7 +204,7 @@ public class ExtensionManagerTests
     [Fact]
     public void GetFeaturesShouldReturnThemesAfterModulesWhenRequestingBoth()
     {
-        var features = _moduleThemeScopedExtensionManager.GetFeatures(["DerivedThemeSample", "Sample3"]);
+        var features = _moduleThemeScopedExtensionManager.GetFeatures((IEnumerable<string>)["DerivedThemeSample", "Sample3"]);
 
         Assert.Equal("Sample1", features.ElementAt(0).Id);
         Assert.Equal("Sample2", features.ElementAt(1).Id);
@@ -226,7 +226,7 @@ public class ExtensionManagerTests
     [Fact]
     public void TypeFeatureProviderIsPopulatedWithComponentTypes()
     {
-        var feature = _moduleScopedExtensionManager.GetFeatures(["Sample1"]).First();
+        var feature = _moduleScopedExtensionManager.GetFeatures((IEnumerable<string>)["Sample1"]).First();
         var types = _moduleScopedTypeFeatureProvider.GetTypesForFeature(feature);
 
         Assert.Equal(2, types.Count());
@@ -238,7 +238,7 @@ public class ExtensionManagerTests
     public void TypeFeatureProviderTypeMustBeMappedToAllFeatures()
     {
         // Types in modules that have no feature that matches the extension ID must be mapped to all features.
-        var features = _moduleScopedExtensionManager.GetFeatures(["Sample1", "Sample2", "Sample3", "Sample4"]);
+        var features = _moduleScopedExtensionManager.GetFeatures((IEnumerable<string>)["Sample1", "Sample2", "Sample3", "Sample4"]);
 
         foreach (var feature in features)
         {
@@ -252,7 +252,7 @@ public class ExtensionManagerTests
     public void TypeFeatureProviderTypeMustBeMappedToExtensionFeature()
     {
         // Types in modules that have a feature that matches the extension ID must be mapped to that feature.
-        var feature = _moduleScopedExtensionManager.GetFeatures(["BaseThemeSample"]).First();
+        var feature = _moduleScopedExtensionManager.GetFeatures((IEnumerable<string>)["BaseThemeSample"]).First();
         var types = _moduleScopedTypeFeatureProvider.GetTypesForFeature(feature);
 
         Assert.Equal(2, types.Count());
@@ -263,7 +263,7 @@ public class ExtensionManagerTests
     [Fact]
     public void TypeFeatureProviderTypeMustBeSkipped()
     {
-        var feature = _moduleScopedExtensionManager.GetFeatures(["Sample2"]).First();
+        var feature = _moduleScopedExtensionManager.GetFeatures((IEnumerable<string>)["Sample2"]).First();
         var types = _moduleScopedTypeFeatureProvider.GetTypesForFeature(feature);
 
         Assert.DoesNotContain(typeof(SkippedDependentType), types);

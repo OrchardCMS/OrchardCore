@@ -67,6 +67,9 @@ public sealed class ExtensionManager : IExtensionManager
     }
 
     public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
+        => GetFeatures((IEnumerable<string>)featureIdsToLoad);
+
+    public IEnumerable<IFeatureInfo> GetFeatures(IEnumerable<string> featureIdsToLoad)
     {
         EnsureInitialized();
 
@@ -101,6 +104,9 @@ public sealed class ExtensionManager : IExtensionManager
     }
 
     public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
+        => LoadFeaturesAsync((IEnumerable<string>)featureIdsToLoad);
+
+    public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(IEnumerable<string> featureIdsToLoad)
     {
         EnsureInitialized();
 
