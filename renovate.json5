@@ -28,7 +28,7 @@
         // Elastic.Clients.Elasticsearch doesn't follow SemVer, so updates need to be tested manually and can't be
         // auto-merged even if it's only a patch version update.
         {
-            groupName: 'Elasticsearch'
+            groupName: 'Elasticsearch',
             matchPackageNames: [
                 'Elastic.Clients.Elasticsearch',
             ],
