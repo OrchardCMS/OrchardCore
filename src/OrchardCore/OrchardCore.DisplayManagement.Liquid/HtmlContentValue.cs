@@ -33,6 +33,7 @@ public class HtmlContentValue : FluidValue
         return NilValue.Instance;
     }
 
+    [Obsolete("GetValue is obsolete, prefer the GetValueAsync method.")]
     protected override FluidValue GetValue(string name, TemplateContext context)
     {
         return NilValue.Instance;
