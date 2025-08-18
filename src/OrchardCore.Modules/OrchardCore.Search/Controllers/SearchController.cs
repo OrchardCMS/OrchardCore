@@ -7,6 +7,9 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Indexing;
+using OrchardCore.Indexing.Core;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions;
@@ -28,6 +31,7 @@ public sealed class SearchController : Controller
     private readonly IEnumerable<ISearchHandler> _searchHandlers;
     private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
+    private readonly IIndexProfileStore _indexProfileStore;
 
     internal readonly IHtmlLocalizer H;
 
@@ -38,6 +42,7 @@ public sealed class SearchController : Controller
         IServiceProvider serviceProvider,
         INotifier notifier,
         IHtmlLocalizer<SearchController> htmlLocalizer,
+        IIndexProfileStore indexProfileStore,
         IEnumerable<ISearchHandler> searchHandlers,
         IShapeFactory shapeFactory,
         ILogger<SearchController> logger
@@ -49,48 +54,72 @@ public sealed class SearchController : Controller
         _serviceProvider = serviceProvider;
         _notifier = notifier;
         H = htmlLocalizer;
+        _indexProfileStore = indexProfileStore;
         _searchHandlers = searchHandlers;
         _shapeFactory = shapeFactory;
         _logger = logger;
     }
 
-    public async Task<IActionResult> Search(SearchViewModel viewModel, PagerSlimParameters pagerParameters)
+    [Route("search/{index?}")]
+    public async Task<IActionResult> Search(string index, string terms, PagerSlimParameters pagerParameters)
     {
-        var searchServices = _serviceProvider.GetServices<ISearchService>();
-
-        if (!searchServices.Any())
-        {
-            await _notifier.WarningAsync(H["No search provider feature is enabled."]);
-
-            return View();
-        }
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var searchSettings = siteSettings.As<SearchSettings>();
-        ISearchService searchService = null;
 
-        if (!string.IsNullOrEmpty(searchSettings.ProviderName))
+        IndexProfile indexProfile = null;
+
+        var hasIndexName = !string.IsNullOrWhiteSpace(index);
+
+        if (!hasIndexName)
         {
-            searchService = searchServices.FirstOrDefault(service => service.Name == searchSettings.ProviderName);
+            // Try to find the default index configured in site search settings.
+            if (!string.IsNullOrEmpty(searchSettings.DefaultIndexProfileName))
+            {
+                indexProfile = await _indexProfileStore.FindByNameAsync(searchSettings.DefaultIndexProfileName);
+            }
+
+            if (indexProfile is null)
+            {
+                await _notifier.WarningAsync(H["No default search index has been configured."]);
+
+                return View();
+            }
+        }
+        else
+        {
+            indexProfile = await _indexProfileStore.FindByNameAsync(index);
         }
 
-        searchService ??= searchServices.First();
+        if (indexProfile is null)
+        {
+            return NotFound();
+        }
 
-        if (!await _authorizationService.AuthorizeAsync(User, SearchPermissions.QuerySearchIndex, new SearchPermissionParameters(searchService.Name, viewModel.Index)))
+        if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.QuerySearchIndex, indexProfile))
         {
             return this.ChallengeOrForbid();
         }
 
-        if (string.IsNullOrWhiteSpace(viewModel.Terms))
+        var searchService = _serviceProvider.GetKeyedService<ISearchService>(indexProfile.ProviderName);
+
+        if (searchService is null)
+        {
+            await _notifier.WarningAsync(H["No search service provider found for {0} provider.", indexProfile.ProviderName]);
+
+            return View();
+        }
+
+        if (string.IsNullOrWhiteSpace(terms))
         {
             return View(new SearchIndexViewModel()
             {
-                Index = viewModel.Index,
+                Index = indexProfile.Name,
                 PageTitle = searchSettings.PageTitle,
                 SearchForm = new SearchFormViewModel()
                 {
-                    Terms = viewModel.Terms,
+                    Terms = terms,
                     Placeholder = searchSettings.Placeholder,
-                    Index = viewModel.Index,
+                    Index = indexProfile.Name,
                 },
             });
         }
@@ -112,12 +141,12 @@ public sealed class SearchController : Controller
             size = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
         }
 
-        var searchResult = await searchService.SearchAsync(viewModel.Index, viewModel.Terms, from, size);
+        var searchResult = await searchService.SearchAsync(indexProfile, terms, from, size);
 
         var searchContext = new SearchContext
         {
-            Index = viewModel.Index,
-            Terms = viewModel.Terms,
+            Index = indexProfile,
+            Terms = terms,
             ContentItemIds = searchResult.ContentItemIds ?? [],
             SearchService = searchService,
             TotalHits = searchResult.ContentItemIds?.Count ?? 0,
@@ -129,17 +158,17 @@ public sealed class SearchController : Controller
 
             return View(new SearchIndexViewModel()
             {
-                Index = viewModel.Index,
+                Index = indexProfile.Name,
                 PageTitle = searchSettings.PageTitle,
                 SearchForm = new SearchFormViewModel()
                 {
-                    Terms = viewModel.Terms,
+                    Terms = terms,
                     Placeholder = searchSettings.Placeholder,
-                    Index = viewModel.Index,
+                    Index = indexProfile.Name,
                 },
                 SearchResults = new SearchResultsViewModel()
                 {
-                    Index = viewModel.Index,
+                    Index = indexProfile.Name,
                     ContentItems = [],
                 },
             });
@@ -184,18 +213,18 @@ public sealed class SearchController : Controller
 
         var shape = new SearchIndexViewModel()
         {
-            Index = viewModel.Index,
+            Index = indexProfile.Name,
             PageTitle = searchSettings.PageTitle,
-            Terms = viewModel.Terms,
+            Terms = terms,
             SearchForm = new SearchFormViewModel()
             {
-                Terms = viewModel.Terms,
+                Terms = terms,
                 Placeholder = searchSettings.Placeholder,
-                Index = viewModel.Index,
+                Index = indexProfile.Name,
             },
             SearchResults = new SearchResultsViewModel()
             {
-                Index = viewModel.Index,
+                Index = indexProfile.Name,
                 ContentItems = containedItems.OrderBy(x => searchResult.ContentItemIds.IndexOf(x.ContentItemId))
                 .Take(pager.PageSize)
                 .ToList(),
@@ -203,8 +232,8 @@ public sealed class SearchController : Controller
             },
             Pager = await _shapeFactory.PagerSlimAsync(pager, new Dictionary<string, string>()
             {
-                { nameof(viewModel.Terms), viewModel.Terms },
-                { nameof(viewModel.Index), viewModel.Index },
+                { nameof(terms), terms },
+                { nameof(index), indexProfile.Name },
             }),
         };
 

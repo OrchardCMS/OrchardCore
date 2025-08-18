@@ -1,17 +1,14 @@
-using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
+using System.Text.Json.Nodes;
 using OrchardCore.Localization;
-using OrchardCore.Localization.Models;
-using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Localization;
 
-public class LocalizationManagerTests
+public class LocalizationManagerTests : IDisposable
 {
     private readonly Mock<IPluralRuleProvider> _pluralRuleProvider;
     private readonly Mock<ITranslationProvider> _translationProvider;
-    private readonly IMemoryCache _memoryCache;
+    private readonly MemoryCache _memoryCache;
 
     public LocalizationManagerTests()
     {
@@ -87,31 +84,37 @@ public class LocalizationManagerTests
         var context = new SiteContext();
         await context.InitializeAsync();
 
-        await context.UsingTenantScopeAsync(async scope =>
+        var recipeSteps = new JsonArray
         {
-            var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-            var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync();
-            var featureIds = new string[] { "OrchardCore.Localization.ContentLanguageHeader", "OrchardCore.Localization" };
-            var features = availableFeatures.Where(feature => featureIds.Contains(feature.Id));
-
-            await shellFeaturesManager.EnableFeaturesAsync(features, true);
-
-            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
-            var siteSettings = await siteService.LoadSiteSettingsAsync();
-
-            siteSettings.Alter<LocalizationSettings>("LocalizationSettings", localizationSettings =>
+            new JsonObject
             {
-                localizationSettings.DefaultCulture = culture;
-                localizationSettings.SupportedCultures = [culture];
-            });
+                {"name", "Feature"},
+                {
+                    "enable", new JsonArray
+                    {
+                        "OrchardCore.Localization",
+                        "OrchardCore.Localization.ContentLanguageHeader",
+                    }
+                },
+            },
+            new JsonObject
+            {
+                {"name", "Settings"},
+                {"LocalizationSettings", new JsonObject
+                    {
+                        {"DefaultCulture", culture},
+                        {"SupportedCultures", new JsonArray(culture) },
+                    }
+                },
+            },
+        };
 
-            await siteService.UpdateSiteSettingsAsync(siteSettings);
+        var recipe = new JsonObject
+        {
+            {"steps", recipeSteps},
+        };
 
-            var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
-            var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
-
-            await shellHost.ReleaseShellContextAsync(shellSettings);
-        });
+        await RecipeHelpers.RunRecipeAsync(context, recipe);
 
         await context.UsingTenantScopeAsync(scope =>
         {
@@ -124,4 +127,6 @@ public class LocalizationManagerTests
             return Task.CompletedTask;
         });
     }
+
+    public void Dispose() => _memoryCache?.Dispose();
 }

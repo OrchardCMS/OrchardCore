@@ -3376,6 +3376,33 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "buzznick",
+      "name": "Nick Jackson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6950723?v=4",
+      "profile": "https://buzzinteractive.co.uk/who-we-are/nick-jackson",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Buzz-Al",
+      "name": "Buzz-Al",
+      "avatar_url": "https://avatars.githubusercontent.com/u/218998992?v=4",
+      "profile": "https://github.com/Buzz-Al",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ShivamGovBuilt",
+      "name": "Shivam Pandey",
+      "avatar_url": "https://avatars.githubusercontent.com/u/123058863?v=4",
+      "profile": "https://github.com/ShivamGovBuilt",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

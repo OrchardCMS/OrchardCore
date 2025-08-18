@@ -1,12 +1,13 @@
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Core.Search;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using OrchardCore.Indexing.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
 public class ElasticsearchSearchContext
 {
-    public string IndexName { get; }
+    public IndexProfile IndexProfile { get; }
 
     public Query Query { get; }
 
@@ -22,12 +23,12 @@ public class ElasticsearchSearchContext
 
     public ICollection<FieldAndFormat> Fields { get; set; }
 
-    public ElasticsearchSearchContext(string indexName, Query query)
+    public ElasticsearchSearchContext(IndexProfile indexProfile, Query query)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentNullException.ThrowIfNull(indexProfile);
         ArgumentNullException.ThrowIfNull(query);
 
-        IndexName = indexName;
+        IndexProfile = indexProfile;
         Query = query;
     }
 }

@@ -1,17 +1,18 @@
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Indexing;
 using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
 public sealed class LuceneIndexRebuildDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexRebuildDeploymentStep>
 {
-    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+    private readonly IIndexProfileStore _indexStore;
 
-    public LuceneIndexRebuildDeploymentStepDriver(LuceneIndexSettingsService luceneIndexSettingsService)
+    public LuceneIndexRebuildDeploymentStepDriver(IIndexProfileStore indexStore)
     {
-        _luceneIndexSettingsService = luceneIndexSettingsService;
+        _indexStore = indexStore;
     }
 
     public override Task<IDisplayResult> DisplayAsync(LuceneIndexRebuildDeploymentStep step, BuildDisplayContext context)
@@ -29,7 +30,7 @@ public sealed class LuceneIndexRebuildDeploymentStepDriver : DisplayDriver<Deplo
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
-            model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 

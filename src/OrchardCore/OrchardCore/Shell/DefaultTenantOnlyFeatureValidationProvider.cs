@@ -18,7 +18,7 @@ public class DefaultTenantOnlyFeatureValidationProvider : IFeatureValidationProv
 
     public ValueTask<bool> IsFeatureValidAsync(string id)
     {
-        var features = _extensionManager.GetFeatures([id]);
+        var features = _extensionManager.GetFeatures((IEnumerable<string>)[id]);
         if (!features.Any())
         {
             return ValueTask.FromResult(false);
