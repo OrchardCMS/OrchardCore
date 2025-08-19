@@ -88,7 +88,7 @@ public class AttachedMediaFieldFileService
     private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
     {
         var exceptions = new List<Exception>();
-        //return a list to allow remove file from original items argument
+        // Copy to a list to allow removing files from the original items argument.
         var itemToParse = items.Where(i => !i.IsRemoved && !string.IsNullOrEmpty(i.Path)).ToList();
         foreach (var item in itemToParse)
         {
