@@ -10,7 +10,7 @@ using Format = OrchardCore.Media.Processing.Format;
 using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
 
 #pragma warning disable CA1050 // Declare types in namespaces
-public static class OrchardRazorHelperExtensions
+public static class MediaOrchardRazorHelperExtensions
 #pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>

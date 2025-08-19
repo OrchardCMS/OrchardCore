@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>OrchardCore Flows Core</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Core project for the Flows module.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
