@@ -107,12 +107,22 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
                 e.Handle((x) =>
                 {
                     var ex = x as FileNotFoundException;
+
                     if (ex != null)
                     {
-                        // If the file is not found, we add a model state error specific to the field
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: The file {1} was not found. Reupload the file.", context.PartFieldDefinition.DisplayName(), ex.FileName]);
-                        _logger.LogError(e, "{FileName} - {Message}, while handling attached media files for field '{Field}'", ex.FileName, ex.Message, context.PartFieldDefinition.DisplayName());
+                        // If the file is not found, we add a model state error specific to the field.
+                        context.Updater.ModelState.AddModelError(
+                            Prefix,
+                            nameof(model.Paths),
+                            S["{0}: The file {1} was not found. Reupload the file.", context.PartFieldDefinition.DisplayName(), ex.FileName]);
+                        _logger.LogError(
+                            e,
+                            "{FileName} - {Message}, while handling attached media files for field '{Field}'",
+                            ex.FileName,
+                            ex.Message,
+                            context.PartFieldDefinition.DisplayName());
                     }
+
                     return true;
                 });
             }
