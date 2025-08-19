@@ -1,12 +1,20 @@
 using System.Text;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
 public sealed class ElasticsearchClientFactory : IElasticsearchClientFactory
 {
+    private readonly ILogger _logger;
+
+    public ElasticsearchClientFactory(ILogger<ElasticsearchClientFactory> logger)
+    {
+        _logger = logger;
+    }
+
     public ElasticsearchClient Create(ElasticsearchConnectionOptions configuration)
     {
         AuthorizationHeader authentication = configuration.AuthenticationType switch
@@ -37,7 +45,23 @@ public sealed class ElasticsearchClientFactory : IElasticsearchClientFactory
 
         if (configuration.EnableDebugMode)
         {
-            settings.EnableDebugMode();
+            settings.EnableDebugMode(details =>
+            {
+                if (!_logger.IsEnabled(LogLevel.Debug))
+                {
+                    return;
+                }
+
+                if (details.RequestBodyInBytes != null)
+                {
+                    _logger.LogInformation("Elasticsearch request is: {Request}.", Encoding.UTF8.GetString(details.RequestBodyInBytes));
+                }
+
+                if (details.ResponseBodyInBytes != null)
+                {
+                    _logger.LogInformation("Elasticsearch response is: {Response}.", Encoding.UTF8.GetString(details.ResponseBodyInBytes));
+                }
+            });
         }
 
         if (configuration.EnableHttpCompression)
