@@ -25,6 +25,17 @@
             groupName: 'Minor Dependency Versions',
             matchUpdateTypes: ['minor'],
         },
+        // Elastic.Clients.Elasticsearch doesn't follow SemVer, so updates need to be tested manually and can't be
+        // auto-merged even if it's only a patch version update.
+        {
+            groupName: 'Elasticsearch',
+            matchPackageNames: [
+                'Elastic.Clients.Elasticsearch',
+            ],
+            // We need to keep this on 8.x for now, see
+            // https://github.com/OrchardCMS/OrchardCore/pull/17942#issuecomment-2903626717.
+            allowedVersions: '<9.0.0',
+        },
 
         // Disable certain updates.
         {
@@ -51,21 +62,6 @@
             ],
             allowedVersions: '<9.0.0',
             matchCurrentVersion: '/^8\\./',
-        },
-        {
-            // We need to keep this on 8.x for now, see
-            // https://github.com/OrchardCMS/OrchardCore/pull/17942#issuecomment-2903626717.
-            matchPackageNames: [
-                'Elastic.Clients.Elasticsearch',
-            ],
-            allowedVersions: '<9.0.0',
-        },
-        {
-            // See the corresponding comment in Directory.Packages.props.
-            matchPackageNames: [
-                'System.Drawing.Common',
-            ],
-            enabled: false,
         },
         {
             // See https://github.com/OrchardCMS/OrchardCore/issues/16318 on why we have NPM updates disabled.
