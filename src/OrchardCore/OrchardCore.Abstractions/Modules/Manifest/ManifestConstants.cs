@@ -5,7 +5,7 @@ public static class ManifestConstants
 {
     public const string OrchardCoreTeam = "The Orchard Core Team";
 
-    public const string OrchardCoreVersion = "2.1.8";
+    public const string OrchardCoreVersion = "2.1.9";
 
     public const string OrchardCoreWebsite = "https://orchardcore.net";
 
