@@ -103,14 +103,13 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
             }
             catch (AggregateException e)
             {
-                var filenames = new List<string>();
                 e.Handle((x) =>
                 {
-                    var ex = x as FileNotFoundException;
+                    var managed = false;
 
-                    if (ex != null)
+                    if (x is FileNotFoundException ex)
                     {
-                        // If the file is not found, we add a model state error specific to the field.
+                        // If the file is not found: add a model error specific for the field.
                         context.Updater.ModelState.AddModelError(
                             Prefix,
                             nameof(model.Paths),
@@ -121,9 +120,11 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
                             ex.FileName,
                             ex.Message,
                             context.PartFieldDefinition.DisplayName());
+
+                        managed = true;
                     }
 
-                    return true;
+                    return managed; 
                 });
             }
             catch (Exception e)

@@ -96,9 +96,9 @@ public class AttachedMediaFieldFileService
 
             if (fileInfo == null)
             {
-                // use AttachedFileName because could result more familiar to user
+                // Use the AttachedFileName property, as it contains the original file name and may be more familiar to the user.
                 exceptions.Add(new FileNotFoundException($"A file with the path '{item.Path}' does not exist.", item.AttachedFileName));
-                // remove item to avoid user see the not found file in the media field editor
+                // Remove the item to prevent users from seeing the not-found files in the media field editor.
                 items.Remove(item);
                 continue;
             }
@@ -113,7 +113,7 @@ public class AttachedMediaFieldFileService
             // because the content item is different on each form submit . We need to remove that empty folder.
             var previousDirPath = fileInfo.DirectoryPath;
 
-            // fileName is a hash of the file. We preserve disk space by reusing the file.
+            // FileName is a hash of the file. We preserve disk space by reusing the file.
             if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
             {
                 await _fileStore.MoveFileAsync(item.Path, finalFilePath);
