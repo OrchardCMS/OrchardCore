@@ -105,8 +105,6 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
             {
                 e.Handle((x) =>
                 {
-                    var managed = false;
-
                     if (x is FileNotFoundException ex)
                     {
                         // If the file is not found: add a model error specific for the field.
@@ -121,10 +119,10 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
                             ex.Message,
                             context.PartFieldDefinition.DisplayName());
 
-                        managed = true;
+                        return true;
                     }
 
-                    return managed; 
+                    return false; 
                 });
             }
             catch (Exception e)
