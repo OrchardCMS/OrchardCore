@@ -113,7 +113,7 @@ public class AttachedMediaFieldFileService
             // because the content item is different on each form submit . We need to remove that empty folder.
             var previousDirPath = fileInfo.DirectoryPath;
 
-            // FileName is a hash of the file. We preserve disk space by reusing the file.
+            // finalFileName is a hash of the file. We preserve disk space by reusing the file.
             if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
             {
                 await _fileStore.MoveFileAsync(item.Path, finalFilePath);
