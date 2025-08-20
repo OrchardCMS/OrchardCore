@@ -192,16 +192,16 @@ For emulators, you'll need to configure a `ServiceURL`. Instead of the default [
 
 The following tools are known to be working with the above settings. Be sure to explore further configuration of these tools, the commands below are just provided for your convenience as a general recommendation.
 
-- [LocalS3](https://github.com/Robothy/local-s3) with Docker:
-
-```
-docker run -d -e MODE=IN_MEMORY -p 9444:80 luofuxiang/local-s3
-```
-
 - [S3Mock](https://github.com/adobe/S3Mock) with Docker:
 
 ```
-docker run -p 9444:9090 -t adobe/s3mock
+docker run -p 9444:9090 -t adobe/s3mock:latest
+```
+
+- [LocalS3](https://github.com/Robothy/local-s3) with Docker:
+
+```
+docker run -d -e MODE=IN_MEMORY -p 9444:80 luofuxiang/local-s3:latest
 ```
 
 ### Media Cache

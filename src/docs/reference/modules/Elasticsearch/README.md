@@ -8,7 +8,7 @@ You can use an Elasticsearch cloud service like offered on <https://www.elastic.
 
 ### Install Elasticsearch with Docker compose
 
-Elasticsearch uses a mmapfs directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.
+Elasticsearch uses a `mmapfs` directory by default to store its indices. The default operating system limits on `mmap` counts is likely to be too low, which may result in out of memory exceptions.
 
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html>
 
@@ -52,6 +52,8 @@ You should get this result in Docker Desktop app:
 
 ## Recipe step
 
+### Create Index Step
+
 Elasticsearch indices can be created during recipe execution using the `ElasticIndexSettings` step.  
 Here is a sample step:
 
@@ -77,25 +79,43 @@ Here is a sample step:
 }
 ```
 
-## Elasticsearch settings recipe step
+!!! note
+     It's recommended to use the `CreateOrUpdateIndexProfile` recipe step instead as the `ElasticIndexSettings` step is obsolete. 
 
-Here is an example for setting default search settings:
+Here is an example of how to create `Elasticsearch` index profile using the `IndexProfile` for Content items.
 
 ```json
 {
   "steps":[
     {
-      // Create the search settings.
-      "name":"Settings",
-      "ElasticSettings":{
-        "SearchIndex":"search",
-        "DefaultSearchFields":[
-          "Content.ContentItem.FullText"
-        ],
-        "SearchType": "", // Use 'custom' for a custom query in DefaultQuery and 'query_string' for a Query String Query search. Leave it blank for the default, which is a Multi-Match Query search.
-        "DefaultQuery": null,
-        "SyncWithLucene":true // Allows to sync content index settings.
-      }
+      "name":"CreateOrUpdateIndexProfile",
+      "indexes": [
+	    {
+		    "Name": "BlogPostsES",
+            "IndexName": "blogposts",
+		    "ProviderName": "Elasticsearch",
+		    "Type": "Content",
+		    "Properties": {
+			    "ContentIndexMetadata": {
+				    "IndexLatest": false,
+				    "IndexedContentTypes": ["BlogPosts"],
+				    "Culture": "any"
+			    },
+                "ElasticsearchIndexMetadata": {
+                    "AnalyzerName": "standard",
+                    "StoreSourceData": true,
+                },
+                "ElasticsearchDefaultQueryMetadata": {
+                    "QueryAnalyzerName": "standard",
+                    "SearchType": "", // The search type can be "query_string", "custom", or empty for default search type.
+                    "DefaultQuery": "", // When using "custom" search type, this is the query to use.
+                    "DefaultSearchFields": [
+                        "Content.ContentItem.FullText"
+                    ]
+                }
+		    }
+	    }
+      ]
     }
   ]
 }
@@ -134,6 +154,9 @@ To reset all indices:
 }
 ```
 
+!!! note
+    It's recommended to use the `ResetIndex` recipe step instead as the `elastic-index-reset` step is obsolete. 
+
 ### Rebuild Elasticsearch Index Step
 
 This Rebuild Index Step rebuilds an Elasticsearch index.
@@ -166,7 +189,10 @@ To rebuild all indices:
 }
 ```
 
-## Queries recipe step
+!!! note
+    It's recommended to use the `RebuildIndex` recipe step instead as the `elastic-index-rebuild` step is obsolete. 
+
+### Queries recipe step
 
 Here is an example for creating a Elasticsearch query from a Queries recipe step:
 
@@ -182,6 +208,20 @@ Here is an example for creating a Elasticsearch query from a Queries recipe step
     }
   ]
 }
+```
+
+## Indexing custom data
+
+The indexing module supports multiple sources for indexing. This allows you to create indexes based on different data sources, such as content items or custom data.
+
+To register a new source, you can add the following code to your `Startup.cs` file:
+
+```csharp
+services.AddElasticsearchIndexingSource("CustomSource", o =>
+{
+    o.DisplayName = S["Custom Source in Provider"];
+    o.Description = S["Create a Provider index based on custom source."];
+});
 ```
 
 ## Web APIs
@@ -227,11 +267,17 @@ The Elasticsearch module connection configuration can be set globally in the `ap
     "Ports": [
       9200
     ],
-    "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc=",
-    "Username": "admin",
-    "Password": "admin",
+    "AuthenticationType":"Basic", // Supported values are:'Basic', 'ApiKey', 'Base64ApiKey' or 'KeyIdAndKey'
+    "ApiKey": "", // Required when using ApiKey authentication type
+    "Base64ApiKey": "", // Required when using Base64ApiKey authentication type
+    "CloudId": "The cloud id", // Required when using CloudConnectionPool connection type
+    "Username": "admin", // Required  using Basic authentication types
+    "Password": "admin", // Required  using Basic authentication types
+    "KeyId": "The key id", // Required  using KeyIdAndKey authentication types
+    "Key": "The key", // Required  using KeyIdAndKey authentication types
     "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
-    "EnableApiVersioningHeader": false,
+    "EnableDebugMode": false,
+    "EnableHttpCompression": true,
     "IndexPrefix": "",
     "Analyzers": {
       "standard": {

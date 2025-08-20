@@ -11,9 +11,11 @@ on:
 
 jobs:
   close-stale-prs-issues:
+    # To enable this workflow on a fork, comment out:
+    if: github.repository == 'OrchardCMS/OrchardCore'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9
         with:
           stale-pr-message: >
             It seems that this pull request didn't really move for quite a while. Is this something you'd like to 

@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   generate-community-metrics:
+    # To enable this workflow on a fork, comment out:
+    if: github.repository == 'OrchardCMS/OrchardCore'
     name: Generate Community Metrics
     runs-on: ubuntu-24.04
     steps:
@@ -28,7 +30,7 @@ jobs:
         Write-Output "LAST_MONTH=$firstDay..$lastDay" >> $env:GITHUB_ENV
 
     - name: Compute Issue Metrics
-      uses: github/issue-metrics@v3
+      uses: github/issue-metrics@119b5237f41e78241b9b9cae254e544b52a359a0 # v3
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:issue created:${{ env.LAST_MONTH }} -reason:"not planned" -label:"community metrics"'
@@ -41,7 +43,7 @@ jobs:
         Add-Content -Path ./community_metrics.md -Value (Get-Content -Path ./issue_metrics.md -Raw)
 
     - name: Compute Pull Request Metrics
-      uses: github/issue-metrics@v3
+      uses: github/issue-metrics@119b5237f41e78241b9b9cae254e544b52a359a0 # v3
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:pr created:${{ env.LAST_MONTH }} -label:dontmerge -label:notready -is:draft'
@@ -54,7 +56,7 @@ jobs:
         Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + $content)
 
     - name: Compute Q&A Discussion Request Metrics
-      uses: github/issue-metrics@v3
+      uses: github/issue-metrics@119b5237f41e78241b9b9cae254e544b52a359a0 # v3
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore type:discussions created:${{ env.LAST_MONTH }} category:Q&A'

@@ -1,9 +1,10 @@
 @model dynamic
+@using OrchardCore.Indexing
 @using OrchardCore.Search.Lucene
-@inject LuceneIndexSettingsService LuceneIndexSettingsService
+@inject IIndexProfileStore IndexStore
 
 @{
-    var disabled = !(await LuceneIndexSettingsService.GetSettingsAsync()).Any();
+    var disabled = !(await IndexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Any();
 }
 <div class="col">
     <div class="card h-100">
