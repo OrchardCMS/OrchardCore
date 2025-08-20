@@ -134,6 +134,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
         foreach (var batch in documents.PagesOf(2500))
         {
             totalBatchesProcessed++;
+
             var response = await _client.BulkAsync(index.IndexFullName, descriptor =>
             {
                 descriptor.Refresh(Refresh.True);
@@ -144,21 +145,40 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
                 }
             });
 
-            if (response.IsValidResponse)
+            if (response.IsValidResponse && !response.Errors)
             {
                 totalBatchesSucceeded++;
-
                 continue;
             }
 
-            if (response.TryGetOriginalException(out var ex))
+            if (response.Errors && response.ItemsWithErrors is not null)
             {
-                _logger.LogError(ex, "There were issues indexing a document using Elasticsearch");
+                // If the request was valid but some documents failed.
+                foreach (var itemWithError in response.ItemsWithErrors)
+                {
+                    _logger.LogError(
+                        "Elasticsearch failed to index document {DocumentId} in index {Index}. Error: {ErrorType} - {Reason}",
+                        itemWithError.Id,
+                        index.IndexFullName,
+                        itemWithError.Error?.Type,
+                        itemWithError.Error?.Reason);
+                }
+            }
+
+            // If bulk request failed at the request level.
+            if (!response.IsValidResponse)
+            {
+                if (response.TryGetOriginalException(out var ex))
+                {
+                    _logger.LogError(ex, "Bulk indexing request failed for index {Index}", index.IndexFullName);
+
+                    return false;
+                }
+
+                _logger.LogError("Bulk indexing request failed for index {Index} without exception", index.IndexFullName);
 
                 return false;
             }
-
-            _logger.LogWarning("There were issues indexing a document using Elasticsearch");
         }
 
         return totalBatchesProcessed == totalBatchesSucceeded;
