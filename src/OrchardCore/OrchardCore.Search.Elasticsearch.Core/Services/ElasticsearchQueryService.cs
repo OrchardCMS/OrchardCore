@@ -30,6 +30,7 @@ public class ElasticsearchQueryService
             return;
         }
 
+        result.TotalCount = searchResult.TotalRecords;
         result.Highlights = [];
 
         foreach (var item in searchResult.TopDocs)

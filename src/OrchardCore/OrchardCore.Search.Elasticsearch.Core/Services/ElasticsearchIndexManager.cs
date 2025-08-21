@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Text.Json.Nodes;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Analysis;
-using Elastic.Clients.Elasticsearch.Fluent;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Transport;
@@ -327,6 +326,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
                 Source = context.Source,
                 Fields = context.Fields ?? [],
                 Highlight = context.Highlight,
+                TrackTotalHits = context.TrackTotalHits,
             };
 
             var searchResponse = await _elasticClient.SearchAsync<JsonObject>(searchRequest);
@@ -502,6 +502,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     private static void ProcessSuccessfulSearchResponse(IndexProfile indexProfile, ElasticsearchResult elasticTopDocs, SearchResponse<JsonObject> searchResponse)
     {
         elasticTopDocs.Count = searchResponse.Hits.Count;
+        elasticTopDocs.TotalRecords = searchResponse.HitsMetadata?.Total?.Value2 ?? 0;
 
         var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
         var documents = searchResponse.Documents.GetEnumerator();

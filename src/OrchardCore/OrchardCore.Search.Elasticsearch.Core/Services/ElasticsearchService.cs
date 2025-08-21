@@ -86,6 +86,7 @@ public class ElasticsearchService : ISearchService
             var searchType = queryMetadata.GetSearchType();
             Query query = null;
             Highlight highlight = null;
+            TrackHits trackTotalHits = null;
             var metadataIndex = index.As<ElasticsearchIndexMetadata>();
             if (searchType == ElasticsearchConstants.CustomSearchType && !string.IsNullOrWhiteSpace(queryMetadata.DefaultQuery))
             {
@@ -103,6 +104,7 @@ public class ElasticsearchService : ISearchService
 
                     query = searchRequest.Query;
                     highlight = searchRequest.Highlight;
+                    trackTotalHits = searchRequest.TrackTotalHits;
                 }
                 catch { }
             }
@@ -128,9 +130,11 @@ public class ElasticsearchService : ISearchService
                 From = start,
                 Size = pageSize,
                 Highlight = highlight,
+                TrackTotalHits = trackTotalHits,
             };
 
             await _elasticsQueryService.PopulateResultAsync(searchContext, result);
+
             result.Success = true;
         }
         catch (Exception e)

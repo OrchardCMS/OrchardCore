@@ -23,6 +23,8 @@ public class ElasticsearchSearchContext
 
     public ICollection<FieldAndFormat> Fields { get; set; }
 
+    public TrackHits TrackTotalHits { get; set; }
+
     public ElasticsearchSearchContext(IndexProfile indexProfile, Query query)
     {
         ArgumentNullException.ThrowIfNull(indexProfile);

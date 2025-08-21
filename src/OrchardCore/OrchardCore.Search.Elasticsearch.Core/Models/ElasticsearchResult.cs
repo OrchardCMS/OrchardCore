@@ -9,6 +9,8 @@ public class ElasticsearchResult
     public IList<ElasticsearchRecord> Fields { get; set; }
 
     public long Count { get; set; }
+
+    public long TotalRecords { get; set; }
 }
 
 public class ElasticsearchRecord
