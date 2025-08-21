@@ -167,10 +167,10 @@
                     </td>
                     <td class="text-center">
                         <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove parameter from list"]" class="btn">
-                            <i class="fa-solid fa-times" aria-hidden="true"></i>
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                         </a>
                     </td>
-                    <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div></td>
+                    <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div></td>
                 </tr>
             </draggable>
             <tfoot>
@@ -212,7 +212,7 @@
         <div class="row mb-3">
             <div class="col-12 col-lg-6">
                 <label asp-for="Parameters" class="form-label">@T["Advanced Parameters"]</label>
-                <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
+                <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i></a>
                 <parameters-table :data="sharedState"></parameters-table>
                 <parameters-modal :data="sharedState" v-on:reload-data="reloadData()"></parameters-modal>
                 <div class="hint">@T["Advanced parameters that can be sent with the authorization request."]</div>
