@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Settings.Recipes;
 
@@ -31,8 +32,8 @@ public sealed class SettingsStep : NamedRecipeStepHandler
 
         foreach (var property in model)
         {
-            if(property.Value is null)
-{
+            if (property.Value is null)
+            {
                 continue;
             }
 
@@ -59,7 +60,10 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                     break;
 
                 case "ResourceDebugMode":
-                    site.ResourceDebugMode = (ResourceDebugMode)property.Value.Value<int>();
+                    if (property.Value.TryGetEnumValue<ResourceDebugMode>(out var resourceDebugMode))
+                    {
+                        site.ResourceDebugMode = (ResourceDebugMode)resourceDebugMode;
+                    }
                     break;
 
                 case "SiteName":
