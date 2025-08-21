@@ -1,0 +1,61 @@
+// file item title. Shared by grid and table-view
+.file-container-main-item-title {
+    border-top: solid 1px $gray-300;
+    overflow: hidden;
+
+    .file-filename {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+}
+
+.break-word {
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+[v-cloak] {
+    display: none !important;
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid #b9dcff;
+    border-radius: 0.25rem;
+    margin-bottom: unset !important;
+}
+
+.card-body {
+    flex: 1 1 auto;
+    padding: 1rem 1rem;
+}
+
+.card-footer:last-child {
+    border-radius: 0 0 calc(0.25rem - 1px) calc(0.25rem - 1px);
+}
+
+.card-footer {
+    padding: 0.5rem 1rem;
+    background-color: #e1f0ff;
+    border-top: $file-border-content;
+}
+
+.flex {
+    display: flex;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
