@@ -71,7 +71,7 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                 case "ResourceDebugMode":
                     if (property.Value.TryGetEnumValue<ResourceDebugMode>(out var resourceDebugMode))
                     {
-                        site.ResourceDebugMode = resourceDebugMode;
+                        site.ResourceDebugMode = resourceDebugMode.Value;
                     }
                     break;
 
@@ -120,7 +120,7 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                 case "CacheMode":
                     if (property.Value.TryGetEnumValue<CacheMode>(out var cacheMode))
                     {
-                        site.CacheMode = cacheMode;
+                        site.CacheMode = cacheMode.Value;
                     }
                     break;
 
