@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
+using Json.Path;
 
 namespace OrchardCore.Settings.Recipes;
 
@@ -48,24 +49,15 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                     break;
 
                 case "MaxPagedCount":
-                    if (property.Value.TryGetValue<int>(out var maxPagedCount))
-                    {
-                        site.MaxPagedCount = maxPagedCount;
-                    }
+                    site.MaxPagedCount = property.Value.Value<int>();
                     break;
 
                 case "MaxPageSize":
-                    if (property.Value.TryGetValue<int>(out var maxPageSize))
-                    {
-                        site.MaxPageSize = maxPageSize;
-                    }
+                    site.MaxPageSize = property.Value.Value<int>();
                     break;
 
                 case "PageSize":
-                    if (property.Value.TryGetValue<int>(out var pageSize))
-                    {
-                        site.PageSize = pageSize;
-                    }
+                    site.PageSize = property.Value.Value<int>();
                     break;
 
                 case "ResourceDebugMode":
@@ -96,10 +88,7 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                     break;
 
                 case "UseCdn":
-                    if (property.Value.TryGetValue<bool>(out var useCdn))
-                    {
-                        site.UseCdn = useCdn;
-                    }
+                    site.UseCdn = property.Value.Value<bool>();
                     break;
 
                 case "CdnBaseUrl":
@@ -107,10 +96,7 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                     break;
 
                 case "AppendVersion":
-                    if (property.Value.TryGetValue<bool>(out var appendVersion))
-                    {
-                        site.AppendVersion = appendVersion;
-                    }
+                    site.AppendVersion = property.Value.Value<bool>();
                     break;
 
                 case "HomeRoute":
