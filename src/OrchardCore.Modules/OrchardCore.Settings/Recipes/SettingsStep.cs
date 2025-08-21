@@ -21,10 +21,21 @@ public sealed class SettingsStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step;
+        if (model == null)
+        {
+            return;
+        }
+
         var site = await _siteService.LoadSiteSettingsAsync();
+        site ??= new SiteSettings();
 
         foreach (var property in model)
         {
+            if(property.Value is null)
+{
+                continue;
+            }
+
             switch (property.Key)
             {
                 case "BaseUrl":
