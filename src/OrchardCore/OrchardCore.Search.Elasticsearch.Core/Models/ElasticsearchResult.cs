@@ -10,7 +10,7 @@ public class ElasticsearchResult
 
     public long Count { get; set; }
 
-    public long TotalRecords { get; set; }
+    public long TotalCount { get; set; }
 }
 
 public class ElasticsearchRecord

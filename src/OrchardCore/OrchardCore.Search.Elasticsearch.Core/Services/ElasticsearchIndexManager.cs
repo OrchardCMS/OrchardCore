@@ -502,7 +502,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     private static void ProcessSuccessfulSearchResponse(IndexProfile indexProfile, ElasticsearchResult elasticTopDocs, SearchResponse<JsonObject> searchResponse)
     {
         elasticTopDocs.Count = searchResponse.Hits.Count;
-        elasticTopDocs.TotalRecords = searchResponse.HitsMetadata?.Total?.Value2 ?? 0;
+        elasticTopDocs.TotalCount = searchResponse.HitsMetadata?.Total?.Value2 ?? 0;
 
         var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
         var documents = searchResponse.Documents.GetEnumerator();
