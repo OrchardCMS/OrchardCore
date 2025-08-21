@@ -48,21 +48,30 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                     break;
 
                 case "MaxPagedCount":
-                    site.MaxPagedCount = property.Value.Value<int>();
+                    if (property.Value.TryGetValue<int>(out var maxPagedCount))
+                    {
+                        site.MaxPagedCount = maxPagedCount;
+                    }
                     break;
 
                 case "MaxPageSize":
-                    site.MaxPageSize = property.Value.Value<int>();
+                    if (property.Value.TryGetValue<int>(out var maxPageSize))
+                    {
+                        site.MaxPageSize = maxPageSize;
+                    }
                     break;
 
                 case "PageSize":
-                    site.PageSize = property.Value.Value<int>();
+                    if (property.Value.TryGetValue<int>(out var pageSize))
+                    {
+                        site.PageSize = pageSize;
+                    }
                     break;
 
                 case "ResourceDebugMode":
                     if (property.Value.TryGetEnumValue<ResourceDebugMode>(out var resourceDebugMode))
                     {
-                        site.ResourceDebugMode = (ResourceDebugMode)resourceDebugMode;
+                        site.ResourceDebugMode = resourceDebugMode;
                     }
                     break;
 
@@ -87,7 +96,10 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                     break;
 
                 case "UseCdn":
-                    site.UseCdn = property.Value.Value<bool>();
+                    if (property.Value.TryGetValue<bool>(out var useCdn))
+                    {
+                        site.UseCdn = useCdn;
+                    }
                     break;
 
                 case "CdnBaseUrl":
@@ -95,7 +107,10 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                     break;
 
                 case "AppendVersion":
-                    site.AppendVersion = property.Value.Value<bool>();
+                    if (property.Value.TryGetValue<bool>(out var appendVersion))
+                    {
+                        site.AppendVersion = appendVersion;
+                    }
                     break;
 
                 case "HomeRoute":
@@ -103,7 +118,10 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                     break;
 
                 case "CacheMode":
-                    site.CacheMode = (CacheMode)property.Value.Value<int>();
+                    if (property.Value.TryGetEnumValue<CacheMode>(out var cacheMode))
+                    {
+                        site.CacheMode = cacheMode;
+                    }
                     break;
 
                 default:
