@@ -22,7 +22,6 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
                 "~/OrchardCore.Liquid/monaco/liquid-intellisense.min.js",
                 "~/OrchardCore.Liquid/monaco/liquid-intellisense.js"
             )
-            .SetDependencies("monaco")
             .SetVersion("1.0.0");
     }
 
