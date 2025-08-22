@@ -101,8 +101,33 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
                 field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
                 await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
             }
+            catch (AggregateException e)
+            {
+                e.Handle((x) =>
+                {
+                    if (x is FileNotFoundException ex)
+                    {
+                        // If the file is not found: add a model error specific for the field.
+                        context.Updater.ModelState.AddModelError(
+                            Prefix,
+                            nameof(model.Paths),
+                            S["{0}: The file {1} was not found. Reupload the file.", context.PartFieldDefinition.DisplayName(), ex.FileName]);
+                        _logger.LogError(
+                            e,
+                            "{FileName} - {Message}, while handling attached media files for field '{Field}'",
+                            ex.FileName,
+                            ex.Message,
+                            context.PartFieldDefinition.DisplayName());
+
+                        return true;
+                    }
+
+                    return false; 
+                });
+            }
             catch (Exception e)
             {
+                // Log the error and add a generic error message.
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: There was an error handling the files.", context.PartFieldDefinition.DisplayName()]);
                 _logger.LogError(e, "Error handling attached media files for field '{Field}'", context.PartFieldDefinition.DisplayName());
             }

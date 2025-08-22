@@ -31,11 +31,11 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:14.5.2
+      image: cypress/included:14.5.4
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - uses: ./.github/actions/setup-dotnet
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
       with:
         node-version: "15"
     - name: Functional Tests
@@ -43,7 +43,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run mvc:test
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       if: failure()
       with:
         name: functional-mvc-screenshots
@@ -58,18 +58,18 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:14.5.2
+      image: cypress/included:14.5.4
     env:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       if: failure()
       with:
         name: functional-cms-sqlite-failure
@@ -86,7 +86,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:14.5.2
+      image: cypress/included:14.5.4
     services:
       postgres:
         image: postgres:11
@@ -105,14 +105,14 @@ jobs:
       OrchardCore__DatabaseProvider: "Postgres"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       if: failure()
       with:
         name: functional-cms-postgresql-failure
@@ -129,7 +129,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:14.5.2
+      image: cypress/included:14.5.4
     services:
       mysql:
         image: mysql:8
@@ -144,14 +144,14 @@ jobs:
       OrchardCore__DatabaseProvider: "MySql"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       if: failure()
       with:
         name: functional-cms-mysql-failure
@@ -168,7 +168,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:14.5.2
+      image: cypress/included:14.5.4
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
@@ -182,14 +182,14 @@ jobs:
       OrchardCore__DatabaseProvider: "SqlConnection"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       if: failure()
       with:
         name: functional-cms-mssql-failure

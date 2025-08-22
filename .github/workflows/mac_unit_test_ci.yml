@@ -10,7 +10,7 @@ jobs:
     runs-on: macos-latest
     name: Unit Tests
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - uses: ./.github/actions/setup-dotnet
     - name: Build and test
       run: |

@@ -27,4 +27,9 @@ public class LocalizationSettings
     /// Gets or sets all the supported cultures of the site. It also contains the default culture.
     /// </summary>
     public string[] SupportedCultures { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the culture could fall back to it's parent culture in case the current culture is not determined.
+    /// </summary>
+    public bool FallBackToParentCulture { get; set; }
 }

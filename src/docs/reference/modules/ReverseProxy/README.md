@@ -11,7 +11,9 @@ The following configuration values can be customized:
 ```json
 {
   "OrchardCore_ReverseProxy": {
-    "ForwardedHeaders": "None"
+    "ForwardedHeaders": "None",
+    "KnownNetworks": ["192.168.1.100", "192.168.1.101"],
+    "KnownProxies": ["192.168.1.200", "192.168.1.201"],
   }
 }
 ```

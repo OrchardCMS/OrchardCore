@@ -4,10 +4,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Handlers;
 
-/// <summary>
-/// Rename this file to ServiceCollectionExtensions in v3.0.
-/// </summary>
-public static class SiteServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSiteDisplayDriver<TDriver>(this IServiceCollection services)
         where TDriver : class, IDisplayDriver<ISite>
