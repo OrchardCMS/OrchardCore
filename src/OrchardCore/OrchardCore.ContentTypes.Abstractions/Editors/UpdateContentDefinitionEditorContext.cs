@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -14,8 +15,8 @@ public class UpdateContentDefinitionEditorContext<TBuilder> : UpdateEditorContex
         bool isNew,
         IShapeFactory shapeFactory,
         IZoneHolding layout,
-        IUpdateModel updater)
-        : base(model, groupId, isNew, "", shapeFactory, layout, updater)
+        IUpdateModel updater,
+        HttpContext httpContext) : base(model, groupId, isNew, "", shapeFactory, layout, updater, httpContext)
     {
         Builder = builder;
     }
