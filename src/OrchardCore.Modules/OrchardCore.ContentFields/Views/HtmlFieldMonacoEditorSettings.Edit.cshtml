@@ -16,7 +16,7 @@
 </div>
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    document.addEventListener('DOMContentLoaded', function() {
+    function initMonacoHtmlFieldMonacoEditorSettingsEditor() {
         require(['vs/editor/editor.main'], function () {
 
             var html = document.documentElement;
@@ -59,4 +59,6 @@
             });
         });
     });
+
+    initMonacoHtmlFieldMonacoEditorSettingsEditor();
 </script>

@@ -21,15 +21,12 @@
 
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    document.addEventListener('DOMContentLoaded', function () {
+    function initMonacoHtmlFieldEditor() {
+        const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
+        if (!divEditor) {
+            return;
+        }
         require(['vs/editor/editor.main'], function () {
-
-            const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
-
-            if (!divEditor) {
-                return;
-            }
-
             var settings = @Html.Raw(monacoSettings.Options);
             if (settings.automaticLayout == undefined) {
                 settings.automaticLayout = true;
@@ -87,5 +84,7 @@
                 textArea.value = editor.getValue();
             });
         });
-    });
+    }
+
+    initMonacoHtmlFieldEditor();
 </script>
