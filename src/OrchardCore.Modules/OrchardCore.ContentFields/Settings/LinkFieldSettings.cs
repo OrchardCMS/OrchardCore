@@ -1,21 +1,27 @@
+using OrchardCore.ContentManagement.Metadata.Settings;
+
 namespace OrchardCore.ContentFields.Settings;
 
-public class LinkFieldSettings
+public class LinkFieldSettings : FieldSettings
 {
-    public string Hint { get; set; }
-    public string HintLinkText { get; set; }
-    public bool Required { get; set; }
-    public LinkTextMode LinkTextMode { get; set; }
-    public string UrlPlaceholder { get; set; }
-    public string TextPlaceholder { get; set; }
-    public string DefaultUrl { get; set; }
-    public string DefaultText { get; set; }
-    public string DefaultTarget { get; set; }
-
     public LinkFieldSettings()
     {
         LinkTextMode = LinkTextMode.Optional;
     }
+
+    public string HintLinkText { get; set; }
+
+    public LinkTextMode LinkTextMode { get; set; }
+
+    public string UrlPlaceholder { get; set; }
+
+    public string TextPlaceholder { get; set; }
+
+    public string DefaultUrl { get; set; }
+
+    public string DefaultText { get; set; }
+
+    public string DefaultTarget { get; set; }
 }
 
 public enum LinkTextMode
