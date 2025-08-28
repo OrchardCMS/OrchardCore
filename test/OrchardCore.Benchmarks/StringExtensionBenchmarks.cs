@@ -9,7 +9,7 @@ public class StringExtensionBenchmarks
     private const string _sample = "Hello\r\nWorld\n. This is a test\rstring\nwith multiple\r\nline breaks\n\nand some extra\r\rcharacters.";
 
 #pragma warning disable CA1822 // Mark members as static
-    [Benchmark]
+    [Benchmark(Baseline = true)]
     public string UsingDoubleReplace()
     {
         var value = _sample.Replace("\r", string.Empty).Replace("\n", string.Empty);
