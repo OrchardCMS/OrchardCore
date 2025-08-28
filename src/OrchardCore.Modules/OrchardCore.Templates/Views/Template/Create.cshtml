@@ -59,7 +59,7 @@
 </form>
 
 <script asp-name="create-template" at="Foot" depends-on="liquid-intellisense monaco">
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
             var settings = {
                 automaticLayout: true,
