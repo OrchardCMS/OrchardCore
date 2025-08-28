@@ -6,6 +6,13 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
+@if (settings.Type == FieldBehaviorType.GeneratedHidden)
+{
+    <input type="hidden" asp-for="Text" />
+
+    return;
+}
+
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
     <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">

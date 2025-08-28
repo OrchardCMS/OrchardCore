@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Liquid;
 using OrchardCore.Tests.Stubs;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.ContentFields.Settings;
@@ -194,7 +195,9 @@ public class SettingsDisplayDriverTests
 
         var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<TextField>(field => field.WithSettings(settings));
 
-        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<TextFieldSettingsDriver>(_shapeFactory, contentDefinition);
+        var liquidTemplateManager = _serviceProvider.GetRequiredService<ILiquidTemplateManager>();
+        var stringLocalizer = _serviceProvider.GetRequiredService<IStringLocalizer<TextFieldSettingsDriver>>();
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new TextFieldSettingsDriver(liquidTemplateManager, stringLocalizer));
 
         var shape = (TextFieldSettings)shapeResult.Shape;
 
