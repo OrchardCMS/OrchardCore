@@ -20,20 +20,4 @@ public static class StringExtensions
 
     public static bool EndsWithOrdinalIgnoreCase(this string? a, string? b) =>
         a is not null && b is not null && a.EndsWith(b, StringComparison.OrdinalIgnoreCase);
-
-    public static string RemoveLineBreaks(this string input)
-    {
-        Span<char> buffer = stackalloc char[input.Length];
-        var pos = 0;
-
-        foreach (var c in input)
-        {
-            if (c != '\r' && c != '\n')
-            {
-                buffer[pos++] = c;
-            }
-        }
-
-        return new string(buffer.Slice(0, pos));
-    }
 }

@@ -5,7 +5,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Liquid;
-using OrchardCore.Modules;
 using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
 
@@ -92,7 +91,7 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
                     ["ContentItem"] = new ObjectValue(model.ContentItem),
                 });
 
-            title = title.RemoveLineBreaks();
+            title = title.ReplaceLineEndings(string.Empty);
 
             part.Title = title;
             part.ContentItem.DisplayText = title;

@@ -1,5 +1,6 @@
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
+using OrchardCore.ContentFields.Settings.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -206,7 +207,7 @@ public class SettingsDisplayDriverTests
         var stringLocalizer = Mock.Of<IStringLocalizer<TextFieldSettingsDriver>>();
         var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new TextFieldSettingsDriver(mock.Object, stringLocalizer));
 
-        var shape = (TextFieldSettings)shapeResult.Shape;
+        var shape = (TextFieldSettingsViewModel)shapeResult.Shape;
 
         Assert.Equal(settings.Hint, shape.Hint);
         Assert.Equal(settings.DefaultValue, shape.DefaultValue);
