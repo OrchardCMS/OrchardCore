@@ -158,6 +158,7 @@ public static class StringExtensions
     }
 
     // Not accounting for only \r (e.g. Apple OS 9 carriage return only new lines).
+    [Obsolete("This method will be removed in future releases. Use string.ReplaceLineEndings() instead")]
     public static string ReplaceNewLinesWith(this string text, string replacement)
     {
         return string.IsNullOrWhiteSpace(text)
@@ -169,6 +170,7 @@ public static class StringExtensions
     }
 
     private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+
     public static bool IsValidUrlSegment(this string segment)
     {
         // Valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
