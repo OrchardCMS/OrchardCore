@@ -19,7 +19,15 @@
 
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    function initMonacoHtmlBodyPartEditor() {
+    function onDocumentReady(fn) {
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", fn);
+        } else {
+            fn();
+        }
+    }
+
+    onDocumentReady(function () {
         const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
 
         if (!divEditor) {
@@ -83,7 +91,5 @@
                 textArea.value = editor.getValue();
             });
         });
-    }
-
-    initMonacoHtmlBodyPartEditor();
+    });
 </script>
