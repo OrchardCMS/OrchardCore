@@ -89,7 +89,7 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
                     ["ContentItem"] = new ObjectValue(model.ContentItem),
                 });
 
-            title = title.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            title = title.ReplaceLineEndings(string.Empty);
 
             part.Title = title;
             part.ContentItem.DisplayText = title;
