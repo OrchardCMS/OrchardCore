@@ -10,6 +10,20 @@ public static class ContentManagerExtensions
         return contentManager.PopulateAspectAsync(content, new TAspect());
     }
 
+    /// <summary>
+    /// Returns the content items in the same order as the given content item ids.
+    /// </summary>
+    /// <param name="contentManager"></param>
+    /// <param name="contentItemIds"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public static async Task<IOrderedEnumerable<ContentItem>> GetOrderedContentItemsAsync(this IContentManager contentManager, IList<string> contentItemIds, VersionOptions options = null)
+    {
+        var contentItems = await contentManager.GetAsync(contentItemIds, options);
+
+        return contentItems.OrderBy(ci => contentItemIds.IndexOf(ci.ContentItemId));
+    }
+
     public static async Task<bool> HasPublishedVersionAsync(this IContentManager contentManager, IContent content)
     {
         if (content?.ContentItem == null)
