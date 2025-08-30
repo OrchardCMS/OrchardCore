@@ -5,10 +5,24 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
+@if (settings.Type == FieldBehaviorType.GeneratedHidden)
+{
+    <input type="hidden" asp-for="Text" />
+
+    return;
+}
+
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
     <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
-        <textarea asp-for="Text" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+        @if (settings.Type == FieldBehaviorType.GeneratedDisabled)
+        {
+            <textarea asp-for="Text" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()" disabled></textarea>
+        }
+        else
+        {
+            <textarea asp-for="Text" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+        }
         <span asp-validation-for="Text"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {

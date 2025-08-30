@@ -4,6 +4,13 @@
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
 }
 
+@if (settings.Type == FieldBehaviorType.GeneratedHidden)
+{
+    <input type="hidden" asp-for="Text" />
+
+    return;
+}
+
 <style at="Head">
     #color_wrapper {
         background-color: black;
@@ -43,7 +50,7 @@
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
     <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required) d-block">@Model.PartFieldDefinition.DisplayName()</label>
     <div id="color_wrapper">
-        <input id="color" asp-for="Text" oninput="setColor()" type="color">
+        <input id="color" asp-for="Text" oninput="setColor()" type="color" asp-is-disabled="settings.Type == FieldBehaviorType.GeneratedDisabled">
         <input id="color_opacity" oninput="setColor()" type="range" min="0" max="255" step="1" value="255" />
     </div>
     <span asp-validation-for="Text"></span>
