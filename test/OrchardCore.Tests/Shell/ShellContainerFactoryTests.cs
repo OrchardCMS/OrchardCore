@@ -305,7 +305,9 @@ public class ShellContainerFactoryTests
     // A raw startup class that is not derived from StartupBase. Must be named Startup.
     private sealed class Startup
     {
+#pragma warning disable CA1822 // Mark members as static
         public void ConfigureServices(IServiceCollection services)
+#pragma warning restore CA1822 // Mark members as static
         {
             services.AddScoped<ITestService, TestService>();
         }
