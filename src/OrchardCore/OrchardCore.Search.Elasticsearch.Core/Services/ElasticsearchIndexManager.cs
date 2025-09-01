@@ -317,19 +317,9 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         if (await ExistsAsync(context.IndexProfile.IndexFullName))
         {
-            var searchRequest = new SearchRequest(context.IndexProfile.IndexFullName)
-            {
-                Query = context.Query,
-                From = context.From,
-                Size = context.Size,
-                Sort = context.Sorts ?? [],
-                Source = context.Source,
-                Fields = context.Fields ?? [],
-                Highlight = context.Highlight,
-                TrackTotalHits = context.TrackTotalHits,
-            };
+            context.SearchRequest.Indices = context.IndexProfile.IndexFullName;
 
-            var searchResponse = await _elasticClient.SearchAsync<JsonObject>(searchRequest);
+            var searchResponse = await _elasticClient.SearchAsync<JsonObject>(context.SearchRequest);
 
             if (!searchResponse.IsValidResponse)
             {

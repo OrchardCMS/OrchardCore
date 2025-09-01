@@ -10,7 +10,7 @@ public class SqlParserTests
 
     private static string FormatSql(string sql)
     {
-        return sql.Replace("\r\n", " ").Replace('\n', ' ');
+        return sql.ReplaceLineEndings(" ");
     }
 
     [Theory]
