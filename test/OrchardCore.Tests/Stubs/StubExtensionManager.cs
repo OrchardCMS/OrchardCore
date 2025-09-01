@@ -27,7 +27,7 @@ public class StubExtensionManager : IExtensionManager
 
     public IEnumerable<IFeatureInfo> GetFeatures()
     {
-        return [];
+        return [new FeatureInfo(GetType().Assembly.GetName().Name, new ExtensionInfo(GetType().Assembly.GetName().Name))];
     }
 
     public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
