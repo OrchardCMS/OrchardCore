@@ -6,7 +6,7 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
-@if (settings.Type == FieldBehaviorType.GeneratedHidden)
+@if (settings.Type == FieldBehaviorType.GeneratedHidden || settings.Type == FieldBehaviorType.GeneratedDisabled)
 {
     <input type="hidden" asp-for="Text" />
 
