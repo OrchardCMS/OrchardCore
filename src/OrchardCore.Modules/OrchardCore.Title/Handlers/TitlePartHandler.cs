@@ -101,17 +101,15 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
 
     private async Task<TitlePartSettings> GetSettingsAsync(TitlePart part)
     {
-        if (_settingsCache.TryGetValue(part.ContentItem.ContentType, out var cachedSettings))
+        if (!_settingsCache.TryGetValue(part.ContentItem.ContentType, out var settings))
         {
-            return cachedSettings;
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart), StringComparison.Ordinal));
+
+            settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
+
+            _settingsCache[part.ContentItem.ContentType] = settings;
         }
-
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-        var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart), StringComparison.Ordinal));
-
-        var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
-
-        _settingsCache[part.ContentItem.ContentType] = settings;
 
         return settings;
     }
