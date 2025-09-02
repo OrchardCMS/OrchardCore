@@ -14,8 +14,8 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
 {
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly HashSet<ContentItem> _contentItems = [];
 
+    private readonly HashSet<ContentItem> _contentItems = [];
     private readonly Dictionary<string, TitlePartSettings> _settingsCache = [];
 
     protected readonly IStringLocalizer S;
