@@ -14,7 +14,9 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
 {
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
+
     private readonly HashSet<ContentItem> _contentItems = [];
+    private readonly Dictionary<string, TitlePartSettings> _settingsCache = [];
 
     protected readonly IStringLocalizer S;
 
@@ -99,9 +101,16 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
 
     private async Task<TitlePartSettings> GetSettingsAsync(TitlePart part)
     {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-        var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart), StringComparison.Ordinal));
+        if (!_settingsCache.TryGetValue(part.ContentItem.ContentType, out var settings))
+        {
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart), StringComparison.Ordinal));
 
-        return contentTypePartDefinition.GetSettings<TitlePartSettings>();
+            settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
+
+            _settingsCache[part.ContentItem.ContentType] = settings;
+        }
+
+        return settings;
     }
 }
