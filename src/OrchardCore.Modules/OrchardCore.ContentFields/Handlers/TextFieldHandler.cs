@@ -70,13 +70,8 @@ public class TextFieldHandler : ContentFieldHandler<TextField>
             field.Text = value?.Trim();
 
             var partActivator = _contentPartFactory.GetTypeActivator(context.PartName);
-            var part = field.ContentItem.Get(partActivator.Type, context.ContentPartFieldDefinition.ContentTypePartDefinition.Name) as ContentPart;
-
-            if (part == null)
-            {
-                part = partActivator.CreateInstance();
-                field.ContentItem.Weld(context.ContentPartFieldDefinition.ContentTypePartDefinition.Name, part);
-            }
+            var part = (field.ContentItem.Get(partActivator.Type, context.ContentPartFieldDefinition.ContentTypePartDefinition.Name) as ContentPart)
+                ?? throw new InvalidOperationException($"The content part '{context.ContentPartFieldDefinition.ContentTypePartDefinition.Name}' could not be found.");
 
             part.Apply(context.ContentPartFieldDefinition.Name, field);
         }
