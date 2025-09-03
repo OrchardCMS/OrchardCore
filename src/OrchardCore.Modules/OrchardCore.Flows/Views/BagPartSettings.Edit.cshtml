@@ -7,13 +7,13 @@
     <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
         <div class="form-check">
             <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@(BagPartSettingType.ContentTypes)" checked="@(Model.Source == BagPartSettingType.ContentTypes))">
-            <label for="SourceContentTypes">
+            <label for="SourceContentTypes" class="form-check-label">
                 @T["Content Types"]
             </label>
         </div>
         <div class="form-check">
             <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="@(BagPartSettingType.Stereotypes)" checked="@(Model.Source == BagPartSettingType.Stereotypes)">
-            <label for="SourceStereotype" class="form-label">
+            <label for="SourceStereotype" class="form-check-label">
                 @T["Stereotype"] <span class="hint">@T["All content types of these Stereotypes"]</span>
             </label>
         </div>
