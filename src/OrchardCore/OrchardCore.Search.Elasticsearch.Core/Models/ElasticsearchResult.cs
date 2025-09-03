@@ -14,7 +14,7 @@ public class ElasticsearchResult
 
     public long TotalCount { get; set; }
 
-    public SearchResponse<JsonObject> Response { get; set; }
+    public SearchResponse<JsonObject> SearchResponse { get; set; }
 }
 
 public class ElasticsearchRecord
