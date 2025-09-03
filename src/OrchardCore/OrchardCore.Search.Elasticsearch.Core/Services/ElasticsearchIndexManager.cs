@@ -493,6 +493,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     {
         elasticTopDocs.Count = searchResponse.Hits.Count;
         elasticTopDocs.TotalCount = searchResponse.HitsMetadata?.Total?.Value2 ?? 0;
+        elasticTopDocs.Response = searchResponse;
 
         var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
         var documents = searchResponse.Documents.GetEnumerator();
