@@ -1,4 +1,6 @@
 using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.DataProtection;
+using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
@@ -12,11 +14,15 @@ namespace OrchardCore.OpenId.Recipes;
 public sealed class OpenIdClientSettingsStep : NamedRecipeStepHandler
 {
     private readonly IOpenIdClientService _clientService;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
 
-    public OpenIdClientSettingsStep(IOpenIdClientService clientService)
+    public OpenIdClientSettingsStep(
+        IOpenIdClientService clientService,
+        IDataProtectionProvider dataProtectionProvider)
         : base("OpenIdClientSettings")
     {
         _clientService = clientService;
+        _dataProtectionProvider = dataProtectionProvider;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -24,11 +30,12 @@ public sealed class OpenIdClientSettingsStep : NamedRecipeStepHandler
         var model = context.Step.ToObject<OpenIdClientSettingsStepModel>();
         var settings = await _clientService.LoadSettingsAsync();
 
-        settings.Scopes = model.Scopes.Split(' ', ',');
+        settings.Scopes = model.Scopes?.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries);
         settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
         settings.CallbackPath = model.CallbackPath;
         settings.ClientId = model.ClientId;
-        settings.ClientSecret = model.ClientSecret;
+        var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
+        settings.ClientSecret = protector.Protect(model.ClientSecret);
         settings.DisplayName = model.DisplayName;
         settings.ResponseMode = model.ResponseMode;
         settings.ResponseType = model.ResponseType;
