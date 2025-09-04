@@ -24,14 +24,14 @@ var optionsList = Vue.component('options-list',
 
 var policyDetails = Vue.component('policy-details',
     {
-        components: { optionsList : optionsList },
+        components: { optionsList: optionsList },
         props: ['policy'],
         template: '#policy-details'
     });
 
 var corsApp = new Vue({
     el: '#corsAdmin',
-    components: { policyDetails : policyDetails, optionsList : optionsList },
+    components: { policyDetails: policyDetails, optionsList: optionsList },
     data: {
         selectedPolicy: null,
         policies: null,
@@ -43,56 +43,59 @@ var corsApp = new Vue({
     methods: {
         newPolicy: function () {
             this.selectedPolicy = {
-                Name: 'New policy',
-                AllowedOrigins: [],
-                AllowAnyOrigin: true,
-                AllowedMethods: [],
-                AllowAnyMethod: true,
-                AllowedHeaders: [],
-                AllowAnyHeader: true,
-                AllowCredentials: true,
-                IsDefaultPolicy: false
+                name: 'New policy',
+                allowedOrigins: [],
+                allowAnyOrigin: true,
+                allowedMethods: [],
+                allowAnyMethod: true,
+                allowedHeaders: [],
+                allowAnyHeader: true,
+                allowCredentials: true,
+                isDefaultPolicy: false,
+                exposedHeaders: []
             };
         },
         editPolicy: function (policy) {
             this.selectedPolicy = Object.assign({}, policy);
-            this.selectedPolicy.OriginalName = this.selectedPolicy.Name;
+            this.selectedPolicy.originalName = this.selectedPolicy.name;
         },
         deletePolicy: function (policy, event) {
             this.selectedPolicy = null;
-            var policyToRemove = this.policies.filter(function (item) { return item.Name === policy.Name; });
+            var policyToRemove = this.policies.filter(function (item) { return item.name === policy.name; });
             if (policyToRemove.length > 0)
                 this.policies.splice($.inArray(policyToRemove[0], this.policies), 1);
             event.stopPropagation();
             this.save();
         },
         updatePolicy: function (policy, event) {
-            if (policy.IsDefaultPolicy) {
-                this.policies.forEach(p => p.IsDefaultPolicy = false);
+            if (policy.isDefaultPolicy) {
+                this.policies.forEach(p => p.isDefaultPolicy = false);
             }
-            if (policy.OriginalName) {
-                var policyIndex = this.policies.findIndex((oldPolicy) => oldPolicy.Name === policy.OriginalName);
+
+            if (policy.originalName) {
+                var policyIndex = this.policies.findIndex((oldPolicy) => oldPolicy.name === policy.originalName);
                 this.policies[policyIndex] = policy;
             }
             else {
                 this.policies.push(policy);
             }
+
             this.save();
             this.back();
         },
         save: function () {
-            document.getElementById('CorsSettings').value = JSON.stringify(this.policies);
+            document.getElementById('corsSettings').value = JSON.stringify(this.policies);
             document.getElementById('corsForm').submit();
         },
         back: function () {
             this.selectedPolicy = null;
         },
-        searchBox: function() {
+        searchBox: function () {
             var searchBox = $('#search-box');
 
             // On Enter, edit the item if there is a single one
-            searchBox.keypress(function (event) {
-                if (event.which == 13) {
+            searchBox.keydown(function (e) {
+                if (e.key == 'Enter') {
 
                     // Edit the item if there is a single filtered element
                     var visible = $('#corsAdmin > ul > li:visible');
@@ -121,9 +124,8 @@ var corsApp = new Vue({
                         var found = text.indexOf(search) > -1;
                         $(this).toggle(found);
 
-                        if(found)
-                        {
-                            intVisible++; 
+                        if (found) {
+                            intVisible++;
                         }
                     });
 

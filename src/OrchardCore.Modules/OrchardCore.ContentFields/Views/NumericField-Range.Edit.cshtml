@@ -13,7 +13,7 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses()">@name</label>
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@name</label>
     <div class="@Orchard.GetEndClasses()">
         <div class="@Orchard.GetLimitedWidthWrapperClasses()">
             <div class="@Orchard.GetLimitedWidthClasses()">
@@ -22,13 +22,14 @@
                     {
                         <span class="input-group-text">@min</span>
                     }
-                    <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" onchange="numericFieldRangeSync('@(id)-range', value);" />
+                    <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" onchange="numericFieldRangeSync('@(id)-range', value);" />
                     @if (settings.Maximum.HasValue)
                     {
                         <span class="input-group-text">@max</span>
                     }
                 </div>
                 <input id="@(id)-range" class="form-control-range" type="range" min="@min" max="@max" step="@step" oninput="numericFieldRange('@(id)', value);" onchange="numericFieldRange('@(id)', value);" />
+                <span asp-validation-for="Value"></span>
             </div>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))

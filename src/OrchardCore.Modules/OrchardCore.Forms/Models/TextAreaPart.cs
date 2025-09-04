@@ -1,10 +1,12 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Forms.Models
+namespace OrchardCore.Forms.Models;
+
+public class TextAreaPart : ContentPart
 {
-    public class TextAreaPart : ContentPart
-    {
-        public string DefaultValue { get; set; }
-        public string Placeholder { get; set; }
-    }
+    public string DefaultValue { get; set; }
+
+    public string Placeholder { get; set; }
+
+    public int? Rows { get; set; }
 }

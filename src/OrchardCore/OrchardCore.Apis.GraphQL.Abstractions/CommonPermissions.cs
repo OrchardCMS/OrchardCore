@@ -2,8 +2,10 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Apis.GraphQL;
 
-public class CommonPermissions
+[Obsolete("This class will be removed in a future release, please use GraphQLPermissions instead.")]
+public static class CommonPermissions
 {
-    public static readonly Permission ExecuteGraphQLMutations = new("ExecuteGraphQLMutations", "Execute GraphQL Mutations.");
-    public static readonly Permission ExecuteGraphQL = new("ExecuteGraphQL", "Execute GraphQL.", new[] { ExecuteGraphQLMutations });
+    public static readonly Permission ExecuteGraphQLMutations = GraphQLPermissions.ExecuteGraphQLMutations;
+
+    public static readonly Permission ExecuteGraphQL = GraphQLPermissions.ExecuteGraphQL;
 }

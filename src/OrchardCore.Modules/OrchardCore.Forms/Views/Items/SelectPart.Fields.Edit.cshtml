@@ -3,7 +3,7 @@
 @using OrchardCore.Forms.Models
 @model SelectPartEditViewModel
 
-<script asp-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.js" asp-name="selectOptionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
+<script asp-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.js" asp-name="selectOptionsEditor" at="Foot" depends-on="vuejs:2, vue-draggable:2"></script>
 <style asp-src="~/OrchardCore.Forms/Styles/selectOptionsEditor.min.css" debug-src="~/OrchardCore.Forms/Styles/selectOptionsEditor.css"></style>
 
 <script type="text/x-template" id="select-options-row" asp-name="select-options-row" at="Foot">
@@ -23,16 +23,16 @@
                         v-model="IsSelected"
                         >
                 <label :for=" partId + '_' + option.key + '_id'" class="form-check-label" title="@T["Set as default"]" >
-                    <span class="sr-only"></span>
+                    <span class="visually-hidden"></span>
                 </label>
             </div>
         </td>
         <td class="text-center">
             <a v-on:click.prevent.stop="remove" href="#" title="@T["Remove element from list"]" class="btn">
-                <i class="fa-solid fa-times" aria-hidden="true"></i>
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
             </a>
         </td>
-        <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div></td>
+        <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div></td>
     </tr>
 </script>
 
@@ -124,7 +124,7 @@
         <div class="@Orchard.GetEndClasses()">
             <input type="hidden" class="field-options-wrapper-initial-default-value" value="@Model.DefaultValue" />
             <div class="d-none field-options-wrapper-initial-options">@Html.Raw(Model.Options)</div>
-            <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
+            <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i></a>
             <select-options-table :data="state"
                                   :mode="'single'"
                                   v-on:reorder-option="reorderOption"

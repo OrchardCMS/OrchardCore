@@ -1,0 +1,12 @@
+name: Set Up .NET
+description: Centralized actions/setup-dotnet for easier updates.
+
+runs:
+  using: composite
+  steps:
+    - name: Set Up .NET
+      uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+      with:
+        dotnet-version: | 
+          8.0.x
+          9.0.x

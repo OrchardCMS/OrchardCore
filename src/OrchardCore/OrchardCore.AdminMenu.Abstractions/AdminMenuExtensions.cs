@@ -8,19 +8,19 @@ using OrchardCore.Navigation;
 namespace OrchardCore.AdminMenu;
 public static class AdminMenuExtensions
 {
-    public static IServiceCollection AddAdminMenu<TNode, TNodeBuilder, TNodeDriver>(this IServiceCollection services)
+    public static IServiceCollection AddAdminNode<TNode, TNodeBuilder, TNodeDriver>(this IServiceCollection services)
         where TNode : AdminNode, new()
         where TNodeBuilder : class, IAdminNodeNavigationBuilder
         where TNodeDriver : class, IDisplayDriver<MenuItem>
     {
-        services.AddAdminMenu<TNode, TNodeBuilder>();
+        services.AddAdminNode<TNode, TNodeBuilder>();
 
-        services.AddScoped<IDisplayDriver<MenuItem>, TNodeDriver>();
+        services.AddDisplayDriver<MenuItem, TNodeDriver>();
 
         return services;
     }
 
-    public static IServiceCollection AddAdminMenu<TNode, TNodeBuilder>(this IServiceCollection services)
+    public static IServiceCollection AddAdminNode<TNode, TNodeBuilder>(this IServiceCollection services)
         where TNode : AdminNode, new()
         where TNodeBuilder : class, IAdminNodeNavigationBuilder
     {

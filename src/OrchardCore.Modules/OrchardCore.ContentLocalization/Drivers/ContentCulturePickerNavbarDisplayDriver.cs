@@ -1,6 +1,4 @@
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using OrchardCore.Admin.Models;
@@ -11,7 +9,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.ContentLocalization.Drivers;
 
-public class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
+public sealed class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILocalizationService _localizationService;
@@ -35,8 +33,7 @@ public class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
             .HttpContext
             .Features
             .Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
-
         }).RenderWhen(() => Task.FromResult(supportedCultures.Count() > 1))
-        .Location("Detail", "Content:5");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content:5");
     }
 }

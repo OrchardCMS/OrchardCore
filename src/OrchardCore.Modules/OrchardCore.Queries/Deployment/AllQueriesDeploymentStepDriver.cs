@@ -2,22 +2,21 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Queries.Deployment
-{
-    public class AllQueriesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllQueriesDeploymentStep>
-    {
-        public override IDisplayResult Display(AllQueriesDeploymentStep step)
-        {
-            return
-                Combine(
-                    View("AllQueriesDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("AllQueriesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
-        }
+namespace OrchardCore.Queries.Deployment;
 
-        public override IDisplayResult Edit(AllQueriesDeploymentStep step)
-        {
-            return View("AllQueriesDeploymentStep_Edit", step).Location("Content");
-        }
+public sealed class AllQueriesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllQueriesDeploymentStep>
+{
+    public override Task<IDisplayResult> DisplayAsync(AllQueriesDeploymentStep step, BuildDisplayContext context)
+    {
+        return
+            CombineAsync(
+                View("AllQueriesDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
+                View("AllQueriesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
+    }
+
+    public override IDisplayResult Edit(AllQueriesDeploymentStep step, BuildEditorContext context)
+    {
+        return View("AllQueriesDeploymentStep_Edit", step).Location("Content");
     }
 }

@@ -1,0 +1,23 @@
+<form asp-controller="Account" asp-action="Login" asp-area="OrchardCore.Users" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form no-multisubmit">
+
+    @if (Model.Content != null)
+    {
+        @await DisplayAsync(Model.Content)
+    }
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary" tabindex="4">@T["Log in"]</button>
+    </div>
+
+    @if (Model.Links != null)
+    {
+        <ul class="list-unstyled">
+            @await DisplayAsync(Model.Links)
+        </ul>
+    }
+
+    @if (Model.Footer != null)
+    {
+        @await DisplayAsync(Model.Footer)
+    }
+</form>

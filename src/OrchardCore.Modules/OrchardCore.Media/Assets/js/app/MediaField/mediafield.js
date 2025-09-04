@@ -1,4 +1,4 @@
-function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors) {
+function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors, allowedExtensions) {
     //BagPart create a script section without other DOM elements
     if(el === null)
         return;
@@ -13,7 +13,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
     //when hide modal detach media app to avoid issue on BagPart
     modalBodyElement.addEventListener('hidden.bs.modal', function (event) {
         $("#mediaApp").appendTo('body');
-        $("#mediaApp").hide();
+        document.getElementById("mediaApp").classList.add("d-none");
     });
 
     mediaFieldApps.push(mediaFieldApp = new Vue({
@@ -27,6 +27,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             allowMediaText: allowMediaText,
             backupMediaText: '',
             allowAnchors: allowAnchors,
+            allowedExtensions: allowedExtensions,
             backupAnchor: null,
             mediaTextModal: null,
             anchoringModal: null
@@ -140,11 +141,19 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             showModal: function (event) {
                 var self = this;
                 if (self.canAddMedia) {
+                    $('#allowedExtensions').val(this.allowedExtensions);
+                    $('#fileupload').attr('accept', this.allowedExtensions);
                     $("#mediaApp").appendTo($(modalBodyElement).find('.modal-body'));
-                    $("#mediaApp").show();
+
+                    // Reload current folder in case the allowed extensions have changed.
+                    mediaApp.refresh();
 
                     var modal = new bootstrap.Modal(modalBodyElement);
                     modal.show();
+
+                    setTimeout(function () {
+                        document.getElementById("mediaApp").classList.remove("d-none");
+                    }, 100)
 
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
                         self.addMediaFiles(mediaApp.selectedMedias);

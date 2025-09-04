@@ -6,26 +6,17 @@
 @using OrchardCore
 @{
     var culture = await Orchard.GetContentCultureAsync(Model.TitlePart.ContentItem);
+    var isRequired = Model.Settings?.Options == TitlePartOptions.EditableRequired;
 }
-@if (Model.Settings?.Options != TitlePartOptions.GeneratedHidden)
-{
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Title">
-        <label asp-for="Title" class="@Orchard.GetLabelClasses()">@T["Title"]</label>
-        <div class="@Orchard.GetEndClasses()">
-            <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
-            <span asp-validation-for="Title"></span>
-            @if (!string.IsNullOrWhiteSpace(Model.Settings?.Pattern))
-            {
-                switch (Model.Settings?.Options)
-                {
-                    case TitlePartOptions.Editable:
-                        <span class="hint">@T["Leave empty to auto-generate the title using the pattern."]</span>
-                        break;
-                    case TitlePartOptions.GeneratedDisabled:
-                        <span class="hint">@T["The title will be auto-generated using the pattern."]</span>
-                        break;
-                }
-            }
-        </div>
+
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Title">
+    <label asp-for="Title" class="@Orchard.GetLabelClasses(inputRequired: isRequired)">@T["Title"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
+        <span asp-validation-for="Title"></span>
+        @if (!string.IsNullOrWhiteSpace(Model.Settings?.Pattern) && Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)
+        {
+            <span class="hint">@T["The title will be auto-generated using the pattern."]</span>
+        }
     </div>
-}
+</div>

@@ -1,9 +1,25 @@
+@using Microsoft.AspNetCore.Identity
+
 @model SummaryAdminUserViewModel
 
+@inject UserManager<IUser> UserManager
+
 <h5 class="float-start">@Model.User.UserName <span class="hint dashed">@Model.User.Email</span></h5>
+@if (!await UserManager.IsEmailConfirmedAsync(Model.User))
+{
+    <span class="badge text-bg-warning ms-2" title="@T["The email address '{0}' has not been confirmed.", Model.User.Email]">
+        <i class="fa-solid fa-envelope-open" aria-hidden="true"></i> @T["Unconfirmed"]
+    </span>
+}
+@if (await UserManager.IsLockedOutAsync(Model.User))
+{
+    <span class="badge text-bg-danger ms-2" title="@T["The user is currently locked out."]">
+        <i class="fa-solid fa-lock" aria-hidden="true"></i> @T["Locked"]
+    </span>
+}
 @if (!Model.User.IsEnabled)
 {
     <span class="badge text-bg-danger ms-2" title="@T["Disabled"]">
-        <i class="fa-solid fa-user-alt-slash" aria-hidden="true"></i> @T["Disabled"]
+        <i class="fa-solid fa-user-slash" aria-hidden="true"></i> @T["Disabled"]
     </span>
 }

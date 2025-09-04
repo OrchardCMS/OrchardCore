@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -10,7 +6,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
@@ -70,17 +65,17 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         await DistributedCache.SetAsync(key, data,
             new DistributedCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 0, 5)
+                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 0, 5),
             });
     }
 
-    protected async Task<IActionResult> RemoveTwoFactorProviderAync(IUser user, Func<Task> onSuccessAsync)
+    protected async Task<IActionResult> RemoveTwoFactorProviderAsync(IUser user, Func<Task> onSuccessAsync)
     {
         var currentProviders = await GetTwoFactorProvidersAsync(user);
 
         if (currentProviders.Count == 1)
         {
-            if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync())
+            if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(user))
             {
                 await Notifier.ErrorAsync(H["You cannot remove the only active two-factor method."]);
 
@@ -112,12 +107,14 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
     {
         if (await UserManager.GetTwoFactorEnabledAsync(user))
         {
+            await RefreshTwoFactorClaimAsync(user);
+
             return;
         }
 
         await UserManager.SetTwoFactorEnabledAsync(user, true);
 
-        if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync())
+        if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(user))
         {
             await RefreshTwoFactorClaimAsync(user);
         }
@@ -125,8 +122,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 
     protected async Task RefreshTwoFactorClaimAsync(IUser user)
     {
-        var twoFactorClaim = (await UserManager.GetClaimsAsync(user))
-            .FirstOrDefault(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType);
+        var twoFactorClaim = User.Claims.FirstOrDefault(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType);
 
         if (twoFactorClaim != null)
         {
@@ -139,7 +135,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
     {
         if (await UserManager.CountRecoveryCodesAsync(user) == 0)
         {
-            var twoFactorSettings = (await SiteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>();
+            var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
             var recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, twoFactorSettings.NumberOfRecoveryCodesToGenerate);
 
             await SetRecoveryCodesAsync(recoveryCodes.ToArray(), await UserManager.GetUserIdAsync(user));

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,48 +9,51 @@ using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 
-namespace OrchardCore.Layers.GraphQL
+namespace OrchardCore.Layers.GraphQL;
+
+public sealed class SiteLayersQuery : ISchemaBuilder
 {
-    public class SiteLayersQuery : ISchemaBuilder
+    private readonly GraphQLContentOptions _graphQLContentOptions;
+
+    internal readonly IStringLocalizer S;
+
+    public SiteLayersQuery(
+        IOptions<GraphQLContentOptions> graphQLContentOptions,
+        IStringLocalizer<SiteLayersQuery> localizer)
     {
-        protected readonly IStringLocalizer S;
-        private readonly GraphQLContentOptions _graphQLContentOptions;
+        _graphQLContentOptions = graphQLContentOptions.Value;
+        S = localizer;
+    }
 
-        public SiteLayersQuery(
-            IStringLocalizer<SiteLayersQuery> localizer,
-            IOptions<GraphQLContentOptions> graphQLContentOptions)
+    public Task<string> GetIdentifierAsync()
+        => Task.FromResult(string.Empty);
+
+    public Task BuildAsync(ISchema schema)
+    {
+        if (_graphQLContentOptions.IsHiddenByDefault("SiteLayers"))
         {
-            S = localizer;
-            _graphQLContentOptions = graphQLContentOptions.Value;
-        }
-
-        public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
-
-        public Task BuildAsync(ISchema schema)
-        {
-            if (_graphQLContentOptions.IsHiddenByDefault("SiteLayers"))
-            {
-                return Task.CompletedTask;
-            }
-
-            var field = new FieldType
-            {
-                Name = "SiteLayers",
-                Description = S["Site layers define the rules and zone placement for widgets."],
-                Type = typeof(ListGraphType<LayerQueryObjectType>),
-                Resolver = new LockedAsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync)
-            };
-
-            schema.Query.AddField(field);
-
             return Task.CompletedTask;
         }
 
-        private async ValueTask<IEnumerable<Layer>> ResolveAsync(IResolveFieldContext resolveContext)
+        var field = new FieldType
         {
-            var layerService = resolveContext.RequestServices.GetService<ILayerService>();
-            var allLayers = await layerService.GetLayersAsync();
-            return allLayers.Layers;
-        }
+            Name = "SiteLayers",
+            Description = S["Site layers define the rules and zone placement for widgets."],
+            Type = typeof(ListGraphType<LayerQueryObjectType>),
+            Resolver = new LockedAsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync),
+        };
+
+        schema.Query.AddField(field);
+
+        return Task.CompletedTask;
+    }
+
+    private async ValueTask<IEnumerable<Layer>> ResolveAsync(IResolveFieldContext resolveContext)
+    {
+        var layerService = resolveContext.RequestServices.GetService<ILayerService>();
+
+        var allLayers = await layerService.GetLayersAsync();
+
+        return allLayers.Layers;
     }
 }

@@ -1,7 +1,0 @@
-{
-  "name": "orchardcore.admindashboard",
-  "version": "1.0.0",
-  "dependencies": {
-    "bootstrap": "5.3.2"
-  }
-}

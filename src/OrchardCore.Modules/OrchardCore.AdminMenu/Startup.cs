@@ -1,127 +1,38 @@
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.AdminMenu.AdminNodes;
-using OrchardCore.AdminMenu.Controllers;
 using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.AdminMenu
+namespace OrchardCore.AdminMenu;
+
+public sealed class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        private readonly AdminOptions _adminOptions;
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
 
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
+#pragma warning disable CS0618 // Type or member is obsolete
+        services.AddScoped<IAdminMenuPermissionService, AdminMenuPermissionService>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IAdminMenuPermissionService, AdminMenuPermissionService>();
+        services.AddScoped<IAdminMenuService, AdminMenuService>();
+        services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 
-            services.AddScoped<IAdminMenuService, AdminMenuService>();
-            services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
+        services.AddRecipeExecutionStep<AdminMenuStep>();
 
-            services.AddRecipeExecutionStep<AdminMenuStep>();
+        services.AddDeployment<AdminMenuDeploymentSource, AdminMenuDeploymentStep, AdminMenuDeploymentStepDriver>();
 
-            services.AddDeployment<AdminMenuDeploymentSource, AdminMenuDeploymentStep, AdminMenuDeploymentStepDriver>();
+        // placeholder treeNode
+        services.AddAdminNode<PlaceholderAdminNode, PlaceholderAdminNodeNavigationBuilder, PlaceholderAdminNodeDriver>();
 
-            // placeholder treeNode
-            services.AddAdminMenu<PlaceholderAdminNode, PlaceholderAdminNodeNavigationBuilder, PlaceholderAdminNodeDriver>();
-
-            // link treeNode
-            services.AddAdminMenu<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            // Menu
-            var menuControllerName = typeof(MenuController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuList",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/List",
-                defaults: new { controller = menuControllerName, action = nameof(MenuController.List) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuCreate",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Create",
-                defaults: new { controller = menuControllerName, action = nameof(MenuController.Create) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuDelete",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Delete/{id}",
-                defaults: new { controller = menuControllerName, action = nameof(MenuController.Delete) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuEdit",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Edit/{id}",
-                defaults: new { controller = menuControllerName, action = nameof(MenuController.Edit) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuToggle",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Toggle/{id}",
-                defaults: new { controller = menuControllerName, action = nameof(MenuController.Toggle) }
-            );
-
-            // Node
-            var nodeControllerName = typeof(NodeController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuNodeList",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/List",
-                defaults: new { controller = nodeControllerName, action = nameof(NodeController.List) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuNodeCreate",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Create",
-                defaults: new { controller = nodeControllerName, action = nameof(NodeController.Create) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuNodeDelete",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Delete",
-                defaults: new { controller = nodeControllerName, action = nameof(NodeController.Delete) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuNodeEdit",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Edit",
-                defaults: new { controller = nodeControllerName, action = nameof(NodeController.Edit) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuNodeToggle",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Toggle",
-                defaults: new { controller = nodeControllerName, action = nameof(NodeController.Toggle) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "AdminMenuNodeMoveNode",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/MoveNode",
-                defaults: new { controller = nodeControllerName, action = nameof(NodeController.MoveNode) }
-            );
-        }
+        // link treeNode
+        services.AddAdminNode<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
     }
 }

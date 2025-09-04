@@ -10,7 +10,11 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Notifications",
     Name = "Notifications",
     Description = "Provides a way to notify users.",
-    Category = "Notifications"
+    Category = "Notifications",
+    Dependencies =
+    [
+        "OrchardCore.Liquid"
+    ]
 )]
 
 [assembly: Feature(

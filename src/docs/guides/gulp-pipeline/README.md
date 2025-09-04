@@ -1,5 +1,7 @@
 # Gulp Pipeline
 
+Will be deprecated. Use new [Assets Manager](../assets-manager/README.md) instead.
+
 Orchard Core includes a processing pipeline for client-side assets (typically scripts and stylesheets) which is used to perform front-end development workflow tasks such as transpilation, minification and bundling of client-side assets in both core projects and extensions (i.e. modules and themes). Many of the built-in modules and themes in Orchard Core use this pipeline to process client-side assets, and you can enable your own extensions to use it as well.
 
 # Overview
@@ -39,7 +41,7 @@ There are three different Gulp tasks that you can invoke to execute the pipeline
 - **rebuild** performs an unconditional full build of all asset groups in the solution, even if their outputs are already newer than their inputs.
 - **watch** monitors all asset groups in the solution for changes to their inputs, and rebuilds an asset group if one or more of its inputs are modified.
 
-Note: These tasks also take the asset manifest files themselves into consideration when evaluating changes; a modification to the asset manifest file (`Assets.json`) is treated the same as a modification to one of the input asset files declared in the manifest.
+Note: These tasks also take the asset manifest files themselves into consideration when evaluating changes; a modification to the asset manifest file (`GulpAssets.json`) is treated the same as a modification to one of the input asset files declared in the manifest.
 
 The way you typically execute the Gulp tasks depends on whether you are using Visual Studio or not.
 
@@ -49,6 +51,8 @@ The way you typically execute the Gulp tasks depends on whether you are using Vi
 2. Make sure you have installed all the required Node.js packages using the `npm install` command as described above.
 3. Navigate to the Orchard Core solution folder where the file `gulpfile.js` is located.
 4. Execute one of the commands `gulp build`, `gulp rebuild` and `gulp watch` to execute the corresponding Gulp task.
+
+Note: If Gulp fails on your system, try downgrading to an older Node.js version. If you are using [Node Version Manager](https://github.com/nvm-sh/nvm) ([for Windows](https://github.com/coreybutler/nvm-windows)) you can type `nvm install 18` or `nvm use 18` to switch to the latest version of Node.js 18.
 
 ### Using Visual Studio
 
@@ -94,7 +98,7 @@ You typically don't have to execute any of the tasks in the client-side asset pi
 
 The first step is to add an *asset manifest file* to your extension. This asset manifest file is a simple JSON document that declares one or more *asset groups* to be processed by the pipeline. Each asset group specifies a set of *input files* in your extension (such as `.less`, `.scss`, `.css`, `.ts` or `.js` files) along with an *output file* and (optionally) one or more options to influence the processing.
 
-To add an asset manifest, add a new JSON file named `Assets.json` to the root folder of your extension (both the name and location of the file are mandatory. The client-side asset pipeline will detect and parse this file, and add the asset groups declared inside it for processing when of the pipeline tasks are executed.
+To add an asset manifest, add a new JSON file named `GulpAssets.json` to the root folder of your extension (both the name and location of the file are mandatory. The client-side asset pipeline will detect and parse this file, and add the asset groups declared inside it for processing when of the pipeline tasks are executed.
 
 The basic structure of the asset manifest looks like this:
 
@@ -331,7 +335,7 @@ An array of additional files to be monitored for changes. Paths are relative to 
 
 ### `generateSourceMaps`
 
-`true` to emit inline source maps into non-minified output files, `false` to disable source maps. Default is `true`.
+`true` to emit inline source maps into non-minified output files, `false` to disable source maps. Default is `false`.
 
 ### `flatten`
 
@@ -406,7 +410,7 @@ When using this approach, the `Styles` and `Scripts` folders in your extension w
 
 ## Including custom extension folders
 
-Orchard Core has the ability to load extensions from other folders besides the `OrchardCore.Modules` and `OrchardCore.Themes` folders. If your extension is stored and loaded from such a custom location, the client-side asset pipeline will not automatically detect your asset manifest. This is because, by default, it only looks for `Assets.json` files in folders under these locations:
+Orchard Core has the ability to load extensions from other folders besides the `OrchardCore.Modules` and `OrchardCore.Themes` folders. If your extension is stored and loaded from such a custom location, the client-side asset pipeline will not automatically detect your asset manifest. This is because, by default, it only looks for `GulpAssets.json` files in folders under these locations:
 
 - `OrchardCore.Modules/`
 - `OrchardCore.Themes/`
@@ -420,8 +424,8 @@ To add your custom location to be scanned for asset manifests, follow these step
 3. This function declares an `assetManifestPaths` array variable. You can add your own glob here and merge the resulting arrays. For example:
 
 ```js
-var assetManifestPaths = glob.sync("./src/OrchardCore.{Modules,Themes}/*/Assets.json", {});
-var customThemePaths = glob.sync("AnotherLocation/MyCompanyThemes/*/Assets.json"); // Custom location!
+var assetManifestPaths = glob.sync("./src/OrchardCore.{Modules,Themes}/*/GulpAssets.json", {});
+var customThemePaths = glob.sync("AnotherLocation/MyCompanyThemes/*/GulpAssets.json"); // Custom location!
 assetManifestPaths = assetManifestPaths.concat(customThemePaths);
 ```
 

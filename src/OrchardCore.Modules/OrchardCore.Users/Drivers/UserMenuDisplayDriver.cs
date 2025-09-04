@@ -1,27 +1,30 @@
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class UserMenuDisplayDriver : DisplayDriver<UserMenu>
+public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
-    private readonly SignInManager<IUser> _signInManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly ISiteService _siteService;
 
     public UserMenuDisplayDriver(
-        SignInManager<IUser> signInManager,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        ISiteService siteService)
     {
-        _signInManager = signInManager;
         _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+        _siteService = siteService;
     }
 
-    public override IDisplayResult Display(UserMenu model)
+    public override async Task<IDisplayResult> DisplayAsync(UserMenu model, BuildDisplayContext context)
     {
         var results = new List<IDisplayResult>
         {
@@ -39,23 +42,36 @@ public class UserMenuDisplayDriver : DisplayDriver<UserMenu>
             .Location("DetailAdmin", "Content:5")
             .Differentiator("Profile"),
 
-            View("UserMenuItems__ExternalLogins", model)
-            .RenderWhen(async () => (await _signInManager.GetExternalAuthenticationSchemesAsync()).Any())
-            .Location("Detail", "Content:10")
-            .Location("DetailAdmin", "Content:10")
-            .Differentiator("ExternalLogins"),
-
             View("UserMenuItems__SignOut", model)
             .Location("Detail", "Content:100")
             .Location("DetailAdmin", "Content:100")
             .Differentiator("SignOut"),
         };
 
-        if (_httpContextAccessor.HttpContext.User.HasClaim("Permission", "AccessAdminPanel"))
+        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+
+        if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AdminPermissions.AccessAdminPanel))
         {
             results.Add(View("UserMenuItems__Dashboard", model)
                 .Location("Detail", "Content:1.1")
                 .Differentiator("Dashboard"));
+
+            if (!loginSettings.DisableLocalLogin)
+            {
+                results.Add(View("UserMenuItems__ChangePassword", model)
+                    .Location("Detail", "Content:10")
+                    .Location("DetailAdmin", "Content:10")
+                    .Differentiator("ChangePassword"));
+            }
+        }
+        else
+        {
+            if (!loginSettings.DisableLocalLogin)
+            {
+                results.Add(View("UserMenuItems__ChangePassword", model)
+                .Location("DetailAdmin", "Content:10")
+                .Differentiator("ChangePassword"));
+            }
         }
 
         return Combine(results);

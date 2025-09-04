@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -10,80 +9,81 @@ using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.ReverseProxy.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.ReverseProxy.Drivers
+namespace OrchardCore.ReverseProxy.Drivers;
+
+public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<ReverseProxySettings>
 {
-    public class ReverseProxySettingsDisplayDriver : SectionDisplayDriver<ISite, ReverseProxySettings>
+    public const string GroupId = "ReverseProxy";
+
+    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public ReverseProxySettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
-        public const string GroupId = "ReverseProxy";
+        _shellReleaseManager = shellReleaseManager;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
 
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+    protected override string SettingsGroupId
+        => GroupId;
 
-        public ReverseProxySettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+    public override async Task<IDisplayResult> EditAsync(ISite site, ReverseProxySettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ReverseProxySettings settings, BuildEditorContext context)
+        context.AddTenantReloadWarningWrapper();
+
+        return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
+            model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
+            model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
+        }).Location("Content:2")
+        .OnGroup(SettingsGroupId);
+    }
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
-            {
-                return null;
-            }
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, ReverseProxySettings settings, UpdateEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-            return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
-            {
-                model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
-                model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
-                model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
-            }).Location("Content:2").OnGroup(GroupId);
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, BuildEditorContext context)
+        var model = new ReverseProxySettingsViewModel();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        settings.ForwardedHeaders = ForwardedHeaders.None;
+
+        if (model.EnableXForwardedFor)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
-            {
-                return null;
-            }
-
-            if (context.GroupId == GroupId)
-            {
-                var model = new ReverseProxySettingsViewModel();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                section.ForwardedHeaders = ForwardedHeaders.None;
-
-                if (model.EnableXForwardedFor)
-                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
-
-                if (model.EnableXForwardedHost)
-                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
-
-                if (model.EnableXForwardedProto)
-                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
-
-                // If the settings are valid, release the current tenant.
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
-            }
-
-            return await EditAsync(section, context);
+            settings.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
         }
+
+        if (model.EnableXForwardedHost)
+        {
+            settings.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
+        }
+
+        if (model.EnableXForwardedProto)
+        {
+            settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
+        }
+
+        _shellReleaseManager.RequestRelease();
+
+        return await EditAsync(site, settings, context);
     }
 }

@@ -1,29 +1,118 @@
-name: Frontend Assets build validation
+name: Validating the Building of Public Assets
+
 on:
-# manual trigger
-  workflow_dispatch:
+  # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
+  # and breaks something after merge (or if we push to main).
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+    branches: [ main, release/** ]
+  pull_request:
+    branches: [ main, release/** ]
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}-assets_validation
+  cancel-in-progress: true
+
 jobs:
   test-npm-build:
     name: Test building assets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - name: Rebuild packages
       run: |
-        npm install
-        npm run rebuild
+        npm install -g corepack
+        corepack enable
+        yarn --no-check-resolutions
+        yarn build -gr
     - name: Check if git has changes
-      id: changes
-      uses: UnicornGlobal/has-changes-action@v1.0.11
-    - name: Changes detected after building assets
-      if: steps.changes.outputs.changed == 1
-      run: | 
-        git status
-        echo "Please make sure to build them properly before pushing"
-        exit -1
+      shell: pwsh
+      run: |
+        $changes = git status --porcelain
+
+        if ($changes)
+        {
+            Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/guides/assets-manager/.'
+            Write-Output 'The following files changed:'
+            Write-Output $changes
+            Write-Output 'You can also download the attached artifact to see the changes.'
+            Write-Output ''
+            Write-Output '---------------------------------------'
+            Write-Output ''
+        
+            $changeLines = $changes -split '`n'
+            $changedFiles = @()
+            $hasNonCrlfChange = $false
+        
+            foreach ($line in $changeLines)
+            {
+                if ($line -match '^\s?(M|A|\?\?)\s+(.*)$')
+                {
+                    $changeType = $matches[1]
+                    $file = $matches[2]
+        
+                    Write-Output "Diff for: $file"
+        
+                    if ($changeType -eq 'M')
+                    {
+                        # File is modified; use git diff to get the diff of the modified file.
+
+                        # The diff will be sent to stderr so we need to redirect it to stdout to capture it.
+                        git diff -- $file 2>&1 >> tmp.txt
+                        $diffOutput = Get-Content tmp.txt
+                        Remove-Item tmp.txt
+
+                        # Filtering out this pattern is necessary because certain CRLF line endings are not replaced by
+                        # gulp-eol, so the output files can still have some CRLF.
+                        if ($($diffOutput ?? '').Contains('CRLF will be replaced by LF the next time Git touches it'))
+                        {
+                            Write-Output "Warning: CRLF will be replaced by LF in $file. Fix this if you can, but certain CRLF line endings can't be replaced."
+                        }
+                        else
+                        {
+                            Write-Output $diffOutput
+                            $hasNonCrlfChange = $true
+                        }
+                    }
+                    elseif ($changeType -eq '??')
+                    {
+                        # File is (untracked); display the file contents.
+                        Get-Content -Path $file
+                        $hasNonCrlfChange = $true
+                    }
+        
+                    $changedFiles += $file
+        
+                    Write-Output ''
+                    Write-Output '---------------------------------------'
+                    Write-Output ''
+                }
+            }
+        
+            if (-not $hasNonCrlfChange)
+            {
+                Write-Output 'No non-CRLF changes found. Repository is clean.'
+                exit 0
+            }
+        
+            # Convert the array of changed files to a single string with each file on a new line so actions/upload-artifact
+            # can consume it.
+            $changedFilesString = $changedFiles -join "`n"
+            "CHANGED_FILES<<ENDOFSTRING`n$($changedFilesString)`nENDOFSTRING" >> $Env:GITHUB_ENV
+        
+            exit -1
+        }
+        else
+        {
+            Write-Host "No uncommitted changes found. Repository is clean."
+        }
+    - name: Upload changed files as artifact
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      if: failure()
+      with:
+        name: changed-files
+        path: ${{ env.CHANGED_FILES }}
+        retention-days: 30

@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
@@ -78,7 +73,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             return DbConnectionValidatorResult.InvalidConnection;
         }
 
-        var factory = GetFactory(context.DatabaseProvider, connectionString);
+        var (factory, sqlDialect) = GetFactoryAndSqlDialect(context.DatabaseProvider, connectionString);
 
         await using var connection = factory.CreateConnection();
 
@@ -87,6 +82,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             connection is SqliteConnection sqliteConnection &&
             !File.Exists(sqliteConnection.DataSource))
         {
+            SqliteConnection.ClearPool(sqliteConnection);
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
@@ -115,13 +111,12 @@ public class DbConnectionValidator : IDbConnectionValidator
         var tableNameConvention = _tableNameConventionFactory.Create(context.TableOptions);
         var documentName = tableNameConvention.GetDocumentTable();
 
-        var sqlDialect = GetSqlDialect(context.DatabaseProvider);
         var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.TableOptions.TableNameSeparator);
 
         try
         {
             var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = GetSelectBuilderForDocumentTable(sqlBuilder, documentName, context.Schema).ToSqlString();
+            selectCommand.CommandText = GetDocumentCommandText(sqlBuilder, documentName, context.Schema);
 
             using var result = await selectCommand.ExecuteReaderAsync();
             if (!context.ShellName.IsDefaultShellName())
@@ -150,7 +145,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         try
         {
             var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = GetSelectBuilderForShellDescriptorDocument(sqlBuilder, documentName, context.Schema).ToSqlString();
+            selectCommand.CommandText = GetDocumentCommandText(sqlBuilder, documentName, context.Schema, isShellDescriptorDocument: true);
 
             using var result = await selectCommand.ExecuteReaderAsync();
             if (!result.HasRows)
@@ -167,50 +162,31 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
-    private static SqlBuilder GetSelectBuilderForDocumentTable(SqlBuilder sqlBuilder, string documentTable, string schema)
+    private static string GetDocumentCommandText(SqlBuilder sqlBuilder, string documentTable, string schema, bool isShellDescriptorDocument = false)
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
         sqlBuilder.Table(documentTable, alias: null, schema);
         sqlBuilder.Take("1");
 
-        return sqlBuilder;
-    }
-
-    private static SqlBuilder GetSelectBuilderForShellDescriptorDocument(SqlBuilder sqlBuilder, string documentTable, string schema)
-    {
-        sqlBuilder.Select();
-        sqlBuilder.Selector("*");
-        sqlBuilder.Table(documentTable, alias: null, schema);
-        sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
-        sqlBuilder.Take("1");
-
-        return sqlBuilder;
-    }
-
-    private static IConnectionFactory GetFactory(string databaseProvider, string connectionString)
-    {
-        return databaseProvider switch
+        if (isShellDescriptorDocument)
         {
-            DatabaseProviderValue.SqlConnection => new DbConnectionFactory<SqlConnection>(connectionString),
-            DatabaseProviderValue.MySql => new DbConnectionFactory<MySqlConnection>(connectionString),
-            DatabaseProviderValue.Sqlite => new DbConnectionFactory<SqliteConnection>(connectionString),
-            DatabaseProviderValue.Postgres => new DbConnectionFactory<NpgsqlConnection>(connectionString),
+            sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
+        }
+
+        return sqlBuilder.ToSqlString();
+    }
+
+    private static (IConnectionFactory connectionFactory, ISqlDialect sqlDialect) GetFactoryAndSqlDialect(
+        string databaseProvider,
+        string connectionString) => databaseProvider switch
+        {
+            DatabaseProviderValue.SqlConnection => (new DbConnectionFactory<SqlConnection>(connectionString), new SqlServerDialect()),
+            DatabaseProviderValue.MySql => (new DbConnectionFactory<MySqlConnection>(connectionString), new MySqlDialect()),
+            DatabaseProviderValue.Sqlite => (new DbConnectionFactory<SqliteConnection>(connectionString), new SqliteDialect()),
+            DatabaseProviderValue.Postgres => (new DbConnectionFactory<NpgsqlConnection>(connectionString), new PostgreSqlDialect()),
             _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider), "Unsupported database provider"),
         };
-    }
-
-    private static ISqlDialect GetSqlDialect(string databaseProvider)
-    {
-        return databaseProvider switch
-        {
-            DatabaseProviderValue.SqlConnection => new SqlServerDialect(),
-            DatabaseProviderValue.MySql => new MySqlDialect(),
-            DatabaseProviderValue.Sqlite => new SqliteDialect(),
-            DatabaseProviderValue.Postgres => new PostgreSqlDialect(),
-            _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider), "Unsupported database provider"),
-        };
-    }
 
     private static SqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
     {

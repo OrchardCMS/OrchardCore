@@ -1,26 +1,36 @@
 using Microsoft.Extensions.Options;
+using OrchardCore.Facebook.Endpoints;
+using OrchardCore.Facebook.Settings;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook
+namespace OrchardCore.Facebook;
+
+public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+    private readonly ISiteService _siteService;
+
+    public ResourceManagementOptionsConfiguration(ISiteService siteService)
     {
-        private static readonly ResourceManifest _manifest;
+        _siteService = siteService;
+    }
 
-        static ResourceManagementOptionsConfiguration()
-        {
-            _manifest = new ResourceManifest();
+    public async void Configure(ResourceManagementOptions options)
+    {
+        var settings = await _siteService.GetSettingsAsync<FacebookSettings>();
 
-            _manifest
-                .DefineScript("fb")
-                .SetDependencies("fbsdk")
-                .SetUrl("~/OrchardCore.Facebook/sdk/fb.js");
+        var manifest = new ResourceManifest();
 
-            _manifest
-                .DefineScript("fbsdk")
-                .SetUrl("~/OrchardCore.Facebook/sdk/fbsdk.js");
-        }
+        manifest
+            .DefineScript("fb")
+            .SetDependencies("fbsdk")
+            .SetUrl($"~/OrchardCore.Facebook/sdk/init.js?v={GetSdkEndpoints.GetInitScriptEndpoint.HashCacheBustingValues(settings)}");
 
-        public void Configure(ResourceManagementOptions options) => options.ResourceManifests.Add(_manifest);
+        manifest
+            .DefineScript("fbsdk")
+            .SetCultures(GetSdkEndpoints.GetFetchScriptEndpoint.ValidFacebookCultures)
+            .SetUrl($"~/OrchardCore.Facebook/sdk/sdk.js?v={GetSdkEndpoints.GetInitScriptEndpoint.HashCacheBustingValues(settings)}");
+
+        options.ResourceManifests.Add(manifest);
     }
 }

@@ -1,13 +1,15 @@
-using System;
 using System.Collections.Specialized;
 using OrchardCore.Flows.Models;
 
-namespace OrchardCore.Flows.ViewModels
+namespace OrchardCore.Flows.ViewModels;
+
+public class FlowPartSettingsViewModel
 {
-    public class FlowPartSettingsViewModel
-    {
-        public FlowPartSettings FlowPartSettings { get; set; }
-        public NameValueCollection ContentTypes { get; set; }
-        public string[] ContainedContentTypes { get; set; } = [];
-    }
+    public FlowPartSettings FlowPartSettings { get; set; }
+
+    public NameValueCollection ContentTypes { get; set; }
+
+    public string[] ContainedContentTypes { get; set; } = [];
+
+    public bool CollapseContainedItems { get; set; }
 }

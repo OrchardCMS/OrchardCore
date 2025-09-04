@@ -27,7 +27,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 name: $('#t-mediaLibrary').text(),
                 path: '',
                 folder: '',
-                isDirectory: true
+                isDirectory: true,
+                canCreateFolder: $('#allowNewRootFolders').val() === 'true'
             };
 
             mediaApp = new Vue({
@@ -70,13 +71,14 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         }
                     });
 
-                    bus.$on('mediaRenamed', function (newName, newPath, oldPath) {
+                    bus.$on('mediaRenamed', function (newName, newPath, oldPath, newUrl) {
                         var media = self.mediaItems.filter(function (item) {
                             return item.mediaPath === oldPath;
                         })[0];
 
                         media.mediaPath = newPath;
                         media.name = newName;
+                        media.url = newUrl;
                     });
 
                     bus.$on('createFolderRequested', function (media) {
@@ -220,6 +222,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         }
 
                         var urlValue = $('#uploadFiles').val();
+                        var allowedExtensions = $('#allowedExtensions').val();
+                        if (allowedExtensions && allowedExtensions !== "") {
+                            urlValue = urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "extensions=" + encodeURIComponent(allowedExtensions);
+                        }
 
                         return urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(this.selectedFolder.path);
                     },
@@ -231,6 +237,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         this.selectedMedias = [];
                         var self = this;
                         var mediaUrl = $('#getMediaItemsUrl').val();
+                        var allowedExtensions = $('#allowedExtensions').val();
+                        if (allowedExtensions && allowedExtensions !== "") {
+                            mediaUrl = mediaUrl + (mediaUrl.indexOf('?') == -1 ? '?' : '&') + "extensions=" + encodeURIComponent(allowedExtensions);
+                        }
                         console.log(folder.path);
                         $.ajax({
                             url: mediaUrl + (mediaUrl.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(folder.path),
@@ -249,6 +259,12 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 self.selectRoot();
                             }
                         });
+                    },
+                    refresh: function () {
+                        var self = this;
+                        if (self.selectedFolder) {
+                            self.loadFolder(self.selectedFolder);
+                        }
                     },
                     selectAll: function () {
                         this.selectedMedias = [];
@@ -436,9 +452,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 }
             });
 
-            $('#create-folder-name').keypress(function (e) {
-                var key = e.which;
-                if (key == 13) {  // the enter key code
+            $('#create-folder-name').keydown(function (e) {
+                if (e.key == 'Enter') {
                     $('#modalFooterOk').click();
                     return false;
                 }
@@ -501,7 +516,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     success: function (data) {
                         var modal = bootstrap.Modal.getOrCreateInstance($('#renameMediaModal'));
                         modal.hide();
-                        bus.$emit('mediaRenamed', newName, newPath, oldPath);
+                        bus.$emit('mediaRenamed', newName, newPath, oldPath, data.newUrl);
                     },
                     error: function (error) {
                         $('#renameMediaModal-errors').empty();
@@ -511,12 +526,13 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 });
             });
 
-            if (displayMediaApplication) {
-                document.getElementById('mediaApp').style.display = "";
-            }
-
             $(document).trigger('mediaApp:ready');
 
+            if (displayMediaApplication) {
+                setTimeout(function () {
+                    document.getElementById("mediaApp").classList.remove("d-none");
+                }, 100)              
+            }
         },
         error: function (error) {
             console.error(error.responseText);

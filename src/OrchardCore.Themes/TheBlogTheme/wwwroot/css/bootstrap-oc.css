@@ -20,75 +20,75 @@ By Orchard Core Team
 }
 
 .message-primary {
-  color: #005061;
-  background-color: #cce7ec;
-  border-color: #b3dae3;
+  color: rgb(0, 79.8, 96.6);
+  background-color: rgb(204, 230.6, 236.2);
+  border-color: rgb(178.5, 218.4, 226.8);
 }
 .message-primary .alert-link {
-  color: #00404e;
+  color: rgb(0, 63.84, 77.28);
 }
 
 .message-secondary {
-  color: #41464b;
-  background-color: #e2e3e5;
-  border-color: #d3d6d8;
+  color: rgb(64.8, 70.2, 75);
+  background-color: rgb(225.6, 227.4, 229);
+  border-color: rgb(210.9, 213.6, 216);
 }
 .message-secondary .alert-link {
-  color: #34383c;
+  color: rgb(51.84, 56.16, 60);
 }
 
 .message-success {
-  color: #0f5132;
-  background-color: #d1e7dd;
-  border-color: #badbcc;
+  color: rgb(15, 81, 50.4);
+  background-color: rgb(209, 231, 220.8);
+  border-color: rgb(186, 219, 203.7);
 }
 .message-success .alert-link {
-  color: #0c4128;
+  color: rgb(12, 64.8, 40.32);
 }
 
 .message-info {
-  color: #087990;
-  background-color: #cff4fc;
-  border-color: #b6effb;
+  color: rgb(7.8, 121.2, 144);
+  background-color: rgb(206.6, 244.4, 252);
+  border-color: rgb(182.4, 239.1, 250.5);
 }
 .message-info .alert-link {
-  color: #066173;
+  color: rgb(6.24, 96.96, 115.2);
 }
 
 .message-warning {
-  color: #997404;
-  background-color: #fff3cd;
-  border-color: #ffecb5;
+  color: rgb(153, 115.8, 4.2);
+  background-color: rgb(255, 242.6, 205.4);
+  border-color: rgb(255, 236.4, 180.6);
 }
 .message-warning .alert-link {
-  color: #7a5d03;
+  color: rgb(122.4, 92.64, 3.36);
 }
 
 .message-danger {
-  color: #842029;
-  background-color: #f8d7da;
-  border-color: #f5c2c7;
+  color: rgb(132, 31.8, 41.4);
+  background-color: rgb(248, 214.6, 217.8);
+  border-color: rgb(244.5, 194.4, 199.2);
 }
 .message-danger .alert-link {
-  color: #6a1a21;
+  color: rgb(105.6, 25.44, 33.12);
 }
 
 .message-light {
-  color: #959596;
-  background-color: #fefefe;
-  border-color: #fdfdfe;
+  color: rgb(148.8, 149.4, 150);
+  background-color: rgb(253.6, 253.8, 254);
+  border-color: rgb(252.9, 253.2, 253.5);
 }
 .message-light .alert-link {
-  color: #777778;
+  color: rgb(119.04, 119.52, 120);
 }
 
 .message-dark {
-  color: #141619;
-  background-color: #d3d3d4;
-  border-color: #bcbebf;
+  color: rgb(19.8, 22.2, 24.6);
+  background-color: rgb(210.6, 211.4, 212.2);
+  border-color: rgb(188.4, 189.6, 190.8);
 }
 .message-dark .alert-link {
-  color: #101214;
+  color: rgb(15.84, 17.76, 19.68);
 }
 
 .widget-container {
@@ -251,6 +251,10 @@ ul.pager li.disabled .page-link {
 
 ul.pager {
   margin-top: 1rem;
+}
+
+.g-recaptcha {
+  margin-bottom: 1rem;
 }
 
 .term-badge > a {

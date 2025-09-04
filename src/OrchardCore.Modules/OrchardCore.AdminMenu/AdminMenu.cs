@@ -1,41 +1,51 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.AdminMenu
+namespace OrchardCore.AdminMenu;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProviderCoordinator;
+
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(
+        AdminMenuNavigationProvidersCoordinator adminMenuNavigationProviderCoordinator,
+        IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProvider;
-        private protected IStringLocalizer S;
+        _adminMenuNavigationProviderCoordinator = adminMenuNavigationProviderCoordinator;
+        S = stringLocalizer;
+    }
 
-        public AdminMenu(AdminMenuNavigationProvidersCoordinator adminMenuNavigationProvider,
-            IStringLocalizer<AdminMenu> localizer)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        if (NavigationHelper.UseLegacyFormat())
         {
-            _adminMenuNavigationProvider = adminMenuNavigationProvider;
-            S = localizer;
-        }
-
-        public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!NavigationHelper.IsAdminMenu(name))
-            {
-                return;
-            }
-
-            // Configuration and settings menus for the AdminMenu module
+            // Configuration and settings menus for the AdminMenu module.
             builder
                 .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
-                        .Permission(Permissions.ManageAdminMenu)
+                    .Add(S["Admin menus"], S["Admin menus"].PrefixPosition(), adminMenu => adminMenu
+                        .Permission(AdminMenuPermissions.ManageAdminMenu)
                         .Action("List", "Menu", "OrchardCore.AdminMenu")
                         .LocalNav()
                     )
                 );
-
-            // This is the entry point for the adminMenu: dynamically generated custom admin menus
-            await _adminMenuNavigationProvider.BuildNavigationAsync(NavigationConstants.AdminMenuId, builder);
         }
+        else
+        {
+            // Configuration and settings menus for the AdminMenu module.
+            builder
+                .Add(S["Tools"], tools => tools
+                    .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
+                        .Permission(AdminMenuPermissions.ManageAdminMenu)
+                        .Action("List", "Menu", "OrchardCore.AdminMenu")
+                        .LocalNav()
+                    )
+                );
+        }
+
+        // This is the entry point for the adminMenu: dynamically generated custom admin menus.
+        return _adminMenuNavigationProviderCoordinator.BuildNavigationAsync(NavigationConstants.AdminMenuId, builder);
     }
 }

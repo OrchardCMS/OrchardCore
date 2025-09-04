@@ -4,8 +4,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Search.AzureAI;
 
 public class NamingTests
 {
-    private static string _maxName = new('a', 128);
-    private static string _overMaxLength = new('a', 129);
+    private static readonly string _maxName = new('a', 128);
+    private static readonly string _overMaxLength = new('a', 129);
 
     [Fact]
     public void CreateLengthSafeIndexName()

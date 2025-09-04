@@ -1,0 +1,11 @@
+{
+  "name": "@orchardcore/media",
+  "version": "1.0.0",
+  "dependencies": {
+    "@popperjs/core": "2.11.8",
+    "blueimp-file-upload": "10.32.0",
+    "bootstrap": "5.3.7",
+    "jquery": "3.7.1",
+    "vue": "2.6.14"
+  }
+}

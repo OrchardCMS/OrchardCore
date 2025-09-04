@@ -1,18 +1,13 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Apis.GraphQL;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ExecuteGraphQLMutations = CommonPermissions.ExecuteGraphQLMutations;
-    public static readonly Permission ExecuteGraphQL = CommonPermissions.ExecuteGraphQL;
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ExecuteGraphQL,
-        ExecuteGraphQLMutations,
+        GraphQLPermissions.ExecuteGraphQL,
+        GraphQLPermissions.ExecuteGraphQLMutations,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -22,10 +17,10 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                ExecuteGraphQLMutations,
+                GraphQLPermissions.ExecuteGraphQLMutations,
             ],
         },
     ];

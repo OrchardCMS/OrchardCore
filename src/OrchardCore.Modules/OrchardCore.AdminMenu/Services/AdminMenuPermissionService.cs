@@ -1,38 +1,18 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.Services;
 
-public class AdminMenuPermissionService : IAdminMenuPermissionService
+[Obsolete("This service is obsolete and will be removed in version 4. Instead, please use IPermissionService")]
+public sealed class AdminMenuPermissionService : IAdminMenuPermissionService
 {
-    private readonly IEnumerable<IPermissionProvider> _permissionProviders;
+    private readonly IPermissionService _permissionService;
 
-    // Cached per request.
-    private List<Permission> _permissions;
-
-    public AdminMenuPermissionService(IEnumerable<IPermissionProvider> permissionProviders)
+    public AdminMenuPermissionService(IPermissionService permissionService)
     {
-        _permissionProviders = permissionProviders;
+        _permissionService = permissionService;
     }
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        if (_permissions != null)
-        {
-            return _permissions;
-        }
-
-        _permissions = [];
-
-        foreach (var permissionProvider in _permissionProviders)
-        {
-            var permissions = await permissionProvider.GetPermissionsAsync();
-
-            _permissions.AddRange(permissions);
-        }
-
-        return _permissions;
-    }
+        => await _permissionService.GetPermissionsAsync();
 }
 

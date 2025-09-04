@@ -83,7 +83,7 @@ Commonly the steps that you follow in order to do that are:
 3. Optionally, you could implement a ViewModel to move info between the edit views and the driver.
 4. Add a class that implements IAdminNodeNavigationBuilder. Its BuildNavigationAsync() method will be called by the AdminMenuNavigationProvidersCoordinator class when it is time to render the menu.
 5. Create the views required to create and edit the admin nodes based on your node type.
-6. Register the new services `services.AddAdminMenu<CustomAdminNode, CustomAdminNodeNavigationBuilder, CustomAdminNodeDriver>();`
+6. Register the new services `services.AddAdminNode<CustomAdminNode, CustomAdminNodeNavigationBuilder, CustomAdminNodeDriver>();`
 
 By convention you should store all these non-view classes on a "AdminNodes" folder. This is optional.
 
@@ -211,3 +211,9 @@ jquery.ui.sortable.js 1.10+
 Copyright (c) 2010-2016 Manuele J Sarfatti and contributors
 Licensed under the MIT License
 <http://www.opensource.org/licenses/mit-license.php>
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/R_Z6gPoAfHE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3w68lDwUzFQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

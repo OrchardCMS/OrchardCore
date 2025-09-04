@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Users.GraphQL;
 
 [RequireFeatures("OrchardCore.Apis.GraphQL", "OrchardCore.Contents")]
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

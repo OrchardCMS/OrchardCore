@@ -13,8 +13,8 @@
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body p-3 text-end">
             <div class="btn-group">
-                <button type="submit" name="submit" class="btn btn-sm btn-primary save">@T["Save"]</button>
-                <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="visually-hidden">@T["Toggle Dropdown"]</span>
                 </button>
                 <div class="dropdown-menu">
@@ -24,12 +24,12 @@
 
             @if (Url.IsLocalUrl(returnUrl))
             {
-                <a class="btn btn-sm btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+                <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
             }
 
             @if (!Model.AdminTemplates)
             {
-                <a class="btn btn-sm btn-info" role="button" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+                <a class="btn btn-info" role="button" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
             }
         </div>
     </div>
@@ -53,12 +53,13 @@
         <label asp-for="Content" class="form-label">@T["Content"]</label>
         <div id="@Html.IdFor(x => x.Content)_editor" asp-for="Text" style="min-height: 600px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Content" class="content-preview-text" hidden>@Html.Raw(Model.Content)</textarea>
+        <span asp-validation-for="Content"></span>
         <span class="hint">@T["The Liquid template."]</span>
     </div>
 </form>
 
-<script asp-name="create-template" at="Foot" depends-on="liquid-intellisense">
-    $(document).ready(function () {
+<script asp-name="create-template" at="Foot" depends-on="liquid-intellisense monaco">
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
             var settings = {
                 automaticLayout: true,

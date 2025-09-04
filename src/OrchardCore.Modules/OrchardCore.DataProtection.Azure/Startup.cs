@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DataProtection.Azure;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     private readonly IShellConfiguration _configuration;
     private readonly ILogger _logger;
@@ -19,8 +20,8 @@ public class Startup : StartupBase
         _logger = logger;
     }
 
-    // Assume that this module will override default configuration, so set the Order to a value above the default.
-    public override int Order => 10;
+    public override int Order
+        => OrchardCoreConstants.ConfigureOrder.AzureDataProtection;
 
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -28,21 +29,37 @@ public class Startup : StartupBase
 
         if (!string.IsNullOrWhiteSpace(connectionString))
         {
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("OrchardCore_DataProtection_Azure:ConnectionString was found. Adding 'OrchardCore.DataProtection.Azure' feature services.");
+            }
+
             services
-                .Configure<BlobOptions, BlobOptionsSetup>()
                 .AddDataProtection()
                 .PersistKeysToAzureBlobStorage(sp =>
                 {
-                    var options = sp.GetRequiredService<BlobOptions>();
+                    var options = sp.GetRequiredService<IOptions<BlobOptions>>().Value;
+
+                    var logger = sp.GetRequiredService<ILogger<Startup>>();
+
+                    if (logger.IsEnabled(LogLevel.Debug))
+                    {
+                        logger.LogDebug("Creating BlobClient instance using '{ContainerName}' as container name and '{BlobName}' as blob name.", options.ContainerName, options.BlobName);
+                    }
+
                     return new BlobClient(
                         options.ConnectionString,
                         options.ContainerName,
                         options.BlobName);
                 });
+
+            services.AddSingleton<IConfigureOptions<BlobOptions>, BlobOptionsConfiguration>();
+
+            services.AddScoped<IModularTenantEvents, BlobModularTenantEvents>();
         }
         else
         {
-            _logger.LogCritical("No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
+            _logger.LogCritical("No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `OrchardCore:OrchardCore_DataProtection_Azure:ConnectionString`.");
         }
     }
 }

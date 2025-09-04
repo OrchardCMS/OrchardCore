@@ -21,6 +21,26 @@ Creating a form typically involves the following steps:
 3. Add the Form widget.
 4. Because the Form widget has the `FlowPart` attached, you can add other widgets to the Form widget. Add widgets such as Input, Textarea and Button to build up your form.
 
+### Configuring Form Visibility
+
+Once your form’s basic structure is in place, you can enhance it with conditional visibility rules. These allow you to hide or show certain fields based on the values of other fields. For example:
+
+1. In the **Form editor**, select the input widget you want to control and expand its **Visibility Settings** pane.  
+2. Choose an **Action**:
+   - **Always Visible** – the widget is never hidden.  
+   - **Conditionally Show** – the widget appears only when your rules evaluate to true; when your rules evaluate to false, the widget is hidden.  
+   - **Conditionally Hide** – the widget is hidden when your rules evaluate to true; when your rules evaluate to false, the widget appears.  
+3. Build one or more rule groups:
+   1. Click **New Group**.  
+   2. Within that group, click **New Rule** and configure each rule:
+      - **Field** – the input to observe (e.g. `MembershipType`). Note that fields will only be listed if you save the form after adding them.
+      - **Operator** – how to compare (e.g. `Contains`)  
+      - **Value** – the comparison target (e.g. `Premium`)  
+   3. **Rule logic** within a group is combined with **AND**: all rules in the same group must pass.  
+4. **Group logic** across multiple groups is combined with **OR**: if **any** group passes, the overall condition is met.  
+5. Repeat step 3 to add additional rules or groups as needed.  
+6. Save the form to apply your visibility settings.
+
 ### Processing Form submissions
 
 Once you have a form in place, you need to handle its submission. The Form widget has a field called **Action**, into which you can enter a URL to where the form should submit to. This could be the path to your own controller, but it can also be the URL pointing to a workflow type.  
@@ -215,7 +235,6 @@ The final workflow should look like this:
 
 ![Contact Form Workflow](./assets/contact-form-workflow-1.png)
 
-## Future Improvements
+## Video
 
-Implementing a workflow that handles form submissions is easy, but the workflow becomes big quite quickly as soon as you start adding validation logic to the mix. In the next version of the Forms module, there will be an easier way to validate Form submissions in combination with the Form widget. The Form widget will contain all of the validation settings, and there will be a single workflow activity that validates the submitted values against those settings.  
-The low-level validation activities will remain part of the toolbox to support workflow validation for forms that are not built with the Form widget, but implemented as raw HTML for example.
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Sd-aYy5DblI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

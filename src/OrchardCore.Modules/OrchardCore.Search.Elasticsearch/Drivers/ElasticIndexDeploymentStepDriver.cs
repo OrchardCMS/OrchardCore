@@ -1,59 +1,54 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Indexing;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Deployment
+namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
+
+public sealed class ElasticIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticsearchIndexDeploymentStep>
 {
-    public class ElasticIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticIndexDeploymentStep>
+    private readonly IIndexProfileStore _store;
+
+    public ElasticIndexDeploymentStepDriver(IIndexProfileStore store)
     {
-        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+        _store = store;
+    }
 
-        public ElasticIndexDeploymentStepDriver(ElasticIndexSettingsService elasticIndexSettingsService)
+    public override Task<IDisplayResult> DisplayAsync(ElasticsearchIndexDeploymentStep step, BuildDisplayContext context)
+    {
+        return
+            CombineAsync(
+                View("ElasticIndexDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
+                View("ElasticIndexDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
+    }
+
+    public override IDisplayResult Edit(ElasticsearchIndexDeploymentStep step, BuildEditorContext context)
+    {
+        return Initialize<ElasticIndexDeploymentStepViewModel>("ElasticIndexDeploymentStep_Fields_Edit", async model =>
         {
-            _elasticIndexSettingsService = elasticIndexSettingsService;
-        }
+            model.IncludeAll = step.IncludeAll;
+            model.IndexNames = step.IndexNames;
+            model.AllIndexNames = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+        }).Location("Content");
+    }
 
-        public override IDisplayResult Display(ElasticIndexDeploymentStep step)
-        {
-            return
-                Combine(
-                    View("ElasticIndexDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("ElasticIndexDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
-        }
+    public override async Task<IDisplayResult> UpdateAsync(ElasticsearchIndexDeploymentStep step, UpdateEditorContext context)
+    {
+        step.IndexNames = [];
 
-        public override IDisplayResult Edit(ElasticIndexDeploymentStep step)
-        {
-            return Initialize<ElasticIndexDeploymentStepViewModel>("ElasticIndexDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.IndexNames = step.IndexNames;
-                model.AllIndexNames = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Content");
-        }
+        await context.Updater.TryUpdateModelAsync(step,
+                                          Prefix,
+                                          x => x.IndexNames,
+                                          x => x.IncludeAll);
 
-        public override async Task<IDisplayResult> UpdateAsync(ElasticIndexDeploymentStep step, IUpdateModel updater)
+        // Don't have the selected option if include all.
+        if (step.IncludeAll)
         {
             step.IndexNames = [];
-
-            await updater.TryUpdateModelAsync(step,
-                                              Prefix,
-                                              x => x.IndexNames,
-                                              x => x.IncludeAll);
-
-            // don't have the selected option if include all
-            if (step.IncludeAll)
-            {
-                step.IndexNames = [];
-            }
-
-            return Edit(step);
         }
+
+        return Edit(step, context);
     }
 }

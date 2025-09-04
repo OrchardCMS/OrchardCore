@@ -16,7 +16,7 @@
 <style asp-name="media" at="Head"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
-    <label asp-for="Paths" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Paths" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
         {
@@ -28,16 +28,16 @@
         <div class="media-field-toolbar mb-1" v-cloak>
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
-                    <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fa-solid fa-compress-alt" aria-hidden="true"></i></span>
-                    <span v-show="smallThumbs" title="@T[" Large Thumbs"]"><i class="fa-solid fa-expand-alt" aria-hidden="true"></i></span>
+                    <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fa-solid fa-down-left-and-up-right-to-center" aria-hidden="true"></i></span>
+                    <span v-show="smallThumbs" title="@T[" Large Thumbs"]"><i class="fa-solid fa-up-right-and-down-left-from-center" aria-hidden="true"></i></span>
                 </button>
                 <label v-show="canAddMedia" class="btn btn-sm btn-secondary fileinput-button">
                     <input id="@mediaFieldId-field-file-upload" type="file" name="files" multiple="multiple">
                     <i class="fa-solid fa-upload"></i>
                 </label>
-                <a href="javascript:;" v-show="allowMediaText" v-on:click="showMediaTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="far fa-comment" aria-hidden="true"></i></a>
-                <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
-                <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash-alt" aria-hidden="true"></i></a>
+                <a href="javascript:;" v-show="allowMediaText" v-on:click="showMediaTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-regular fa-comment" aria-hidden="true"></i></a>
+                <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia || !selectedMedia.mime.startsWith('image') }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
+                <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
             </div>
             <label class="selected-media-name form-label">
                 <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.attachedFileName !== null && selectedMedia.attachedFileName !== '' ? selectedMedia.attachedFileName : selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
@@ -62,6 +62,8 @@
     </div>
 
     <partial name="Shared/MediaFieldEditLocalization.cshtml" />
+
+    <span asp-validation-for="Paths"></span>
 </div>
 
 <script asp-name="media" at="Foot"></script>

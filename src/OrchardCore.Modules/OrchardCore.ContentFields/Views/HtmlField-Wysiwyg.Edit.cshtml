@@ -7,10 +7,12 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
+<style asp-name="trumbowyg-plugins" version="2"></style>
 <style asp-name="trumbowyg" version="2"></style>
-<script asp-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
+<script asp-name="trumbowyg-plugins" version="2" at="Foot"></script>
+<script asp-name="trumbowyg-media-tag" at="Foot"></script>
 <script asp-name="trumbowyg-shortcodes" at="Foot"></script>
-
+<script asp-name="trumbowyg-theme" at="Foot"></script>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Html)_FieldWrapper">
     <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
@@ -57,6 +59,12 @@
         if (defaultButtons[6] !== "insertShortcode") {
             defaultButtons.splice(6, 0, "insertShortcode");
         }
+        defaultButtons.forEach(group => {
+            if (group.includes("undo") && group.includes("redo")) {
+                group[group.indexOf("undo")] = "historyUndo";
+                group[group.indexOf("redo")] = "historyRedo";
+            }
+        });
 
         var settings = {
             lang: '@culture.TwoLetterISOLanguageName',

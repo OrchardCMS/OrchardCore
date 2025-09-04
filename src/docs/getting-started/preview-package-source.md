@@ -1,11 +1,11 @@
 # Add preview package source
 
-In this article, we are going to add a new package source pointing to the preview packages.  
-The preview packages are built each time some code is committed on the `dev` branch, compared to the ones on NuGet, built from the `master` branch.  
-They are the most up to date versions but not the most stable and can contain breaking changes.
+In this article, we are going to add a new package source pointing to the preview packages. The preview packages are built every day from the latest code on the `main` branch and published to [Cloudsmith](https://cloudsmith.io/~orchardcore/repos/preview/packages/). Release packages are published to NuGet, built from code corresponding to that release's version tag.
+
+The preview packages are the most up-to-date versions but not the most stable and can contain breaking changes. Only use them if you want to work with the latest development version of Orchard Core, e.g. to try out a fix for a bug you reported.
 
 !!! warning
-    We do not suggest you to use the dev packages in production.
+    We do not suggest you use the preview packages in production. Preview packages are not kept forever, and there's no guarantee on how long a given preview package will be available. (You can assume something like 1-1.5 months, but then again, there's no guarantee.)
 
 ## Adding Orchard Core preview Feed to Visual Studio
 

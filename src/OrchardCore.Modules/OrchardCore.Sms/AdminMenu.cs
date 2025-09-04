@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Mvc.Core.Utilities;
@@ -7,7 +6,7 @@ using OrchardCore.Sms.Controllers;
 
 namespace OrchardCore.Sms;
 
-public class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -15,23 +14,43 @@ public class AdminMenu : INavigationProvider
         { "groupId", SmsSettings.GroupId },
     };
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
         S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
+        if (NavigationHelper.UseLegacyFormat())
         {
-            return Task.CompletedTask;
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
+                            .AddClass("sms")
+                            .Id("sms")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(SmsPermissions.ManageSmsSettings)
+                            .LocalNav()
+                        )
+                        .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
+                            .AddClass("smstest")
+                            .Id("smstest")
+                            .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")
+                            .Permission(SmsPermissions.ManageSmsSettings)
+                            .LocalNav()
+                        )
+                    )
+                );
+
+            return ValueTask.CompletedTask;
         }
 
         builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
+            .Add(S["Settings"], settings => settings
+                .Add(S["Communication"], S["Communication"].PrefixPosition(), communication => communication
                     .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
                         .AddClass("sms")
                         .Id("sms")
@@ -39,6 +58,10 @@ public class AdminMenu : INavigationProvider
                         .Permission(SmsPermissions.ManageSmsSettings)
                         .LocalNav()
                     )
+                )
+            )
+            .Add(S["Tools"], tools => tools
+                .Add(S["Testing"], S["Testing"].PrefixPosition(), testing => testing
                     .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
                         .AddClass("smstest")
                         .Id("smstest")
@@ -49,6 +72,6 @@ public class AdminMenu : INavigationProvider
                 )
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

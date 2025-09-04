@@ -1,5 +1,6 @@
 @charset "UTF-8";
-/* Import variables first */ /* 
+/* Import variables first */
+/* 
     IMPORTANT: Never import Bootstrap directly into the theme. 
     TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
 */
@@ -837,6 +838,11 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
 
 label .field-validation-error::before {
   content: "- ";
+}
+
+label.input-required:after {
+  color: var(--bs-danger-text-emphasis);
+  content: " *";
 }
 
 input[type=password]::-ms-reveal,
@@ -7966,6 +7972,30 @@ input[type=password]::-ms-clear {
   padding: 0.75rem 0.5rem;
 }
 
+.list-group .first-child-visible {
+  border-top: var(--bs-border-width) solid var(--bs-border-color) !important;
+  border-top-left-radius: var(--bs-border-radius) !important;
+  border-top-right-radius: var(--bs-border-radius) !important;
+}
+
+.list-group .last-child-visible {
+  border-bottom: var(--bs-border-width) solid var(--bs-border-color) !important;
+  border-bottom-left-radius: var(--bs-border-radius) !important;
+  border-bottom-right-radius: var(--bs-border-radius) !important;
+}
+
+.EasyMDEContainer blockquote:not(.blockquote) {
+  background: var(--bs-secondary-bg-subtle);
+  border-left: 0.4rem solid var(--bs-secondary-border-subtle) !important;
+  margin: 1.5em 10px;
+  padding: 1em 10px 0.1em;
+  quotes: "“" "”" "‘" "’";
+}
+
+.EasyMDEContainer blockquote:not(.blockquote) > p {
+  color: var(--bs-secondary-text-emphasis);
+}
+
 .monaco-editor {
   --vscode-foreground: var(--bs-body-color) !important;
   --vscode-editor-background: var(--bs-body-bg) !important;
@@ -8444,6 +8474,10 @@ ul.pager {
   justify-content: center;
 }
 
+.g-recaptcha {
+  margin-bottom: 1rem;
+}
+
 /* 
     IMPORTANT: Never import Bootstrap directly into the theme. 
     TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
@@ -8551,7 +8585,7 @@ ul.ui-sortable:not(:has(> li)) {
   }
 }
 .nav-tabs .nav-link:hover {
-  background-color: #5a6268;
+  background-color: rgb(90.2703862661, 97.7929184549, 104.4796137339);
 }
 .nav-tabs .nav-link.active {
   border-left: var(--bs-border-width) solid var(--bs-border-color);
@@ -8584,68 +8618,51 @@ ul.ui-sortable:not(:has(> li)) {
   font-size: 16px;
 }
 
-[dir] .trumbowyg-box {
+.trumbowyg-box .trumbowyg-editor {
+  min-height: 260px;
+}
+
+[dir] .trumbowyg-box,
+[dir] .trumbowyg-dark .trumbowyg-box {
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
   border-radius: var(--bs-border-radius);
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
 }
 
-[dir] trumbowyg-editor-box {
+[dir] .trumbowyg-editor-box,
+[dir] .trumbowyg-dark .trumbowyg-editor-box {
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
 }
 
-[dir] .trumbowyg-button-pane {
+[dir] .trumbowyg-button-pane,
+[dir] .trumbowyg-dark .trumbowyg-button-pane {
   border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
-  background-color: var(--bs-border-color);
-  padding: 0;
 }
 
-.trumbowyg-box svg, .trumbowyg-modal svg {
-  color: var(--bs-body-color);
-  fill: var(--bs-body-color);
+[dir] .trumbowyg-button-pane .trumbowyg-button-group:not(:empty)::after,
+[dir] .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty)::after {
+  background: var(--bs-border-color);
 }
 
-[dir] .trumbowyg-button-pane button {
-  margin-bottom: 0 !important;
-}
-
-[dir] .trumbowyg-dropdown {
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
+[dir] .trumbowyg-dropdown,
+[dir] .trumbowyg-dark .trumbowyg-dropdown {
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
-}
-
-[dir] .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dropdown button:focus {
-  background-color: var(--bs-body-color) !important;
-  color: var(--bs-body-bg) !important;
-}
-
-[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
-  border-top-color: var(--bs-body-color);
-}
-
-[dir] .trumbowyg-dropdown button {
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
 }
 
 .trumbowyg-fullscreen {
   z-index: var(--oc-editor-fullscreen);
 }
 
-[dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
+[dir] .trumbowyg-textarea,
+[dir] .trumbowyg-dark .trumbowyg-textarea {
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
 }
 
-.trumbowyg-fullscreen .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
-  color: var(--bs-body-color);
-  fill: var(--bs-body-color);
-}
-
-[dir] .trumbowyg-box .trumbowyg-editor th, [dir] .trumbowyg-box .trumbowyg-editor td {
+[dir] .trumbowyg-box .trumbowyg-editor th,
+[dir] .trumbowyg-box .trumbowyg-editor td {
   border-width: var(--bs-border-width, 1px);
   border-style: var(--bs-border-style, solid);
   border-color: var(--bs-border-color, #dee2e6);
@@ -8682,7 +8699,7 @@ span.field-validation-error {
 }
 
 .field-validation-error {
-  color: var(--bs-danger) !important;
+  color: var(--bs-danger-text-emphasis) !important;
 }
 
 .field-validation-valid {
@@ -8691,7 +8708,9 @@ span.field-validation-error {
 
 .input-validation-error {
   border-color: var(--bs-form-invalid-border-color);
-  padding-right: calc(1.5em + 0.75rem);
+}
+
+input:not([type=checkbox]):not([type=radio]).input-validation-error {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right calc(0.375em + 0.1875rem) center;
@@ -8748,6 +8767,19 @@ textarea.form-control.input-validation-error {
 .input-group > .form-select:not(:focus).input-validation-error,
 .input-group > .form-floating:not(:focus-within).input-validation-error {
   z-index: 4;
+}
+
+.has-validation-error.is-invalid.multiselect {
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+.has-validation-error.is-invalid.term-entries-area {
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  border-color: var(--bs-form-invalid-border-color);
+  padding: 0.375rem 0.75rem;
 }
 
 .vue-multiselect {

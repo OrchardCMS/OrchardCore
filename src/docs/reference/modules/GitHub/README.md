@@ -30,12 +30,14 @@ The `OrchardCore.GitHub` module allows the user to use configuration values to o
 The following configuration values can be customized:
 
 ```json
-    "OrchardCore_GitHub": {
-      "ClientID": "",
-      "ClientSecret": "",
-      "CallbackPath": "/signin-github",
-      "SaveTokens": false
-    }
+{
+  "OrchardCore_GitHub": {
+    "ClientID": "",
+    "ClientSecret": "",
+    "CallbackPath": "/signin-github",
+    "SaveTokens": false
+  }
+}
 ```
 
-For more information please refer to [Configuration](../../core/Configuration/README.md).
+For more information please refer to [Configuration](../../modules/Configuration/README.md).

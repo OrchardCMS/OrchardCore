@@ -5,11 +5,12 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <div class="@Orchard.GetLimitedWidthWrapperClasses()">
             <div class="@Orchard.GetLimitedWidthClasses()">
-                <input asp-for="Value" type="time" class="form-control content-preview-select" step="@settings.Step" required="@settings.Required" />
+                <input asp-for="Value" type="time" class="form-control content-preview-select" step="@settings.Step" />
+                <span asp-validation-for="Value"></span>
             </div>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))

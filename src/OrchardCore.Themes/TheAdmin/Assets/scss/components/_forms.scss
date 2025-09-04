@@ -1,5 +1,5 @@
 @import '../mixins/_word-wrap';
-@import '../../../node_modules/bootstrap/scss/mixins/_border-radius';
+@import '../../../../../../node_modules/bootstrap/scss/mixins/_border-radius';
 @import '../_variables';
 
 .hint {
@@ -41,6 +41,11 @@
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";
+}
+
+label.input-required:after {
+    color: var(--bs-danger-text-emphasis);
+    content: " *"
 }
 
 .button {

@@ -2,9 +2,20 @@
 @using OrchardCore.ContentManagement
 @using OrchardCore.Contents
 @model OrchardCore.Lists.ViewModels.ListPartNavigationAdminViewModel
-@inject OrchardCore.ContentManagement.IContentManager ContentManager
-@inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
-
+@inject IContentManager ContentManager
+@inject IAuthorizationService AuthorizationService
+@{
+    var authorizedContentTypeDefinitions = new List<ContentTypeDefinition>();
+    foreach (var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
+    {
+        if (!await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, await ContentManager.NewAsync(contentTypeDefinition.Name)))
+        {
+            continue;
+        }
+        
+        authorizedContentTypeDefinitions.Add(contentTypeDefinition);
+    }
+}
 <div class="card text-bg-theme text-right mb-3 second-action-bar">
     <div class="card-body">
         <div class="d-flex justify-content-end">
@@ -21,9 +32,9 @@
                 </a>
             }
 
-            @if (Model.ContainedContentTypeDefinitions.Length == 1)
+            @if (authorizedContentTypeDefinitions.Count == 1)
             {
-                var contentTypeDefinition = Model.ContainedContentTypeDefinitions[0];
+                var contentTypeDefinition = authorizedContentTypeDefinitions.FirstOrDefault();
 
                 if (await AuthorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition, User.Identity.Name))
                 {
@@ -32,13 +43,13 @@
                     </a>
                 }
             }
-            else if (Model.ContainedContentTypeDefinitions.Length > 1)
+            else if (authorizedContentTypeDefinitions.Count > 1)
             {
                 <a class="btn btn-secondary dropdown-toggle" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     @T["New"]
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
+                    @foreach (var containedContentTypeDefinition in authorizedContentTypeDefinitions)
                     {
                         if (!await AuthorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, containedContentTypeDefinition, User.Identity.Name))
                         {

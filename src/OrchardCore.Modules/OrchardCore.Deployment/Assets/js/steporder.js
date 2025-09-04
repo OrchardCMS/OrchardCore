@@ -19,7 +19,9 @@ function updateStepOrders(oldIndex, newIndex) {
 
 $(function () {
     var sortable = document.getElementById("stepOrder");
-
+    if (!sortable) {
+        return;
+    }
     var sortable = Sortable.create(sortable, {
         handle: ".ui-sortable-handle",
         onSort: function (evt) {

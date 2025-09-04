@@ -1,7 +1,7 @@
 @using OrchardCore.DisplayManagement.Views
 @using OrchardCore.Search.Elasticsearch.Core.Deployment
 
-@model ShapeViewModel<ElasticIndexDeploymentStep>
+@model ShapeViewModel<ElasticsearchIndexDeploymentStep>
 
 @{
     var includeAll = Model.Value.IncludeAll;
@@ -12,7 +12,7 @@
 
 @if (includeAll)
 {
-    <span class="badge badge-success">@T["All"]</span>
+    <span class="badge text-bg-success">@T["All"]</span>
 }
 else if (indexNames?.Length > 0)
 {
@@ -23,5 +23,5 @@ else if (indexNames?.Length > 0)
 }
 else
 {
-    <span class="badge badge-warning">@T["No index selected."]</span>
+    <span class="badge text-bg-warning">@T["No index selected."]</span>
 }

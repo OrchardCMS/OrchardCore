@@ -5,37 +5,52 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.Mvc.Routing;
 
-namespace OrchardCore.Admin
+namespace OrchardCore.Admin;
+
+public class AdminAreaControllerRouteMapper : IAreaControllerRouteMapper
 {
-    public class AdminAreaControllerRouteMapper : IAreaControllerRouteMapper
+    private const string _defaultAreaPattern = "{area}/{controller}/{action}/{id?}";
+    private readonly string _adminUrlPrefix;
+
+    public int Order => -1000;
+
+    public AdminAreaControllerRouteMapper(IOptions<AdminOptions> adminOptions)
     {
-        private readonly string _defaultAreaPattern;
+        _adminUrlPrefix = adminOptions.Value.AdminUrlPrefix;
+    }
 
-        public int Order => -1000;
+    public bool TryMapAreaControllerRoute(IEndpointRouteBuilder routes, ControllerActionDescriptor descriptor)
+    {
+        var controllerAttribute = descriptor.ControllerTypeInfo.GetCustomAttribute<AdminAttribute>();
+        var actionAttribute = descriptor.MethodInfo.GetCustomAttribute<AdminAttribute>();
 
-        public AdminAreaControllerRouteMapper(IOptions<AdminOptions> adminOptions)
+        if (descriptor.ControllerName != "Admin" && controllerAttribute == null && actionAttribute == null)
         {
-            _defaultAreaPattern = adminOptions.Value.AdminUrlPrefix + "/{area}/{controller}/{action}/{id?}";
-        }
-
-        public bool TryMapAreaControllerRoute(IEndpointRouteBuilder routes, ControllerActionDescriptor descriptor)
-        {
-            if (descriptor.ControllerName == "Admin" ||
-                descriptor.ControllerTypeInfo.GetCustomAttribute<AdminAttribute>() != null ||
-                descriptor.MethodInfo.GetCustomAttribute<AdminAttribute>() != null
-                )
-            {
-                routes.MapAreaControllerRoute(
-                    name: descriptor.DisplayName,
-                    areaName: descriptor.RouteValues["area"],
-                    pattern: _defaultAreaPattern.Replace("{action}", descriptor.ActionName),
-                    defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
-                );
-
-                return true;
-            }
-
             return false;
         }
+
+        string name = null;
+        var pattern = _defaultAreaPattern;
+
+        if (!string.IsNullOrWhiteSpace(actionAttribute?.Template))
+        {
+            name = actionAttribute.RouteName;
+            pattern = actionAttribute.Template;
+        }
+        else if (!string.IsNullOrWhiteSpace(controllerAttribute?.Template))
+        {
+            name = controllerAttribute.RouteName;
+            pattern = controllerAttribute.Template;
+        }
+
+        var (area, controller, action) = RoutingHelper.GetMvcRouteValues(descriptor);
+
+        routes.MapControllerRoute(
+            name: RoutingHelper.ReplaceMvcPlaceholders(name, area, controller, action) ?? descriptor.DisplayName,
+            pattern: $"{_adminUrlPrefix}/{RoutingHelper.ReplaceMvcPlaceholders(pattern.TrimStart('/'), area, controller, action)}",
+            defaults: new { area, controller, action }
+        );
+
+        return true;
     }
 }

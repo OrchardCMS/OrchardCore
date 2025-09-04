@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Utilities;
 
@@ -18,7 +17,7 @@ public class UserMenuShapeTableProvider : ShapeTableProvider
         builder.Describe($"{ShapeTypePrefix}*")
             .OnDisplaying(context =>
             {
-                if (string.IsNullOrEmpty(context.Shape.Metadata.DisplayType) || context.Shape.Metadata.DisplayType == "Detail")
+                if (string.IsNullOrEmpty(context.Shape.Metadata.DisplayType) || context.Shape.Metadata.DisplayType == OrchardCoreConstants.DisplayType.Detail)
                 {
                     return;
                 }

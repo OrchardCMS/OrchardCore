@@ -1,35 +1,31 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.Modules.FileProviders
+namespace OrchardCore.Modules.FileProviders;
+
+public class EmbeddedDirectoryContents : IDirectoryContents
 {
-    public class EmbeddedDirectoryContents : IDirectoryContents
+    private readonly IList<IFileInfo> _entries;
+
+    public EmbeddedDirectoryContents(IEnumerable<IFileInfo> entries)
     {
-        private readonly IList<IFileInfo> _entries;
+        ArgumentNullException.ThrowIfNull(entries);
 
-        public EmbeddedDirectoryContents(IEnumerable<IFileInfo> entries)
-        {
-            ArgumentNullException.ThrowIfNull(entries);
+        _entries = entries.ToList();
+    }
 
-            _entries = entries.ToList();
-        }
+    public bool Exists
+    {
+        get { return _entries.Any(); }
+    }
 
-        public bool Exists
-        {
-            get { return _entries.Any(); }
-        }
+    public IEnumerator<IFileInfo> GetEnumerator()
+    {
+        return _entries.GetEnumerator();
+    }
 
-        public IEnumerator<IFileInfo> GetEnumerator()
-        {
-            return _entries.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _entries.GetEnumerator();
-        }
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return _entries.GetEnumerator();
     }
 }

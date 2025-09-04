@@ -13,11 +13,11 @@
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
 }
 
-<script asp-name="vue-multiselect-userpicker" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-userpicker.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
-<style asp-name="vue-multiselect" at="Foot"></style>
+<script asp-name="vue-multiselect-userpicker" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-userpicker.js" at="Foot" depends-on="vuejs:2,vue-multiselect:2,vue-draggable:2,sortable"></script>
+<style asp-name="vue-multiselect" version="2" at="Foot"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.UserIds)_FieldWrapper">
-    <label asp-for="UserIds" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="UserIds" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-content-type="@contentTypeName" data-editor-type="UserPicker" data-selected-users="@selectedUsers" data-search-url="@searchUrl" data-multiple="@multiple">
 
@@ -56,7 +56,11 @@
                     <span class="hint">@settings.Hint</span>
                 }
             </div>
+
         </div>
+
+        <span asp-validation-for="UserIds"></span>
+
     </div>
 </div>
 <script at="Foot" depends-on="vue-multiselect-userpicker">initVueMultiselectUserPicker(document.querySelector("#@vueElementId"))</script>

@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Seo;
 
-public class SeoConstants
+public static class SeoConstants
 {
     public const string RobotsFileName = "robots.txt";
 

@@ -1,25 +1,34 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.ReverseProxy.Services
-{
-    public class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
-    {
-        private readonly ReverseProxyService _reverseProxyService;
+namespace OrchardCore.ReverseProxy.Services;
 
-        public ForwardedHeadersOptionsConfiguration(ReverseProxyService reverseProxyService)
+public sealed class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
+{
+    private readonly ReverseProxyService _reverseProxyService;
+
+    public ForwardedHeadersOptionsConfiguration(ReverseProxyService reverseProxyService)
+    {
+        _reverseProxyService = reverseProxyService;
+    }
+
+    public void Configure(ForwardedHeadersOptions options)
+    {
+        var reverseProxySettings = _reverseProxyService.GetSettingsAsync().GetAwaiter().GetResult();
+        options.ForwardedHeaders = reverseProxySettings.ForwardedHeaders;
+
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+
+        foreach (var network in reverseProxySettings.KnownNetworks)
         {
-            _reverseProxyService = reverseProxyService;
+            options.KnownNetworks.Add(IPNetwork.Parse(network));
         }
 
-        public void Configure(ForwardedHeadersOptions options)
+        foreach (var proxy in reverseProxySettings.KnownProxies)
         {
-            var reverseProxySettings = _reverseProxyService.GetSettingsAsync().GetAwaiter().GetResult();
-            options.ForwardedHeaders = reverseProxySettings.ForwardedHeaders;
-
-            // later we can add known networks and know proxies, for now we accept all
-            options.KnownNetworks.Clear();
-            options.KnownProxies.Clear();
+            options.KnownProxies.Add(System.Net.IPAddress.Parse(proxy));
         }
     }
 }

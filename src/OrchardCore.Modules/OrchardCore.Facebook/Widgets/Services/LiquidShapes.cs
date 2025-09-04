@@ -1,17 +1,13 @@
-using System.Collections.Generic;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Facebook.Widgets.ViewModels;
 using OrchardCore.Liquid;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Facebook.Widgets.Services;
 
-[Feature(FacebookConstants.Features.Widgets)]
 public class LiquidShapes(HtmlEncoder htmlEncoder) : ShapeTableProvider
 {
     private readonly HtmlEncoder _htmlEncoder = htmlEncoder;

@@ -100,14 +100,14 @@ The __Bag__ part will invoke all available display drivers recursively, to rende
 
 Each of these drivers return one or more shapes that are added to named zones (or sections) of a global __Shape__ called the `Content` shape.
 
-For instance the `TitleDisplayDriver` class will return a shape of type `TitlePart` in the `Header` zone of the main shape at position `5`. See [TitlePartDisplayDriver](../../../../OrchardCore.Modules/OrchardCore.Title/Drivers/TitlePartDisplayDriver.cs#L14-L20)
+For instance the `TitleDisplayDriver` class will return a shape of type `TitlePart` in the `Header` zone of the main shape at position `5`. See [`TitlePartDisplayDriver`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Title/Drivers/TitlePartDisplayDriver.cs)
 
-Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See [BagPartDisplayDriver](../../../../OrchardCore.Modules/OrchardCore.Flows/Drivers/BagPartDisplayDriver.cs#L39-L45).
+Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See [`BagPartDisplayDriver`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Flows/Drivers/BagPartDisplayDriver.cs).
 
 Once all the drivers for all the parts and all the fields have returned their shapes to specific zones of the main `Content` shape, Orchard will look for a matching template.
 Template matching is done dynamically, and if no specific ones are created for a Content Type, then the file `Content.cshtml` (or `Content.liquid`) is used.  
 The default template will go over all the zones it knows about and render the shapes that are inside each of them.  
-See [Header](../../../../OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L17) where the `Header` zone shapes are rendered (the `TitlePart` shape) and also [Content](../../../../OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L24) where the `Content` zone shapes are rendered (`BagPart` and `TextField` shapes).
+See [the source file](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml) where the `Header` zone shapes are rendered (the `TitlePart` shape) and also `Content` where the `Content` zone shapes are rendered (`BagPart` and `TextField` shapes).
 
 ## Customizing templates
 
@@ -282,3 +282,15 @@ Instead of rendering the shapes that have been removed from the zone, some custo
 One advantage of reusing the shape is that its template might contain some complex logic that is not easily reusable.  
 This is the case for the `MarkdownPart` shape for instance, as it will have to convert some markdown content to HTML.  
 The `TitlePart` however could easily be ignored and the __Content__ template directly access the `Title` property of this shape.
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yMzqwvr6Lgo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yDtUyQpormU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8Hm9HeZMsDA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pfPkPH7PN5w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlv60tte8UE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

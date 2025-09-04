@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -16,12 +13,16 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
-public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLoginSettings>
+public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IRoleService _roleService;
-    protected readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => LoginSettingsDisplayDriver.GroupId;
 
     public RoleLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
@@ -35,27 +36,28 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(RoleLoginSettings settings)
+    public override IDisplayResult Edit(ISite site, RoleLoginSettings settings, BuildEditorContext context)
     {
         return Initialize<RoleLoginSettingsViewModel>("LoginSettingsRoles_Edit", async model =>
         {
             model.RequireTwoFactorAuthenticationForSpecificRoles = settings.RequireTwoFactorAuthenticationForSpecificRoles;
-            var roles = await _roleService.GetRolesAsync();
-            model.Roles = roles.Select(role => new RoleEntry()
-            {
-                Role = role.RoleName,
-                IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
-            }).OrderBy(entry => entry.Role)
-            .ToArray();
+            var roles = await _roleService.GetAssignableRolesAsync();
+
+            model.Roles = roles
+                .Select(role => new RoleEntry()
+                {
+                    Role = role.RoleName,
+                    IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
+                }).OrderBy(entry => entry.Role)
+                .ToArray();
         }).Location("Content:6#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
-        .OnGroup(LoginSettingsDisplayDriver.GroupId);
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(RoleLoginSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, RoleLoginSettings settings, UpdateEditorContext context)
     {
-        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
         {
             return null;
         }
@@ -66,7 +68,7 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
 
         if (model.RequireTwoFactorAuthenticationForSpecificRoles)
         {
-            var roles = await _roleService.GetRolesAsync();
+            var roles = await _roleService.GetAssignableRolesAsync();
 
             var selectedRoles = model.Roles.Where(x => x.IsSelected)
                 .Join(roles, e => e.Role, r => r.RoleName, (e, r) => r.RoleName)
@@ -87,6 +89,6 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
             settings.RequireTwoFactorAuthenticationForSpecificRoles = false;
         }
 
-        return Edit(settings);
+        return Edit(site, settings, context);
     }
 }

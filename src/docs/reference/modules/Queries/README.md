@@ -61,9 +61,9 @@ Executes a query with the specified name.
 
 Verbs: **POST** and **GET**
 
-| Parameter | Example | Description |
-| --------- | ---- |------------ |
-| `name` | `myQuery` | The name of the query to execute. |
+| Parameter    | Example      | Description                                             |
+|--------------|--------------|---------------------------------------------------------|
+| `name`       | `myQuery`    | The name of the query to execute.                       |
 | `parameters` | `{ size: 3}` | A Json object representing the parameters of the query. |
 
 ## GraphQL
@@ -99,6 +99,9 @@ Where properties can either be of `string` or `integer` type.
 For Lucene queries with custom object schema, you are limited to elements stored in Lucene index.
 
 For SQL queries, you can expose any column where property name is a column alias from the query.
+
+!!! note
+    When returning documents from a SQL query, make sure your query returns a list of document IDs. This is commonly available in the `DocumentId` column, but check the tables you're querying.
 
 Here is an example of a custom Query from a manually added table in a database :
 
@@ -150,7 +153,7 @@ Here is an example for creating a SQL query from a Queries recipe step:
     "Source": "Sql",
     "Name": "ContentItems",
     "Template": "select * from ContentItemIndex", // json encoded query template
-    "ReturnDocuments": false
+    "ReturnContentItems": false
 }
 ```
 
@@ -276,8 +279,8 @@ These statements will be converted automatically based on the RDBMS in use.
 
 The SQL parser is also able to convert some specific functions to the intended dialect.
 
-| Name             | Description                        |
-| ---------------- |----------------------------------- |
+| Name             | Description                         |
+|------------------|-------------------------------------|
 | `second(_date_)` | Returns the seconds part of a date. |
 | `minute(_date_)` | Returns the minutes part of a date. |
 | `hour(_date_)`   | Returns the hours part of a date.   |
@@ -286,17 +289,27 @@ The SQL parser is also able to convert some specific functions to the intended d
 | `year(_date_)`   | Returns the years part of a date.   |
 | `now()`          | Returns current date time (utc).    |
 
+Order By clauses can also use the `random()` function (case insensitive) to order results randomly, e.g., 
+
+```
+SELECT * FROM ContentItemIndex ORDER BY random()
+```
+
 ## Scripting
 
 The following JavaScript functions are available with this module.
 
-| Function | Description | Signature |
-| -------- | ----------- | --------- |
+| Function       | Description                      | Signature                                                                                |
+|----------------|----------------------------------|------------------------------------------------------------------------------------------|
 | `executeQuery` | Returns the result of the query. | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
 
-## Tutorial
+## Videos
 
-<https://www.youtube.com/watch?v=6ZaqWmq8Pog&t=2891s>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6ZaqWmq8Pog" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JYES1i6BdWs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IYKEeYxeNck" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Breaking changes
 

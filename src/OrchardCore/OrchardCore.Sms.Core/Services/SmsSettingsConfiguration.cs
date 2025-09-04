@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Sms.Services;
@@ -15,9 +14,7 @@ public class SmsSettingsConfiguration : IPostConfigureOptions<SmsSettings>
 
     public void PostConfigure(string name, SmsSettings options)
     {
-        var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-
-        var settings = site.As<SmsSettings>();
+        var settings = _siteService.GetSettings<SmsSettings>();
 
         options.DefaultProviderName = settings.DefaultProviderName;
     }

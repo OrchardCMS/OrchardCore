@@ -55,3 +55,26 @@
         stroke-width: 10;
     }
 }
+.sortable-ghost {
+  opacity: 0.5;
+  background-color: #f0f0f0;
+  border: 2px dashed #ccc;
+}
+
+.sortable-selected {
+  border: 2px solid #2196f3;
+  box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
+}
+
+.media-thumb-item.selected.sortable-selected {
+    border: 2px solid purple;
+    box-shadow: 0 0 8px rgba(128, 0, 128, 0.7);
+}
+
+.media-thumb-item {
+    cursor: grab;
+}
+
+.media-thumb-item.sortable-selected {
+    cursor: grabbing;
+}

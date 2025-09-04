@@ -1,42 +1,52 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.Users.Events
+namespace OrchardCore.Users.Events;
+
+/// <summary>
+/// Contract for login events.
+/// </summary>
+public interface ILoginFormEvent
 {
     /// <summary>
-    /// Contract for login events.
+    /// Occurs when the user login has failed and the user was not found.
     /// </summary>
-    public interface ILoginFormEvent
-    {
-        /// <summary>
-        /// Occurs when the user is logging.
-        /// </summary>
-        /// <param name="userName">The username.</param>
-        /// <param name="reportError">The reported error if failure happened during the login process.</param>
-        Task LoggingInAsync(string userName, Action<string, string> reportError);
+    /// <param name="userName">The username.</param>
+    Task LoggingInFailedAsync(string userName);
 
-        /// <summary>
-        /// Occurs when the user login has failed and the user was not found.
-        /// </summary>
-        /// <param name="userName">The username.</param>
-        Task LoggingInFailedAsync(string userName);
+    /// <summary>
+    /// Occurs when the user login has failed and the user is known.
+    /// </summary>
+    /// <param name="user">The <see cref="IUser"/>.</param>
+    Task LoggingInFailedAsync(IUser user);
 
-        /// <summary>
-        /// Occurs when the user login has failed and the user is known.
-        /// </summary>
-        /// <param name="user">The <see cref="IUser"/>.</param>
-        Task LoggingInFailedAsync(IUser user);
+    /// <summary>
+    /// Occurs when a user is locked out.
+    /// </summary>
+    /// <param name="user">The <see cref="IUser"/>.</param>
+    Task IsLockedOutAsync(IUser user);
 
-        /// <summary>
-        /// Occurs when a user is locked out.
-        /// </summary>
-        /// <param name="user">The <see cref="IUser"/>.</param>
-        Task IsLockedOutAsync(IUser user);
+    /// <summary>
+    /// Occurs when the user is logged in.
+    /// </summary>
+    /// <param name="user">The <see cref="IUser"/>.</param>
+    Task LoggedInAsync(IUser user);
 
-        /// <summary>
-        /// Occurs when the user is logged in.
-        /// </summary>
-        /// <param name="user">The <see cref="IUser"/>.</param>
-        Task LoggedInAsync(IUser user);
-    }
+    /// <summary>
+    /// Occurs when the user is logging in.
+    /// </summary>
+    /// <param name="userName">The username.</param>
+    /// <param name="reportError">The reported error if failure happened during the login process.</param>
+    Task LoggingInAsync(string userName, Action<string, string> reportError);
+
+    /// <summary>
+    /// Occurs when a user visits the login page.
+    /// </summary>
+    /// <returns></returns>
+    Task<IActionResult> LoggingInAsync();
+
+    /// <summary>
+    /// Occurs when a user is trying to login and after the user is located.
+    /// </summary>
+    /// <returns></returns>
+    Task<IActionResult> ValidatingLoginAsync(IUser user);
 }

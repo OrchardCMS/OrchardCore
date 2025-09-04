@@ -42,36 +42,36 @@ Named resources are well-known scripts and stylesheets that are described in a m
 They have a name, a type (script, stylesheet) and optionally a version.  
 The `OrchardCore.Resources` module provides some commonly used ones:
 
-| Name                  | Type   | Versions      | Dependencies   |
-| --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.7.1         | -              |
-| jQuery.slim           | Script | 3.7.1         | -              |
-| jQuery-ui             | Script | 1.12.1        | jQuery         |
-| jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
-| jquery.easing         | Script | 1.4.1         | -              |
-| jquery-resizable-dom  | Script | 0.35.0        | -              |
-| js-cookie             | Script | 3.0.5         | -              |
-| popper                | Script | 1.16.1        | -              |
-| popperjs              | Script | 2.11.8        | -              |
-| bootstrap             | Script | 4.6.1         | popper         |
-| bootstrap             | Script | 5.3.2         | popperjs       |
-| bootstrap             | Style  | 4.6.1, 5.3.2  | -              |
-| bootstrap-select      | Script | 1.14.0-beta3  | -              |
-| bootstrap-select      | Style  | 1.14.0-beta3  | -              |
-| codemirror            | Script | 5.65.7        | -              |
-| codemirror            | Style  | 5.65.7        | -              |
-| font-awesome          | Style  | 6.5.1         | -              |
-| font-awesome          | Script | 6.5.1         | -              |
-| font-awesome-v4-shims | Script | 6.5.1         | -              |
-| Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Style  | 2.27.3        | -              |
-| trumbowyg             | Script | 2.27.3        | -              |
-| vue-multiselect       | Script | 2.1.6         | -              |
-| vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.44.0        | -              |
-| monaco                | Script | 0.44.0        | monaco-loader  |
-| nouislider            | Script | 15.6.1        | -              |
-| nouislider            | Style  | 15.6.1        | -              |
+| Name                  | Type   | Versions     | Dependencies  |
+|-----------------------|--------|--------------|---------------|
+| jQuery                | Script | 3.7.1        | -             |
+| jQuery.slim           | Script | 3.7.1        | -             |
+| jQuery-ui             | Script | 1.12.1       | jQuery        |
+| jQuery-ui-i18n        | Script | 1.12.1       | jQuery-ui     |
+| jquery.easing         | Script | 1.4.1        | -             |
+| jquery-resizable-dom  | Script | 0.35.0       | -             |
+| js-cookie             | Script | 3.0.5        | -             |
+| popper                | Script | 1.16.1       | -             |
+| popperjs              | Script | 2.11.8       | -             |
+| bootstrap             | Script | 4.6.1        | popper        |
+| bootstrap             | Script | 5.3.7        | popperjs      |
+| bootstrap             | Style  | 4.6.1, 5.3.7 | -             |
+| bootstrap-select      | Script | 1.14.0-beta3 | -             |
+| bootstrap-select      | Style  | 1.14.0-beta3 | -             |
+| codemirror            | Script | 5.65.7       | -             |
+| codemirror            | Style  | 5.65.7       | -             |
+| font-awesome          | Style  | 6.7.2, 7.0.0 | -             |
+| font-awesome          | Script | 6.7.2, 7.0.0 | -             |
+| font-awesome-v4-shims | Script | 6.7.2, 7.0.0 | -             |
+| Sortable              | Script | 1.10.2       | -             |
+| trumbowyg             | Style  | 2.28.0       | -             |
+| trumbowyg             | Script | 2.28.0       | -             |
+| vue-multiselect       | Script | 2.1.6        | -             |
+| vuedraggable          | Script | 2.24.3       | Sortable      |
+| monaco-loader         | Script | 0.46.0       | -             |
+| monaco                | Script | 0.46.0       | monaco-loader |
+| nouislider            | Script | 15.6.1       | -             |
+| nouislider            | Style  | 15.6.1       | -             |
 
 ### Registering a Resource Manifest
 
@@ -142,7 +142,7 @@ In this example, we define a style that depends on Bootstrap version 4. In this 
 
 !!! note "Registration"
     Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
-    `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
+    `services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();`
   
 ## Usage
 
@@ -466,7 +466,7 @@ The style block will only be injected once based on its name and can optionally 
 
 #### Link tag
 
-A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script).
+A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script-or-stylesheet).
 
 === "Liquid"
 
@@ -520,7 +520,7 @@ If you wish to use files contained in the media library when using the link tag 
 These properties are available:
 
 | Name                         | Description                                                           |
-| ---------------------------- | --------------------------------------------------------------------- |
+|------------------------------|-----------------------------------------------------------------------|
 | `name` (`asp-name` in Razor) | The `name` attribute of the tag                                       |
 | `content`                    | The `content` attribute of the tag                                    |
 | `httpequiv`                  | The `http-equiv` attribute of the tag                                 |
@@ -595,3 +595,7 @@ This is to allow access to resources when an internet connection is not availabl
 
 !!! note
     It is recommended to enable the CDN setting after setup.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlv60tte8UE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -43,7 +43,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Search.Lucene.FrenchAnalyzer
 {
     [Feature("OrchardCore.Search.Lucene.FrenchAnalyzer")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

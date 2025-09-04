@@ -4,10 +4,18 @@
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
 }
 
+@if (settings.Type == FieldBehaviorType.GeneratedHidden)
+{
+    <input type="hidden" asp-for="Text" />
+
+    return;
+}
+
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Text" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
-        <input asp-for="Text" class="form-control content-preview-text" type="tel" />
+        <input asp-for="Text" class="form-control content-preview-text" type="tel" asp-is-disabled="settings.Type == FieldBehaviorType.GeneratedDisabled" />
+        <span asp-validation-for="Text"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>

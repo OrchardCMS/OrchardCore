@@ -1,0 +1,51 @@
+name: Main - CI
+
+on:
+  # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
+  # and breaks something after merge (or if we push to main).
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+    branches: [ main, release/** ]
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    name: Build & Test
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    steps:
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      with:
+        node-version: "15"
+    - uses: ./.github/actions/setup-dotnet
+    - name: Build
+      # See pr_ci.yml for the reason why we disable NuGet audit warnings.
+      run: |
+        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
+    - name: Unit Tests
+      run: |
+        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
+    - name: Functional Tests
+      if: matrix.os == 'ubuntu-24.04'
+      run: |
+        cd test/OrchardCore.Tests.Functional
+        npm install
+        npm run cms:test
+        npm run mvc:test
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      if: matrix.os == 'ubuntu-24.04' && failure()
+      with:
+        name: Functional Test failure
+        path: |
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs

@@ -1,18 +1,16 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
-    public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
-    public static readonly Permission ManageOwnUserInformation = CommonPermissions.EditOwnUser;
-    public static readonly Permission EditOwnUser = CommonPermissions.EditOwnUser;
-    public static readonly Permission ListUsers = CommonPermissions.ListUsers;
-    public static readonly Permission EditUsers = CommonPermissions.EditUsers;
-    public static readonly Permission DeleteUsers = CommonPermissions.DeleteUsers;
+    public static readonly Permission ManageUsers = UsersPermissions.ManageUsers;
+    public static readonly Permission ViewUsers = UsersPermissions.ViewUsers;
+    public static readonly Permission ManageOwnUserInformation = UsersPermissions.EditOwnUser;
+    public static readonly Permission EditOwnUser = UsersPermissions.EditOwnUser;
+    public static readonly Permission ListUsers = UsersPermissions.ListUsers;
+    public static readonly Permission EditUsers = UsersPermissions.EditUsers;
+    public static readonly Permission DeleteUsers = UsersPermissions.DeleteUsers;
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
@@ -36,27 +34,27 @@ public class Permissions : IPermissionProvider
     [
          new PermissionStereotype
          {
-             Name = "Administrator",
+             Name = OrchardCoreConstants.Roles.Administrator,
              Permissions = _allPermissions,
          },
         new PermissionStereotype
         {
-            Name = "Editor",
+            Name = OrchardCoreConstants.Roles.Editor,
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Moderator",
+            Name = OrchardCoreConstants.Roles.Moderator,
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Contributor",
+            Name = OrchardCoreConstants.Roles.Contributor,
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Author",
+            Name = OrchardCoreConstants.Roles.Author,
             Permissions = _generalPermissions,
         }
     ];

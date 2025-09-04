@@ -1,22 +1,26 @@
 [
   {
-    "generateSourceMaps": false,
-    "inputs": [
-      "Assets/scss/Contents.scss"
-    ],
-    "output": "wwwroot/Styles/Contents.css"
+    "action": "sass",
+    "name": "content-localization",
+    "source": "Assets/scss/Contents.scss",
+    "tags": ["admin", "dashboard", "css"]
   },
   {
-    "generateSourceMaps": false,
-    "inputs": [
-      "Assets/scss/audittrail-disabledcontent.scss"
-    ],
-    "output": "wwwroot/Styles/audittrail-disabledcontent.css"
+    "action": "sass",
+    "name": "content-localization",
+    "source": "Assets/scss/audittrail-disabledcontent.scss",
+    "tags": ["admin", "dashboard", "css"]
   },
   {
-    "inputs": [
-      "Assets/js/audittrail-disabledcontent.js"
-    ],
-    "output": "wwwroot/Scripts/audittrail-disabledcontent.js"
+    "action": "min",
+    "name": "content-localization",
+    "source": "Assets/js/audittrail-disabledcontent.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "min",
+    "name": "content-localization",
+    "source": "Assets/js/content-type-check-all.js",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

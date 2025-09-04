@@ -1,0 +1,35 @@
+name: Validating Building the Documentation
+
+on:
+  # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
+  # and breaks something after merge (or if we push to main).
+  push:
+    paths:
+      - 'mkdocs.yml'
+      - 'src/docs/**'
+    branches: [ main, release/** ]
+  pull_request:
+    paths:
+      - 'mkdocs.yml'
+      - 'src/docs/**'
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}-docs_validation
+  cancel-in-progress: true
+
+jobs:
+  validate-building-documentation:
+    name: Validating Building the Documentation
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      with:
+        # Necessary to avoid mkdocs-git-revision-date-localized-plugin warnings.
+        fetch-depth: 0
+
+    - name: Install Dependencies
+      run: |
+        pip install -r src/docs/requirements.txt -v
+
+    - name: Build Documentation
+      run: python -m mkdocs build --strict

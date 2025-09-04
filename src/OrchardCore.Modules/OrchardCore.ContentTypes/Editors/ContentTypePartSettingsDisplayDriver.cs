@@ -1,14 +1,13 @@
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentTypes.Editors
+namespace OrchardCore.ContentTypes.Editors;
+
+public sealed class ContentTypePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
 {
-    public class ContentTypePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public override IDisplayResult Edit(ContentTypePartDefinition model, BuildEditorContext context)
     {
-        public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
-        {
-            return Shape("ContentTypePartSettings_Edit", new ShapeViewModel<ContentTypePartDefinition>(model)).Location("Content");
-        }
+        return Shape("ContentTypePartSettings_Edit", new ShapeViewModel<ContentTypePartDefinition>(model)).Location("Content");
     }
 }

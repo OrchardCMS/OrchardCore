@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.ContentFields.Settings;
 
 public class ContentPickerFieldSettingsViewModel
