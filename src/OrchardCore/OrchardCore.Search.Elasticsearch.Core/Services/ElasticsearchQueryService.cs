@@ -1,3 +1,4 @@
+using Elastic.Clients.Elasticsearch;
 using Json.Path;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
@@ -19,9 +20,9 @@ public class ElasticsearchQueryService
         _logger = logger;
     }
 
-    public async Task PopulateResultAsync(ElasticsearchSearchContext request, SearchResult result)
+    public async Task PopulateResultAsync(ElasticsearchSearchContext context, SearchResult result)
     {
-        var searchResult = await _elasticIndexManager.SearchAsync(request);
+        var searchResult = await _elasticIndexManager.SearchAsync(context);
 
         result.ContentItemIds = [];
 
