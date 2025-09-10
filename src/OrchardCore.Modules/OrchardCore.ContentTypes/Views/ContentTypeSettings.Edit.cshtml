@@ -65,7 +65,7 @@
 
 <div class="mb-3">
     <div class="w-md-75 w-xl-50">
-        <label asp-for="Stereotype">@T["Stereotype"]</label>
+        <label asp-for="Stereotype" class="form-label">@T["Stereotype"]</label>
         <input asp-for="Stereotype" list="stereotypeOptions" type="text" class="form-control">
         <datalist id="stereotypeOptions">
             @foreach (var item in Model.Options.Stereotypes)
