@@ -25,8 +25,6 @@
 
     if (!string.IsNullOrEmpty(contentItem.Author))
     {
-        <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Author"]">
-            <i class="fa-solid fa-user text-secondary me-1" aria-hidden="true"></i>@contentItem.Author
-        </span>
+        <shape Type="UserDisplayName" prop-userName="@(contentItem.Author)" cache-id="user-display-name" cache-context="user" cache-tag="user-display-name,user-display-name:@contentItem.Author" />
     }
 }

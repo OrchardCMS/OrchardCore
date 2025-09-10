@@ -17,6 +17,20 @@ public class CoreShapes : IShapeAttributeProvider
 
     [Shape]
 #pragma warning disable CA1822 // Mark members as static
+    public IHtmlContent UserDisplayName(string username)
+#pragma warning restore CA1822 // Mark members as static
+    {
+        var spanTag = new TagBuilder("span");
+
+        spanTag.AddCssClass("badge ta-badge font-weight-normal");
+        spanTag.MergeAttribute("title", "Author");
+        spanTag.InnerHtml.Append(username);
+
+        return spanTag;
+    }
+
+    [Shape]
+#pragma warning disable CA1822 // Mark members as static
     public async Task<IHtmlContent> List(Shape shape, DisplayContext displayContext, IEnumerable<object> Items,
 #pragma warning restore CA1822 // Mark members as static
         string ItemTagName,
