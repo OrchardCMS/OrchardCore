@@ -22,7 +22,6 @@ public class CoreShapes : IShapeAttributeProvider
     {
         var spanTag = new TagBuilder("span");
 
-        spanTag.AddCssClass("badge ta-badge font-weight-normal");
         spanTag.MergeAttribute("title", "Author");
         spanTag.InnerHtml.Append(username);
 
