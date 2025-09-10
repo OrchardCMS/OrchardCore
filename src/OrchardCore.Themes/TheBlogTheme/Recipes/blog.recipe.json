@@ -101,7 +101,6 @@
         }
       ]
     },
-
     {
       "name": "ContentDefinition",
       "ContentTypes": [
@@ -428,27 +427,7 @@
               }
             }
           ]
-        },
-        {
-          "Name": "Category",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Icon",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Icon",
-                  "Editor": "IconPicker",
-                  "Position": "0"
-                },
-                "TextFieldSettings": {
-                  "Required": true
-                }
-              }
-            }
-          ]
-        }
+        }       
       ]
     },
     {
@@ -712,6 +691,5 @@
         }
       ]
     }
-
   ]
 }

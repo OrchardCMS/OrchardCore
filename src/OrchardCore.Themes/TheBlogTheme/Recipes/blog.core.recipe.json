@@ -37,7 +37,6 @@
         "Zones": [ "Content", "Footer" ]
       }
     },
-
     {
       "name": "ContentDefinition",
       "ContentTypes": [        
@@ -381,123 +380,7 @@
               }
             }
           ]
-        },
-        {
-          "Name": "Article",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Subtitle",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Subtitle",
-                  "Position": "0"
-                }
-              }
-            },
-            {
-              "FieldName": "MediaField",
-              "Name": "Image",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Banner Image",
-                  "Position": "0"
-                },
-                "MediaFieldSettings": {
-                  "Multiple": false,
-                  "AllowAnchors": true
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Blockquote",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Quote",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Quote",
-                  "Editor": "TextArea",
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Image",
-          "Settings": {
-            "Attachable": true
-          },
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "MediaField",
-              "Name": "Media",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Image",
-                  "Position": "0"
-                },
-                "MediaFieldSettings": {
-                  "Multiple": false,
-                  "Required": true
-                }
-              }
-            },
-            {
-              "FieldName": "TextField",
-              "Name": "Caption",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Caption",
-                  "Position": "1"
-                },
-                "TextFieldSettings": {
-                  "Hint": "A description of the image used as title or alternate text"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Paragraph",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "HtmlField",
-              "Name": "Content",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Content",
-                  "Position": "0",
-                  "Editor": "Wysiwyg"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "RawHtml",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "HtmlField",
-              "Name": "Content",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Content",
-                  "Position": "0",
-                  "Editor": "Multiline"
-                }
-              }
-            }
-          ]
-        },
+        },      
         {
           "Name": "Category",
           "Settings": {},
@@ -522,8 +405,7 @@
     },
     {
       "name": "content",
-      "Data": [
-       
+      "Data": [       
         {
           "ContentItemId": "[js: variables('tagsContentItemId')]",
           "Owner": "[js: parameters('AdminUserId')]",
@@ -727,8 +609,7 @@
               "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]"
             }
           }
-        }
-        
+        }        
       ]
     },
     {
