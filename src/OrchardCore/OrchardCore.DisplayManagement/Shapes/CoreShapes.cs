@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Shapes;
 
