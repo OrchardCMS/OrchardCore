@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.DisplayManagement.TagHelpers;
 
 [HtmlTargetElement("user-display-name")]
 [HtmlTargetElement("UserDisplayName")]
-public class UserDisplayNameTagHelper : BaseShapeTagHelper
+public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
 {
     private static readonly char[] _separators = [',', ' '];
 
@@ -29,14 +30,14 @@ public class UserDisplayNameTagHelper : BaseShapeTagHelper
     {
         if (string.IsNullOrEmpty(Username))
         {
-            if (!Properties.TryGetValue("Username", out var usernameObj))
+            if (!Properties.TryGetValue("Username", out var name))
             {
                 output.SuppressOutput();
 
                 return;
             }
 
-            Username = usernameObj.ToString();
+            Username = name.ToString();
         }
 
         if (!output.Attributes.TryGetAttribute("cache-id", out _))
@@ -54,18 +55,28 @@ public class UserDisplayNameTagHelper : BaseShapeTagHelper
             output.Attributes.Add("cache-tag", $"user-display-name,user-display-name:{Username}");
         }
 
-        var wrapperShape = await _shapeFactory.CreateAsync("UserDisplayName", Arguments.From(new { Username, Title, }));
+        var shape = await _shapeFactory.CreateAsync("UserDisplayName", Arguments.From(new { Username, Title, }));
 
         if (!string.IsNullOrWhiteSpace(DisplayType))
         {
-            wrapperShape.Metadata.DisplayType = DisplayType;
+            shape.Metadata.DisplayType = DisplayType;
         }
 
-        tagHelperContext.Items[typeof(IShape)] = wrapperShape;
+        var displayType = shape.Metadata.DisplayType?.EncodeAlternateElement() ?? "Detail";
+
+        var username = Username.EncodeAlternateElement();
+
+        // UserDisplayName_[DisplayType]__[Username] e.g. UserDisplayName-johndoe.SummaryAdmin.cshtml
+        shape.Metadata.Alternates.Add("UserDisplayName_" + displayType + "__" + username);
+
+        // UserDisplayName_[DisplayType] e.g. UserDisplayName.SummaryAdmin.cshtml
+        shape.Metadata.Alternates.Add("UserDisplayName_" + displayType);
+
+        tagHelperContext.Items[typeof(IShape)] = shape;
 
         if (!string.IsNullOrWhiteSpace(Cache))
         {
-            var metadata = wrapperShape.Metadata;
+            var metadata = shape.Metadata;
 
             metadata.Cache(Cache);
 
@@ -94,7 +105,7 @@ public class UserDisplayNameTagHelper : BaseShapeTagHelper
 
         await output.GetChildContentAsync();
 
-        output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(wrapperShape));
+        output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
 
         output.TagName = null;
     }
