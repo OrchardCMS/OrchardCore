@@ -17,7 +17,7 @@ public class CoreShapes : IShapeAttributeProvider
 
     [Shape]
 #pragma warning disable CA1822 // Mark members as static
-    public IHtmlContent UserDisplayName(string username)
+    public IHtmlContent SummaryAdminUserDisplayName(string username)
 #pragma warning restore CA1822 // Mark members as static
     {
         var spanTag = new TagBuilder("span");
