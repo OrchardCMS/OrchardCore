@@ -128,7 +128,10 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
     {
         var directoryInfo = GetFileInfo(path);
         
-        if (!directoryInfo.Exists) return Task.FromResult(false);
+        if (!directoryInfo.Exists)
+        {
+            return Task.FromResult(false);
+        }
 
         try
         {
