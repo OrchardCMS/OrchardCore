@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.TagHelpers;
 using OrchardCore.DisplayManagement.Utilities;
 
-namespace OrchardCore.DisplayManagement.TagHelpers;
+namespace OrchardCore.Users.TagHelpers;
 
 [HtmlTargetElement("user-display-name")]
 [HtmlTargetElement("UserDisplayName")]

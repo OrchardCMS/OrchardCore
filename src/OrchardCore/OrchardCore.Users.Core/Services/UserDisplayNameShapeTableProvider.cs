@@ -2,9 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 
-namespace OrchardCore.Contents.Services;
+namespace OrchardCore.Users.Core.Services;
 
-public sealed class UsernameAsUserDisplayNameShapeTableProvider : ShapeTableProvider
+public sealed class UserDisplayNameShapeTableProvider : ShapeTableProvider
 {
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
