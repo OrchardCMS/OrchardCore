@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Shapes;
 
@@ -13,19 +14,6 @@ public class CoreShapes : IShapeAttributeProvider
     public void PlaceChildContent(dynamic Source, TextWriter Output)
     {
         throw new NotImplementedException();
-    }
-
-    [Shape]
-#pragma warning disable CA1822 // Mark members as static
-    public IHtmlContent SummaryAdminUserDisplayName(string username)
-#pragma warning restore CA1822 // Mark members as static
-    {
-        var spanTag = new TagBuilder("span");
-
-        spanTag.MergeAttribute("title", "Author");
-        spanTag.InnerHtml.Append(username);
-
-        return spanTag;
     }
 
     [Shape]

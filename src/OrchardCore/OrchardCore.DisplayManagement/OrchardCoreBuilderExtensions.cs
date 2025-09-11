@@ -107,6 +107,7 @@ public static class OrchardCoreBuilderExtensions
                 services.AddTagHelpers<RemoveWrapperTagHelper>();
                 services.AddTagHelpers<ShapeMetadataTagHelper>();
                 services.AddTagHelpers<ShapeTagHelper>();
+                services.AddTagHelpers<UserDisplayNameTagHelper>();
                 services.AddTagHelpers<TimeSpanTagHelper>();
                 services.AddTagHelpers<ValidationMessageTagHelper>();
                 services.AddTagHelpers<ZoneTagHelper>();

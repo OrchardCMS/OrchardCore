@@ -1,0 +1,6 @@
+<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@Model.Title">
+    @foreach (var item in Model.Items)
+    {
+        @await DisplayAsync(item)
+    }
+</span>

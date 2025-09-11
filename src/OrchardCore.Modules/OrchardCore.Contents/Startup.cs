@@ -61,6 +61,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddContentServices();
+        services.AddShapeTableProvider<UserDisplayNameShapeTableProvider>();
         services.AddSingleton<IAnchorTag, ContentAnchorTag>();
 
         services.Configure<LiquidViewOptions>(o =>

@@ -14,5 +14,5 @@
 
 @if (!string.IsNullOrEmpty(contentItem.Author))
 {
-    <shape Type="SummaryAdminUserDisplayName" prop-userName="@(contentItem.Author)" cache-id="user-display-name" cache-context="user" cache-tag="user-display-name,user-display-name:@contentItem.Author" />
+    <user-display-name username="@(contentItem.Author)" title="@T["Author"].Value" display-type="@Model.Metadata.DisplayType" />
 }
