@@ -8,7 +8,7 @@ $(function () {
         })
         .on('keyup', '.content-preview-text', function (event) {
             // handle backspace
-            if (event.keyCode == 46 || event.ctrlKey) {
+            if (e.key === 'Backspace' || event.ctrlKey) {
                 $(document).trigger('contentpreview:render');
             }
         })
