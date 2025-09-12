@@ -6,9 +6,9 @@ $(function () {
         .on('propertychange', '.content-preview-text', function () {
             $(document).trigger('contentpreview:render');
         })
-        .on('keyup', '.content-preview-text', function (event) {
+        .on('keyup', '.content-preview-text', function (e) {
             // handle backspace
-            if (e.key === 'Backspace' || event.ctrlKey) {
+            if (e.key === 'Backspace' || e.ctrlKey) {
                 $(document).trigger('contentpreview:render');
             }
         })
