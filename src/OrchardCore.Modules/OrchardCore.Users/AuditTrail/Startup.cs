@@ -4,6 +4,7 @@ using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Users.AuditTrail.Drivers;
 using OrchardCore.Users.AuditTrail.Handlers;
 using OrchardCore.Users.AuditTrail.Services;
@@ -24,5 +25,7 @@ public sealed class Startup : StartupBase
             .AddScoped<ILoginFormEvent>(sp => sp.GetRequiredService<UserEventHandler>());
 
         services.AddDisplayDriver<AuditTrailEvent, AuditTrailUserEventDisplayDriver>();
+        
+        services.AddPermissionProvider<Permissions>();
     }
 }
