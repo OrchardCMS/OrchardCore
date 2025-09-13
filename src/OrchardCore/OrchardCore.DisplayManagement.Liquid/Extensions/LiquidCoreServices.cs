@@ -16,7 +16,8 @@ public static class LiquidCoreServices
 {
     public static IServiceCollection AddLiquidCoreServices(this IServiceCollection services)
     {
-        services.AddSingleton<LiquidViewParser>();
+        services.AddSingleton<LiquidViewParser>(serviceProvider =>
+            new LiquidViewParser(serviceProvider.GetRequiredService<IOptions<LiquidViewOptions>>()));
         services.AddSingleton<IAnchorTag, AnchorTag>();
 
         services.AddTransient<IConfigureOptions<TemplateOptions>, TemplateOptionsFileProviderSetup>();
