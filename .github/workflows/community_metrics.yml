@@ -30,7 +30,7 @@ jobs:
         Write-Output "LAST_MONTH=$firstDay..$lastDay" >> $env:GITHUB_ENV
 
     - name: Compute Issue Metrics
-      uses: github/issue-metrics@6fa9041b3ea7b6a9dafbdc388d25d86d06b2b6af # v3
+      uses: github/issue-metrics@e8f19041d9996b64cd5eebd653f065adb6d0e195 # v3.23.2
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:issue created:${{ env.LAST_MONTH }} -reason:"not planned" -label:"community metrics"'
@@ -43,7 +43,7 @@ jobs:
         Add-Content -Path ./community_metrics.md -Value (Get-Content -Path ./issue_metrics.md -Raw)
 
     - name: Compute Pull Request Metrics
-      uses: github/issue-metrics@6fa9041b3ea7b6a9dafbdc388d25d86d06b2b6af # v3
+      uses: github/issue-metrics@e8f19041d9996b64cd5eebd653f065adb6d0e195 # v3.23.2
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:pr created:${{ env.LAST_MONTH }} -label:dontmerge -label:notready -is:draft'
@@ -56,7 +56,7 @@ jobs:
         Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + $content)
 
     - name: Compute Q&A Discussion Request Metrics
-      uses: github/issue-metrics@6fa9041b3ea7b6a9dafbdc388d25d86d06b2b6af # v3
+      uses: github/issue-metrics@e8f19041d9996b64cd5eebd653f065adb6d0e195 # v3.23.2
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore type:discussions created:${{ env.LAST_MONTH }} category:Q&A'
