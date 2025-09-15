@@ -90,9 +90,12 @@
                         <tbody>
                             @foreach (var permission in group.Value.OrderBy(x => x.Description))
                             {
-                                <tr data-text="@permission.Description">
+                                var description = string.IsNullOrEmpty(permission.Description)
+                                    ? permission.Name
+                                    : permission.Description;
+                                <tr data-text="@description">
                                     <td class="col-10">
-                                        @permission.Description
+                                        @description
                                         @if (permission.IsSecurityCritical)
                                         {
                                             <div class="float-end">
@@ -134,7 +137,7 @@
             var search = $(this).val().toLowerCase();
 
             // On ESC, clear the search box and display all roles
-            if (e.keyCode == 27 || search == '') {
+            if (e.key === "Escape" || search == '') {
                 searchBox.val('');
                 $('.permissions-list').toggle(true);
                 $('.permissions-list > table > tbody > tr').toggle(true);
