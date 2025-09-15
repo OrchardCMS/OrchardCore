@@ -33,13 +33,12 @@ jobs:
     container:
       image: cypress/included:15.0.0
     steps:
-    - run: npm install -g corepack
-    - run: corepack enable
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - uses: ./.github/actions/setup-dotnet
     - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
       with:
-        node-version: "15"    
+        node-version: "15"
+        package-manager-cache: false
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
