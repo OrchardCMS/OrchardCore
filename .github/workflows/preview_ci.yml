@@ -23,7 +23,7 @@ jobs:
         Write-Output "Commits found in the last 24 hours: $hasCommitFromLastDay."
         $shouldPublish = ($hasCommitFromLastDay -and '${{ github.event_name }}' -eq 'schedule') -or ('${{ github.event_name }}' -eq 'workflow_dispatch')
         "should-publish=$($shouldPublish ? 'true' : 'false')" >> $Env:GITHUB_OUTPUT
-    - run: npm install -g corepack@0.33.0 --force
+    - run: npm install -g corepack
     - run: corepack enable
     - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
       if: steps.check-publish.outputs.should-publish == 'true'

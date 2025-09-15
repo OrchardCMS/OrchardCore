@@ -33,7 +33,7 @@ jobs:
     container:
       image: cypress/included:15.0.0
     steps:
-    - run: npm install -g corepack@0.33.0 --force
+    - run: npm install -g corepack
     - run: corepack enable
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - uses: ./.github/actions/setup-dotnet
