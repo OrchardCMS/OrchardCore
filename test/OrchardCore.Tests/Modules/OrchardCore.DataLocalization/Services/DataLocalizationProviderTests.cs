@@ -10,7 +10,7 @@ public class DataLocalizationProviderTests
     [Fact]
     public async Task ContentTypeDataLocalizationProvider_GetLocalizedStrings()
     {
-        var contentDefinitionService = new Mock<IContentDefinitionService>();
+        var contentDefinitionService = new Mock<IContentDefinitionViewModelService>();
         contentDefinitionService.Setup(cds => cds.GetTypesAsync())
             .ReturnsAsync(() => new List<EditTypeViewModel> {
                 new() { DisplayName = "Article" },
@@ -27,7 +27,7 @@ public class DataLocalizationProviderTests
     [Fact]
     public async Task ContentFieldDataLocalizationProvider_GetLocalizedStrings()
     {
-        var contentDefinitionService = new Mock<IContentDefinitionService>();
+        var contentDefinitionService = new Mock<IContentDefinitionViewModelService>();
         contentDefinitionService.Setup(cds => cds.GetTypesAsync())
             .ReturnsAsync(() => new List<EditTypeViewModel>
             {

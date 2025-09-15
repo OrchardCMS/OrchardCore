@@ -9,7 +9,7 @@ public class ContentTypeDataLocalizationProviderTests
 
     public ContentTypeDataLocalizationProviderTests()
     {
-        var contentDefinitionService = new Mock<IContentDefinitionService>();
+        var contentDefinitionService = new Mock<IContentDefinitionViewModelService>();
         contentDefinitionService.Setup(service => service.GetTypesAsync())
             .ReturnsAsync(() => new List<EditTypeViewModel> {
                 new() { DisplayName = "Article" },
