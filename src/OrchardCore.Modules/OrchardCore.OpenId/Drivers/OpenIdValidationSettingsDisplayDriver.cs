@@ -72,19 +72,6 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
         settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
         settings.Tenant = model.Tenant;
 
-        var isTenantValid = !string.IsNullOrEmpty(model.Tenant)
-            && _shellHost.TryGetShellContext(model.Tenant, out var shellContext)
-            && shellContext.Settings.IsRunning();
-
-        if (!isTenantValid)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Tenant), S["Invalid tenant value."]);
-        }
-        else if (!hasAuthority && string.IsNullOrEmpty(model.Tenant))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Authority), S["A tenant or authority value is required."]);
-        }
-
         return await EditAsync(settings, context);
     }
 }
