@@ -27,6 +27,9 @@ jobs:
       if: steps.check-publish.outputs.should-publish == 'true'
       with:
         node-version: "15"
+    - run: |
+          corepack enable
+          yarn --version
     - uses: ./.github/actions/setup-dotnet
       if: steps.check-publish.outputs.should-publish == 'true'
     - name: Set build number

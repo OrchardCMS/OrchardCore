@@ -38,6 +38,9 @@ jobs:
     - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
       with:
         node-version: "15"
+    - run: |
+          corepack enable
+          yarn --version        
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
