@@ -40,6 +40,16 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
         return SetTitleAsync(part);
     }
 
+    public override Task ClonedAsync(CloneContentContext context, TitlePart part)
+    {
+        return SetTitleAsync(part);
+    }
+
+    public override Task ImportedAsync(ImportContentContext context, TitlePart part)
+    {
+        return SetTitleAsync(part);
+    }
+
     protected override Task ValidatingAsync(ValidateContentPartContext context, TitlePart part)
     {
         var settings = context.ContentTypePartDefinition.GetSettings<TitlePartSettings>();
