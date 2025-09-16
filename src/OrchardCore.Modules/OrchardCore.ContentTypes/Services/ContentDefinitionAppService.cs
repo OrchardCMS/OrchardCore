@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -20,12 +21,14 @@ public class ContentDefinitionViewModelService : IContentDefinitionViewModelServ
     public ContentDefinitionViewModelService(IContentDefinitionManager contentDefinitionManager
         , IEnumerable<Type> contentPartTypes
         , IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers
-        , IStringLocalizer s)
+        , IStringLocalizer s
+        , ILogger<ContentDefinitionViewModelService> logger)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _contentPartTypes = contentPartTypes;
         _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
         S = s;
+        _logger = logger;
     }
 
     public async Task<EditPartViewModel> AddPartAsync(CreatePartViewModel partViewModel)
