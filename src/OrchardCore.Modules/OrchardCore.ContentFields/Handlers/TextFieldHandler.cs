@@ -54,11 +54,6 @@ public class TextFieldHandler : ContentFieldHandler<TextField>
         return SetValueAsync(context, field);
     }
 
-    public override Task ImportedAsync(ImportContentFieldContext context, TextField field)
-    {
-        return SetValueAsync(context, field);
-    }
-
     private async Task SetValueAsync(ContentFieldContextBase context, TextField field)
     {
         var settings = context.ContentPartFieldDefinition?.GetSettings<TextFieldSettings>();
