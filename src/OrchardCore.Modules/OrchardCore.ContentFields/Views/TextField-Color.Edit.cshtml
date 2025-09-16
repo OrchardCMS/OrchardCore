@@ -2,6 +2,40 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
+
+    if (string.IsNullOrEmpty(Model.Text))
+    {
+        Model.Text = "#000000"; // Default to black if no color is set
+    }
+
+    var alpha = "255"; // Default to fully opaque
+    var color = Model.Text;
+
+    if (color.Length == 9) // #RRGGBBAA
+    {
+        if (int.TryParse(color.Substring(7, 2), System.Globalization.NumberStyles.HexNumber, null, out var a))
+        {
+            alpha = a.ToString();
+        }
+        color = color.Substring(0, 7); // Keep only #RRGGBB
+    }
+    else if (color.Length == 5) // #RGBA
+    {
+        if (int.TryParse(color.Substring(4, 1) + color.Substring(4, 1), System.Globalization.NumberStyles.HexNumber, null, out var a))
+        {
+            alpha = a.ToString();
+        }
+        color = Model.Text.Substring(0, 4); // Keep only #RGB
+    }
+
+    if (color.Length == 4) // #RGB
+    {
+        color = "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3]; // Expand to #RRGGBB
+    }
+    else if (color.Length != 7) // #RRGGBB
+    {
+        color = "#000000"; // Fallback to black if format is unexpected
+    }
 }
 
 @if (settings.Type == FieldBehaviorType.GeneratedHidden)
@@ -12,13 +46,13 @@
 }
 
 <style at="Head">
-    #color_wrapper {
+    .color_wrapper {
         background-color: black;
         display: inline-block;
         visibility: hidden;
     }
 
-        #color_wrapper::before {
+        .color_wrapper::before {
             content: "";
             position: absolute;
             border-radius: 3px;
@@ -32,26 +66,29 @@
             box-sizing: border-box;
         }
 
-    #color {
-        opacity: 0;
-        height: 2rem;
-        width: 2rem;
-        box-sizing: border-box;
-        pointer-events: initial;
-        visibility: visible;
-    }
+        .color_wrapper .color {
+            opacity: 0;
+            height: 2rem;
+            width: 2rem;
+            box-sizing: border-box;
+            pointer-events: initial;
+            visibility: visible;
+        }
 
-    #color_opacity {
-        filter: grayscale(100%);
-        visibility: visible;
-    }
+        .color_wrapper .color_opacity {
+            filter: grayscale(100%);
+            visibility: visible;
+        }
 </style>
-
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required) d-block">@Model.PartFieldDefinition.DisplayName()</label>
-    <div id="color_wrapper">
-        <input id="color" asp-for="Text" oninput="setColor()" type="color" asp-is-disabled="settings.Type == FieldBehaviorType.GeneratedDisabled">
-        <input id="color_opacity" oninput="setColor()" type="range" min="0" max="255" step="1" value="255" />
+@{
+    var fieldId = Html.IdFor(x => x.Text);
+}
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@(fieldId)_FieldWrapper">
+    <label for="@(fieldId)_color" class="@Orchard.GetLabelClasses(inputRequired: settings.Required) d-block">@Model.PartFieldDefinition.DisplayName()</label>
+    <div id="@(fieldId)_color_wrapper" class="color_wrapper">
+        <input id="@(fieldId)" asp-for="Text" type="hidden">
+        <input id="@(fieldId)_color" class="color" oninput="setColorField('@fieldId')" type="color" value="@color" @(settings.Type == FieldBehaviorType.GeneratedDisabled ? "disabled" : "")>
+        <input id="@(fieldId)_color_opacity" title="@T["Opacity"]" class="color_opacity" oninput="setColorField('@fieldId')" type="range" min="0" max="255" step="1" value="@alpha" @(settings.Type == FieldBehaviorType.GeneratedDisabled ? "disabled" : "")>
     </div>
     <span asp-validation-for="Text"></span>
     @if (!string.IsNullOrEmpty(settings.Hint))
@@ -61,14 +98,47 @@
 </div>
 
 <script>
-    let colorPicker = document.querySelector('#color');
-    let colorWrapper = document.querySelector('#color_wrapper');
-    let colorOpacity = document.querySelector('#color_opacity');
+    (function() {
+        const currentFieldId = '@fieldId';
 
-    function setColor(){
-        var colorAlpha = colorOpacity.value == 255
-            ? ""
-            : parseInt(colorOpacity.value).toString(16).padStart(2, "0");
-        colorWrapper.style.backgroundColor = colorPicker.value + colorAlpha;
-    }
+        function onDocumentReady(fn) {
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", fn);
+            } else {
+                fn();
+            }
+        }
+
+        // Define the global function only once
+        if (!window.setColorField) {
+            window.setColorField = function(fieldId) {
+                const colorField = document.querySelector('#' + fieldId);
+                const colorPicker = document.querySelector('#' + fieldId + '_color');
+                const colorWrapper = document.querySelector('#' + fieldId + '_color_wrapper');
+                const colorOpacity = document.querySelector('#' + fieldId + '_color_opacity');
+
+                if (!colorField || !colorPicker || !colorWrapper || !colorOpacity) {
+                    return;
+                }
+
+                var colorAlpha = colorOpacity.value == 255
+                    ? ""
+                    : parseInt(colorOpacity.value).toString(16).padStart(2, "0");
+                colorWrapper.style.backgroundColor = colorPicker.value + colorAlpha;
+                colorField.value = colorPicker.value + colorAlpha;
+            };
+
+            // Initialize all color fields on document ready (for initial page load)
+            onDocumentReady(function() {
+                const colorWrappers = document.querySelectorAll('.color_wrapper');
+                colorWrappers.forEach(function(wrapper) {
+                    const fieldId = wrapper.id.replace('_color_wrapper', '');
+                    window.setColorField(fieldId);
+                });
+            });
+        }
+
+        // Also initialize this specific field immediately (for dynamic injection)
+        window.setColorField(currentFieldId);
+    })();
 </script>
