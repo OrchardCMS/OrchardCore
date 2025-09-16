@@ -13,7 +13,8 @@ html {
 
 body {
     position: relative;
-    overflow-x: hidden;
+    // Disabled for now due to incompatibility with ScrollSpy in Bootstrap 5.2.x
+    // overflow-x: hidden;
 }
 
 // Adjust the line height of paragraphs
