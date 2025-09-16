@@ -1658,10 +1658,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/fontawesome-free@npm:6.7.2":
-  version: 6.7.2
-  resolution: "@fortawesome/fontawesome-free@npm:6.7.2"
-  checksum: 10/88101fee12470ede1e7f2588b86121924259d98889b950e2ccde71d934f4f344b592d1360700de4e92d81262014d3ae33fe995c7799f2be2abddcee3102413d6
+"@fortawesome/fontawesome-free@npm:7.0.0":
+  version: 7.0.0
+  resolution: "@fortawesome/fontawesome-free@npm:7.0.0"
+  checksum: 10/b2a8400d163c7543e20f0cfedf3285f58e12e1495281691e42397560ad8cbb14587faaf4bb302eb20213ad1b6eb58b2eaa99c6d6d44dd7b65ecb6d63e65a9833
   languageName: node
   linkType: hard
 
@@ -2258,7 +2258,7 @@ __metadata:
   resolution: "@orchardcore/admindashboard@workspace:src/OrchardCore.Modules/OrchardCore.AdminDashboard/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
   languageName: unknown
   linkType: soft
 
@@ -2267,7 +2267,7 @@ __metadata:
   resolution: "@orchardcore/adminmenu@workspace:src/OrchardCore.Modules/OrchardCore.AdminMenu/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
     fontawesome-iconpicker: "npm:3.2.0"
     vue: "npm:2.6.14"
   languageName: unknown
@@ -2362,7 +2362,7 @@ __metadata:
     "@types/react": "npm:^18.2.21"
     "@types/react-dom": "npm:^18.2.7"
     assert: "npm:^2.0.0"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
     css-loader: "npm:^6.8.1"
     diff: "npm:5.1.0"
     null-loader: "npm:^4.0.1"
@@ -2391,7 +2391,7 @@ __metadata:
   resolution: "@orchardcore/contentfields@workspace:src/OrchardCore.Modules/OrchardCore.ContentFields/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
   languageName: unknown
   linkType: soft
 
@@ -2468,7 +2468,7 @@ __metadata:
   resolution: "@orchardcore/markdown@workspace:src/OrchardCore.Modules/OrchardCore.Markdown/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
     easymde: "npm:2.18.0"
   languageName: unknown
   linkType: soft
@@ -2479,7 +2479,7 @@ __metadata:
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     blueimp-file-upload: "npm:10.32.0"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
     jquery: "npm:3.7.1"
     vue: "npm:2.6.14"
   languageName: unknown
@@ -2507,10 +2507,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets"
   dependencies:
-    "@fortawesome/fontawesome-free": "npm:6.7.2"
+    "@fortawesome/fontawesome-free": "npm:7.0.0"
     "@popperjs/core": "npm:2.11.8"
     blueimp-file-upload: "npm:^10.32.0"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
     bootstrap-select: "npm:1.14.0-beta3"
     codemirror: "npm:5.65.7"
     fontawesome-iconpicker: "npm:3.2.0"
@@ -2542,7 +2542,7 @@ __metadata:
     "@orchardcore/assets-manager": "workspace:^"
     "@popperjs/core": "npm:2.11.8"
     all-contributors-cli: "npm:^6.26.1"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
     child_process: "npm:^1.0.2"
     es6-promise: "npm:4.2.8"
     eslint: "npm:^9.21.0"
@@ -2598,7 +2598,7 @@ __metadata:
   resolution: "@orchardcore/setup@workspace:src/OrchardCore.Modules/OrchardCore.Setup/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
     jquery: "npm:3.7.1"
   languageName: unknown
   linkType: soft
@@ -2608,7 +2608,7 @@ __metadata:
   resolution: "@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
   languageName: unknown
   linkType: soft
 
@@ -2639,7 +2639,7 @@ __metadata:
     "@popperjs/core": "npm:2.11.8"
     "@types/jquery": "npm:3.5.32"
     "@types/js-cookie": "npm:^3.0.6"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
     bootstrap-select: "npm:1.14.0-beta3"
     jquery: "npm:3.7.1"
     js-cookie: "npm:^3.0.5"
@@ -2679,7 +2679,7 @@ __metadata:
   resolution: "@orchardcore/themes@workspace:src/OrchardCore.Modules/OrchardCore.Themes/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
   languageName: unknown
   linkType: soft
 
@@ -2688,7 +2688,7 @@ __metadata:
   resolution: "@orchardcore/thetheme@workspace:src/OrchardCore.Themes/TheTheme/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
   languageName: unknown
   linkType: soft
 
@@ -2719,7 +2719,7 @@ __metadata:
     "@popperjs/core": "npm:2.11.8"
     "@types/bootstrap": "npm:5.2.7"
     "@types/jquery": "npm:3.5.5"
-    bootstrap: "npm:5.3.7"
+    bootstrap: "npm:5.3.8"
     jsplumb: "npm:2.15.6"
   languageName: unknown
   linkType: soft
@@ -6238,21 +6238,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:5.2.3":
-  version: 5.2.3
-  resolution: "bootstrap@npm:5.2.3"
+"bootstrap@npm:5.3.8":
+  version: 5.3.8
+  resolution: "bootstrap@npm:5.3.8"
   peerDependencies:
     "@popperjs/core": ^2.11.6
   checksum: 10/b986846817ddf9c7e16643db26fe9e61487c5138838c79ae71aa4ae2bda77ef59a648d37c2fc438d24258ecf67fb56b89ac774e04a40d104e2249ec44d3d1c0c
   languageName: node
   linkType: hard
 
-"bootstrap@npm:5.3.7":
-  version: 5.3.7
-  resolution: "bootstrap@npm:5.3.7"
   peerDependencies:
     "@popperjs/core": ^2.11.8
-  checksum: 10/f88bbe12303ca5af11c0616f169ccb08edf456fd48185ffacae487520eaff23de9b7774ccc27edf2fdd0b0f65e316039a757590efe1c360ca9af5f4e52b9bf95
+  checksum: 10/ca36e1816940ee424b91f3a534e7a359c1f180da00e92c650b92a9c2621a1ca24ee71a0886666675718b58527f9193cd0ead934da7a92108224013fa07bec2d2
   languageName: node
   linkType: hard
 

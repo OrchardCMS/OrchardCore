@@ -1,6 +1,5 @@
 using System.IO.Hashing;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentPreview;
 using OrchardCore.FileStorage;
@@ -16,18 +15,15 @@ public class AttachedMediaFieldFileService
     private readonly IMediaFileStore _fileStore;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
-    private readonly ILogger _logger;
 
     public AttachedMediaFieldFileService(
         IMediaFileStore fileStore,
         IHttpContextAccessor httpContextAccessor,
-        IUserAssetFolderNameProvider userAssetFolderNameProvider,
-        ILogger<AttachedMediaFieldFileService> logger)
+        IUserAssetFolderNameProvider userAssetFolderNameProvider)
     {
         _fileStore = fileStore;
         _httpContextAccessor = httpContextAccessor;
         _userAssetFolderNameProvider = userAssetFolderNameProvider;
-        _logger = logger;
 
         MediaFieldsFolder = "mediafields";
         MediaFieldsTempSubFolder = _fileStore.Combine(MediaFieldsFolder, "temp");
@@ -91,14 +87,20 @@ public class AttachedMediaFieldFileService
     // Newly added files
     private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
     {
-        foreach (var item in items.Where(i => !i.IsRemoved && !string.IsNullOrEmpty(i.Path)))
+        var exceptions = new List<Exception>();
+        // Copy to a list to allow removing files from the original items argument.
+        var itemToParse = items.Where(i => !i.IsRemoved && !string.IsNullOrEmpty(i.Path)).ToList();
+        foreach (var item in itemToParse)
         {
             var fileInfo = await _fileStore.GetFileInfoAsync(item.Path);
 
             if (fileInfo == null)
             {
-                _logger.LogError("A file with the path '{Path}' does not exist.", item.Path);
-                return;
+                // Use the AttachedFileName property, as it contains the original file name and may be more familiar to the user.
+                exceptions.Add(new FileNotFoundException($"A file with the path '{item.Path}' does not exist.", item.AttachedFileName));
+                // Remove the item to prevent users from seeing the not-found files in the media field editor.
+                items.Remove(item);
+                continue;
             }
 
             var targetDir = GetContentItemFolder(contentItem);
@@ -111,7 +113,7 @@ public class AttachedMediaFieldFileService
             // because the content item is different on each form submit . We need to remove that empty folder.
             var previousDirPath = fileInfo.DirectoryPath;
 
-            // fileName is a hash of the file. We preserve disk space by reusing the file.
+            // finalFileName is a hash of the file. We preserve disk space by reusing the file.
             if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
             {
                 await _fileStore.MoveFileAsync(item.Path, finalFilePath);
@@ -120,6 +122,11 @@ public class AttachedMediaFieldFileService
             item.Path = finalFilePath;
 
             await DeleteDirIfEmptyAsync(previousDirPath);
+        }
+
+        if (exceptions.Count > 0)
+        {
+            throw new AggregateException("Some files could not be processed.", exceptions);
         }
     }
 

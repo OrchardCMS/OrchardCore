@@ -67,8 +67,8 @@ else
 </form>
 
 
-<script asp-name="edit-template" at="Foot" depends-on="liquid-intellisense">
-    $(document).ready(function () {
+<script asp-name="edit-template" at="Foot" depends-on="liquid-intellisense monaco">
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
             var settings = {
                 automaticLayout: true,
