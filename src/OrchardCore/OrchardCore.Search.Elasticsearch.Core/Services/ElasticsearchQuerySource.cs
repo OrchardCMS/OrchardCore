@@ -61,9 +61,9 @@ public sealed class ElasticsearchQuerySource : IQuerySource
             return elasticQueryResults;
         }
 
-        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync(metadata.Index, ElasticsearchConstants.ProviderName);
+        var index = await _indexProfileStore.FindByNameAsync(metadata.Index);
 
-        if (index is null)
+        if (index is null || index.ProviderName != ElasticsearchConstants.ProviderName)
         {
             return elasticQueryResults;
         }
