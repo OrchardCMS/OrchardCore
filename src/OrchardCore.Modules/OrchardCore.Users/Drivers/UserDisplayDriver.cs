@@ -35,10 +35,10 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
     public override Task<IDisplayResult> DisplayAsync(User user, BuildDisplayContext context)
     {
         return CombineAsync(
-            Initialize<SummaryAdminUserViewModel>("UserFields", model => model.User = user).Location("SummaryAdmin", "Header:1"),
-            Initialize<SummaryAdminUserViewModel>("UserInfo", model => model.User = user).Location("DetailAdmin", "Content:5"),
-            Initialize<SummaryAdminUserViewModel>("UserButtons", model => model.User = user).Location("SummaryAdmin", "Actions:1"),
-            Initialize<SummaryAdminUserViewModel>("UserActionsMenu", model => model.User = user).Location("SummaryAdmin", "ActionsMenu:5")
+            Initialize<SummaryAdminUserViewModel>("UserFields", model => model.User = user).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Header:1"),
+            Initialize<SummaryAdminUserViewModel>("UserInfo", model => model.User = user).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:5"),
+            Initialize<SummaryAdminUserViewModel>("UserButtons", model => model.User = user).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:1"),
+            Initialize<SummaryAdminUserViewModel>("UserActionsMenu", model => model.User = user).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:5")
         );
     }
 
