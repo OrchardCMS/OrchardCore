@@ -8,17 +8,17 @@ namespace OrchardCore.ContentTypes.Services;
 public class StereotypeService : IStereotypeService
 {
     private readonly IEnumerable<IStereotypesProvider> _providers;
-    private readonly IContentDefinitionViewModelService _contentDefinitionAppService;
+    private readonly IContentDefinitionViewModelService _contentDefinitionViewModelService;
     private readonly ILogger<StereotypeService> _logger;
 
     public StereotypeService(
         IEnumerable<IStereotypesProvider> providers,
         ILogger<StereotypeService> logger,
-        IContentDefinitionViewModelService contentDefinitionAppService)
+        IContentDefinitionViewModelService contentDefinitionViewModelService)
     {
         _providers = providers;
         _logger = logger;
-        _contentDefinitionAppService = contentDefinitionAppService;
+        _contentDefinitionViewModelService = contentDefinitionViewModelService;
     }
 
     public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
@@ -28,7 +28,7 @@ public class StereotypeService : IStereotypeService
         var stereotypes = providerStereotypes.Select(providerStereotype => providerStereotype.Stereotype)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var contentType in await _contentDefinitionAppService.GetTypesAsync())
+        foreach (var contentType in await _contentDefinitionViewModelService.GetTypesAsync())
         {
             if (!contentType.TypeDefinition.TryGetStereotype(out var stereotype) ||
                 stereotypes.Contains(stereotype))

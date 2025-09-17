@@ -5,16 +5,16 @@ namespace OrchardCore.DataLocalization.Services;
 
 public class ContentTypeDataLocalizationProvider : ILocalizationDataProvider
 {
-    private readonly IContentDefinitionViewModelService _contentDefinitionAppService;
+    private readonly IContentDefinitionViewModelService _contentDefinitionViewModelService;
 
     private static readonly string _contentTypesContext = "Content Types";
 
-    public ContentTypeDataLocalizationProvider(IContentDefinitionViewModelService contentDefinitionAppService)
+    public ContentTypeDataLocalizationProvider(IContentDefinitionViewModelService contentDefinitionViewModelService)
     {
-        _contentDefinitionAppService = contentDefinitionAppService;
+        _contentDefinitionViewModelService = contentDefinitionViewModelService;
     }
 
     public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
-        => (await _contentDefinitionAppService.GetTypesAsync())
+        => (await _contentDefinitionViewModelService.GetTypesAsync())
             .Select(t => new DataLocalizedString(_contentTypesContext, t.DisplayName, string.Empty));
 }

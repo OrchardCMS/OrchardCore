@@ -21,7 +21,7 @@ namespace OrchardCore.ContentTypes.Controllers;
 public sealed class AdminController : Controller
 {
     private readonly IContentDefinitionService _contentDefinitionService;
-    private readonly IContentDefinitionViewModelService _contentDefinitionAppService;
+    private readonly IContentDefinitionViewModelService _contentDefinitionViewModelService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDocumentStore _documentStore;
@@ -35,7 +35,7 @@ public sealed class AdminController : Controller
     public AdminController(
         IContentDefinitionDisplayManager contentDefinitionDisplayManager,
         IContentDefinitionService contentDefinitionService,
-        IContentDefinitionViewModelService contentDefinitionAppService,
+        IContentDefinitionViewModelService contentDefinitionViewModelService,
         IContentDefinitionManager contentDefinitionManager,
         IAuthorizationService authorizationService,
         IDocumentStore documentStore,
@@ -54,7 +54,7 @@ public sealed class AdminController : Controller
 
         H = htmlLocalizer;
         S = stringLocalizer;
-        _contentDefinitionAppService = contentDefinitionAppService;
+        _contentDefinitionViewModelService = contentDefinitionViewModelService;
     }
 
     public Task<ActionResult> Index()
@@ -74,7 +74,7 @@ public sealed class AdminController : Controller
 
         return View("List", new ListContentTypesViewModel
         {
-            Types = await _contentDefinitionAppService.GetTypesAsync(),
+            Types = await _contentDefinitionViewModelService.GetTypesAsync(),
         });
     }
 
@@ -104,7 +104,7 @@ public sealed class AdminController : Controller
         {
             ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
         }
-        var types = await _contentDefinitionAppService.LoadTypesAsync();
+        var types = await _contentDefinitionViewModelService.LoadTypesAsync();
 
         if (types.Any(t => string.Equals(t.DisplayName.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
         {
@@ -159,7 +159,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var typeViewModel = await _contentDefinitionAppService.GetTypeAsync(id);
+        var typeViewModel = await _contentDefinitionViewModelService.GetTypeAsync(id);
 
         if (typeViewModel == null)
         {
@@ -225,7 +225,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var typeViewModel = await _contentDefinitionAppService.LoadTypeAsync(id);
+        var typeViewModel = await _contentDefinitionViewModelService.LoadTypeAsync(id);
 
         if (typeViewModel == null)
         {
@@ -247,7 +247,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var typeViewModel = await _contentDefinitionAppService.GetTypeAsync(id);
+        var typeViewModel = await _contentDefinitionViewModelService.GetTypeAsync(id);
 
         if (typeViewModel == null)
         {
@@ -259,7 +259,7 @@ public sealed class AdminController : Controller
         var viewModel = new AddPartsViewModel
         {
             Type = typeViewModel,
-            PartSelections = (await _contentDefinitionAppService.GetPartsAsync(metadataPartsOnly: false))
+            PartSelections = (await _contentDefinitionViewModelService.GetPartsAsync(metadataPartsOnly: false))
                 .Where(cpd => !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) && cpd.PartDefinition != null && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable)
                 .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                 .ToList(),
@@ -276,14 +276,14 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var typeViewModel = await _contentDefinitionAppService.GetTypeAsync(id);
+        var typeViewModel = await _contentDefinitionViewModelService.GetTypeAsync(id);
 
         if (typeViewModel == null)
         {
             return NotFound();
         }
 
-        var reusableParts = (await _contentDefinitionAppService.GetPartsAsync(metadataPartsOnly: false))
+        var reusableParts = (await _contentDefinitionViewModelService.GetPartsAsync(metadataPartsOnly: false))
                 .Where(cpd => cpd.PartDefinition != null &&
                     cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
                     cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable);
@@ -308,7 +308,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var typeViewModel = await _contentDefinitionAppService.LoadTypeAsync(id);
+        var typeViewModel = await _contentDefinitionViewModelService.LoadTypeAsync(id);
 
         if (typeViewModel == null)
         {
@@ -345,7 +345,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var typeViewModel = await _contentDefinitionAppService.LoadTypeAsync(id);
+        var typeViewModel = await _contentDefinitionViewModelService.LoadTypeAsync(id);
 
         if (typeViewModel == null)
         {
@@ -420,7 +420,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var typeViewModel = await _contentDefinitionAppService.LoadTypeAsync(id);
+        var typeViewModel = await _contentDefinitionViewModelService.LoadTypeAsync(id);
 
         if (typeViewModel == null)
         {
@@ -456,7 +456,7 @@ public sealed class AdminController : Controller
         return View(new ListContentPartsViewModel
         {
             // Only user-defined parts (not code as they are not configurable).
-            Parts = await _contentDefinitionAppService.GetPartsAsync(metadataPartsOnly: true),
+            Parts = await _contentDefinitionViewModelService.GetPartsAsync(metadataPartsOnly: true),
         });
     }
 
@@ -486,7 +486,7 @@ public sealed class AdminController : Controller
             ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
         }
 
-        if ((await _contentDefinitionAppService.LoadPartsAsync(false)).Any(p => string.Equals(p.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
+        if ((await _contentDefinitionViewModelService.LoadPartsAsync(false)).Any(p => string.Equals(p.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
         {
             ModelState.AddModelError("Name", S["A part with the same Technical Name already exists."]);
         }
@@ -511,7 +511,7 @@ public sealed class AdminController : Controller
             return View(viewModel);
         }
 
-        var partViewModel = await _contentDefinitionAppService.AddPartAsync(viewModel);
+        var partViewModel = await _contentDefinitionViewModelService.AddPartAsync(viewModel);
 
         if (partViewModel == null)
         {
@@ -589,7 +589,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var partViewModel = await _contentDefinitionAppService.LoadPartAsync(id);
+        var partViewModel = await _contentDefinitionViewModelService.LoadPartAsync(id);
 
         if (partViewModel == null)
         {
@@ -620,7 +620,7 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(List));
         }
 
-        var partViewModel = await _contentDefinitionAppService.LoadPartAsync(id);
+        var partViewModel = await _contentDefinitionViewModelService.LoadPartAsync(id);
 
         if (partViewModel == null)
         {
@@ -645,7 +645,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var partViewModel = await _contentDefinitionAppService.LoadPartAsync(id);
+        var partViewModel = await _contentDefinitionViewModelService.LoadPartAsync(id);
 
         if (partViewModel == null)
         {
@@ -727,7 +727,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var partViewModel = await _contentDefinitionAppService.GetPartAsync(id);
+        var partViewModel = await _contentDefinitionViewModelService.GetPartAsync(id);
 
         if (partViewModel == null)
         {
@@ -770,7 +770,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var partViewModel = await _contentDefinitionAppService.LoadPartAsync(id);
+        var partViewModel = await _contentDefinitionViewModelService.LoadPartAsync(id);
 
         if (partViewModel == null)
         {
@@ -796,7 +796,7 @@ public sealed class AdminController : Controller
                 ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
             }
 
-            if ((await _contentDefinitionAppService.LoadPartAsync(partViewModel.Name)).PartDefinition.Fields.Any(t => t.Name != viewModel.Name && string.Equals(t.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if ((await _contentDefinitionViewModelService.LoadPartAsync(partViewModel.Name)).PartDefinition.Fields.Any(t => t.Name != viewModel.Name && string.Equals(t.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("DisplayName", S["A field with the same Display Name already exists."]);
             }
@@ -814,7 +814,7 @@ public sealed class AdminController : Controller
             await _notifier.InformationAsync(H["Display name changed to {0}.", viewModel.DisplayName]);
         }
 
-        await _contentDefinitionAppService.AlterFieldAsync(partViewModel, viewModel);
+        await _contentDefinitionViewModelService.AlterFieldAsync(partViewModel, viewModel);
 
         // Refresh the local field variable in case it has been altered
         field = (await _contentDefinitionManager.LoadPartDefinitionAsync(id)).Fields.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
@@ -840,7 +840,7 @@ public sealed class AdminController : Controller
         else
         {
             // Redirect to the type editor if a type exists with this name
-            var typeViewModel = await _contentDefinitionAppService.LoadTypeAsync(id);
+            var typeViewModel = await _contentDefinitionViewModelService.LoadTypeAsync(id);
             if (typeViewModel != null)
             {
                 return RedirectToAction(nameof(Edit), new { id });
@@ -858,7 +858,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var partViewModel = await _contentDefinitionAppService.LoadPartAsync(id);
+        var partViewModel = await _contentDefinitionViewModelService.LoadPartAsync(id);
 
         if (partViewModel == null)
         {
@@ -876,7 +876,7 @@ public sealed class AdminController : Controller
 
         await _notifier.SuccessAsync(H["The \"{0}\" field has been removed.", field.DisplayName()]);
 
-        if (await _contentDefinitionAppService.LoadTypeAsync(id) != null)
+        if (await _contentDefinitionViewModelService.LoadTypeAsync(id) != null)
         {
             return RedirectToAction(nameof(Edit), new { id });
         }
@@ -980,7 +980,7 @@ public sealed class AdminController : Controller
             }
         }
 
-        await _contentDefinitionAppService.AlterTypePartAsync(viewModel);
+        await _contentDefinitionViewModelService.AlterTypePartAsync(viewModel);
 
         // Refresh the local part variable in case it has been altered
         part = (await _contentDefinitionManager.LoadTypeDefinitionAsync(id)).Parts.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
