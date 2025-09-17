@@ -1,11 +1,23 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
 @using OrchardCore.Mvc.Utilities
 @{
+    const string DefaultColor = "#000000";
+
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
+}
+
+@if (settings.Type == FieldBehaviorType.GeneratedHidden)
+{
+    <input type="hidden" asp-for="Text" />
+
+    return;
+}
+
+@{
 
     if (string.IsNullOrEmpty(Model.Text))
     {
-        Model.Text = "#000000"; // Default to black if no color is set
+        Model.Text = DefaultColor; // Default to black if no color is set
     }
 
     var alpha = "255"; // Default to fully opaque
@@ -13,7 +25,7 @@
 
     if (color.Length == 9) // #RRGGBBAA
     {
-        if (int.TryParse(color.Substring(7, 2), System.Globalization.NumberStyles.HexNumber, null, out var a))
+        if (int.TryParse(color.AsSpan(7, 2), System.Globalization.NumberStyles.HexNumber, null, out var a))
         {
             alpha = a.ToString();
         }
@@ -22,7 +34,7 @@
     }
     else if (color.Length == 5) // #RGBA
     {
-        if (int.TryParse(color.Substring(4, 1) + color.Substring(4, 1), System.Globalization.NumberStyles.HexNumber, null, out var a))
+        if (int.TryParse(stackalloc char[2] { color[4], color[4] }, System.Globalization.NumberStyles.HexNumber, null, out var a))
         {
             alpha = a.ToString();
         }
@@ -32,19 +44,12 @@
 
     if (color.Length == 4) // #RGB
     {
-        color = "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3]; // Expand to #RRGGBB
+        color = new string(stackalloc char[7] { '#', color[1], color[1], color[2], color[2], color[3], color[3] }); // Expand to #RRGGBB
     }
     else if (color.Length != 7) // #RRGGBB
     {
-        color = "#000000"; // Fallback to black if format is unexpected
+        color = DefaultColor; // Fallback to black if format is unexpected
     }
-}
-
-@if (settings.Type == FieldBehaviorType.GeneratedHidden)
-{
-    <input type="hidden" asp-for="Text" />
-
-    return;
 }
 
 <style at="Head">
@@ -82,9 +87,11 @@
             visibility: visible;
         }
 </style>
+
 @{
     var fieldId = Html.IdFor(x => x.Text);
 }
+
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@(fieldId)_FieldWrapper">
     <label for="@(fieldId)_color" class="@Orchard.GetLabelClasses(inputRequired: settings.Required) d-block">@Model.PartFieldDefinition.DisplayName()</label>
     <div id="@(fieldId)_color_wrapper" class="color_wrapper">
