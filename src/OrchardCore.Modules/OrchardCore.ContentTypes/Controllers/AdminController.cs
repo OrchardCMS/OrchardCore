@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -596,7 +597,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        await _contentDefinitionService.RemovePartAsync(id);
+        await _contentDefinitionService.RemovePartDefinitionAsync(id);
 
         await _notifier.InformationAsync(H["\"{0}\" has been removed.", partViewModel.DisplayName]);
 

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -9,7 +8,7 @@ using OrchardCore.ContentTypes.Events;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
-namespace OrchardCore.ContentTypes.Services;
+namespace OrchardCore.ContentManagement;
 
 public class ContentDefinitionService : IContentDefinitionService
 {
@@ -123,7 +122,7 @@ public class ContentDefinitionService : IContentDefinitionService
             // Delete the part if it's its own part.
             if (partDefinition.PartDefinition.Name == name)
             {
-                await RemovePartAsync(name);
+                await RemovePartDefinitionAsync(name);
             }
         }
 
@@ -202,7 +201,36 @@ public class ContentDefinitionService : IContentDefinitionService
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
     }
 
-    public async Task RemovePartAsync(string name)
+    public async Task<ContentPartDefinition> CreatePartDefinitionAsync(string name)
+    {
+        if (await _contentDefinitionManager.LoadPartDefinitionAsync(name) is not null)
+        {
+            throw new InvalidOperationException($"Part named '{name}' already exists.");
+        }
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            await _contentDefinitionManager.AlterPartDefinitionAsync(name, builder => builder.Attachable());
+            var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name);
+
+            var context = new ContentPartCreatedContext
+            {
+                ContentPartDefinition = partDefinition,
+            };
+
+            _contentDefinitionEventHandlers.Invoke(
+                (handler, ctx) => handler.ContentPartCreated(ctx),
+                context,
+                _logger
+            );
+
+            return partDefinition; // ✅ Return domain object, not ViewModel
+        }
+
+        return null;
+    }
+
+    public async Task RemovePartDefinitionAsync(string name)
     {
         var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name);
 

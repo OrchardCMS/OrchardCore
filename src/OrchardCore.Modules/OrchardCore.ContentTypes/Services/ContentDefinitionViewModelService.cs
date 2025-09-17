@@ -14,6 +14,7 @@ public class ContentDefinitionViewModelService : IContentDefinitionViewModelServ
 {
     private readonly IEnumerable<Type> _contentPartTypes;
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IContentDefinitionService _contentDefinitionService;
     private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
     protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
@@ -22,40 +23,32 @@ public class ContentDefinitionViewModelService : IContentDefinitionViewModelServ
         , IEnumerable<Type> contentPartTypes
         , IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers
         , IStringLocalizer s
-        , ILogger<ContentDefinitionViewModelService> logger)
+        , ILogger<ContentDefinitionViewModelService> logger,
+        IContentDefinitionService contentDefinitionService)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _contentPartTypes = contentPartTypes;
         _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
         S = s;
         _logger = logger;
+        _contentDefinitionService = contentDefinitionService;
     }
 
     public async Task<EditPartViewModel> AddPartAsync(CreatePartViewModel partViewModel)
     {
-        var name = partViewModel.Name;
+        var partDefinition = await _contentDefinitionService.CreatePartDefinitionAsync(partViewModel.Name);
 
-        if (await _contentDefinitionManager.LoadPartDefinitionAsync(name) is not null)
+        if (partDefinition == null)
         {
-            throw new Exception(S["Cannot add part named '{0}'. It already exists.", name]);
+            return null;
         }
 
-        if (!string.IsNullOrEmpty(name))
-        {
-            await _contentDefinitionManager.AlterPartDefinitionAsync(name, builder => builder.Attachable());
-            var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name);
+        return new EditPartViewModel(partDefinition);
+    }
 
-            var context = new ContentPartCreatedContext
-            {
-                ContentPartDefinition = partDefinition,
-            };
-
-            _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
-
-            return new EditPartViewModel(partDefinition);
-        }
-
-        return null;
+    public async Task RemovePartAsync(string name)
+    {
+        await _contentDefinitionService.RemovePartDefinitionAsync(name);
     }
 
     public async Task AlterFieldAsync(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)

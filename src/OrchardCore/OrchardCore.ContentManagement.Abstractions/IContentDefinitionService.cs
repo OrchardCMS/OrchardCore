@@ -1,6 +1,6 @@
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentTypes.Services;
+namespace OrchardCore.ContentManagement;
 
 public interface IContentDefinitionService
 {
@@ -18,7 +18,9 @@ public interface IContentDefinitionService
 
     Task<string> GenerateFieldNameFromDisplayNameAsync(string partName, string displayName);
 
-    Task RemovePartAsync(string name);
+    Task<ContentPartDefinition> CreatePartDefinitionAsync(string name);
+
+    Task RemovePartDefinitionAsync(string name);
 
     Task<IEnumerable<Type>> GetFieldsAsync();
 

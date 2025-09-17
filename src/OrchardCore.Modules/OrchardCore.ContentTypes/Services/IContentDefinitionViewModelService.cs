@@ -23,6 +23,8 @@ public interface IContentDefinitionViewModelService
 
     Task<EditPartViewModel> AddPartAsync(CreatePartViewModel partViewModel);
 
+    Task RemovePartAsync(string name);
+
     Task AlterFieldAsync(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel);
 
     Task AlterTypePartAsync(EditTypePartViewModel partViewModel);
