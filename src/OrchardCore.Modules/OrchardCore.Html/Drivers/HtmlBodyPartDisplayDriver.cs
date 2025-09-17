@@ -41,8 +41,8 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
     public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart, BuildPartDisplayContext context)
     {
         return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context))
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+            .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
     public override IDisplayResult Edit(HtmlBodyPart HtmlBodyPart, BuildPartEditorContext context)

@@ -45,8 +45,8 @@ public sealed class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
         })
-        .Location("Detail", "Content")
-        .Location("Summary", "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
     public override IDisplayResult Edit(LinkField field, BuildFieldEditorContext context)

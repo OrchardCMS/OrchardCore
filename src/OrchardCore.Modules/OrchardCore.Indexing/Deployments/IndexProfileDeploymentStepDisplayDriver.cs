@@ -27,7 +27,7 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
     {
         return
             CombineAsync(
-                View("IndexProfileDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("IndexProfileDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("IndexProfileDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

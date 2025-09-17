@@ -45,10 +45,10 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
     {
         return CombineAsync(
             Initialize<SummaryAdminUserViewModel>("UserRolesMeta", model => model.User = user)
-                .Location("SummaryAdmin", "Description"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Description"),
 
             Initialize<SummaryAdminUserViewModel>("UserRoles", model => model.User = user)
-                .Location("DetailAdmin", "Content:10")
+                .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10")
         );
     }
 
