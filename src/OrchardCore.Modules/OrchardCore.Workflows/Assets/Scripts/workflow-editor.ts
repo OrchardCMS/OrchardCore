@@ -124,7 +124,6 @@ class WorkflowEditor extends WorkflowCanvas {
                         endpoint: ["Blank", { radius: 8 }],
                     });
 
-
                     // Add source endpoints.
                     for (let outcome of activity.outcomes) {
                         const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
