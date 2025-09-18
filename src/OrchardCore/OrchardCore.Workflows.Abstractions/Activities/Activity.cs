@@ -14,7 +14,15 @@ public abstract class Activity : Entity, IActivity
     public abstract LocalizedString Category { get; }
     public virtual bool HasEditor => true;
 
-    public abstract IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+    public virtual ValueTask<IEnumerable<Outcome>> GetPossibleOutcomesAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        return ValueTask.FromResult(GetPossibleOutcomes(workflowContext, activityContext));
+    }
+
+    public virtual IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        return [];
+    }
 
     public virtual Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
