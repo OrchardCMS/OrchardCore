@@ -116,30 +116,31 @@ public class ShapeTemplateBindingStrategy : ShapeTableProvider, IShapeTableHarve
         {
             var hit = iter;
 
-            // The template files of an active module need to be associated to one of its enabled feature.
-            var feature = hit.extensionDescriptor.Features.First(f => enabledFeatureIds.Contains(f.Id));
-
-            if (_logger.IsEnabled(LogLevel.Debug))
+            // The template files of an active module need to be associated to all of its enabled features.
+            foreach (var feature in hit.extensionDescriptor.Features.Where(f => enabledFeatureIds.Contains(f.Id)))
             {
-                _logger.LogDebug("Binding '{TemplatePath}' as shape '{ShapeType}' for feature '{FeatureName}'",
-                    hit.shapeContext.harvestShapeInfo.RelativePath,
-                    iter.shapeContext.harvestShapeHit.ShapeType,
-                    feature.Id);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Binding '{TemplatePath}' as shape '{ShapeType}' for feature '{FeatureName}'",
+                        hit.shapeContext.harvestShapeInfo.RelativePath,
+                        iter.shapeContext.harvestShapeHit.ShapeType,
+                        feature.Id);
+                }
+
+                var viewEngineType = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension].GetType();
+
+                builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
+                    .From(feature)
+                    .BoundAs(
+                        hit.shapeContext.harvestShapeInfo.RelativePath, displayContext =>
+                        {
+                            var viewEngine = displayContext.ServiceProvider
+                                .GetServices<IShapeTemplateViewEngine>()
+                                .FirstOrDefault(e => e.GetType() == viewEngineType);
+
+                            return viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext);
+                        });
             }
-
-            var viewEngineType = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension].GetType();
-
-            builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
-                .From(feature)
-                .BoundAs(
-                    hit.shapeContext.harvestShapeInfo.RelativePath, displayContext =>
-                    {
-                        var viewEngine = displayContext.ServiceProvider
-                            .GetServices<IShapeTemplateViewEngine>()
-                            .FirstOrDefault(e => e.GetType() == viewEngineType);
-
-                        return viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext);
-                    });
         }
 
         _logger.LogInformation("Done discovering shapes");
