@@ -106,7 +106,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
             part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
                 new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
 
-            part.Alias = part.Alias.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            part.Alias = part.Alias.ReplaceLineEndings(string.Empty);
 
             if (part.Alias?.Length > AliasPart.MaxAliasLength)
             {

@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Text.Json.Nodes;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Analysis;
-using Elastic.Clients.Elasticsearch.Fluent;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Transport;
@@ -318,18 +317,9 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         if (await ExistsAsync(context.IndexProfile.IndexFullName))
         {
-            var searchRequest = new SearchRequest(context.IndexProfile.IndexFullName)
-            {
-                Query = context.Query,
-                From = context.From,
-                Size = context.Size,
-                Sort = context.Sorts ?? [],
-                Source = context.Source,
-                Fields = context.Fields ?? [],
-                Highlight = context.Highlight,
-            };
+            context.SearchRequest.Indices = context.IndexProfile.IndexFullName;
 
-            var searchResponse = await _elasticClient.SearchAsync<JsonObject>(searchRequest);
+            var searchResponse = await _elasticClient.SearchAsync<JsonObject>(context.SearchRequest);
 
             if (!searchResponse.IsValidResponse)
             {
@@ -502,6 +492,8 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     private static void ProcessSuccessfulSearchResponse(IndexProfile indexProfile, ElasticsearchResult elasticTopDocs, SearchResponse<JsonObject> searchResponse)
     {
         elasticTopDocs.Count = searchResponse.Hits.Count;
+        elasticTopDocs.TotalCount = searchResponse.HitsMetadata?.Total?.Value2 ?? 0;
+        elasticTopDocs.SearchResponse = searchResponse;
 
         var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
         var documents = searchResponse.Documents.GetEnumerator();

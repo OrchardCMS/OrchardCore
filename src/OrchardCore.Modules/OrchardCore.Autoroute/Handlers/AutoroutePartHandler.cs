@@ -405,7 +405,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                     new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
             }
 
-            part.Path = part.Path.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            part.Path = part.Path.ReplaceLineEndings(string.Empty);
 
             if (part.Path?.Length > AutoroutePart.MaxPathLength)
             {

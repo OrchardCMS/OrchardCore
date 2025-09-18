@@ -63,8 +63,8 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
                 });
 
         })
-        .Location("Detail", "Content")
-        .Location("Summary", "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
     public override IDisplayResult Edit(HtmlField field, BuildFieldEditorContext context)

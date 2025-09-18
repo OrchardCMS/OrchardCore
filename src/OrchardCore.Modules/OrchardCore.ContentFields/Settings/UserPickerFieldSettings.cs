@@ -1,14 +1,14 @@
 using System.ComponentModel;
+using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentFields.Settings;
 
-public class UserPickerFieldSettings
+public class UserPickerFieldSettings : FieldSettings
 {
-    public string Hint { get; set; }
-    public bool Required { get; set; }
     public bool Multiple { get; set; }
 
     [DefaultValue(true)]
     public bool DisplayAllUsers { get; set; } = true;
+
     public string[] DisplayedRoles { get; set; } = [];
 }

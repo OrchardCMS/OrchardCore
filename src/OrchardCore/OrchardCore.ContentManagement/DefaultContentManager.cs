@@ -311,7 +311,7 @@ public class DefaultContentManager : IContentManager
             }
         }
 
-        return finalItems;
+        return finalItems.OrderBy(contentItem => Array.IndexOf(ids, contentItem.ContentItemId));
     }
 
     public async Task<ContentItem> LoadAsync(ContentItem contentItem)

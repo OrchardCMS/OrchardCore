@@ -52,7 +52,7 @@
 </div>
 
 <div class="mb-3">
-    <label>@T["Format"]</label>
+    <label class="form-label">@T["Format"]</label>
     <select class="form-select" asp-for="BodyFormat">
         <option selected="@(Model.BodyFormat == MailMessageBodyFormat.All)" value="@MailMessageBodyFormat.All">@T["All"]</option>
         <option selected="@(Model.BodyFormat == MailMessageBodyFormat.Text)" value="@MailMessageBodyFormat.Text">@T["Text"]</option>
@@ -62,13 +62,13 @@
 </div>
 
 <div class="mb-3" id="textBodyDiv">
-    <label asp-for="TextBody">@T["Text Body"]</label>
+    <label asp-for="TextBody" class="form-label">@T["Text Body"]</label>
     <textarea asp-for="TextBody" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The plain text body of the email message. With Liquid support."]</span>
 </div>
 
 <div class="mb-3" id="htmlBodyDiv">
-    <label asp-for="HtmlBody">@T["HTML Body"]</label>
+    <label asp-for="HtmlBody" class="form-label">@T["HTML Body"]</label>
     <textarea asp-for="HtmlBody" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The HTML body of the email message. With Liquid support."]</span>
 </div>

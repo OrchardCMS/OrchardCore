@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.Encodings.Web;
 using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Core.Search;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Fluid.Values;
 using Microsoft.Extensions.Logging;
@@ -19,7 +18,7 @@ namespace OrchardCore.Search.Elasticsearch.Services;
 public class ElasticsearchService : ISearchService
 {
     private readonly ElasticsearchIndexManager _elasticIndexManager;
-    private readonly ElasticsearchClient _elasticClient;
+    private readonly ElasticsearchClient _elasticsearchClient;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -28,7 +27,7 @@ public class ElasticsearchService : ISearchService
 
     public ElasticsearchService(
         ElasticsearchIndexManager elasticIndexManager,
-        ElasticsearchClient elasticClient,
+        ElasticsearchClient elasticsearchClient,
         JavaScriptEncoder javaScriptEncoder,
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         ILiquidTemplateManager liquidTemplateManager,
@@ -37,7 +36,7 @@ public class ElasticsearchService : ISearchService
         )
     {
         _elasticIndexManager = elasticIndexManager;
-        _elasticClient = elasticClient;
+        _elasticsearchClient = elasticsearchClient;
         _javaScriptEncoder = javaScriptEncoder;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
         _liquidTemplateManager = liquidTemplateManager;
@@ -84,12 +83,14 @@ public class ElasticsearchService : ISearchService
         try
         {
             var searchType = queryMetadata.GetSearchType();
-            Query query = null;
-            Highlight highlight = null;
-            var metadataIndex = index.As<ElasticsearchIndexMetadata>();
-            if (searchType == ElasticsearchConstants.CustomSearchType && !string.IsNullOrWhiteSpace(queryMetadata.DefaultQuery))
+
+            SearchRequest searchRequest;
+
+            if (searchType == ElasticsearchConstants.CustomSearchType)
             {
-                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(queryMetadata.DefaultQuery, _javaScriptEncoder,
+                var tokenizedContent = string.IsNullOrWhiteSpace(queryMetadata.DefaultQuery)
+                    ? "{}"
+                    : await _liquidTemplateManager.RenderStringAsync(queryMetadata.DefaultQuery, _javaScriptEncoder,
                     new Dictionary<string, FluidValue>()
                     {
                         ["term"] = new StringValue(term),
@@ -99,38 +100,62 @@ public class ElasticsearchService : ISearchService
                 {
                     using var stream = new MemoryStream(Encoding.UTF8.GetBytes(tokenizedContent));
 
-                    var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
-
-                    query = searchRequest.Query;
-                    highlight = searchRequest.Highlight;
+                    searchRequest = await _elasticsearchClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Incorrect Elasticsearch search query syntax provided in custom query.");
+
+                    var metadataIndex = index.As<ElasticsearchIndexMetadata>();
+
+                    searchRequest = new()
+                    {
+                        Query = new MultiMatchQuery
+                        {
+                            Fields = queryMetadata.DefaultSearchFields,
+                            Analyzer = metadataIndex.GetQueryAnalyzerName(),
+                            Query = term,
+                        },
+                    };
+                }
             }
             else if (searchType == ElasticsearchConstants.QueryStringSearchType)
             {
-                query = new QueryStringQuery
+                var metadataIndex = index.As<ElasticsearchIndexMetadata>();
+
+                searchRequest = new()
                 {
-                    Fields = queryMetadata.DefaultSearchFields,
-                    Analyzer = metadataIndex.GetQueryAnalyzerName(),
-                    Query = term,
+                    Query = new QueryStringQuery
+                    {
+                        Fields = queryMetadata.DefaultSearchFields,
+                        Analyzer = metadataIndex.GetQueryAnalyzerName(),
+                        Query = term,
+                    },
+                };
+            }
+            else
+            {
+                var metadataIndex = index.As<ElasticsearchIndexMetadata>();
+
+                searchRequest = new()
+                {
+                    Query = new MultiMatchQuery
+                    {
+                        Fields = queryMetadata.DefaultSearchFields,
+                        Analyzer = metadataIndex.GetQueryAnalyzerName(),
+                        Query = term,
+                    },
                 };
             }
 
-            query ??= new MultiMatchQuery
-            {
-                Fields = queryMetadata.DefaultSearchFields,
-                Analyzer = metadataIndex.GetQueryAnalyzerName(),
-                Query = term,
-            };
+            searchRequest.Indices = index.IndexFullName;
+            searchRequest.From = start;
+            searchRequest.Size = pageSize;
 
-            var searchContext = new ElasticsearchSearchContext(index, query)
-            {
-                From = start,
-                Size = pageSize,
-                Highlight = highlight,
-            };
+            var searchContext = new ElasticsearchSearchContext(index, searchRequest);
 
             await _elasticsQueryService.PopulateResultAsync(searchContext, result);
+
             result.Success = true;
         }
         catch (Exception e)
