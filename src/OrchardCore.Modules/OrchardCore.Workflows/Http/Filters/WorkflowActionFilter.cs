@@ -50,7 +50,7 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
                 if (workflowTypes.TryGetValue(long.Parse(entry.WorkflowId), out var workflowType))
                 {
                     var activity = workflowType.Activities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
-                    if (activity == null)
+                    if (activity is null)
                     {                        
                         continue;
                     }
