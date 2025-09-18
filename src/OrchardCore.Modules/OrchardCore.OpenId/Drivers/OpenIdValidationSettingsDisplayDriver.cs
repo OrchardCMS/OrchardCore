@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 
@@ -12,22 +9,15 @@ namespace OrchardCore.OpenId.Drivers;
 
 public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenIdValidationSettings>
 {
-    private readonly IShellHost _shellHost;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    internal readonly IStringLocalizer S;
-
     public OpenIdValidationSettingsDisplayDriver(
-        IShellHost shellHost,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService,
-        IStringLocalizer<OpenIdValidationSettingsDisplayDriver> stringLocalizer)
+        IAuthorizationService authorizationService)
     {
-        _shellHost = shellHost;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
