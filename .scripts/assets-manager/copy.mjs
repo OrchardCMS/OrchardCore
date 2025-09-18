@@ -52,9 +52,11 @@ glob(config.source).then((files) => {
 
     files.forEach(async (file) => {
         file = file.replace(/\\/g, "/");
+
         let relativePath;
         if (baseFolder) {
-            relativePath = file.replace(baseFolder, "");
+            var regex = new RegExp(baseFolder, "i");
+            relativePath = file.replace(regex, "");
         } else {
             relativePath = path.basename(file);
         }
