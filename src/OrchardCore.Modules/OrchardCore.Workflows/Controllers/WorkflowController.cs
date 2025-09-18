@@ -210,7 +210,7 @@ public sealed class WorkflowController : Controller
             workflowType.Id,
             workflowType.Name,
             workflowType.IsEnabled,
-            Activities = activitiesDataQuery.ToArray(),
+            Activities = activitiesDataQuery,
             workflowType.Transitions,
         };
 
