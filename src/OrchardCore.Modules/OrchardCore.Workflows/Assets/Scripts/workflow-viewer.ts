@@ -22,8 +22,7 @@ class WorkflowViewer extends WorkflowCanvas {
                 const outcome: Workflows.Outcome = connection.getParameters().outcome;
 
                 const label: any = connection.getOverlay('label');
-                label.useHtml = true;
-                label.setLabel(`<span title="${outcome.displayName}">${outcome.displayName}</span>`);
+                label.setLabel(outcome.displayName);
             });
 
             let activityElements = this.getActivityElements();
@@ -64,7 +63,7 @@ class WorkflowViewer extends WorkflowCanvas {
                     // Add source endpoints.
                     for (let outcome of activity.outcomes) {
                         const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
-                        plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: `<span title="${outcome.displayName}">${outcome.displayName}</span>`, cssClass: 'connection-label', useHtml: true }]] }, sourceEndpointOptions);
+                        plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
                     }
                 });
 

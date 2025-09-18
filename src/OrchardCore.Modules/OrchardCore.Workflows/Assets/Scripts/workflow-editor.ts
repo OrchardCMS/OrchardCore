@@ -124,14 +124,20 @@ class WorkflowEditor extends WorkflowCanvas {
                         endpoint: ["Blank", { radius: 8 }],
                     });
 
+
                     // Add source endpoints.
                     for (let outcome of activity.outcomes) {
                         const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
-                        plumber.addEndpoint(
+                        var endpoint = plumber.addEndpoint(
                             activityElement,
                             { connectorOverlays: [["Label", { label: outcome.displayName, cssClass: "connection-label" }]] },
                             sourceEndpointOptions,
                         );
+
+                        // Add Title for each dot.
+                        if (endpoint.canvas) {
+                            endpoint.canvas.setAttribute("title", outcome.displayName);
+                        }
                     }
                 });
 
