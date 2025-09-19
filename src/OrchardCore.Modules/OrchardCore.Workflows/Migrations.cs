@@ -14,6 +14,7 @@ public sealed class Migrations : DataMigration
     {
         _logger = logger;
     }
+
     public async Task<int> CreateAsync()
     {
         await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeIndex>(table => table
