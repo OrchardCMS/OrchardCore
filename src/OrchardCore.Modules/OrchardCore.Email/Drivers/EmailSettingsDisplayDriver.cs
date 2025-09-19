@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -16,7 +15,6 @@ namespace OrchardCore.Email.Drivers;
 
 public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly EmailOptions _emailOptions;
     private readonly IEmailProviderResolver _emailProviderResolver;
@@ -29,7 +27,6 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         => EmailSettings.GroupId;
 
     public EmailSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptions<EmailProviderOptions> emailProviders,
         IOptions<EmailOptions> emailOptions,
@@ -37,7 +34,6 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         IShellReleaseManager shellReleaseManager,
         IStringLocalizer<EmailSettingsDisplayDriver> stringLocalizer)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _emailOptions = emailOptions.Value;
         _emailProviderResolver = emailProviderResolver;
@@ -47,7 +43,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
     }
     public override async Task<IDisplayResult> EditAsync(ISite site, EmailSettings settings, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, EmailPermissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, EmailPermissions.ManageEmailSettings))
         {
             return null;
         }
@@ -64,7 +60,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, EmailSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, EmailPermissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, EmailPermissions.ManageEmailSettings))
         {
             return null;
         }

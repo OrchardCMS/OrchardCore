@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -17,7 +16,6 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
     public const string GroupId = "Https";
 
     private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
 
@@ -25,13 +23,11 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 
     public HttpsSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         INotifier notifier,
         IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _notifier = notifier;
         H = htmlLocalizer;
@@ -41,7 +37,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 
     public override async Task<IDisplayResult> EditAsync(ISite site, HttpsSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
         {
             return null;
@@ -51,7 +47,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 
         return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", async model =>
         {
-            var isHttpsRequest = _httpContextAccessor.HttpContext.Request.IsHttps;
+            var isHttpsRequest = context.HttpContext.Request.IsHttps;
 
             if (!isHttpsRequest)
             {
@@ -64,7 +60,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
             model.RequireHttpsPermanent = settings.RequireHttpsPermanent;
             model.SslPort = settings.SslPort ??
                             (isHttpsRequest && !settings.RequireHttps
-                                ? _httpContextAccessor.HttpContext.Request.Host.Port
+                                ? context.HttpContext.Request.Host.Port
                                 : null);
         }).Location("Content:2")
         .OnGroup(GroupId);
@@ -72,7 +68,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, HttpsSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
         {
             return null;

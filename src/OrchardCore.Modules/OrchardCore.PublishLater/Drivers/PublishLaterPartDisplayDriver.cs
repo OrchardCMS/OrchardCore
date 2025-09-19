@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.Contents;
@@ -12,16 +11,13 @@ namespace OrchardCore.PublishLater.Drivers;
 
 public sealed class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<PublishLaterPart>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly ILocalClock _localClock;
 
     public PublishLaterPartDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         ILocalClock localClock)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _localClock = localClock;
     }
@@ -42,7 +38,7 @@ public sealed class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<Pub
 
     public override async Task<IDisplayResult> UpdateAsync(PublishLaterPart part, UpdatePartEditorContext context)
     {
-        var httpContext = _httpContextAccessor.HttpContext;
+        var httpContext = context.HttpContext;
 
         if (await _authorizationService.AuthorizeAsync(httpContext?.User, CommonPermissions.PublishContent, part.ContentItem))
         {

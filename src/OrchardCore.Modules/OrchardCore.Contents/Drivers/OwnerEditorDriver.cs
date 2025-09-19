@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -15,25 +14,22 @@ namespace OrchardCore.Contents.Drivers;
 public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
 {
     private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserManager<IUser> _userManager;
 
     internal readonly IStringLocalizer S;
 
     public OwnerEditorDriver(IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor,
         UserManager<IUser> userManager,
         IStringLocalizer<OwnerEditorDriver> stringLocalizer)
     {
         _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
         _userManager = userManager;
         S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(CommonPart part, BuildPartEditorContext context)
     {
-        var currentUser = _httpContextAccessor.HttpContext?.User;
+        var currentUser = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
         {
@@ -61,7 +57,7 @@ public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
 
     public override async Task<IDisplayResult> UpdateAsync(CommonPart part, UpdatePartEditorContext context)
     {
-        var currentUser = _httpContextAccessor.HttpContext?.User;
+        var currentUser = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
         {

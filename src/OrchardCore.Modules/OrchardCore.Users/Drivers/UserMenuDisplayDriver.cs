@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -10,16 +9,13 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly ISiteService _siteService;
 
     public UserMenuDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         ISiteService siteService)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _siteService = siteService;
     }
@@ -50,7 +46,7 @@ public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
 
         var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
 
-        if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AdminPermissions.AccessAdminPanel))
+        if (await _authorizationService.AuthorizeAsync(context.HttpContext.User, AdminPermissions.AccessAdminPanel))
         {
             results.Add(View("UserMenuItems__Dashboard", model)
                 .Location("Detail", "Content:1.1")

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -12,7 +11,6 @@ namespace OrchardCore.Seo.Drivers;
 
 public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettings>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
     private readonly INotifier _notifier;
@@ -23,13 +21,11 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
         => SeoConstants.RobotsSettingsGroupId;
 
     public RobotsSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IStaticFileProvider staticFileProvider,
         INotifier notifier,
         IHtmlLocalizer<RobotsSettingsDisplayDriver> htmlLocalizer)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _staticFileProvider = staticFileProvider;
         _notifier = notifier;
@@ -39,7 +35,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
 
     public override async Task<IDisplayResult> EditAsync(ISite site, RobotsSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
         {
@@ -64,7 +60,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, RobotsSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!context.GroupId.Equals(SeoConstants.RobotsSettingsGroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))

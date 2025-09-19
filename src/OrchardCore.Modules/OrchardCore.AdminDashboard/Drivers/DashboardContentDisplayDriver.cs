@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
@@ -12,23 +11,20 @@ namespace OrchardCore.AdminDashboard.Drivers;
 
 public sealed class DashboardContentDisplayDriver : ContentDisplayDriver
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;
 
-    public DashboardContentDisplayDriver(IHttpContextAccessor httpContextAccessor,
+    public DashboardContentDisplayDriver(
         IAuthorizationService authorizationService,
         IContentManager contentManager)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _contentManager = contentManager;
     }
 
     public override async Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
     {
-        var httpContext = _httpContextAccessor.HttpContext;
-        var dashboardFeature = httpContext.Features.Get<DashboardFeature>();
+        var dashboardFeature = context.HttpContext.Features.Get<DashboardFeature>();
 
         // Return if it's not Manage dashboard request 
         if (dashboardFeature == null || !dashboardFeature.IsManageRequest)
@@ -39,9 +35,9 @@ public sealed class DashboardContentDisplayDriver : ContentDisplayDriver
         var results = new List<IDisplayResult>();
         var hasPublished = await _contentManager.HasPublishedVersionAsync(model);
         var hasDraft = model.HasDraft();
-        var hasEditPermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, model);
-        var hasDeletePermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.DeleteContent, model);
-        var hasPublishPermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, model);
+        var hasEditPermission = await _authorizationService.AuthorizeAsync(context.HttpContext.User, CommonPermissions.EditContent, model);
+        var hasDeletePermission = await _authorizationService.AuthorizeAsync(context.HttpContext.User, CommonPermissions.DeleteContent, model);
+        var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.HttpContext.User, CommonPermissions.PublishContent, model);
 
         var dragHandle = Initialize<ContentItemViewModel>("Dashboard_DragHandle", m =>
         {

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
@@ -15,7 +14,6 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLoginSettings>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IRoleService _roleService;
 
@@ -25,12 +23,10 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
         => LoginSettingsDisplayDriver.GroupId;
 
     public RoleLoginSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IRoleService roleService,
         IStringLocalizer<RoleLoginSettingsDisplayDriver> stringLocalizer)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _roleService = roleService;
         S = stringLocalizer;
@@ -51,13 +47,13 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
                 }).OrderBy(entry => entry.Role)
                 .ToArray();
         }).Location("Content:6#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(context.HttpContext?.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, RoleLoginSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, UsersPermissions.ManageUsers))
         {
             return null;
         }

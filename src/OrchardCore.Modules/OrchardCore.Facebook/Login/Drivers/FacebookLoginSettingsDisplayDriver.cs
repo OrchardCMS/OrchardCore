@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -14,23 +13,21 @@ public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<Faceb
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public FacebookLoginSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IAuthorizationService authorizationService)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
     }
+
     protected override string SettingsGroupId
         => FacebookConstants.Features.Login;
 
     public override async Task<IDisplayResult> EditAsync(ISite site, FacebookLoginSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
         {
             return null;
@@ -46,7 +43,7 @@ public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<Faceb
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookLoginSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
         {
             return null;

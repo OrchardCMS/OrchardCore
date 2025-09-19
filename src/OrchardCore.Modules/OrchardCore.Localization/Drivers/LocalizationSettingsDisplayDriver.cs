@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -24,7 +23,6 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
 
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly INotifier _notifier;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly CultureOptions _cultureOptions;
 
@@ -37,16 +35,13 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     public LocalizationSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         INotifier notifier,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptions<CultureOptions> cultureOptions,
         IHtmlLocalizer<LocalizationSettingsDisplayDriver> htmlLocalizer,
-        IStringLocalizer<LocalizationSettingsDisplayDriver> stringLocalizer
-    )
+        IStringLocalizer<LocalizationSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _notifier = notifier;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _cultureOptions = cultureOptions.Value;
         H = htmlLocalizer;
@@ -56,7 +51,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     /// <inheritdocs />
     public override async Task<IDisplayResult> EditAsync(ISite site, LocalizationSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, LocalizationPermissions.ManageCultures))
         {
@@ -89,7 +84,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     /// <inheritdocs />
     public override async Task<IDisplayResult> UpdateAsync(ISite site, LocalizationSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, LocalizationPermissions.ManageCultures))
         {

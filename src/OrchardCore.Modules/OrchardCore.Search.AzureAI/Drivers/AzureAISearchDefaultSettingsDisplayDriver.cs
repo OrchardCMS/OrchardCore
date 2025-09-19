@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -20,7 +19,6 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
 {
     public const string GroupId = "azureAISearch";
 
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly AzureAISearchDefaultOptions _searchOptions;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -33,14 +31,12 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
 
     public AzureAISearchDefaultSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptions<AzureAISearchDefaultOptions> searchOptions,
         IDataProtectionProvider dataProtectionProvider,
         IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _searchOptions = searchOptions.Value;
         _dataProtectionProvider = dataProtectionProvider;
@@ -70,7 +66,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
             model.IdentityClientId = settings.IdentityClientId;
             model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
         }).Location("Content")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(context.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
         .OnGroup(SettingsGroupId);
     }
 
@@ -81,7 +77,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
             return null;
         }
 
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
         {
             return null;
         }

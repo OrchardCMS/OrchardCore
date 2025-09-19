@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
@@ -13,16 +12,13 @@ namespace OrchardCore.Contents.Drivers;
 public sealed class ContentsDriver : ContentDisplayDriver
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     public ContentsDriver(
         IContentDefinitionManager contentDefinitionManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
 
@@ -66,7 +62,7 @@ public sealed class ContentsDriver : ContentDisplayDriver
                 }
             });
 
-            var user = _httpContextAccessor.HttpContext.User;
+            var user = context.HttpContext.User;
 
             results.Add(contentsMetadataShape);
             results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
@@ -95,7 +91,7 @@ public sealed class ContentsDriver : ContentDisplayDriver
             return null;
         }
 
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = context.HttpContext.User;
 
         return Combine(
             Dynamic("Content_PublishButton").Location("Actions:10")

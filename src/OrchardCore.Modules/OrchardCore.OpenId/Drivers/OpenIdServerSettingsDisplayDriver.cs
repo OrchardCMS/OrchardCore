@@ -12,22 +12,19 @@ namespace OrchardCore.OpenId.Drivers;
 public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServerSettings>
 {
     private readonly IOpenIdServerService _serverService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     public OpenIdServerSettingsDisplayDriver(
         IOpenIdServerService serverService,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
     {
         _serverService = serverService;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
 
     public override async Task<IDisplayResult> EditAsync(OpenIdServerSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageServerSettings))
         {
@@ -91,7 +88,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
 
     public override async Task<IDisplayResult> UpdateAsync(OpenIdServerSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageServerSettings))
         {

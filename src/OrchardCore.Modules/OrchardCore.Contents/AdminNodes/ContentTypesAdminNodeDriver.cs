@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
@@ -11,17 +10,13 @@ namespace OrchardCore.Contents.AdminNodes;
 public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, ContentTypesAdminNode>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     public ContentTypesAdminNodeDriver(
         IContentDefinitionManager contentDefinitionManager,
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService
-        )
+        IAuthorizationService authorizationService)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
 
@@ -82,7 +77,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
 
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
-            if (!await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ListContent, contentTypeDefinition))
+            if (!await _authorizationService.AuthorizeContentTypeAsync(context.HttpContext.User, CommonPermissions.ListContent, contentTypeDefinition))
             {
                 continue;
             }

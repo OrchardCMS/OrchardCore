@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -12,7 +11,6 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoFactorLoginSettings>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     internal readonly IStringLocalizer S;
@@ -20,17 +18,14 @@ public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoF
     protected override string SettingsGroupId
         => LoginSettingsDisplayDriver.GroupId;
 
-    public TwoFactorLoginSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService,
+    public TwoFactorLoginSettingsDisplayDriver(IAuthorizationService authorizationService,
         IStringLocalizer<TwoFactorLoginSettingsDisplayDriver> stringLocalizer)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(ISite site, TwoFactorLoginSettings settings, BuildEditorContext c)
+    public override IDisplayResult Edit(ISite site, TwoFactorLoginSettings settings, BuildEditorContext context)
     {
         return Initialize<TwoFactorLoginSettings>("TwoFactorLoginSettings_Edit", model =>
         {
@@ -39,13 +34,13 @@ public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoF
             model.AllowRememberClientTwoFactorAuthentication = settings.AllowRememberClientTwoFactorAuthentication;
             model.UseSiteTheme = settings.UseSiteTheme;
         }).Location("Content:5#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(context.HttpContext?.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwoFactorLoginSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, UsersPermissions.ManageUsers))
         {
             return null;
         }

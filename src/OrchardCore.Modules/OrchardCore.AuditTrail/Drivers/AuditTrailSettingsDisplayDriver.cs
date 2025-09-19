@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.AuditTrail.ViewModels;
@@ -13,18 +12,15 @@ namespace OrchardCore.AuditTrail.Drivers;
 public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTrailSettings>
 {
     private readonly IAuditTrailManager _auditTrailManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IServiceProvider _serviceProvider;
 
     public AuditTrailSettingsDisplayDriver(
         IAuditTrailManager auditTrailManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IServiceProvider serviceProvider)
     {
         _auditTrailManager = auditTrailManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _serviceProvider = serviceProvider;
     }
@@ -34,7 +30,7 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
 
     public override async Task<IDisplayResult> EditAsync(ISite site, AuditTrailSettings settings, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
         {
             return null;
         }
@@ -79,7 +75,7 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AuditTrailSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
         {
             return null;
         }

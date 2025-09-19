@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.DisplayManagement.Entities;
@@ -24,7 +23,6 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOpenIdClientService _clientService;
 
     internal readonly IStringLocalizer S;
@@ -37,20 +35,18 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         IOpenIdClientService clientService,
-        IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
         _clientService = clientService;
-        _httpContextAccessor = httpContextAccessor;
         S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite site, OpenIdClientSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageClientSettings))
         {
             return null;
@@ -103,7 +99,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, OpenIdClientSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageClientSettings))
         {
             return null;

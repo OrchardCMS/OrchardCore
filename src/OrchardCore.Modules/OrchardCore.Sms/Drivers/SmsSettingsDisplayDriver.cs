@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -15,7 +14,6 @@ namespace OrchardCore.Sms.Drivers;
 public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
 {
     private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     internal readonly IStringLocalizer S;
@@ -27,13 +25,11 @@ public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
 
     public SmsSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptions<SmsProviderOptions> smsProviders,
         IStringLocalizer<SmsSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _smsProviderOptions = smsProviders.Value;
         S = stringLocalizer;
@@ -50,12 +46,12 @@ public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
             .ToArray();
 
         }).Location("Content:1#Providers")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(context.HttpContext?.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SmsSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {

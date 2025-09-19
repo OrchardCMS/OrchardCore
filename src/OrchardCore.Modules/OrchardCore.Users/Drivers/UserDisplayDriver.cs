@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -14,19 +13,16 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class UserDisplayDriver : DisplayDriver<User>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
 
     public UserDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
         IStringLocalizer<UserDisplayDriver> stringLocalizer)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -44,7 +40,7 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, UsersPermissions.EditUsers, user))
         {
             return null;
         }
@@ -59,7 +55,7 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
     {
         // To prevent html injection when updating the user must meet all authorization requirements.
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, UsersPermissions.EditUsers, user))
         {
             // When the user is only editing their profile never update this part of the user.
             return await EditAsync(user, context);
