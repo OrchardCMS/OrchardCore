@@ -20,6 +20,9 @@ public class GeoPointFieldProvider : IContentFieldProvider
 
     public FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName = null)
     {
+        if (field.FieldDefinition.Name != nameof(GeoPointField)) {
+            return null;
+        }
 
         return new FieldType
         {
