@@ -53,13 +53,7 @@ glob(config.source).then((files) => {
 
         let relativePath;
         if (baseFolder) {
-            const isWindows = process.platform === "win32";
-            if (isWindows) {
-                var regex = new RegExp(baseFolder, "i");
-                relativePath = file.replace(regex, "");
-            } else {
-                relativePath = file.replace(baseFolder, "");
-            }
+            relativePath = file.replace(baseFolder, "");
         } else {
             relativePath = path.basename(file);
         }
