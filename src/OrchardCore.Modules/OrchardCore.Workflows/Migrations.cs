@@ -167,6 +167,7 @@ public sealed class Migrations : DataMigration
                 // Drop the existing column (if it exists)
                 table.DropColumn("WorkflowStatus");
             });
+
             await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
             {
                 // Recreate the column with the new type
