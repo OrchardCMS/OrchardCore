@@ -56,21 +56,21 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0 || _notificationOptions.SlidingCacheExpirationSeconds > 0)
         {
             return result
-                .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context =>
+                .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, cacheContext =>
                 {
-                    context.AddContext("user")
+                    cacheContext.AddContext("user")
                         // Allow another feature to clear all notification cache entries if necessary.
                         .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
                         .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(context.HttpContext.User.Identity.Name));
 
                     if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0)
                     {
-                        context.WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.AbsoluteCacheExpirationSeconds));
+                        cacheContext.WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.AbsoluteCacheExpirationSeconds));
                     }
 
                     if (_notificationOptions.SlidingCacheExpirationSeconds > 0)
                     {
-                        context.WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.SlidingCacheExpirationSeconds));
+                        cacheContext.WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.SlidingCacheExpirationSeconds));
                     }
                 });
         }

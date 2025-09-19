@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
@@ -32,7 +33,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
     {
         return Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", async model =>
             {
-                var listable = await GetListableContentTypeDefinitionsAsync();
+                var listable = await GetListableContentTypeDefinitionsAsync(context.HttpContext);
 
                 model.ShowAll = treeNode.ShowAll;
                 model.IconClass = treeNode.IconClass;
@@ -69,7 +70,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
         return Edit(treeNode, context);
     }
 
-    private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync()
+    private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync(HttpContext httpContext)
     {
         var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
@@ -77,7 +78,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
 
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
-            if (!await _authorizationService.AuthorizeContentTypeAsync(context.HttpContext.User, CommonPermissions.ListContent, contentTypeDefinition))
+            if (!await _authorizationService.AuthorizeContentTypeAsync(httpContext.User, CommonPermissions.ListContent, contentTypeDefinition))
             {
                 continue;
             }
