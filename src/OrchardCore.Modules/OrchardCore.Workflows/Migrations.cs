@@ -44,7 +44,7 @@ public sealed class Migrations : DataMigration
         await SchemaBuilder.CreateMapIndexTableAsync<WorkflowIndex>(table => table
             .Column<string>("WorkflowTypeId", c => c.WithLength(26))
             .Column<string>("WorkflowId", c => c.WithLength(26))
-            .Column<int>("WorkflowStatus", c => c.WithLength(26))
+            .Column<string>("WorkflowStatus", c => c.WithLength(26))
             .Column<DateTime>("CreatedUtc")
         );
 
@@ -91,7 +91,7 @@ public sealed class Migrations : DataMigration
     {
         await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
         {
-            table.AddColumn<int>("WorkflowStatus");
+            table.AddColumn<string>("WorkflowStatus");
         });
 
         return 2;
