@@ -81,12 +81,11 @@ public class BooleanQueryProvider : ILuceneQueryProvider
     private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query, JsonNode filter)
     {
         Query filteredQuery = null;
-        var queryObj = filter.AsObject();
 
         switch (filter.GetValueKind())
         {
             case JsonValueKind.Object:
-                var first = queryObj.First();
+                var first = filter.AsObject().First();
 
                 foreach (var queryProvider in _filters)
                 {
