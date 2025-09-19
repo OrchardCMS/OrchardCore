@@ -14,7 +14,6 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly ISiteService _siteService;
@@ -22,13 +21,11 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
     internal readonly IStringLocalizer S;
 
     public UserInformationDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
         IStringLocalizer<UserInformationDisplayDriver> stringLocalizer,
         ISiteService siteService)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
         S = stringLocalizer;
@@ -37,13 +34,13 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, UsersPermissions.EditUsers, user))
         {
             return null;
         }
 
         var settings = await _siteService.GetSettingsAsync<LoginSettings>();
-        var canEditUserInfo = await CanEditUserInfoAsync(user);
+        var canEditUserInfo = await CanEditUserInfoAsync(user, context.HttpContext);
         return Combine(
             Initialize<EditUserNameViewModel>("UserName_Edit", model =>
             {
@@ -74,7 +71,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, UsersPermissions.EditUsers, user))
         {
             return null;
         }
@@ -114,7 +111,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
         {
             var settings = await _siteService.GetSettingsAsync<LoginSettings>();
 
-            if (await CanEditUserInfoAsync(user))
+            if (await CanEditUserInfoAsync(user, context.HttpContext))
             {
                 if (settings.AllowChangingUsername && await context.Updater.TryUpdateModelAsync(userNameModel, Prefix))
                 {
@@ -143,13 +140,6 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
         return await EditAsync(user, context);
     }
 
-    private async Task<bool> CanEditUserInfoAsync(User user)
-    {
-        return !IsCurrentUser(user) || await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditOwnUser);
-    }
-
-    private bool IsCurrentUser(User user)
-    {
-        return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId;
-    }
+    private async Task<bool> CanEditUserInfoAsync(User user, HttpContext httpContext) => httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) != user.UserId ||
+        await _authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.EditOwnUser);
 }
