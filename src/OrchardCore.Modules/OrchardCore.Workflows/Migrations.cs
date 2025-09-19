@@ -1,3 +1,5 @@
+using System.Data;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration;
 using OrchardCore.Workflows.Indexes;
 using YesSql.Sql;
@@ -6,6 +8,12 @@ namespace OrchardCore.Workflows;
 
 public sealed class Migrations : DataMigration
 {
+    private readonly ILogger _logger;
+
+    public Migrations(ILogger<Migrations> logger)
+    {
+        _logger = logger;
+    }
     public async Task<int> CreateAsync()
     {
         await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeIndex>(table => table
@@ -144,5 +152,41 @@ public sealed class Migrations : DataMigration
         );
 
         return 3;
+    }
+
+    public async Task<int> UpdateFrom3Async()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
+            .DropIndex("IDX_WorkflowIndex_DocumentId")
+        );
+
+        try
+        {
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
+            {
+                // Drop the existing column (if it exists)
+                table.DropColumn("WorkflowStatus");
+            });
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
+            {
+                // Recreate the column with the new type
+                table.AddColumn<int>("WorkflowStatus");
+            });
+        }
+        catch
+        {
+            _logger.LogWarning("Failed to alter 'WorkflowStatus' column. This is not an error when using SqLite");
+        }
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
+            .CreateIndex("IDX_WorkflowIndex_DocumentId",
+                "DocumentId",
+                "WorkflowTypeId",
+                "WorkflowId",
+                "WorkflowStatus",
+                "CreatedUtc")
+        );
+
+        return 4;
     }
 }
