@@ -186,7 +186,7 @@ public sealed class Migrations : DataMigration
                 "WorkflowId",
                 "WorkflowStatus",
                 "CreatedUtc")
-        );
+             );
 
         return 4;
     }
