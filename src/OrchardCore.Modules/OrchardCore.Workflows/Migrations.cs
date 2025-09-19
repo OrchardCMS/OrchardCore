@@ -176,7 +176,7 @@ public sealed class Migrations : DataMigration
         }
         catch
         {
-            _logger.LogWarning("Failed to alter 'WorkflowStatus' column. This is not an error when using SqLite");
+            _logger.LogWarning("Failed to alter 'WorkflowStatus' column. This is not an error when using SQLite");
         }
 
         await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
