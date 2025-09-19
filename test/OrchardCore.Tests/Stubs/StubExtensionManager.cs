@@ -27,10 +27,13 @@ public class StubExtensionManager : IExtensionManager
 
     public IEnumerable<IFeatureInfo> GetFeatures()
     {
-        return [];
+        return [new FeatureInfo(GetType().Assembly.GetName().Name, new ExtensionInfo(GetType().Assembly.GetName().Name))];
     }
 
     public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
+        => GetFeatures((IEnumerable<string>)featureIdsToLoad);
+
+    public IEnumerable<IFeatureInfo> GetFeatures(IEnumerable<string> featureIdsToLoad)
     {
         throw new NotImplementedException();
     }
@@ -46,6 +49,9 @@ public class StubExtensionManager : IExtensionManager
     }
 
     public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
+        => LoadFeaturesAsync((IEnumerable<string>)featureIdsToLoad);
+
+    public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(IEnumerable<string> featureIdsToLoad)
     {
         throw new NotImplementedException();
     }

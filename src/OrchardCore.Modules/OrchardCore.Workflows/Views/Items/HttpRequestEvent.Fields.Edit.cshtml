@@ -21,7 +21,7 @@
         <button class="btn btn-primary" type="button" id="generate-url-button" title="@T["Generate a new URL"]" data-generate-url="@Url.Action("GenerateUrl", "HttpWorkflow")" data-antiforgery-token="@antiforgeryTokenSet.RequestToken" data-antiforgery-header-name="@antiforgeryTokenSet.HeaderName">@T["Regenerate"]</button>
         <span class="btn btn-secondary" onclick="select_all_and_copy(document.getElementById('workflow-url-text'))"><i class="fa-solid fa-copy" aria-hidden="true"></i> @T["Copy"]</span>
     </div>
-    <span class="hint"><i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
+    <span class="hint"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
 </div>
 
 <div class="mb-3">
@@ -35,10 +35,9 @@
 <div class="mb-3">
     <input type="number" asp-for="TokenLifeSpan" id="token-lifespan" class="form-control" />
     <label asp-for="TokenLifeSpan" class="form-label">@T["Token Life Span"]</label>
-    <span class="hint"><i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i> @T["Hit the <b>Regenerate</b> button after changing this value."]</span>
+    <span class="hint"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @T["Hit the <b>Regenerate</b> button after changing this value."]</span>
     <span class="hint">@T["Number of days to expire the token. 0 for the token to never expire"]</span>
 </div>
-
 
 <div class="mb-3" asp-validation-class-for="FormLocationKey">
     <label asp-for="FormLocationKey" class="form-label">@T["Form Location Key"]</label>

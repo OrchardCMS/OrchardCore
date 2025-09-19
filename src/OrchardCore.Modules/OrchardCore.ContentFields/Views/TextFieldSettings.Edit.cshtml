@@ -1,4 +1,16 @@
-@model OrchardCore.ContentFields.Settings.TextFieldSettings
+@using OrchardCore.ContentFields.Settings.Models
+@model TextFieldSettingsViewModel
+
+@* Provide code completion in the pattern editor *@
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <div class="mb-3">
     <div class="form-check">
@@ -24,3 +36,49 @@
     <span class="hint">@T["The default value. (optional)"]</span>
 </div>
 
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <label asp-for="Type" class="form-label">@T["Type"]</label>
+        <select asp-for="Type" class="form-select" asp-items="Model.Types"></select>
+    </div>
+</div>
+
+<div class="row mb-3" id="patternEditor">
+    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
+        <label asp-for="Pattern" class="form-label">@T["Pattern"]</label>
+        <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
+        <span class="hint">@T["The pattern used to render the title of this content type. With Liquid support."]</span>
+    </div>
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+
+        setPatternVisibility();
+
+        document.getElementById('@Html.IdFor(x => x.Type)').addEventListener('change', function () {
+            setPatternVisibility();
+        });
+    });
+
+    function setPatternVisibility() {
+        var selectedValue = document.getElementById('@Html.IdFor(x => x.Type)').value;
+        var patternEditor = document.getElementById('patternEditor');
+        switch (selectedValue) {
+            case '@nameof(FieldBehaviorType.GeneratedDisabled)':
+            case '@nameof(FieldBehaviorType.GeneratedHidden)':
+                patternEditor.classList.remove('d-none');
+                break;
+            default:
+                patternEditor.classList.add('d-none');
+                break;
+        }
+    }
+</script>

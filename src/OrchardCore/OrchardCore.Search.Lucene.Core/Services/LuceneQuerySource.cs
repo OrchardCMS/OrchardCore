@@ -63,9 +63,9 @@ public sealed class LuceneQuerySource : IQuerySource
 
         var metadata = query.As<LuceneQueryMetadata>();
 
-        var index = await _indexStore.FindByIndexNameAndProviderAsync(metadata.Index, LuceneConstants.ProviderName);
+        var index = await _indexStore.FindByNameAsync(metadata.Index);
 
-        if (index is null)
+        if (index is null || index.ProviderName != LuceneConstants.ProviderName)
         {
             return result;
         }

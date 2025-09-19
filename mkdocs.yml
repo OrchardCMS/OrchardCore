@@ -288,6 +288,9 @@ nav:
       - Libraries: reference/libraries/README.md
       - Glossary: reference/glossary/README.md
   - Releases Notes:
+      - 2.2.0: releases/2.2.0.md
+      - 2.1.9: releases/2.1.9.md
+      - 2.1.8: releases/2.1.8.md
       - 2.1.7: releases/2.1.7.md
       - 2.1.6: releases/2.1.6.md
       - 2.1.5: releases/2.1.5.md

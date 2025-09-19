@@ -9,15 +9,15 @@ public sealed class DefaultAzureAISearchFieldIndexEvents : IAzureAISearchFieldIn
 {
     public Task MappingAsync(SearchIndexDefinition context)
     {
-        if (context.IndexEntry.Type == ContentItemDocumentIndex.Types.Text)
+        if (context.IndexEntry.Type == DocumentIndex.Types.Text)
         {
             context.Map.IsCollection = !context.IndexEntry.Options.HasFlag(DocumentIndexOptions.Keyword);
             context.Map.IsSearchable = true;
         }
         else
         {
-            context.Map.IsFilterable = true;
-            context.Map.IsSortable = true;
+            context.Map.IsFilterable = context.IsRootField;
+            context.Map.IsSortable = context.IsRootField;
         }
 
         return Task.CompletedTask;
@@ -29,7 +29,7 @@ public sealed class DefaultAzureAISearchFieldIndexEvents : IAzureAISearchFieldIn
         {
             context.Map.IsSearchable = true;
             context.Map.IsCollection = false;
-            context.Map.IsSuggester = true;
+            context.Map.IsSuggester = context.IsRootField;
         }
         else if (context.Map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey)
         {
@@ -38,15 +38,15 @@ public sealed class DefaultAzureAISearchFieldIndexEvents : IAzureAISearchFieldIn
         }
         else if (context.Map.AzureFieldKey == ContentIndexingConstants.ContentItemIdKey)
         {
-            context.Map.IsKey = true;
-            context.Map.IsFilterable = true;
-            context.Map.IsSortable = true;
+            context.Map.IsKey = context.IsRootField; // Only the root field should be marked as a key.
+            context.Map.IsFilterable = context.IsRootField;
+            context.Map.IsSortable = context.IsRootField;
         }
         else if (context.Map.AzureFieldKey == ContentIndexingConstants.ContentItemVersionIdKey ||
             context.Map.AzureFieldKey == ContentIndexingConstants.OwnerKey)
         {
-            context.Map.IsFilterable = true;
-            context.Map.IsSortable = true;
+            context.Map.IsFilterable = context.IsRootField;
+            context.Map.IsSortable = context.IsRootField;
         }
 
         return Task.CompletedTask;

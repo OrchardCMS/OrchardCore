@@ -77,6 +77,8 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
             {
                 model.Cultures[0].IsDefault = true;
             }
+
+            model.FallBackToParentCultures = settings.FallBackToParentCulture;
         }).Location("Content:2")
         .OnGroup(SettingsGroupId);
     }
@@ -105,6 +107,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
         {
             // Invariant culture name is empty so a null value is bound.
             settings.DefaultCulture = model.DefaultCulture ?? string.Empty;
+            settings.FallBackToParentCulture = model.FallBackToParentCultures;
             settings.SupportedCultures = supportedCulture;
 
             if (!settings.SupportedCultures.Contains(settings.DefaultCulture))

@@ -49,6 +49,7 @@ app.publish/
 *.log
 *.scc
 project.lock.json
+package-lock.json
 
 # Visual C++ cache files
 ipch/

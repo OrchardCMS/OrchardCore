@@ -10,6 +10,7 @@ using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Handlers;
@@ -38,6 +39,13 @@ public sealed class ElasticsearchIndexProfileHandler : IndexProfileHandlerBase
         if (!string.Equals(ElasticsearchConstants.ProviderName, context.Model.ProviderName, StringComparison.OrdinalIgnoreCase))
         {
             return Task.CompletedTask;
+        }
+
+        var safeName = ElasticsearchIndexNameProvider.ToSafeIndexName(context.Model.IndexName);
+
+        if (safeName != context.Model.IndexName)
+        {
+            context.Result.Fail(new ValidationResult(S["Invalid index name: it must be lowercase, under 255 bytes, not start with -, _, or +, and must not contain , /, *, ?, \", <, >, |, space, ,, or #, nor be \".\" or \"..\"."]));
         }
 
         // When the provider is 'Elasticsearch', "regardless of the type" we need to validate the index mappings.

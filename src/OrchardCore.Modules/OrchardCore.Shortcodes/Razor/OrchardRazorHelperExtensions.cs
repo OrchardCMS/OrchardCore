@@ -7,7 +7,7 @@ using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 #pragma warning disable CA1050 // Declare types in namespaces
-public static class OrchardRazorHelperExtensions
+public static class ShortcodesOrchardRazorHelperExtensions
 #pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>

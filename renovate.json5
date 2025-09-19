@@ -5,6 +5,9 @@
     $schema: 'https://docs.renovatebot.com/renovate-schema.json',
     extends: [
         'config:recommended',
+        'helpers:pinGitHubActionDigests',
+        // See https://docs.renovatebot.com/semantic-commits/.
+        ':semanticCommitsDisabled',
     ],
     // See https://docs.renovatebot.com/configuration-options/#configmigration.
     configMigration: true,
@@ -22,6 +25,17 @@
             groupName: 'Minor Dependency Versions',
             matchUpdateTypes: ['minor'],
         },
+        // Elastic.Clients.Elasticsearch doesn't follow SemVer, so updates need to be tested manually and can't be
+        // auto-merged even if it's only a patch version update.
+        {
+            groupName: 'Elasticsearch',
+            matchPackageNames: [
+                'Elastic.Clients.Elasticsearch',
+            ],
+            // We need to keep this on 8.x for now, see
+            // https://github.com/OrchardCMS/OrchardCore/pull/17942#issuecomment-2903626717.
+            allowedVersions: '<9.0.0',
+        },
 
         // Disable certain updates.
         {
@@ -29,20 +43,25 @@
             // .NET 9 versions in Directory.Packages.props, only active when building for .NET 9.
             matchPackageNames: [
                 'AspNet.Security.OAuth.GitHub',
-                '/^Microsoft\\.AspNetCore.*$/',
-                '/^Microsoft\\.Extensions.*$/',
+                'Microsoft.AspNetCore.Authentication.Facebook',
+                'Microsoft.AspNetCore.Authentication.Google',
+                'Microsoft.AspNetCore.Authentication.MicrosoftAccount',
+                'Microsoft.AspNetCore.Authentication.OpenIdConnect',
+                'Microsoft.AspNetCore.Authentication.Twitter',
+                'Microsoft.AspNetCore.DataProtection.StackExchangeRedis',
+                'Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation',
+                'Microsoft.AspNetCore.Mvc.Testing',
+                'Microsoft.AspNetCore.Owin',
+                'Microsoft.AspNetCore.Authorization',
+                'Microsoft.Extensions.Caching.Memory',
+                'Microsoft.Extensions.Caching.StackExchangeRedis',
+                'Microsoft.Extensions.Http.Resilience',
                 'Serilog.AspNetCore',
+                'System.IO.Hashing',
                 'System.Text.Json',
             ],
             allowedVersions: '<9.0.0',
-            matchCurrentVersion: '<9.0.0',
-        },
-        {
-            // See the corresponding comment in Directory.Packages.props.
-            matchPackageNames: [
-                'System.Drawing.Common',
-            ],
-            enabled: false,
+            matchCurrentVersion: '/^8\\./',
         },
         {
             // See https://github.com/OrchardCMS/OrchardCore/issues/16318 on why we have NPM updates disabled.
@@ -114,6 +133,17 @@
             matchPackageNames: [
                 '/^YesSql.*$/',
             ],
+        },
+        // These are database engines references in .github/workflows/functional_all_db.yml. They should match the
+        // minimum versions supported by YesSql, see:
+        // https://github.com/sebastienros/yessql/blob/main/.github/workflows/build.yml.
+        {
+            matchPackageNames: [
+                'postgres',
+                'mysql',
+                'mcr.microsoft.com/mssql/server',
+            ],
+            enabled: false,
         },
     ],
     // With GitHub Actions, concurrency is not really an issue.
