@@ -210,15 +210,6 @@ ol.media-items-grid {
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  list-style: none;
-}
-
-[dir=ltr] ol.media-items-grid {
-  padding-left: 0;
-}
-
-[dir=rtl] ol.media-items-grid {
-  padding-right: 0;
 }
 [dir=ltr] ol.media-items-grid.row {
   margin-left: 0;
@@ -292,6 +283,15 @@ ol.media-items-grid .thumb-container {
 }
 [dir] ol.media-items-grid .thumb-container img {
   background: repeating-conic-gradient(var(--bs-gray-200, #ccc) 0% 25%, transparent 0% 50%) 50%/10px 10px;
+}
+ol.media-items-grid {
+  list-style: none;
+}
+[dir=ltr] ol.media-items-grid {
+  padding-left: 0;
+}
+[dir=rtl] ol.media-items-grid {
+  padding-right: 0;
 }
 
 .media-items-table {
@@ -423,9 +423,6 @@ ol.media-items-grid .thumb-container {
     display: none;
   }
 }
-.action-bar {
-  /* Upload button */
-}
 [dir] .action-bar {
   border-bottom: var(--oc-media-border-content);
 }
@@ -476,6 +473,9 @@ ol.media-items-grid .thumb-container {
 }
 [dir=rtl] .action-bar .media-filter .icon-inside-input {
   right: 10px;
+}
+.action-bar {
+  /* Upload button */
 }
 [dir] .action-bar .fileinput-button {
   cursor: pointer;

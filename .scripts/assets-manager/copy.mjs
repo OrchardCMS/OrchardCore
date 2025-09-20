@@ -23,8 +23,6 @@ if (config.dryRun) {
     action = "dry-run";
 }
 
-// console.log(`copy ${action}`, config);
-
 glob(config.source).then((files) => {
     if (files.length == 0) {
         console.log(chalk.yellow("No files to copy", config.source));
@@ -52,6 +50,7 @@ glob(config.source).then((files) => {
 
     files.forEach(async (file) => {
         file = file.replace(/\\/g, "/");
+
         let relativePath;
         if (baseFolder) {
             relativePath = file.replace(baseFolder, "");

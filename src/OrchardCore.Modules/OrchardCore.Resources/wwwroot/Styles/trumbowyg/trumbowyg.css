@@ -672,11 +672,6 @@ body.trumbowyg-body-fullscreen {
   fill: transparent;
 }
 
-.trumbowyg-editor {
-  /*
-   * For resetCss option
-   */
-}
 .trumbowyg-editor object,
 .trumbowyg-editor embed,
 .trumbowyg-editor video,
@@ -692,6 +687,11 @@ body.trumbowyg-body-fullscreen {
 }
 .trumbowyg-editor canvas:focus {
   outline: none;
+}
+.trumbowyg-editor {
+  /*
+   * For resetCss option
+   */
 }
 .trumbowyg-editor.trumbowyg-reset-css {
   font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
