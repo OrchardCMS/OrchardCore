@@ -47,14 +47,14 @@ glob(config.source).then((files) => {
     let baseFolder;
 
     if (config.source.indexOf("**") > 0) {
-        baseFolder = config.source.substring(0, config.source.indexOf("**"));
+        baseFolder = path.normalize(config.source.substring(0, config.source.indexOf("**")));
     }
 
     files.forEach(async (file) => {
         file = file.replace(/\\/g, "/");
         let relativePath;
         if (baseFolder) {
-            relativePath = file.replace(baseFolder, "");
+            relativePath = path.normalize(file).replace(baseFolder, "");
         } else {
             relativePath = path.basename(file);
         }
