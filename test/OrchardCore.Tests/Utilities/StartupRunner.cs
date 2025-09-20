@@ -1,11 +1,34 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Net;
+using Xunit;
+
 namespace OrchardCore.Tests;
 
 internal static class StartupRunner
 {
     public static async Task Run(Type startupType, string culture, string expected)
     {
-        var webHostBuilder = new WebHostBuilder().UseStartup(startupType);
-        var testHost = new TestServer(webHostBuilder);
+        var builder = WebApplication.CreateBuilder();
+        
+        // Configure the startup type (assuming it implements IStartup or has Configure/ConfigureServices methods)
+        var startupInstance = Activator.CreateInstance(startupType);
+        
+        // Call ConfigureServices if it exists
+        var configureServicesMethod = startupType.GetMethod("ConfigureServices");
+        configureServicesMethod?.Invoke(startupInstance, [builder.Services]);
+        
+        var app = builder.Build();
+        
+        // Call Configure if it exists
+        var configureMethod = startupType.GetMethod("Configure");
+        configureMethod?.Invoke(startupInstance, [app]);
+        
+        using var testHost = new TestServer(app.Services.GetRequiredService<IServiceProvider>());
 
         var client = testHost.CreateClient();
         var request = new HttpRequestMessage();
