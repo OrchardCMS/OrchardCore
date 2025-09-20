@@ -87,9 +87,9 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Several transitive dependencies on 8.0.4 and lower which is vulnerable -->
-    <PackageVersion Include="System.Text.Json" Version="9.0.8" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.0-rc.1.25451.107" />
     <!-- Several transitive dependencies on 8.0.0 which has known vulnerabilities -->
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0-rc.1.25451.107" />
   </ItemGroup>
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <ItemGroup>
@@ -102,7 +102,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.0-rc.1.25451.107" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.0-rc.1.25451.107" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0-rc.1.25451.107" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.0-rc.1.25451.107" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0-rc.1.25451.107" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.0-rc.1.25451.107" />
     <!-- dotnet/extensions repository -->
