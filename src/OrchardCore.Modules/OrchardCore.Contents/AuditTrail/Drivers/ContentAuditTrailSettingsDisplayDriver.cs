@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.AuditTrail;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.Contents.AuditTrail.Settings;
@@ -13,14 +12,10 @@ namespace OrchardCore.Contents.AuditTrail.Drivers;
 
 public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<ContentAuditTrailSettings>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public ContentAuditTrailSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+    public ContentAuditTrailSettingsDisplayDriver(IAuthorizationService authorizationService)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
 
@@ -29,7 +24,7 @@ public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<C
 
     public override async Task<IDisplayResult> EditAsync(ISite site, ContentAuditTrailSettings section, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
         {
             return null;
@@ -44,7 +39,7 @@ public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<C
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ContentAuditTrailSettings section, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
         {
             return null;

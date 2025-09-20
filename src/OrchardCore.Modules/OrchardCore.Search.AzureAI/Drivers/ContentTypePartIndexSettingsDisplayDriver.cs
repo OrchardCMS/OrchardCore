@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -10,20 +9,16 @@ namespace OrchardCore.Search.AzureAI.Drivers;
 
 public sealed class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public ContentTypePartIndexSettingsDisplayDriver(
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+    public ContentTypePartIndexSettingsDisplayDriver(IAuthorizationService authorizationService)
     {
         _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     public override async Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
         {
             return null;
         }
@@ -36,7 +31,7 @@ public sealed class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartD
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
         {
             return null;
         }

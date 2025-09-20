@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -18,20 +17,17 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
 
     public GitHubAuthenticationSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
-        IHttpContextAccessor httpContextAccessor,
         ILogger<GitHubAuthenticationSettingsDisplayDriver> logger)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
-        _httpContextAccessor = httpContextAccessor;
         _logger = logger;
     }
 
@@ -40,7 +36,7 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
 
     public override async Task<IDisplayResult> EditAsync(ISite site, GitHubAuthenticationSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGitHubAuthentication))
         {
             return null;
@@ -78,7 +74,7 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GitHubAuthenticationSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGitHubAuthentication))
         {
             return null;

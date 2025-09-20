@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -16,16 +15,13 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
     public const string GroupId = "ReverseProxy";
 
     private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     public ReverseProxySettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
     {
         _shellReleaseManager = shellReleaseManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
 
@@ -34,7 +30,7 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
 
     public override async Task<IDisplayResult> EditAsync(ISite site, ReverseProxySettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
         {
@@ -54,7 +50,7 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ReverseProxySettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
         {

@@ -1,6 +1,5 @@
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -18,20 +17,17 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContentManager _contentManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CustomUserSettingsDisplayDriver(
         IContentItemDisplayManager contentItemDisplayManager,
         IContentDefinitionManager contentDefinitionManager,
         IContentManager contentManager,
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IAuthorizationService authorizationService)
     {
         _contentItemDisplayManager = contentItemDisplayManager;
         _contentDefinitionManager = contentDefinitionManager;
         _contentManager = contentManager;
         _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
@@ -43,7 +39,7 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
         }
 
         var results = new List<IDisplayResult>();
-        var userClaim = _httpContextAccessor.HttpContext.User;
+        var userClaim = context.HttpContext.User;
 
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
@@ -63,7 +59,7 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
     {
-        var userClaim = _httpContextAccessor.HttpContext.User;
+        var userClaim = context.HttpContext.User;
         var contentTypeDefinitions = await GetContentTypeDefinitionsAsync();
 
         foreach (var contentTypeDefinition in contentTypeDefinitions)

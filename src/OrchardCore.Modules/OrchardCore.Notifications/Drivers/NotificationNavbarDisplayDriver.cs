@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
@@ -15,25 +14,22 @@ namespace OrchardCore.Notifications.Drivers;
 public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly NotificationOptions _notificationOptions;
     private readonly YesSql.ISession _session;
 
     public NotificationNavbarDisplayDriver(
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor,
         IOptions<NotificationOptions> notificationOptions,
         YesSql.ISession session)
     {
         _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
         _notificationOptions = notificationOptions.Value;
         _session = session;
     }
 
     public override async Task<IDisplayResult> DisplayAsync(Navbar model, BuildDisplayContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, NotificationPermissions.ManageNotifications))
         {
             return null;
         }
@@ -41,7 +37,7 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         var result = Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar")
             .Processing<UserNotificationNavbarViewModel>(async model =>
             {
-                var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userId = context.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
                     .OrderByDescending(x => x.CreatedAtUtc)
@@ -60,21 +56,21 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0 || _notificationOptions.SlidingCacheExpirationSeconds > 0)
         {
             return result
-                .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context =>
+                .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, cacheContext =>
                 {
-                    context.AddContext("user")
+                    cacheContext.AddContext("user")
                         // Allow another feature to clear all notification cache entries if necessary.
                         .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
-                        .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(_httpContextAccessor.HttpContext.User.Identity.Name));
+                        .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(context.HttpContext.User.Identity.Name));
 
                     if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0)
                     {
-                        context.WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.AbsoluteCacheExpirationSeconds));
+                        cacheContext.WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.AbsoluteCacheExpirationSeconds));
                     }
 
                     if (_notificationOptions.SlidingCacheExpirationSeconds > 0)
                     {
-                        context.WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.SlidingCacheExpirationSeconds));
+                        cacheContext.WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.SlidingCacheExpirationSeconds));
                     }
                 });
         }

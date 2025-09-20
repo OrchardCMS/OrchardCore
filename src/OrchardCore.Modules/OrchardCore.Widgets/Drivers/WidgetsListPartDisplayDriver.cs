@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -19,7 +18,6 @@ namespace OrchardCore.Widgets.Drivers;
 public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<WidgetsListPart>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;
     private readonly IServiceProvider _serviceProvider;
@@ -27,13 +25,11 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
     public WidgetsListPartDisplayDriver(
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IServiceProvider serviceProvider
         )
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _contentManager = contentManager;
         _serviceProvider = serviceProvider;
@@ -51,7 +47,7 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
 
         var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
 
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = context.HttpContext.User;
         var widgetDefinitions = (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync())
             .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 

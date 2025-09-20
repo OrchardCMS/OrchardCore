@@ -1,5 +1,4 @@
 using System.Globalization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentLocalization.ViewModels;
@@ -11,14 +10,10 @@ namespace OrchardCore.ContentLocalization.Drivers;
 
 public sealed class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILocalizationService _localizationService;
 
-    public ContentCulturePickerNavbarDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        ILocalizationService localizationService)
+    public ContentCulturePickerNavbarDisplayDriver(ILocalizationService localizationService)
     {
-        _httpContextAccessor = httpContextAccessor;
         _localizationService = localizationService;
     }
 
@@ -29,7 +24,7 @@ public sealed class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navb
         return Initialize<CulturePickerViewModel>("ContentCulturePicker", model =>
         {
             model.SupportedCultures = supportedCultures;
-            model.CurrentCulture = _httpContextAccessor
+            model.CurrentCulture = context
             .HttpContext
             .Features
             .Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;

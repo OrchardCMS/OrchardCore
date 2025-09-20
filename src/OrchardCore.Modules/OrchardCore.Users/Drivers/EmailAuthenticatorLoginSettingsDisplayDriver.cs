@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,16 +12,13 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class EmailAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriver<EmailAuthenticatorLoginSettings>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
 
     public EmailAuthenticatorLoginSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         ILiquidTemplateManager liquidTemplateManager)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _liquidTemplateManager = liquidTemplateManager;
     }
@@ -37,13 +33,13 @@ public sealed class EmailAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDr
             model.Subject = string.IsNullOrWhiteSpace(settings.Subject) ? EmailAuthenticatorLoginSettings.DefaultSubject : settings.Subject;
             model.Body = string.IsNullOrWhiteSpace(settings.Body) ? EmailAuthenticatorLoginSettings.DefaultBody : settings.Body;
         }).Location("Content:10#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(context.HttpContext?.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, EmailAuthenticatorLoginSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, UsersPermissions.ManageUsers))
         {
             return null;
         }

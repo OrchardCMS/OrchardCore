@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -14,8 +15,8 @@ public class UpdatePartFieldEditorContext : UpdateContentDefinitionEditorContext
             bool isNew,
             IShapeFactory shapeFactory,
             IZoneHolding layout,
-            IUpdateModel updater)
-        : base(builder, model, groupId, isNew, shapeFactory, layout, updater)
+            IUpdateModel updater,
+            HttpContext httpContext) : base(builder, model, groupId, isNew, shapeFactory, layout, updater, httpContext)
     {
     }
 }
