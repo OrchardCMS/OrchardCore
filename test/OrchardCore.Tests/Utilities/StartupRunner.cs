@@ -28,7 +28,8 @@ internal static class StartupRunner
         var configureMethod = startupType.GetMethod("Configure");
         configureMethod?.Invoke(startupInstance, [app]);
         
-        using var testHost = new TestServer(app.Services.GetRequiredService<IServiceProvider>());
+        // Create TestServer with the app's ServiceProvider (non-obsolete constructor)
+        using var testHost = new TestServer(app.Services);
 
         var client = testHost.CreateClient();
         var request = new HttpRequestMessage();
