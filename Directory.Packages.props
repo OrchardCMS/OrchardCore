@@ -85,54 +85,30 @@
   <ItemGroup>
     <!-- Add packages here that should be used instead of older, vulnerable versions of transitive dependencies. -->
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+  <ItemGroup>
     <!-- Several transitive dependencies on 8.0.4 and lower which is vulnerable -->
-    <PackageVersion Include="System.Text.Json" Version="8.0.6" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.0" />
     <!-- Several transitive dependencies on 8.0.0 which has known vulnerabilities -->
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
   </ItemGroup>
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
-  <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
-  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
-    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="9.4.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.8" />
+  <ItemGroup>
+    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.0" />
     <!-- dotnet/extensions repository -->
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.9.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
     <!-- Serilog.AspNetCore -->
-    <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
-    <PackageVersion Include="System.IO.Hashing" Version="9.0.8" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <!-- When removing this block, also remove the corresponding package rule in the root renovate.json5 config file. -->
-    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="8.3.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.19" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.19" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.19" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.20" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="8.0.19" />
-    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.19" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.19" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.19" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="8.0.19" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.19" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="8.0.19" />
-    <!-- dotnet/extensions repository -->
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
-    <!-- Serilog.AspNetCore -->
-    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
-    <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageVersion Include="System.IO.Hashing" Version="10.0.0" />
   </ItemGroup>
 </Project>
