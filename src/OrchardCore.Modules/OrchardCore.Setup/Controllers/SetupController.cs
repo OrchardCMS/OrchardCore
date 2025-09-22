@@ -54,6 +54,12 @@ public sealed class SetupController : Controller
     public async Task<ActionResult> Index(string token)
     {
         var recipes = await _setupService.GetSetupRecipesAsync();
+
+        if (!_shellSettings.IsDefaultShell())
+        {
+            recipes = recipes.Where(r => r.Name != OrchardCoreConstants.Shell.SaasRecipeName);
+        }
+
         var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
         if (!await ShouldProceedWithTokenAsync(token))

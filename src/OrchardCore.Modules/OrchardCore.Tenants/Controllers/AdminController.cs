@@ -302,7 +302,10 @@ public sealed class AdminController : Controller
         }
 
         var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-        var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
+        var recipes = recipeCollections.SelectMany(r => r)
+            .Where(r => r.IsSetupRecipe && r.Name != OrchardCoreConstants.Shell.SaasRecipeName)
+            .OrderBy(r => r.DisplayName)
+            .ToArray();
 
         // Creates a default shell settings based on the configuration.
         using var shellSettings = _shellSettingsManager

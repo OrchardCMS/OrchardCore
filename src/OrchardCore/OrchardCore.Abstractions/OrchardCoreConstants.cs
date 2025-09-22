@@ -5,6 +5,7 @@ public static class OrchardCoreConstants
     public static class Shell
     {
         public const string TenantsFileName = "tenants.json";
+        public const string SaasRecipeName = "SaaS";
     }
 
     public static class Configuration
