@@ -80,12 +80,16 @@ public class BooleanQueryProvider : ILuceneQueryProvider
 
     private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query, JsonNode filter)
     {
-        Query filteredQuery = null;
+        Query filteredQuery;
 
         switch (filter.GetValueKind())
         {
             case JsonValueKind.Object:
-                var first = filter.AsObject().First();
+                var first = filter.AsObject().FirstOrDefault();
+                if (string.IsNullOrEmpty(first.Key))
+                {
+                    return null;
+                }
 
                 foreach (var queryProvider in _filters)
                 {
@@ -93,14 +97,18 @@ public class BooleanQueryProvider : ILuceneQueryProvider
 
                     if (filteredQuery != null)
                     {
-                        break;
+                        return filteredQuery;
                     }
                 }
                 break;
             case JsonValueKind.Array:
                 foreach (var item in filter.AsArray())
                 {
-                    var firstQuery = item.AsObject().First();
+                    var firstQuery = item.AsObject().FirstOrDefault();
+                    if (string.IsNullOrEmpty(firstQuery.Key))
+                    {
+                        return null;
+                    }
 
                     foreach (var queryProvider in _filters)
                     {
@@ -108,7 +116,7 @@ public class BooleanQueryProvider : ILuceneQueryProvider
 
                         if (filteredQuery != null)
                         {
-                            break;
+                            return filteredQuery;
                         }
                     }
                 }
@@ -116,6 +124,6 @@ public class BooleanQueryProvider : ILuceneQueryProvider
             default: throw new ArgumentException($"Invalid value in boolean query");
         }
 
-        return filteredQuery;
+        return null;
     }
 }
