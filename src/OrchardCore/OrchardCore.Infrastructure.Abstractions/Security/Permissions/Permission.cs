@@ -22,7 +22,7 @@ public class Permission
     /// </remarks>
     public Permission(string name)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNullOrEmpty(name);
 
         Name = name;
     }

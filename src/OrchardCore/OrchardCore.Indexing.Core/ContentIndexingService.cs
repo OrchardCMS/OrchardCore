@@ -5,7 +5,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Core.Models;
-using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
 
@@ -15,7 +14,6 @@ public sealed class ContentIndexingService : NamedIndexingService
 {
     private readonly IStore _store;
     private readonly IContentManager _contentManager;
-    private readonly IEnumerable<IDocumentIndexHandler> _contentItemIndexHandlers;
 
     private ISession _readonlySession;
     private Dictionary<string, CultureAspect> _cultureAspects;
@@ -30,18 +28,18 @@ public sealed class ContentIndexingService : NamedIndexingService
         IStore store,
         IContentManager contentManager,
         IServiceProvider serviceProvider,
-        IEnumerable<IDocumentIndexHandler> contentItemIndexHandlers,
+        IEnumerable<IDocumentIndexHandler> documentIndexHandlers,
         ILogger<ContentIndexingService> logger)
         : base(
             IndexingConstants.ContentsIndexSource,
             indexProfileStore,
             indexingTaskManager,
+            documentIndexHandlers,
             serviceProvider,
             logger)
     {
         _store = store;
         _contentManager = contentManager;
-        _contentItemIndexHandlers = contentItemIndexHandlers;
     }
 
     protected override async Task BeforeProcessingTasksAsync(IEnumerable<RecordIndexingTask> tasks, IEnumerable<IndexProfileEntryContext> contexts)
@@ -102,15 +100,14 @@ public sealed class ContentIndexingService : NamedIndexingService
         }
     }
 
-    protected override async Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, RecordIndexingTask task)
+    protected override Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, RecordIndexingTask task)
     {
         if (task.Type != RecordIndexingTaskTypes.Update)
         {
-            return null;
+            return Task.FromResult<BuildDocumentIndexContext>(null);
         }
 
         var metadata = entry.IndexProfile.As<ContentIndexMetadata>();
-        var anyCulture = string.IsNullOrEmpty(metadata.Culture) || metadata.Culture == "any";
 
         ContentItem contentItem = null;
 
@@ -127,16 +124,23 @@ public sealed class ContentIndexingService : NamedIndexingService
         // We index only if we actually found a content item in the database.
         if (contentItem is null)
         {
-            return null;
+            return Task.FromResult<BuildDocumentIndexContext>(null);
         }
 
-        var buildIndexContext = new BuildDocumentIndexContext(new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], entry.DocumentIndexManager.GetContentIndexSettings());
+        var context = new BuildDocumentIndexContext(new ContentItemDocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], entry.DocumentIndexManager.GetContentIndexSettings());
 
-        await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), Logger);
+        return Task.FromResult(context);
+    }
+
+    protected override async ValueTask<bool> ShouldTrackDocumentAsync(BuildDocumentIndexContext buildIndexContext, IndexProfileEntryContext entry, RecordIndexingTask task)
+    {
+        var metadata = entry.IndexProfile.As<ContentIndexMetadata>();
+        var anyCulture = string.IsNullOrEmpty(metadata.Culture) || metadata.Culture == "any";
 
         // Ignore if the culture is not indexed in this index.
         if (!anyCulture)
         {
+            var contentItem = (ContentItem)buildIndexContext.Record;
             if (!_cultureAspects.TryGetValue(contentItem.ContentItemVersionId ?? contentItem.ContentItemId, out var cultureAspect) && buildIndexContext.Record is ContentItem record)
             {
                 cultureAspect = await _contentManager.PopulateAspectAsync<CultureAspect>(record);
@@ -145,10 +149,10 @@ public sealed class ContentIndexingService : NamedIndexingService
 
             if (cultureAspect.Culture?.Name != metadata.Culture)
             {
-                return null;
+                return false;
             }
         }
 
-        return buildIndexContext;
+        return true;
     }
 }

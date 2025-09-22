@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core;
 
@@ -11,6 +12,7 @@ public abstract class NamedIndexingService
 
     private readonly IIndexProfileStore _indexProfileStore;
     private readonly IIndexingTaskManager _indexingTaskManager;
+    private readonly IEnumerable<IDocumentIndexHandler> _documentIndexHandlers;
     private readonly IServiceProvider _serviceProvider;
 
     private const int _batchSize = 100;
@@ -19,6 +21,7 @@ public abstract class NamedIndexingService
         string name,
         IIndexProfileStore indexProfileStore,
         IIndexingTaskManager indexingTaskManager,
+        IEnumerable<IDocumentIndexHandler> documentIndexHandlers,
         IServiceProvider serviceProvider,
         ILogger logger)
     {
@@ -27,6 +30,7 @@ public abstract class NamedIndexingService
         Name = name;
         _indexProfileStore = indexProfileStore;
         _indexingTaskManager = indexingTaskManager;
+        _documentIndexHandlers = documentIndexHandlers;
         _serviceProvider = serviceProvider;
         Logger = logger;
     }
@@ -148,7 +152,14 @@ public abstract class NamedIndexingService
 
                     var buildIndexContext = await GetBuildDocumentIndexAsync(entry, task);
 
-                    if (buildIndexContext is not null)
+                    if (buildIndexContext is null)
+                    {
+                        continue;
+                    }
+
+                    await _documentIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), Logger);
+
+                    if (await ShouldTrackDocumentAsync(buildIndexContext, entry, task))
                     {
                         updatedDocumentsByIndex[entry.IndexProfile.Id].Add(buildIndexContext.DocumentIndex);
                     }
@@ -183,25 +194,9 @@ public abstract class NamedIndexingService
 
     protected abstract Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, RecordIndexingTask task);
 
+    protected virtual ValueTask<bool> ShouldTrackDocumentAsync(BuildDocumentIndexContext buildIndexContext, IndexProfileEntryContext entry, RecordIndexingTask task)
+        => ValueTask.FromResult(true);
+
     protected virtual Task BeforeProcessingTasksAsync(IEnumerable<RecordIndexingTask> tasks, IEnumerable<IndexProfileEntryContext> contexts)
         => Task.CompletedTask;
-
-    public sealed class IndexProfileEntryContext
-    {
-        public readonly IndexProfile IndexProfile;
-
-        public long LastTaskId { get; }
-
-        public readonly IDocumentIndexManager DocumentIndexManager;
-
-        public IndexProfileEntryContext(IndexProfile indexProfile, IDocumentIndexManager documentIndexManager, long lastTaskId)
-        {
-            ArgumentNullException.ThrowIfNull(indexProfile);
-            ArgumentNullException.ThrowIfNull(documentIndexManager);
-
-            IndexProfile = indexProfile;
-            DocumentIndexManager = documentIndexManager;
-            LastTaskId = lastTaskId;
-        }
-    }
 }

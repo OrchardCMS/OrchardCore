@@ -4,11 +4,9 @@
     <RootNamespace>OrchardCore.Search.AzureAI</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Azure AI Search Core</Title>
-    <Description>
-      $(OCCMSDescription)
+    <Description>$(OCCMSDescription)
 
-      Core Implementation for Azure AI Search module.
-    </Description>
+    Core Implementation for Azure AI Search module.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 

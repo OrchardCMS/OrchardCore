@@ -27,6 +27,8 @@ public sealed class Startup : StartupBase
             o.MemberAccessStrategy.Register<FlowPart>();
         });
 
+        services.AddScoped<IContentPartIndexHandler, BagPartDocumentIndexHandler>();
+
         // Flow Part
         services.AddContentPart<FlowPart>()
             .UseDisplayDriver<FlowPartDisplayDriver>();

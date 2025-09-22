@@ -26,6 +26,9 @@ public class LocalizationService : ILocalizationService
     }
 
     /// <inheritdocs />
+    public bool FallBackToParentCultures => _localizationSettings.FallBackToParentCulture;
+
+    /// <inheritdocs />
     public async Task<string> GetDefaultCultureAsync()
     {
         await InitializeLocalizationSettingsAsync();

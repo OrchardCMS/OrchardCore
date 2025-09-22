@@ -2,6 +2,7 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @{
     var settings = Model.TypeDefinition.GetSettings<ContentTypeSettings>();
+    var contentSettings = Model.TypeDefinition.GetSettings<ContentSettings>();
 }
 <div class="d-flex">
     <div class="me-auto">
@@ -21,6 +22,18 @@
         }
         <a role="btn-list-@Model.Name" asp-route-action="List" asp-route-area="OrchardCore.Contents" asp-route-contentTypeId="@Model.Name" class="btn btn-secondary btn-sm">@T["List Items"]</a>
         <a role="btn-edit-@Model.Name" asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name" class="btn btn-primary btn-sm edit-button">@T["Edit"]</a>
+        @if (contentSettings.IsSystemDefined)
+        {
+            <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined types are integral components of the system and cannot be removed."]">
+                <button type="button" class="btn btn-sm btn-danger" disabled>
+                    @T["Delete"]
+                </button>
+            </div>
+        }
+        else
+        {
+            <a role="btn-delete-@Model.Name" asp-route-action="Delete" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content type?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+        }
     </div>
 </div>
 

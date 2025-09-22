@@ -33,8 +33,8 @@ public sealed class ContentsDriver : ContentDisplayDriver
 
         var results = new List<IDisplayResult>()
         {
-            Shape("ContentsTags_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Tags:10"),
-            Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Meta:20"),
+            Shape("ContentsTags_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10"),
+            Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20"),
         };
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
@@ -42,7 +42,7 @@ public sealed class ContentsDriver : ContentDisplayDriver
         if (contentTypeDefinition != null)
         {
             var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(contentItem))
-                .Location("Detail", "Content:before");
+                .Location(OrchardCoreConstants.DisplayType.Detail, "Content:before");
 
             contentsMetadataShape.Displaying(ctx =>
             {
@@ -69,8 +69,8 @@ public sealed class ContentsDriver : ContentDisplayDriver
             var user = _httpContextAccessor.HttpContext.User;
 
             results.Add(contentsMetadataShape);
-            results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
-            results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10")
+            results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:10"));
+            results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:10")
                 .RenderWhen(async () =>
                 {
                     var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem);

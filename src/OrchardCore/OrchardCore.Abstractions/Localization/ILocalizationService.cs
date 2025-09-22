@@ -24,6 +24,11 @@ public interface ILocalizationService
     Task<string[]> GetSupportedCulturesAsync();
 
     /// <summary>
+    /// Get whether to set the request culture to a parent culture in case the culture is not determined.
+    /// </summary>
+    bool FallBackToParentCultures { get; }
+
+    /// <summary>
     /// Gets all cultures recognized by .NET, including culture aliases.
     /// </summary>
     static CultureInfo[] GetAllCulturesAndAliases()

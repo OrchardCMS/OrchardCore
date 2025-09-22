@@ -27,11 +27,17 @@ public class AzureAISearchIndexMap
 
     public bool IsSearchable { get; set; }
 
+    public AzureAISearchIndexMapVectorInfo VectorInfo { get; set; }
+
+    /// <summary>
+    /// When the type is complex, this property contains the sub-fields of the complex type.
+    /// </summary>
+    public IList<AzureAISearchIndexMap> SubFields { get; set; }
+
     public DocumentIndexOptions Options { get; set; }
 
     public AzureAISearchIndexMap()
     {
-
     }
 
     public AzureAISearchIndexMap(string azureFieldKey, Types type)

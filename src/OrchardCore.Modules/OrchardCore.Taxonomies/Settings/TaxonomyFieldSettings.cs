@@ -1,14 +1,9 @@
+using OrchardCore.ContentManagement.Metadata.Settings;
+
 namespace OrchardCore.Taxonomies.Settings;
 
-public class TaxonomyFieldSettings
+public class TaxonomyFieldSettings : FieldSettings
 {
-    public string Hint { get; set; }
-
-    /// <summary>
-    /// Whether a selection is required.
-    /// </summary>
-    public bool Required { get; set; }
-
     /// <summary>
     /// The content item id of the taxonomy to choose from.
     /// </summary>

@@ -24,4 +24,9 @@ public class LocalizationSettingsViewModel
     /// Gets or sets the default culture of the site.
     /// </summary>
     public string DefaultCulture { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the culture could fall back to it's parent culture in case the current culture is not determined.
+    /// </summary>
+    public bool FallBackToParentCultures { get; set; }
 }

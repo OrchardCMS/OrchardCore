@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
 

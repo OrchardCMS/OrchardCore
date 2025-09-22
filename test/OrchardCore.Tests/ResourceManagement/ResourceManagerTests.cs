@@ -6,7 +6,7 @@ using ResourceLocation = OrchardCore.ResourceManagement.ResourceLocation;
 
 namespace OrchardCore.Tests.ResourceManagement;
 
-public class ResourceManagerTests
+public class ResourceManagerTests : IDisposable
 {
     private const string BasePath = "http://host";
 
@@ -886,6 +886,8 @@ public class ResourceManagerTests
             )
         );
     }
+
+    public void Dispose() => _browsingContext?.Dispose();
 
     #region Helpers
     private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)

@@ -21,7 +21,7 @@
     @switch (Model.Value.ShellSettings.State)
     {
         case TenantState.Uninitialized:
-            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-cog text-secondary" aria-hidden="true"></i> @T["Uninitialized"]</span>
+            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-gear text-secondary" aria-hidden="true"></i> @T["Uninitialized"]</span>
             break;
         case TenantState.Initializing:
             <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-hourglass-start text-info" aria-hidden="true"></i> @T["Initializing"]</span>
@@ -30,10 +30,10 @@
             <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-check text-success" aria-hidden="true"></i> @T["Running"]</span>
             break;
         case TenantState.Disabled:
-            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-remove text-danger" aria-hidden="true"></i> @T["Disabled"]</span>
+            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-xmark text-danger" aria-hidden="true"></i> @T["Disabled"]</span>
             break;
         case TenantState.Invalid:
-            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-exclamation-triangle text-warning" aria-hidden="true"></i> @T["Invalid"]</span>
+            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-triangle-exclamation text-warning" aria-hidden="true"></i> @T["Invalid"]</span>
             break;
     }
 </a>

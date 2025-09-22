@@ -17,6 +17,11 @@ public interface IActivity : IEntity
     /// <summary>
     /// List of possible outcomes when the activity is executed.
     /// </summary>
+    ValueTask<IEnumerable<Outcome>> GetPossibleOutcomesAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+
+    /// <summary>
+    /// List of possible outcomes when the activity is executed.
+    /// </summary>
     IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 
     /// <summary>
