@@ -7,8 +7,9 @@ public class LogSmsProvider : ISmsProvider
 {
     public const string TechnicalName = "Log";
 
-    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
+
+    protected readonly IStringLocalizer S;
 
     public LocalizedString Name => S["Log - writes messages to the logs"];
 
