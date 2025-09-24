@@ -508,31 +508,29 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     [Shape]
+    
     public IHtmlContent ActionLink(Shape shape, IUrlHelper Url, object Value, bool Disabled = false)
     {
         if (Disabled)
         {
+            // keep the parent <li> styled as disabled
             if (shape.TryGetProperty("Tag", out TagBuilder tagBuilder))
             {
                 tagBuilder.AddCssClass("disabled");
             }
+
+            
+            return HtmlString.Empty;
         }
 
         var routeValues = shape.GetProperty<RouteValueDictionary>("RouteValues") ?? [];
-        if (!Disabled)
-        {
-            shape.Attributes["href"] = Url.Action((string)routeValues["action"], (string)routeValues["controller"], routeValues);
-        }
-        else
-        {
-            shape.Attributes.Remove("href");
-        }
+        shape.Attributes["href"] = Url.Action((string)routeValues["action"], (string)routeValues["controller"], routeValues);
 
         var tag = shape.GetTagBuilder("a");
-
         tag.InnerHtml.AppendHtml(CoerceHtmlString(Value));
         return tag;
     }
+
 
     [Shape]
     public Task<IHtmlContent> Pager_Gap(IShape shape, DisplayContext displayContext)
