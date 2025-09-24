@@ -180,6 +180,7 @@ nav:
                   - Title: reference/modules/Title/README.md
                   - Autoroute: reference/modules/Autoroute/README.md
                   - Alias: reference/modules/Alias/README.md
+                  - Archive Later: reference/modules/ArchiveLater/README.md
                   - Html: reference/modules/Html/README.md
                   - Markdown: reference/modules/Markdown/README.md
                   - List: reference/modules/Lists/README.md
