@@ -166,7 +166,7 @@
         {
             // Render a mock widget so that its resources are included in the page
             var contentItem = await ContentManager.NewAsync(type.Name);
-            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", "z" + Guid.NewGuid().ToString("n")));
+            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, string.Empty, $"z{Guid.NewGuid():n}"));
         }
         
         <script asp-name="widgetslist-edit" at="Foot"></script>
