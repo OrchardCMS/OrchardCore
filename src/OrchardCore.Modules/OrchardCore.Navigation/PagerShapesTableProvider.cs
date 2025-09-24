@@ -517,7 +517,6 @@ public class PagerShapes : IShapeAttributeProvider
             {
                 tagBuilder.AddCssClass("disabled");
             }
-
             
             return HtmlString.Empty;
         }
