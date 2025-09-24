@@ -22,7 +22,7 @@
 <div>
     @foreach (var zone in Model.AvailableZones)
     {
-        var widgetTemplatePlaceholderId = "z" + Guid.NewGuid().ToString("n");
+        var widgetTemplatePlaceholderId = $"z{Guid.NewGuid():n}";
 
             <div class="widget-list-zone card my-2">
                 <div class="card-header text-muted">
