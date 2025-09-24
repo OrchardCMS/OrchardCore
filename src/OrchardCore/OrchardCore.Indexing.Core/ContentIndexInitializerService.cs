@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
@@ -31,42 +32,46 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
 
         _initialized = true;
 
-        ShellScope.AddDeferredTask(async scope =>
+        ShellScope.AddDeferredTask(scope =>
         {
-            var indexStore = scope.ServiceProvider.GetRequiredService<IIndexProfileStore>();
-            var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
-
-            var indexes = await indexStore.GetAllAsync();
-
-            var createdIndexIds = new List<string>();
-
-            var indexManagers = new Dictionary<string, IIndexManager>();
-
-            foreach (var index in indexes)
+            // Trigger the indexing in differed task to ensure that the current transaction is committed before indexing.
+            return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("synchronize-content-indexes", async scope =>
             {
-                if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+                var indexStore = scope.ServiceProvider.GetRequiredService<IIndexProfileStore>();
+                var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
+
+                var indexes = await indexStore.GetAllAsync();
+
+                var createdIndexIds = new List<string>();
+
+                var indexManagers = new Dictionary<string, IIndexManager>();
+
+                foreach (var index in indexes)
                 {
-                    indexManager = scope.ServiceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
-                    indexManagers[index.ProviderName] = indexManager;
+                    if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+                    {
+                        indexManager = scope.ServiceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+                        indexManagers[index.ProviderName] = indexManager;
+                    }
+
+                    if (indexManager is null)
+                    {
+                        continue;
+                    }
+
+                    if (!await indexManager.ExistsAsync(index.IndexFullName))
+                    {
+                        await indexManager.CreateAsync(index);
+                    }
+
+                    createdIndexIds.Add(index.Id);
                 }
 
-                if (indexManager is null)
+                if (createdIndexIds.Count > 0)
                 {
-                    continue;
+                    await indexingService.ProcessRecordsAsync(createdIndexIds);
                 }
-
-                if (!await indexManager.ExistsAsync(index.IndexFullName))
-                {
-                    await indexManager.CreateAsync(index);
-                }
-
-                createdIndexIds.Add(index.Id);
-            }
-
-            if (createdIndexIds.Count > 0)
-            {
-                await indexingService.ProcessRecordsAsync(createdIndexIds);
-            }
+            });
         });
 
         return Task.CompletedTask;
