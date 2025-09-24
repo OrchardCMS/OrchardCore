@@ -522,6 +522,7 @@ public class PagerShapes : IShapeAttributeProvider
         }
 
         var routeValues = shape.GetProperty<RouteValueDictionary>("RouteValues") ?? [];
+
         shape.Attributes["href"] = Url.Action((string)routeValues["action"], (string)routeValues["controller"], routeValues);
 
         var tag = shape.GetTagBuilder("a");
