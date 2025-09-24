@@ -529,7 +529,6 @@ public class PagerShapes : IShapeAttributeProvider
         return tag;
     }
 
-
     [Shape]
     public Task<IHtmlContent> Pager_Gap(IShape shape, DisplayContext displayContext)
     {
