@@ -670,7 +670,7 @@ This template is called when displaying a User Name.
 
 | Template        | Filename              |
 |-----------------|-----------------------|
-| `UserDisplayName_SummaryAdmin___johndoe`  | `UserDisplayName-johndoe.SummaryAdmin.cshtml`  |
+| `UserDisplayName_SummaryAdmin__johndoe`  | `UserDisplayName-johndoe.SummaryAdmin.cshtml`  |
 | `UserDisplayName_SummaryAdmin` | `UserDisplayName.SummaryAdmin.cshtml` |
 
 ## Overriding Views

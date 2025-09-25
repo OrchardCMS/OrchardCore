@@ -37,13 +37,12 @@ You can then display a user's name like this:
 
 ```html
 <user-display-name 
-    username="@(contentItem.Author)" 
+    user-name="@(contentItem.Author)" 
     title="@T["Author"].Value" 
     display-type="@Model.Metadata.DisplayType" />
 ```
 
 This ensures user names are rendered consistently while making use of OrchardCore's caching system for performance.
-
 
 ## Two-factor Authentication
 
