@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
@@ -18,6 +19,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     private List<Func<ShellScope, Task>> _beforeDispose;
     private HashSet<string> _deferredSignals;
     private List<Func<ShellScope, Task>> _deferredTasks;
+    private List<BackgroundJobInfo> _deferredBackgrounds;
     private List<Func<ShellScope, Exception, Task>> _exceptionHandlers;
 
     private ShellScopeStates _state;
@@ -392,6 +394,20 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     }
 
     /// <summary>
+    /// Adds a Task to be executed in a new scope after 'BeforeDisposeAsync()'.
+    /// </summary>
+    internal void BackgroundTask(string jobName, Func<ShellScope, Task> task)
+    {
+        ThrowIfTerminating();
+
+        (_deferredBackgrounds ??= []).Add(new BackgroundJobInfo
+        {
+            Name = jobName,
+            Job = task,
+        });
+    }
+
+    /// <summary>
     /// Adds an handler to be invoked if an exception is thrown while executing in this shell scope.
     /// </summary>
     internal void ExceptionHandler(Func<ShellScope, Exception, Task> callback)
@@ -404,22 +420,33 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Registers a delegate to be invoked before the current shell scope will be disposed.
     /// </summary>
-    public static void RegisterBeforeDispose(Func<ShellScope, Task> callback, bool last = false) => Current?.BeforeDispose(callback, last);
+    public static void RegisterBeforeDispose(Func<ShellScope, Task> callback, bool last = false)
+        => Current?.BeforeDispose(callback, last);
 
     /// <summary>
     /// Adds a Signal (if not already present) to be sent just before the current shell scope will be disposed.
     /// </summary>
-    public static void AddDeferredSignal(string key) => Current?.DeferredSignal(key);
+    public static void AddDeferredSignal(string key)
+        => Current?.DeferredSignal(key);
 
     /// <summary>
     /// Adds a Task to be executed in a new scope once the current shell scope has been disposed.
     /// </summary>
-    public static void AddDeferredTask(Func<ShellScope, Task> task) => Current?.DeferredTask(task);
+    public static void AddDeferredTask(Func<ShellScope, Task> task)
+        => Current?.DeferredTask(task);
+
+    /// <summary>
+    /// Adds a task to be executed in the background in a new scope once the current shell scope has been disposed.
+    /// </summary>
+    /// <param name="task"></param>
+    public static void ExecuteInBackgroundAfterRequestAsync(Func<ShellScope, Task> task, string jobName = "")
+        => Current?.BackgroundTask(jobName, task);
 
     /// <summary>
     /// Adds an handler to be invoked if an exception is thrown while executing in this shell scope.
     /// </summary>
-    public static void AddExceptionHandler(Func<ShellScope, Exception, Task> handler) => Current?.ExceptionHandler(handler);
+    public static void AddExceptionHandler(Func<ShellScope, Exception, Task> handler)
+        => Current?.ExceptionHandler(handler);
 
     /// <summary>
     /// Invokes the registered delegates that should be executed if an exception is thrown while executing in this shell scope.
@@ -504,6 +531,16 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                     }
                 },
                 activateShell: false);
+            }
+        }
+
+        if (_deferredBackgrounds?.Count > 0)
+        {
+            var shellHost = ShellContext.ServiceProvider.GetRequiredService<IShellHost>();
+
+            foreach (var backgroundInfo in _deferredBackgrounds)
+            {
+                await HttpBackgroundJob.ExecuteAsync(scope => backgroundInfo.Job(scope), backgroundInfo.Name);
             }
         }
     }
@@ -607,5 +644,12 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         ServiceScopeOnly = 1,
         IsTerminating = 2,
         IsDisposed = 4,
+    }
+
+    private sealed class BackgroundJobInfo
+    {
+        public string Name { get; set; }
+
+        public Func<ShellScope, Task> Job { get; set; }
     }
 }

@@ -18,7 +18,15 @@ public static class HttpBackgroundJob
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
-    public static Task ExecuteAfterEndOfRequestAsync(string jobName, Func<ShellScope, Task> job)
+    public static Task ExecuteAsync(Func<ShellScope, Task> job, string jobName = "")
+    {
+        return ExecuteAsync<object>((scope, _) => job(scope), default, jobName);
+    }
+
+    /// <summary>
+    /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
+    /// </summary>
+    public static Task ExecuteAsync<T>(Func<ShellScope, T, Task> job, T args = default, string jobName = "")
     {
         var scope = ShellScope.Current;
 
@@ -36,21 +44,15 @@ public static class HttpBackgroundJob
             return Task.CompletedTask;
         }
 
-        // Record the current logged in user.
-        var userPrincipal = httpContextAccessor.HttpContext.User.Clone();
-
         // Increment the active jobs count to track the number of background jobs running.
         Interlocked.Increment(ref _activeJobsCount);
+
+        // Record the current logged in user.
+        var userPrincipal = httpContextAccessor.HttpContext.User.Clone();
 
         // Fire and forget in an isolated child scope.
         _ = ShellScope.UsingChildScopeAsync(async scope =>
         {
-            scope.RegisterBeforeDispose(scope =>
-            {
-                // Decrement the active jobs count when the job is disposed.
-                Interlocked.Decrement(ref _activeJobsCount);
-            }, true);
-
             var timeoutTask = Task.Delay(60_000);
 
             // Wait for the current 'HttpContext' to be released with a timeout of 60s.
@@ -60,6 +62,8 @@ public static class HttpBackgroundJob
 
                 if (timeoutTask.IsCompleted)
                 {
+                    Interlocked.Decrement(ref _activeJobsCount);
+
                     return;
                 }
             }
@@ -71,6 +75,8 @@ public static class HttpBackgroundJob
             // Can't be executed e.g. if a tenant setup failed.
             if (!shellContext.Settings.IsRunning())
             {
+                Interlocked.Decrement(ref _activeJobsCount);
+
                 return;
             }
 
@@ -94,24 +100,26 @@ public static class HttpBackgroundJob
             // Use a new scope as the shell context may have been reloaded.
             await ShellScope.UsingChildScopeAsync(async scope =>
             {
-                var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
-
                 try
                 {
-                    await job(scope);
+                    await job(scope, args);
                 }
                 catch (Exception ex)
                 {
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
+
                     logger.LogError(
                         ex,
                         "Error while executing the background job '{JobName}' after the end of the request on tenant '{TenantName}'.",
-                        jobName,
+                        jobName ?? "",
                         scope.ShellContext.Settings.Name);
                 }
             });
 
             // Clear the 'HttpContext' for this async flow.
             httpContextAccessor.HttpContext = null;
+
+            Interlocked.Decrement(ref _activeJobsCount);
         });
 
         return Task.CompletedTask;
@@ -120,30 +128,42 @@ public static class HttpBackgroundJob
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
+    [Obsolete("This method is obsolete and should no longer be used. Use ExecuteAsync to run a background task immediately, or ShellScope.ExecuteInBackgroundAfterRequestAsync to schedule execution after the current request has completed.")]
+    public static Task ExecuteAfterEndOfRequestAsync(string jobName, Func<ShellScope, Task> job)
+        => ExecuteAsync(job, jobName);
+
+    /// <summary>
+    /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
+    /// </summary>
+    [Obsolete("This method is obsolete and should no longer be used. Use ExecuteAsync to run a background task immediately, or ShellScope.ExecuteInBackgroundAfterRequestAsync to schedule execution after the current request has completed.")]
     public static Task ExecuteAfterEndOfRequestAsync<T1>(string jobName, T1 item1, Func<ShellScope, T1, Task> job)
         => ExecuteAfterEndOfRequestAsync(jobName, scope => job(scope, item1));
 
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
+    [Obsolete("This method is obsolete and should no longer be used. Use ExecuteAsync to run a background task immediately, or ShellScope.ExecuteInBackgroundAfterRequestAsync to schedule execution after the current request has completed.")]
     public static Task ExecuteAfterEndOfRequestAsync<T1, T2>(string jobName, T1 item1, T2 item2, Func<ShellScope, T1, T2, Task> job)
         => ExecuteAfterEndOfRequestAsync(jobName, scope => job(scope, item1, item2));
 
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
+    [Obsolete("This method is obsolete and should no longer be used. Use ExecuteAsync to run a background task immediately, or ShellScope.ExecuteInBackgroundAfterRequestAsync to schedule execution after the current request has completed.")]
     public static Task ExecuteAfterEndOfRequestAsync<T1, T2, T3>(string jobName, T1 item1, T2 item2, T3 item3, Func<ShellScope, T1, T2, T3, Task> job)
         => ExecuteAfterEndOfRequestAsync(jobName, scope => job(scope, item1, item2, item3));
 
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
+    [Obsolete("This method is obsolete and should no longer be used. Use ExecuteAsync to run a background task immediately, or ShellScope.ExecuteInBackgroundAfterRequestAsync to schedule execution after the current request has completed.")]
     public static Task ExecuteAfterEndOfRequestAsync<T1, T2, T3, T4>(string jobName, T1 item1, T2 item2, T3 item3, T4 item4, Func<ShellScope, T1, T2, T3, T4, Task> job)
         => ExecuteAfterEndOfRequestAsync(jobName, scope => job(scope, item1, item2, item3, item4));
 
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
+    [Obsolete("This method is obsolete and should no longer be used. Use ExecuteAsync to run a background task immediately, or ShellScope.ExecuteInBackgroundAfterRequestAsync to schedule execution after the current request has completed.")]
     public static Task ExecuteAfterEndOfRequestAsync<T1, T2, T3, T4, T5>(string jobName, T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, Func<ShellScope, T1, T2, T3, T4, T5, Task> job)
         => ExecuteAfterEndOfRequestAsync(jobName, scope => job(scope, item1, item2, item3, item4, item5));
 }

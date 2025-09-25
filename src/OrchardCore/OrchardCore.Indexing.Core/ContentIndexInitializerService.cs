@@ -31,7 +31,7 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
 
         _initialized = true;
 
-        ShellScope.AddDeferredTask(async scope =>
+        ShellScope.ExecuteInBackgroundAfterRequestAsync(async scope =>
         {
             var indexStore = scope.ServiceProvider.GetRequiredService<IIndexProfileStore>();
             var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
@@ -67,7 +67,7 @@ public sealed class ContentIndexInitializerService : ModularTenantEvents
             {
                 await indexingService.ProcessRecordsAsync(createdIndexIds);
             }
-        });
+        }, "synchronize-content-indexes");
 
         return Task.CompletedTask;
     }

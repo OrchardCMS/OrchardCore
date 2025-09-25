@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.BackgroundJobs;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -15,21 +15,21 @@ public sealed class AzureAISearchIndexResetStep : NamedRecipeStepHandler
     {
     }
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
+    protected override Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<AzureAISearchIndexResetDeploymentStep>();
 
         if (model == null)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         if (!model.IncludeAll && (model.Indices == null || model.Indices.Length == 0))
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
+        ShellScope.ExecuteInBackgroundAfterRequestAsync(async scope =>
         {
             var indexProfileManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
 
@@ -44,6 +44,8 @@ public sealed class AzureAISearchIndexResetStep : NamedRecipeStepHandler
                 await indexProfileManager.UpdateAsync(index);
                 await indexProfileManager.SynchronizeAsync(index);
             }
-        });
+        }, AzureAISearchIndexRebuildDeploymentSource.Name);
+
+        return Task.CompletedTask;
     }
 }

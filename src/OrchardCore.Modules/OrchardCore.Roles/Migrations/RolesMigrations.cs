@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.BackgroundJobs;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
@@ -123,7 +122,7 @@ public sealed class RolesMigrations : DataMigration
             if (adminRoles.Count > 0)
             {
                 // Run the migration in the background to ensure that the newly added role is committed to the database first, preventing potential exceptions.
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("MigrateAdminUsersToNewAdminRole", async subScope =>
+                ShellScope.ExecuteInBackgroundAfterRequestAsync(async subScope =>
                 {
                     var userManager = subScope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
@@ -141,7 +140,7 @@ public sealed class RolesMigrations : DataMigration
                             }
                         }
                     }
-                });
+                }, "MigrateAdminUsersToNewAdminRole");
             }
 
             if (adminSystemRoleName != OrchardCoreConstants.Roles.Administrator)

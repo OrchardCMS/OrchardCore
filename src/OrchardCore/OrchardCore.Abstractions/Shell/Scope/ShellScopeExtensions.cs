@@ -42,6 +42,7 @@ public static class ShellScopeExtensions
     public static ShellScope AddDeferredSignal(this ShellScope scope, string key)
     {
         scope?.DeferredSignal(key);
+
         return scope;
     }
 
@@ -51,6 +52,7 @@ public static class ShellScopeExtensions
     public static ShellScope AddDeferredTask(this ShellScope scope, Func<ShellScope, Task> task)
     {
         scope?.DeferredTask(task);
+
         return scope;
     }
 
@@ -69,11 +71,36 @@ public static class ShellScopeExtensions
     }
 
     /// <summary>
+    /// Adds a Task to be executed in a new scope once this shell scope has been disposed.
+    /// </summary>
+    public static ShellScope ExecuteInBackgroundAfterRequestAsync(this ShellScope scope, Func<ShellScope, Task> task, string jobName = "")
+    {
+        scope?.BackgroundTask(jobName, task);
+
+        return scope;
+    }
+
+    /// <summary>
+    /// Adds an Action to be executed in a new scope once this shell scope has been disposed.
+    /// </summary>
+    public static ShellScope ExecuteInBackgroundAfterRequestAsync(this ShellScope scope, Action<ShellScope> callback, string jobName = "")
+    {
+        scope?.BackgroundTask(jobName, scope =>
+        {
+            callback(scope);
+            return Task.CompletedTask;
+        });
+
+        return scope;
+    }
+
+    /// <summary>
     /// Adds an handler task to be invoked if an exception is thrown while executing in this shell scope.
     /// </summary>
     public static ShellScope AddExceptionHandler(this ShellScope scope, Func<ShellScope, Exception, Task> handler)
     {
         scope?.ExceptionHandler(handler);
+
         return scope;
     }
 
