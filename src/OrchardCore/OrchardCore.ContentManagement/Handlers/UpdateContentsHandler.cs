@@ -21,7 +21,7 @@ public class UpdateContentsHandler : ContentHandlerBase
     {
         var httpContext = _httpContextAccessor.HttpContext;
 
-        // It is imortant to set the owner during initialization own permission are validated correctly everywhere.
+        // Important: set the owner during initialization so that "own" permissions are validated correctly everywhere.
         if (httpContext?.User.Identity?.IsAuthenticated == true)
         {
             context.ContentItem.Owner = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
