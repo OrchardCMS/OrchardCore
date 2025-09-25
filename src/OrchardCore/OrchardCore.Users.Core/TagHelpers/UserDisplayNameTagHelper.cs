@@ -15,7 +15,7 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
         Type = "UserDisplayName";
     }
 
-    [HtmlAttributeName("username")]
+    [HtmlAttributeName("user-name")]
     public string Username { get; set; }
 
     [HtmlAttributeName("title")]

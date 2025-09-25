@@ -14,5 +14,5 @@
 
 @if (!string.IsNullOrEmpty(contentItem.Author))
 {
-    <user-display-name username="@(contentItem.Author)" title="@T["Author"].Value" display-type="@Model.Metadata.DisplayType" />
+    <user-display-name user-name="@(contentItem.Author)" title="@T["Author"].Value" display-type="@Model.Metadata.DisplayType" />
 }
