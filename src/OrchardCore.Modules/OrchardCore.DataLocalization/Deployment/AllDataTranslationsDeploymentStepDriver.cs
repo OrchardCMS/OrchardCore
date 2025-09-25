@@ -10,7 +10,7 @@ public class AllDataTranslationsDeploymentStepDriver : DisplayDriver<DeploymentS
     {
         return
             CombineAsync(
-                View("AllDataTranslationsDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllDataTranslationsDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AllDataTranslationsDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

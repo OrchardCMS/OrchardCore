@@ -53,6 +53,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
   - [Title](modules/Title/README.md)
   - [Autoroute](modules/Autoroute/README.md)
   - [Alias](modules/Alias/README.md)
+  - [Archive Later](modules/ArchiveLater/README.md)
   - [Html](modules/Html/README.md)
   - [Markdown](modules/Markdown/README.md)
   - [List](modules/Lists/README.md)

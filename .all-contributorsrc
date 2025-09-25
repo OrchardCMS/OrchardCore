@@ -3403,6 +3403,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "TurkyAhmed",
+      "name": "TurkyAhmed",
+      "avatar_url": "https://avatars.githubusercontent.com/u/138265111?v=4",
+      "profile": "https://github.com/TurkyAhmed",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "xnavrat4",
+      "name": "Patrik Navratil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/100190956?v=4",
+      "profile": "https://github.com/xnavrat4",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
