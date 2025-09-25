@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.TagHelpers;
 using OrchardCore.DisplayManagement.Utilities;
 
-namespace OrchardCore.Users.TagHelpers;
+namespace OrchardCore.DisplayManagement.TagHelpers;
 
 [HtmlTargetElement("user-display-name")]
 [HtmlTargetElement("UserDisplayName")]
@@ -28,7 +26,7 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
     {
         if (string.IsNullOrEmpty(Username))
         {
-            if (!Properties.TryGetValue("Username", out var name))
+            if (!Properties.TryGetValue(nameof(Username), out var name))
             {
                 output.SuppressOutput();
 
@@ -38,11 +36,11 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
             Username = name.ToString();
         }
 
-        Properties["Username"] = Username;
+        Properties[nameof(Username)] = Username;
 
         if (!string.IsNullOrWhiteSpace(Title))
         {
-            Properties["Title"] = Title;
+            Properties[nameof(Title)] = Title;
         }
 
         if (!output.Attributes.TryGetAttribute("cache-id", out _))

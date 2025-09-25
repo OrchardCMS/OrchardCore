@@ -48,7 +48,6 @@ using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Recipes;
 using OrchardCore.Users.Services;
-using OrchardCore.Users.TagHelpers;
 using OrchardCore.Users.ViewModels;
 using YesSql.Filters.Query;
 
@@ -70,7 +69,6 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTagHelpers<UserDisplayNameTagHelper>();
         services.AddShapeTableProvider<UserDisplayNameShapeTableProvider>();
 
         services.AddDataMigration<ExternalAuthenticationMigrations>();

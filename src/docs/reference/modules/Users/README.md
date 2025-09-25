@@ -26,11 +26,11 @@ If you override the affected shapes (see the changes in the [relevant pull reque
 
 To use this shape:
 
-1. Add the `OrchardCore.Users.Core` package to your project if you haven't already.
+1. Add the `OrchardCore.DisplayManagement` package to your project if you haven't already.
 2. In `_ViewImports.cshtml`, add:
 
 ```csharp
-@addTagHelper *, OrchardCore.Users.Core
+@addTagHelper *, OrchardCore.DisplayManagement
 ```
 
 You can then display a user's name like this:
