@@ -1,6 +1,7 @@
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Contents.Services;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -50,6 +51,13 @@ public sealed class Startup : StartupBase
         services.AddOptions<ShortcodeOptions>();
         services.AddScoped<Sc.IShortcodeProvider, OptionsShortcodeProvider>();
         services.AddDisplayDriver<ShortcodeDescriptor, ShortcodeDescriptorDisplayDriver>();
+        //services.AddDisplayDriver<ContentOptionsViewModel, ShortcodesOptionsDisplayDriver>();
+
+        // Shortcode Filters
+        services
+            .AddTransient<IShortcodesAdminListFilterProvider, DefaultShortcodesAdminListFilterProvider>()
+            .AddScoped<IDisplayDriver<ShortcodeFilter>, ShortcodeFilterDisplayDriver>()
+            .AddShortcodeFilterParser();
     }
 }
 
@@ -77,20 +85,23 @@ public sealed class LocaleShortcodeProviderStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddShortcode<LocaleShortcodeProvider>("locale", d =>
-        {
-            d.DefaultValue = "[locale {language_code}] [/locale]";
-            d.Hint = "Conditionally render content in the specified language";
-            d.Usage =
-@"[locale en]English Text[/locale][locale fr false]French Text[/locale]<br>
+        services.AddShortcode<LocaleShortcodeProvider>(
+            "locale",
+            d =>
+            {
+                d.DefaultValue = "[locale {language_code}] [/locale]";
+                d.Hint = "Conditionally render content in the specified language";
+                d.Usage =
+                    @"[locale en]English Text[/locale][locale fr false]French Text[/locale]<br>
 <table>
   <tr>
     <td>Args:</td>
     <td>lang, fallback</td>
   </tr>
 </table>";
-            d.Categories = ["Localization"];
-        });
+                d.Categories = ["Localization"];
+            }
+        );
     }
 }
 
@@ -99,6 +110,10 @@ public sealed class ShortcodeTemplatesDeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<AllShortcodeTemplatesDeploymentSource, AllShortcodeTemplatesDeploymentStep, AllShortcodeTemplatesDeploymentStepDriver>();
+        services.AddDeployment<
+            AllShortcodeTemplatesDeploymentSource,
+            AllShortcodeTemplatesDeploymentStep,
+            AllShortcodeTemplatesDeploymentStepDriver
+        >();
     }
 }

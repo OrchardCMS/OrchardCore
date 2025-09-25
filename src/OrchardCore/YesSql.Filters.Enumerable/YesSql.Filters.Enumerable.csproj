@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+      <PackageReference Include="YesSql.Filters.Abstractions" />
+      <PackageReference Include="YesSql.Abstractions" />
+    </ItemGroup>
+
+</Project>

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
@@ -18,109 +19,222 @@ using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
 using Parlot;
+using YesSql.Filters.Enumerable;
 
 namespace OrchardCore.Shortcodes.Controllers;
 
 [Feature("OrchardCore.Shortcodes.Templates")]
-public sealed class AdminController : Controller
+public sealed class AdminController : Controller, IUpdateModel
 {
-    private const string _optionsSearch = "Options.Search";
-
     private readonly IAuthorizationService _authorizationService;
     private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
-    private readonly IShapeFactory _shapeFactory;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
+    private readonly IDisplayManager<ShortcodeFilter> _contentOptionsDisplayManager;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
+        IServiceProvider serviceProvider,
         IAuthorizationService authorizationService,
         ShortcodeTemplatesManager shortcodeTemplatesManager,
         ILiquidTemplateManager liquidTemplateManager,
         IOptions<PagerOptions> pagerOptions,
         INotifier notifier,
-        IShapeFactory shapeFactory,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer,
-        IHtmlSanitizerService htmlSanitizerService
-        )
+        IHtmlSanitizerService htmlSanitizerService,
+        IDisplayManager<ShortcodeFilter> contentOptionsDisplayManager
+    )
     {
         _authorizationService = authorizationService;
         _shortcodeTemplatesManager = shortcodeTemplatesManager;
         _liquidTemplateManager = liquidTemplateManager;
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
-        _shapeFactory = shapeFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
         _htmlSanitizerService = htmlSanitizerService;
+        _contentOptionsDisplayManager = contentOptionsDisplayManager;
+        _serviceProvider = serviceProvider;
     }
 
     [Admin("Shortcodes", "Shortcodes.Index")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        [FromServices] IShapeFactory shapeFactory,
+        //[FromServices] IContentsAdminListQueryService shortcodesAdminListQueryService,
+        [ModelBinder(BinderType = typeof(ShortcodeFilterEngineModelBinder), Name = "q")]
+            EnumerableFilterResult<DataSourceEntry> enumerableFilterResult,
+        ContentOptionsViewModel options,
+        PagerParameters pagerParameters
+    )
     {
-        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
+        if (
+            !await _authorizationService.AuthorizeAsync(
+                User,
+                ShortcodesPermissions.ManageShortcodeTemplates
+            )
+        )
         {
             return Forbid();
         }
 
         var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-        var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
+        var shortcodeTemplatesDocument =
+            await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
         var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToList();
 
-        if (!string.IsNullOrWhiteSpace(options.Search))
+        if (!string.IsNullOrWhiteSpace(options.SearchText))
         {
-            shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+            shortcodeTemplates = shortcodeTemplates
+                .Where(x => x.Key.Contains(options.SearchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
         }
 
         var count = shortcodeTemplates.Count;
 
-        shortcodeTemplates = shortcodeTemplates.OrderBy(x => x.Key)
+        shortcodeTemplates = shortcodeTemplates
+            .OrderBy(x => x.Value.ModifiedUtc)
             .Skip(pager.GetStartIndex())
-            .Take(pager.PageSize).ToList();
+            .Take(pager.PageSize)
+            .ToList();
 
-        // Maintain previous route data when generating page links.
-        var routeData = new RouteData();
+        /*         // Maintain previous route data when generating page links.
+                var routeData = new RouteData();
 
-        if (!string.IsNullOrEmpty(options.Search))
-        {
-            routeData.Values.TryAdd(_optionsSearch, options.Search);
-        }
+                if (!string.IsNullOrEmpty(options.SearchText))
+                {
+                    routeData.Values.TryAdd(_optionsSearch, options.SearchText);
+                } */
 
-        var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
+/*         // The search text is provided back to the UI.
+        //options.SearchText = options.FilterResult.ToString();
+        options.OriginalSearchText = options.SearchText;
 
-        var model = new ShortcodeTemplateIndexViewModel
-        {
-            ShortcodeTemplates = shortcodeTemplates.Select(x => new ShortcodeTemplateEntry { Name = x.Key, ShortcodeTemplate = x.Value }).ToList(),
-            Options = options,
-            Pager = pagerShape,
-        };
+        // Populate route values to maintain previous route data when generating page links.
+        options.RouteValues.TryAdd("q", options.FilterResult.ToString()); */
 
-        model.Options.ContentsBulkAction =
+
+
+        var pagerShape = await shapeFactory.PagerAsync(pager, count, options.RouteValues);
+
+        var shortcodeFilter = new ShortcodeFilter { FilterResult = enumerableFilterResult, };
+
+        var shortcodeEntries = shortcodeTemplates
+            .Select(x => new DataSourceEntry(x.Value))
+            .ToList();
+
+        var shortcodes = (
+            await shortcodeFilter.FilterResult.ExecuteAsync(
+                new ShortcodeQueryContext(_serviceProvider, shortcodeEntries)
+            )
+        ).ToList();
+
+        // The search text is provided back to the UI.
+        shortcodeFilter.SearchText = shortcodeFilter.FilterResult.ToString();
+        shortcodeFilter.OriginalSearchText = shortcodeFilter.SearchText;
+
+        // Populate route values to maintain previous route data when generating page links.
+        shortcodeFilter.RouteValues["q"] = shortcodeFilter.FilterResult.ToString();
+        shortcodeFilter.AllItems = shortcodeEntries;
+
+        shortcodeFilter.ContentsBulkAction =
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        return View(model);
+        shortcodeFilter.ContentSorts =
+        [
+            new SelectListItem(S["Recently created"], nameof(ContentsOrder.Created)),
+            new SelectListItem(S["Recently modified"], nameof(ContentsOrder.Modified)),
+            new SelectListItem(S["Title"], nameof(ContentsOrder.Title)),
+        ];
+
+        var header = await _contentOptionsDisplayManager.BuildEditorAsync(
+            shortcodeFilter,
+            this,
+            false,
+            string.Empty,
+            string.Empty
+        );
+
+        var shapeViewModel = await shapeFactory.CreateAsync<ShortcodeTemplateIndexViewModel>(
+            "ShortcodesAdminList",
+            viewModel =>
+            {
+                viewModel.ShortcodeTemplates = shortcodeTemplates
+                    .Select(x => new ShortcodeTemplateEntry
+                    {
+                        Name = x.Key,
+                        ShortcodeTemplate = x.Value,
+                    })
+                    .ToList();
+                viewModel.Pager = pagerShape;
+                viewModel.Options = options;
+                viewModel.Header = header;
+            }
+        );
+
+        return View(shapeViewModel);
     }
 
-    [HttpPost, ActionName(nameof(Index))]
+    /*     [HttpPost, ActionName(nameof(Index))]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model) =>
+            RedirectToAction(
+                nameof(Index),
+                new RouteValueDictionary { { _optionsSearch, model.Options.SearchText }, }
+            ); */
+
+    [HttpPost]
+    [ActionName(nameof(Index))]
     [FormValueRequired("submit.Filter")]
-    public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model)
-        => RedirectToAction(nameof(Index), new RouteValueDictionary
+    public async Task<ActionResult> ListFilterPOST(ShortcodeFilter filter)
+    {
+        // When the user has typed something into the search input no further evaluation of the form post is required.
+        if (
+            !string.Equals(
+                filter.SearchText,
+                filter.OriginalSearchText,
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
         {
-            { _optionsSearch, model.Options.Search },
-        });
+            return RedirectToAction(
+                nameof(Index),
+                new RouteValueDictionary { { "q", filter.SearchText }, }
+            );
+        }
+
+        // Evaluate the values provided in the form post and map them to the filter result and route values.
+        await _contentOptionsDisplayManager.UpdateEditorAsync(
+            filter,
+            this,
+            false,
+            string.Empty,
+            string.Empty
+        );
+
+        // The route value must always be added after the editors have updated the models.
+        filter.RouteValues.TryAdd("q", filter.FilterResult.ToString());
+
+        return RedirectToAction(nameof(Index), filter.RouteValues);
+    }
 
     [Admin("Shortcodes/Create", "Shortcodes.Create")]
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
+        if (
+            !await _authorizationService.AuthorizeAsync(
+                User,
+                ShortcodesPermissions.ManageShortcodeTemplates
+            )
+        )
         {
             return Forbid();
         }
@@ -131,7 +245,12 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName(nameof(Create))]
     public async Task<IActionResult> CreatePost(ShortcodeTemplateViewModel model, string submit)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
+        if (
+            !await _authorizationService.AuthorizeAsync(
+                User,
+                ShortcodesPermissions.ManageShortcodeTemplates
+            )
+        )
         {
             return Forbid();
         }
@@ -140,29 +259,48 @@ public sealed class AdminController : Controller
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
+                ModelState.AddModelError(
+                    nameof(ShortcodeTemplateViewModel.Name),
+                    S["The name is mandatory."]
+                );
             }
             else if (!IsValidShortcodeName(model.Name))
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
+                ModelState.AddModelError(
+                    nameof(ShortcodeTemplateViewModel.Name),
+                    S["The name contains invalid characters."]
+                );
             }
             else
             {
-                var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
+                var shortcodeTemplatesDocument =
+                    await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
                 if (shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
+                    ModelState.AddModelError(
+                        nameof(ShortcodeTemplateViewModel.Name),
+                        S["A template with the same name already exists."]
+                    );
                 }
             }
 
             if (string.IsNullOrEmpty(model.Content))
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
+                ModelState.AddModelError(
+                    nameof(ShortcodeTemplateViewModel.Content),
+                    S["The template content is mandatory."]
+                );
             }
             else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                ModelState.AddModelError(
+                    nameof(ShortcodeTemplateViewModel.Content),
+                    S[
+                        "The template doesn't contain a valid Liquid expression. Details: {0}",
+                        string.Join(" ", errors)
+                    ]
+                );
             }
         }
 
@@ -175,6 +313,8 @@ public sealed class AdminController : Controller
                 Usage = _htmlSanitizerService.Sanitize(model.Usage),
                 DefaultValue = model.DefaultValue,
                 Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories),
+                CreatedUtc = DateTime.UtcNow,
+                ModifiedUtc = DateTime.UtcNow,
             };
 
             await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
@@ -194,12 +334,18 @@ public sealed class AdminController : Controller
     [Admin("Shortcodes/Edit/{name}", "Shortcodes.Edit")]
     public async Task<IActionResult> Edit(string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
+        if (
+            !await _authorizationService.AuthorizeAsync(
+                User,
+                ShortcodesPermissions.ManageShortcodeTemplates
+            )
+        )
         {
             return Forbid();
         }
 
-        var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
+        var shortcodeTemplatesDocument =
+            await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
         if (!shortcodeTemplatesDocument.ShortcodeTemplates.TryGetValue(name, out var template))
         {
@@ -220,14 +366,24 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(string sourceName, ShortcodeTemplateViewModel model, string submit)
+    public async Task<IActionResult> Edit(
+        string sourceName,
+        ShortcodeTemplateViewModel model,
+        string submit
+    )
     {
-        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
+        if (
+            !await _authorizationService.AuthorizeAsync(
+                User,
+                ShortcodesPermissions.ManageShortcodeTemplates
+            )
+        )
         {
             return Forbid();
         }
 
-        var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync();
+        var shortcodeTemplatesDocument =
+            await _shortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync();
 
         if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(sourceName))
         {
@@ -238,25 +394,45 @@ public sealed class AdminController : Controller
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
+                ModelState.AddModelError(
+                    nameof(ShortcodeTemplateViewModel.Name),
+                    S["The name is mandatory."]
+                );
             }
             else if (!IsValidShortcodeName(model.Name))
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
+                ModelState.AddModelError(
+                    nameof(ShortcodeTemplateViewModel.Name),
+                    S["The name contains invalid characters."]
+                );
             }
-            else if (!string.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
-                && shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
+            else if (
+                !string.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
+                && shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name)
+            )
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
+                ModelState.AddModelError(
+                    nameof(ShortcodeTemplateViewModel.Name),
+                    S["A template with the same name already exists."]
+                );
             }
 
             if (string.IsNullOrEmpty(model.Content))
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
+                ModelState.AddModelError(
+                    nameof(ShortcodeTemplateViewModel.Content),
+                    S["The template content is mandatory."]
+                );
             }
             else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                ModelState.AddModelError(
+                    nameof(ShortcodeTemplateViewModel.Content),
+                    S[
+                        "The template doesn't contain a valid Liquid expression. Details: {0}",
+                        string.Join(" ", errors)
+                    ]
+                );
             }
         }
 
@@ -269,6 +445,8 @@ public sealed class AdminController : Controller
                 Usage = _htmlSanitizerService.Sanitize(model.Usage),
                 DefaultValue = model.DefaultValue,
                 Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories),
+                CreatedUtc = model.CreatedUtc ?? DateTime.UtcNow, // For adding a created date if not set
+                ModifiedUtc = DateTime.UtcNow,
             };
 
             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(sourceName);
@@ -294,12 +472,18 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
+        if (
+            !await _authorizationService.AuthorizeAsync(
+                User,
+                ShortcodesPermissions.ManageShortcodeTemplates
+            )
+        )
         {
             return Forbid();
         }
 
-        var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync();
+        var shortcodeTemplatesDocument =
+            await _shortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync();
 
         if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(name))
         {
@@ -315,17 +499,28 @@ public sealed class AdminController : Controller
 
     [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]
-    public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
+    public async Task<ActionResult> IndexPost(
+        ContentOptionsViewModel options,
+        IEnumerable<string> itemIds
+    )
     {
-        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
+        if (
+            !await _authorizationService.AuthorizeAsync(
+                User,
+                ShortcodesPermissions.ManageShortcodeTemplates
+            )
+        )
         {
             return Forbid();
         }
 
         if (itemIds?.Count() > 0)
         {
-            var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync();
-            var checkedContentItems = shortcodeTemplatesDocument.ShortcodeTemplates.Where(x => itemIds.Contains(x.Key));
+            var shortcodeTemplatesDocument =
+                await _shortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync();
+            var checkedContentItems = shortcodeTemplatesDocument.ShortcodeTemplates.Where(x =>
+                itemIds.Contains(x.Key)
+            );
             switch (options.BulkAction)
             {
                 case ContentsBulkAction.None:
@@ -338,7 +533,10 @@ public sealed class AdminController : Controller
                     await _notifier.SuccessAsync(H["Shortcode templates successfully removed."]);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk action.");
+                    throw new ArgumentOutOfRangeException(
+                        options.BulkAction.ToString(),
+                        "Invalid bulk action."
+                    );
             }
         }
 

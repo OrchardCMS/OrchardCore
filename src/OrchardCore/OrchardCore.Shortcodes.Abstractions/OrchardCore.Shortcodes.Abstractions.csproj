@@ -16,10 +16,12 @@
 
   <ItemGroup>
     <PackageReference Include="Shortcodes" />
+    <PackageReference Include="YesSql.Filters.Query" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

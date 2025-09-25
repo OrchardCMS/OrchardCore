@@ -14,4 +14,6 @@ public class ShortcodeTemplate
     public string Usage { get; set; }
     public string DefaultValue { get; set; }
     public string[] Categories { get; set; } = [];
+    public DateTime? CreatedUtc { get; set; }
+    public DateTime? ModifiedUtc { get; set; }
 }

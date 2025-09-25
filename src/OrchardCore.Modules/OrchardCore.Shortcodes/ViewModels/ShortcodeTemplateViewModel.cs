@@ -9,4 +9,6 @@ public class ShortcodeTemplateViewModel
     public string DefaultValue { get; set; }
     public string[] Categories { get; set; } = [];
     public string SelectedCategories { get; set; }
+    public DateTime? CreatedUtc { get; set; }
+    public DateTime? ModifiedUtc { get; set; }
 }
