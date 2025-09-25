@@ -20,7 +20,7 @@
             //Assign prefix
             if (string.IsNullOrEmpty(Model.PrefixValue))
             {
-                Model.PrefixValue = Guid.NewGuid().ToString("n");
+                Model.PrefixValue = $"z{Guid.NewGuid():n}";
             }
 
             //Build Editor for Content Item

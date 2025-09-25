@@ -13,15 +13,15 @@ namespace OrchardCore.ContentFields.Settings;
 
 public sealed class TextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
 {
-    private readonly ILiquidTemplateManager _templateManager;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
 
     internal readonly IStringLocalizer S;
 
     public TextFieldSettingsDriver(
-        ILiquidTemplateManager templateManager,
+        ILiquidTemplateManager liquidTemplateManager,
         IStringLocalizer<TextFieldSettingsDriver> stringLocalizer)
     {
-        _templateManager = templateManager;
+        _liquidTemplateManager = liquidTemplateManager;
         S = stringLocalizer;
     }
 
@@ -57,9 +57,9 @@ public sealed class TextFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["A pattern is required when using the selected behavior type."]);
             }
-            else if (!_templateManager.Validate(model.Pattern, out var errors))
+            else if (!_liquidTemplateManager.Validate(model.Pattern, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(' ', errors)]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(' ', errors)]);
             }
         }
 
