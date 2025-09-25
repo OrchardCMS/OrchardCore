@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
@@ -43,7 +42,6 @@ public sealed class UserPickerAdminController : Controller
         }
 
         var contentItem = await _contentManager.NewAsync(contentType);
-        contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
         {

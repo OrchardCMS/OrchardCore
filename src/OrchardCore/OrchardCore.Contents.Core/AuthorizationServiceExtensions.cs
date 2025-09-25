@@ -54,7 +54,6 @@ public static class AuthorizationServiceExtensions
             var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 
             var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
-            contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (await service.AuthorizeAsync(user, dynamicPermission, contentItem))
             {

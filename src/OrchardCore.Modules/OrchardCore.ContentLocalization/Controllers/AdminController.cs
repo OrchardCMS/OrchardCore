@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -53,9 +52,6 @@ public sealed class AdminController : Controller
         }
 
         var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
-
-        // Set the current user as the owner to check for ownership permissions on creation
-        checkContentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
         {
