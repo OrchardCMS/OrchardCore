@@ -318,4 +318,14 @@ public static class ContentExtensions
             }
         }
     }
+
+    /// <summary>
+    /// Gets all <see cref="ContentField"/> instances attached to a <see cref="ContentPart"/>.
+    /// </summary>
+    /// <param name="contentPart">The <see cref="ContentPart"/> to retrieve fields from.</param>
+    /// <returns>An <see cref="IEnumerable{ContentField}"/> of all attached fields.</returns>
+    public static IEnumerable<ContentField> GetContentFields(this ContentPart contentPart)
+    {
+        return contentPart.OfType<ContentField>();
+    }
 }
