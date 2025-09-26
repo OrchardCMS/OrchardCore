@@ -31,6 +31,7 @@ public static class HttpBackgroundJob
                 jobName,
                 scope.ShellContext.Settings.Name,
                 scope.ShellContext.Settings.State);
+
             return Task.CompletedTask;
         }
 
@@ -44,6 +45,7 @@ public static class HttpBackgroundJob
                 "Background job '{JobName}' was not executed because it requires an HTTP context. Tenant: '{TenantName}'",
                 jobName,
                 scope.ShellContext.Settings.Name);
+
             return Task.CompletedTask;
         }
 
@@ -76,6 +78,7 @@ public static class HttpBackgroundJob
                         "Background job '{JobName}' timed out waiting for HTTP context to be released after 60 seconds on tenant '{TenantName}'. Job will be skipped.",
                         jobName,
                         scope.ShellContext.Settings.Name);
+
                     return;
                 }
             }
@@ -93,6 +96,7 @@ public static class HttpBackgroundJob
                     jobName,
                     shellContext.Settings.Name,
                     shellContext.Settings.State);
+
                 return;
             }
 
