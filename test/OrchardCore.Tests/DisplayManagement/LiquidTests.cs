@@ -251,7 +251,7 @@ public class LiquidTests
                 """;
 
             // Create a StringValues with multiple values, one of which is "hello"
-            var testModel = new StringValues(new[] { "hi", "hello", "hey" });
+            var testModel = new StringValues(["hi", "hello", "hey"]);
 
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
@@ -275,7 +275,7 @@ public class LiquidTests
                 """;
 
             // Create a StringValues with multiple values
-            var testModel = new StringValues(new[] { "apple", "banana", "cherry" });
+            var testModel = new StringValues(["apple", "banana", "cherry"]);
 
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
@@ -299,7 +299,7 @@ public class LiquidTests
                 """;
 
             // Create a StringValues with multiple values
-            var testModel = new StringValues(new[] { "first", "second", "third" });
+            var testModel = new StringValues(["first", "second", "third"]);
 
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
@@ -323,7 +323,7 @@ public class LiquidTests
                 """;
 
             // Create a StringValues with three values
-            var testModel = new StringValues(new[] { "one", "two", "three" });
+            var testModel = new StringValues(["one", "two", "three"]);
 
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
@@ -347,7 +347,7 @@ public class LiquidTests
                 """;
 
             // Create a StringValues with multiple values
-            var testModel = new StringValues(new[] { "alpha", "beta", "gamma" });
+            var testModel = new StringValues(["alpha", "beta", "gamma"]);
 
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
@@ -422,7 +422,7 @@ public class LiquidTests
                 """;
 
             // Create a StringValues with multiple values
-            var testModel = new StringValues(new[] { "hello", "world" });
+            var testModel = new StringValues(["hello", "world"]);
 
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
@@ -446,7 +446,7 @@ public class LiquidTests
                 """;
 
             // Create a StringValues with values - should be truthy
-            var testModel = new StringValues(new[] { "test" });
+            var testModel = new StringValues(["test"]);
 
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,

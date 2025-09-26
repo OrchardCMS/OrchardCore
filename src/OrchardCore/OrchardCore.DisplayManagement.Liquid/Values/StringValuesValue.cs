@@ -26,7 +26,7 @@ internal sealed class StringValuesValue : FluidValue
     {
         if (other is null)
         {
-            return _stringValues.Count == 0;
+            return false;
         }
 
         if (ReferenceEquals(this, other))
