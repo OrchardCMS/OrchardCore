@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -238,9 +237,4 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
     private Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem)
         => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
-
-    private string GetCurrentOwner()
-    {
-        return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-    }
 }

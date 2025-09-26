@@ -16,19 +16,16 @@ namespace OrchardCore.ContentFields.Controllers;
 public sealed class UserPickerAdminController : Controller
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IContentManager _contentManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEnumerable<IUserPickerResultProvider> _resultProviders;
 
     public UserPickerAdminController(
         IContentDefinitionManager contentDefinitionManager,
-        IContentManager contentManager,
         IAuthorizationService authorizationService,
         IEnumerable<IUserPickerResultProvider> resultProviders
         )
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _contentManager = contentManager;
         _authorizationService = authorizationService;
         _resultProviders = resultProviders;
     }
