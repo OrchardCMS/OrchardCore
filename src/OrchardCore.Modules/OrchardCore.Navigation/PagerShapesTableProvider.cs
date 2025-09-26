@@ -512,7 +512,6 @@ public class PagerShapes : IShapeAttributeProvider
     {
         if (Disabled)
         {
-            // keep the parent <li> styled as disabled
             if (shape.TryGetProperty("Tag", out TagBuilder tagBuilder))
             {
                 tagBuilder.AddCssClass("disabled");
