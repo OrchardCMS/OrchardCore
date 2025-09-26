@@ -478,7 +478,7 @@ public class LiquidTests
                 testModel);
 
             // According to the implementation, StringValuesValue.ToBooleanValue() always returns true.
-            // This mimics the havior of the ArrayValue in Fluid.
+            // This mimics the behavior of the ArrayValue in Fluid.
             Assert.Equal("Has values!", result);
         });
     }
