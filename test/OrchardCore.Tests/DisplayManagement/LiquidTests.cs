@@ -226,7 +226,7 @@ public class LiquidTests
                 """;
 
             // Create a StringValues with multiple values, one of which is "hello"
-            var testModel = new StringValues(new[] { "hi", "hello", "hey" });
+            var testModel = new StringValues(["hi", "hello", "hey"]);
 
             var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var result = await liquidTemplateManager.RenderStringAsync(template,
