@@ -8,7 +8,7 @@
     var authorizedContentTypeDefinitions = new List<ContentTypeDefinition>();
     foreach (var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
     {
-        if (!await AuthorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition, User.Identity.Name))
+        if (!await AuthorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition.Name, User.Identity.Name))
         {
             continue;
         }
