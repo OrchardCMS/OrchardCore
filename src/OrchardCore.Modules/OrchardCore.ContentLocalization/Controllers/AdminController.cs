@@ -51,9 +51,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
-
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
+        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentItem.ContentType, User.Identity.Name))
         {
             return Forbid();
         }

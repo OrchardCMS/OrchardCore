@@ -335,7 +335,7 @@ public sealed class AdminController : Controller, IUpdateModel
     {
         var contentItem = await _contentManager.NewAsync(id);
 
-        if (!await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
+        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, id, User.Identity.Name))
         {
             return Forbid();
         }

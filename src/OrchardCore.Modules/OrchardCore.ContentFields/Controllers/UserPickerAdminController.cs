@@ -41,9 +41,7 @@ public sealed class UserPickerAdminController : Controller
             return BadRequest("Part, field and contentType are required parameters");
         }
 
-        var contentItem = await _contentManager.NewAsync(contentType);
-
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentType, User.Identity.Name))
         {
             return Forbid();
         }
