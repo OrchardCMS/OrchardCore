@@ -1,5 +1,3 @@
-using NLog.Web;
-
 namespace OrchardCore.Tests.Apis.Context;
 
 public class OrchardTestFixture<TStartup> : WebApplicationFactory<TStartup>
@@ -25,7 +23,6 @@ public class OrchardTestFixture<TStartup> : WebApplicationFactory<TStartup>
 
     protected override IHostBuilder CreateHostBuilder()
         => Host.CreateDefaultBuilder()
-            .UseNLog()
             .ConfigureWebHostDefaults(webBuilder =>
                 webBuilder.UseStartup<TStartup>());
 }
