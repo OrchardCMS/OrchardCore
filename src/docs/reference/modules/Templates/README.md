@@ -660,6 +660,19 @@ Which zones are available depends on the current theme.
     }
     ```
 
+## User templates
+
+### `UserDisplayName_[DisplayType]`
+
+This template is called when displaying a User Name.
+
+#### User Examples
+
+| Template        | Filename              |
+|-----------------|-----------------------|
+| `UserDisplayName_SummaryAdmin__johndoe`  | `UserDisplayName-johndoe.SummaryAdmin.cshtml`  |
+| `UserDisplayName_SummaryAdmin` | `UserDisplayName.SummaryAdmin.cshtml` |
+
 ## Overriding Views
 
 Some modules (namely the OrchardCore.Users module) allow you to override some of its views in your Theme. Since these views are not shapes, the way to override them is a little different than mentioned above.

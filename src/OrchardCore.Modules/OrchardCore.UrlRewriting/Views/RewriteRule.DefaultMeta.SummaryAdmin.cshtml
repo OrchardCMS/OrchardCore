@@ -14,7 +14,5 @@
 
 @if (!string.IsNullOrEmpty(Model.Value.Author))
 {
-    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Author"]">
-        <i class="fa-solid fa-user text-secondary me-1" aria-hidden="true"></i>@Model.Value.Author
-    </span>
+    <user-display-name user-name="@(Model.Value.Author)" title="@T["Author"].Value" display-type="@Model.Metadata.DisplayType" />
 }
