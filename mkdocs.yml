@@ -273,6 +273,7 @@ nav:
       - Owners: resources/owners/README.md
       - Workshops: resources/workshops/README.md
   - Releases:
+      - 2.2.1: releases/2.2.1.md
       - 2.2.0: releases/2.2.0.md
       - 2.1.9: releases/2.1.9.md
       - 2.1.8: releases/2.1.8.md
