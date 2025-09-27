@@ -3,10 +3,8 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -335,14 +333,9 @@ public sealed class AdminController : Controller, IUpdateModel
     [Admin("Contents/ContentTypes/{id}/Create", "CreateContentItem")]
     public async Task<IActionResult> Create(string id)
     {
-        if (string.IsNullOrWhiteSpace(id))
-        {
-            return NotFound();
-        }
+        var contentItem = await _contentManager.NewAsync(id);
 
-        var contentItem = await CreateContentItemOwnedByCurrentUserAsync(id);
-
-        if (!await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
+        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, id, User.Identity.Name))
         {
             return Forbid();
         }
@@ -695,7 +688,7 @@ public sealed class AdminController : Controller, IUpdateModel
         bool stayOnSamePage,
         Func<ContentItem, Task<bool>> conditionallyPublish)
     {
-        var contentItem = await CreateContentItemOwnedByCurrentUserAsync(id);
+        var contentItem = await _contentManager.NewAsync(id);
 
         if (!await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
         {
@@ -823,14 +816,6 @@ public sealed class AdminController : Controller, IUpdateModel
         }
 
         return items;
-    }
-
-    private async Task<ContentItem> CreateContentItemOwnedByCurrentUserAsync(string contentType)
-    {
-        var contentItem = await _contentManager.NewAsync(contentType);
-        contentItem.Owner = CurrentUserId();
-
-        return contentItem;
     }
 
     private string _currentUserId;

@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Text.Json.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -63,7 +62,6 @@ public static class CreateEndpoint
             }
 
             contentItem = await contentManager.NewAsync(model.ContentType);
-            contentItem.Owner = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, contentItem))
             {

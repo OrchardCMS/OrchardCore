@@ -22,10 +22,7 @@ public static class AuthorizationServiceExtensions
 
         ArgumentNullException.ThrowIfNull(requiredPermission);
 
-        if (string.IsNullOrWhiteSpace(contentType))
-        {
-            throw new ArgumentException($"{nameof(contentType)} cannot be empty.");
-        }
+        ArgumentException.ThrowIfNullOrEmpty(contentType);
 
         var item = new ContentItem()
         {
@@ -53,10 +50,7 @@ public static class AuthorizationServiceExtensions
         {
             var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 
-            var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
-            contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (await service.AuthorizeAsync(user, dynamicPermission, contentItem))
+            if (await service.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition.Name, user.Identity.Name))
             {
                 return true;
             }

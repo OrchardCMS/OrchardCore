@@ -104,9 +104,6 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
         {
             var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
 
-            // Assign the owner of the item to ensure we can validate access to it later.
-            contentItem.Owner = GetCurrentOwner();
-
             // Try to match the requested id with an existing id
             ContentItem existingContentItem = null;
 
