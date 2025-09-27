@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.Demo.Models;
 using OrchardCore.Demo.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
@@ -11,12 +10,10 @@ namespace OrchardCore.Demo.Drivers;
 
 public sealed class UserProfileDisplayDriver : SectionDisplayDriver<User, UserProfile>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public UserProfileDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
+    public UserProfileDisplayDriver(IAuthorizationService authorizationService)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
 
@@ -29,12 +26,12 @@ public sealed class UserProfileDisplayDriver : SectionDisplayDriver<User, UserPr
             model.LastName = profile.LastName;
         })
         .Location("Content:2")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile));
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ManageOwnUserProfile));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UserProfile profile, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ManageOwnUserProfile))
         {
             return Edit(user, profile, context);
         }

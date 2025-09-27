@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.OpenId.Settings;
@@ -9,20 +8,16 @@ namespace OrchardCore.OpenId.Drivers;
 
 public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenIdValidationSettings>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public OpenIdValidationSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+    public OpenIdValidationSettingsDisplayDriver(IAuthorizationService authorizationService)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
 
     public override async Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings))
         {
@@ -43,7 +38,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
 
     public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings))
         {

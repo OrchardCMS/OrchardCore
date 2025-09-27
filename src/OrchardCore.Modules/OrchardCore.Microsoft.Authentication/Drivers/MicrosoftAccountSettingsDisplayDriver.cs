@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -18,20 +17,17 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
 
     public MicrosoftAccountSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
-        IHttpContextAccessor httpContextAccessor,
         ILogger<MicrosoftAccountSettingsDisplayDriver> logger)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
-        _httpContextAccessor = httpContextAccessor;
         _logger = logger;
     }
 
@@ -40,7 +36,7 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
 
     public override async Task<IDisplayResult> EditAsync(ISite site, MicrosoftAccountSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
         {
             return null;
@@ -78,7 +74,7 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, MicrosoftAccountSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
         {
             return null;

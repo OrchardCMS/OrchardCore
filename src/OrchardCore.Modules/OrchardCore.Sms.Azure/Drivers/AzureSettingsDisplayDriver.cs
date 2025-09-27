@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
@@ -21,7 +20,6 @@ namespace OrchardCore.Sms.Azure.Drivers;
 public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSettings>
 {
     private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -35,7 +33,6 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
 
     public AzureSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
         IDataProtectionProvider dataProtectionProvider,
@@ -44,7 +41,6 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
         IStringLocalizer<AzureSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
         _dataProtectionProvider = dataProtectionProvider;
@@ -53,7 +49,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(ISite site, AzureSmsSettings settings, BuildEditorContext c)
+    public override IDisplayResult Edit(ISite site, AzureSmsSettings settings, BuildEditorContext context)
     {
         return Initialize<AzureSettingsViewModel>("AzureSmsSettings_Edit", model =>
         {
@@ -61,13 +57,13 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
             model.PhoneNumber = settings.PhoneNumber;
             model.HasConnectionString = !string.IsNullOrEmpty(settings.ConnectionString);
         }).Location("Content:5#Azure Communication Services")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(context.HttpContext?.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureSmsSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, SmsPermissions.ManageSmsSettings))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext.User, SmsPermissions.ManageSmsSettings))
         {
             return null;
         }

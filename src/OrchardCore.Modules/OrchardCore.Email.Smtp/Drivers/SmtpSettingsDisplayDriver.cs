@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
@@ -22,7 +21,6 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly SmtpOptions _smtpOptions;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
@@ -35,7 +33,6 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
     public SmtpSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IDataProtectionProvider dataProtectionProvider,
-        IHttpContextAccessor httpContextAccessor,
         IOptions<SmtpOptions> options,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailAddressValidator,
@@ -43,7 +40,6 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
     {
         _shellReleaseManager = shellReleaseManager;
         _dataProtectionProvider = dataProtectionProvider;
-        _httpContextAccessor = httpContextAccessor;
         _smtpOptions = options.Value;
         _authorizationService = authorizationService;
         _emailValidator = emailAddressValidator;
@@ -52,7 +48,7 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
     public override async Task<IDisplayResult> EditAsync(ISite site, SmtpSettings settings, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, EmailPermissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, EmailPermissions.ManageEmailSettings))
         {
             return null;
         }
@@ -82,7 +78,7 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SmtpSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, EmailPermissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, EmailPermissions.ManageEmailSettings))
         {
             return null;
         }

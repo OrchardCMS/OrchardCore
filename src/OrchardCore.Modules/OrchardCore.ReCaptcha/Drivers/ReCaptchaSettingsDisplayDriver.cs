@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -15,16 +14,13 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
     public const string GroupId = "recaptcha";
 
     private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     public ReCaptchaSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
     {
         _shellReleaseManager = shellReleaseManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
 
@@ -33,7 +29,7 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
 
     public override async Task<IDisplayResult> EditAsync(ISite site, ReCaptchaSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, ReCaptchaPermissions.ManageReCaptchaSettings))
         {
@@ -52,7 +48,7 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ReCaptchaSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, ReCaptchaPermissions.ManageReCaptchaSettings))
         {

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -13,16 +12,13 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 {
     public const string GroupId = "userRegistration";
 
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShellReleaseManager _shellReleaseManager;
 
     public RegistrationSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IShellReleaseManager shellReleaseManager)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _shellReleaseManager = shellReleaseManager;
     }
@@ -32,7 +28,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
     public override async Task<IDisplayResult> EditAsync(ISite site, RegistrationSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
         {
@@ -52,7 +48,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, RegistrationSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
         {

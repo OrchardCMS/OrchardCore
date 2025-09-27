@@ -11,17 +11,13 @@ namespace OrchardCore.Contents.AdminNodes;
 public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, ContentTypesAdminNode>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     public ContentTypesAdminNodeDriver(
         IContentDefinitionManager contentDefinitionManager,
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService
-        )
+        IAuthorizationService authorizationService)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
 
@@ -37,7 +33,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
     {
         return Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", async model =>
             {
-                var listable = await GetListableContentTypeDefinitionsAsync();
+                var listable = await GetListableContentTypeDefinitionsAsync(context.HttpContext);
 
                 model.ShowAll = treeNode.ShowAll;
                 model.IconClass = treeNode.IconClass;
@@ -74,7 +70,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
         return Edit(treeNode, context);
     }
 
-    private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync()
+    private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync(HttpContext httpContext)
     {
         var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
@@ -82,7 +78,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
 
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
-            if (!await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ListContent, contentTypeDefinition))
+            if (!await _authorizationService.AuthorizeContentTypeAsync(httpContext.User, CommonPermissions.ListContent, contentTypeDefinition))
             {
                 continue;
             }

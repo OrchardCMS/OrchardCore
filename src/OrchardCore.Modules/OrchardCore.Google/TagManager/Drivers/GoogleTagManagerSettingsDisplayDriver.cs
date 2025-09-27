@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -12,14 +11,10 @@ namespace OrchardCore.Google.TagManager.Drivers;
 public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<GoogleTagManagerSettings>
 {
     private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public GoogleTagManagerSettingsDisplayDriver(
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+    public GoogleTagManagerSettingsDisplayDriver(IAuthorizationService authorizationService)
     {
         _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     protected override string SettingsGroupId
@@ -27,7 +22,7 @@ public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<Go
 
     public override async Task<IDisplayResult> EditAsync(ISite site, GoogleTagManagerSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
         {
             return null;
@@ -42,7 +37,7 @@ public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<Go
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleTagManagerSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
         {
             return null;

@@ -19,7 +19,6 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
     internal const string GroupId = "SecurityHeaders";
 
     private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly SecuritySettings _securitySettings;
     private readonly INotifier _notifier;
@@ -31,14 +30,12 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
 
     public SecuritySettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptionsSnapshot<SecuritySettings> securitySettings,
         INotifier notifier,
         IHtmlLocalizer<SecuritySettingsDisplayDriver> htmlLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _securitySettings = securitySettings.Value;
         _notifier = notifier;
@@ -47,7 +44,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
 
     public override async Task<IDisplayResult> EditAsync(ISite site, SecuritySettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
         {
@@ -94,7 +91,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SecuritySettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
         {

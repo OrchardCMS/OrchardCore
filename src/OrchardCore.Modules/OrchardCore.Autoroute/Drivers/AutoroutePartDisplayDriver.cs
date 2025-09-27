@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Core.Indexes;
@@ -21,7 +20,6 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
     private readonly AutorouteOptions _options;
     private readonly ISiteService _siteService;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly YesSql.ISession _session;
 
     internal readonly IStringLocalizer S;
@@ -30,7 +28,6 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
         IOptions<AutorouteOptions> options,
         ISiteService siteService,
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor,
         YesSql.ISession session,
         IStringLocalizer<AutoroutePartDisplayDriver> localizer
     )
@@ -38,7 +35,6 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
         _options = options.Value;
         _siteService = siteService;
         _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
         _session = session;
         S = localizer;
     }
@@ -106,7 +102,7 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
                 model.Path = string.Empty;
             }
 
-            var httpContext = _httpContextAccessor.HttpContext;
+            var httpContext = context.HttpContext;
 
             if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, AutoroutePermissions.SetHomepage))
             {

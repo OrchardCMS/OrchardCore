@@ -12,16 +12,13 @@ namespace OrchardCore.ArchiveLater.Drivers;
 
 public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLaterPart>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly ILocalClock _localClock;
 
     public ArchiveLaterPartDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         ILocalClock localClock)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _localClock = localClock;
     }
@@ -38,7 +35,7 @@ public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<Arc
 
     public override async Task<IDisplayResult> UpdateAsync(ArchiveLaterPart part, UpdatePartEditorContext context)
     {
-        var httpContext = _httpContextAccessor.HttpContext;
+        var httpContext = context.HttpContext;
 
         if (await _authorizationService.AuthorizeAsync(httpContext?.User, CommonPermissions.PublishContent, part.ContentItem))
         {
