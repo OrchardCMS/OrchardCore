@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.Liquid.Values;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
@@ -28,6 +29,10 @@ public class TemplateOptionsConfigurations : IConfigureOptions<TemplateOptions>
             else if (x is IHtmlContent c)
             {
                 return new HtmlContentValue(c);
+            }
+            else if (x is StringValues sv)
+            {
+                return new StringValuesValue(sv);
             }
 
             return null;
@@ -55,13 +60,13 @@ public class TemplateOptionsConfigurations : IConfigureOptions<TemplateOptions>
                 return new ArrayValue(forms.Keys.Select(x => new StringValue(x)).ToArray());
             }
 
-            return new ArrayValue(forms[name].Select(x => new StringValue(x)).ToArray());
+            return new StringValuesValue(forms[name]);
         });
 
         options.MemberAccessStrategy.Register<HttpContextItemsWrapper, object>((httpContext, name) => httpContext.Items[name]);
-        options.MemberAccessStrategy.Register<QueryCollection, string[]>((queries, name) => queries[name].ToArray());
+        options.MemberAccessStrategy.Register<QueryCollection, StringValues>((queries, name) => queries[name]);
         options.MemberAccessStrategy.Register<CookieCollectionWrapper, string>((cookies, name) => cookies.RequestCookieCollection[name]);
-        options.MemberAccessStrategy.Register<HeaderDictionaryWrapper, string[]>((headers, name) => headers.HeaderDictionary[name].ToArray());
+        options.MemberAccessStrategy.Register<HeaderDictionaryWrapper, StringValues>((headers, name) => headers.HeaderDictionary[name]);
         options.MemberAccessStrategy.Register<RouteValueDictionaryWrapper, object>((headers, name) => headers.RouteValueDictionary[name]);
     }
 }
