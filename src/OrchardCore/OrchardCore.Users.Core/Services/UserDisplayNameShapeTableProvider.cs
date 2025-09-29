@@ -17,9 +17,9 @@ public sealed class UserDisplayNameShapeTableProvider : ShapeTableProvider
 
                 if (shape.TryGetProperty<string>("UserName", out var username))
                 {
-                    var usernameShape = await shapeFactory.CreateAsync("UserDisplayNameText", Arguments.From(shape.Properties));
+                    var userNameShape = await shapeFactory.CreateAsync("UserDisplayNameText", Arguments.From(shape.Properties));
 
-                    await shape.AddAsync(usernameShape, "5");
+                    await shape.AddAsync(userNameShape, "5");
                 }
             });
 
