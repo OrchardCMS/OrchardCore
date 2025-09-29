@@ -14,7 +14,7 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
     }
 
     [HtmlAttributeName("user-name")]
-    public string Username { get; set; }
+    public string UserName { get; set; }
 
     [HtmlAttributeName("title")]
     public string Title { get; set; }
@@ -24,19 +24,19 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
 
     public override Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
     {
-        if (string.IsNullOrEmpty(Username))
+        if (string.IsNullOrEmpty(UserName))
         {
-            if (!Properties.TryGetValue(nameof(Username), out var name))
+            if (!Properties.TryGetValue(nameof(UserName), out var name))
             {
                 output.SuppressOutput();
 
                 return Task.CompletedTask;
             }
 
-            Username = name.ToString();
+            UserName = name.ToString();
         }
 
-        Properties[nameof(Username)] = Username;
+        Properties[nameof(UserName)] = UserName;
 
         if (!string.IsNullOrWhiteSpace(Title))
         {
@@ -55,7 +55,7 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
 
         if (!output.Attributes.TryGetAttribute("cache-tag", out _))
         {
-            output.Attributes.Add("cache-tag", $"user-display-name,user-display-name:{Username}");
+            output.Attributes.Add("cache-tag", $"user-display-name,user-display-name:{UserName}");
         }
 
         if (!string.IsNullOrWhiteSpace(DisplayType))
@@ -70,10 +70,10 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
     {
         var displayType = shape.Metadata.DisplayType?.EncodeAlternateElement() ?? "Detail";
 
-        var username = Username.EncodeAlternateElement();
+        var userName = UserName.EncodeAlternateElement();
 
-        // UserDisplayName_[DisplayType]__[Username] e.g. UserDisplayName-johndoe.SummaryAdmin.cshtml
-        shape.Metadata.Alternates.Add("UserDisplayName_" + displayType + "__" + username);
+        // UserDisplayName_[DisplayType]__[UserName] e.g. UserDisplayName-johndoe.SummaryAdmin.cshtml
+        shape.Metadata.Alternates.Add("UserDisplayName_" + displayType + "__" + userName);
 
         // UserDisplayName_[DisplayType] e.g. UserDisplayName.SummaryAdmin.cshtml
         shape.Metadata.Alternates.Add("UserDisplayName_" + displayType);

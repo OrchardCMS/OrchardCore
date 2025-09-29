@@ -9,10 +9,7 @@
     <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@createdUtc">@await DisplayAsync(await New.Timespan(Utc: Model.AuditTrailEvent.CreatedUtc))</time>
 </span>
 
-<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["User Name"]">
-    <i class="fa-solid fa-user text-secondary me-1" aria-hidden="true"></i>@Model.AuditTrailEvent.UserName
-</span>
-
+<user-display-name user-name="@(Model.AuditTrailEvent.UserName)" title="@T["User Name"].Value" />
 
 @if (!string.IsNullOrEmpty(Model.AuditTrailEvent.ClientIpAddress))
 {
