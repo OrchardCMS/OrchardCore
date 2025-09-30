@@ -94,6 +94,7 @@ public static class OrchardCoreBuilderExtensions
                 services.AddShapeAttributes<DateTimeShapes>();
                 services.AddShapeAttributes<PageTitleShapes>();
 
+                services.AddTagHelpers<UserDisplayNameTagHelper>();
                 services.AddTagHelpers<AddAlternateTagHelper>();
                 services.AddTagHelpers<AddClassTagHelper>();
                 services.AddTagHelpers<AddWrapperTagHelper>();

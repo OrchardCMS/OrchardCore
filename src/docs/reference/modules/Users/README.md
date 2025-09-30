@@ -18,6 +18,32 @@ The module contains the following features apart from the base feature:
 - Two-Factor Authenticator App Method: Allows users to two-factor authenticate using any Authenticator App.
 - User Localization: Allows ability to configure user culture per user from admin UI.
 
+### User Display Name Shape
+
+The `UserDisplayName` shape has been introduced to render a user's display name in a consistent and cache-friendly way. This is frequently used in admin content lists.
+
+If you override the affected shapes (see the changes in the [relevant pull request](https://github.com/OrchardCMS/OrchardCore/pull/18329/files)), we recommend you make use of `UserDisplayName` too.
+
+To use this shape:
+
+1. Add the `OrchardCore.DisplayManagement` package to your project if you haven't already.
+2. In `_ViewImports.cshtml`, add:
+
+```csharp
+@addTagHelper *, OrchardCore.DisplayManagement
+```
+
+You can then display a user's name like this:
+
+```html
+<user-display-name 
+    user-name="@(contentItem.Author)" 
+    title="@T["Author"].Value" 
+    display-type="@Model.Metadata.DisplayType" />
+```
+
+This ensures user names are rendered consistently while making use of OrchardCore's caching system for performance.
+
 ## Two-factor Authentication
 
 Starting with version 1.7, OrchardCore is shipped with everything you need to secure your app with two-factor authentication. To use two-factor authentication, simply enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method" features. You can configure the process based on your need by navigating to `Security` >> `Settings` >> `User Login`. Click on the "Two-Factor Authentication" tab and update the settings as needed.
