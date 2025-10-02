@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.DisplayManagement.TagHelpers;
 
@@ -64,20 +63,5 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
         }
 
         return base.ProcessAsync(tagHelperContext, output);
-    }
-
-    protected override ValueTask ShapeBuildingAsync(IShape shape)
-    {
-        var displayType = shape.Metadata.DisplayType?.EncodeAlternateElement() ?? "Detail";
-
-        var userName = UserName.EncodeAlternateElement();
-
-        // UserDisplayName_[DisplayType]__[UserName] e.g. UserDisplayName-johndoe.SummaryAdmin.cshtml
-        shape.Metadata.Alternates.Add("UserDisplayName_" + displayType + "__" + userName);
-
-        // UserDisplayName_[DisplayType] e.g. UserDisplayName.SummaryAdmin.cshtml
-        shape.Metadata.Alternates.Add("UserDisplayName_" + displayType);
-
-        return ValueTask.CompletedTask;
     }
 }

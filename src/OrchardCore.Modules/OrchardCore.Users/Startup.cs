@@ -37,6 +37,7 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Sms;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
+using OrchardCore.Users.Core.Services;
 using OrchardCore.Users.DataMigrations;
 using OrchardCore.Users.Deployment;
 using OrchardCore.Users.Drivers;
@@ -69,6 +70,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<ExternalAuthenticationMigrations>();
+        services.AddShapeTableProvider<UserDisplayNameShapeTableProvider>();
 
         services.Configure<UserOptions>(userOptions =>
         {
