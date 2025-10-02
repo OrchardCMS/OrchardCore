@@ -69,8 +69,9 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDataMigration<ExternalAuthenticationMigrations>();
         services.AddShapeTableProvider<UserDisplayNameShapeTableProvider>();
+
+        services.AddDataMigration<ExternalAuthenticationMigrations>();
 
         services.Configure<UserOptions>(userOptions =>
         {
