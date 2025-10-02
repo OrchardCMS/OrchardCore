@@ -1,4 +1,13 @@
-@foreach (var item in Model.Items)
-{
-    @await DisplayAsync(item)
+@inject IShapeFactory ShapeFactory
+@{
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "UserDisplayNameIcon";
 }
+
+@await DisplayAsync(Model)
+
+@{
+    var textShape = await ShapeFactory.CreateAsync("UserDisplayNameText", new { Model.UserName, Model.Title });
+}
+
+@await DisplayAsync(textShape)
