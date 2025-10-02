@@ -82,23 +82,23 @@ public abstract class BaseShapeTagHelper : TagHelper
 
         if (string.IsNullOrWhiteSpace(Cache) && output.Attributes.TryGetAttribute("cache-id", out var cacheId))
         {
-            Cache = Convert.ToString(cacheId);
+            Cache = Convert.ToString(cacheId.Value);
         }
 
         if (string.IsNullOrWhiteSpace(Context) && output.Attributes.TryGetAttribute("cache-context", out var cacheContext))
         {
-            Context = Convert.ToString(cacheContext);
+            Context = Convert.ToString(cacheContext.Value);
         }
 
         if (string.IsNullOrWhiteSpace(Tag) && output.Attributes.TryGetAttribute("cache-tag", out var cacheTag))
         {
-            Tag = Convert.ToString(cacheTag);
+            Tag = Convert.ToString(cacheTag.Value);
         }
 
         if (!FixedDuration.HasValue && output.Attributes.TryGetAttribute("cache-fixed-duration", out var cashDuration))
         {
             TimeSpan timespan;
-            if (TimeSpan.TryParse(Convert.ToString(cashDuration), out timespan))
+            if (TimeSpan.TryParse(Convert.ToString(cashDuration.Value), out timespan))
             {
                 FixedDuration = timespan;
             }
@@ -107,7 +107,7 @@ public abstract class BaseShapeTagHelper : TagHelper
         if (!SlidingDuration.HasValue && output.Attributes.TryGetAttribute("cache-sliding-duration", out var slidingDuration))
         {
             TimeSpan timespan;
-            if (TimeSpan.TryParse(Convert.ToString(slidingDuration), out timespan))
+            if (TimeSpan.TryParse(Convert.ToString(slidingDuration.Value), out timespan))
             {
                 SlidingDuration = timespan;
             }

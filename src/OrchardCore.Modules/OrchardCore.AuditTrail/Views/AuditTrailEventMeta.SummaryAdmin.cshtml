@@ -9,7 +9,7 @@
     <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@createdUtc">@await DisplayAsync(await New.Timespan(Utc: Model.AuditTrailEvent.CreatedUtc))</time>
 </span>
 
-<user-display-name user-name="@(Model.AuditTrailEvent.UserName)" title="@T["User Name"].Value" />
+<user-display-name user-name="@(Model.AuditTrailEvent.UserName)" title="@T["User Name"].Value" cache-id="user-display-name-username" display-type="SummaryAdmin" />
 
 @if (!string.IsNullOrEmpty(Model.AuditTrailEvent.ClientIpAddress))
 {

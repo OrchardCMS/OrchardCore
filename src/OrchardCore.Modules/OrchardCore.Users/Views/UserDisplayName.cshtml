@@ -7,7 +7,9 @@
 @await DisplayAsync(Model)
 
 @{
-    var textShape = await ShapeFactory.CreateAsync("UserDisplayNameText", new { Model.UserName, Model.Title });
+    Model.Metadata.Type = "UserDisplayNameText";
+    Model.Metadata.Cache(string.Empty);
+    Model.Metadata.ChildContent = null;
 }
 
-@await DisplayAsync(textShape)
+@await DisplayAsync(Model)

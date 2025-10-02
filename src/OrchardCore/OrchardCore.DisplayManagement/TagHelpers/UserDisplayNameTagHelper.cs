@@ -15,12 +15,6 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
     [HtmlAttributeName("user-name")]
     public string UserName { get; set; }
 
-    [HtmlAttributeName("title")]
-    public string Title { get; set; }
-
-    [HtmlAttributeName("display-type")]
-    public string DisplayType { get; set; }
-
     public override Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
     {
         if (string.IsNullOrEmpty(UserName))
@@ -37,11 +31,6 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
 
         Properties[nameof(UserName)] = UserName;
 
-        if (!string.IsNullOrWhiteSpace(Title))
-        {
-            Properties[nameof(Title)] = Title;
-        }
-
         if (!output.Attributes.TryGetAttribute("cache-id", out _))
         {
             output.Attributes.Add("cache-id", "user-display-name");
@@ -55,11 +44,6 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
         if (!output.Attributes.TryGetAttribute("cache-tag", out _))
         {
             output.Attributes.Add("cache-tag", $"user-display-name,user-display-name:{UserName}");
-        }
-
-        if (!string.IsNullOrWhiteSpace(DisplayType))
-        {
-            output.Attributes.Add("display-type", DisplayType);
         }
 
         return base.ProcessAsync(tagHelperContext, output);

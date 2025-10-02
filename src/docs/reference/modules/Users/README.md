@@ -39,7 +39,8 @@ You can then display a user's name like this:
 <user-display-name 
     user-name="@(contentItem.Author)" 
     title="@T["Author"].Value" 
-    display-type="@Model.Metadata.DisplayType" />
+    display-type="SummaryAdmin"
+    cache-id="user-display-name-author" />
 ```
 
 This ensures user names are rendered consistently while making use of OrchardCore's caching system for performance.
