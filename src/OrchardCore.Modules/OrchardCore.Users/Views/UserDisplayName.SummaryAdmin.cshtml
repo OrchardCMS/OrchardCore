@@ -1,4 +1,3 @@
-@inject IShapeFactory ShapeFactory
 <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@Model.Title">
     @{
         Model.Metadata.Alternates.Clear();
@@ -8,8 +7,11 @@
     @await DisplayAsync(Model)
 
     @{
-        var textShape = await ShapeFactory.CreateAsync("UserDisplayNameText", new { Model.UserName, Model.Title });
+        Model.Metadata.Type = "UserDisplayNameText";
+        Model.Metadata.ClearCache();
+        Model.Metadata.ChildContent = null;
     }
 
-    @await DisplayAsync(textShape)
+    @await DisplayAsync(Model)
+
 </span>

@@ -94,4 +94,9 @@ public class ShapeMetadata
     {
         return _cacheContext;
     }
+
+    public void ClearCache()
+    {
+        _cacheContext = null;
+    }
 }
