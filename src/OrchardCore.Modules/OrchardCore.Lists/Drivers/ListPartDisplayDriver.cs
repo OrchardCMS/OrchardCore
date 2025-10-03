@@ -220,7 +220,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     {
         var items = new List<SelectListItem>()
         {
-            new SelectListItem(S["All content types"], string.Empty)
+            new SelectListItem(S["All content types"], string.Empty),
         };
 
         foreach (var definition in definitions)
