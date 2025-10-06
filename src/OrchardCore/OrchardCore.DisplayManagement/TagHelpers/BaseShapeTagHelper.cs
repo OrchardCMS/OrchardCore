@@ -32,9 +32,13 @@ public abstract class BaseShapeTagHelper : TagHelper
     // and then not added to the properties of the shape we are building.
 
     internal string Cache { get; set; }
+
     internal TimeSpan? FixedDuration { get; set; }
+
     internal TimeSpan? SlidingDuration { get; set; }
+
     internal string Context { get; set; }
+
     internal string Tag { get; set; }
 
     protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
@@ -82,23 +86,23 @@ public abstract class BaseShapeTagHelper : TagHelper
 
         if (string.IsNullOrWhiteSpace(Cache) && output.Attributes.TryGetAttribute("cache-id", out var cacheId))
         {
-            Cache = Convert.ToString(cacheId);
+            Cache = Convert.ToString(cacheId.Value);
         }
 
         if (string.IsNullOrWhiteSpace(Context) && output.Attributes.TryGetAttribute("cache-context", out var cacheContext))
         {
-            Context = Convert.ToString(cacheContext);
+            Context = Convert.ToString(cacheContext.Value);
         }
 
         if (string.IsNullOrWhiteSpace(Tag) && output.Attributes.TryGetAttribute("cache-tag", out var cacheTag))
         {
-            Tag = Convert.ToString(cacheTag);
+            Tag = Convert.ToString(cacheTag.Value);
         }
 
         if (!FixedDuration.HasValue && output.Attributes.TryGetAttribute("cache-fixed-duration", out var cashDuration))
         {
             TimeSpan timespan;
-            if (TimeSpan.TryParse(Convert.ToString(cashDuration), out timespan))
+            if (TimeSpan.TryParse(Convert.ToString(cashDuration.Value), out timespan))
             {
                 FixedDuration = timespan;
             }
@@ -107,7 +111,7 @@ public abstract class BaseShapeTagHelper : TagHelper
         if (!SlidingDuration.HasValue && output.Attributes.TryGetAttribute("cache-sliding-duration", out var slidingDuration))
         {
             TimeSpan timespan;
-            if (TimeSpan.TryParse(Convert.ToString(slidingDuration), out timespan))
+            if (TimeSpan.TryParse(Convert.ToString(slidingDuration.Value), out timespan))
             {
                 SlidingDuration = timespan;
             }
@@ -117,25 +121,23 @@ public abstract class BaseShapeTagHelper : TagHelper
 
         if (output.Attributes.TryGetAttribute("id", out var id))
         {
-            shape.Id = Convert.ToString(id);
+            shape.Id = Convert.ToString(id.Value);
         }
 
         if (output.Attributes.TryGetAttribute("alternate", out var alternate))
         {
-            shape.Metadata.Alternates.Add(Convert.ToString(alternate));
+            shape.Metadata.Alternates.Add(Convert.ToString(alternate.Value));
         }
 
         if (output.Attributes.TryGetAttribute("wrapper", out var wrapper))
         {
-            shape.Metadata.Wrappers.Add(Convert.ToString(wrapper));
+            shape.Metadata.Wrappers.Add(Convert.ToString(wrapper.Value));
         }
 
         if (output.Attributes.TryGetAttribute("display-type", out var displayType))
         {
             shape.Metadata.DisplayType = Convert.ToString(displayType.Value);
         }
-
-        await ShapeBuildingAsync(shape);
 
         tagHelperContext.Items[typeof(IShape)] = shape;
 
@@ -175,7 +177,4 @@ public abstract class BaseShapeTagHelper : TagHelper
         // We don't want any encapsulating tag around the shape
         output.TagName = null;
     }
-
-    protected virtual ValueTask ShapeBuildingAsync(IShape shape)
-        => ValueTask.CompletedTask;
 }
