@@ -19,10 +19,10 @@
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.8" />
     <PackageVersion Include="Fluid.Core" Version="2.25.0" />
-    <PackageVersion Include="GraphQL" Version="8.5.0" />
-    <PackageVersion Include="GraphQL.DataLoader" Version="8.5.0" />
-    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.5.0" />
-    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.5.0" />
+    <PackageVersion Include="GraphQL" Version="8.6.0" />
+    <PackageVersion Include="GraphQL.DataLoader" Version="8.6.0" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.6.0" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.6.0" />
     <PackageVersion Include="Jint" Version="4.4.1" />
     <PackageVersion Include="JsonPath.Net" Version="2.1.1" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
@@ -33,14 +33,14 @@
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.QueryParser" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00017" />
-    <PackageVersion Include="MailKit" Version="4.13.0" />
+    <PackageVersion Include="MailKit" Version="4.14.0" />
     <PackageVersion Include="Markdig" Version="0.42.0" />
-    <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.12.0" />
+    <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.14.1" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.14.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="MimeKit" Version="4.13.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+    <PackageVersion Include="MimeKit" Version="4.14.0" />
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="ncrontab" Version="3.4.0" />
@@ -62,7 +62,7 @@
     <PackageVersion Include="StackExchange.Redis" Version="2.9.11" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.3" />
-    <PackageVersion Include="xunit.v3" Version="3.0.1" />
+    <PackageVersion Include="xunit.v3" Version="3.1.0" />
     <PackageVersion Include="xunit.analyzers" Version="1.24.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
     <PackageVersion Include="YesSql" Version="5.4.6" />
