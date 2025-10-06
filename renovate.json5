@@ -145,6 +145,14 @@
             ],
             enabled: false,
         },
+        // These are updated manually during a .NET SDK upgrade.
+        {
+            matchPackageNames: [
+                'mcr.microsoft.com/dotnet/aspnet',
+                'mcr.microsoft.com/dotnet/sdk',
+            ],
+            enabled: false,
+        },
     ],
     // With GitHub Actions, concurrency is not really an issue.
     prHourlyLimit: 0,
