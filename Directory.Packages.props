@@ -35,7 +35,7 @@
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00017" />
     <PackageVersion Include="MailKit" Version="4.13.0" />
     <PackageVersion Include="Markdig" Version="0.42.0" />
-    <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.12.0" />
+    <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.14.1" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.14.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
@@ -62,7 +62,7 @@
     <PackageVersion Include="StackExchange.Redis" Version="2.9.11" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.3" />
-    <PackageVersion Include="xunit.v3" Version="3.0.1" />
+    <PackageVersion Include="xunit.v3" Version="3.1.0" />
     <PackageVersion Include="xunit.analyzers" Version="1.24.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
     <PackageVersion Include="YesSql" Version="5.4.6" />
