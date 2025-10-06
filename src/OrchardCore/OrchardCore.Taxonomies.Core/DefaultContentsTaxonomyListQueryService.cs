@@ -32,10 +32,18 @@ public sealed class DefaultContentsTaxonomyListQueryService : IContentsTaxonomyL
 
         await _contentTaxonomyListFilters.InvokeAsync((filter, q, part) => filter.FilterAsync(q, part), query, termPart, _logger);
 
+        var currentPage = 1;
+
+        if (pager?.Page > 0)
+        {
+            currentPage = pager.Page;
+        }
+
         return query
             .With<ContentItemIndex>()
             .ThenByDescending(x => x.CreatedUtc)
             .ThenBy(x => x.Id)
-            .Take(pager.PageSize + 1);
+            .Skip((currentPage - 1) * pager.PageSize)
+            .Take(pager.PageSize);
     }
 }
