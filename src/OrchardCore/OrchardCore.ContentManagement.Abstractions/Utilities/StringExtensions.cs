@@ -343,21 +343,6 @@ public static class StringExtensions
         return Regex.Replace(original, pattern, match => replacements[match.Value]);
     }
 
-#if NET8_0
-    [Obsolete("Don't use 'TrimEnd' as this has a different behavior in .NET 9.0. Use 'OrchardCore.ContentManagement.Utilities.TrimEndString' instead.")]
-    public static string TrimEnd(this string value, string trim = "")
-    {
-        if (value == null)
-        {
-            return null;
-        }
-
-        return value.EndsWith(trim, StringComparison.Ordinal)
-            ? value[..^trim.Length]
-            : value;
-    }
-#endif
-
     public static string TrimEndString(this string value, string suffix)
     {
         if (string.IsNullOrWhiteSpace(value))
