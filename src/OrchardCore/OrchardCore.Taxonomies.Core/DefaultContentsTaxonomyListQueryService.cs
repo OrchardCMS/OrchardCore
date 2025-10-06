@@ -27,6 +27,9 @@ public sealed class DefaultContentsTaxonomyListQueryService : IContentsTaxonomyL
 
     public async Task<IQuery<ContentItem>> QueryAsync(TermPart termPart, Pager pager)
     {
+        ArgumentNullException.ThrowIfNull(termPart);
+        ArgumentNullException.ThrowIfNull(pager);
+
         IQuery<ContentItem> query = _session.Query<ContentItem>()
             .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId);
 
@@ -34,7 +37,7 @@ public sealed class DefaultContentsTaxonomyListQueryService : IContentsTaxonomyL
 
         var currentPage = 1;
 
-        if (pager?.Page > 0)
+        if (pager.Page > 0)
         {
             currentPage = pager.Page;
         }
