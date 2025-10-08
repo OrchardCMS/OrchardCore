@@ -95,9 +95,10 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
             if (_cacheOptions.DebugMode)
             {
                 var contentBuilder = new HtmlContentBuilder();
+                var debugLog = Guid.NewGuid();
 
                 contentBuilder.AppendLine();
-                contentBuilder.AppendHtmlLine($"<!-- CACHED SHAPE: {cacheContext.CacheId} ({Guid.NewGuid()})");
+                contentBuilder.AppendHtmlLine($"<!-- START CACHED SHAPE: {cacheContext.CacheId} ({debugLog})");
                 contentBuilder.AppendHtmlLine($"          VARY BY: {string.Join(", ", cacheContext.Contexts)}");
                 contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {string.Join(", ", cacheContext.Tags)}");
                 contentBuilder.AppendHtmlLine($"       EXPIRES ON: {cacheContext.ExpiresOn}");
@@ -108,7 +109,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
                 contentBuilder.AppendHtml(sw.ToString());
 
                 contentBuilder.AppendLine();
-                contentBuilder.AppendHtmlLine($"<!-- END CACHED SHAPE: {cacheContext.CacheId} -->");
+                contentBuilder.AppendHtmlLine($"<!-- END CACHED SHAPE: {cacheContext.CacheId} ({debugLog}) -->");
 
                 context.ChildContent = contentBuilder;
             }
