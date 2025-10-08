@@ -12,10 +12,6 @@ public class ShapeMetadata
     private List<Func<IShape, Task>> _processing;
     private List<Action<ShapeDisplayContext>> _displayed;
 
-    public ShapeMetadata()
-    {
-    }
-
     public string Type { get; set; }
     public string DisplayType { get; set; }
     public string Position { get; set; }
@@ -28,7 +24,7 @@ public class ShapeMetadata
     public string Differentiator { get; set; }
     public AlternatesCollection Wrappers { get; set; } = [];
     public AlternatesCollection Alternates { get; set; } = [];
-    public bool IsCached => _cacheContexts?.ContainsKey(Type) ?? false;
+    public bool IsCached => _cacheContexts?.ContainsKey(Type) == true;
     public IHtmlContent ChildContent { get; set; }
 
     // The casts in (IReadOnlyList<T>)_displaying ?? [] are important as they convert [] to Array.Empty.
@@ -82,7 +78,7 @@ public class ShapeMetadata
 
         cacheId = $"{Type}_{cacheId}";
 
-        _cacheContexts ??= new Dictionary<string, CacheContext>(StringComparer.OrdinalIgnoreCase);
+        _cacheContexts ??= new(StringComparer.OrdinalIgnoreCase);
 
         if (!_cacheContexts.TryGetValue(Type, out var cacheContext) || cacheContext.CacheId != cacheId)
         {
@@ -97,6 +93,8 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache()
     {
-        return _cacheContexts?.TryGetValue(Type, out var cacheContext) == true ? cacheContext : null;
+        return _cacheContexts?.TryGetValue(Type, out var cacheContext) == true 
+            ? cacheContext 
+            : null;
     }
 }
