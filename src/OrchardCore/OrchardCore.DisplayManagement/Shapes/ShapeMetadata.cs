@@ -7,15 +7,14 @@ namespace OrchardCore.DisplayManagement.Shapes;
 
 public class ShapeMetadata
 {
-    private CacheContext _cacheContext;
+    private Dictionary<string, CacheContext> _cacheContexts;
+    private List<Action<ShapeDisplayContext>> _displaying;
+    private List<Func<IShape, Task>> _processing;
+    private List<Action<ShapeDisplayContext>> _displayed;
 
     public ShapeMetadata()
     {
     }
-
-    private List<Action<ShapeDisplayContext>> _displaying;
-    private List<Func<IShape, Task>> _processing;
-    private List<Action<ShapeDisplayContext>> _displayed;
 
     public string Type { get; set; }
     public string DisplayType { get; set; }
@@ -29,7 +28,7 @@ public class ShapeMetadata
     public string Differentiator { get; set; }
     public AlternatesCollection Wrappers { get; set; } = [];
     public AlternatesCollection Alternates { get; set; } = [];
-    public bool IsCached => _cacheContext != null;
+    public bool IsCached => _cacheContexts?.ContainsKey(Type) ?? false;
     public IHtmlContent ChildContent { get; set; }
 
     // The casts in (IReadOnlyList<T>)_displaying ?? [] are important as they convert [] to Array.Empty.
@@ -79,12 +78,16 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache(string cacheId)
     {
-        if (_cacheContext == null || _cacheContext.CacheId != cacheId)
+        cacheId = $"{Type}_{cacheId}";
+
+        _cacheContexts ??= new Dictionary<string, CacheContext>(StringComparer.OrdinalIgnoreCase);
+
+        if (!_cacheContexts.TryGetValue(Type, out var cacheContext) || cacheContext.CacheId != cacheId)
         {
-            _cacheContext = new CacheContext(cacheId);
+            _cacheContexts[Type] = cacheContext = new CacheContext(cacheId);
         }
 
-        return _cacheContext;
+        return cacheContext;
     }
 
     /// <summary>
@@ -92,6 +95,6 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache()
     {
-        return _cacheContext;
+        return _cacheContexts?.TryGetValue(Type, out var cacheContext) ?? false ? cacheContext : null;
     }
 }
