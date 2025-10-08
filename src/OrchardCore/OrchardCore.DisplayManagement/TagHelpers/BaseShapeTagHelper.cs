@@ -32,9 +32,13 @@ public abstract class BaseShapeTagHelper : TagHelper
     // and then not added to the properties of the shape we are building.
 
     internal string Cache { get; set; }
+
     internal TimeSpan? FixedDuration { get; set; }
+
     internal TimeSpan? SlidingDuration { get; set; }
+
     internal string Context { get; set; }
+
     internal string Tag { get; set; }
 
     protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
@@ -117,17 +121,17 @@ public abstract class BaseShapeTagHelper : TagHelper
 
         if (output.Attributes.TryGetAttribute("id", out var id))
         {
-            shape.Id = Convert.ToString(id);
+            shape.Id = Convert.ToString(id.Value);
         }
 
         if (output.Attributes.TryGetAttribute("alternate", out var alternate))
         {
-            shape.Metadata.Alternates.Add(Convert.ToString(alternate));
+            shape.Metadata.Alternates.Add(Convert.ToString(alternate.Value));
         }
 
         if (output.Attributes.TryGetAttribute("wrapper", out var wrapper))
         {
-            shape.Metadata.Wrappers.Add(Convert.ToString(wrapper));
+            shape.Metadata.Wrappers.Add(Convert.ToString(wrapper.Value));
         }
 
         if (output.Attributes.TryGetAttribute("display-type", out var displayType))
