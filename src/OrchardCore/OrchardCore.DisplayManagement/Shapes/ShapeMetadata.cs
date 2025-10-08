@@ -78,6 +78,8 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache(string cacheId)
     {
+        ArgumentException.ThrowIfNullOrEmpty(cacheId);
+
         cacheId = $"{Type}_{cacheId}";
 
         _cacheContexts ??= new Dictionary<string, CacheContext>(StringComparer.OrdinalIgnoreCase);
