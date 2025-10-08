@@ -54,7 +54,6 @@ public class DynamicCacheTests
         serviceCollection.AddScoped<ITagRemovedEventHandler>(sp => sp.GetRequiredService<IDynamicCacheService>());
 
         serviceCollection.AddScoped<IShapeDisplayEvents, DynamicCacheShapeDisplayEvents>();
-        serviceCollection.AddShapeAttributes<CachedShapeWrapperShapes>();
 
         serviceCollection.AddSingleton<IDynamicCache, DefaultDynamicCache>();
         serviceCollection.AddSingleton<DynamicCacheTagHelperService>();
