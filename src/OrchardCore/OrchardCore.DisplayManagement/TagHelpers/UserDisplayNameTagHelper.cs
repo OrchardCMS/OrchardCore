@@ -33,12 +33,7 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
 
         if (!output.Attributes.TryGetAttribute("cache-id", out _))
         {
-            output.Attributes.Add("cache-id", "user-display-name");
-        }
-
-        if (!output.Attributes.TryGetAttribute("cache-context", out _))
-        {
-            output.Attributes.Add("cache-context", "user");
+            output.Attributes.Add("cache-id", $"user-display-name-{UserName}");
         }
 
         if (!output.Attributes.TryGetAttribute("cache-tag", out _))

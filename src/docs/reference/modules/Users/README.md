@@ -40,7 +40,7 @@ You can then display a user's name like this:
     user-name="@(contentItem.Author)" 
     title="@T["Author"].Value" 
     display-type="SummaryAdmin"
-    cache-id="user-display-name-author" />
+    cache-id="user-display-name-author-@(contentItem.Author)" />
 ```
 
 This ensures user names are rendered consistently while making use of OrchardCore's caching system for performance.

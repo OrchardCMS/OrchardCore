@@ -1,4 +1,6 @@
 @{
+    var originalType = Model.Metadata.Type;
+
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "UserDisplayNameIcon";
 }
@@ -7,8 +9,12 @@
 
 @{
     Model.Metadata.Type = "UserDisplayNameText";
-    Model.Metadata.ClearCache();
     Model.Metadata.ChildContent = null;
 }
 
 @await DisplayAsync(Model)
+
+@{
+    // After rendering the shapes, reset the shape type to its original value to allow dynamic cache to locate the correct cache context.
+    Model.Metadata.Type = originalType;
+}
