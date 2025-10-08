@@ -428,4 +428,36 @@ public class DefaultDisplayManagerTests
 
         Assert.Equal("alpha", result.ToString());
     }
+
+    [Fact]
+    public async Task IShapeDisplayEventsCalledInCorrectOrder()
+    {
+        var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+        var testEvents = _serviceProvider.GetService<IShapeDisplayEvents>() as TestDisplayEvents;
+        
+        var shape = new Shape();
+        shape.Metadata.Type = "OrderTest";
+        
+        var descriptor = new ShapeDescriptor
+        {
+            ShapeType = "OrderTest",
+        };
+        AddBinding(descriptor, "OrderTest", ctx => Task.FromResult<IHtmlContent>(new HtmlString("Order Test Content")));
+        AddShapeDescriptor(descriptor);
+
+        var eventOrder = new List<string>();
+        
+        // Override the event handlers to track the order of calls
+        testEvents.Displaying = ctx => eventOrder.Add("Displaying");
+        testEvents.Displayed = ctx => eventOrder.Add("Displayed");
+        testEvents.Finalized = ctx => eventOrder.Add("Finalized");
+
+        await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+        // Verify that events were called in the correct order
+        Assert.Equal(3, eventOrder.Count);
+        Assert.Equal("Displaying", eventOrder[0]);
+        Assert.Equal("Displayed", eventOrder[1]);
+        Assert.Equal("Finalized", eventOrder[2]);
+    }
 }
