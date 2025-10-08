@@ -95,6 +95,6 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache()
     {
-        return _cacheContexts?.TryGetValue(Type, out var cacheContext) ?? false ? cacheContext : null;
+        return _cacheContexts?.TryGetValue(Type, out var cacheContext) == true ? cacheContext : null;
     }
 }
