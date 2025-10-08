@@ -56,6 +56,10 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
                 _cached[cacheContext.CacheId] = cacheContext;
                 context.ChildContent = new HtmlString(cachedContent);
             }
+            else if (_cacheOptions.DebugMode)
+            {
+                context.Shape.Metadata.Wrappers.Add("CachedShapeWrapper");
+            }
         }
     }
 
@@ -91,38 +95,10 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
             // 'ChildContent' may be a 'ViewBufferTextWriterContent' on which we can't
             // call 'WriteTo()' twice, so here we update it with a new 'HtmlString()'.
             context.ChildContent.WriteTo(sw, _htmlEncoder);
+ var contentHtmlString = new HtmlString(sw.ToString());
+            context.ChildContent = contentHtmlString;
 
-            if (_cacheOptions.DebugMode)
-            {
-                var contentBuilder = new HtmlContentBuilder();
-
-                var debugLog = Guid.NewGuid();
-
-                contentBuilder.AppendLine();
-                contentBuilder.AppendHtmlLine($"<!-- START CACHED SHAPE: {cacheContext.CacheId} ({debugLog})");
-                contentBuilder.AppendHtmlLine($"          VARY BY: {string.Join(", ", cacheContext.Contexts)}");
-                contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {string.Join(", ", cacheContext.Tags)}");
-                contentBuilder.AppendHtmlLine($"       EXPIRES ON: {cacheContext.ExpiresOn}");
-                contentBuilder.AppendHtmlLine($"    EXPIRES AFTER: {cacheContext.ExpiresAfter}");
-                contentBuilder.AppendHtmlLine($"  EXPIRES SLIDING: {cacheContext.ExpiresSliding}");
-                contentBuilder.AppendHtmlLine("-->");
-
-                contentBuilder.AppendHtml(sw.ToString());
-
-                contentBuilder.AppendLine();
-                contentBuilder.AppendHtmlLine($"<!-- END CACHED SHAPE: {cacheContext.CacheId} ({debugLog}) -->");
-
-                context.ChildContent = contentBuilder;
-            }
-            else
-            {
-                context.ChildContent = new HtmlString(sw.ToString());
-            }
-
-            using var swForCache = new ZStringWriter();
-            context.ChildContent.WriteTo(swForCache, _htmlEncoder);
-
-            await _dynamicCacheService.SetCachedValueAsync(cacheContext, swForCache.ToString());
+            await _dynamicCacheService.SetCachedValueAsync(cacheContext, contentHtmlString.Value);
         }
     }
 
