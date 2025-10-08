@@ -19,7 +19,7 @@ dotnet-version: |
 - [ ] Update all `dotnet publish`, `dotnet build` and `dotnet test` calls to the latest TFM, if specified.
 - [ ] Update all `tasks.json` files to target the latest TFM
 - [ ] Update the list of template **choices** (see the `template.json` files).
-- [ ] Update docker file base images.
+- [ ] Update Dockerfile base images.
 - [ ] Update documentation pages specifying a TFM (search for `<TargetFramework>`).
 - [ ] Add a note about the supported .NET versions to the upcoming release notes.
 - [ ] When dual-targeting framework versions, configure Renovate in the `renovate.json5` file (in the repository root) to update packages targeting the older framework only up to their compatible versions. An example package rule for the `packageRules` section that will update the <9.0.0 (i.e. 8.x) version of the matching packages only up to 8.x:
