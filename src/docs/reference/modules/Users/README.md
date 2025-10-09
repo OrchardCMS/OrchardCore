@@ -38,11 +38,14 @@ You can then display a user's name like this:
 ```html
 <user-display-name 
     user-name="@(contentItem.Author)" 
-    title="@T["Author"].Value" 
-    display-type="@Model.Metadata.DisplayType" />
+    display-type="SummaryAdmin"
+    cache-id="user-display-name-author" />
 ```
 
 This ensures user names are rendered consistently while making use of OrchardCore's caching system for performance.
+
+!!! note
+    You may add additional HTML attributes, such as `title`, to show a tooltip for the username badge.
 
 ## Two-factor Authentication
 

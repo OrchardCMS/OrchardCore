@@ -139,8 +139,6 @@ public abstract class BaseShapeTagHelper : TagHelper
             shape.Metadata.DisplayType = Convert.ToString(displayType.Value);
         }
 
-        await ShapeBuildingAsync(shape);
-
         tagHelperContext.Items[typeof(IShape)] = shape;
 
         if (!string.IsNullOrWhiteSpace(Cache))
@@ -179,7 +177,4 @@ public abstract class BaseShapeTagHelper : TagHelper
         // We don't want any encapsulating tag around the shape
         output.TagName = null;
     }
-
-    protected virtual ValueTask ShapeBuildingAsync(IShape shape)
-        => ValueTask.CompletedTask;
 }

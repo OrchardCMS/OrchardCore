@@ -1,4 +1,16 @@
-@foreach (var item in Model.Items)
-{
-    @await DisplayAsync(item)
+@{
+    var originalType = Model.Metadata.Type;
+
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "UserDisplayNameIcon";
 }
+
+@await DisplayAsync(Model)
+
+@{
+    Model.Metadata.Type = "UserDisplayNameText";
+    Model.Metadata.ChildContent = null;
+}
+
+@await DisplayAsync(Model)
+
