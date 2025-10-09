@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -15,14 +14,10 @@ public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSett
 
     private static readonly char[] _separator = [' ', ','];
 
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public LayerSiteSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+    public LayerSiteSettingsDisplayDriver(IAuthorizationService authorizationService)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
 
@@ -31,7 +26,7 @@ public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSett
 
     public override async Task<IDisplayResult> EditAsync(ISite site, LayerSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
         {
@@ -47,7 +42,7 @@ public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSett
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, LayerSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
         {

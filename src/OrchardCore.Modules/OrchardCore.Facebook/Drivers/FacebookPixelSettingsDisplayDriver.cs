@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -11,15 +10,10 @@ namespace OrchardCore.Facebook.Drivers;
 public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<FacebookPixelSettings>
 {
     private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public FacebookPixelSettingsDisplayDriver(
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor
-        )
+    public FacebookPixelSettingsDisplayDriver(IAuthorizationService authorizationService)
     {
         _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     protected override string SettingsGroupId
@@ -27,7 +21,7 @@ public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<Faceb
 
     public override async Task<IDisplayResult> EditAsync(ISite site, FacebookPixelSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
         {
             return null;
@@ -42,7 +36,7 @@ public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<Faceb
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookPixelSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageFacebookApp))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, Permissions.ManageFacebookApp))
         {
             return null;
         }

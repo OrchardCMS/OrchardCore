@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -14,16 +13,13 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public AzureADSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IAuthorizationService authorizationService)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     protected override string SettingsGroupId
@@ -31,7 +27,7 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
 
     public override async Task<IDisplayResult> EditAsync(ISite site, AzureADSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
         {
             return null;
@@ -53,7 +49,7 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureADSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
         {
             return null;

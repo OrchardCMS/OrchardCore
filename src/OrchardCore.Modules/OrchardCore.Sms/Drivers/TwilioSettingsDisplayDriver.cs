@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
@@ -21,7 +20,6 @@ namespace OrchardCore.Sms.Drivers;
 public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettings>
 {
     private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -35,7 +33,6 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
 
     public TwilioSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
         IDataProtectionProvider dataProtectionProvider,
@@ -44,7 +41,6 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
         IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
         _dataProtectionProvider = dataProtectionProvider;
@@ -53,7 +49,7 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(ISite site, TwilioSettings settings, BuildEditorContext c)
+    public override IDisplayResult Edit(ISite site, TwilioSettings settings, BuildEditorContext context)
     {
         return Initialize<TwilioSettingsViewModel>("TwilioSettings_Edit", model =>
         {
@@ -62,13 +58,13 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
             model.AccountSID = settings.AccountSID;
             model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5#Twilio")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(context.HttpContext?.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwilioSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {

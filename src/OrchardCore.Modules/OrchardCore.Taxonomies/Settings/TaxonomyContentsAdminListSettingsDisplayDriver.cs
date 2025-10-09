@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement.Entities;
@@ -15,16 +14,13 @@ public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplay
 {
     public const string GroupId = "taxonomyContentsAdminList";
 
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly YesSql.ISession _session;
 
     public TaxonomyContentsAdminListSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         YesSql.ISession session)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _session = session;
     }
@@ -34,7 +30,7 @@ public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplay
 
     public override async Task<IDisplayResult> EditAsync(ISite site, TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies))
         {
             return null;

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,16 +12,13 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class SmsAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriver<SmsAuthenticatorLoginSettings>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
 
     public SmsAuthenticatorLoginSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         ILiquidTemplateManager liquidTemplateManager)
     {
-        _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _liquidTemplateManager = liquidTemplateManager;
     }
@@ -30,7 +26,7 @@ public sealed class SmsAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriv
     protected override string SettingsGroupId
         => LoginSettingsDisplayDriver.GroupId;
 
-    public override IDisplayResult Edit(ISite site, SmsAuthenticatorLoginSettings settings, BuildEditorContext c)
+    public override IDisplayResult Edit(ISite site, SmsAuthenticatorLoginSettings settings, BuildEditorContext context)
     {
         return Initialize<SmsAuthenticatorLoginSettings>("SmsAuthenticatorLoginSettings_Edit", model =>
         {
@@ -38,13 +34,13 @@ public sealed class SmsAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriv
             ? EmailAuthenticatorLoginSettings.DefaultBody
             : settings.Body;
         }).Location("Content:15#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(context.HttpContext?.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SmsAuthenticatorLoginSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(context.HttpContext?.User, UsersPermissions.ManageUsers))
         {
             return null;
         }

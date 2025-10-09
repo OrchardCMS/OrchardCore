@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -15,19 +14,15 @@ public sealed class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<Goo
         => GoogleConstants.Features.GoogleAnalytics;
 
     private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public GoogleAnalyticsSettingsDisplayDriver(
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+    public GoogleAnalyticsSettingsDisplayDriver(IAuthorizationService authorizationService)
     {
         _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite site, GoogleAnalyticsSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
         {
             return null;
@@ -42,7 +37,7 @@ public sealed class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<Goo
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleAnalyticsSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = context.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
         {
             return null;
