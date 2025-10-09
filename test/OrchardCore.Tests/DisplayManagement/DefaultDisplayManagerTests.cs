@@ -37,9 +37,6 @@ public class DefaultDisplayManagerTests
         serviceCollection.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
         serviceCollection.AddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
-        // Empty collection for IShapeFactoryEvents - needed by DefaultShapeFactory
-        serviceCollection.AddScoped<IEnumerable<IShapeFactoryEvents>>(sp => new List<IShapeFactoryEvents>());
-
         serviceCollection.AddLogging();
 
         serviceCollection.AddSingleton(_defaultShapeTable);
@@ -810,7 +807,6 @@ public class DefaultDisplayManagerTests
         Assert.Contains("Finalized: MorphedShape", eventLog);
         // Note: The Finalized event for the original shape is called, but the shape type
         // has already been changed to MorphedShape, so it won't log as OriginalShape.
-        // Assert.Contains("Finalized: OriginalShape", eventLog);
     }
 
     [Fact]
