@@ -7,12 +7,7 @@ namespace OrchardCore.DisplayManagement.Shapes;
 
 public class ShapeMetadata
 {
-    private CacheContext _cacheContext;
-
-    public ShapeMetadata()
-    {
-    }
-
+    private Dictionary<string, CacheContext> _cacheContexts;
     private List<Action<ShapeDisplayContext>> _displaying;
     private List<Func<IShape, Task>> _processing;
     private List<Action<ShapeDisplayContext>> _displayed;
@@ -29,7 +24,7 @@ public class ShapeMetadata
     public string Differentiator { get; set; }
     public AlternatesCollection Wrappers { get; set; } = [];
     public AlternatesCollection Alternates { get; set; } = [];
-    public bool IsCached => _cacheContext != null;
+    public bool IsCached => _cacheContexts?.ContainsKey(Type) == true;
     public IHtmlContent ChildContent { get; set; }
 
     // The casts in (IReadOnlyList<T>)_displaying ?? [] are important as they convert [] to Array.Empty.
@@ -79,12 +74,18 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache(string cacheId)
     {
-        if (_cacheContext == null || _cacheContext.CacheId != cacheId)
+        ArgumentException.ThrowIfNullOrEmpty(cacheId);
+
+        cacheId = $"{Type}_{cacheId}";
+
+        _cacheContexts ??= new(StringComparer.OrdinalIgnoreCase);
+
+        if (!_cacheContexts.TryGetValue(Type, out var cacheContext) || cacheContext.CacheId != cacheId)
         {
-            _cacheContext = new CacheContext(cacheId);
+            _cacheContexts[Type] = cacheContext = new CacheContext(cacheId);
         }
 
-        return _cacheContext;
+        return cacheContext;
     }
 
     /// <summary>
@@ -92,6 +93,8 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache()
     {
-        return _cacheContext;
+        return _cacheContexts?.TryGetValue(Type, out var cacheContext) == true 
+            ? cacheContext 
+            : null;
     }
 }
