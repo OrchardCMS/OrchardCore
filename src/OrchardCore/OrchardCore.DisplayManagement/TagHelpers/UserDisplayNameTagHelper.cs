@@ -41,6 +41,15 @@ public sealed class UserDisplayNameTagHelper : BaseShapeTagHelper
             output.Attributes.Add("cache-tag", $"user-display-name,user-display-name:{UserName}");
         }
 
+        if (output.Attributes.TryGetAttribute("cache-context", out var cacheContext))
+        {
+            output.Attributes.SetAttribute("cache-context", $"{Convert.ToString(cacheContext.Value)},username-{UserName}");
+        }
+        else
+        {
+            output.Attributes.Add("cache-context", $"username-{UserName}");
+        }
+
         return base.ProcessAsync(tagHelperContext, output);
     }
 }
