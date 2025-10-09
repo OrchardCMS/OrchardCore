@@ -47,9 +47,6 @@ public class DynamicCacheTests
         serviceCollection.AddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
         serviceCollection.AddLogging();
 
-        // Empty collection for IShapeFactoryEvents - needed by DefaultShapeFactory
-        serviceCollection.AddScoped<IEnumerable<IShapeFactoryEvents>>(sp => new List<IShapeFactoryEvents>());
-
         serviceCollection.AddSingleton(_defaultShapeTable);
         serviceCollection.AddSingleton(_additionalBindings);
         serviceCollection.AddWebEncoders();
