@@ -94,7 +94,7 @@ public class DynamicCacheTests
         return new DisplayContext
         {
             Value = shape,
-            ServiceProvider = _serviceProvider
+            ServiceProvider = _serviceProvider,
         };
     }
 
