@@ -86,7 +86,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
 
         // If the ChildContent was retrieved form the cache, then the Cache Context will be present in the _cached collection (see the DisplayingAsync method in this class).
         // So, if the cache context is not present in the _cached collection, we need to insert the ChildContent value into the cache:
-        if (!_cached.ContainsKey(cacheContext.CacheId) && context.ChildContent != null)
+        if (!_cached.Remove(cacheContext.CacheId) && context.ChildContent != null)
         {
             // The content is pre-encoded in the cache so we don't have to do it every time it's rendered.
             using var sw = new ZStringWriter();
