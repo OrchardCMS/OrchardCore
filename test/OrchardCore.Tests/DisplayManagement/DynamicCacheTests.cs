@@ -1080,8 +1080,8 @@ public class DynamicCacheTests
         var result5 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
 
         Assert.Equal("Morphed Content", result5.ToString());
-        Assert.Equal(3, originalBindingCalled); // Should increase after cache inner invalidation
-        Assert.Equal(2, morphedBindingCalled); // Should increase after cache inner invalidation
+        Assert.Equal(3, originalBindingCalled); // Should increase after inner cache invalidation
+        Assert.Equal(2, morphedBindingCalled); // Should increase after inner cache invalidation
     }
 
     public class MyModel
