@@ -29,6 +29,10 @@ public class RecentBlogPostsQueryTests
         // Indexing of the content item happens in the deferred-task and may not be immediate available,
         // so we wait until the indexing is done before querying.
         await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
+        await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
+
+        // Indexing may still be running, so we wait a bit to ensure the content item is indexed.
+        await Task.Delay(2000, TestContext.Current.CancellationToken);
 
         var result = await context
             .GraphQLClient
