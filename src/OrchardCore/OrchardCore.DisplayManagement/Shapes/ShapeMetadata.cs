@@ -7,24 +7,55 @@ namespace OrchardCore.DisplayManagement.Shapes;
 
 public class ShapeMetadata
 {
-    private Dictionary<string, CacheContext> _cacheContexts;
+    private (CacheContext rootCacheContext, Dictionary<string, CacheContext> morphedCacheContexts) _cacheContexts;
     private List<Action<ShapeDisplayContext>> _displaying;
     private List<Func<IShape, Task>> _processing;
     private List<Action<ShapeDisplayContext>> _displayed;
+    private string _originalType;
+    private string _type;
 
-    public string Type { get; set; }
+    public string Type
+    {
+        get => _type;
+        set
+        {
+            if (_originalType is null)
+            {
+                _originalType = value;
+            }
+
+            _type = value;
+        }
+    }
+
+    internal bool IsOriginalType => _type == _originalType;
+
     public string DisplayType { get; set; }
+
     public string Position { get; set; }
+
     public string Tab { get; set; }
+
     public string Card { get; set; }
+
     public string Column { get; set; }
+
     public string PlacementSource { get; set; }
+
     public string Prefix { get; set; }
+
     public string Name { get; set; }
+
     public string Differentiator { get; set; }
+
     public AlternatesCollection Wrappers { get; set; } = [];
+
     public AlternatesCollection Alternates { get; set; } = [];
-    public bool IsCached => _cacheContexts?.ContainsKey(Type) == true;
+
+    public bool IsCached => IsOriginalType
+        ? _cacheContexts.rootCacheContext is not null
+        : _cacheContexts.morphedCacheContexts?.ContainsKey(Type) == true;
+
     public IHtmlContent ChildContent { get; set; }
 
     // The casts in (IReadOnlyList<T>)_displaying ?? [] are important as they convert [] to Array.Empty.
@@ -76,13 +107,21 @@ public class ShapeMetadata
     {
         ArgumentException.ThrowIfNullOrEmpty(cacheId);
 
-        cacheId = $"{Type}_{cacheId}";
-
-        _cacheContexts ??= new(StringComparer.OrdinalIgnoreCase);
-
-        if (!_cacheContexts.TryGetValue(Type, out var cacheContext) || cacheContext.CacheId != cacheId)
+        if (IsOriginalType)
         {
-            _cacheContexts[Type] = cacheContext = new CacheContext(cacheId);
+            if (_cacheContexts.rootCacheContext is null || _cacheContexts.rootCacheContext.CacheId != cacheId)
+            {
+                _cacheContexts.rootCacheContext = new CacheContext(cacheId);
+            }
+
+            return _cacheContexts.rootCacheContext;
+        }
+
+        _cacheContexts.morphedCacheContexts ??= new(StringComparer.OrdinalIgnoreCase);
+
+        if (!_cacheContexts.morphedCacheContexts.TryGetValue(Type, out var cacheContext) || cacheContext.CacheId != cacheId)
+        {
+            _cacheContexts.morphedCacheContexts[Type] = cacheContext = new CacheContext(cacheId);
         }
 
         return cacheContext;
@@ -93,8 +132,10 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache()
     {
-        return _cacheContexts?.TryGetValue(Type, out var cacheContext) == true 
-            ? cacheContext 
-            : null;
+        return IsOriginalType
+            ? _cacheContexts.rootCacheContext
+            : _cacheContexts.morphedCacheContexts?.TryGetValue(Type, out var cacheContext) == true
+                ? cacheContext
+                : null;
     }
 }
