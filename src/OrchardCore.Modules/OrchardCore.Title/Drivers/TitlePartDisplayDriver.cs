@@ -28,7 +28,7 @@ public sealed class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
 
         return Initialize<TitlePartViewModel>(GetDisplayShapeType(context), model =>
         {
-            model.Title = titlePart.ContentItem.DisplayText;
+            model.Title = titlePart.Title;
             model.TitlePart = titlePart;
             model.ContentItem = titlePart.ContentItem;
         }).Location(OrchardCoreConstants.DisplayType.Detail, "Header")
@@ -39,7 +39,7 @@ public sealed class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
     {
         return Initialize<TitlePartViewModel>(GetEditorShapeType(context), model =>
         {
-            model.Title = titlePart.ContentItem.DisplayText;
+            model.Title = titlePart.Title;
             model.TitlePart = titlePart;
             model.ContentItem = titlePart.ContentItem;
             model.Settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
