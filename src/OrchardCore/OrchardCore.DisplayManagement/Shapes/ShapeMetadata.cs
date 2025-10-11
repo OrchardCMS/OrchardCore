@@ -7,7 +7,7 @@ namespace OrchardCore.DisplayManagement.Shapes;
 
 public class ShapeMetadata
 {
-    private (string type, CacheContext cacheContext) _mainCacheContext;
+    private (string Type, CacheContext Context) _mainCacheContext;
     private Dictionary<string, CacheContext> _cacheContexts;
     private List<Action<ShapeDisplayContext>> _displaying;
     private List<Func<IShape, Task>> _processing;
@@ -38,13 +38,13 @@ public class ShapeMetadata
     public AlternatesCollection Alternates { get; set; } = [];
 
     public bool IsCached => UseMainCacheContext
-        ? _mainCacheContext.cacheContext is not null
+        ? _mainCacheContext.Context is not null
         : _cacheContexts?.ContainsKey(Type) == true;
 
     public IHtmlContent ChildContent { get; set; }
 
     internal bool UseMainCacheContext
-        => _mainCacheContext.type is null || string.Equals(_mainCacheContext.type, Type, StringComparison.OrdinalIgnoreCase);
+        => _mainCacheContext.Type is null || string.Equals(_mainCacheContext.Type, Type, StringComparison.OrdinalIgnoreCase);
 
     // The casts in (IReadOnlyList<T>)_displaying ?? [] are important as they convert [] to Array.Empty.
     // It would use List<T> otherwise which is not what we want here, we don't want to allocate.
@@ -97,13 +97,13 @@ public class ShapeMetadata
 
         if (UseMainCacheContext)
         {
-            if (_mainCacheContext.cacheContext is null || _mainCacheContext.cacheContext.CacheId != cacheId)
+            if (_mainCacheContext.Context is null || _mainCacheContext.Context.CacheId != cacheId)
             {
-                _mainCacheContext.cacheContext = new CacheContext(cacheId);
-                _mainCacheContext.type = Type;
+                _mainCacheContext.Context = new CacheContext(cacheId);
+                _mainCacheContext.Type = Type;
             }
 
-            return _mainCacheContext.cacheContext;
+            return _mainCacheContext.Context;
         }
 
         _cacheContexts ??= new(StringComparer.OrdinalIgnoreCase);
@@ -122,7 +122,7 @@ public class ShapeMetadata
     public CacheContext Cache()
     {
         return UseMainCacheContext
-            ? _mainCacheContext.cacheContext
+            ? _mainCacheContext.Context
             : _cacheContexts?.TryGetValue(Type, out var cacheContext) == true
                 ? cacheContext
                 : null;
