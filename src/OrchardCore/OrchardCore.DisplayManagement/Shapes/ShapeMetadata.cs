@@ -7,28 +7,13 @@ namespace OrchardCore.DisplayManagement.Shapes;
 
 public class ShapeMetadata
 {
-    private (CacheContext rootCacheContext, Dictionary<string, CacheContext> morphedCacheContexts) _cacheContexts;
+    private (string type, CacheContext cacheContext) _mainCacheContext;
+    private Dictionary<string, CacheContext> _cacheContexts;
     private List<Action<ShapeDisplayContext>> _displaying;
     private List<Func<IShape, Task>> _processing;
     private List<Action<ShapeDisplayContext>> _displayed;
-    private string _originalType;
-    private string _type;
 
-    public string Type
-    {
-        get => _type;
-        set
-        {
-            if (_originalType is null)
-            {
-                _originalType = value;
-            }
-
-            _type = value;
-        }
-    }
-
-    internal bool IsOriginalType => _type == _originalType;
+    public string Type { get; set; }
 
     public string DisplayType { get; set; }
 
@@ -52,11 +37,14 @@ public class ShapeMetadata
 
     public AlternatesCollection Alternates { get; set; } = [];
 
-    public bool IsCached => IsOriginalType
-        ? _cacheContexts.rootCacheContext is not null
-        : _cacheContexts.morphedCacheContexts?.ContainsKey(Type) == true;
+    public bool IsCached => UseMainCacheContext
+        ? _mainCacheContext.cacheContext is not null
+        : _cacheContexts?.ContainsKey(Type) == true;
 
     public IHtmlContent ChildContent { get; set; }
+
+    internal bool UseMainCacheContext
+        => _mainCacheContext.type is null || string.Equals(_mainCacheContext.type, Type, StringComparison.OrdinalIgnoreCase);
 
     // The casts in (IReadOnlyList<T>)_displaying ?? [] are important as they convert [] to Array.Empty.
     // It would use List<T> otherwise which is not what we want here, we don't want to allocate.
@@ -107,21 +95,22 @@ public class ShapeMetadata
     {
         ArgumentException.ThrowIfNullOrEmpty(cacheId);
 
-        if (IsOriginalType)
+        if (UseMainCacheContext)
         {
-            if (_cacheContexts.rootCacheContext is null || _cacheContexts.rootCacheContext.CacheId != cacheId)
+            if (_mainCacheContext.cacheContext is null || _mainCacheContext.cacheContext.CacheId != cacheId)
             {
-                _cacheContexts.rootCacheContext = new CacheContext(cacheId);
+                _mainCacheContext.cacheContext = new CacheContext(cacheId);
+                _mainCacheContext.type = Type;
             }
 
-            return _cacheContexts.rootCacheContext;
+            return _mainCacheContext.cacheContext;
         }
 
-        _cacheContexts.morphedCacheContexts ??= new(StringComparer.OrdinalIgnoreCase);
+        _cacheContexts ??= new(StringComparer.OrdinalIgnoreCase);
 
-        if (!_cacheContexts.morphedCacheContexts.TryGetValue(Type, out var cacheContext) || cacheContext.CacheId != cacheId)
+        if (!_cacheContexts.TryGetValue(Type, out var cacheContext) || cacheContext.CacheId != cacheId)
         {
-            _cacheContexts.morphedCacheContexts[Type] = cacheContext = new CacheContext(cacheId);
+            _cacheContexts[Type] = cacheContext = new CacheContext(cacheId);
         }
 
         return cacheContext;
@@ -132,9 +121,9 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache()
     {
-        return IsOriginalType
-            ? _cacheContexts.rootCacheContext
-            : _cacheContexts.morphedCacheContexts?.TryGetValue(Type, out var cacheContext) == true
+        return UseMainCacheContext
+            ? _mainCacheContext.cacheContext
+            : _cacheContexts?.TryGetValue(Type, out var cacheContext) == true
                 ? cacheContext
                 : null;
     }
