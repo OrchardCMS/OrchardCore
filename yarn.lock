@@ -1648,10 +1648,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/fontawesome-free@npm:7.0.0":
-  version: 7.0.0
-  resolution: "@fortawesome/fontawesome-free@npm:7.0.0"
-  checksum: 10/b2a8400d163c7543e20f0cfedf3285f58e12e1495281691e42397560ad8cbb14587faaf4bb302eb20213ad1b6eb58b2eaa99c6d6d44dd7b65ecb6d63e65a9833
+"@fortawesome/fontawesome-free@npm:7.1.0":
+  version: 7.1.0
+  resolution: "@fortawesome/fontawesome-free@npm:7.1.0"
+  checksum: 10/7a7bbb470b2de4e2764b4f9cc91703c5e1d5f430c834353035ef7aecba278cc9b5e2917ddaa7f1c28445530216543b3aa37598f56bb16576395fa060cbb33323
   languageName: node
   linkType: hard
 
@@ -2501,7 +2501,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets"
   dependencies:
-    "@fortawesome/fontawesome-free": "npm:7.0.0"
+    "@fortawesome/fontawesome-free": "npm:7.1.0"
     "@popperjs/core": "npm:2.11.8"
     blueimp-file-upload: "npm:^10.32.0"
     bootstrap: "npm:5.3.8"

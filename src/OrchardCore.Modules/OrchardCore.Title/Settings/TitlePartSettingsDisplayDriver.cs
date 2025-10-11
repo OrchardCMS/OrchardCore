@@ -4,6 +4,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
 
@@ -11,13 +12,15 @@ namespace OrchardCore.Title.Settings;
 
 public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<TitlePart>
 {
-    private readonly ILiquidTemplateManager _templateManager;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
 
     internal readonly IStringLocalizer S;
 
-    public TitlePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<TitlePartSettingsDisplayDriver> localizer)
+    public TitlePartSettingsDisplayDriver(
+        ILiquidTemplateManager liquidTemplateManager,
+        IStringLocalizer<TitlePartSettingsDisplayDriver> localizer)
     {
-        _templateManager = templateManager;
+        _liquidTemplateManager = liquidTemplateManager;
         S = localizer;
     }
 
@@ -43,14 +46,24 @@ public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDi
             m => m.Options,
             m => m.RenderTitle);
 
-        if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
+        if (model.Options == TitlePartOptions.GeneratedHidden || model.Options == TitlePartOptions.GeneratedDisabled)
         {
-            context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            if (string.IsNullOrWhiteSpace(model.Pattern))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["A pattern is required when using the selected behavior option."]);
+            }
+            else if (!_liquidTemplateManager.Validate(model.Pattern, out var errors))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["The pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(' ', errors)]);
+            }
         }
-        else
+
+        context.Builder.WithSettings(new TitlePartSettings
         {
-            context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, RenderTitle = model.RenderTitle });
-        }
+            Pattern = model.Pattern,
+            Options = model.Options,
+            RenderTitle = model.RenderTitle,
+        });
 
         return Edit(contentTypePartDefinition, context);
     }
