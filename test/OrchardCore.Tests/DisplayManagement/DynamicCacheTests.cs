@@ -308,7 +308,7 @@ public class DynamicCacheTests
             .Cache("morphed-shape", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         var contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         // First execution - should trigger morphing and cache the result
         var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
@@ -324,7 +324,7 @@ public class DynamicCacheTests
             .Cache("morphed-shape", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         var result2 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
         
@@ -341,7 +341,7 @@ public class DynamicCacheTests
             .Cache("morphed-shape", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         var result3 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
         
@@ -421,7 +421,7 @@ public class DynamicCacheTests
             .Cache("morphed-chain", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         var contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         // First execution - should go through entire morphing chain
         var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
@@ -440,7 +440,7 @@ public class DynamicCacheTests
             .Cache("morphed-chain", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         var result2 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
         
@@ -460,7 +460,7 @@ public class DynamicCacheTests
             .Cache("morphed-chain", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         var result3 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
         
@@ -537,7 +537,7 @@ public class DynamicCacheTests
             .Cache("conditional-morph-true", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         var contentShape = await factory.CreateAsync("Content");
-        await shapeResult1.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult1.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult1.Shape));
         
@@ -558,7 +558,7 @@ public class DynamicCacheTests
             .Cache("conditional-morph-false", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         contentShape = await factory.CreateAsync("Content");
-        await shapeResult2.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult2.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         var result2 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult2.Shape));
         
@@ -582,7 +582,7 @@ public class DynamicCacheTests
                 .Cache("conditional-morph-true", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
             contentShape = await factory.CreateAsync("Content");
-            await shapeResult1.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+            await shapeResult1.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
             var cachedResult1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult1.Shape));
             Assert.Equal("Morphed Conditional Content", cachedResult1.ToString());
@@ -600,7 +600,7 @@ public class DynamicCacheTests
                 .Cache("conditional-morph-false", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
             contentShape = await factory.CreateAsync("Content");
-            await shapeResult2.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+            await shapeResult2.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
             var cachedResult2 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult2.Shape));
             Assert.Equal("Original Conditional Content", cachedResult2.ToString());
@@ -673,7 +673,7 @@ public class DynamicCacheTests
             .Cache("alternates-morph", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         var contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         // First execution - should morph and use alternate
         var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
@@ -696,7 +696,7 @@ public class DynamicCacheTests
                 .Cache("alternates-morph", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
             contentShape = await factory.CreateAsync("Content");
-            await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+            await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
             var cachedResult = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
             Assert.Equal("Special Morphed Content with TestValue", cachedResult.ToString());
@@ -761,7 +761,7 @@ public class DynamicCacheTests
                 .Cache("invalidation-test-shape", ctx => ctx.AddTag(cacheTag));
 
             var contentShape = await factory.CreateAsync("Content");
-            await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+            await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
             return (result.ToString(), shapeResult.Shape);
@@ -874,7 +874,7 @@ public class DynamicCacheTests
             .Cache("double-morph-concat", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         var contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         // First execution - should perform double morphing and concatenation
         var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
@@ -896,7 +896,7 @@ public class DynamicCacheTests
                 .Cache("double-morph-concat", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
             contentShape = await factory.CreateAsync("Content");
-            await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+            await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
             var cachedResult = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
             
@@ -915,7 +915,7 @@ public class DynamicCacheTests
             .Cache("double-morph-concat-different", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         contentShape = await factory.CreateAsync("Content");
-        await shapeResult2.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult2.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         var result2 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult2.Shape));
         
@@ -936,7 +936,7 @@ public class DynamicCacheTests
             .Cache("double-morph-concat", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
         contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null, null));
 
         var result3 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
         
