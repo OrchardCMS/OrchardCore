@@ -67,7 +67,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
 
         return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
         {
-            model.Cultures = ILocalizationService.GetAllCulturesAndAliases()
+            model.Cultures = CultureInfoWrapper.GetCultures()
                 .Select(cultureInfo =>
                 {
                     return new CultureEntry

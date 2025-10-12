@@ -36,7 +36,7 @@ internal sealed class ContentIndexProfileDisplayDriver : DisplayDriver<IndexProf
             model.IndexLatest = metadata.IndexLatest;
             model.IndexedContentTypes = metadata.IndexedContentTypes;
             model.Culture = metadata.Culture;
-            model.Cultures = ILocalizationService.GetAllCulturesAndAliases()
+            model.Cultures = CultureInfoWrapper.GetCultures()
             .Select(culture => new SelectListItem
             {
                 Text = $"{culture.Name} ({culture.DisplayName})",

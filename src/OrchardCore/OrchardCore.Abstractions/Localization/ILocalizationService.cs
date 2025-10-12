@@ -28,9 +28,7 @@ public interface ILocalizationService
     /// </summary>
     bool FallBackToParentCultures { get; }
 
-    /// <summary>
-    /// Gets all cultures recognized by .NET, including culture aliases.
-    /// </summary>
+    [Obsolete("This method is deprecated and will be removed in a future version. Use CultureInfoWrapper.GetAllCulturesAndAliases() instead.")]
     static CultureInfo[] GetAllCulturesAndAliases()
     {
         var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
