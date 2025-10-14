@@ -1,5 +1,6 @@
 using Azure;
 using Azure.Search.Documents.Indexes.Models;
+using OrchardCore.Azure.Core;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Search.AzureAI.Models;
@@ -106,7 +107,7 @@ public class AzureAISearchDefaultOptions : ISearchProviderOptions
 
     public string Endpoint { get; set; }
 
-    public AzureAIAuthenticationType AuthenticationType { get; set; }
+    public AzureAuthenticationType AuthenticationType { get; set; }
 
     public bool DisableUIConfiguration { get; set; }
 

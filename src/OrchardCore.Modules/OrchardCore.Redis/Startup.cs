@@ -1,5 +1,6 @@
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
@@ -11,6 +12,7 @@ using OrchardCore.Caching.Distributed;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Redis.Options;
@@ -55,6 +57,10 @@ public sealed class Startup : StartupBase
 
             services.Configure<RedisOptions>(options =>
             {
+                var protectorProvider = ShellScope.Services.GetRequiredService<IDataProtectionProvider>();
+                var protector = protectorProvider.CreateProtector("RedisOptions");
+
+                options.ConnectionIdentifier = protector.Protect(configuration);
                 options.Configuration = configuration;
                 options.ConfigurationOptions = configurationOptions;
                 options.InstancePrefix = instancePrefix;

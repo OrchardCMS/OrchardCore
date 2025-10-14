@@ -3,9 +3,11 @@
   <PropertyGroup>
     <!-- NuGet properties-->
     <Title>OrchardCore Redis</Title>
-    <Description>$(OCFrameworkDescription)
+    <Description>
+      $(OCFrameworkDescription)
 
-    Provides Redis features for configuration, cache, bus and lock.</Description>
+      Provides Redis features for configuration, cache, bus and lock.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework Infrastructure</PackageTags>
   </PropertyGroup>
 
@@ -14,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Azure.Core\OrchardCore.Azure.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Redis.Abstractions\OrchardCore.Redis.Abstractions.csproj" />

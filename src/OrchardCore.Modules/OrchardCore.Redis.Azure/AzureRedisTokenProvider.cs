@@ -2,50 +2,47 @@ using Azure.Core;
 using Azure.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 
 namespace OrchardCore.Redis.Azure;
 
 public sealed class AzureRedisTokenProvider : IRedisTokenProvider
 {
-    private readonly AzureRedisOptions _options;
+    private readonly IOptionsMonitor<AzureOptions> _options;
     private readonly ILogger _logger;
 
     public AzureRedisTokenProvider(
-        IOptions<AzureRedisOptions> options,
+        IOptionsMonitor<AzureOptions> options,
         ILogger<AzureRedisTokenProvider> logger)
     {
-        _options = options.Value;
+        _options = options;
         _logger = logger;
     }
 
-    public async Task<RedisAuthenticationInfo> GetAuthenticationAsync()
+    public async Task<string> GetTokenAsync()
     {
-        TokenCredential credential = _options.AuthenticationType switch
-        {
-            AzureRedisAuthType.DefaultAzureCredential => new DefaultAzureCredential(),
-            AzureRedisAuthType.ManagedIdentity => new ManagedIdentityCredential(),
-            AzureRedisAuthType.ClientSecret => new ClientSecretCredential(
-                _options.TenantId ?? throw new ArgumentException("TenantId is required for ClientSecretCredential"),
-                _options.ClientId ?? throw new ArgumentException("ClientId is required for ClientSecretCredential"),
-                _options.ClientSecret ?? throw new ArgumentException("ClientSecret is required for ClientSecretCredential")
-            ),
-            _ => throw new NotSupportedException($"Authentication type {_options.AuthenticationType} is not supported")
-        };
+        var redisOptions = _options.Get("Redis");
 
-        if (_options.Scopes is null || _options.Scopes.Length == 0)
+        var scopes = redisOptions.Get<string[]>("Scopes");
+
+        if (scopes is null || scopes.Length == 0)
         {
             _logger.LogWarning("No scope configured for Azure Redis authentication, returning empty token.");
 
-            return new RedisAuthenticationInfo();
+            return null;
         }
 
-        var requestContext = new TokenRequestContext(_options.Scopes);
-
-        var token = await credential.GetTokenAsync(requestContext, CancellationToken.None);
-
-        return new RedisAuthenticationInfo
+        TokenCredential credential = redisOptions.AuthenticationType switch
         {
-            Password = token.Token,
+            AzureAuthenticationType.Default => new DefaultAzureCredential(),
+            AzureAuthenticationType.ManagedIdentity => new ManagedIdentityCredential(),
+            _ => throw new NotSupportedException($"Authentication type {redisOptions.AuthenticationType} is not supported")
         };
+
+        var requestContext = new TokenRequestContext(scopes);
+
+        var result = await credential.GetTokenAsync(requestContext, CancellationToken.None);
+
+        return result.Token;
     }
 }

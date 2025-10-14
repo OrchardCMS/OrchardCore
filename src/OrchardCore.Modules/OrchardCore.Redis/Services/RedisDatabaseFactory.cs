@@ -38,7 +38,7 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
 
     public Task<IDatabase> CreateAsync(RedisOptions options)
     {
-        return _factories.GetOrAdd(options.Configuration, new Lazy<Task<IDatabase>>(async () =>
+        return _factories.GetOrAdd(options.ConnectionIdentifier, new Lazy<Task<IDatabase>>(async () =>
         {
             var provider = _serviceProvider.GetService<IRedisTokenProvider>();
 
@@ -51,16 +51,11 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
                 return connection.GetDatabase();
             }
 
-            var authInfo = await provider.GetAuthenticationAsync();
+            var token = await provider.GetTokenAsync();
 
-            if (!string.IsNullOrEmpty(authInfo.Password))
+            if (!string.IsNullOrEmpty(token))
             {
-                config.Password = authInfo.Password;
-            }
-
-            if (!string.IsNullOrEmpty(authInfo.User))
-            {
-                config.User = authInfo.User;
+                config.Password = token;
             }
 
             var attempt = 0;
@@ -82,16 +77,11 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
                         break;
                     }
 
-                    var info = await provider.GetAuthenticationAsync();
+                    token = await provider.GetTokenAsync();
 
-                    if (!string.IsNullOrEmpty(info.Password))
+                    if (!string.IsNullOrEmpty(token))
                     {
-                        config.Password = info.Password;
-                    }
-
-                    if (!string.IsNullOrEmpty(info.User))
-                    {
-                        config.User = info.User;
+                        config.Password = token;
                     }
                 }
             }

@@ -2,6 +2,7 @@ using Azure;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Settings;
@@ -74,7 +75,7 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
 
         if (!string.IsNullOrWhiteSpace(fileOptions.Credential?.Key))
         {
-            options.AuthenticationType = AzureAIAuthenticationType.ApiKey;
+            options.AuthenticationType = AzureAuthenticationType.ApiKey;
             options.Credential = fileOptions.Credential;
         }
     }
@@ -85,13 +86,13 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
         options.Endpoint = settings.Endpoint;
         options.AuthenticationType = settings.AuthenticationType;
 
-        if (settings.AuthenticationType == AzureAIAuthenticationType.ApiKey)
+        if (settings.AuthenticationType == AzureAuthenticationType.ApiKey)
         {
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
             options.Credential = new AzureKeyCredential(protector.Unprotect(settings.ApiKey));
         }
-        else if (settings.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+        else if (settings.AuthenticationType == AzureAuthenticationType.ManagedIdentity)
         {
             options.IdentityClientId = settings.IdentityClientId;
         }
@@ -104,7 +105,7 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
             return false;
         }
 
-        return options.AuthenticationType != AzureAIAuthenticationType.ApiKey ||
+        return options.AuthenticationType != AzureAuthenticationType.ApiKey ||
             !string.IsNullOrEmpty(options.Credential?.Key);
     }
 }

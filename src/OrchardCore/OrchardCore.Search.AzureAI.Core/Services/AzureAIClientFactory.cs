@@ -3,6 +3,7 @@ using Azure.Identity;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Services;
@@ -38,11 +39,11 @@ public class AzureAIClientFactory
                 throw new Exception("The Endpoint provided to Azure AI Options contains invalid value.");
             }
 
-            if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && _defaultOptions.Credential != null)
+            if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ApiKey && _defaultOptions.Credential != null)
             {
                 client = new SearchClient(endpoint, indexFullName, _defaultOptions.Credential);
             }
-            else if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+            else if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ManagedIdentity)
             {
                 client = new SearchClient(endpoint, indexFullName, GetManagedIdentityCredential());
             }
@@ -71,11 +72,11 @@ public class AzureAIClientFactory
                 throw new Exception("The Endpoint provided to Azure AI Options contains invalid value.");
             }
 
-            if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && _defaultOptions.Credential != null)
+            if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ApiKey && _defaultOptions.Credential != null)
             {
                 _searchIndexClient = new SearchIndexClient(endpoint, _defaultOptions.Credential);
             }
-            else if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+            else if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ManagedIdentity)
             {
                 _searchIndexClient = new SearchIndexClient(endpoint, GetManagedIdentityCredential());
             }

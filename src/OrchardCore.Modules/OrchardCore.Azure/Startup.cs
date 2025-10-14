@@ -1,12 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Azure.Core;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Redis.Azure;
+namespace OrchardCore.Azure;
 
-public sealed class Startup : StartupBase
+public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IRedisTokenProvider, AzureRedisTokenProvider>();
+        services.AddAzureOptions();
     }
 }

@@ -1,15 +1,10 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Azure Redis Cache",
+    Name = "OrchardCore.Azure",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Distributed cache using Azure Redis.",
-    Dependencies =
-    [
-        "OrchardCore.Redis",
-        "OrchardCore.Azure",
-    ],
-    Category = "Distributed"
+    Description = "Provides a way to manage Azure credentials",
+    Category = "Azure"
 )]
