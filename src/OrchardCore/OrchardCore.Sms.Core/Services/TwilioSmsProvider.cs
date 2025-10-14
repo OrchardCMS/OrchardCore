@@ -61,9 +61,17 @@ public class TwilioSmsProvider : ISmsProvider
         try
         {
             var settings = await GetSettingsAsync();
+
+            var senderNumber = settings.PhoneNumber;
+
+            if (!string.IsNullOrEmpty(message.From))
+            {
+                senderNumber = message.From;
+            }
+
             var data = new List<KeyValuePair<string, string>>
             {
-                new ("From", settings.PhoneNumber),
+                new ("From", senderNumber),
                 new ("To", message.To),
                 new ("Body", message.Body),
             };
