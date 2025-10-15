@@ -16,11 +16,13 @@ public sealed class AzureOptionsConfigurations : IConfigureNamedOptions<AzureOpt
     }
 
     public void Configure(AzureOptions options)
-            => Configure(AzureOptions.DefaultConfigurationName, options);
+    {
+        options.AuthenticationType = AzureAuthenticationType.Default;
+    }
 
     public void Configure(string name, AzureOptions options)
     {
-        var credentialsSection = _configuration.GetSection("OrchardCore_Azure:Credentials");
+        var credentialsSection = _configuration.GetSection("Azure:Credentials");
 
         if (!credentialsSection.Exists())
         {

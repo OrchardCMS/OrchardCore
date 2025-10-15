@@ -4,6 +4,6 @@ public enum AzureAuthenticationType
 {
     Default,
     ManagedIdentity,
-    CliCredentials,
+    AzureCli,
     ApiKey,
 }

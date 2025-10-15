@@ -133,10 +133,10 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
         settings.UseCustomConfiguration = model.UseCustomConfiguration;
 
         if (context.Updater.ModelState.IsValid &&
-            (_searchOptions.Credential?.Key != model.ApiKey ||
+            (_searchOptions.ApiKey != model.ApiKey ||
              _searchOptions.Endpoint != settings.Endpoint ||
              _searchOptions.AuthenticationType != settings.AuthenticationType ||
-             _searchOptions.IdentityClientId != settings.IdentityClientId ||
+             _searchOptions.ClientId != settings.IdentityClientId ||
              useCustomConfigurationChanged))
         {
             _shellReleaseManager.RequestRelease();

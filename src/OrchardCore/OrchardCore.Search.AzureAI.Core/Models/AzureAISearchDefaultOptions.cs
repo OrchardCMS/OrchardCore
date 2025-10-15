@@ -5,7 +5,7 @@ using OrchardCore.Indexing;
 
 namespace OrchardCore.Search.AzureAI.Models;
 
-public class AzureAISearchDefaultOptions : ISearchProviderOptions
+public class AzureAISearchDefaultOptions : AzureOptions, ISearchProviderOptions
 {
     public const string DefaultAnalyzer = LexicalAnalyzerName.Values.StandardLucene;
 
@@ -107,10 +107,9 @@ public class AzureAISearchDefaultOptions : ISearchProviderOptions
 
     public string Endpoint { get; set; }
 
-    public AzureAuthenticationType AuthenticationType { get; set; }
-
     public bool DisableUIConfiguration { get; set; }
 
+    [Obsolete("This property is no longer used and will be removed in future releases.")]
     public AzureKeyCredential Credential { get; set; }
 
     // Environment prefix for all of the indexes.
@@ -118,7 +117,15 @@ public class AzureAISearchDefaultOptions : ISearchProviderOptions
 
     public string[] Analyzers { get; set; }
 
-    public string IdentityClientId { get; set; }
+    [Obsolete("This property is no longer used and will be removed in future releases. Use ClientId property instead.")]
+    public string IdentityClientId
+    {
+        get => ClientId;
+        set
+        {
+            ClientId = value;
+        }
+    }
 
     private bool _configurationExists;
 

@@ -71,12 +71,14 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
         options.IndexesPrefix = fileOptions.IndexesPrefix;
         options.Endpoint = fileOptions.Endpoint;
         options.AuthenticationType = fileOptions.AuthenticationType;
-        options.IdentityClientId = fileOptions.IdentityClientId;
+        options.ClientId = fileOptions.ClientId;
 
-        if (!string.IsNullOrWhiteSpace(fileOptions.Credential?.Key))
+        if (!string.IsNullOrWhiteSpace(fileOptions.ApiKey))
         {
             options.AuthenticationType = AzureAuthenticationType.ApiKey;
+#pragma warning disable CS0618 // Type or member is obsolete
             options.Credential = fileOptions.Credential;
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 
@@ -90,11 +92,17 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
         {
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
-            options.Credential = new AzureKeyCredential(protector.Unprotect(settings.ApiKey));
+            var unprotectedApiKey = protector.Unprotect(settings.ApiKey);
+
+            options.ApiKey = unprotectedApiKey;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            options.Credential = new AzureKeyCredential(unprotectedApiKey);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
         else if (settings.AuthenticationType == AzureAuthenticationType.ManagedIdentity)
         {
-            options.IdentityClientId = settings.IdentityClientId;
+            options.ClientId = settings.IdentityClientId;
         }
     }
 
@@ -105,7 +113,6 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
             return false;
         }
 
-        return options.AuthenticationType != AzureAuthenticationType.ApiKey ||
-            !string.IsNullOrEmpty(options.Credential?.Key);
+        return options.ConfigurationExists();
     }
 }

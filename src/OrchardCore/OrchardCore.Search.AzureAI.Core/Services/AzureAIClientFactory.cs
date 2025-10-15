@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Azure;
 using Azure.Identity;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
@@ -39,17 +40,21 @@ public class AzureAIClientFactory
                 throw new Exception("The Endpoint provided to Azure AI Options contains invalid value.");
             }
 
-            if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ApiKey && _defaultOptions.Credential != null)
+            if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ApiKey)
             {
-                client = new SearchClient(endpoint, indexFullName, _defaultOptions.Credential);
+                client = new SearchClient(endpoint, indexFullName, new AzureKeyCredential(_defaultOptions.ApiKey));
             }
             else if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ManagedIdentity)
             {
                 client = new SearchClient(endpoint, indexFullName, GetManagedIdentityCredential());
             }
-            else
+            else if (_defaultOptions.AuthenticationType == AzureAuthenticationType.Default)
             {
                 client = new SearchClient(endpoint, indexFullName, new DefaultAzureCredential());
+            }
+            else
+            {
+                throw new NotSupportedException($"The Authentication Type '{_defaultOptions.AuthenticationType}' is not supported.");
             }
 
             _clients.TryAdd(indexFullName, client);
@@ -72,9 +77,9 @@ public class AzureAIClientFactory
                 throw new Exception("The Endpoint provided to Azure AI Options contains invalid value.");
             }
 
-            if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ApiKey && _defaultOptions.Credential != null)
+            if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ApiKey)
             {
-                _searchIndexClient = new SearchIndexClient(endpoint, _defaultOptions.Credential);
+                _searchIndexClient = new SearchIndexClient(endpoint, new AzureKeyCredential(_defaultOptions.ApiKey));
             }
             else if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ManagedIdentity)
             {
@@ -90,5 +95,5 @@ public class AzureAIClientFactory
     }
 
     private ManagedIdentityCredential GetManagedIdentityCredential()
-        => new(_defaultOptions.IdentityClientId);
+        => new(_defaultOptions.ClientId);
 }

@@ -23,7 +23,7 @@ public sealed class AzureRedisTokenProvider : IRedisTokenProvider
     {
         var redisOptions = _options.Get("Redis");
 
-        var scopes = redisOptions.Get<string[]>("Scopes");
+        var scopes = redisOptions.GetProperty<string[]>("Scopes");
 
         if (scopes is null || scopes.Length == 0)
         {
@@ -36,6 +36,7 @@ public sealed class AzureRedisTokenProvider : IRedisTokenProvider
         {
             AzureAuthenticationType.Default => new DefaultAzureCredential(),
             AzureAuthenticationType.ManagedIdentity => new ManagedIdentityCredential(),
+            AzureAuthenticationType.AzureCli => new AzureCliCredential(),
             _ => throw new NotSupportedException($"Authentication type {redisOptions.AuthenticationType} is not supported")
         };
 
