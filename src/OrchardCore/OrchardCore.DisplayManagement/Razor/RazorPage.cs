@@ -96,12 +96,14 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     /// Renders the specified shape by morphing it to the specified type.
     /// </summary>
     /// <param name="shape">The shape to render. Cannot be <see langword="null"/>.</param>
-    /// <param name="shapeType">The shape type to assign to the shape before rendering. Cannot be <see langword="null"/> or empty.</param>
+    /// <param name="shapeType">The shape type to assign to the shape before rendering.</param>
     /// <param name="clearAlternates">A value indicating whether to clear the shape's alternates before rendering.  <see langword="true"/> to clear
     /// alternates; otherwise, <see langword="false"/>.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the rendered HTML content.</returns>
-    public Task<IHtmlContent> DisplayMorphedAsync(IShape shape, string shapeType, bool clearAlternates = false)
+    public Task<IHtmlContent> DisplayAsAsync(IShape shape, string shapeType, bool clearAlternates = false)
     {
+        ArgumentNullException.ThrowIfNull(shape);
+
         if (clearAlternates)
         {
             shape.Metadata.Alternates.Clear();

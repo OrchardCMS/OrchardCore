@@ -4,7 +4,7 @@
     // Morphing the shape to keep Model untouched
     Model.Classes.Clear();
 
-    tag.InnerHtml.AppendHtml(await DisplayMorphedAsync(Model, "MenuItemLink", true));
+    tag.InnerHtml.AppendHtml(await DisplayAsAsync(Model, "MenuItemLink", true));
 
     if ((bool)Model.HasItems)
     {
