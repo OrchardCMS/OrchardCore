@@ -134,7 +134,7 @@
                 '/^YesSql.*$/',
             ],
         },
-        // These are database engines references in .github/workflows/functional_all_db.yml. They should match the
+        // These are database engines referenced in .github/workflows/functional_all_db.yml. They should match the
         // minimum versions supported by YesSql, see:
         // https://github.com/sebastienros/yessql/blob/main/.github/workflows/build.yml.
         {
@@ -142,6 +142,14 @@
                 'postgres',
                 'mysql',
                 'mcr.microsoft.com/mssql/server',
+            ],
+            enabled: false,
+        },
+        // These are updated manually during a .NET SDK upgrade.
+        {
+            matchPackageNames: [
+                'mcr.microsoft.com/dotnet/aspnet',
+                'mcr.microsoft.com/dotnet/sdk',
             ],
             enabled: false,
         },
