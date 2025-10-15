@@ -241,11 +241,11 @@ public sealed class ExtensionManager : IExtensionManager
 
             _extensions = _extensionsInfos.ToFrozenDictionary(extension => extension.Id, extension => loadedExtensions[extension.Id]);
 
-            if (L.IsEnabled(LogLevel.Trace))
+            if (L.IsEnabled(LogLevel.Debug))
             {
                 foreach (var featureInfo in _featureInfos)
                 {
-                    L.LogTrace("Loaded feature: {ExtensionId} - {FeatureId} ({FeatureName})", featureInfo.Extension.Id, featureInfo.Id, featureInfo.Name);
+                    L.LogDebug("Loaded feature: {ExtensionId} - {FeatureId} ({FeatureName})", featureInfo.Extension.Id, featureInfo.Id, featureInfo.Name);
                 }
             }
 
