@@ -62,7 +62,6 @@ Below is an example configuration:
   ```csharp
   var endpoint = redisOptions.GetProperty<string>("Endpoint");
   ```
-
 ---
 
 ## Notes
@@ -96,8 +95,7 @@ public sealed class Example
 
         if (scopes is null || scopes.Length == 0)
         {
-            _logger.LogWarning("No scope configured for Azure Redis authentication, returning empty token.");
-            return null;
+            throw new InvalidOperationException("Scopes must be defined in the configuration for the Redis credential.");
         }
 
         // Create the appropriate credential based on the authentication type
@@ -109,8 +107,7 @@ public sealed class Example
             _ => throw new NotSupportedException($"Authentication type {redisOptions.AuthenticationType} is not supported")
         };
 
-        var requestContext = new TokenRequestContext(scopes);
-        var result = await credential.GetTokenAsync(requestContext, CancellationToken.None);
+        var result = await credential.GetTokenAsync(new TokenRequestContext(scopes), CancellationToken.None);
 
         return result.Token;
     }
