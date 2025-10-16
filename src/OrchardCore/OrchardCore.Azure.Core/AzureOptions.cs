@@ -29,7 +29,7 @@ public class AzureOptions
         return default;
     }
 
-    public bool ConfigurationExists()
+    public virtual bool ConfigurationExists()
     {
         return AuthenticationType switch
         {

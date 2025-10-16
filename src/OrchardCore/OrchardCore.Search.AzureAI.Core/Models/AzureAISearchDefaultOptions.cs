@@ -132,7 +132,7 @@ public class AzureAISearchDefaultOptions : AzureOptions, ISearchProviderOptions
     public void SetConfigurationExists(bool configurationExists)
         => _configurationExists = configurationExists;
 
-    public bool ConfigurationExists()
+    public override bool ConfigurationExists()
         => _configurationExists;
 
     private bool _fileConfigurationExists;
