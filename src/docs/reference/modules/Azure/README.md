@@ -1,6 +1,6 @@
-# Azure Credentials Module (`OrchardCore.Azure`)
+# Azure Module (`OrchardCore.Azure`)
 
-The **Azure Credentials Module** provides a centralized way to manage all Azure connections and credentials within Orchard Core.
+The **Azure Module** provides a centralized way to manage all Azure connections and credentials within Orchard Core.
 Other modules can reference these credentials by name, allowing for clean configuration management and consistent authentication across tenants or services.
 
 ---
@@ -15,10 +15,10 @@ Below is an example configuration:
   "OrchardCore": {
     "Azure": {
       "Credentials": {
-        "DefaultCredential": {
+        "my-default": {
           "AuthenticationType": "Default"
         },
-        "ManagedIdentity": {
+        "my-identity": {
           "AuthenticationType": "ManagedIdentity",
           "ClientId": "<your-client-id>" // Optional: If omitted, the system-assigned managed identity will be used.
         },
@@ -29,7 +29,7 @@ Below is an example configuration:
           "DeploymentName": "<your-deployment-name>"
         },
         "Redis": {
-          "Alias": "DefaultCredential" // References another credentials entry (in this case, "DefaultCredential").
+          "Alias": "my-default" // References another credentials entry (in this case, "my-default").
         }
       }
     }
@@ -41,18 +41,18 @@ Below is an example configuration:
 
 ## Explanation
 
-* **`DefaultCredential`**
+* **`my-default`**
   Defines a credential that uses Azure CLI authentication, managed identity, or default Azure authentication depending on your environment.
   You can choose any authentication type here: `Default`, `ManagedIdentity`, `AzureCli`, or `ApiKey`.
 
-* **`ManagedIdentity`, `SearchAI`, `Redis`**
+* **`my-identity`, `SearchAI`, `Redis`**
   Arbitrary names chosen by the user to identify different credentials.
   You can define as many credential entries as needed, each with a unique name.
   Other modules can reference them by name.
 
 * **`Alias` property**
   Allows a credential entry to reference another defined credential by name.
-  For example, the `Redis` entry reuses the `DefaultCredential` settings.
+  For example, the `Redis` entry reuses the `my-default` settings.
 
 * **Custom Properties**
   Any credential entry can include additional, user-defined properties beyond the standard fields.
