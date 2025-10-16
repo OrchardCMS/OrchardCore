@@ -1,35 +1,32 @@
 using Azure.Core;
 using Azure.Identity;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Azure.Core;
 
 namespace OrchardCore.Redis.Azure;
 
-public sealed class AzureRedisTokenProvider : IRedisTokenProvider
+public sealed class AzureRedisTokenProvider : ITokenProvider
 {
     private readonly IOptionsMonitor<AzureOptions> _options;
-    private readonly ILogger _logger;
+    private readonly RedisOptions _redisOptions;
 
     public AzureRedisTokenProvider(
         IOptionsMonitor<AzureOptions> options,
-        ILogger<AzureRedisTokenProvider> logger)
+        IOptions<RedisOptions> redisOptions)
     {
         _options = options;
-        _logger = logger;
+        _redisOptions = redisOptions.Value;
     }
 
-    public async Task<string> GetTokenAsync()
+    public async Task<TokenResult> GetTokenAsync()
     {
-        var redisOptions = _options.Get("Redis");
+        var redisOptions = _options.Get(_redisOptions.CredentialName ?? AzureOptions.DefaultName);
 
-        var scopes = redisOptions.GetProperty<string[]>("Scopes");
+        var scope = redisOptions.GetProperty<string>("Scope");
 
-        if (scopes is null || scopes.Length == 0)
+        if (string.IsNullOrEmpty(scope))
         {
-            _logger.LogWarning("No scope configured for Azure Redis authentication, returning empty token.");
-
-            return null;
+            scope = "https://redis.azure.com/.default";
         }
 
         TokenCredential credential = redisOptions.AuthenticationType switch
@@ -37,13 +34,18 @@ public sealed class AzureRedisTokenProvider : IRedisTokenProvider
             AzureAuthenticationType.Default => new DefaultAzureCredential(),
             AzureAuthenticationType.ManagedIdentity => new ManagedIdentityCredential(),
             AzureAuthenticationType.AzureCli => new AzureCliCredential(),
+            AzureAuthenticationType.AzurePower => new AzurePowerShellCredential(),
+            AzureAuthenticationType.VisualStudio => new VisualStudioCredential(),
             _ => throw new NotSupportedException($"Authentication type {redisOptions.AuthenticationType} is not supported")
         };
 
-        var requestContext = new TokenRequestContext(scopes);
+        var requestContext = new TokenRequestContext([scope]);
 
         var result = await credential.GetTokenAsync(requestContext, CancellationToken.None);
 
-        return result.Token;
+        return new TokenResult
+        {
+            Token = result.Token,
+        };
     }
 }

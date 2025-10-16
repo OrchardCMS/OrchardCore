@@ -5,6 +5,8 @@ namespace OrchardCore.Azure.Core;
 
 public class AzureOptions
 {
+    public const string DefaultName = "Default";
+
     public AzureAuthenticationType AuthenticationType { get; set; }
 
     public string TenantId { get; set; }
@@ -13,7 +15,7 @@ public class AzureOptions
 
     public string ApiKey { get; set; }
 
-    internal JsonObject Properties { get; set; }
+    public JsonObject Properties { get; set; }
 
     public T GetProperty<T>(string propertyName)
     {
@@ -28,6 +30,7 @@ public class AzureOptions
 
         return default;
     }
+
 
     public virtual bool ConfigurationExists()
     {

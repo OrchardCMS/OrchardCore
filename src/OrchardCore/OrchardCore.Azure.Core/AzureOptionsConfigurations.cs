@@ -16,9 +16,7 @@ public sealed class AzureOptionsConfigurations : IConfigureNamedOptions<AzureOpt
     }
 
     public void Configure(AzureOptions options)
-    {
-        options.AuthenticationType = AzureAuthenticationType.Default;
-    }
+        => Configure(AzureOptions.DefaultName, options);
 
     public void Configure(string name, AzureOptions options)
     {

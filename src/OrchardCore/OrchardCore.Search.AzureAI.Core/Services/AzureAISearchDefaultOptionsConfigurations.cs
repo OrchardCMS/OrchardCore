@@ -15,15 +15,18 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
 
     private readonly IShellConfiguration _shellConfiguration;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IOptionsMonitor<AzureOptions> _optionsMonitor;
     private readonly ISiteService _siteService;
 
     public AzureAISearchDefaultOptionsConfigurations(
         IShellConfiguration shellConfiguration,
         IDataProtectionProvider dataProtectionProvider,
+        IOptionsMonitor<AzureOptions> optionsMonitor,
         ISiteService siteService)
     {
         _shellConfiguration = shellConfiguration;
         _dataProtectionProvider = dataProtectionProvider;
+        _optionsMonitor = optionsMonitor;
         _siteService = siteService;
     }
 
@@ -32,6 +35,14 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
         var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch")
             .Get<AzureAISearchDefaultOptions>()
             ?? new AzureAISearchDefaultOptions();
+
+        // first we populate the options from the AzureOptions credentials.
+        var azureOptions = _optionsMonitor.Get(fileOptions.CredentialName ?? AzureOptions.DefaultName);
+
+        options.AuthenticationType = azureOptions.AuthenticationType;
+        options.ClientId = azureOptions.ClientId;
+        options.ApiKey = azureOptions.ApiKey;
+        options.Properties = azureOptions.Properties;
 
         // This should be called first determine whether the file configs are set or not.
         options.SetFileConfigurationExists(HasConnectionInfo(fileOptions));

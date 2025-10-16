@@ -109,6 +109,8 @@ public class AzureAISearchDefaultOptions : AzureOptions, ISearchProviderOptions
 
     public bool DisableUIConfiguration { get; set; }
 
+    public string CredentialName { get; set; }
+
     [Obsolete("This property is no longer used and will be removed in future releases.")]
     public AzureKeyCredential Credential { get; set; }
 

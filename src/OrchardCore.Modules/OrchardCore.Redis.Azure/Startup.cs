@@ -7,6 +7,6 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IRedisTokenProvider, AzureRedisTokenProvider>();
+        services.AddKeyedTransient<ITokenProvider, AzureRedisTokenProvider>("Redis");
     }
 }

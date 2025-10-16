@@ -23,4 +23,6 @@ public class RedisOptions
     public string InstancePrefix { get; set; }
 
     public string ConnectionIdentifier { get; set; }
+
+    public string CredentialName { get; set; }
 }
