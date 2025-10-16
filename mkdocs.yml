@@ -243,6 +243,7 @@ nav:
               - Display Management: reference/modules/DisplayManagement/README.md
               - Audit Trail: reference/modules/AuditTrail/README.md
               - Auto Setup: reference/modules/AutoSetup/README.md
+              - Azure: reference/modules/Azure/README.md
               - Features: reference/modules/Features/README.md
               - Contents: reference/modules/Contents/README.md
               - Configuration: reference/modules/Configuration/README.md
@@ -271,6 +272,7 @@ nav:
               - Razor Helpers: reference/modules/Razor/README.md
               - Recipes: reference/modules/Recipes/README.md
               - Redis: reference/modules/Redis/README.md
+              - Redis Azure: reference/modules/Redis.Azure/README.md
               - Remote Deployment: reference/modules/Deployment.Remote/README.md
               - Response Compression: reference/modules/ResponseCompression/README.md
               - Roles: reference/modules/Roles/README.md
