@@ -98,9 +98,9 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     /// <param name="shape">The shape to render. Cannot be <see langword="null"/>.</param>
     /// <param name="shapeType">The shape type to assign to the shape before rendering.</param>
     /// <param name="clearAlternates">A value indicating whether to clear the shape's alternates before rendering.  <see langword="true"/> to clear
-    /// alternates; otherwise, <see langword="false"/>.</param>
+    /// alternates; otherwise, <see langword="false"/>. Defaults to <see langword="true"/>.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the rendered HTML content.</returns>
-    public Task<IHtmlContent> DisplayAsAsync(IShape shape, string shapeType, bool clearAlternates = false)
+    public Task<IHtmlContent> DisplayAsAsync(IShape shape, string shapeType, bool clearAlternates = true)
     {
         ArgumentNullException.ThrowIfNull(shape);
 
