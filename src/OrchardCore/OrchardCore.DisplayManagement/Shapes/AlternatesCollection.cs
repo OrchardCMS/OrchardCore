@@ -14,7 +14,7 @@ public class AlternatesCollection : IEnumerable<string>
 
     public AlternatesCollection(params string[] alternates)
     {
-        if (alternates != null && alternates.Length != 0)
+        if (alternates != null)
         {
             foreach (var alternate in alternates)
             {
