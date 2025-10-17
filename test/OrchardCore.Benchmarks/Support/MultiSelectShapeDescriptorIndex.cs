@@ -46,10 +46,10 @@ public class MultiSelectShapeDescriptorIndex : OriginalShapeDescriptor
             .ToList();
 
         _bindings = _alternationDescriptors
-           .SelectMany(sd => sd.Bindings)
-           .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
-           .Select(kv => kv.Last())
-           .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
+            .SelectMany(sd => sd.Bindings)
+            .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(kv => kv.Last())
+            .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
 
         _creatingAsync = _alternationDescriptors
             .SelectMany(sd => sd.CreatingAsync)
@@ -154,10 +154,10 @@ public class MultiSelectShapeDescriptorIndexArray : OriginalShapeDescriptor
             .ToArray();
 
         _bindings = _alternationDescriptors
-           .SelectMany(sd => sd.Bindings)
-           .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
-           .Select(kv => kv.Last())
-           .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
+            .SelectMany(sd => sd.Bindings)
+            .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(kv => kv.Last())
+            .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
 
         _creatingAsync = _alternationDescriptors
             .SelectMany(sd => sd.CreatingAsync)
