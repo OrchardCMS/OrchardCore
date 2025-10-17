@@ -33,11 +33,13 @@ public sealed class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmai
         {
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
-            options.ConnectionString = protector.Unprotect(settings.ConnectionString);
+            var rawConnectionString = protector.Unprotect(settings.ConnectionString);
+
+            options.ConnectionString = rawConnectionString;
 
             if (options.Endpoint is null)
             {
-                var endpointString = ConnectionStringHelper.Extract(options.ConnectionString, "Endpoint");
+                var endpointString = ConnectionStringHelper.Extract(rawConnectionString, "Endpoint");
 
                 if (endpointString is not null && Uri.TryCreate(endpointString, UriKind.Absolute, out var endpointUri))
                 {

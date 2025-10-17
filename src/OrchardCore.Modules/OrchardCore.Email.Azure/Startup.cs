@@ -35,7 +35,7 @@ public sealed class Startup
             // The 'OrchardCore_Email_Azure' key can be removed in version 3. 
             _shellConfiguration.GetSection("OrchardCore_Email_Azure").Bind(options);
 
-            if (options.Endpoint is null)
+            if (options.Endpoint is null && !string.IsNullOrEmpty(options.ConnectionString))
             {
                 var endpointString = ConnectionStringHelper.Extract(options.ConnectionString, "Endpoint");
 
