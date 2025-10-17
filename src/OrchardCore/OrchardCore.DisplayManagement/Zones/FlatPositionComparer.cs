@@ -111,13 +111,13 @@ public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<str
     {
         if (value is null)
         {
-            return "before.".AsSpan();
+            return "before.";
         }
 
         var span = value.AsSpan();
         if (span.IsWhiteSpace())
         {
-            return "0".AsSpan();
+            return "0";
         }
 
         // Trim ':' from start and '.' from end
@@ -135,13 +135,13 @@ public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<str
             return false;
         }
 
-        if (partition.Equals("before".AsSpan(), StringComparison.OrdinalIgnoreCase))
+        if (partition.Equals("before", StringComparison.OrdinalIgnoreCase))
         {
             position = -9999;
             return true;
         }
 
-        if (partition.Equals("after".AsSpan(), StringComparison.OrdinalIgnoreCase))
+        if (partition.Equals("after", StringComparison.OrdinalIgnoreCase))
         {
             position = 9999;
             return true;
