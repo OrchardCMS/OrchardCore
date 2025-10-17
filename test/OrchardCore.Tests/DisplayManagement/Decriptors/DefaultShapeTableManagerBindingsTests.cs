@@ -137,9 +137,11 @@ public class DefaultShapeTableManagerBindingsTests : IDisposable
         var table = await manager.GetShapeTableAsync(themeId: null);
 
         var descriptor = table.Descriptors["TestShape"];
+        var binding = table.Bindings["TestShape"];
 
         // Expected: Override from ModuleB should win.
         Assert.Equal("OverrideSource", descriptor.BindingSource);
+        Assert.Equal("OverrideSource", binding.BindingSource);
     }
 
     public void Dispose()
