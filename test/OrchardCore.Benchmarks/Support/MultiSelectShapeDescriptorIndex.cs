@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 
@@ -14,6 +15,7 @@ public class MultiSelectShapeDescriptorIndex : OriginalShapeDescriptor
     private readonly List<FeatureShapeDescriptor> _alternationDescriptors;
     private readonly List<string> _wrappers;
     private readonly List<string> _bindingSources;
+    private readonly Dictionary<string, ShapeBinding> _bindings;
     private readonly List<Func<ShapeCreatingContext, Task>> _creatingAsync;
     private readonly List<Func<ShapeCreatedContext, Task>> _createdAsync;
     private readonly List<Func<ShapeDisplayContext, Task>> _displayingAsync;
@@ -43,13 +45,11 @@ public class MultiSelectShapeDescriptorIndex : OriginalShapeDescriptor
             .SelectMany(sd => sd.BindingSources)
             .ToList();
 
-        foreach (var kv in _alternationDescriptors
-            .SelectMany(sd => sd.Bindings)
-            .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
-            .Select(kv => kv.Last()))
-        {
-            Bindings[kv.Key] = kv.Value;
-        }
+        _bindings = _alternationDescriptors
+           .SelectMany(sd => sd.Bindings)
+           .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
+           .Select(kv => kv.Last())
+           .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
 
         _creatingAsync = _alternationDescriptors
             .SelectMany(sd => sd.CreatingAsync)
@@ -71,6 +71,18 @@ public class MultiSelectShapeDescriptorIndex : OriginalShapeDescriptor
             .SelectMany(sd => sd.DisplayedAsync)
             .ToList();
     }
+
+    /// <summary>
+    /// The BindingSource is informational text about the source of the Binding delegate. Not used except for
+    /// troubleshooting.
+    /// </summary>
+    public override string BindingSource =>
+        Bindings.TryGetValue(ShapeType, out var binding) ? binding.BindingSource : null;
+
+    public override Func<DisplayContext, Task<IHtmlContent>> Binding =>
+        Bindings.TryGetValue(ShapeType, out var binding) ? binding.BindingAsync : null;
+
+    public override IDictionary<string, ShapeBinding> Bindings => _bindings;
 
     public override IReadOnlyList<Func<ShapeCreatingContext, Task>> CreatingAsync => _creatingAsync;
 
@@ -111,6 +123,7 @@ public class MultiSelectShapeDescriptorIndexArray : OriginalShapeDescriptor
     private readonly FeatureShapeDescriptor[] _alternationDescriptors;
     private readonly string[] _wrappers;
     private readonly string[] _bindingSources;
+    private readonly Dictionary<string, ShapeBinding> _bindings;
     private readonly Func<ShapeCreatingContext, Task>[] _creatingAsync;
     private readonly Func<ShapeCreatedContext, Task>[] _createdAsync;
     private readonly Func<ShapeDisplayContext, Task>[] _displayingAsync;
@@ -140,13 +153,11 @@ public class MultiSelectShapeDescriptorIndexArray : OriginalShapeDescriptor
             .SelectMany(sd => sd.BindingSources)
             .ToArray();
 
-        foreach (var kv in _alternationDescriptors
-            .SelectMany(sd => sd.Bindings)
-            .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
-            .Select(kv => kv.Last()))
-        {
-            Bindings[kv.Key] = kv.Value;
-        }
+        _bindings = _alternationDescriptors
+           .SelectMany(sd => sd.Bindings)
+           .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
+           .Select(kv => kv.Last())
+           .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
 
         _creatingAsync = _alternationDescriptors
             .SelectMany(sd => sd.CreatingAsync)
@@ -168,6 +179,18 @@ public class MultiSelectShapeDescriptorIndexArray : OriginalShapeDescriptor
             .SelectMany(sd => sd.DisplayedAsync)
             .ToArray();
     }
+
+    /// <summary>
+    /// The BindingSource is informational text about the source of the Binding delegate. Not used except for
+    /// troubleshooting.
+    /// </summary>
+    public override string BindingSource =>
+        Bindings.TryGetValue(ShapeType, out var binding) ? binding.BindingSource : null;
+
+    public override Func<DisplayContext, Task<IHtmlContent>> Binding =>
+        Bindings.TryGetValue(ShapeType, out var binding) ? binding.BindingAsync : null;
+
+    public override IDictionary<string, ShapeBinding> Bindings => _bindings;
 
     public override IReadOnlyList<Func<ShapeCreatingContext, Task>> CreatingAsync => _creatingAsync;
 
