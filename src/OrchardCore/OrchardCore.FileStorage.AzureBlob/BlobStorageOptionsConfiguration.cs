@@ -33,6 +33,23 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
         var parser = new FluidOptionsParser<TOptions>(_sellSettings);
 
         options.ConnectionString = rawOptions.ConnectionString;
+        options.CredentialName = rawOptions.CredentialName;
+
+        if (rawOptions.StorageAccountUri is null)
+        {
+            var accountName = GetAccountName(rawOptions.ConnectionString);
+
+            if (string.IsNullOrEmpty(accountName))
+            {
+                throw new InvalidOperationException($"Unable to determine the storage account name for {typeof(TOptions).Name}.");
+            }
+
+            rawOptions.StorageAccountUri = new Uri($"https://{accountName}.blob.core.windows.net");
+        }
+        else
+        {
+            options.StorageAccountUri = rawOptions.StorageAccountUri;
+        }
 
         if (!string.IsNullOrEmpty(rawOptions.ContainerName))
         {
@@ -67,9 +84,30 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
     /// <summary>
     /// Allows you to configure additional options in an inherited class.
     /// </summary>
-    /// <param name="rawOptions">The options as returned by <see cref="GetRawOptions"/></param>
+    /// <param name="rawOptions">The options as returned by <see cref="GetRawOptions"/>.</param>
     /// <param name="options">The options to configure.</param>
     protected virtual void FurtherConfigure(TOptions rawOptions, TOptions options)
     {
+    }
+
+    private static string GetAccountName(string connectionString)
+    {
+        // Split by ';' and parse key=value pairs
+        var parts = connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var part in parts)
+        {
+            var kv = part.Split('=', 2);
+
+            if (kv.Length == 2)
+            {
+                dict[kv[0].Trim()] = kv[1].Trim();
+            }
+        }
+
+        dict.TryGetValue("AccountName", out var accountName);
+
+        return accountName;
     }
 }

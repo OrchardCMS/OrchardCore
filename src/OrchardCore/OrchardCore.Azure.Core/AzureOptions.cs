@@ -1,5 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Azure.Core;
+using Azure.Identity;
 
 namespace OrchardCore.Azure.Core;
 
@@ -31,13 +33,34 @@ public class AzureOptions
         return default;
     }
 
-
     public virtual bool ConfigurationExists()
     {
         return AuthenticationType switch
         {
             AzureAuthenticationType.ApiKey => !string.IsNullOrEmpty(ApiKey),
             _ => true,
+        };
+    }
+
+    public TokenCredential ToTokenCredential()
+    {
+        return AuthenticationType switch
+        {
+            AzureAuthenticationType.Default => new DefaultAzureCredential(),
+            AzureAuthenticationType.ManagedIdentity => new ManagedIdentityCredential(ClientId),
+            AzureAuthenticationType.AzureCli => new AzureCliCredential(),
+            AzureAuthenticationType.VisualStudio => new VisualStudioCredential(),
+            AzureAuthenticationType.VisualStudioCode => new VisualStudioCodeCredential(),
+            AzureAuthenticationType.AzurePowerShell => new AzurePowerShellCredential(),
+            AzureAuthenticationType.Environment => new EnvironmentCredential(),
+            AzureAuthenticationType.InteractiveBrowser =>
+                new InteractiveBrowserCredential(new InteractiveBrowserCredentialOptions
+                {
+                    TenantId = TenantId,
+                    ClientId = ClientId,
+                }),
+            AzureAuthenticationType.WorkloadIdentity => new WorkloadIdentityCredential(),
+            _ => null, // ApiKey and unsupported types
         };
     }
 }

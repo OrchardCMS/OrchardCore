@@ -1,5 +1,4 @@
 using Azure.Core;
-using Azure.Identity;
 using Microsoft.Extensions.Options;
 using OrchardCore.Azure.Core;
 
@@ -29,15 +28,12 @@ public sealed class AzureRedisTokenProvider : ITokenProvider
             scope = "https://redis.azure.com/.default";
         }
 
-        TokenCredential credential = redisOptions.AuthenticationType switch
+        var credential = redisOptions.ToTokenCredential();
+
+        if (credential is null)
         {
-            AzureAuthenticationType.Default => new DefaultAzureCredential(),
-            AzureAuthenticationType.ManagedIdentity => new ManagedIdentityCredential(),
-            AzureAuthenticationType.AzureCli => new AzureCliCredential(),
-            AzureAuthenticationType.AzurePower => new AzurePowerShellCredential(),
-            AzureAuthenticationType.VisualStudio => new VisualStudioCredential(),
-            _ => throw new NotSupportedException($"Authentication type {redisOptions.AuthenticationType} is not supported")
-        };
+            throw new InvalidOperationException($"Unable to create a valid TokenCredential for RedisOptions '{_redisOptions.CredentialName}'.");
+        }
 
         var requestContext = new TokenRequestContext([scope]);
 
