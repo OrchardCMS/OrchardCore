@@ -24,7 +24,7 @@ Below is an example configuration:
           "AuthenticationType": "ManagedIdentity",
           "ClientId": "<your-client-id>" // Optional: If omitted, the system-assigned managed identity will be used.
         },
-        "AnyAuthentication": {
+        "AnyCustomName": {
           "AuthenticationType": "Default" // Uses the special Default credential
         },
         "SearchAI": {
@@ -69,23 +69,24 @@ public sealed class Example
 
     public async Task<string> GetTokenAsync()
     {
-        // Get the named credential (falls back to "Default" if not specified)
-        var redisOptions = _options.Get("Redis");
+        // Get the named credential (falls back to "Default" if not specified).
+        var options = _options.Get("AnyCustomName");
 
-        // Access a custom property called "Scopes" defined in the configuration
-        var scopes = redisOptions.GetProperty<string[]>("Scopes");
+        // Access a custom property called "Scopes" defined in the configuration.
+        var scopes = options.GetProperty<string[]>("Scopes");
 
         if (scopes is null || scopes.Length == 0)
-            throw new InvalidOperationException("Scopes must be defined in the configuration for the Redis credential.");
-
-        // Create the appropriate credential based on the authentication type
-        TokenCredential credential = redisOptions.AuthenticationType switch
         {
-            AzureAuthenticationType.Default => new DefaultAzureCredential(),
-            AzureAuthenticationType.ManagedIdentity => new ManagedIdentityCredential(),
-            AzureAuthenticationType.AzureCli => new AzureCliCredential(),
-            _ => throw new NotSupportedException($"Authentication type {redisOptions.AuthenticationType} is not supported")
-        };
+            throw new InvalidOperationException("Scopes must be defined in the configuration for the Redis credential.");
+        }
+
+        // Create the appropriate credential based on the authentication type.
+        TokenCredential credential = options.ToTokenCredential();
+
+        if (credential is null)
+        {
+            throw new InvalidOperationException("Failed to create a TokenCredential from the Redis options.");
+        }
 
         var result = await credential.GetTokenAsync(new TokenRequestContext(scopes), CancellationToken.None);
 
