@@ -129,7 +129,7 @@ public class DefaultShapeTableManager : IShapeTableManager
             .Select(group => new ShapeDescriptorIndex
             (
                 shapeType: group.Key,
-                alternations: group.Select(kv => kv.Value)
+                alterations: group.Select(kv => kv.Value)
             ))
             .ToList();
 

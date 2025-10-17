@@ -17,7 +17,7 @@ public sealed class FeatureShapeDescriptor : ShapeDescriptor
 
 public sealed class ShapeDescriptorIndex : ShapeDescriptor
 {
-    private readonly List<FeatureShapeDescriptor> _alternationDescriptors;
+    private readonly List<FeatureShapeDescriptor> _alterationDescriptors;
     private readonly IReadOnlyList<string> _wrappers;
     private readonly IReadOnlyList<Func<ShapeCreatingContext, Task>> _creatingAsync;
     private readonly IReadOnlyList<Func<ShapeCreatedContext, Task>> _createdAsync;
@@ -27,7 +27,7 @@ public sealed class ShapeDescriptorIndex : ShapeDescriptor
 
     public ShapeDescriptorIndex(
         string shapeType,
-        IEnumerable<FeatureShapeDescriptor> alternations)
+        IEnumerable<FeatureShapeDescriptor> alterations)
     {
         ArgumentException.ThrowIfNullOrEmpty(shapeType);
 
@@ -41,53 +41,53 @@ public sealed class ShapeDescriptorIndex : ShapeDescriptor
         List<Func<ShapeDisplayContext, Task>> displayedAsync = null;
 
         // Pre-calculate as much as we can for performance reasons.
-        foreach (var alternationDescriptor in alternations)
+        foreach (var alterationDescriptor in alterations)
         {
-            _alternationDescriptors ??= [];
-            _alternationDescriptors.Add(alternationDescriptor);
+            _alterationDescriptors ??= [];
+            _alterationDescriptors.Add(alterationDescriptor);
 
-            if (alternationDescriptor.Wrappers.Count > 0)
+            if (alterationDescriptor.Wrappers.Count > 0)
             {
                 wrappers ??= [];
-                wrappers.AddRange(alternationDescriptor.Wrappers);
+                wrappers.AddRange(alterationDescriptor.Wrappers);
             }
 
-            if (alternationDescriptor.BindingSources.Count > 0)
+            if (alterationDescriptor.BindingSources.Count > 0)
             {
-                AddBindingSources(alternationDescriptor.BindingSources);
+                AddBindingSources(alterationDescriptor.BindingSources);
             }
 
-            if (alternationDescriptor.CreatingAsync.Count > 0)
+            if (alterationDescriptor.CreatingAsync.Count > 0)
             {
                 creatingAsync ??= [];
-                creatingAsync.AddRange(alternationDescriptor.CreatingAsync);
+                creatingAsync.AddRange(alterationDescriptor.CreatingAsync);
             }
 
-            if (alternationDescriptor.CreatedAsync.Count > 0)
+            if (alterationDescriptor.CreatedAsync.Count > 0)
             {
                 createdAsync ??= [];
-                createdAsync.AddRange(alternationDescriptor.CreatedAsync);
+                createdAsync.AddRange(alterationDescriptor.CreatedAsync);
             }
 
-            if (alternationDescriptor.DisplayingAsync.Count > 0)
+            if (alterationDescriptor.DisplayingAsync.Count > 0)
             {
                 displayingAsync ??= [];
-                displayingAsync.AddRange(alternationDescriptor.DisplayingAsync);
+                displayingAsync.AddRange(alterationDescriptor.DisplayingAsync);
             }
 
-            if (alternationDescriptor.ProcessingAsync.Count > 0)
+            if (alterationDescriptor.ProcessingAsync.Count > 0)
             {
                 processingAsync ??= [];
-                processingAsync.AddRange(alternationDescriptor.ProcessingAsync);
+                processingAsync.AddRange(alterationDescriptor.ProcessingAsync);
             }
 
-            if (alternationDescriptor.DisplayedAsync.Count > 0)
+            if (alterationDescriptor.DisplayedAsync.Count > 0)
             {
                 displayedAsync ??= [];
-                displayedAsync.AddRange(alternationDescriptor.DisplayedAsync);
+                displayedAsync.AddRange(alterationDescriptor.DisplayedAsync);
             }
 
-            foreach (var binding in alternationDescriptor.Bindings)
+            foreach (var binding in alterationDescriptor.Bindings)
             {
                 Bindings[binding.Key] = binding.Value;
             }
@@ -126,15 +126,15 @@ public sealed class ShapeDescriptorIndex : ShapeDescriptor
 
     private PlacementInfo CalculatePlacement(ShapePlacementContext ctx)
     {
-        if (_alternationDescriptors == null)
+        if (_alterationDescriptors == null)
         {
             return DefaultPlacementAction(ctx);
         }
 
         PlacementInfo info = null;
-        for (var i = _alternationDescriptors.Count - 1; i >= 0; i--)
+        for (var i = _alterationDescriptors.Count - 1; i >= 0; i--)
         {
-            var descriptor = _alternationDescriptors[i];
+            var descriptor = _alterationDescriptors[i];
             info = descriptor.Placement(ctx);
             if (info != null)
             {
