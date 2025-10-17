@@ -3,14 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
-using Xunit.Internal;
 
 namespace OrchardCore.Benchmarks.Support;
 
-public class MultiSelectShapeDescriptorIndex : ShapeDescriptor
+public class MultiSelectShapeDescriptorIndex : OriginalShapeDescriptor
 {
     private readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _descriptors;
     private readonly List<FeatureShapeDescriptor> _alternationDescriptors;
@@ -107,7 +105,7 @@ public class MultiSelectShapeDescriptorIndex : ShapeDescriptor
     public override IReadOnlyList<string> BindingSources => _bindingSources;
 }
 
-public class MultiSelectShapeDescriptorIndexArray : ShapeDescriptor
+public class MultiSelectShapeDescriptorIndexArray : OriginalShapeDescriptor
 {
     private readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _descriptors;
     private readonly FeatureShapeDescriptor[] _alternationDescriptors;

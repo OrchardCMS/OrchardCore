@@ -180,7 +180,7 @@ public class ShapeDescriptor
 
     public virtual IReadOnlyList<string> Wrappers { get; set; } = [];
 
-    public virtual IReadOnlyList<string> BindingSources { get; } = new List<string>(); // Don't replace with [] to make sure this is a mutable list.
+    public IReadOnlyList<string> BindingSources { get; } = new List<string>(); // Don't replace with [] to make sure this is a mutable list.
 
     protected PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
     {
@@ -196,7 +196,7 @@ public class ShapeDescriptor
         };
     }
 
-    internal void AddBindingSource(string bindingSource)
+    public void AddBindingSource(string bindingSource)
         => ((List<string>)BindingSources).Add(bindingSource);
 
     protected internal void AddBindingSources(IEnumerable<string> collection)
