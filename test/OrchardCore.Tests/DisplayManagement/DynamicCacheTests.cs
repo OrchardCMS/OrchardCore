@@ -276,12 +276,12 @@ public class DynamicCacheTests
             BindingAsync = async ctx =>
             {
                 originalBindingCalled++;
-                
+
                 // Morph the shape to a different type
-                ((IShape)ctx.Value).Metadata.Type = "MorphedShape";
-                
+                ctx.Value.Metadata.Type = "MorphedShape";
+
                 var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
-                return await displayHelper.ShapeExecuteAsync((IShape)ctx.Value);
+                return await displayHelper.ShapeExecuteAsync(ctx.Value);
             },
         };
         AddShapeDescriptor(originalDescriptor);
@@ -312,7 +312,7 @@ public class DynamicCacheTests
 
         // First execution - should trigger morphing and cache the result
         var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("Morphed Content", result1.ToString());
         Assert.Equal(1, originalBindingCalled);
         Assert.Equal(1, morphedBindingCalled);
@@ -327,7 +327,7 @@ public class DynamicCacheTests
         await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         var result2 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("Morphed Content", result2.ToString());
         Assert.Equal(1, originalBindingCalled); // Should not increase
         Assert.Equal(1, morphedBindingCalled); // Should not increase
@@ -344,7 +344,7 @@ public class DynamicCacheTests
         await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         var result3 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("Morphed Content", result3.ToString());
         Assert.Equal(2, originalBindingCalled); // Should increase after cache invalidation
         Assert.Equal(2, morphedBindingCalled); // Should increase after cache invalidation
@@ -369,10 +369,10 @@ public class DynamicCacheTests
             BindingAsync = async ctx =>
             {
                 firstBindingCalled++;
-                var shape = (IShape)ctx.Value;
+                var shape = ctx.Value;
                 shape.Metadata.Type = "SecondShape";
                 shape.Properties["MorphCount"] = 1;
-                
+
                 var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
                 return await displayHelper.ShapeExecuteAsync(shape);
             },
@@ -387,11 +387,11 @@ public class DynamicCacheTests
             BindingAsync = async ctx =>
             {
                 secondBindingCalled++;
-                var shape = (IShape)ctx.Value;
+                var shape = ctx.Value;
                 shape.Metadata.Type = "FinalShape";
                 var morphCount = (int)shape.Properties["MorphCount"];
                 shape.Properties["MorphCount"] = morphCount + 1;
-                
+
                 var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
                 return await displayHelper.ShapeExecuteAsync(shape);
             },
@@ -406,7 +406,7 @@ public class DynamicCacheTests
             BindingAsync = ctx =>
             {
                 finalBindingCalled++;
-                var shape = (IShape)ctx.Value;
+                var shape = ctx.Value;
                 var morphCount = (int)shape.Properties["MorphCount"];
                 return Task.FromResult<IHtmlContent>(new HtmlString($"Final Content (Morphed {morphCount} times)"));
             },
@@ -425,7 +425,7 @@ public class DynamicCacheTests
 
         // First execution - should go through entire morphing chain
         var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("Final Content (Morphed 2 times)", result1.ToString());
         Assert.Equal(1, firstBindingCalled);
         Assert.Equal(1, secondBindingCalled);
@@ -443,7 +443,7 @@ public class DynamicCacheTests
         await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         var result2 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("Final Content (Morphed 2 times)", result2.ToString());
         Assert.Equal(1, firstBindingCalled); // Should not increase
         Assert.Equal(1, secondBindingCalled); // Should not increase
@@ -463,7 +463,7 @@ public class DynamicCacheTests
         await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         var result3 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("Final Content (Morphed 2 times)", result3.ToString());
         Assert.Equal(2, firstBindingCalled); // Should increase after cache invalidation
         Assert.Equal(2, secondBindingCalled); // Should increase after cache invalidation
@@ -471,7 +471,7 @@ public class DynamicCacheTests
 
         // Verify it caches again
         var result4 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("Final Content (Morphed 2 times)", result4.ToString());
         Assert.Equal(2, firstBindingCalled); // Should not increase
         Assert.Equal(2, secondBindingCalled); // Should not increase
@@ -496,16 +496,16 @@ public class DynamicCacheTests
             BindingAsync = async ctx =>
             {
                 conditionalBindingCalled++;
-                var shape = (IShape)ctx.Value;
+                var shape = ctx.Value;
                 var shouldMorph = shape.Properties.TryGetValue("ShouldMorph", out var morphValue) && (bool)morphValue;
-                
+
                 if (shouldMorph)
                 {
                     shape.Metadata.Type = "MorphedConditionalShape";
                     var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
                     return await displayHelper.ShapeExecuteAsync(shape);
                 }
-                
+
                 return new HtmlString("Original Conditional Content");
             },
         };
@@ -527,11 +527,11 @@ public class DynamicCacheTests
         // Test morphing case (ShouldMorph = true)
         var shapeResult1 = new ShapeResult(
             "ConditionalShape",
-            ctx => factory.CreateAsync("ConditionalShape"), 
-            shape => 
-            { 
-                shape.Properties["ShouldMorph"] = true; 
-                return Task.CompletedTask; 
+            ctx => factory.CreateAsync("ConditionalShape"),
+            shape =>
+            {
+                shape.Properties["ShouldMorph"] = true;
+                return Task.CompletedTask;
             })
             .Location("Content")
             .Cache("conditional-morph-true", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -540,7 +540,7 @@ public class DynamicCacheTests
         await shapeResult1.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult1.Shape));
-        
+
         Assert.Equal("Morphed Conditional Content", result1.ToString());
         Assert.Equal(1, conditionalBindingCalled);
         Assert.Equal(1, morphedBindingCalled);
@@ -548,11 +548,11 @@ public class DynamicCacheTests
         // Test non-morphing case (ShouldMorph = false) - different cache key
         var shapeResult2 = new ShapeResult(
             "ConditionalShape",
-            ctx => factory.CreateAsync("ConditionalShape"), 
-            shape => 
-            { 
-                shape.Properties["ShouldMorph"] = false; 
-                return Task.CompletedTask; 
+            ctx => factory.CreateAsync("ConditionalShape"),
+            shape =>
+            {
+                shape.Properties["ShouldMorph"] = false;
+                return Task.CompletedTask;
             })
             .Location("Content")
             .Cache("conditional-morph-false", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -561,7 +561,7 @@ public class DynamicCacheTests
         await shapeResult2.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         var result2 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult2.Shape));
-        
+
         Assert.Equal("Original Conditional Content", result2.ToString());
         Assert.Equal(2, conditionalBindingCalled); // Should increase
         Assert.Equal(1, morphedBindingCalled); // Should not increase
@@ -572,11 +572,11 @@ public class DynamicCacheTests
             // Test cached morphed version
             shapeResult1 = new ShapeResult(
                 "ConditionalShape",
-                ctx => factory.CreateAsync("ConditionalShape"), 
-                shape => 
-                { 
-                    shape.Properties["ShouldMorph"] = true; 
-                    return Task.CompletedTask; 
+                ctx => factory.CreateAsync("ConditionalShape"),
+                shape =>
+                {
+                    shape.Properties["ShouldMorph"] = true;
+                    return Task.CompletedTask;
                 })
                 .Location("Content")
                 .Cache("conditional-morph-true", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -590,11 +590,11 @@ public class DynamicCacheTests
             // Test cached non-morphed version
             shapeResult2 = new ShapeResult(
                 "ConditionalShape",
-                ctx => factory.CreateAsync("ConditionalShape"), 
-                shape => 
-                { 
-                    shape.Properties["ShouldMorph"] = false; 
-                    return Task.CompletedTask; 
+                ctx => factory.CreateAsync("ConditionalShape"),
+                shape =>
+                {
+                    shape.Properties["ShouldMorph"] = false;
+                    return Task.CompletedTask;
                 })
                 .Location("Content")
                 .Cache("conditional-morph-false", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -629,16 +629,16 @@ public class DynamicCacheTests
             BindingAsync = async ctx =>
             {
                 originalBindingCalled++;
-                var shape = (IShape)ctx.Value;
-                
+                var shape = ctx.Value;
+
                 // Preserve existing alternates and properties
                 shape.Metadata.Alternates.Add("CustomAlternate");
                 shape.Properties["PreservedProperty"] = "TestValue";
-                
+
                 // Morph to different type
                 shape.Metadata.Type = "MorphedShape";
                 shape.Metadata.Alternates.Add("MorphedShape__Special");
-                
+
                 var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
                 return await displayHelper.ShapeExecuteAsync(shape);
             },
@@ -658,7 +658,7 @@ public class DynamicCacheTests
             BindingAsync = ctx =>
             {
                 alternateBindingCalled++;
-                var shape = (IShape)ctx.Value;
+                var shape = ctx.Value;
                 var preservedValue = shape.Properties["PreservedProperty"];
                 return Task.FromResult<IHtmlContent>(new HtmlString($"Special Morphed Content with {preservedValue}"));
             },
@@ -677,7 +677,7 @@ public class DynamicCacheTests
 
         // First execution - should morph and use alternate
         var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("Special Morphed Content with TestValue", result1.ToString());
         Assert.Equal(1, originalBindingCalled);
         Assert.Equal(1, alternateBindingCalled);
@@ -726,10 +726,10 @@ public class DynamicCacheTests
             BindingAsync = async ctx =>
             {
                 morphingCallCount++;
-                var shape = (IShape)ctx.Value;
+                var shape = ctx.Value;
                 shape.Metadata.Type = "FinalInvalidationShape";
                 shape.Properties["CallCount"] = morphingCallCount;
-                
+
                 var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
                 return await displayHelper.ShapeExecuteAsync(shape);
             },
@@ -744,7 +744,7 @@ public class DynamicCacheTests
             BindingAsync = ctx =>
             {
                 finalCallCount++;
-                var shape = (IShape)ctx.Value;
+                var shape = ctx.Value;
                 var callCount = (int)shape.Properties["CallCount"];
                 return Task.FromResult<IHtmlContent>(new HtmlString($"Final Content (Call #{callCount})"));
             },
@@ -817,8 +817,8 @@ public class DynamicCacheTests
             BindingAsync = async ctx =>
             {
                 originalBindingCalled++;
-                var shape = (IShape)ctx.Value;
-                
+                var shape = ctx.Value;
+
                 // Morph to first target type and execute
                 shape.Metadata.Type = "FirstMorphTarget";
                 var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
@@ -843,7 +843,7 @@ public class DynamicCacheTests
             BindingAsync = ctx =>
             {
                 firstMorphBindingCalled++;
-                var shape = (IShape)ctx.Value;
+                var shape = ctx.Value;
                 var sourceData = shape.Properties.TryGetValue("Data", out var data) ? data.ToString() : "NoData";
                 return Task.FromResult<IHtmlContent>(new HtmlString($"[First: {sourceData}]"));
             },
@@ -858,7 +858,7 @@ public class DynamicCacheTests
             BindingAsync = ctx =>
             {
                 secondMorphBindingCalled++;
-                var shape = (IShape)ctx.Value;
+                var shape = ctx.Value;
                 var sourceData = shape.Properties.TryGetValue("Data", out var data) ? data.ToString() : "NoData";
                 return Task.FromResult<IHtmlContent>(new HtmlString($"[Second: {sourceData}]"));
             },
@@ -878,7 +878,7 @@ public class DynamicCacheTests
 
         // First execution - should perform double morphing and concatenation
         var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("[First: TestValue][Second: TestValue]", result1.ToString());
         Assert.Equal(1, originalBindingCalled);
         Assert.Equal(1, firstMorphBindingCalled);
@@ -899,7 +899,7 @@ public class DynamicCacheTests
             await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
             var cachedResult = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-            
+
             Assert.Equal("[First: TestValue][Second: TestValue]", cachedResult.ToString());
             Assert.Equal(1, originalBindingCalled); // Should not increase
             Assert.Equal(1, firstMorphBindingCalled); // Should not increase
@@ -918,7 +918,7 @@ public class DynamicCacheTests
         await shapeResult2.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         var result2 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult2.Shape));
-        
+
         Assert.Equal("[First: DifferentValue][Second: DifferentValue]", result2.ToString());
         Assert.Equal(2, originalBindingCalled); // Should increase for different cache key
         Assert.Equal(2, firstMorphBindingCalled); // Should increase for different cache key
@@ -939,7 +939,7 @@ public class DynamicCacheTests
         await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         var result3 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("[First: TestValue][Second: TestValue]", result3.ToString());
         Assert.Equal(3, originalBindingCalled); // Should increase after cache invalidation
         Assert.Equal(3, firstMorphBindingCalled); // Should increase after cache invalidation
@@ -947,11 +947,141 @@ public class DynamicCacheTests
 
         // Verify it caches the concatenated result again
         var result4 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
-        
+
         Assert.Equal("[First: TestValue][Second: TestValue]", result4.ToString());
         Assert.Equal(3, originalBindingCalled); // Should not increase
         Assert.Equal(3, firstMorphBindingCalled); // Should not increase
         Assert.Equal(3, secondMorphBindingCalled); // Should not increase
+    }
+
+    [Fact]
+    public async Task ShapeMorphingWithCachingCachesInnerMorphedShape()
+    {
+        var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+        var factory = _serviceProvider.GetService<IShapeFactory>();
+
+        var originalBindingCalled = 0;
+        var morphedBindingCalled = 0;
+        var cacheTag = "morphing-test";
+        var innerCacheTag = "morphing-test-inner";
+
+        // Original shape descriptor that morphs to another shape
+        var originalDescriptor = new ShapeDescriptor
+        {
+            ShapeType = "OriginalShape",
+        };
+        originalDescriptor.Bindings["OriginalShape"] = new ShapeBinding
+        {
+            BindingName = "OriginalShape",
+            BindingAsync = async ctx =>
+            {
+                originalBindingCalled++;
+
+                // Morph the shape to a different type
+                ctx.Value.Metadata.Type = "MorphedShape";
+
+                // Cache the morphed shape separately
+                ctx.Value.Metadata.Cache("inner-morph-cache")
+                    .WithExpiryAfter(TimeSpan.FromSeconds(10))
+                    .AddTag(innerCacheTag);
+
+                var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
+                return await displayHelper.ShapeExecuteAsync(ctx.Value);
+            },
+        };
+        AddShapeDescriptor(originalDescriptor);
+
+        // Morphed shape descriptor
+        var morphedDescriptor = new ShapeDescriptor
+        {
+            ShapeType = "MorphedShape",
+        };
+        morphedDescriptor.Bindings["MorphedShape"] = new ShapeBinding
+        {
+            BindingName = "MorphedShape",
+            BindingAsync = ctx =>
+            {
+                morphedBindingCalled++;
+                return Task.FromResult<IHtmlContent>(new HtmlString("Morphed Content"));
+            },
+        };
+        AddShapeDescriptor(morphedDescriptor);
+
+        // Create cached shape result that morphs
+        var shapeResult = new ShapeResult("OriginalShape", ctx => factory.CreateAsync("OriginalShape"))
+            .Location("Content")
+            .Cache("morphed-shape", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
+
+        var contentShape = await factory.CreateAsync("Content");
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+
+        // First execution - should trigger morphing and cache the result
+        var result1 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
+
+        Assert.Equal("Morphed Content", result1.ToString());
+        Assert.Equal(1, originalBindingCalled);
+        Assert.Equal(1, morphedBindingCalled);
+        Assert.Equal("MorphedShape", shapeResult.Shape.Metadata.Type);
+
+        // Second execution - should use cached result, no morphing should occur
+        shapeResult = new ShapeResult("OriginalShape", ctx => factory.CreateAsync("OriginalShape"))
+            .Location("Content")
+            .Cache("morphed-shape", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
+
+        contentShape = await factory.CreateAsync("Content");
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+
+        var result2 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
+
+        Assert.Equal("Morphed Content", result2.ToString());
+        Assert.Equal(1, originalBindingCalled); // Should not increase
+        Assert.Equal(1, morphedBindingCalled); // Should not increase
+
+        // Second execution of the inner shape - should be cached separately
+        shapeResult = new ShapeResult("MorphedShape", ctx => factory.CreateAsync("MorphedShape"))
+            .Location("Content")
+            .Cache("inner-morph-cache", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(innerCacheTag));
+
+        contentShape = await factory.CreateAsync("Content");
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+
+        var result3 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
+
+        Assert.Equal("Morphed Content", result3.ToString());
+        Assert.Equal(1, morphedBindingCalled); // Should not increase
+
+        // Invalidate outer cache and verify morphing happens again
+        var tagCache = _serviceProvider.GetService<ITagCache>();
+        await tagCache.RemoveTagAsync(cacheTag);
+
+        shapeResult = new ShapeResult("OriginalShape", ctx => factory.CreateAsync("OriginalShape"))
+            .Location("Content")
+            .Cache("morphed-shape", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
+
+        contentShape = await factory.CreateAsync("Content");
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+
+        var result4 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
+
+        Assert.Equal("Morphed Content", result4.ToString());
+        Assert.Equal(2, originalBindingCalled); // Should increase after cache invalidation
+        Assert.Equal(1, morphedBindingCalled); // Should not increase because inner shape is still cached
+
+        // Invalidate inner cache and verify morphing happens again
+        await tagCache.RemoveTagAsync(innerCacheTag);
+
+        shapeResult = new ShapeResult("OriginalShape", ctx => factory.CreateAsync("OriginalShape"))
+            .Location("Content")
+            .Cache("morphed-shape", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
+
+        contentShape = await factory.CreateAsync("Content");
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
+
+        var result5 = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
+
+        Assert.Equal("Morphed Content", result5.ToString());
+        Assert.Equal(3, originalBindingCalled); // Should increase after inner cache invalidation
+        Assert.Equal(2, morphedBindingCalled); // Should increase after inner cache invalidation
     }
 
     public class MyModel
