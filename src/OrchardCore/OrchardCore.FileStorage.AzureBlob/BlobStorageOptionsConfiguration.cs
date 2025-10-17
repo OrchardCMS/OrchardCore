@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid.Abstractions;
 
@@ -37,7 +38,7 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
 
         if (rawOptions.StorageAccountUri is null)
         {
-            var accountName = GetAccountName(rawOptions.ConnectionString);
+            var accountName = ConnectionStringHelper.Extract(rawOptions.ConnectionString, "AccountName");
 
             if (string.IsNullOrEmpty(accountName))
             {
@@ -88,26 +89,5 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
     /// <param name="options">The options to configure.</param>
     protected virtual void FurtherConfigure(TOptions rawOptions, TOptions options)
     {
-    }
-
-    private static string GetAccountName(string connectionString)
-    {
-        // Split by ';' and parse key=value pairs
-        var parts = connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var part in parts)
-        {
-            var kv = part.Split('=', 2);
-
-            if (kv.Length == 2)
-            {
-                dict[kv[0].Trim()] = kv[1].Trim();
-            }
-        }
-
-        dict.TryGetValue("AccountName", out var accountName);
-
-        return accountName;
     }
 }

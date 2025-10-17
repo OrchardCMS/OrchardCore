@@ -60,6 +60,13 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
             model.AuthenticationTypes =
             [
                 new SelectListItem(S["Default"], nameof(AzureAuthenticationType.Default)),
+                new SelectListItem(S["Azure CLI"], nameof(AzureAuthenticationType.AzureCli)),
+                new SelectListItem(S["Visual Studio"], nameof(AzureAuthenticationType.VisualStudio)),
+                new SelectListItem(S["Visual Studio Code"], nameof(AzureAuthenticationType.VisualStudioCode)),
+                new SelectListItem(S["Azure Power Shell"], nameof(AzureAuthenticationType.AzurePowerShell)),
+                new SelectListItem(S["Environment"], nameof(AzureAuthenticationType.Environment)),
+                new SelectListItem(S["Interactive Browser"], nameof(AzureAuthenticationType.InteractiveBrowser)),
+                new SelectListItem(S["Workload Identity"], nameof(AzureAuthenticationType.WorkloadIdentity)),
                 new SelectListItem(S["Managed Identity"], nameof(AzureAuthenticationType.ManagedIdentity)),
                 new SelectListItem(S["API Key"], nameof(AzureAuthenticationType.ApiKey)),
             ];
@@ -136,7 +143,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
             (_searchOptions.ApiKey != model.ApiKey ||
              _searchOptions.Endpoint != settings.Endpoint ||
              _searchOptions.AuthenticationType != settings.AuthenticationType ||
-             _searchOptions.ClientId != settings.IdentityClientId ||
+             _searchOptions.IdentityClientId != settings.IdentityClientId ||
              useCustomConfigurationChanged))
         {
             _shellReleaseManager.RequestRelease();

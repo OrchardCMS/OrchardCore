@@ -12,14 +12,18 @@ namespace OrchardCore.Search.AzureAI.Services;
 public class AzureAIClientFactory
 {
     private readonly AzureAISearchDefaultOptions _defaultOptions;
+    private readonly IOptionsMonitor<AzureOptions> _optionsMonitor;
 
     private SearchIndexClient _searchIndexClient;
 
     private ConcurrentDictionary<string, SearchClient> _clients;
 
-    public AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultOptions)
+    public AzureAIClientFactory(
+        IOptions<AzureAISearchDefaultOptions> defaultOptions,
+        IOptionsMonitor<AzureOptions> optionsMonitor)
     {
         _defaultOptions = defaultOptions.Value;
+        _optionsMonitor = optionsMonitor;
     }
 
     public SearchClient CreateSearchClient(string indexFullName)
@@ -48,11 +52,14 @@ public class AzureAIClientFactory
             {
                 client = new SearchClient(endpoint, indexFullName, GetManagedIdentityCredential());
             }
-            else if (_defaultOptions.AuthenticationType == AzureAuthenticationType.Default)
-            {
-                client = new SearchClient(endpoint, indexFullName, new DefaultAzureCredential());
-            }
             else
+            {
+                var credentials = _optionsMonitor.Get(_defaultOptions.CredentialName ?? AzureOptions.DefaultName).ToTokenCredential();
+
+                client = new SearchClient(endpoint, indexFullName, credentials);
+            }
+
+            if (client is null)
             {
                 throw new NotSupportedException($"The Authentication Type '{_defaultOptions.AuthenticationType}' is not supported.");
             }
@@ -95,5 +102,5 @@ public class AzureAIClientFactory
     }
 
     private ManagedIdentityCredential GetManagedIdentityCredential()
-        => new(_defaultOptions.ClientId);
+        => new(_defaultOptions.IdentityClientId);
 }
