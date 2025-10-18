@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Implementation;
 
 namespace OrchardCore.Benchmarks.Support;
 
-public class MultiSelectShapeDescriptorIndex : ShapeDescriptor
+public class MultiSelectShapeDescriptorIndex : OriginalShapeDescriptor
 {
     private readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _descriptors;
     private readonly List<FeatureShapeDescriptor> _alternationDescriptors;
@@ -117,7 +117,7 @@ public class MultiSelectShapeDescriptorIndex : ShapeDescriptor
     public override IReadOnlyList<string> BindingSources => _bindingSources;
 }
 
-public class MultiSelectShapeDescriptorIndexArray : ShapeDescriptor
+public class MultiSelectShapeDescriptorIndexArray : OriginalShapeDescriptor
 {
     private readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _descriptors;
     private readonly FeatureShapeDescriptor[] _alternationDescriptors;
