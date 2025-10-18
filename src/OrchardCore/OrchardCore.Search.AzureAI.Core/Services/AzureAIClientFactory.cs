@@ -1,8 +1,10 @@
 using System.Collections.Concurrent;
+using Azure;
 using Azure.Identity;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Services;
@@ -10,14 +12,18 @@ namespace OrchardCore.Search.AzureAI.Services;
 public class AzureAIClientFactory
 {
     private readonly AzureAISearchDefaultOptions _defaultOptions;
+    private readonly IOptionsMonitor<AzureOptions> _optionsMonitor;
 
     private SearchIndexClient _searchIndexClient;
 
     private ConcurrentDictionary<string, SearchClient> _clients;
 
-    public AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultOptions)
+    public AzureAIClientFactory(
+        IOptions<AzureAISearchDefaultOptions> defaultOptions,
+        IOptionsMonitor<AzureOptions> optionsMonitor)
     {
         _defaultOptions = defaultOptions.Value;
+        _optionsMonitor = optionsMonitor;
     }
 
     public SearchClient CreateSearchClient(string indexFullName)
@@ -38,17 +44,24 @@ public class AzureAIClientFactory
                 throw new Exception("The Endpoint provided to Azure AI Options contains invalid value.");
             }
 
-            if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && _defaultOptions.Credential != null)
+            if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ApiKey)
             {
-                client = new SearchClient(endpoint, indexFullName, _defaultOptions.Credential);
+                client = new SearchClient(endpoint, indexFullName, new AzureKeyCredential(_defaultOptions.ApiKey));
             }
-            else if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+            else if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ManagedIdentity)
             {
                 client = new SearchClient(endpoint, indexFullName, GetManagedIdentityCredential());
             }
             else
             {
-                client = new SearchClient(endpoint, indexFullName, new DefaultAzureCredential());
+                var credentials = _optionsMonitor.Get(_defaultOptions.CredentialName ?? AzureOptions.DefaultName).ToTokenCredential();
+
+                client = new SearchClient(endpoint, indexFullName, credentials);
+            }
+
+            if (client is null)
+            {
+                throw new NotSupportedException($"The Authentication Type '{_defaultOptions.AuthenticationType}' is not supported.");
             }
 
             _clients.TryAdd(indexFullName, client);
@@ -71,11 +84,11 @@ public class AzureAIClientFactory
                 throw new Exception("The Endpoint provided to Azure AI Options contains invalid value.");
             }
 
-            if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && _defaultOptions.Credential != null)
+            if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ApiKey)
             {
-                _searchIndexClient = new SearchIndexClient(endpoint, _defaultOptions.Credential);
+                _searchIndexClient = new SearchIndexClient(endpoint, new AzureKeyCredential(_defaultOptions.ApiKey));
             }
-            else if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+            else if (_defaultOptions.AuthenticationType == AzureAuthenticationType.ManagedIdentity)
             {
                 _searchIndexClient = new SearchIndexClient(endpoint, GetManagedIdentityCredential());
             }

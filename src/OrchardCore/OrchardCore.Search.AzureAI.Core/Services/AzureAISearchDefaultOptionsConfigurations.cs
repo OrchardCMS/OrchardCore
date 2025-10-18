@@ -2,6 +2,7 @@ using Azure;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Settings;
@@ -71,11 +72,14 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
         options.Endpoint = fileOptions.Endpoint;
         options.AuthenticationType = fileOptions.AuthenticationType;
         options.IdentityClientId = fileOptions.IdentityClientId;
-
-        if (!string.IsNullOrWhiteSpace(fileOptions.Credential?.Key))
+        options.ApiKey = fileOptions.ApiKey;
+        options.CredentialName = fileOptions.CredentialName;
+        if (!string.IsNullOrWhiteSpace(fileOptions.ApiKey))
         {
-            options.AuthenticationType = AzureAIAuthenticationType.ApiKey;
+            options.AuthenticationType = AzureAuthenticationType.ApiKey;
+#pragma warning disable CS0618 // Type or member is obsolete
             options.Credential = fileOptions.Credential;
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 
@@ -85,13 +89,19 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
         options.Endpoint = settings.Endpoint;
         options.AuthenticationType = settings.AuthenticationType;
 
-        if (settings.AuthenticationType == AzureAIAuthenticationType.ApiKey)
+        if (settings.AuthenticationType == AzureAuthenticationType.ApiKey)
         {
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
-            options.Credential = new AzureKeyCredential(protector.Unprotect(settings.ApiKey));
+            var unprotectedApiKey = protector.Unprotect(settings.ApiKey);
+
+            options.ApiKey = unprotectedApiKey;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            options.Credential = new AzureKeyCredential(unprotectedApiKey);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
-        else if (settings.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+        else if (settings.AuthenticationType == AzureAuthenticationType.ManagedIdentity)
         {
             options.IdentityClientId = settings.IdentityClientId;
         }
@@ -104,7 +114,6 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
             return false;
         }
 
-        return options.AuthenticationType != AzureAIAuthenticationType.ApiKey ||
-            !string.IsNullOrEmpty(options.Credential?.Key);
+        return options.ConfigurationExists();
     }
 }

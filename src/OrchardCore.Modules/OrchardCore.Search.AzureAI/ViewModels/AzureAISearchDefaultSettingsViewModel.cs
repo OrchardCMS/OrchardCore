@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using OrchardCore.Search.AzureAI.Models;
+using OrchardCore.Azure.Core;
 
 namespace OrchardCore.Search.AzureAI.ViewModels;
 
 public class AzureAISearchDefaultSettingsViewModel
 {
     [Required]
-    public AzureAIAuthenticationType? AuthenticationType { get; set; }
+    public AzureAuthenticationType? AuthenticationType { get; set; }
 
     public string Endpoint { get; set; }
 
