@@ -51,7 +51,7 @@ public static class DependencyOrdering
 
     private static int LowestIndex<T>(List<T> list, int index, Func<T, T, bool> hasDependency, Func<T, int> getPriority)
     {
-        double priority = getPriority(list[index]);
+        var priority = getPriority(list[index]);
 
         var lowestIndex = index;
         for (var i = index - 1; i >= 0; i--)
@@ -61,7 +61,7 @@ public static class DependencyOrdering
                 return lowestIndex;
             }
 
-            double currentPriority = getPriority(list[i]);
+            var currentPriority = getPriority(list[i]);
             if (currentPriority > priority)
             {
                 lowestIndex = i;
