@@ -33,7 +33,7 @@
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.QueryParser" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00017" />
-    <PackageVersion Include="MailKit" Version="4.14.0" />
+    <PackageVersion Include="MailKit" Version="4.14.1" />
     <PackageVersion Include="Markdig" Version="0.42.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.14.1" />
