@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -58,9 +59,16 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
         {
             model.AuthenticationTypes =
             [
-                new SelectListItem(S["Default"], nameof(AzureAIAuthenticationType.Default)),
-                new SelectListItem(S["Managed Identity"], nameof(AzureAIAuthenticationType.ManagedIdentity)),
-                new SelectListItem(S["API Key"], nameof(AzureAIAuthenticationType.ApiKey)),
+                new SelectListItem(S["Default"], nameof(AzureAuthenticationType.Default)),
+                new SelectListItem(S["Azure CLI"], nameof(AzureAuthenticationType.AzureCli)),
+                new SelectListItem(S["Visual Studio"], nameof(AzureAuthenticationType.VisualStudio)),
+                new SelectListItem(S["Visual Studio Code"], nameof(AzureAuthenticationType.VisualStudioCode)),
+                new SelectListItem(S["Azure Power Shell"], nameof(AzureAuthenticationType.AzurePowerShell)),
+                new SelectListItem(S["Environment"], nameof(AzureAuthenticationType.Environment)),
+                new SelectListItem(S["Interactive Browser"], nameof(AzureAuthenticationType.InteractiveBrowser)),
+                new SelectListItem(S["Workload Identity"], nameof(AzureAuthenticationType.WorkloadIdentity)),
+                new SelectListItem(S["Managed Identity"], nameof(AzureAuthenticationType.ManagedIdentity)),
+                new SelectListItem(S["API Key"], nameof(AzureAuthenticationType.ApiKey)),
             ];
 
             model.ConfigurationsAreOptional = _searchOptions.FileConfigurationExists();
@@ -112,7 +120,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Endpoint), S["Endpoint must be a valid url."]);
             }
 
-            if (model.AuthenticationType == AzureAIAuthenticationType.ApiKey)
+            if (model.AuthenticationType == AzureAuthenticationType.ApiKey)
             {
                 var hasNewKey = !string.IsNullOrWhiteSpace(model.ApiKey);
 
@@ -132,7 +140,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
         settings.UseCustomConfiguration = model.UseCustomConfiguration;
 
         if (context.Updater.ModelState.IsValid &&
-            (_searchOptions.Credential?.Key != model.ApiKey ||
+            (_searchOptions.ApiKey != model.ApiKey ||
              _searchOptions.Endpoint != settings.Endpoint ||
              _searchOptions.AuthenticationType != settings.AuthenticationType ||
              _searchOptions.IdentityClientId != settings.IdentityClientId ||

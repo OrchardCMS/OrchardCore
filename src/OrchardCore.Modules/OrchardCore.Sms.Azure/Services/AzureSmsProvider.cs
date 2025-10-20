@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Sms.Azure.Models;
 
 namespace OrchardCore.Sms.Azure.Services;
@@ -12,9 +13,10 @@ public sealed class AzureSmsProvider : AzureSmsProviderBase
     public AzureSmsProvider(
         IOptions<AzureSmsOptions> options,
         IPhoneFormatValidator phoneFormatValidator,
+        IOptionsMonitor<AzureOptions> optionsMonitor,
         ILogger<AzureSmsProvider> logger,
         IStringLocalizer<AzureSmsProvider> stringLocalizer)
-        : base(options.Value, phoneFormatValidator, logger, stringLocalizer)
+        : base(options.Value, phoneFormatValidator, optionsMonitor, logger, stringLocalizer)
     {
     }
 

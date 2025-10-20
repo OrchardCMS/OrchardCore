@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid.Abstractions;
 
@@ -33,6 +34,23 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
         var parser = new FluidOptionsParser<TOptions>(_sellSettings);
 
         options.ConnectionString = rawOptions.ConnectionString;
+        options.CredentialName = rawOptions.CredentialName;
+
+        if (rawOptions.StorageAccountUri is null)
+        {
+            var accountName = ConnectionStringHelper.Extract(rawOptions.ConnectionString, "AccountName");
+
+            if (string.IsNullOrEmpty(accountName))
+            {
+                throw new InvalidOperationException($"Unable to determine the storage account name for {typeof(TOptions).Name}.");
+            }
+
+            rawOptions.StorageAccountUri = new Uri($"https://{accountName}.blob.core.windows.net");
+        }
+        else
+        {
+            options.StorageAccountUri = rawOptions.StorageAccountUri;
+        }
 
         if (!string.IsNullOrEmpty(rawOptions.ContainerName))
         {
@@ -67,7 +85,7 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
     /// <summary>
     /// Allows you to configure additional options in an inherited class.
     /// </summary>
-    /// <param name="rawOptions">The options as returned by <see cref="GetRawOptions"/></param>
+    /// <param name="rawOptions">The options as returned by <see cref="GetRawOptions"/>.</param>
     /// <param name="options">The options to configure.</param>
     protected virtual void FurtherConfigure(TOptions rawOptions, TOptions options)
     {

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Azure.Core;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
@@ -25,6 +26,16 @@ public sealed class Startup : StartupBase
         services.Configure<DefaultAzureSmsOptions>(options =>
         {
             _shellConfiguration.GetSection("OrchardCore_Sms_AzureCommunicationServices").Bind(options);
+
+            if (options.Endpoint is null && !string.IsNullOrEmpty(options.ConnectionString))
+            {
+                var endpointString = ConnectionStringHelper.Extract(options.ConnectionString, "Endpoint");
+
+                if (endpointString is not null && Uri.TryCreate(endpointString, UriKind.Absolute, out var endpointUri))
+                {
+                    options.Endpoint = endpointUri;
+                }
+            }
 
             options.IsEnabled = options.ConfigurationExists();
         });

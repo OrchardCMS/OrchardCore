@@ -8,6 +8,22 @@ public class AzureEmailOptions
 
     public string ConnectionString { get; set; }
 
+    public string CredentialName { get; set; }
+
+    public Uri Endpoint { get; set; }
+
     public bool ConfigurationExists()
-        => !string.IsNullOrWhiteSpace(DefaultSender) && !string.IsNullOrWhiteSpace(ConnectionString);
+    {
+        if (string.IsNullOrWhiteSpace(DefaultSender))
+        {
+            return false;
+        }
+
+        if (Endpoint is not null)
+        {
+            return true;
+        }
+
+        return !string.IsNullOrWhiteSpace(ConnectionString);
+    }
 }

@@ -8,7 +8,22 @@ public class AzureSmsOptions
 
     public string ConnectionString { get; set; }
 
+    public Uri Endpoint { get; set; }
+
+    public string CredentialName { get; set; }
+
     public bool ConfigurationExists()
-        => !string.IsNullOrWhiteSpace(PhoneNumber) &&
-        !string.IsNullOrWhiteSpace(ConnectionString);
+    {
+        if (string.IsNullOrWhiteSpace(PhoneNumber))
+        {
+            return false;
+        }
+
+        if (Endpoint is not null)
+        {
+            return true;
+        }
+
+        return !string.IsNullOrWhiteSpace(ConnectionString);
+    }
 }

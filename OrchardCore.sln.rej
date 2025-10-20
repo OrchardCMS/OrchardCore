@@ -1,0 +1,43 @@
+diff a/OrchardCore.sln b/OrchardCore.sln	(rejected hunks)
+@@ -585,6 +585,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Taxonomies.Core
+ EndProject
+ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Flows.Core", "src\OrchardCore\OrchardCore.Flows.Core\OrchardCore.Flows.Core.csproj", "{F7F3AFBD-8045-49D3-BA06-504954D6910B}"
+ EndProject
++Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Redis.Azure", "src\OrchardCore.Modules\OrchardCore.Redis.Azure\OrchardCore.Redis.Azure.csproj", "{61848F3E-972A-4AD3-965E-DC42E690BF05}"
++EndProject
++Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Azure.Core", "src\OrchardCore\OrchardCore.Azure.Core\OrchardCore.Azure.Core.csproj", "{903FFEBA-B69D-4464-8391-9240C9EB8384}"
++EndProject
++Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Azure", "src\OrchardCore.Modules\OrchardCore.Azure\OrchardCore.Azure.csproj", "{5BA3337B-2266-40A8-87A2-C4497D260FE0}"
++EndProject
+ Global
+ 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+ 		Debug|Any CPU = Debug|Any CPU
+@@ -1481,6 +1487,18 @@ Global
+ 		{F7F3AFBD-8045-49D3-BA06-504954D6910B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+ 		{F7F3AFBD-8045-49D3-BA06-504954D6910B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+ 		{F7F3AFBD-8045-49D3-BA06-504954D6910B}.Release|Any CPU.Build.0 = Release|Any CPU
++		{61848F3E-972A-4AD3-965E-DC42E690BF05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
++		{61848F3E-972A-4AD3-965E-DC42E690BF05}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{61848F3E-972A-4AD3-965E-DC42E690BF05}.Release|Any CPU.ActiveCfg = Release|Any CPU
++		{61848F3E-972A-4AD3-965E-DC42E690BF05}.Release|Any CPU.Build.0 = Release|Any CPU
++		{903FFEBA-B69D-4464-8391-9240C9EB8384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
++		{903FFEBA-B69D-4464-8391-9240C9EB8384}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{903FFEBA-B69D-4464-8391-9240C9EB8384}.Release|Any CPU.ActiveCfg = Release|Any CPU
++		{903FFEBA-B69D-4464-8391-9240C9EB8384}.Release|Any CPU.Build.0 = Release|Any CPU
++		{5BA3337B-2266-40A8-87A2-C4497D260FE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
++		{5BA3337B-2266-40A8-87A2-C4497D260FE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{5BA3337B-2266-40A8-87A2-C4497D260FE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
++		{5BA3337B-2266-40A8-87A2-C4497D260FE0}.Release|Any CPU.Build.0 = Release|Any CPU
+ 	EndGlobalSection
+ 	GlobalSection(SolutionProperties) = preSolution
+ 		HideSolutionNode = FALSE
+@@ -1734,6 +1752,9 @@ Global
+ 		{51C07EE9-9420-4BFE-911B-9F4326A0F83B} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+ 		{6A379AE9-B468-4D89-82B2-0C350AB712F9} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+ 		{F7F3AFBD-8045-49D3-BA06-504954D6910B} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
++		{61848F3E-972A-4AD3-965E-DC42E690BF05} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
++		{903FFEBA-B69D-4464-8391-9240C9EB8384} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
++		{5BA3337B-2266-40A8-87A2-C4497D260FE0} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+ 	EndGlobalSection
+ 	GlobalSection(ExtensibilityGlobals) = postSolution
+ 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
