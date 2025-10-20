@@ -2,12 +2,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Catalogs.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Infrastructure.Entities;
 
 namespace OrchardCore.Indexing.Core.Handlers;
 

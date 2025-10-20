@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Catalogs.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Entities;
@@ -8,7 +9,6 @@ using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Models;

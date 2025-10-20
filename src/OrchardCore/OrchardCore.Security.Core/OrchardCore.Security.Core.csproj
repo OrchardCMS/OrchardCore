@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore\OrchardCore.csproj" />
+  </ItemGroup>
+
+</Project>

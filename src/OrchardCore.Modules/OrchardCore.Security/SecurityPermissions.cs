@@ -1,14 +1,16 @@
+using OrchardCore.Security.Core;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security;
 
 public sealed class SecurityPermissions : IPermissionProvider
 {
-    public static readonly Permission ManageSecurityHeadersSettings = new("ManageSecurityHeadersSettings", "Manage Security Headers Settings");
+    [Obsolete("This will be removed in a future release. Instead use 'SecurityConstants.Permissions.ManageSecurityHeadersSettings'.")]
+    public static readonly Permission ManageSecurityHeadersSettings = SecurityConstants.Permissions.ManageSecurityHeadersSettings;
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageSecurityHeadersSettings,
+        SecurityConstants.Permissions.ManageSecurityHeadersSettings,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

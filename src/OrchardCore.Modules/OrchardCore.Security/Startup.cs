@@ -1,10 +1,13 @@
+using CrestApps.OrchardCore.AI.Drivers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Catalogs;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Core;
 using OrchardCore.Security.Drivers;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
@@ -25,6 +28,8 @@ public sealed class Startup : StartupBase
         services.AddSingleton<ISecurityService, SecurityService>();
 
         services.AddTransient<IConfigureOptions<SecuritySettings>, SecuritySettingsConfiguration>();
+
+        services.AddDisplayDriver<Credential, CredentialDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -39,5 +44,17 @@ public sealed class Startup : StartupBase
                 .AddPermissionsPolicy(securityOptions.PermissionsPolicy)
                 .AddReferrerPolicy(securityOptions.ReferrerPolicy);
         });
+    }
+}
+
+[Feature(SecurityConstants.Features.Credentials)]
+public sealed class CredentialsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<Credential, CredentialDisplayDriver>();
+        services.AddScoped<ICatalogEntryHandler<Credential>, CredentialHandler>();
+        services.AddNavigationProvider<CredentialsAdminMenu>();
+        services.AddPermissionProvider<CredentialsPermissions>();
     }
 }

@@ -1,9 +1,9 @@
+using OrchardCore.Catalogs;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Infrastructure.Entities;
 
 namespace OrchardCore.Indexing;
 
-public interface IIndexProfileHandler : IModelHandler<IndexProfile>
+public interface IIndexProfileHandler : ICatalogEntryHandler<IndexProfile>
 {
     /// <summary>
     /// Invoked when an <see cref="IndexProfile"/> has been synchronized.

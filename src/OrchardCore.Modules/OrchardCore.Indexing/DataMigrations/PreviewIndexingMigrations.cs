@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Catalogs;
 using OrchardCore.Data.Migration;
 using OrchardCore.Documents;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Models;
 using YesSql;
 

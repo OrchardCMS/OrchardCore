@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Catalogs.Models;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Handlers;

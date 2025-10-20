@@ -1,8 +1,7 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Abstractions.Indexing;
+using OrchardCore.Catalogs.Models;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core;
@@ -130,9 +129,9 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
     {
         var result = await _store.PageAsync(page, pageSize, context);
 
-        foreach (var model in result.Models)
+        foreach (var entry in result.Entries)
         {
-            await LoadAsync(model);
+            await LoadAsync(entry);
         }
         return result;
     }

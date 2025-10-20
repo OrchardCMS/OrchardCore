@@ -1,4 +1,4 @@
-using OrchardCore.Abstractions.Indexing;
+using OrchardCore.Catalogs.Models;
 using OrchardCore.Indexing.Models;
 
 namespace OrchardCore.Indexing;

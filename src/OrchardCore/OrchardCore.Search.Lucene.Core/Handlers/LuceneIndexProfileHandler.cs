@@ -1,8 +1,8 @@
+using OrchardCore.Catalogs.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Search.Lucene.Models;
 
 namespace OrchardCore.Search.Lucene.Core.Handlers;

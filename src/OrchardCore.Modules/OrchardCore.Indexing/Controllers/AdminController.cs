@@ -93,12 +93,12 @@ public sealed class AdminController : Controller
             .ThenBy(x => x.Type),
         };
 
-        foreach (var record in result.Models)
+        foreach (var entry in result.Entries)
         {
             viewModel.Models.Add(new ModelEntry<IndexProfile>
             {
-                Model = record,
-                Shape = await _displayManager.BuildDisplayAsync(record, _updateModelAccessor.ModelUpdater, "SummaryAdmin"),
+                Model = entry,
+                Shape = await _displayManager.BuildDisplayAsync(entry, _updateModelAccessor.ModelUpdater, "SummaryAdmin"),
             });
         }
 
