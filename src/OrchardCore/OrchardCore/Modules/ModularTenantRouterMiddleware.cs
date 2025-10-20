@@ -30,7 +30,7 @@ public class ModularTenantRouterMiddleware
         // This allows to use any helper accepting the '~/' path to resolve the tenant's base url.
         if (!string.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
         {
-            PathString prefix = "/" + shellContext.Settings.RequestUrlPrefix;
+            var prefix = shellContext.Settings.RequestPathBase;
             httpContext.Request.PathBase += prefix;
             httpContext.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase, out var remainingPath);
             httpContext.Request.Path = remainingPath;
