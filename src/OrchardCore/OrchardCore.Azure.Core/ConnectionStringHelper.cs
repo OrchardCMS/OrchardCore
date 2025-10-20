@@ -1,3 +1,5 @@
+using System.Data.Common;
+
 namespace OrchardCore.Azure.Core;
 
 public static class ConnectionStringHelper
@@ -7,14 +9,14 @@ public static class ConnectionStringHelper
         ArgumentNullException.ThrowIfNull(connectionString);
         ArgumentNullException.ThrowIfNull(valueKey);
 
-        var parts = connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        foreach (var part in parts)
+        var builder = new DbConnectionStringBuilder
         {
-            var kv = part.Split('=', 2);
-            if (kv.Length == 2 && kv[0].Trim().Equals(valueKey, StringComparison.OrdinalIgnoreCase))
-            {
-                return kv[1].Trim();
-            }
+            ConnectionString = connectionString,
+        };
+
+        if (builder.TryGetValue(valueKey, out var value))
+        {
+            return value?.ToString();
         }
 
         return null;

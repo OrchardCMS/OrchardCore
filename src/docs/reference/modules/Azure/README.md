@@ -32,9 +32,6 @@ Below is an example configuration:
           "AuthenticationType": "ApiKey",
           "ApiKey": "<your-api-key>",
           "DeploymentName": "<your-deployment-name>"
-        },
-        "Redis": {
-          "Alias": "my-default" // References another credentials entry (here, "my-default")
         }
       }
     }
@@ -46,9 +43,8 @@ Below is an example configuration:
 
 ## Notes
 
-* **Credential names are fully customizable** (e.g., `SearchAI`, `Redis`, `StorageAccount`).
+* **Credential names are fully customizable** (e.g., `SearchAI`, `StorageAccount`).
 * If a module does not specify which credential to use, it **may fall back to `"Default"`**.
-* The `Alias` property allows credential reuse without duplicating configuration values.
 * You can define **custom properties** within any credential, which can be retrieved programmatically using `GetProperty<T>(propertyName)`.
 
 ---

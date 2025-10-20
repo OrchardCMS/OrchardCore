@@ -34,20 +34,6 @@ public sealed class AzureOptionsConfigurations : IConfigureNamedOptions<AzureOpt
             return;
         }
 
-        var alias = section["Alias"];
-
-        if (alias is not null)
-        {
-            _configuredAliases ??= new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            if (_configuredAliases.Add(alias))
-            {
-                Configure(alias, options);
-            }
-
-            return;
-        }
-
         var type = section[nameof(AzureOptions.AuthenticationType)];
 
         if (type is not null && Enum.TryParse<AzureAuthenticationType>(type, true, out var authType))

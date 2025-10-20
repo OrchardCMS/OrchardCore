@@ -7,8 +7,6 @@ It supports authentication using Azure credentials, including:
 * **Azure CLI (`AzureCli`)**
 * **Default credentials (`Default`)**
 
-> **Important:** For this module to work, the credential entry **must be named `Redis`** in your Azure credentials configuration.
-
 ---
 
 ## Configuration
