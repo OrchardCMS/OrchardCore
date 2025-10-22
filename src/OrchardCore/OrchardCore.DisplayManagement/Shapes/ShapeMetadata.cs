@@ -67,9 +67,6 @@ public class ShapeMetadata
     [JsonIgnore]
     public IReadOnlyList<Action<ShapeDisplayContext>> Displayed => (IReadOnlyList<Action<ShapeDisplayContext>>)_displayed ?? [];
 
-    [JsonIgnore]
-    public IReadOnlyList<string> BindingSources { get; set; } = [];
-
     public void OnDisplaying(Action<ShapeDisplayContext> context)
     {
         _displaying ??= new List<Action<ShapeDisplayContext>>();

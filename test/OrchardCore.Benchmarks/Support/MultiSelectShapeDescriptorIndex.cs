@@ -41,9 +41,8 @@ public class MultiSelectShapeDescriptorIndex : OriginalShapeDescriptor
             .SelectMany(sd => sd.Wrappers)
             .ToList();
 
-        _bindingSources = _alternationDescriptors
-            .SelectMany(sd => sd.BindingSources)
-            .ToList();
+        // BindingSources were removed from FeatureShapeDescriptor.
+        _bindingSources = new List<string>();
 
         _bindings = _alternationDescriptors
             .SelectMany(sd => sd.Bindings)
@@ -149,9 +148,8 @@ public class MultiSelectShapeDescriptorIndexArray : OriginalShapeDescriptor
             .SelectMany(sd => sd.Wrappers)
             .ToArray();
 
-        _bindingSources = _alternationDescriptors
-            .SelectMany(sd => sd.BindingSources)
-            .ToArray();
+        // BindingSources were removed from FeatureShapeDescriptor.
+        _bindingSources = Array.Empty<string>();
 
         _bindings = _alternationDescriptors
             .SelectMany(sd => sd.Bindings)

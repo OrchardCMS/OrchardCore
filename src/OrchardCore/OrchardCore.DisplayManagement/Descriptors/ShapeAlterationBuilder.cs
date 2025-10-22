@@ -55,7 +55,6 @@ public class ShapeAlterationBuilder
 
             // ShapeDescriptor.Bindings is a case insensitive dictionary.
             descriptor.Bindings[_bindingName] = binding;
-            descriptor.AddBindingSource(bindingSource);
         });
     }
 

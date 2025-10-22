@@ -39,7 +39,8 @@ public class OriginalShapeDescriptorIndex : OriginalShapeDescriptor
 
             _alternationDescriptors.Add(alternationDescriptor);
             _wrappers.AddRange(alternationDescriptor.Wrappers);
-            _bindingSources.AddRange(alternationDescriptor.BindingSources);
+            // BindingSources were removed from FeatureShapeDescriptor.
+            // Keep an empty list for compatibility with original benchmark API surface.
             _creatingAsync.AddRange(alternationDescriptor.CreatingAsync);
             _createdAsync.AddRange(alternationDescriptor.CreatedAsync);
             _displayingAsync.AddRange(alternationDescriptor.DisplayingAsync);

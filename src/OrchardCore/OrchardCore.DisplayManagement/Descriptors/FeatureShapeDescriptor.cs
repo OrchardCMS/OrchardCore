@@ -52,11 +52,6 @@ public sealed class ShapeDescriptorIndex : ShapeDescriptor
                 wrappers.AddRange(alterationDescriptor.Wrappers);
             }
 
-            if (alterationDescriptor.BindingSources.Count > 0)
-            {
-                AddBindingSources(alterationDescriptor.BindingSources);
-            }
-
             if (alterationDescriptor.CreatingAsync.Count > 0)
             {
                 creatingAsync ??= [];
@@ -180,8 +175,6 @@ public class ShapeDescriptor
 
     public virtual IReadOnlyList<string> Wrappers { get; set; } = [];
 
-    public IReadOnlyList<string> BindingSources { get; } = new List<string>(); // Don't replace with [] to make sure this is a mutable list.
-
     protected PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
     {
         // A null default placement means no default placement is specified
@@ -195,12 +188,6 @@ public class ShapeDescriptor
             Location = DefaultPlacement,
         };
     }
-
-    public void AddBindingSource(string bindingSource)
-        => ((List<string>)BindingSources).Add(bindingSource);
-
-    protected internal void AddBindingSources(IEnumerable<string> collection)
-        => ((List<string>)BindingSources).AddRange(collection);
 }
 
 public sealed class ShapeBinding
