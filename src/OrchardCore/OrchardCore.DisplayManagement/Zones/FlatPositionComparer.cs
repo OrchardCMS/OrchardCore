@@ -48,8 +48,13 @@ public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<str
         var xSpan = GetNormalizedSpan(x);
         var ySpan = GetNormalizedSpan(y);
 
+#if NET9_0_OR_GREATER
+        var xParts = xSpan.SplitAny(_splitChars);
+        var yParts = ySpan.SplitAny(_splitChars);
+#else
         var xParts = new SpanSplitEnumerator(xSpan, _splitChars);
         var yParts = new SpanSplitEnumerator(ySpan, _splitChars);
+#endif
 
         var partIndex = 0;
 
@@ -61,8 +66,13 @@ public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<str
                 return 1;
             }
 
+#if NET9_0_OR_GREATER
+            var xPart = xSpan[xParts.Current];
+            var yPart = ySpan[yParts.Current];
+#else
             var xPart = xParts.Current;
             var yPart = yParts.Current;
+#endif
 
             // Normalize known partitions
             var xIsInt = TryNormalizeKnownPartitions(xPart, out var xPos);
@@ -151,6 +161,7 @@ public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<str
         return false;
     }
 
+#if !NET9_0_OR_GREATER
     private ref struct SpanSplitEnumerator
     {
         private readonly ReadOnlySpan<char> _span;
@@ -200,4 +211,5 @@ public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<str
             return true;
         }
     }
+#endif
 }
