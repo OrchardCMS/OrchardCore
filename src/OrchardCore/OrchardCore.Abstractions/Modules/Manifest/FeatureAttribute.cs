@@ -1,5 +1,3 @@
-using static System.StringSplitOptions;
-
 namespace OrchardCore.Modules.Manifest;
 
 /// <summary>
@@ -9,27 +7,24 @@ namespace OrchardCore.Modules.Manifest;
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
 public class FeatureAttribute : Attribute
 {
-    protected internal const string DefaultName = "";
+    private string _id;
+    private string _name;
+    private string _category = "";
+    private string[] _dependencies = [];
 
-    protected internal const string DefaultDescription = "";
-
-    protected internal const string Uncategorized = nameof(Uncategorized);
-
-    protected internal const string DefaultCategory = "";
-
-    protected internal const string DefaultFeatureDependencies = "";
-
-    protected internal const bool DefaultDefaultTenantOnly = false;
-
-    protected internal const bool DefaultAlwaysEnabled = false;
+    /// <summary>
+    /// Gets the default known ListDelims supporting <see cref="Dependencies"/> splits, etc.
+    /// Semi-colon (&apos;;&apos;) delimiters are most common, expected from a <em>CSPROJ</em>
+    /// perspective. Also common are comma (&apos;,&apos;) and space (&apos; &apos;)
+    /// delimiters.
+    /// </summary>
+    protected internal static char[] ListDelims { get; } = [';', ',', ' '];
 
     /// <summary>
     /// Default parameterless ctor.
     /// </summary>
-    /// <remarks>Cannot route to <c>this(...)</c> in any form here due to restrictions on the Id property setter.</remarks>
     public FeatureAttribute()
     {
-        // Defaults are defaults, caller may initialize the properties themselves.
     }
 
     /// <summary>
@@ -132,25 +127,19 @@ public class FeatureAttribute : Attribute
     {
         Id = id;
         Name = name;
-        Category = category ?? DefaultCategory;
-        Priority = priority ?? string.Empty;
-        Description = description ?? DefaultDescription;
-        DelimitedDependencies = featureDependencies ?? DefaultFeatureDependencies;
-
-        // https://docs.microsoft.com/en-us/dotnet/api/system.convert.toboolean
-        static bool ToBoolean(object value) => Convert.ToBoolean(value);
-
-        DefaultTenantOnly = ToBoolean(defaultTenant);
-        IsAlwaysEnabled = ToBoolean(alwaysEnabled);
-        EnabledByDependencyOnly = ToBoolean(enabledByDependencyOnly);
+        Category = category ?? "";
+        Priority = priority ?? "";
+        Description = description ?? "";
+        Dependencies = ParseDependencies(featureDependencies);
+        DefaultTenantOnly = Convert.ToBoolean(defaultTenant);
+        IsAlwaysEnabled = Convert.ToBoolean(alwaysEnabled);
+        EnabledByDependencyOnly = Convert.ToBoolean(enabledByDependencyOnly);
     }
 
     /// <summary>
     /// Whether the feature exists based on the <see cref="Id"/>.
     /// </summary>
     public virtual bool Exists => !string.IsNullOrEmpty(Id);
-
-    private string _id;
 
     /// <summary>
     /// Gets or sets the feature identifier. Identifier is required.
@@ -160,29 +149,13 @@ public class FeatureAttribute : Attribute
         get => _id;
         set
         {
-            // Guards setting Id with strictly invalid values.
             if (string.IsNullOrEmpty(value))
             {
-                throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.")
-                {
-                    Data = { { nameof(value), value } },
-                };
+                throw new InvalidOperationException($"'{nameof(Id)}' cannot be null or empty.");
             }
-
             _id = value;
         }
     }
-
-    private string _name;
-
-    /// <summary>
-    /// Returns the <see cref="string"/> <paramref name="s"/> as is, or <c>null</c> when that
-    /// or <see cref="string.Empty"/>.
-    /// </summary>
-    /// <param name="s">The string value to consider.</param>
-    /// <returns>The <paramref name="s"/> value as is, or Null when either that or Empty.</returns>
-    /// <see cref="string.IsNullOrEmpty(string?)"/>
-    internal static string StringOrNull(string s) => string.IsNullOrEmpty(s) ? null : s;
 
     /// <summary>
     /// Gets or sets the human readable or canonical feature name. <see cref="Id"/> will be
@@ -190,68 +163,38 @@ public class FeatureAttribute : Attribute
     /// </summary>
     public virtual string Name
     {
-        get => StringOrNull(_name) ?? Id;
+        get => string.IsNullOrEmpty(_name) ? Id : _name;
         set => _name = value;
-    }
-
-    /// <summary>
-    /// Yields return of the <paramref name="values"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    protected static IEnumerable<T> GetValues<T>(params T[] values)
-    {
-        foreach (var value in values)
-        {
-            yield return value;
-        }
     }
 
     /// <summary>
     /// Gets or sets a brief summary of what the feature does.
     /// </summary>
-    public virtual string Description { get; set; } = DefaultDescription;
+    public virtual string Description { get; set; } = "";
 
     /// <summary>
-    /// Describes the first or default Feature starting with This instance,
-    /// which defines a <see cref="Description"/>.
+    /// Gets or sets the Category for use with the Module.
     /// </summary>
-    /// <param name="additionalFeatures">Additional Features to consider in the aggregate.</param>
-    /// <returns>The first or default Description with optional back stop features.</returns>
-    internal virtual string Describe(params FeatureAttribute[] additionalFeatures)
+    public virtual string Category
     {
-        static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
-        var firstOrDefaultResult = GetValues(this).Concat(additionalFeatures)
-            .Select(feature => feature.Description)
-            .FirstOrDefault(IsNotNullOrEmpty);
-        return firstOrDefaultResult ?? DefaultDescription;
+        get => _category;
+        set => _category = (value ?? "").Trim();
     }
 
     /// <summary>
-    /// <see cref="TrimEntries"/> | <see cref="RemoveEmptyEntries"/>, trim the entries, and
-    /// remove the empty ones.
+    /// Gets or sets the feature priority without breaking the <see cref="Dependencies"/>
+    /// order. The higher is the priority, the later the drivers / handlers are invoked.
     /// </summary>
-    protected internal const StringSplitOptions DefaultSplitOptions = TrimEntries | RemoveEmptyEntries;
+    /// <remarks>The default value is 0, consistent with the baseline, however, could
+    /// be nullified, which would in turn favor the parent <see cref="ModuleAttribute"/>.</remarks>
+    public virtual string Priority { get; set; } = "0";
 
     /// <summary>
-    /// Gets the default known ListDelims supporting <see cref="Dependencies"/> splits, etc.
-    /// Semi-colon (&apos;;&apos;) delimiters are most common, expected from a <em>CSPROJ</em>
-    /// perspective. Also common are comma (&apos;,&apos;) and space (&apos; &apos;)
-    /// delimiters.
+    /// Gets the <see cref="Priority"/>, parsed and ready to go for Internal use. May yield
+    /// <c>null</c> when failing to <see cref="int.TryParse(string, out int)"/>.
     /// </summary>
-    /// <see cref="string.Split(char[], StringSplitOptions)"/>
-    protected internal static char[] ListDelims { get; } = GetValues(';', ',', ' ').ToArray();
-
-    /// <summary>
-    /// Set-only <see cref="Dependencies"/> property.
-    /// </summary>
-    private string DelimitedDependencies
-    {
-        set => Dependencies = (value ?? DefaultFeatureDependencies).Trim().Split(ListDelims, DefaultSplitOptions);
-    }
-
-    private string[] _dependencies = GetValues<string>().ToArray();
+    internal virtual int? InternalPriority
+        => !string.IsNullOrEmpty(Priority) && int.TryParse(Priority, out var result) ? result : null;
 
     /// <summary>
     /// Gets or sets an array of Feature Dependencies. Used to arrange drivers, handlers
@@ -260,67 +203,7 @@ public class FeatureAttribute : Attribute
     public virtual string[] Dependencies
     {
         get => _dependencies;
-        set => _dependencies = (value ?? GetValues<string>()).Select(_ => _.Trim()).ToArray();
-    }
-
-    protected internal const int DefaultPriority = 0;
-
-    /// <summary>
-    /// Gets or sets the feature priority without breaking the <see cref="Dependencies"/>
-    /// order. The higher is the priority, the later the drivers / handlers are invoked.
-    /// </summary>
-    /// <remarks>The default value is aligned with <see cref="DefaultPriority"/>, consistent
-    /// with the baseline, however, could be nullified, which would in turn favor the parent
-    /// <see cref="ModuleAttribute"/>.</remarks>
-    public virtual string Priority { get; set; } = $"{DefaultPriority}";
-
-    /// <summary>
-    /// Gets the <see cref="Priority"/>, parsed and ready to go for Internal use. May yield
-    /// <c>null</c> when failing to <see cref="int.TryParse(string, out int)"/>.
-    /// </summary>
-    internal virtual int? InternalPriority => int.TryParse(Priority, out var result) ? result : null;
-
-    /// <summary>
-    /// Prioritizes the Features starting with This one, concatenating
-    /// <paramref name="additionalFeatures"/>, and lifting the <see cref="InternalPriority"/>
-    /// from there. We prefer the first non Null Priority, default
-    /// <see cref="DefaultPriority"/>.
-    /// </summary>
-    /// <param name="additionalFeatures"></param>
-    /// <returns></returns>
-    internal virtual int Prioritize(params FeatureAttribute[] additionalFeatures)
-    {
-        var firstPriority = GetValues(this).Concat(additionalFeatures)
-            .Select(feature => feature.InternalPriority)
-            .FirstOrDefault(priority => priority.HasValue);
-        return firstPriority ?? DefaultPriority;
-    }
-
-    private string _category = DefaultCategory;
-
-    /// <summary>
-    /// Gets or sets the Category for use with the Module.
-    /// </summary>
-    public virtual string Category
-    {
-        get => _category;
-        set => _category = (value ?? DefaultCategory).Trim();
-    }
-
-    /// <summary>
-    /// Categorizes This <see cref="Category"/> using <paramref name="additionalFeatures"/> as
-    /// back stops, presents the <see cref="Category"/> that is not Null nor Empty, or returns
-    /// <see cref="DefaultCategory"/> by default.
-    /// </summary>
-    /// <param name="additionalFeatures">Additional Feature instances to use as potential back stops.</param>
-    /// <returns>The Category normalized across This instance and optional Module.</returns>
-    internal virtual string Categorize(params FeatureAttribute[] additionalFeatures)
-    {
-        static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
-        var categories = GetValues(this).Concat(additionalFeatures).Select(feature => feature.Category);
-        var category = categories.FirstOrDefault(IsNotNullOrEmpty);
-        // TODO: MWP: 'Uncategorized'? or is empty acceptable here?
-        return category ?? Uncategorized;
+        set => _dependencies = value?.Select(d => d.Trim()).ToArray() ?? [];
     }
 
     /// <summary>
@@ -337,4 +220,91 @@ public class FeatureAttribute : Attribute
     /// Set to <c>true</c> to make the feature available by dependency only.
     /// </summary>
     public virtual bool EnabledByDependencyOnly { get; set; }
+
+    /// <summary>
+    /// Describes the first or default Feature starting with This instance,
+    /// which defines a <see cref="Description"/>.
+    /// </summary>
+    /// <param name="additionalFeatures">Additional Features to consider in the aggregate.</param>
+    /// <returns>The first or default Description with optional back stop features.</returns>
+    internal virtual string Describe(params FeatureAttribute[] additionalFeatures)
+    {
+        if (!string.IsNullOrEmpty(Description))
+        {
+            return Description;
+        }
+
+        foreach (var feature in additionalFeatures)
+        {
+            if (!string.IsNullOrEmpty(feature?.Description))
+            {
+                return feature.Description;
+            }
+        }
+
+        return "";
+    }
+
+    /// <summary>
+    /// Categorizes This <see cref="Category"/> using <paramref name="additionalFeatures"/> as
+    /// back stops, presents the <see cref="Category"/> that is not Null nor Empty, or returns
+    /// "Uncategorized" by default.
+    /// </summary>
+    /// <param name="additionalFeatures">Additional Feature instances to use as potential back stops.</param>
+    /// <returns>The Category normalized across This instance and optional Module.</returns>
+    internal virtual string Categorize(params FeatureAttribute[] additionalFeatures)
+    {
+        if (!string.IsNullOrEmpty(Category))
+        {
+            return Category;
+        }
+
+        foreach (var feature in additionalFeatures)
+        {
+            if (!string.IsNullOrEmpty(feature?.Category))
+            {
+                return feature.Category;
+            }
+        }
+
+        return "Uncategorized";
+    }
+
+    /// <summary>
+    /// Prioritizes the Features starting with This one, concatenating
+    /// <paramref name="additionalFeatures"/>, and lifting the <see cref="InternalPriority"/>
+    /// from there. We prefer the first non Null Priority, default
+    /// 0.
+    /// </summary>
+    /// <param name="additionalFeatures"></param>
+    /// <returns></returns>
+    internal virtual int Prioritize(params FeatureAttribute[] additionalFeatures)
+    {
+        var priority = InternalPriority;
+        if (priority.HasValue)
+        {
+            return priority.Value;
+        }
+
+        foreach (var feature in additionalFeatures)
+        {
+            priority = feature?.InternalPriority;
+            if (priority.HasValue)
+            {
+                return priority.Value;
+            }
+        }
+
+        return 0;
+    }
+
+    private static string[] ParseDependencies(string dependencies)
+    {
+        if (string.IsNullOrWhiteSpace(dependencies))
+        {
+            return [];
+        }
+
+        return dependencies.Split(ListDelims, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+    }
 }

@@ -7,13 +7,11 @@ namespace OrchardCore.Modules.Manifest;
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
 public class ModuleAttribute : FeatureAttribute
 {
-    internal const string DefaultAuthor = "";
-
-    internal const string DefaultWebsiteUrl = "";
-
-    internal const string DefaultVersionZero = "0.0";
-
-    internal const string DefaultTags = "";
+    private string _type;
+    private string _author = "";
+    private string _website = "";
+    private string _version = "0.0";
+    private string[] _tags = [];
 
     /// <summary>
     /// Default parameterless ctor.
@@ -139,10 +137,10 @@ public class ModuleAttribute : FeatureAttribute
     /// <param name="description">A simple feature description.</param>
     /// <param name="author">The module author name.</param>
     /// <param name="semVer">Semantic Version string.</param>
+    /// <param name="websiteUrl">The module website URL.</param>
     /// <param name="featureDependencies">Zero or more delimited feature dependencies,
     /// corresponding to each of the feature <see cref="FeatureAttribute.Name"/>
     /// properties.</param>
-    /// <param name="websiteUrl">The module website URL.</param>
     /// <param name="tags">Tags associated with the Module.</param>
     /// <param name="defaultTenant">Whether considered default tenant only.
     /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
@@ -182,7 +180,7 @@ public class ModuleAttribute : FeatureAttribute
         Author = author;
         Website = websiteUrl;
         Version = semVer;
-        DelimitedTags = tags;
+        Tags = ParseTags(tags);
     }
 
     /// <summary>
@@ -198,10 +196,10 @@ public class ModuleAttribute : FeatureAttribute
     /// <param name="description">A simple feature description.</param>
     /// <param name="author">The module author name.</param>
     /// <param name="semVer">Semantic Version string.</param>
+    /// <param name="websiteUrl">The module website URL.</param>
     /// <param name="featureDependencies">Zero or more delimited feature dependencies,
     /// corresponding to each of the feature <see cref="FeatureAttribute.Name"/>
     /// properties.</param>
-    /// <param name="websiteUrl">The module website URL.</param>
     /// <param name="tags">Tags associated with the Module.</param>
     /// <param name="defaultTenant">Whether considered default tenant only.
     /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
@@ -267,8 +265,6 @@ public class ModuleAttribute : FeatureAttribute
         return GetTypeNamePrefix(attributeType.Name);
     }
 
-    private string _type;
-
     /// <summary>
     /// Gets or sets the Type. Allows authors to identify the attribute by a logical,
     /// human-readable Type. Defaults to the abbreviated <see cref="Attribute"/> class name,
@@ -280,52 +276,33 @@ public class ModuleAttribute : FeatureAttribute
         protected internal set => _type = value?.Trim();
     }
 
-    private string _author = DefaultAuthor;
-
     /// <summary>
     /// Gets or sets the name of the developer.
     /// </summary>
-    /// <see cref="DefaultAuthor" />
     public virtual string Author
     {
         get => _author;
-        set => _author = (value ?? DefaultAuthor).Trim();
+        set => _author = (value ?? "").Trim();
     }
-
-    private string _website = DefaultWebsiteUrl;
 
     /// <summary>
     /// Gets or sets the URL for the website of the developer.
     /// </summary>
-    /// <see cref="DefaultWebsiteUrl" />
     public virtual string Website
     {
         get => _website;
-        set => _website = (value ?? DefaultWebsiteUrl).Trim();
+        set => _website = (value ?? "").Trim();
     }
-
-    private string _version = DefaultVersionZero;
 
     /// <summary>
     /// Gets or sets the Semantic Version string.
     /// </summary>
     /// <see cref="!:https://semver.org">Semantic Versioning.</see>
-    /// <see cref="DefaultVersionZero" />
     public virtual string Version
     {
         get => _version;
-        set => _version = (value ?? DefaultVersionZero).Trim();
+        set => _version = (value ?? "0.0").Trim();
     }
-
-    /// <summary>
-    /// Set-only <see cref="Tags"/> property.
-    /// </summary>
-    private string DelimitedTags
-    {
-        set => Tags = (value ?? DefaultTags).Trim().Split(ListDelims, DefaultSplitOptions);
-    }
-
-    private string[] _tags = GetValues<string>().ToArray();
 
     /// <summary>
     /// Gets or sets an array of enumerated Tags.
@@ -333,11 +310,21 @@ public class ModuleAttribute : FeatureAttribute
     public virtual string[] Tags
     {
         get => _tags;
-        set => _tags = (value ?? GetValues<string>()).Select(_ => _.Trim()).ToArray();
+        set => _tags = value?.Select(t => t.Trim()).ToArray() ?? [];
     }
 
     /// <summary>
     /// Gets a list of Features attributes associated with the Module.
     /// </summary>
-    public virtual List<FeatureAttribute> Features { get; } = GetValues<FeatureAttribute>().ToList();
+    public virtual List<FeatureAttribute> Features { get; } = [];
+
+    private static string[] ParseTags(string tags)
+    {
+        if (string.IsNullOrWhiteSpace(tags))
+        {
+            return [];
+        }
+
+        return tags.Split(ListDelims, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+    }
 }
