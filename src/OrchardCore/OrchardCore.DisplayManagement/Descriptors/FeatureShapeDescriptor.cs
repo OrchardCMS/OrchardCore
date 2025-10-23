@@ -39,6 +39,7 @@ public sealed class ShapeDescriptorIndex : ShapeDescriptor
         List<Func<ShapeDisplayContext, Task>> displayingAsync = null;
         List<Func<ShapeDisplayContext, Task>> processingAsync = null;
         List<Func<ShapeDisplayContext, Task>> displayedAsync = null;
+        var bindingSources = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         // Pre-calculate as much as we can for performance reasons.
         foreach (var alterationDescriptor in alterations)
@@ -84,7 +85,12 @@ public sealed class ShapeDescriptorIndex : ShapeDescriptor
 
             foreach (var binding in alterationDescriptor.Bindings)
             {
-                Bindings[binding.Key] = binding.Value;
+                // Only add the first binding for each binding source. This ensures that only the
+                // first binding of a extension is used, and that overrides are not ignored.
+                if (bindingSources.Add(binding.Value.BindingSource))
+                {
+                    Bindings[binding.Key] = binding.Value;
+                } 
             }
         }
 

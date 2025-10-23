@@ -28,9 +28,11 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
         }
     }
 
-    private void EnsureDisplayHelper() => _displayHelper ??= Context.RequestServices.GetService<IDisplayHelper>();
+    private void EnsureDisplayHelper()
+        => _displayHelper ??= Context.RequestServices.GetService<IDisplayHelper>();
 
-    private void EnsureShapeFactory() => _shapeFactory ??= Context.RequestServices.GetService<IShapeFactory>();
+    private void EnsureShapeFactory()
+        => _shapeFactory ??= Context.RequestServices.GetService<IShapeFactory>();
 
     /// <summary>
     /// Gets a dynamic shape factory to create new shapes.
@@ -43,7 +45,8 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     /// (await New.MyShape()).A(1).B("Some text")
     /// </code>
     /// </example>
-    public dynamic New => Factory;
+    public dynamic New
+        => Factory;
 
     /// <summary>
     /// Gets an <see cref="IShapeFactory"/> to create new shapes.
@@ -53,6 +56,7 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
         get
         {
             EnsureShapeFactory();
+
             return _shapeFactory;
         }
     }
@@ -66,6 +70,7 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
         if (shape is IShape s)
         {
             EnsureDisplayHelper();
+
             return _displayHelper.ShapeExecuteAsync(s);
         }
 
@@ -89,6 +94,7 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     public Task<IHtmlContent> DisplayAsync(IShape shape)
     {
         EnsureDisplayHelper();
+
         return _displayHelper.ShapeExecuteAsync(shape);
     }
 
@@ -103,8 +109,11 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     public Task<IHtmlContent> DisplayAsAsync(IShape shape, string shapeType, bool? clearAlternates = null)
     {
         ArgumentNullException.ThrowIfNull(shape);
+        ArgumentException.ThrowIfNullOrEmpty(shapeType);
 
-        if (!clearAlternates.HasValue || clearAlternates.Value)
+        clearAlternates ??= true;
+
+        if (clearAlternates.Value)
         {
             shape.Metadata.Alternates.Clear();
         }
@@ -113,6 +122,7 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
         shape.Metadata.ChildContent = null;
 
         EnsureDisplayHelper();
+
         return _displayHelper.ShapeExecuteAsync(shape);
     }
 
@@ -176,7 +186,8 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
 
     private IPageTitleBuilder _pageTitleBuilder;
 
-    public IPageTitleBuilder Title => _pageTitleBuilder ??= Context.RequestServices.GetRequiredService<IPageTitleBuilder>();
+    public IPageTitleBuilder Title
+        => _pageTitleBuilder ??= Context.RequestServices.GetRequiredService<IPageTitleBuilder>();
 
     private IViewLocalizer _t;
 
@@ -207,6 +218,7 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     public IHtmlContent RenderTitleSegments(IHtmlContent segment, string position = "0", IHtmlContent separator = null)
     {
         Title.AddSegment(segment, position);
+
         return Title.GenerateTitle(separator);
     }
 
@@ -230,14 +242,16 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     /// <summary>
     /// Renders the content zone of the layout.
     /// </summary>
-    public IHtmlContent RenderLayoutBody() => base.RenderBody();
+    public IHtmlContent RenderLayoutBody()
+        => base.RenderBody();
 
     /// <summary>
     /// Creates a <see cref="TagBuilder"/> to render a shape.
     /// </summary>
     /// <param name="shape">The shape.</param>
     /// <returns>A new <see cref="TagBuilder"/>.</returns>
-    public static TagBuilder Tag(IShape shape) => shape.GetTagBuilder();
+    public static TagBuilder Tag(IShape shape)
+        => shape.GetTagBuilder();
 
     /// <summary>
     /// Creates a <see cref="TagBuilder"/> to render a shape.
@@ -245,13 +259,15 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     /// <param name="shape">The shape.</param>
     /// <param name="tag">The tag name to use.</param>
     /// <returns>A new <see cref="TagBuilder"/>.</returns>
-    public static TagBuilder Tag(IShape shape, string tag) => shape.GetTagBuilder(tag);
+    public static TagBuilder Tag(IShape shape, string tag)
+        => shape.GetTagBuilder(tag);
 
     /// <summary>
     /// In a Razor layout page, renders the portion of a content page that is not within a named zone.
     /// </summary>
     /// <returns>The HTML content to render.</returns>
-    public Task<IHtmlContent> RenderBodyAsync() => DisplayAsync(ThemeLayout.Zones["Content"]);
+    public Task<IHtmlContent> RenderBodyAsync()
+        => DisplayAsync(ThemeLayout.Zones["Content"]);
 
     /// <summary>
     /// Check if a zone is defined in the layout or it has items.
@@ -341,12 +357,14 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     /// <summary>
     /// Returns the full escaped path of the current request.
     /// </summary>
-    public string FullRequestPath => Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
+    public string FullRequestPath
+        => Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
 
     /// <summary>
     /// Gets the <see cref="ISite"/> instance.
     /// </summary>
-    public ISite Site => _site ??= Context.Features.Get<RazorViewFeature>()?.Site;
+    public ISite Site
+        => _site ??= Context.Features.Get<RazorViewFeature>()?.Site;
 }
 
 public abstract class RazorPage : RazorPage<dynamic>;
