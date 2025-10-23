@@ -90,7 +90,7 @@ public sealed class ShapeDescriptorIndex : ShapeDescriptor
                 if (bindingSources.Add(binding.Value.BindingSource))
                 {
                     Bindings[binding.Key] = binding.Value;
-                } 
+                }
             }
         }
 
