@@ -4,6 +4,8 @@ namespace OrchardCore.Security.Core;
 
 public sealed class SecurityOptions
 {
+    public Dictionary<string, SecurityProvider> SecurityProviders { get; } = new(StringComparer.OrdinalIgnoreCase);
+
     public IReadOnlyDictionary<string, CredentialOptionsEntry> CredentialProviders
         => _credentialProviders;
 

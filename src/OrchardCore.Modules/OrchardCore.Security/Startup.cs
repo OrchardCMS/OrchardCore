@@ -52,6 +52,7 @@ public sealed class CredentialsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddTransient<IConfigureOptions<SecurityOptions>, SecurityOptionsConfiguration>();
         services.AddDisplayDriver<Credential, CredentialDisplayDriver>();
         services.AddScoped<ICatalogEntryHandler<Credential>, CredentialHandler>();
         services.AddNavigationProvider<CredentialsAdminMenu>();
