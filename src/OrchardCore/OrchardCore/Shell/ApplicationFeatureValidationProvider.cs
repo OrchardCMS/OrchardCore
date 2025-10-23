@@ -1,16 +1,22 @@
+using Microsoft.Extensions.Hosting;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell;
 
 /// <summary>
-/// Hides the application feature from non-default tenants.
+/// An implementation of <see cref="IFeatureValidationProvider"/> that hides
+/// the application features from non-default tenants.
 /// </summary>
 internal sealed class ApplicationFeatureValidationProvider : IFeatureValidationProvider
 {
+    private readonly IHostEnvironment _environment;
     private readonly ShellSettings _shellSettings;
 
-    public ApplicationFeatureValidationProvider(ShellSettings shellSettings)
+    public ApplicationFeatureValidationProvider(
+        IHostEnvironment environment,
+        ShellSettings shellSettings)
     {
+        _environment = environment;
         _shellSettings = shellSettings;
     }
 
@@ -21,6 +27,8 @@ internal sealed class ApplicationFeatureValidationProvider : IFeatureValidationP
             return ValueTask.FromResult(true);
         }
 
-        return ValueTask.FromResult(!string.Equals(Application.DefaultFeatureId, id, StringComparison.OrdinalIgnoreCase));
+        return ValueTask.FromResult(
+            !string.Equals(_environment.ApplicationName, id, StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(Application.DefaultFeatureId, id, StringComparison.OrdinalIgnoreCase));
     }
 }

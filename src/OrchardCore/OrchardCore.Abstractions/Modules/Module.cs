@@ -60,7 +60,7 @@ public class Module
                     Application.ModulePriority,
                     Application.ModuleDescription,
                     null,
-                    false,
+                    default,
                     default,
                     default
                 ));
@@ -73,7 +73,7 @@ public class Module
                     Application.ModulePriority,
                     Application.DefaultFeatureDescription,
                     null,
-                    false,
+                    default,
                     default,
                     default
                 ));
