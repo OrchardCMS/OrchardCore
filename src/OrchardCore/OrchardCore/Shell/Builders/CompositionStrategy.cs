@@ -72,16 +72,19 @@ public class CompositionStrategy : ICompositionStrategy
         {
             _logger.LogDebug("Done composing blueprint");
 
-            foreach (var feature in descriptor.Features)
+            if (_logger.IsEnabled(LogLevel.Trace))
             {
-                _logger.LogDebug("Feature '{FeatureName}' is enabled", feature.Id);
-            }
+                _logger.LogTrace("Shell blueprint for tenant '{TenantName}' contains {TypeCount} type(s)", settings.Name, entries.Count);
 
-            _logger.LogDebug("Shell Blueprint for tenant '{TenantName}' contains {TypeCount} types", settings.Name, entries.Count);
+                foreach (var entry in entries)
+                {
+                    _logger.LogTrace("Type '{TypeName}' is provided by feature(s): {FeatureNames}", entry.Key.FullName, string.Join(", ", entry.Value.Select(f => f.Id)));
+                }
 
-            foreach (var entry in entries)
-            {
-                _logger.LogDebug("Type '{TypeName}' is required by feature(s): {FeatureNames}", entry.Key.FullName, string.Join(',', entry.Value.Select(f => f.Id)));
+                foreach (var feature in entries.Values.SelectMany(f => f).Select(f => f.Id).Distinct().OrderBy(f => f))
+                {
+                    _logger.LogTrace("Enabled feature: '{FeatureId}'", feature);
+                }
             }
         }
 
