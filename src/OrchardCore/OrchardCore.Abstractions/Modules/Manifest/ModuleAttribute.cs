@@ -2,8 +2,13 @@ namespace OrchardCore.Modules.Manifest;
 
 /// <summary>
 /// Defines a Module which is composed of features. If the Module has only one default
-/// feature, it may be defined there.
+/// feature, it may be defined using this attribute.
 /// </summary>
+/// <remarks>
+/// This attribute should be applied to an assembly to define module metadata including
+/// author, version, website, tags, and other properties. It extends <see cref="FeatureAttribute"/>
+/// to provide module-specific functionality while maintaining feature semantics.
+/// </remarks>
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
 public class ModuleAttribute : FeatureAttribute
 {
@@ -14,34 +19,25 @@ public class ModuleAttribute : FeatureAttribute
     private string[] _tags = [];
 
     /// <summary>
-    /// Default parameterless ctor.
+    /// Initializes a new instance of the <see cref="ModuleAttribute"/> class with default values.
     /// </summary>
     public ModuleAttribute() : base()
     {
     }
 
     /// <summary>
-    /// Ctor allowing <paramref name="author"/>, as well as defaults for
-    /// <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+    /// Initializes a new instance of the <see cref="ModuleAttribute"/> class with the specified parameters.
     /// </summary>
-    /// <param name="id">The identifier for the Module.</param>
-    /// <param name="description">A simple feature description.</param>
-    /// <param name="author">The module author name.</param>
-    /// <param name="semVer">Semantic Version string.</param>
-    /// <param name="websiteUrl">The module website URL.</param>
-    /// <param name="featureDependencies">Zero or more delimited feature dependencies,
-    /// corresponding to each of the feature <see cref="FeatureAttribute.Name"/>
-    /// properties.</param>
-    /// <param name="tags">Tags associated with the Module.</param>
-    /// <param name="defaultTenant">Whether considered default tenant only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <param name="alwaysEnabled">Whether feature is always enabled.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <see cref="!:https://semver.org">Semantic Versioning.</see>
-    /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
-    /// parameterless ctor.</remarks>
-    /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+    /// <param name="id">The unique identifier for the module.</param>
+    /// <param name="description">A brief description of what the module does.</param>
+    /// <param name="author">The name of the module author or organization.</param>
+    /// <param name="semVer">The semantic version string (e.g., "1.0.0"). See <see href="https://semver.org">Semantic Versioning</see>.</param>
+    /// <param name="websiteUrl">The URL of the module's website or repository.</param>
+    /// <param name="featureDependencies">A delimited string of feature dependencies (feature IDs).</param>
+    /// <param name="tags">A delimited string of tags for categorizing the module.</param>
+    /// <param name="defaultTenant">A value indicating whether the module is only available to the default tenant. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="alwaysEnabled">A value indicating whether the module is always enabled and cannot be disabled. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="enabledByDependencyOnly">A value indicating whether the module can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public ModuleAttribute(
         string id,
         string description,
@@ -72,29 +68,19 @@ public class ModuleAttribute : FeatureAttribute
     }
 
     /// <summary>
-    /// Ctor allowing <paramref name="author"/>, as well as defaults for
-    /// <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+    /// Initializes a new instance of the <see cref="ModuleAttribute"/> class with the specified parameters.
     /// </summary>
-    /// <param name="id">The identifier for the Module.</param>
-    /// <param name="name">The feature name, defaults to <see cref="FeatureAttribute.Id"/>
-    /// when null or blank.</param>
-    /// <param name="description">A simple feature description.</param>
-    /// <param name="author">The module author name.</param>
-    /// <param name="semVer">Semantic Version string.</param>
-    /// <param name="websiteUrl">The module website URL.</param>
-    /// <param name="featureDependencies">Zero or more delimited feature dependencies,
-    /// corresponding to each of the feature <see cref="FeatureAttribute.Name"/>
-    /// properties.</param>
-    /// <param name="tags">Tags associated with the Module.</param>
-    /// <param name="defaultTenant">Whether considered default tenant only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <param name="alwaysEnabled">Whether feature is always enabled.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <see cref="!:https://semver.org">Semantic Versioning.</see>
-    /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
-    /// parameterless ctor.</remarks>
-    /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+    /// <param name="id">The unique identifier for the module.</param>
+    /// <param name="name">The human-readable module name. Defaults to <paramref name="id"/> when null or blank.</param>
+    /// <param name="description">A brief description of what the module does.</param>
+    /// <param name="author">The name of the module author or organization.</param>
+    /// <param name="semVer">The semantic version string (e.g., "1.0.0"). See <see href="https://semver.org">Semantic Versioning</see>.</param>
+    /// <param name="websiteUrl">The URL of the module's website or repository.</param>
+    /// <param name="featureDependencies">A delimited string of feature dependencies (feature IDs).</param>
+    /// <param name="tags">A delimited string of tags for categorizing the module.</param>
+    /// <param name="defaultTenant">A value indicating whether the module is only available to the default tenant. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="alwaysEnabled">A value indicating whether the module is always enabled and cannot be disabled. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="enabledByDependencyOnly">A value indicating whether the module can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public ModuleAttribute(
         string id,
         string name,
@@ -126,31 +112,21 @@ public class ModuleAttribute : FeatureAttribute
     }
 
     /// <summary>
-    /// Ctor allowing <paramref name="author"/>, as well as defaults for
-    /// <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+    /// Initializes a new instance of the <see cref="ModuleAttribute"/> class with the specified parameters.
     /// </summary>
-    /// <param name="id">The identifier for the Module.</param>
-    /// <param name="name">The feature name, defaults to <see cref="FeatureAttribute.Id"/>
-    /// when null or blank.</param>
-    /// <param name="category">A simple feature category.</param>
-    /// <param name="priority">Priority for the Module.</param>
-    /// <param name="description">A simple feature description.</param>
-    /// <param name="author">The module author name.</param>
-    /// <param name="semVer">Semantic Version string.</param>
-    /// <param name="websiteUrl">The module website URL.</param>
-    /// <param name="featureDependencies">Zero or more delimited feature dependencies,
-    /// corresponding to each of the feature <see cref="FeatureAttribute.Name"/>
-    /// properties.</param>
-    /// <param name="tags">Tags associated with the Module.</param>
-    /// <param name="defaultTenant">Whether considered default tenant only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <param name="alwaysEnabled">Whether feature is always enabled.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <see cref="!:https://semver.org">Semantic Versioning.</see>
-    /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
-    /// parameterless ctor.</remarks>
-    /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+    /// <param name="id">The unique identifier for the module.</param>
+    /// <param name="name">The human-readable module name. Defaults to <paramref name="id"/> when null or blank.</param>
+    /// <param name="category">The category used for grouping the module in the UI.</param>
+    /// <param name="priority">The module priority as a string. Higher priority modules have their drivers/handlers invoked later.</param>
+    /// <param name="description">A brief description of what the module does.</param>
+    /// <param name="author">The name of the module author or organization.</param>
+    /// <param name="semVer">The semantic version string (e.g., "1.0.0"). See <see href="https://semver.org">Semantic Versioning</see>.</param>
+    /// <param name="websiteUrl">The URL of the module's website or repository.</param>
+    /// <param name="featureDependencies">A delimited string of feature dependencies (feature IDs).</param>
+    /// <param name="tags">A delimited string of tags for categorizing the module.</param>
+    /// <param name="defaultTenant">A value indicating whether the module is only available to the default tenant. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="alwaysEnabled">A value indicating whether the module is always enabled and cannot be disabled. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="enabledByDependencyOnly">A value indicating whether the module can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public ModuleAttribute(
         string id,
         string name,
@@ -180,36 +156,26 @@ public class ModuleAttribute : FeatureAttribute
         Author = author;
         Website = websiteUrl;
         Version = semVer;
-        Tags = ParseTags(tags);
+        _tags = ParseTags(tags);
     }
 
     /// <summary>
-    /// Ctor allowing <paramref name="author"/>, as well as defaults for
-    /// <paramref name="websiteUrl"/>, <paramref name="semVer"/>, and <paramref name="tags"/>.
+    /// Initializes a new instance of the <see cref="ModuleAttribute"/> class with the specified parameters, including a custom module type.
     /// </summary>
-    /// <param name="id">The identifier for the Module.</param>
-    /// <param name="name">The feature name, defaults to <see cref="FeatureAttribute.Id"/>
-    /// when null or blank.</param>
-    /// <param name="type">User provided type of the Module.</param>
-    /// <param name="category">A simple feature category.</param>
-    /// <param name="priority">Priority for the Module.</param>
-    /// <param name="description">A simple feature description.</param>
-    /// <param name="author">The module author name.</param>
-    /// <param name="semVer">Semantic Version string.</param>
-    /// <param name="websiteUrl">The module website URL.</param>
-    /// <param name="featureDependencies">Zero or more delimited feature dependencies,
-    /// corresponding to each of the feature <see cref="FeatureAttribute.Name"/>
-    /// properties.</param>
-    /// <param name="tags">Tags associated with the Module.</param>
-    /// <param name="defaultTenant">Whether considered default tenant only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <param name="alwaysEnabled">Whether feature is always enabled.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <see cref="!:https://semver.org">Semantic Versioning.</see>
-    /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
-    /// parameterless ctor.</remarks>
-    /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+    /// <param name="id">The unique identifier for the module.</param>
+    /// <param name="name">The human-readable module name. Defaults to <paramref name="id"/> when null or blank.</param>
+    /// <param name="type">A user-defined type identifier for the module. If not provided, defaults to the attribute class name without the "Attribute" suffix.</param>
+    /// <param name="category">The category used for grouping the module in the UI.</param>
+    /// <param name="priority">The module priority as a string. Higher priority modules have their drivers/handlers invoked later.</param>
+    /// <param name="description">A brief description of what the module does.</param>
+    /// <param name="author">The name of the module author or organization.</param>
+    /// <param name="semVer">The semantic version string (e.g., "1.0.0"). See <see href="https://semver.org">Semantic Versioning</see>.</param>
+    /// <param name="websiteUrl">The URL of the module's website or repository.</param>
+    /// <param name="featureDependencies">A delimited string of feature dependencies (feature IDs).</param>
+    /// <param name="tags">A delimited string of tags for categorizing the module.</param>
+    /// <param name="defaultTenant">A value indicating whether the module is only available to the default tenant. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="alwaysEnabled">A value indicating whether the module is always enabled and cannot be disabled. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="enabledByDependencyOnly">A value indicating whether the module can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public ModuleAttribute(
         string id,
         string name,
@@ -246,11 +212,14 @@ public class ModuleAttribute : FeatureAttribute
     }
 
     /// <summary>
-    /// Returns the <see cref="System.Reflection.MemberInfo.Name"/> less the
-    /// <see cref="Attribute"/> suffix when present.
+    /// Returns the attribute name without the "Attribute" suffix.
     /// </summary>
-    /// <param name="attributeType"></param>
-    /// <returns></returns>
+    /// <param name="attributeType">The attribute type to extract the prefix from.</param>
+    /// <returns>The type name with the "Attribute" suffix removed if present; otherwise, the original type name.</returns>
+    /// <remarks>
+    /// This method is used to derive the default <see cref="Type"/> value for modules.
+    /// For example, "ModuleAttribute" becomes "Module".
+    /// </remarks>
     protected internal static string GetAttributePrefix(Type attributeType)
     {
         const string attributeSuffix = nameof(Attribute);
@@ -264,10 +233,15 @@ public class ModuleAttribute : FeatureAttribute
     }
 
     /// <summary>
-    /// Gets or sets the Type. Allows authors to identify the attribute by a logical,
-    /// human-readable Type. Defaults to the abbreviated <see cref="Attribute"/> class name,
-    /// sans suffix.
+    /// Gets or sets the module type identifier.
     /// </summary>
+    /// <value>
+    /// A user-defined type that identifies the module by a logical, human-readable name.
+    /// If not set, defaults to the attribute class name without the "Attribute" suffix.
+    /// </value>
+    /// <remarks>
+    /// This allows module authors to categorize modules by custom types beyond the default classification.
+    /// </remarks>
     public virtual string Type
     {
         get => _type ??= GetAttributePrefix(GetType());
@@ -275,8 +249,10 @@ public class ModuleAttribute : FeatureAttribute
     }
 
     /// <summary>
-    /// Gets or sets the name of the developer.
+    /// Gets or sets the name of the module author or organization.
     /// </summary>
+    /// <value>The author name, or an empty string if not set.</value>
+    /// <remarks>Values are trimmed when set. Null values are converted to empty strings.</remarks>
     public virtual string Author
     {
         get => _author;
@@ -284,8 +260,10 @@ public class ModuleAttribute : FeatureAttribute
     }
 
     /// <summary>
-    /// Gets or sets the URL for the website of the developer.
+    /// Gets or sets the URL for the module's website or repository.
     /// </summary>
+    /// <value>The website URL, or an empty string if not set.</value>
+    /// <remarks>Values are trimmed when set. Null values are converted to empty strings.</remarks>
     public virtual string Website
     {
         get => _website;
@@ -293,9 +271,13 @@ public class ModuleAttribute : FeatureAttribute
     }
 
     /// <summary>
-    /// Gets or sets the Semantic Version string.
+    /// Gets or sets the semantic version string for the module.
     /// </summary>
-    /// <see cref="!:https://semver.org">Semantic Versioning.</see>
+    /// <value>The version string following semantic versioning conventions, or "0.0" if not set.</value>
+    /// <remarks>
+    /// Values are trimmed when set. Null values are converted to "0.0".
+    /// See <see href="https://semver.org">Semantic Versioning</see> for version format details.
+    /// </remarks>
     public virtual string Version
     {
         get => _version;
@@ -303,8 +285,13 @@ public class ModuleAttribute : FeatureAttribute
     }
 
     /// <summary>
-    /// Gets or sets an array of enumerated Tags.
+    /// Gets or sets an array of tags associated with the module.
     /// </summary>
+    /// <value>An array of tag strings, or an empty array if not set.</value>
+    /// <remarks>
+    /// Tags are used for categorization and discovery of modules.
+    /// Values are trimmed when set. Null values are converted to empty arrays.
+    /// </remarks>
     public virtual string[] Tags
     {
         get => _tags;
@@ -312,10 +299,24 @@ public class ModuleAttribute : FeatureAttribute
     }
 
     /// <summary>
-    /// Gets a list of Features attributes associated with the Module.
+    /// Gets a list of feature attributes associated with this module.
     /// </summary>
+    /// <value>A list of <see cref="FeatureAttribute"/> instances defining the module's features.</value>
+    /// <remarks>
+    /// This collection is populated when multiple features are defined for a single module.
+    /// Each feature can be independently enabled or disabled.
+    /// </remarks>
     public virtual List<FeatureAttribute> Features { get; } = [];
 
+    /// <summary>
+    /// Parses a delimited string of tags into an array of trimmed tag strings.
+    /// </summary>
+    /// <param name="tags">A string containing delimited tags.</param>
+    /// <returns>An array of tag strings, or an empty array if the input is null or whitespace.</returns>
+    /// <remarks>
+    /// Supported delimiters are semicolon (;), comma (,), and space ( ).
+    /// Empty entries are removed and all values are trimmed.
+    /// </remarks>
     private static string[] ParseTags(string tags)
     {
         if (string.IsNullOrWhiteSpace(tags))
