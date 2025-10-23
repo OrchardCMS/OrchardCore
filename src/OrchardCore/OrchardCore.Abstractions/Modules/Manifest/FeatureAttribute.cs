@@ -12,13 +12,11 @@ public class FeatureAttribute : Attribute
     private string _category = "";
     private string[] _dependencies = [];
 
-    /// <summary>
-    /// Gets the default known ListDelims supporting <see cref="Dependencies"/> splits, etc.
-    /// Semi-colon (&apos;;&apos;) delimiters are most common, expected from a <em>CSPROJ</em>
-    /// perspective. Also common are comma (&apos;,&apos;) and space (&apos; &apos;)
-    /// delimiters.
-    /// </summary>
-    protected internal static char[] ListDelims { get; } = [';', ',', ' '];
+    // Gets the default known ListDelimiters supporting Dependencies splits, etc.
+    // Semi-colon ';' delimiters are most common, expected from a CSPROJ
+    // perspective. Also common are comma ',' and space ' '
+    // delimiters.
+    protected internal static readonly char[] ListDelimiters = [';', ',', ' '];
 
     /// <summary>
     /// Default parameterless ctor.
@@ -149,10 +147,8 @@ public class FeatureAttribute : Attribute
         get => _id;
         set
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new InvalidOperationException($"'{nameof(Id)}' cannot be null or empty.");
-            }
+            ArgumentException.ThrowIfNullOrEmpty(value);
+
             _id = value;
         }
     }
@@ -178,23 +174,24 @@ public class FeatureAttribute : Attribute
     public virtual string Category
     {
         get => _category;
-        set => _category = (value ?? "").Trim();
+        set => _category = value?.Trim() ?? "";
     }
 
     /// <summary>
     /// Gets or sets the feature priority without breaking the <see cref="Dependencies"/>
     /// order. The higher is the priority, the later the drivers / handlers are invoked.
     /// </summary>
-    /// <remarks>The default value is 0, consistent with the baseline, however, could
-    /// be nullified, which would in turn favor the parent <see cref="ModuleAttribute"/>.</remarks>
+    /// <remarks>
+    /// The default value is 0, consistent with the baseline, however, could
+    /// be nullified, which would in turn favor the parent <see cref="ModuleAttribute"/>.
+    /// </remarks>
     public virtual string Priority { get; set; } = "0";
 
     /// <summary>
     /// Gets the <see cref="Priority"/>, parsed and ready to go for Internal use. May yield
     /// <c>null</c> when failing to <see cref="int.TryParse(string, out int)"/>.
     /// </summary>
-    internal virtual int? InternalPriority
-        => !string.IsNullOrEmpty(Priority) && int.TryParse(Priority, out var result) ? result : null;
+    internal int? InternalPriority => int.TryParse(Priority, out var result) ? result : null;
 
     /// <summary>
     /// Gets or sets an array of Feature Dependencies. Used to arrange drivers, handlers
@@ -227,7 +224,7 @@ public class FeatureAttribute : Attribute
     /// </summary>
     /// <param name="additionalFeatures">Additional Features to consider in the aggregate.</param>
     /// <returns>The first or default Description with optional back stop features.</returns>
-    internal virtual string Describe(params FeatureAttribute[] additionalFeatures)
+    internal string Describe(params FeatureAttribute[] additionalFeatures)
     {
         if (!string.IsNullOrEmpty(Description))
         {
@@ -252,7 +249,7 @@ public class FeatureAttribute : Attribute
     /// </summary>
     /// <param name="additionalFeatures">Additional Feature instances to use as potential back stops.</param>
     /// <returns>The Category normalized across This instance and optional Module.</returns>
-    internal virtual string Categorize(params FeatureAttribute[] additionalFeatures)
+    internal string Categorize(params FeatureAttribute[] additionalFeatures)
     {
         if (!string.IsNullOrEmpty(Category))
         {
@@ -278,7 +275,7 @@ public class FeatureAttribute : Attribute
     /// </summary>
     /// <param name="additionalFeatures"></param>
     /// <returns></returns>
-    internal virtual int Prioritize(params FeatureAttribute[] additionalFeatures)
+    internal int Prioritize(params FeatureAttribute[] additionalFeatures)
     {
         var priority = InternalPriority;
         if (priority.HasValue)
@@ -305,6 +302,6 @@ public class FeatureAttribute : Attribute
             return [];
         }
 
-        return dependencies.Split(ListDelims, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        return dependencies.Split(ListDelimiters, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 }

@@ -26,11 +26,6 @@ public abstract class FeatureAttributeTests<TAttribute>
     protected virtual ITestOutputHelper OutputHelper { get; }
 
     /// <summary>
-    /// Gets the <see cref="FeatureAttribute.ListDelims"/>.
-    /// </summary>
-    protected static IEnumerable<char> ListDelims => FeatureAttribute.ListDelims;
-
-    /// <summary>
     /// Returns a <paramref name="count"/> of Lorem Ipsum Words.
     /// </summary>
     /// <param name="count"></param>
