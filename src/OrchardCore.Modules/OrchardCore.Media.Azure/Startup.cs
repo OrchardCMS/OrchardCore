@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
@@ -92,12 +93,13 @@ public sealed class Startup : Modules.StartupBase
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var clock = serviceProvider.GetRequiredService<IClock>();
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<AzureOptions>>();
                 var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
-                var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
+                var fileStore = new BlobFileStore(blobStorageOptions, clock, optionsMonitor, contentTypeProvider);
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext

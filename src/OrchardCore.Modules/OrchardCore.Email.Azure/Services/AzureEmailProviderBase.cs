@@ -3,6 +3,8 @@ using Azure;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Email.Azure.Models;
 
 namespace OrchardCore.Email.Azure.Services;
@@ -79,6 +81,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
     };
 
     private readonly AzureEmailOptions _providerOptions;
+    private readonly IOptionsMonitor<AzureOptions> _optionsMonitor;
     private readonly ILogger _logger;
 
     private EmailClient _emailClient;
@@ -87,10 +90,12 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
     public AzureEmailProviderBase(
         AzureEmailOptions options,
+        IOptionsMonitor<AzureOptions> optionsMonitor,
         ILogger logger,
         IStringLocalizer stringLocalizer)
     {
         _providerOptions = options;
+        _optionsMonitor = optionsMonitor;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -135,7 +140,28 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         try
         {
-            _emailClient ??= new EmailClient(_providerOptions.ConnectionString);
+            if (_emailClient is null)
+            {
+                if (!string.IsNullOrEmpty(_providerOptions.ConnectionString))
+                {
+                    _emailClient = new EmailClient(_providerOptions.ConnectionString);
+                }
+                else if (_providerOptions.Endpoint is not null)
+                {
+                    var azureOptions = _optionsMonitor.Get(_providerOptions.CredentialName ?? AzureOptions.DefaultName);
+
+                    if (azureOptions is null)
+                    {
+                        return EmailResult.FailedResult(string.Empty, S["Unsupported Authentication Type. The Azure Email Provider is not configured correctly."]);
+                    }
+
+                    _emailClient = new EmailClient(_providerOptions.Endpoint, azureOptions.ToTokenCredential());
+                }
+                else
+                {
+                    return EmailResult.FailedResult(string.Empty, S["The Azure Email Provider is not configured correctly."]);
+                }
+            }
 
             var emailResult = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage);
 

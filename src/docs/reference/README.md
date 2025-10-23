@@ -43,6 +43,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
   - [Ticket store](modules/Users/TicketStore.md)
 - [OpenId](modules/OpenId/README.md)
 - [Roles](modules/Roles/README.md)
+- [Azure](modules/Azure/README.md)
 
 ### Content
 
@@ -121,6 +122,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [SMTP Provider](modules/Email.Smtp/README.md)
 - [Azure Email Provider](modules/Email.Azure/README.md)
 - [Redis](modules/Redis/README.md)
+- [Redis Azure](modules/Redis.Azure/README.md)
 - [Deployment](modules/Deployment/README.md)
 - [Diagnostics](modules/Diagnostics/README.md)
 - [Remote Deployment](modules/Deployment.Remote/README.md)

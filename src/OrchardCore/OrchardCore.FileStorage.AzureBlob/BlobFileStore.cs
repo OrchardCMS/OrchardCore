@@ -3,6 +3,8 @@ using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Modules;
 
 namespace OrchardCore.FileStorage.AzureBlob;
@@ -37,20 +39,23 @@ public class BlobFileStore : IFileStore
 
     private readonly BlobStorageOptions _options;
     private readonly IClock _clock;
-    private readonly BlobContainerClient _blobContainer;
+    private readonly IOptionsMonitor<AzureOptions> _optionsMonitor;
     private readonly IContentTypeProvider _contentTypeProvider;
-
     private readonly string _basePrefix;
+
+    private BlobContainerClient _blobContainer;
 
     public BlobFileStore(
         BlobStorageOptions options,
         IClock clock,
+        IOptionsMonitor<AzureOptions> optionsMonitor,
         IContentTypeProvider contentTypeProvider)
     {
         _options = options;
         _clock = clock;
+        _optionsMonitor = optionsMonitor;
         _contentTypeProvider = contentTypeProvider;
-        _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+
 
         if (!string.IsNullOrEmpty(_options.BasePath))
         {
@@ -127,7 +132,7 @@ public class BlobFileStore : IFileStore
         var prefix = this.Combine(_basePrefix, path);
         prefix = NormalizePrefix(prefix);
 
-        var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
+        var page = GetBlobContainer().GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
 
         await foreach (var blob in page)
         {
@@ -164,7 +169,7 @@ public class BlobFileStore : IFileStore
         var prefix = this.Combine(_basePrefix, path);
         prefix = NormalizePrefix(prefix);
 
-        var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
+        var page = GetBlobContainer().GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
         await foreach (var blob in page)
         {
             var name = WebUtility.UrlDecode(blob.Name);
@@ -261,10 +266,10 @@ public class BlobFileStore : IFileStore
             var prefix = this.Combine(_basePrefix, path);
             prefix = NormalizePrefix(prefix);
 
-            var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
+            var page = GetBlobContainer().GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
             await foreach (var blob in page)
             {
-                var blobReference = _blobContainer.GetBlobClient(blob.Name);
+                var blobReference = GetBlobContainer().GetBlobClient(blob.Name);
                 await blobReference.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
                 blobsWereDeleted = true;
             }
@@ -409,7 +414,7 @@ public class BlobFileStore : IFileStore
     private BlobClient GetBlobReference(string path)
     {
         var blobPath = this.Combine(_options.BasePath, path);
-        var blob = _blobContainer.GetBlobClient(blobPath);
+        var blob = GetBlobContainer().GetBlobClient(blobPath);
 
         return blob;
     }
@@ -420,7 +425,7 @@ public class BlobFileStore : IFileStore
         prefix = NormalizePrefix(prefix);
 
         // Directory exists if path contains any files.
-        var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
+        var page = GetBlobContainer().GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
 
         var enumerator = page.GetAsyncEnumerator();
 
@@ -457,5 +462,33 @@ public class BlobFileStore : IFileStore
         {
             return prefix;
         }
+    }
+
+    private BlobContainerClient GetBlobContainer()
+    {
+        if (_blobContainer is null)
+        {
+            if (!string.IsNullOrEmpty(_options.CredentialName))
+            {
+                var credential = _optionsMonitor.Get(_options.CredentialName ?? AzureOptions.DefaultName).ToTokenCredential();
+
+                if (credential is null)
+                {
+                    throw new InvalidOperationException($"Azure credential '{_options.CredentialName}' is not configured properly. Please check the authentication settings.");
+                }
+
+                _blobContainer = new BlobContainerClient(_options.StorageAccountUri, credential);
+            }
+            else if (!string.IsNullOrEmpty(_options.ConnectionString))
+            {
+                _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+            }
+            else
+            {
+                throw new InvalidOperationException("BlobFileStore is not configured properly. Please check the ConnectionString or CredentialName settings.");
+            }
+        }
+
+        return _blobContainer;
     }
 }
