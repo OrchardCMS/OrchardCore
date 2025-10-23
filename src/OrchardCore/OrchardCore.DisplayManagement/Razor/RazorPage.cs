@@ -112,8 +112,8 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
         ArgumentException.ThrowIfNullOrEmpty(shapeType);
 
         clearAlternates ??= true;
-        
-        if (clearAlternates)
+
+        if (clearAlternates.Value)
         {
             shape.Metadata.Alternates.Clear();
         }
