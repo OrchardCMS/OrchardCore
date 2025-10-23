@@ -37,6 +37,8 @@ public class ShapeDescriptorIndex : ShapeDescriptor
 
         ShapeType = shapeType;
 
+        var bindingSources = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         // Pre-calculate as much as we can for performance reasons.
         foreach (var alterationKey in alterationKeys)
         {
@@ -56,7 +58,12 @@ public class ShapeDescriptorIndex : ShapeDescriptor
 
             foreach (var binding in alternationDescriptor.Bindings)
             {
-                _bindings[binding.Key] = binding.Value;
+                // Only add the first binding for each binding source. This ensures that only the
+                // first binding of a extension is used, and that overrides are not ignored.
+                if (bindingSources.Add(binding.Value.BindingSource))
+                {
+                    _bindings[binding.Key] = binding.Value;
+                }
             }
         }
     }
