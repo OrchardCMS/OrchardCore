@@ -19,6 +19,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore;
+using OrchardCore.Catalogs;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -102,6 +103,7 @@ public static class ServiceCollectionExtensions
             AddSameSiteCookieBackwardsCompatibility(builder);
             AddAuthentication(builder);
             AddDataProtection(builder);
+            AddCatalogServices(builder);
 
             // Register the list of services to be resolved later on
             services.AddSingleton(services);
@@ -121,6 +123,14 @@ public static class ServiceCollectionExtensions
         configure?.Invoke(builder);
 
         return services;
+    }
+
+    private static void AddCatalogServices(OrchardCoreBuilder builder)
+    {
+        var services = builder.ApplicationServices;
+
+        services.AddCatalogs();
+        services.AddCatalogManagers();
     }
 
     private static void AddDefaultServices(OrchardCoreBuilder builder)

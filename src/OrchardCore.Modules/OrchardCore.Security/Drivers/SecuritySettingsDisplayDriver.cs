@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Security.Core;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Settings;
 using OrchardCore.Security.ViewModels;
@@ -49,7 +50,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SecurityConstants.Permissions.ManageSecurityHeadersSettings))
         {
             return null;
         }
@@ -96,7 +97,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SecurityConstants.Permissions.ManageSecurityHeadersSettings))
         {
             return null;
         }

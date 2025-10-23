@@ -1,5 +1,6 @@
 using Azure;
 using Azure.Search.Documents.Indexes.Models;
+using OrchardCore.Azure.Core;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Search.AzureAI.Models;
@@ -106,10 +107,15 @@ public class AzureAISearchDefaultOptions : ISearchProviderOptions
 
     public string Endpoint { get; set; }
 
-    public AzureAIAuthenticationType AuthenticationType { get; set; }
+    public AzureAuthenticationType AuthenticationType { get; set; }
 
     public bool DisableUIConfiguration { get; set; }
 
+    public string CredentialName { get; set; }
+
+    public string ApiKey { get; set; }
+
+    [Obsolete("This property is no longer used and will be removed in future releases. Instead set the ApiKey property in the OrchardCore_AzureAISearch settings.")]
     public AzureKeyCredential Credential { get; set; }
 
     // Environment prefix for all of the indexes.

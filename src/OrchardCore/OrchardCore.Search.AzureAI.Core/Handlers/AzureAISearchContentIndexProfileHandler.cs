@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Catalogs.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Core;

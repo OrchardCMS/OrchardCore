@@ -1,4 +1,4 @@
-using OrchardCore.Abstractions.Indexing;
+using OrchardCore.Catalogs.Models;
 using OrchardCore.Indexing.Core.Indexes;
 using OrchardCore.Indexing.Models;
 using YesSql;
@@ -89,7 +89,7 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
         return new PageResult<IndexProfile>
         {
             Count = await records.CountAsync(),
-            Models = await records.Skip(skip).Take(pageSize).ListAsync(),
+            Entries = (await records.Skip(skip).Take(pageSize).ListAsync()).ToArray(),
         };
     }
 

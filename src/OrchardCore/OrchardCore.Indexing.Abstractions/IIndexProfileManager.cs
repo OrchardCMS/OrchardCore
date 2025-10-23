@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
-using OrchardCore.Abstractions.Indexing;
+using OrchardCore.Catalogs.Models;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Infrastructure.Entities;
 
 namespace OrchardCore.Indexing;
 

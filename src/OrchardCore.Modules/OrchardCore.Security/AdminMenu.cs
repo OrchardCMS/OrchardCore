@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Core;
 using OrchardCore.Security.Drivers;
 
 namespace OrchardCore.Security;
@@ -30,7 +31,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Id("security")
                     .Add(S["Settings"], settings => settings
                         .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                            .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
+                            .Permission(SecurityConstants.Permissions.ManageSecurityHeadersSettings)
                             .Action("Index", "Admin", _routeValues)
                             .LocalNav()
                         )
@@ -44,7 +45,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                        .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
+                        .Permission(SecurityConstants.Permissions.ManageSecurityHeadersSettings)
                         .Action("Index", "Admin", _routeValues)
                         .LocalNav()
                     )

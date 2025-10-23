@@ -1,6 +1,8 @@
 using Azure.Communication.Sms;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Sms.Azure.Models;
 
 namespace OrchardCore.Sms.Azure.Services;
@@ -9,6 +11,7 @@ public abstract class AzureSmsProviderBase : ISmsProvider
 {
     private readonly AzureSmsOptions _providerOptions;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
+    private readonly IOptionsMonitor<AzureOptions> _optionsMonitor;
     private readonly ILogger _logger;
 
     private SmsClient _smsClient;
@@ -18,11 +21,13 @@ public abstract class AzureSmsProviderBase : ISmsProvider
     public AzureSmsProviderBase(
         AzureSmsOptions options,
         IPhoneFormatValidator phoneFormatValidator,
+        IOptionsMonitor<AzureOptions> optionsMonitor,
         ILogger logger,
         IStringLocalizer stringLocalizer)
     {
         _providerOptions = options;
         _phoneFormatValidator = phoneFormatValidator;
+        _optionsMonitor = optionsMonitor;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -57,7 +62,28 @@ public abstract class AzureSmsProviderBase : ISmsProvider
 
         try
         {
-            _smsClient ??= new SmsClient(_providerOptions.ConnectionString);
+            if (_smsClient is null)
+            {
+                if (!string.IsNullOrEmpty(_providerOptions.ConnectionString))
+                {
+                    _smsClient ??= new SmsClient(_providerOptions.ConnectionString);
+                }
+                else if (_providerOptions.Endpoint is not null)
+                {
+                    var azureOptions = _optionsMonitor.Get(_providerOptions.CredentialName ?? AzureOptions.DefaultName);
+
+                    if (azureOptions is null)
+                    {
+                        return SmsResult.Failed(S["Unsupported Authentication Type. The Azure SMS Provider is not configured correctly."]);
+                    }
+
+                    _smsClient = new SmsClient(_providerOptions.Endpoint, azureOptions.ToTokenCredential());
+                }
+                else
+                {
+                    return SmsResult.Failed(S["The Azure SMS Provider is not configured correctly."]);
+                }
+            }
 
             var senderNumber = _providerOptions.PhoneNumber;
 

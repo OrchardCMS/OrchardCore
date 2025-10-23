@@ -1,9 +1,9 @@
+using OrchardCore.Catalogs;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Infrastructure.Entities;
 
 namespace OrchardCore.Indexing.Core.Handlers;
 
-public abstract class IndexProfileHandlerBase : ModelHandlerBase<IndexProfile>, IIndexProfileHandler
+public abstract class IndexProfileHandlerBase : CatalogEntryHandlerBase<IndexProfile>, IIndexProfileHandler
 {
     public virtual Task ExportingAsync(IndexProfileExportingContext context)
         => Task.CompletedTask;

@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
@@ -14,14 +15,19 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
     private static volatile int _registered;
     private static volatile int _refCount;
 
+    private readonly IServiceProvider _serviceProvider;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly ILogger _logger;
 
-    public RedisDatabaseFactory(IHostApplicationLifetime lifetime, ILogger<RedisDatabaseFactory> logger)
+    public RedisDatabaseFactory(
+        IServiceProvider serviceProvider,
+        IHostApplicationLifetime lifetime,
+        ILogger<RedisDatabaseFactory> logger)
     {
         Interlocked.Increment(ref _refCount);
-
+        _serviceProvider = serviceProvider;
         _lifetime = lifetime;
+
         if (Interlocked.CompareExchange(ref _registered, 1, 0) == 0)
         {
             _lifetime.ApplicationStopped.Register(Release);
@@ -30,25 +36,59 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
         _logger = logger;
     }
 
-    public Task<IDatabase> CreateAsync(RedisOptions options) =>
-        _factories.GetOrAdd(options.Configuration, new Lazy<Task<IDatabase>>(async () =>
+    public Task<IDatabase> CreateAsync(RedisOptions options)
+    {
+        return _factories.GetOrAdd(options.ConnectionIdentifier, new Lazy<Task<IDatabase>>(async () =>
         {
-            try
+            var provider = _serviceProvider.GetKeyedService<ITokenProvider>("Redis");
+
+            var config = options.ConfigurationOptions;
+
+            if (provider is null)
             {
-                if (_logger.IsEnabled(LogLevel.Debug))
+                var connection = await ConnectionMultiplexer.ConnectAsync(config);
+
+                return connection.GetDatabase();
+            }
+
+            var result = await provider.GetTokenAsync();
+
+            if (!string.IsNullOrEmpty(result?.Token))
+            {
+                config.Password = result.Token;
+            }
+
+            var attempt = 0;
+
+            while (attempt < 3)
+            {
+                try
                 {
-                    _logger.LogDebug("Creating a new instance of '{Name}'. A single instance per configuration should be created across tenants. Total instances prior creating is '{Count}'.", nameof(ConnectionMultiplexer), _factories.Count);
+                    var connection = await ConnectionMultiplexer.ConnectAsync(config);
+                    return connection.GetDatabase();
                 }
+                catch (RedisConnectionException ex) when (ex.Message.Contains("WRONGPASS") || ex.Message.Contains("NOAUTH"))
+                {
+                    attempt++;
+                    _logger.LogWarning(ex, "Redis authentication failed, retry attempt {Attempt}", attempt);
 
-                return (await ConnectionMultiplexer.ConnectAsync(options.ConfigurationOptions)).GetDatabase();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Unable to connect to Redis.");
+                    if (provider == null)
+                    {
+                        break;
+                    }
 
-                return null;
+                    result = await provider.GetTokenAsync();
+
+                    if (!string.IsNullOrEmpty(result?.Token))
+                    {
+                        config.Password = result.Token;
+                    }
+                }
             }
+
+            throw new InvalidOperationException("Unable to authenticate to Redis after multiple attempts.");
         })).Value;
+    }
 
     public void Dispose()
     {
@@ -63,7 +103,6 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
         if (Interlocked.CompareExchange(ref _refCount, 0, 0) == 0)
         {
             var factories = _factories.Values.ToArray();
-
             _factories.Clear();
 
             foreach (var factory in factories)

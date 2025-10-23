@@ -3,9 +3,11 @@
   <PropertyGroup>
     <!-- NuGet properties-->
     <Title>OrchardCore Redis</Title>
-    <Description>$(OCFrameworkDescription)
+    <Description>
+      $(OCFrameworkDescription)
 
-    Provides Redis features for configuration, cache, bus and lock.</Description>
+      Provides Redis features for configuration, cache, bus and lock.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework Infrastructure</PackageTags>
   </PropertyGroup>
 

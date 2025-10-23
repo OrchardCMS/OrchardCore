@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Azure.Core;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Azure.Models;
 
@@ -31,7 +32,19 @@ public sealed class AzureSmsOptionsConfiguration : IConfigureOptions<AzureSmsOpt
         {
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
-            options.ConnectionString = protector.Unprotect(settings.ConnectionString);
+            var rawConnectionString = protector.Unprotect(settings.ConnectionString);
+
+            options.ConnectionString = rawConnectionString;
+
+            if (options.Endpoint is null)
+            {
+                var endpointString = ConnectionStringHelper.Extract(rawConnectionString, "Endpoint");
+
+                if (endpointString is not null && Uri.TryCreate(endpointString, UriKind.Absolute, out var endpointUri))
+                {
+                    options.Endpoint = endpointUri;
+                }
+            }
         }
     }
 }
