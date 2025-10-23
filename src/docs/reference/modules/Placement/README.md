@@ -112,6 +112,51 @@ The placement rules are stricter for non-standard display modes.
 }
 ```
 
+### Field Editors
+
+When placing field editors, the shape type depends on whether the field has a custom editor configured.
+
+#### Fields without a custom editor
+
+For fields without a custom editor, use the shape type `{FieldType}_Edit`. For example:
+
+```json
+{
+  "NumericField_Edit": [
+    {
+      "place": "Content:1",
+      "differentiator": "FieldsAccordionPart-MaintenanceFeesFinance"
+    }
+  ]
+}
+```
+
+#### Fields with a custom editor
+
+Some field types support multiple editor options. For example, `NumericField` supports editors like `Spinner`, `Slider`, `Range`, and `Select`. When a custom editor is configured, the shape type becomes `{FieldType}_Edit__{EditorName}`.
+
+For example, if a `NumericField` is configured with the `Spinner` editor:
+
+```json
+{
+  "NumericField_Edit__Spinner": [
+    {
+      "place": "Content:1",
+      "differentiator": "FieldsAccordionPart-MaintenanceFeesFinance"
+    }
+  ]
+}
+```
+
+Other examples of fields with custom editors:
+- `TextField` with `Monaco` editor: `TextField_Edit__Monaco`
+- `TextField` with `PredefinedList` editor: `TextField_Edit__PredefinedList`
+- `HtmlField` with `Trumbowyg` editor: `HtmlField_Edit__Trumbowyg`
+- `NumericField` with `Slider` editor: `NumericField_Edit__Slider`
+
+!!! note
+    To find the editor name for a field, check the field settings in the content type definition. The editor name is case-sensitive and must match exactly.
+
 ## Shape differentiators
 
 You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/README.md#content-field-differentiator)

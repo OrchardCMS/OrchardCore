@@ -1,0 +1,14 @@
+{
+  "NumericField_Edit__Spinner": [
+    {
+      "differentiator": "FieldsAccordionPart-MaintenanceFeesFinance",
+      "place": "-"
+    }
+  ],
+  "NumericField": [
+    {
+      "differentiator": "FieldsAccordionPart-TestNumericNoEditor",
+      "place": "-"
+    }
+  ]
+}
