@@ -21,7 +21,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
     [Fact]
     public virtual void Default_Static_Consts()
     {
-        Assert.Equal(GetArray(';', ',', ' '), FeatureAttribute.ListDelimiters);
+        Assert.Equal(GetArray(';', ',', ' '), ListDelims);
     }
 
     /// <summary>
@@ -389,7 +389,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
         var deps = LoremWords(5).Split(' ');
         var depString = string.Join(delim, deps);
 
-        var listDelims = FeatureAttribute.ListDelimiters;
+        var listDelims = FeatureAttribute.ListDelims;
 
         FeatureAttribute CreateForDeps(params string[] deps) => CreateFromArgs(
             FeatureString6Object3CtorClassifier,

@@ -241,7 +241,7 @@ public class ModuleAttribute : FeatureAttribute
         enabledByDependencyOnly
     )
     {
-        type = type?.Trim();
+        type = (type ?? string.Empty).Trim();
         _type = string.IsNullOrEmpty(type) ? null : type;
     }
 
@@ -255,12 +255,14 @@ public class ModuleAttribute : FeatureAttribute
     {
         const string attributeSuffix = nameof(Attribute);
 
-        var typeName = attributeType.Name;
-
         // Drops the 'Attribute' suffix from the conventional abbreviation, or leaves it alone
-        return typeName.EndsWith(attributeSuffix)
+        static string GetTypeNamePrefix(string typeName) =>
+            typeName.EndsWith(attributeSuffix)
             ? typeName[..^attributeSuffix.Length]
-            : typeName;
+            : typeName
+            ;
+
+        return GetTypeNamePrefix(attributeType.Name);
     }
 
     /// <summary>
@@ -280,7 +282,7 @@ public class ModuleAttribute : FeatureAttribute
     public virtual string Author
     {
         get => _author;
-        set => _author = value?.Trim() ?? "";
+        set => _author = (value ?? "").Trim();
     }
 
     /// <summary>
@@ -289,7 +291,7 @@ public class ModuleAttribute : FeatureAttribute
     public virtual string Website
     {
         get => _website;
-        set => _website = value?.Trim() ?? "";
+        set => _website = (value ?? "").Trim();
     }
 
     /// <summary>
@@ -299,7 +301,7 @@ public class ModuleAttribute : FeatureAttribute
     public virtual string Version
     {
         get => _version;
-        set => _version = value?.Trim() ?? "0.0";
+        set => _version = (value ?? "0.0").Trim();
     }
 
     /// <summary>
@@ -323,6 +325,6 @@ public class ModuleAttribute : FeatureAttribute
             return [];
         }
 
-        return tags.Split(ListDelimiters, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        return tags.Split(ListDelims, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 }
