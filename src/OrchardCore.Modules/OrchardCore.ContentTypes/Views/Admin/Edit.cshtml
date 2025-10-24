@@ -6,7 +6,7 @@
 @model EditTypeViewModel
 
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
+@inject OrchardCore.ContentManagement.IContentDefinitionService ContentDefinitionService
 
 @{
     var contentSettings = Model.TypeDefinition.GetSettings<ContentSettings>();

@@ -20,6 +20,7 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDefinitionService, ContentDefinitionService>();
+        services.AddScoped<IContentDefinitionViewModelService, ContentDefinitionViewModelService>();
         services.AddScoped<IStereotypeService, StereotypeService>();
         services.AddScoped<IContentDefinitionDisplayHandler, ContentDefinitionDisplayCoordinator>();
         services.AddScoped<IContentDefinitionDisplayManager, DefaultContentDefinitionDisplayManager>();
