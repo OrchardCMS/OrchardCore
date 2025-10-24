@@ -45,8 +45,21 @@ public class ShapeDescriptorIndexBenchmark
             .Select(group => new ShapeDescriptorIndex
             (
                 shapeType: group.Key,
+                alterations: group.Select(kv => kv.Value)
+            ))
+            .ToList();
+    }
+
+    [Benchmark]
+    public List<OriginalShapeDescriptorIndex> OriginalSingleLoopLists()
+    {
+        return _shapeDescriptors
+            .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
+            .Select(group => new OriginalShapeDescriptorIndex
+            (
+                shapeType: group.Key,
                 alterationKeys: group.Select(kv => kv.Key),
-                descriptors: _shapeDescriptors
+                _shapeDescriptors
             ))
             .ToList();
     }
