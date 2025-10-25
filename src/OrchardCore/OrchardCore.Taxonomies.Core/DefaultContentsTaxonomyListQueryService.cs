@@ -27,15 +27,26 @@ public sealed class DefaultContentsTaxonomyListQueryService : IContentsTaxonomyL
 
     public async Task<IQuery<ContentItem>> QueryAsync(TermPart termPart, Pager pager)
     {
+        ArgumentNullException.ThrowIfNull(termPart);
+        ArgumentNullException.ThrowIfNull(pager);
+
         IQuery<ContentItem> query = _session.Query<ContentItem>()
             .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId);
 
         await _contentTaxonomyListFilters.InvokeAsync((filter, q, part) => filter.FilterAsync(q, part), query, termPart, _logger);
 
+        var currentPage = 1;
+
+        if (pager.Page > 0)
+        {
+            currentPage = pager.Page;
+        }
+
         return query
             .With<ContentItemIndex>()
             .ThenByDescending(x => x.CreatedUtc)
             .ThenBy(x => x.Id)
-            .Take(pager.PageSize + 1);
+            .Skip((currentPage - 1) * pager.PageSize)
+            .Take(pager.PageSize);
     }
 }

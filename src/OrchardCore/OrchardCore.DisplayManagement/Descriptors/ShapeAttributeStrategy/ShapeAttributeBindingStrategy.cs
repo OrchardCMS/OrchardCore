@@ -75,7 +75,7 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
         {
             action = (s, d) =>
             {
-                var arguments = new object[argumentBuilders.Length];
+                var arguments = argumentBuilders.Length > 0 ? new object[argumentBuilders.Length] : [];
                 for (var i = 0; i < arguments.Length; i++)
                 {
                     arguments[i] = argumentBuilders[i](d);
@@ -88,7 +88,7 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
         {
             action = (s, d) =>
             {
-                var arguments = new object[argumentBuilders.Length];
+                var arguments = argumentBuilders.Length > 0 ? new object[argumentBuilders.Length] : [];
                 for (var i = 0; i < arguments.Length; i++)
                 {
                     arguments[i] = argumentBuilders[i](d);
@@ -101,7 +101,7 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
         {
             action = (s, d) =>
             {
-                var arguments = new object[argumentBuilders.Length];
+                var arguments = argumentBuilders.Length > 0 ? new object[argumentBuilders.Length] : [];
                 for (var i = 0; i < arguments.Length; i++)
                 {
                     arguments[i] = argumentBuilders[i](d);

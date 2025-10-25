@@ -9,10 +9,26 @@ public class UpdateContentsHandler : ContentHandlerBase
     private readonly IClock _clock;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UpdateContentsHandler(IClock clock, IHttpContextAccessor httpContextAccessor)
+    public UpdateContentsHandler(
+        IClock clock,
+        IHttpContextAccessor httpContextAccessor)
     {
         _clock = clock;
         _httpContextAccessor = httpContextAccessor;
+    }
+
+    public override Task InitializingAsync(InitializingContentContext context)
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+
+        // Important: set the owner during initialization so that "own" permissions are validated correctly everywhere.
+        if (httpContext?.User.Identity?.IsAuthenticated == true)
+        {
+            context.ContentItem.Owner = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            context.ContentItem.Author = httpContext.User.Identity.Name;
+        }
+
+        return Task.CompletedTask;
     }
 
     public override Task CreatingAsync(CreateContentContext context)

@@ -216,10 +216,6 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav {
   position: relative;
   flex: 1 1 auto;
   height: calc(100% - 51px - 38px);
-  /*.btn-nostyle:focus, .btn-nostyle:active {
-      background-color: rgba(0, 0, 0, 0.3);
-      color: white;
-  }*/
 }
 
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav ul {
@@ -362,6 +358,12 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav .btn-nostyle {
 
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > li > figure > figcaption > .item-label {
   width: 100%;
+}
+body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav {
+  /*.btn-nostyle:focus, .btn-nostyle:active {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
+  }*/
 }
 
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items .item-label,

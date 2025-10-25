@@ -16,7 +16,7 @@ public sealed class UserPickerFieldUserNamesDisplayDriver : ContentFieldDisplayD
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
         })
-        .Location("Detail", "Content")
-        .Location("Summary", "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 }

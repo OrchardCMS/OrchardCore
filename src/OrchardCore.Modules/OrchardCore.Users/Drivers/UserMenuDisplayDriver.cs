@@ -29,22 +29,22 @@ public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
         var results = new List<IDisplayResult>
         {
             View("UserMenuItems__Title", model)
-            .Location("Detail", "Header:5")
-            .Location("DetailAdmin", "Header:5")
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Header:5")
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Header:5")
             .Differentiator("Title"),
 
             View("UserMenuItems__SignedUser", model)
-            .Location("DetailAdmin", "Content:1")
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:1")
             .Differentiator("SignedUser"),
 
             View("UserMenuItems__Profile", model)
-            .Location("Detail", "Content:5")
-            .Location("DetailAdmin", "Content:5")
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content:5")
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:5")
             .Differentiator("Profile"),
 
             View("UserMenuItems__SignOut", model)
-            .Location("Detail", "Content:100")
-            .Location("DetailAdmin", "Content:100")
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content:100")
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:100")
             .Differentiator("SignOut"),
         };
 
@@ -53,14 +53,14 @@ public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
         if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AdminPermissions.AccessAdminPanel))
         {
             results.Add(View("UserMenuItems__Dashboard", model)
-                .Location("Detail", "Content:1.1")
+                .Location(OrchardCoreConstants.DisplayType.Detail, "Content:1.1")
                 .Differentiator("Dashboard"));
 
             if (!loginSettings.DisableLocalLogin)
             {
                 results.Add(View("UserMenuItems__ChangePassword", model)
-                    .Location("Detail", "Content:10")
-                    .Location("DetailAdmin", "Content:10")
+                    .Location(OrchardCoreConstants.DisplayType.Detail, "Content:10")
+                    .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10")
                     .Differentiator("ChangePassword"));
             }
         }
@@ -69,7 +69,7 @@ public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
             if (!loginSettings.DisableLocalLogin)
             {
                 results.Add(View("UserMenuItems__ChangePassword", model)
-                .Location("DetailAdmin", "Content:10")
+                .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10")
                 .Differentiator("ChangePassword"));
             }
         }

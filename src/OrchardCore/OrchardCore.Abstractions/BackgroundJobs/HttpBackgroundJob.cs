@@ -25,6 +25,13 @@ public static class HttpBackgroundJob
         // Allow a job to be triggered e.g. during a tenant setup, but later on only check if the tenant is running.
         if (!scope.ShellContext.Settings.IsRunning() && !scope.ShellContext.Settings.IsInitializing())
         {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
+            logger.LogWarning(
+                "Background job '{JobName}' was not executed because tenant '{TenantName}' is not running or initializing. Current state: {TenantState}.",
+                jobName,
+                scope.ShellContext.Settings.Name,
+                scope.ShellContext.Settings.State);
+
             return Task.CompletedTask;
         }
 
@@ -33,6 +40,12 @@ public static class HttpBackgroundJob
 
         if (httpContextAccessor.HttpContext == null)
         {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
+            logger.LogWarning(
+                "Background job '{JobName}' was not executed because it requires an HTTP context. Tenant: '{TenantName}'",
+                jobName,
+                scope.ShellContext.Settings.Name);
+
             return Task.CompletedTask;
         }
 
@@ -56,10 +69,16 @@ public static class HttpBackgroundJob
             // Wait for the current 'HttpContext' to be released with a timeout of 60s.
             while (httpContextAccessor.HttpContext != null)
             {
-                await Task.Delay(1_000);
+                await Task.Delay(100);
 
                 if (timeoutTask.IsCompleted)
                 {
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
+                    logger.LogWarning(
+                        "Background job '{JobName}' timed out waiting for HTTP context to be released after 60 seconds on tenant '{TenantName}'. Job will be skipped.",
+                        jobName,
+                        scope.ShellContext.Settings.Name);
+
                     return;
                 }
             }
@@ -71,6 +90,13 @@ public static class HttpBackgroundJob
             // Can't be executed e.g. if a tenant setup failed.
             if (!shellContext.Settings.IsRunning())
             {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
+                logger.LogWarning(
+                    "Background job '{JobName}' was not executed because tenant '{TenantName}' is no longer running after context reload. Current state: {TenantState}.",
+                    jobName,
+                    shellContext.Settings.Name,
+                    shellContext.Settings.State);
+
                 return;
             }
 
