@@ -93,13 +93,14 @@ public class DefaultShapeTableManager : IShapeTableManager
 
         foreach (var bindingStrategy in bindingStrategies)
         {
-            var strategyFeature = typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+            foreach (var strategyFeature in typeFeatureProvider.GetFeaturesForDependency(bindingStrategy.GetType()))
+            {
+                var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
+                await bindingStrategy.DiscoverAsync(builder);
+                var builtAlterations = builder.BuildAlterations();
 
-            var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
-            await bindingStrategy.DiscoverAsync(builder);
-            var builtAlterations = builder.BuildAlterations();
-
-            BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
+                BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
+            }
         }
 
         // Here we don't use a lock for thread safety but for atomicity.
