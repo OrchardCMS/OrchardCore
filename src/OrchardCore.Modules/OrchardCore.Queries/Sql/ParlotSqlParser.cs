@@ -117,13 +117,13 @@ public class ParlotSqlParser
         var identifierExpr = identifier.Then<Expression>(id => new IdentifierExpression(id));
 
         var term = functionCall
+            .Or(parameter)
             .Or(parSelectStatement)
             .Or(tuple)
             .Or(booleanLiteral)
             .Or(stringLiteral)
             .Or(numberLiteral)
-            .Or(identifierExpr)
-            .Or(parameter);
+            .Or(identifierExpr);
 
         // Unary expressions
         var unaryMinus = Terms.Char('-').And(term).Then<Expression>(x => new UnaryExpression(UnaryOperator.Minus, x.Item2));
