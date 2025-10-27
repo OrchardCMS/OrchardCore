@@ -7,7 +7,7 @@ using static Parlot.Fluent.Parsers;
 namespace OrchardCore.Queries.Sql;
 
 /// <summary>
-/// SQL parser using Parlot library (compatible with Parlot 1.4.0)
+/// SQL parser using Parlot library (compatible with Parlot 1.5.1)
 /// </summary>
 public class ParlotSqlParser
 {
@@ -68,7 +68,7 @@ public class ParlotSqlParser
         var booleanLiteral = TRUE.Then<Expression>(new LiteralExpression<bool>(true))
             .Or(FALSE.Then<Expression>(new LiteralExpression<bool>(false)));
 
-        // Identifiers - simplified version compatible with Parlot 1.4.0
+        // Identifiers - simplified version compatible with Parlot 1.5.1
         // Support: identifier, [identifier], "identifier"
         var bracketedIdentifier = Between(Terms.Char('['), Terms.Identifier(), Terms.Char(']'));
         var quotedIdentifier = Between(Terms.Char('"'), Terms.Identifier(), Terms.Char('"'));
@@ -99,10 +99,10 @@ public class ParlotSqlParser
 
         // Parameter with optional default value
         var defaultValue = COLON.SkipAnd(expression);
-        var parameter = AT.And(identifier).And(ZeroOrOne(defaultValue)).Then<Expression>(x =>
+        var parameter = AT.And(identifier).And(defaultValue.Optional()).Then<Expression>(x =>
         {
             var (_, name, defaultVal) = x;
-            return new ParameterExpression(name, defaultVal);
+            return new ParameterExpression(name, defaultVal.OrSome(null));
         });
 
         // Tuple
@@ -184,18 +184,18 @@ public class ParlotSqlParser
         );
 
         // BETWEEN and IN expressions
-        var betweenExpr = andExpr.And(ZeroOrOne(NOT)).AndSkip(BETWEEN).And(bitwise).AndSkip(AND).And(bitwise)
+        var betweenExpr = andExpr.And(NOT.Optional()).AndSkip(BETWEEN).And(bitwise).AndSkip(AND).And(bitwise)
             .Then<Expression>(result =>
             {
                 var (expr, notKeyword, lower, upper) = result;
-                return new BetweenExpression(expr, lower, upper, notKeyword != null);
+                return new BetweenExpression(expr, lower, upper, notKeyword.HasValue);
             });
 
-        var inExpr = andExpr.And(ZeroOrOne(NOT)).AndSkip(IN).AndSkip(LPAREN).And(expressionList).AndSkip(RPAREN)
+        var inExpr = andExpr.And(NOT.Optional()).AndSkip(IN).AndSkip(LPAREN).And(expressionList).AndSkip(RPAREN)
             .Then<Expression>(result =>
             {
                 var (expr, notKeyword, values) = result;
-                return new InExpression(expr, values, notKeyword != null);
+                return new InExpression(expr, values, notKeyword.HasValue);
             });
 
         expression.Parser = betweenExpr.Or(inExpr).Or(orExpr);
@@ -213,18 +213,21 @@ public class ParlotSqlParser
         var partitionBy = PARTITION.AndSkip(BY).And(columnItemList)
             .Then(x => new PartitionByClause(x.Item2));
 
-        var overClause = OVER.AndSkip(LPAREN).And(ZeroOrOne(partitionBy)).And(ZeroOrOne(orderByClause)).AndSkip(RPAREN)
+        var overClause = OVER.AndSkip(LPAREN).And(partitionBy.Optional()).And(orderByClause.Optional()).AndSkip(RPAREN)
             .Then(result =>
             {
                 var (_, partition, orderBy) = result;
-                return new OverClause(partition, orderBy);
+                return new OverClause(
+                    partition.OrSome(null),
+                    orderBy.OrSome(null)
+                );
             });
 
-        var columnSourceFunc = functionCall.And(ZeroOrOne(overClause))
+        var columnSourceFunc = functionCall.And(overClause.Optional())
             .Then<ColumnSource>(result =>
             {
                 var (func, over) = result;
-                return new ColumnSourceFunction((FunctionCall)func, over);
+                return new ColumnSourceFunction((FunctionCall)func, over.OrSome(null));
             });
 
         var columnSource = columnSourceFunc.Or(columnSourceId);
@@ -232,21 +235,21 @@ public class ParlotSqlParser
         // Column item with alias
         var columnAlias = AS.SkipAnd(identifier);
 
-        columnItem.Parser = columnSource.And(ZeroOrOne(columnAlias))
+        columnItem.Parser = columnSource.And(columnAlias.Optional())
             .Then(result =>
             {
                 var (source, alias) = result;
-                return new ColumnItem(source, alias);
+                return new ColumnItem(source, alias.OrSome(null));
             });
 
         // Table source
         var tableAlias = AS.SkipAnd(identifier);
 
-        var tableSourceItem = identifier.And(ZeroOrOne(tableAlias))
+        var tableSourceItem = identifier.And(tableAlias.Optional())
             .Then(result =>
             {
                 var (id, alias) = result;
-                return new TableSourceItem(id, alias);
+                return new TableSourceItem(id, alias.OrSome(null));
             });
 
         // Deferred union statement list for subqueries
@@ -271,10 +274,10 @@ public class ParlotSqlParser
         var joinCondition = ON.SkipAnd(andExpr);
         var tableSourceItemList = Separated(COMMA, tableSourceItem);
 
-        var joinStatement = ZeroOrOne(joinKind).AndSkip(JOIN).And(tableSourceItemList).And(joinCondition)
+        var joinStatement = joinKind.Else(JoinKind.None).AndSkip(JOIN).And(tableSourceItemList).And(joinCondition)
             .Then(result =>
             {
-                var kind = result.Item1; // ZeroOrOne returns JoinKind.None by default
+                var kind = result.Item1;
                 var tables = result.Item2;
                 var conditions = result.Item3;
                 return new JoinStatement(tables, conditions, kind);
@@ -288,8 +291,7 @@ public class ParlotSqlParser
             {
                 var tables = result.Item1;
                 var joinList = result.Item2;
-                IReadOnlyList<JoinStatement>? joinArray = joinList.Count > 0 ? joinList.ToArray() : null;
-                return new FromClause(tables, joinArray);
+                return new FromClause(tables, joinList.Any() ? joinList : null);
             });
 
         // WHERE clause
@@ -306,11 +308,11 @@ public class ParlotSqlParser
         // ORDER BY item
         var orderDirection = ASC.Then(OrderDirection.Asc).Or(DESC.Then(OrderDirection.Desc));
 
-        orderByItem.Parser = identifier.And(ZeroOrOne(orderDirection))
+        orderByItem.Parser = identifier.And(orderDirection.Optional())
             .Then(result =>
             {
                 var (id, dir) = result;
-                return new OrderByItem(id, dir); // ZeroOrOne returns OrderDirection.NotSpecified by default
+                return new OrderByItem(id, dir.OrSome(OrderDirection.NotSpecified));
             });
 
         // LIMIT and OFFSET clauses
@@ -321,29 +323,29 @@ public class ParlotSqlParser
         var selectRestriction = ALL.Then(SelectRestriction.All).Or(DISTINCT.Then(SelectRestriction.Distinct));
 
         selectStatement.Parser = SELECT
-            .SkipAnd(ZeroOrOne(selectRestriction))
+            .SkipAnd(selectRestriction.Else(SelectRestriction.NotSpecified))
             .And(columnItemList)
-            .And(ZeroOrOne(fromClause))
-            .And(ZeroOrOne(whereClause))
-            .And(ZeroOrOne(groupByClause))
-            .And(ZeroOrOne(havingClause))
-            .And(ZeroOrOne(orderByClause))
-            .And(ZeroOrOne(limitClause))
-            .And(ZeroOrOne(offsetClause))
+            .And(fromClause.Optional())
+            .And(whereClause.Optional())
+            .And(groupByClause.Optional())
+            .And(havingClause.Optional())
+            .And(orderByClause.Optional())
+            .And(limitClause.Optional())
+            .And(offsetClause.Optional())
             .Then(result =>
             {
                 var ((restriction, columns, from, where, groupBy, having, orderBy), limit, offset) = result;
 
                 return new SelectStatement(
                     columns,
-                    restriction, // ZeroOrOne returns SelectRestriction.NotSpecified by default
-                    from,
-                    where,
-                    groupBy,
-                    having,
-                    orderBy,
-                    limit,
-                    offset
+                    restriction,
+                    from.OrSome(null),
+                    where.OrSome(null),
+                    groupBy.OrSome(null),
+                    having.OrSome(null),
+                    orderBy.OrSome(null),
+                    limit.OrSome(null),
+                    offset.OrSome(null)
                 );
             });
 
@@ -354,13 +356,13 @@ public class ParlotSqlParser
         var cteColumnList = Between(LPAREN, columnNames, RPAREN);
 
         var cte = simpleIdentifier
-            .And(ZeroOrOne(cteColumnList))
+            .And(cteColumnList.Optional())
             .AndSkip(AS)
             .And(Between(LPAREN, unionStatementList, RPAREN))
             .Then(result =>
             {
                 var (name, columns, query) = result;
-                return new CommonTableExpression(name.ToString(), query, columns);
+                return new CommonTableExpression(name.ToString(), query, columns.OrSome(null));
             });
 
         var cteList = Separated(COMMA, cte);
@@ -368,28 +370,28 @@ public class ParlotSqlParser
             .Then(x => new WithClause(x.Item2));
 
         // UNION
-        var unionClause = UNION.And(ZeroOrOne(ALL))
-            .Then(x => new UnionClause(x.Item2 != null));
+        var unionClause = UNION.And(ALL.Optional())
+            .Then(x => new UnionClause(x.Item2.HasValue));
 
         // Statement
-        var statement = ZeroOrOne(withClause).And(selectStatement)
+        var statement = withClause.Optional().And(selectStatement)
             .Then(result =>
             {
                 var (with, select) = result;
-                return new Statement(select, with);
+                return new Statement(select, with.OrSome(null));
             });
 
-        var unionStatement = statement.And(ZeroOrOne(unionClause))
+        var unionStatement = statement.And(unionClause.Optional())
             .Then(result =>
             {
                 var (stmt, union) = result;
-                return new UnionStatement(stmt, union);
+                return new UnionStatement(stmt, union.OrSome(null));
             });
 
         unionStatementList.Parser = OneOrMany(unionStatement);
 
         // Statement line
-        var statementLine = unionStatementList.AndSkip(ZeroOrOne(SEMICOLON))
+        var statementLine = unionStatementList.AndSkip(SEMICOLON.Optional())
             .Then(x => new StatementLine(x));
 
         // Statement list
