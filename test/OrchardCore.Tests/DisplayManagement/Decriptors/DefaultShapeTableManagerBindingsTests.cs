@@ -100,7 +100,8 @@ public class DefaultShapeTableManagerBindingsTests : IDisposable
         services.AddMemoryCache();
         services.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
         services.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
-        services.AddKeyedSingleton<IDictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, ShapeTable>());
+        services.AddKeyedSingleton<IDictionary<string, Task<ShapeTable>>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, Task<ShapeTable>>());
+        services.AddKeyedSingleton(nameof(DefaultShapeTableManager), new SemaphoreSlim(1, 1));
         services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
         services.AddSingleton<IHostEnvironment>(new StubHostingEnvironment());
 
