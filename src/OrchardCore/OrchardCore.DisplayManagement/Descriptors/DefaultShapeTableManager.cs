@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Locking;
 
 namespace OrchardCore.DisplayManagement.Descriptors;
 
@@ -50,24 +51,18 @@ public class DefaultShapeTableManager : IShapeTableManager
 
         async Task<ShapeTable> Awaited(string themeId)
         {
-            // Use a semaphore to avoid multiple concurrent builds of the same shape table. This is a singleton
-            // semaphore per tenant.
-            var semaphore = _serviceProvider.GetRequiredKeyedService<SemaphoreSlim>(nameof(DefaultShapeTableManager));
+            // Use a local lock to avoid multiple concurrent builds of the same shape table. Using the ILocalLock
+            // avoids holding on to a semaphore for the whole application lifetime.
+            var localLock = _serviceProvider.GetRequiredService<ILocalLock>();
 
-            await semaphore.WaitAsync();
-            try
-            {
-                if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out shapeTable))
-                {
-                    return shapeTable.Result;
-                }
+            using var locker = await localLock.AcquireLockAsync(nameof(DefaultShapeTableManager));
 
-                return await BuildShapeTableAsync(themeId);
-            }
-            finally
+            if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out shapeTable))
             {
-                semaphore.Release();
+                return shapeTable.Result;
             }
+
+            return await BuildShapeTableAsync(themeId);
         }
     }
 
