@@ -83,8 +83,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
 
         try
         {
-            var theme = await _themeManager.GetThemeAsync();
-            var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme?.Id);
+            var shapeTable = await _themeManager.GetShapeTableAsync(_shapeTableManager);
 
             // Evaluate global Shape Display Events.
             await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingAsync(displayContext), displayContext, _logger);
@@ -119,6 +118,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
 
                 if (actualBinding == null)
                 {
+                    var theme = await _themeManager.GetThemeAsync();
                     throw new InvalidOperationException($"The shape type '{shapeMetadata.Type}' is not found for the theme '{theme?.Id}'");
                 }
 
