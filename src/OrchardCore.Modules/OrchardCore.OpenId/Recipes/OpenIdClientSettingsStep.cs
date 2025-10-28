@@ -34,11 +34,7 @@ public sealed class OpenIdClientSettingsStep : NamedRecipeStepHandler
         settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
         settings.CallbackPath = model.CallbackPath;
         settings.ClientId = model.ClientId;
-        if (string.IsNullOrEmpty(model.ClientSecret))
-        {
-            settings.ClientSecret = null;
-        }
-        else
+        if (!string.IsNullOrEmpty(model.ClientSecret))
         {
             var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
             settings.ClientSecret = protector.Protect(model.ClientSecret);
