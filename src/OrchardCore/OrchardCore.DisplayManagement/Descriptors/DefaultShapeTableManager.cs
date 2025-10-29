@@ -47,23 +47,23 @@ public class DefaultShapeTableManager : IShapeTableManager
             return shapeTable;
         }
 
-        return Awaited(themeId);
+        return GetShapeTableInternalAsync(themeId);
+    }
 
-        async Task<ShapeTable> Awaited(string themeId)
+    private async Task<ShapeTable> GetShapeTableInternalAsync(string themeId)
+    {
+        // Use a local lock to avoid multiple concurrent builds of the same shape table. Using the ILocalLock
+        // avoids holding on to a semaphore for the whole application lifetime.
+        var localLock = _serviceProvider.GetRequiredService<ILocalLock>();
+
+        using var locker = await localLock.AcquireLockAsync(nameof(DefaultShapeTableManager));
+
+        if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out var shapeTable))
         {
-            // Use a local lock to avoid multiple concurrent builds of the same shape table. Using the ILocalLock
-            // avoids holding on to a semaphore for the whole application lifetime.
-            var localLock = _serviceProvider.GetRequiredService<ILocalLock>();
-
-            using var locker = await localLock.AcquireLockAsync(nameof(DefaultShapeTableManager));
-
-            if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out shapeTable))
-            {
-                return shapeTable.Result;
-            }
-
-            return await BuildShapeTableAsync(themeId);
+            return shapeTable.Result;
         }
+
+        return await BuildShapeTableAsync(themeId);
     }
 
     private async Task<ShapeTable> BuildShapeTableAsync(string themeId)
