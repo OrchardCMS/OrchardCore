@@ -3,7 +3,7 @@ using OrchardCore.Environment.Extensions;
 
 namespace OrchardCore.DisplayManagement.Theming;
 
-public static class ShapeTableManagerExtensions
+public static class ThemeManagerExtensions
 {
     /// <summary>
     /// Asynchronously retrieves the shape table for the current theme.
