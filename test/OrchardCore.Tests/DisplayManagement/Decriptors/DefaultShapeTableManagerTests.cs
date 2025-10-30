@@ -7,7 +7,6 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Locking;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
 
@@ -120,8 +119,7 @@ public class DefaultShapeTableManagerTests : IDisposable
         serviceCollection.AddMemoryCache();
         serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
         serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
-        serviceCollection.AddKeyedSingleton<IDictionary<string, Task<ShapeTable>>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, Task<ShapeTable>>());
-        serviceCollection.AddSingleton<ILocalLock, LocalLock>();
+        serviceCollection.AddKeyedSingleton<IDictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, ShapeTable>());
         serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
         serviceCollection.AddSingleton<IHostEnvironment>(new StubHostingEnvironment());
 
