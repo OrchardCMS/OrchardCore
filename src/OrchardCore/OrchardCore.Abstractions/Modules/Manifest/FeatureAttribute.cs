@@ -1,48 +1,51 @@
-using static System.StringSplitOptions;
-
 namespace OrchardCore.Modules.Manifest;
 
 /// <summary>
-/// Defines a Feature in a Module, can be used multiple times.
-/// If at least one Feature is defined, the Module default feature is ignored.
+/// Defines a feature within a module. This attribute can be applied multiple times to an assembly.
 /// </summary>
+/// <remarks>
+/// <para>
+/// When at least one <see cref="FeatureAttribute"/> is defined on an assembly, 
+/// the module's default feature is ignored and only the explicitly defined features are used.
+/// </para>
+/// <para>
+/// Features enable modular functionality within OrchardCore, allowing selective enabling/disabling 
+/// of capabilities and managing dependencies between different parts of the system.
+/// </para>
+/// </remarks>
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
 public class FeatureAttribute : Attribute
 {
-    protected internal const string DefaultName = "";
-
-    protected internal const string DefaultDescription = "";
-
-    protected internal const string Uncategorized = nameof(Uncategorized);
-
-    protected internal const string DefaultCategory = "";
-
-    protected internal const string DefaultFeatureDependencies = "";
-
-    protected internal const bool DefaultDefaultTenantOnly = false;
-
-    protected internal const bool DefaultAlwaysEnabled = false;
+    private string _id;
+    private string _name;
+    private string _category = "";
+    private string[] _dependencies = [];
 
     /// <summary>
-    /// Default parameterless ctor.
+    /// Gets the default list delimiters used for parsing dependency strings.
+    /// Supported delimiters are semicolon (;), comma (,), and space ( ).
     /// </summary>
-    /// <remarks>Cannot route to <c>this(...)</c> in any form here due to restrictions on the Id property setter.</remarks>
+    /// <remarks>
+    /// Semicolon delimiters are most common from a CSPROJ perspective.
+    /// </remarks>
+    protected internal static readonly char[] ListDelimiters = [';', ',', ' '];
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FeatureAttribute"/> class.
+    /// </summary>
     public FeatureAttribute()
     {
-        // Defaults are defaults, caller may initialize the properties themselves.
     }
 
     /// <summary>
-    /// Constructs an instance of the attribute with some default values.
+    /// Initializes a new instance of the <see cref="FeatureAttribute"/> class with the specified parameters.
     /// </summary>
-    /// <param name="id">An identifier overriding the Name.</param>
-    /// <param name="description">A simple feature description.</param>
-    /// <param name="featureDependencies">Zero or more delimited feature dependencies,
-    /// corresponding to each of the feature <see cref="Name"/> properties.</param>
-    /// <param name="defaultTenant">Whether considered default tenant only.</param>
-    /// <param name="alwaysEnabled">Whether feature is always enabled.</param>
-    /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+    /// <param name="id">The unique feature identifier.</param>
+    /// <param name="description">A brief description of what the feature does.</param>
+    /// <param name="featureDependencies">A delimited string of feature dependencies (feature IDs).</param>
+    /// <param name="defaultTenant">A value indicating whether the feature is only available to the default tenant. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="alwaysEnabled">A value indicating whether the feature is always enabled and cannot be disabled. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="enabledByDependencyOnly">A value indicating whether the feature can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public FeatureAttribute(
         string id,
         string description,
@@ -65,20 +68,15 @@ public class FeatureAttribute : Attribute
     }
 
     /// <summary>
-    /// Constructs an instance of the attribute with some default values.
+    /// Initializes a new instance of the <see cref="FeatureAttribute"/> class with the specified parameters.
     /// </summary>
-    /// <param name="id">An identifier overriding the Name.</param>
-    /// <param name="name">The feature name, defaults to <see cref="Id"/> when null or
-    /// blank.</param>
-    /// <param name="description">A simple feature description.</param>
-    /// <param name="featureDependencies">Zero or more delimited feature dependencies,
-    /// corresponding to each of the feature <see cref="Name"/> properties.</param>
-    /// <param name="defaultTenant">Whether considered default tenant only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <param name="alwaysEnabled">Whether feature is always enabled.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+    /// <param name="id">The unique feature identifier.</param>
+    /// <param name="name">The human-readable feature name. Defaults to <paramref name="id"/> when null or blank.</param>
+    /// <param name="description">A brief description of what the feature does.</param>
+    /// <param name="featureDependencies">A delimited string of feature dependencies (feature IDs).</param>
+    /// <param name="defaultTenant">A value indicating whether the feature is only available to the default tenant. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="alwaysEnabled">A value indicating whether the feature is always enabled and cannot be disabled. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="enabledByDependencyOnly">A value indicating whether the feature can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public FeatureAttribute(
         string id,
         string name,
@@ -102,22 +100,17 @@ public class FeatureAttribute : Attribute
     }
 
     /// <summary>
-    /// Constructs an instance of the attribute with some default values.
+    /// Initializes a new instance of the <see cref="FeatureAttribute"/> class with the specified parameters.
     /// </summary>
-    /// <param name="id">An identifier overriding the Name.</param>
-    /// <param name="name">The feature name, defaults to <see cref="Id"/> when null or
-    /// blank.</param>
-    /// <param name="category">A simple feature category.</param>
-    /// <param name="priority">The priority of the Feature.</param>
-    /// <param name="description">A simple feature description.</param>
-    /// <param name="featureDependencies">Zero or more delimited feature dependencies,
-    /// corresponding to each of the feature <see cref="Name"/> properties.</param>
-    /// <param name="defaultTenant">Whether considered default tenant only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <param name="alwaysEnabled">Whether feature is always enabled.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-    /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-    /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+    /// <param name="id">The unique feature identifier.</param>
+    /// <param name="name">The human-readable feature name. Defaults to <paramref name="id"/> when null or blank.</param>
+    /// <param name="category">The feature category used for grouping in the UI.</param>
+    /// <param name="priority">The feature priority as a string. Higher priority features have their drivers/handlers invoked later.</param>
+    /// <param name="description">A brief description of what the feature does.</param>
+    /// <param name="featureDependencies">A delimited string of feature dependencies (feature IDs).</param>
+    /// <param name="defaultTenant">A value indicating whether the feature is only available to the default tenant. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="alwaysEnabled">A value indicating whether the feature is always enabled and cannot be disabled. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
+    /// <param name="enabledByDependencyOnly">A value indicating whether the feature can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public FeatureAttribute(
         string id,
         string name,
@@ -132,209 +125,195 @@ public class FeatureAttribute : Attribute
     {
         Id = id;
         Name = name;
-        Category = category ?? DefaultCategory;
-        Priority = priority ?? string.Empty;
-        Description = description ?? DefaultDescription;
-        DelimitedDependencies = featureDependencies ?? DefaultFeatureDependencies;
-
-        // https://docs.microsoft.com/en-us/dotnet/api/system.convert.toboolean
-        static bool ToBoolean(object value) => Convert.ToBoolean(value);
-
-        DefaultTenantOnly = ToBoolean(defaultTenant);
-        IsAlwaysEnabled = ToBoolean(alwaysEnabled);
-        EnabledByDependencyOnly = ToBoolean(enabledByDependencyOnly);
+        Category = category ?? "";
+        Priority = priority ?? "";
+        Description = description ?? "";
+        _dependencies = ParseDependencies(featureDependencies);
+        DefaultTenantOnly = Convert.ToBoolean(defaultTenant);
+        IsAlwaysEnabled = Convert.ToBoolean(alwaysEnabled);
+        EnabledByDependencyOnly = Convert.ToBoolean(enabledByDependencyOnly);
     }
 
     /// <summary>
-    /// Whether the feature exists based on the <see cref="Id"/>.
+    /// Gets a value indicating whether the feature exists based on whether the <see cref="Id"/> is set.
     /// </summary>
     public virtual bool Exists => !string.IsNullOrEmpty(Id);
 
-    private string _id;
-
     /// <summary>
-    /// Gets or sets the feature identifier. Identifier is required.
+    /// Gets or sets the unique feature identifier.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when attempting to set a null or empty value.</exception>
     public virtual string Id
     {
         get => _id;
         set
         {
-            // Guards setting Id with strictly invalid values.
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.")
-                {
-                    Data = { { nameof(value), value } },
-                };
-            }
+            ArgumentException.ThrowIfNullOrEmpty(value);
 
             _id = value;
         }
     }
 
-    private string _name;
-
     /// <summary>
-    /// Returns the <see cref="string"/> <paramref name="s"/> as is, or <c>null</c> when that
-    /// or <see cref="string.Empty"/>.
+    /// Gets or sets the human-readable feature name.
     /// </summary>
-    /// <param name="s">The string value to consider.</param>
-    /// <returns>The <paramref name="s"/> value as is, or Null when either that or Empty.</returns>
-    /// <see cref="string.IsNullOrEmpty(string?)"/>
-    internal static string StringOrNull(string s) => string.IsNullOrEmpty(s) ? null : s;
-
-    /// <summary>
-    /// Gets or sets the human readable or canonical feature name. <see cref="Id"/> will be
-    /// returned when not provided or blank.
-    /// </summary>
+    /// <remarks>
+    /// If not set or empty, returns the <see cref="Id"/> value.
+    /// </remarks>
     public virtual string Name
     {
-        get => StringOrNull(_name) ?? Id;
+        get => string.IsNullOrEmpty(_name) ? Id : _name;
         set => _name = value;
-    }
-
-    /// <summary>
-    /// Yields return of the <paramref name="values"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    protected static IEnumerable<T> GetValues<T>(params T[] values)
-    {
-        foreach (var value in values)
-        {
-            yield return value;
-        }
     }
 
     /// <summary>
     /// Gets or sets a brief summary of what the feature does.
     /// </summary>
-    public virtual string Description { get; set; } = DefaultDescription;
+    public virtual string Description { get; set; } = "";
 
     /// <summary>
-    /// Describes the first or default Feature starting with This instance,
-    /// which defines a <see cref="Description"/>.
+    /// Gets or sets the category used for grouping features in the UI.
     /// </summary>
-    /// <param name="additionalFeatures">Additional Features to consider in the aggregate.</param>
-    /// <returns>The first or default Description with optional back stop features.</returns>
-    internal virtual string Describe(params FeatureAttribute[] additionalFeatures)
-    {
-        static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
-        var firstOrDefaultResult = GetValues(this).Concat(additionalFeatures)
-            .Select(feature => feature.Description)
-            .FirstOrDefault(IsNotNullOrEmpty);
-        return firstOrDefaultResult ?? DefaultDescription;
-    }
-
-    /// <summary>
-    /// <see cref="TrimEntries"/> | <see cref="RemoveEmptyEntries"/>, trim the entries, and
-    /// remove the empty ones.
-    /// </summary>
-    protected internal const StringSplitOptions DefaultSplitOptions = TrimEntries | RemoveEmptyEntries;
-
-    /// <summary>
-    /// Gets the default known ListDelims supporting <see cref="Dependencies"/> splits, etc.
-    /// Semi-colon (&apos;;&apos;) delimiters are most common, expected from a <em>CSPROJ</em>
-    /// perspective. Also common are comma (&apos;,&apos;) and space (&apos; &apos;)
-    /// delimiters.
-    /// </summary>
-    /// <see cref="string.Split(char[], StringSplitOptions)"/>
-    protected internal static char[] ListDelims { get; } = GetValues(';', ',', ' ').ToArray();
-
-    /// <summary>
-    /// Set-only <see cref="Dependencies"/> property.
-    /// </summary>
-    private string DelimitedDependencies
-    {
-        set => Dependencies = (value ?? DefaultFeatureDependencies).Trim().Split(ListDelims, DefaultSplitOptions);
-    }
-
-    private string[] _dependencies = GetValues<string>().ToArray();
-
-    /// <summary>
-    /// Gets or sets an array of Feature Dependencies. Used to arrange drivers, handlers
-    /// invoked during startup and so forth.
-    /// </summary>
-    public virtual string[] Dependencies
-    {
-        get => _dependencies;
-        set => _dependencies = (value ?? GetValues<string>()).Select(_ => _.Trim()).ToArray();
-    }
-
-    protected internal const int DefaultPriority = 0;
-
-    /// <summary>
-    /// Gets or sets the feature priority without breaking the <see cref="Dependencies"/>
-    /// order. The higher is the priority, the later the drivers / handlers are invoked.
-    /// </summary>
-    /// <remarks>The default value is aligned with <see cref="DefaultPriority"/>, consistent
-    /// with the baseline, however, could be nullified, which would in turn favor the parent
-    /// <see cref="ModuleAttribute"/>.</remarks>
-    public virtual string Priority { get; set; } = $"{DefaultPriority}";
-
-    /// <summary>
-    /// Gets the <see cref="Priority"/>, parsed and ready to go for Internal use. May yield
-    /// <c>null</c> when failing to <see cref="int.TryParse(string, out int)"/>.
-    /// </summary>
-    internal virtual int? InternalPriority => int.TryParse(Priority, out var result) ? result : null;
-
-    /// <summary>
-    /// Prioritizes the Features starting with This one, concatenating
-    /// <paramref name="additionalFeatures"/>, and lifting the <see cref="InternalPriority"/>
-    /// from there. We prefer the first non Null Priority, default
-    /// <see cref="DefaultPriority"/>.
-    /// </summary>
-    /// <param name="additionalFeatures"></param>
-    /// <returns></returns>
-    internal virtual int Prioritize(params FeatureAttribute[] additionalFeatures)
-    {
-        var firstPriority = GetValues(this).Concat(additionalFeatures)
-            .Select(feature => feature.InternalPriority)
-            .FirstOrDefault(priority => priority.HasValue);
-        return firstPriority ?? DefaultPriority;
-    }
-
-    private string _category = DefaultCategory;
-
-    /// <summary>
-    /// Gets or sets the Category for use with the Module.
-    /// </summary>
+    /// <remarks>
+    /// Values are trimmed when set. If not specified, features will be categorized as "Uncategorized".
+    /// </remarks>
     public virtual string Category
     {
         get => _category;
-        set => _category = (value ?? DefaultCategory).Trim();
+        set => _category = value?.Trim() ?? "";
     }
 
     /// <summary>
-    /// Categorizes This <see cref="Category"/> using <paramref name="additionalFeatures"/> as
-    /// back stops, presents the <see cref="Category"/> that is not Null nor Empty, or returns
-    /// <see cref="DefaultCategory"/> by default.
+    /// Gets or sets the feature priority as a string representation of an integer.
     /// </summary>
-    /// <param name="additionalFeatures">Additional Feature instances to use as potential back stops.</param>
-    /// <returns>The Category normalized across This instance and optional Module.</returns>
-    internal virtual string Categorize(params FeatureAttribute[] additionalFeatures)
+    /// <remarks>
+    /// The priority determines the order in which drivers and handlers are invoked, 
+    /// without affecting the <see cref="Dependencies"/> order. Higher priority values 
+    /// result in later invocation. The default value is "0".
+    /// If set to null or empty, the priority of the parent feature is used.
+    /// </remarks>
+    public virtual string Priority { get; set; } = "0";
+
+    /// <summary>
+    /// Gets the parsed priority value for internal use.
+    /// </summary>
+    /// <remarks>
+    /// Returns <c>null</c> if the <see cref="Priority"/> string cannot be parsed as an integer.
+    /// </remarks>
+    internal int? InternalPriority => int.TryParse(Priority, out var result) ? result : null;
+
+    /// <summary>
+    /// Gets or sets the array of feature dependencies.
+    /// </summary>
+    /// <remarks>
+    /// Dependencies are used to arrange the order in which drivers and handlers are invoked during startup.
+    /// Each dependency should correspond to another feature's <see cref="Id"/>.
+    /// Values are automatically trimmed when set.
+    /// </remarks>
+    public virtual string[] Dependencies
     {
-        static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
-        var categories = GetValues(this).Concat(additionalFeatures).Select(feature => feature.Category);
-        var category = categories.FirstOrDefault(IsNotNullOrEmpty);
-        // TODO: MWP: 'Uncategorized'? or is empty acceptable here?
-        return category ?? Uncategorized;
+        get => _dependencies;
+        set => _dependencies = value?.Select(d => d.Trim()).ToArray() ?? [];
     }
 
     /// <summary>
-    /// Set to <c>true</c> to only allow the <em>Default tenant to enable or disable</em> the feature.
+    /// Gets or sets a value indicating whether only the default tenant can enable or disable this feature.
     /// </summary>
     public virtual bool DefaultTenantOnly { get; set; }
 
     /// <summary>
-    /// Once enabled, check whether the feature cannot be disabled. Defaults to <c>false</c>.
+    /// Gets or sets a value indicating whether the feature is always enabled and cannot be disabled once activated.
     /// </summary>
     public virtual bool IsAlwaysEnabled { get; set; }
 
     /// <summary>
-    /// Set to <c>true</c> to make the feature available by dependency only.
+    /// Gets or sets a value indicating whether the feature can only be enabled as a dependency of another feature.
     /// </summary>
     public virtual bool EnabledByDependencyOnly { get; set; }
+
+    /// <summary>
+    /// Returns the first non-empty description from this instance or the provided additional features.
+    /// </summary>
+    /// <param name="additionalFeatures">Additional features to check for descriptions if this instance has none.</param>
+    /// <returns>The first non-empty description found, or an empty string if none exist.</returns>
+    internal string Describe(params FeatureAttribute[] additionalFeatures)
+    {
+        if (!string.IsNullOrEmpty(Description))
+        {
+            return Description;
+        }
+
+        foreach (var feature in additionalFeatures)
+        {
+            if (!string.IsNullOrEmpty(feature?.Description))
+            {
+                return feature.Description;
+            }
+        }
+
+        return "";
+    }
+
+    /// <summary>
+    /// Returns the first non-empty category from this instance or the provided additional features.
+    /// </summary>
+    /// <param name="additionalFeatures">Additional features to check for categories if this instance has none.</param>
+    /// <returns>The first non-empty category found, or "Uncategorized" if none exist.</returns>
+    internal string Categorize(params FeatureAttribute[] additionalFeatures)
+    {
+        if (!string.IsNullOrEmpty(Category))
+        {
+            return Category;
+        }
+
+        foreach (var feature in additionalFeatures)
+        {
+            if (!string.IsNullOrEmpty(feature?.Category))
+            {
+                return feature.Category;
+            }
+        }
+
+        return "Uncategorized";
+    }
+
+    /// <summary>
+    /// Returns the first valid priority value from this instance or the provided additional features.
+    /// </summary>
+    /// <param name="additionalFeatures">Additional features to check for priority values if this instance has none.</param>
+    /// <returns>The first valid priority value found, or 0 if none exist.</returns>
+    internal int Prioritize(params FeatureAttribute[] additionalFeatures)
+    {
+        var priority = InternalPriority;
+        if (priority.HasValue)
+        {
+            return priority.Value;
+        }
+
+        foreach (var feature in additionalFeatures)
+        {
+            priority = feature?.InternalPriority;
+            if (priority.HasValue)
+            {
+                return priority.Value;
+            }
+        }
+
+        return 0;
+    }
+
+    /// <summary>
+    /// Parses a delimited string of dependencies into an array of trimmed dependency strings.
+    /// </summary>
+    /// <param name="dependencies">A string containing delimited feature dependencies.</param>
+    /// <returns>An array of dependency strings, or an empty array if the input is null or whitespace.</returns>
+    private static string[] ParseDependencies(string dependencies)
+    {
+        if (string.IsNullOrWhiteSpace(dependencies))
+        {
+            return [];
+        }
+
+        return dependencies.Split(ListDelimiters, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+    }
 }
