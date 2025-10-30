@@ -128,7 +128,7 @@ public enum SelectRestriction
 {
     NotSpecified,
     All,
-    Distinct
+    Distinct,
 }
 
 public class ColumnItem : ISqlNode
@@ -229,7 +229,7 @@ public enum JoinKind
     None,
     Inner,
     Left,
-    Right
+    Right,
 }
 
 public class WhereClause : ISqlNode
@@ -288,7 +288,7 @@ public enum OrderDirection
 {
     NotSpecified,
     Asc,
-    Desc
+    Desc,
 }
 
 public class LimitClause : ISqlNode
@@ -378,7 +378,7 @@ public enum BinaryOperator
     And,
     Or,
     Like,
-    NotLike
+    NotLike,
 }
 
 public class UnaryExpression : Expression
@@ -398,7 +398,7 @@ public enum UnaryOperator
     Not,
     Plus,
     Minus,
-    BitwiseNot
+    BitwiseNot,
 }
 
 public class BetweenExpression : Expression
