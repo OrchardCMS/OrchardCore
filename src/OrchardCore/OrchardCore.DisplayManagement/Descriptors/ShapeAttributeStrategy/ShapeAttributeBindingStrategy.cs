@@ -43,15 +43,18 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
             }
         }
 
-        foreach (var iter in shapeAttributeOccurrences)
+        foreach (var occurrence in shapeAttributeOccurrences)
         {
-            var occurrence = iter;
             var shapeType = occurrence.ShapeAttribute.ShapeType ?? occurrence.MethodInfo.Name;
-            builder.Describe(shapeType)
-                .From(_typeFeatureProvider.GetFeatureForDependency(occurrence.ServiceType))
-                .BoundAs(
-                    occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name,
-                    CreateDelegate(occurrence));
+            var bindingSource = occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name;
+            var bindingDelegate = CreateDelegate(occurrence);
+
+            foreach (var feature in _typeFeatureProvider.GetFeaturesForDependency(occurrence.ServiceType))
+            {
+                builder.Describe(shapeType)
+                    .From(feature)
+                    .BoundAs(bindingSource, bindingDelegate);
+            }
         }
 
         return ValueTask.CompletedTask;
