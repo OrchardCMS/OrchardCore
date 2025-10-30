@@ -467,10 +467,6 @@ public abstract class FunctionArguments : ISqlNode
 {
 }
 
-public class EmptyArguments : FunctionArguments
-{
-}
-
 public class StarArgument : FunctionArguments
 {
 }

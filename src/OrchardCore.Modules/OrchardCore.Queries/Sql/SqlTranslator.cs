@@ -673,7 +673,6 @@ public class SqlTranslator
     {
         return arguments switch
         {
-            EmptyArguments => Array.Empty<string>(),
             StarArgument => new string[] { "*" },
             SelectStatementArgument selectArg => new string[] { TranslateSelectStatementToString(selectArg.SelectStatement) },
             ExpressionListArguments exprList => TranslateExpressionListToArray(exprList.Expressions),
