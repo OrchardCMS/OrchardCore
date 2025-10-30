@@ -523,7 +523,7 @@ public class SqlTranslator
         TranslateExpression(builder, binary.Right);
     }
 
-    private string GetBinaryOperatorString(BinaryOperator op)
+    private static string GetBinaryOperatorString(BinaryOperator op)
     {
         return op switch
         {
@@ -558,7 +558,7 @@ public class SqlTranslator
         TranslateExpression(builder, unary.Expression);
     }
 
-    private string GetUnaryOperatorString(UnaryOperator op)
+    private static string GetUnaryOperatorString(UnaryOperator op)
     {
         return op switch
         {
@@ -651,7 +651,7 @@ public class SqlTranslator
         }
     }
 
-    private object ExtractLiteralValue(Expression expression)
+    private static object ExtractLiteralValue(Expression expression)
     {
         return expression switch
         {
