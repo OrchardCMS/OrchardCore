@@ -1,20 +1,17 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Events;
-using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
-namespace OrchardCore.ContentTypes.Services;
+namespace OrchardCore.ContentManagement;
 
 public class ContentDefinitionService : IContentDefinitionService
 {
-    private readonly IEnumerable<Type> _contentPartTypes;
     private readonly IEnumerable<Type> _contentFieldTypes;
 
     private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -45,10 +42,6 @@ public class ContentDefinitionService : IContentDefinitionService
             logger.LogWarning("The content field '{ContentField}' should not be registered in DI. Use AddContentField<T> instead.", element);
         }
 
-        // TODO: This code can be removed in a future release and rationalized to only use ContentPartOptions.
-        _contentPartTypes = contentParts.Select(cp => cp.GetType())
-            .Union(contentOptions.Value.ContentPartOptions.Select(cpo => cpo.Type));
-
         // TODO: This code can be removed in a future release and rationalized to only use ContentFieldOptions.
         _contentFieldTypes = contentFields.Select(cf => cf.GetType())
             .Union(contentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type));
@@ -57,39 +50,6 @@ public class ContentDefinitionService : IContentDefinitionService
         S = stringLocalizer;
     }
 
-    public async Task<IEnumerable<EditTypeViewModel>> LoadTypesAsync()
-        => (await _contentDefinitionManager.LoadTypeDefinitionsAsync())
-            .Select(ctd => new EditTypeViewModel(ctd))
-            .OrderBy(m => m.DisplayName);
-
-    public async Task<IEnumerable<EditTypeViewModel>> GetTypesAsync()
-        => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-            .Select(ctd => new EditTypeViewModel(ctd))
-            .OrderBy(m => m.DisplayName);
-
-    public async Task<EditTypeViewModel> LoadTypeAsync(string name)
-    {
-        var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name);
-
-        if (contentTypeDefinition == null)
-        {
-            return null;
-        }
-
-        return new EditTypeViewModel(contentTypeDefinition);
-    }
-
-    public async Task<EditTypeViewModel> GetTypeAsync(string name)
-    {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name);
-
-        if (contentTypeDefinition == null)
-        {
-            return null;
-        }
-
-        return new EditTypeViewModel(contentTypeDefinition);
-    }
 
     public async Task<ContentTypeDefinition> AddTypeAsync(string name, string displayName)
     {
@@ -162,7 +122,7 @@ public class ContentDefinitionService : IContentDefinitionService
             // Delete the part if it's its own part.
             if (partDefinition.PartDefinition.Name == name)
             {
-                await RemovePartAsync(name);
+                await RemovePartDefinitionAsync(name);
             }
         }
 
@@ -241,111 +201,11 @@ public class ContentDefinitionService : IContentDefinitionService
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);
     }
 
-    public async Task<IEnumerable<EditPartViewModel>> LoadPartsAsync(bool metadataPartsOnly)
+    public async Task<ContentPartDefinition> CreatePartDefinitionAsync(string name)
     {
-        var typeNames = new HashSet<string>((await LoadTypesAsync()).Select(ctd => ctd.Name));
-
-        // User-defined parts.
-        // Except for those parts with the same name as a type (implicit type's part or a mistake).
-        var userContentParts = (await _contentDefinitionManager.LoadPartDefinitionsAsync())
-            .Where(cpd => !typeNames.Contains(cpd.Name))
-            .Select(cpd => new EditPartViewModel(cpd))
-            .ToDictionary(k => k.Name);
-
-        // Code-defined parts.
-        var codeDefinedParts = metadataPartsOnly
-            ? []
-            : _contentPartTypes
-                .Where(cpd => !userContentParts.ContainsKey(cpd.Name))
-                .Select(cpi => new EditPartViewModel
-                {
-                    Name = cpi.Name,
-                    DisplayName = cpi.Name,
-                }).ToList();
-
-        // Order by display name.
-        return codeDefinedParts
-            .Union(userContentParts.Values)
-            .OrderBy(m => m.DisplayName);
-    }
-
-    public async Task<IEnumerable<EditPartViewModel>> GetPartsAsync(bool metadataPartsOnly)
-    {
-        var typeNames = new HashSet<string>((await GetTypesAsync()).Select(ctd => ctd.Name));
-
-        // User-defined parts.
-        // Except for those parts with the same name as a type (implicit type's part or a mistake).
-        var userContentParts = (await _contentDefinitionManager.ListPartDefinitionsAsync())
-            .Where(cpd => !typeNames.Contains(cpd.Name))
-            .Select(cpd => new EditPartViewModel(cpd))
-            .ToDictionary(k => k.Name);
-
-        // Code-defined parts.
-        var codeDefinedParts = metadataPartsOnly
-            ? []
-            : _contentPartTypes
-                .Where(cpd => !userContentParts.ContainsKey(cpd.Name))
-                .Select(cpi => new EditPartViewModel
-                {
-                    Name = cpi.Name,
-                    DisplayName = cpi.Name,
-                }).ToList();
-
-        // Order by display name.
-        return codeDefinedParts
-            .Union(userContentParts.Values)
-            .OrderBy(m => m.DisplayName);
-    }
-
-    public async Task<EditPartViewModel> LoadPartAsync(string name)
-    {
-        var contentPartDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name);
-
-        if (contentPartDefinition == null)
-        {
-            var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name);
-
-            if (contentTypeDefinition == null)
-            {
-                return null;
-            }
-
-            contentPartDefinition = new ContentPartDefinition(name);
-        }
-
-        var viewModel = new EditPartViewModel(contentPartDefinition);
-
-        return viewModel;
-    }
-
-    public async Task<EditPartViewModel> GetPartAsync(string name)
-    {
-        var contentPartDefinition = await _contentDefinitionManager.GetPartDefinitionAsync(name);
-
-        if (contentPartDefinition == null)
-        {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name);
-
-            if (contentTypeDefinition == null)
-            {
-                return null;
-            }
-
-            contentPartDefinition = new ContentPartDefinition(name);
-        }
-
-        var viewModel = new EditPartViewModel(contentPartDefinition);
-
-        return viewModel;
-    }
-
-    public async Task<EditPartViewModel> AddPartAsync(CreatePartViewModel partViewModel)
-    {
-        var name = partViewModel.Name;
-
         if (await _contentDefinitionManager.LoadPartDefinitionAsync(name) is not null)
         {
-            throw new Exception(S["Cannot add part named '{0}'. It already exists.", name]);
+            throw new InvalidOperationException($"Part named '{name}' already exists.");
         }
 
         if (!string.IsNullOrEmpty(name))
@@ -358,15 +218,19 @@ public class ContentDefinitionService : IContentDefinitionService
                 ContentPartDefinition = partDefinition,
             };
 
-            _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
+            _contentDefinitionEventHandlers.Invoke(
+                (handler, ctx) => handler.ContentPartCreated(ctx),
+                context,
+                _logger
+            );
 
-            return new EditPartViewModel(partDefinition);
+            return partDefinition; // ✅ Return domain object, not ViewModel
         }
 
         return null;
     }
 
-    public async Task RemovePartAsync(string name)
+    public async Task RemovePartDefinitionAsync(string name)
     {
         var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name);
 
@@ -459,51 +323,6 @@ public class ContentDefinitionService : IContentDefinitionService
         };
 
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
-    }
-
-    public async Task AlterFieldAsync(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)
-    {
-        await _contentDefinitionManager.AlterPartDefinitionAsync(partViewModel.Name, partBuilder =>
-        {
-            partBuilder.WithField(fieldViewModel.Name, fieldBuilder =>
-            {
-                fieldBuilder.WithDisplayName(fieldViewModel.DisplayName);
-                fieldBuilder.WithEditor(fieldViewModel.Editor);
-                fieldBuilder.WithDisplayMode(fieldViewModel.DisplayMode);
-            });
-        });
-
-        var context = new ContentPartFieldUpdatedContext
-        {
-            ContentPartName = partViewModel.Name,
-            ContentFieldName = fieldViewModel.Name,
-        };
-
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
-    }
-
-    public async Task AlterTypePartAsync(EditTypePartViewModel typePartViewModel)
-    {
-        var typeDefinition = typePartViewModel.TypePartDefinition.ContentTypeDefinition;
-
-        await _contentDefinitionManager.AlterTypeDefinitionAsync(typeDefinition.Name, type =>
-        {
-            type.WithPart(typePartViewModel.Name, typePartViewModel.TypePartDefinition.PartDefinition, part =>
-            {
-                part.WithDisplayName(typePartViewModel.DisplayName);
-                part.WithDescription(typePartViewModel.Description);
-                part.WithEditor(typePartViewModel.Editor);
-                part.WithDisplayMode(typePartViewModel.DisplayMode);
-            });
-        });
-
-        var context = new ContentTypePartUpdatedContext
-        {
-            ContentTypeName = typeDefinition.Name,
-            ContentPartName = typePartViewModel.Name,
-        };
-
-        _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
     }
 
     public async Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames)
