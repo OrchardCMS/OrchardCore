@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell.Scope;
@@ -58,11 +59,15 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        ShellScope.AddDeferredTask(scope =>
+        ShellScope.AddDeferredTask(s =>
         {
-            var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
+            // Trigger the indexing in differed task to ensure that the current transaction is committed before indexing.
+            return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("synchronize-content-index-" + context.IndexProfile.Id, scope =>
+            {
+                var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
 
-            return indexingService.ProcessRecordsAsync([context.IndexProfile.Id]);
+                return indexingService.ProcessRecordsAsync([context.IndexProfile.Id]);
+            });
         });
 
         return Task.CompletedTask;
