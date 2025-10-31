@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.BackgroundJobs;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing.Core.Deployments;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -16,21 +16,21 @@ public sealed class RebuildIndexStep : NamedRecipeStepHandler
     {
     }
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
+    protected override Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<IndexProfileDeploymentStep>();
 
         if (model == null)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         if (!model.IncludeAll && (model.IndexNames == null || model.IndexNames.Length == 0))
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("rebuild-indexes", async scope =>
+        ShellScope.ExecuteInBackgroundAfterRequestAsync(async scope =>
         {
             var indexProfileManager = scope.ServiceProvider.GetService<IIndexProfileManager>();
 
@@ -60,6 +60,8 @@ public sealed class RebuildIndexStep : NamedRecipeStepHandler
                     await indexProfileManager.SynchronizeAsync(index);
                 }
             }
-        });
+        }, "rebuild-indexes");
+
+        return Task.CompletedTask;
     }
 }
