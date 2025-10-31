@@ -14,7 +14,7 @@ public sealed class Migrations : DataMigration
             .Column<string>(nameof(AuditTrailEventIndex.Category), column => column.WithLength(64))
             .Column<string>(nameof(AuditTrailEventIndex.Name), column => column.WithLength(64))
             .Column<string>(nameof(AuditTrailEventIndex.CorrelationId), column => column.WithLength(26))
-            .Column<string>(nameof(AuditTrailEventIndex.UserId), column => column.WithLength(26))
+            .Column<string>(nameof(AuditTrailEventIndex.UserId), column => column.WithLength(255))
             .Column<string>(nameof(AuditTrailEventIndex.NormalizedUserName), column => column.Nullable().WithLength(255))
             .Column<DateTime>(nameof(AuditTrailEventIndex.CreatedUtc), column => column.Nullable()),
             collection: AuditTrailEvent.Collection);
@@ -33,6 +33,20 @@ public sealed class Migrations : DataMigration
             collection: AuditTrailEvent.Collection
         );
 
-        return 1;
+        return 2;
+    }
+
+    public async Task<int> UpdateFrom1Async()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<AuditTrailEventIndex>(
+            table =>
+                table.AlterColumn(
+                    nameof(AuditTrailEventIndex.UserId),
+                    column => column.WithType(typeof(string), 255)
+            ),
+            collection: AuditTrailEvent.Collection
+        );
+
+        return 2;
     }
 }
