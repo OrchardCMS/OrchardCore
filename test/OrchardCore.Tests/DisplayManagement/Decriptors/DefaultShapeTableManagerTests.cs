@@ -503,6 +503,96 @@ public class DefaultShapeTableManagerTests : IDisposable
         Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
     }
 
+    /// <summary>
+    /// Tests that when an IShapeTableProvider is registered for multiple features using ITypeFeatureProvider,
+    /// the DefaultShapeTableManager processes the provider separately for each feature it belongs to.
+    /// This ensures that shapes from all features are properly discovered and registered.
+    /// Related to PR: https://github.com/OrchardCMS/OrchardCore/pull/18502
+    /// </summary>
+    [Fact]
+    public async Task ShapeTableProviderRegisteredInMultipleFeaturesIsProcessedForEachFeature()
+    {
+        // Arrange
+        IServiceCollection serviceCollection = new ServiceCollection();
+
+        serviceCollection.AddLogging();
+        serviceCollection.AddMemoryCache();
+        serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
+        serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
+        serviceCollection.AddKeyedSingleton<IDictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, ShapeTable>());
+        serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
+        serviceCollection.AddSingleton<IHostEnvironment>(new StubHostingEnvironment());
+
+        // Create two separate features
+        var feature1Info = new TestModuleExtensionInfo("Feature1");
+        var feature2Info = new TestModuleExtensionInfo("Feature2");
+
+        var feature1 = feature1Info.Features.First();
+        var feature2 = feature2Info.Features.First();
+
+        var features = new[] { feature1, feature2 };
+
+        serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
+
+        // Create a shape provider that tracks which features it was called for
+        var calledForFeatures = new List<IFeatureInfo>();
+        var multiFeatureProvider = new TestMultiFeatureShapeProvider(calledForFeatures);
+
+        serviceCollection.AddSingleton<IShapeTableProvider>(multiFeatureProvider);
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        // Register the provider for both features
+        var typeFeatureProvider = serviceProvider.GetService<ITypeFeatureProvider>();
+        typeFeatureProvider.TryAdd(typeof(TestMultiFeatureShapeProvider), feature1);
+        typeFeatureProvider.TryAdd(typeof(TestMultiFeatureShapeProvider), feature2);
+
+        // Act
+        var manager = serviceProvider.GetService<IShapeTableManager>();
+        var shapeTable = await manager.GetShapeTableAsync(null);
+
+        // Assert
+        // The provider should have been called once for each feature it's registered to
+        Assert.Equal(2, calledForFeatures.Count);
+        Assert.Contains(feature1, calledForFeatures);
+        Assert.Contains(feature2, calledForFeatures);
+
+        // Both features should have contributed their shapes
+        Assert.True(shapeTable.Descriptors.ContainsKey("Feature1Shape"));
+        Assert.True(shapeTable.Descriptors.ContainsKey("Feature2Shape"));
+
+        (serviceProvider as IDisposable)?.Dispose();
+    }
+
+    // New test shape provider that can be registered in multiple features
+    public class TestMultiFeatureShapeProvider : IShapeTableProvider
+    {
+        private readonly List<IFeatureInfo> _calledForFeatures;
+
+        public TestMultiFeatureShapeProvider(List<IFeatureInfo> calledForFeatures)
+        {
+            _calledForFeatures = calledForFeatures;
+        }
+
+        public ValueTask DiscoverAsync(ShapeTableBuilder builder)
+        {
+            // Access the internal Feature property
+            var feature = builder.Feature;
+
+            if (feature != null)
+            {
+                _calledForFeatures.Add(feature);
+
+                // Register a shape specific to this feature
+                builder.Describe($"{feature.Id}Shape")
+                    .From(feature)
+                    .BoundAs(feature.Id, null);
+            }
+
+            return ValueTask.CompletedTask;
+        }
+    }
+
     public void Dispose()
     {
         (_serviceProvider as IDisposable)?.Dispose();

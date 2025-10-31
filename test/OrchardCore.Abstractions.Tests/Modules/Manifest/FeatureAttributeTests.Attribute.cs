@@ -26,46 +26,6 @@ public abstract class FeatureAttributeTests<TAttribute>
     protected virtual ITestOutputHelper OutputHelper { get; }
 
     /// <summary>
-    /// Gets the <see cref="FeatureAttribute.DefaultName"/>.
-    /// </summary>
-    protected static string DefaultName => FeatureAttribute.DefaultName;
-
-    /// <summary>
-    /// Gets the <see cref="FeatureAttribute.DefaultCategory"/>.
-    /// </summary>
-    protected static string DefaultCategory => FeatureAttribute.DefaultCategory;
-
-    /// <summary>
-    /// Gets the <see cref="FeatureAttribute.DefaultPriority"/>.
-    /// </summary>
-    protected static int DefaultPriority => FeatureAttribute.DefaultPriority;
-
-    /// <summary>
-    /// Gets the <see cref="FeatureAttribute.DefaultDescription"/>.
-    /// </summary>
-    protected static string DefaultDescription => FeatureAttribute.DefaultDescription;
-
-    /// <summary>
-    /// Gets the <see cref="FeatureAttribute.DefaultFeatureDependencies"/>.
-    /// </summary>
-    protected static string DefaultFeatureDependencies => FeatureAttribute.DefaultFeatureDependencies;
-
-    /// <summary>
-    /// Gets the <see cref="FeatureAttribute.DefaultDefaultTenantOnly"/>.
-    /// </summary>
-    protected static bool DefaultDefaultTenantOnly => FeatureAttribute.DefaultDefaultTenantOnly;
-
-    /// <summary>
-    /// Gets the <see cref="FeatureAttribute.DefaultAlwaysEnabled"/>.
-    /// </summary>
-    protected static bool DefaultAlwaysEnabled => FeatureAttribute.DefaultAlwaysEnabled;
-
-    /// <summary>
-    /// Gets the <see cref="FeatureAttribute.ListDelims"/>.
-    /// </summary>
-    protected static IEnumerable<char> ListDelims => FeatureAttribute.ListDelims;
-
-    /// <summary>
     /// Returns a <paramref name="count"/> of Lorem Ipsum Words.
     /// </summary>
     /// <param name="count"></param>
@@ -347,8 +307,8 @@ public abstract class FeatureAttributeTests<TAttribute>
         // Name, OTOH, different story, Id is the fallback response when Name is not provided
         Assert.Null(feature.Name);
         Assert.Empty(feature.Category);
-        Assert.Equal(DefaultDescription, feature.Description);
-        Assert.Equal($"{DefaultPriority}", feature.Priority);
+        Assert.Empty(feature.Description);
+        Assert.Equal($"{0}", feature.Priority);
     }
 
     private static bool DefaultAssemblyAttribPredicate<T>(T _) where T : Attribute => _ is not null;
