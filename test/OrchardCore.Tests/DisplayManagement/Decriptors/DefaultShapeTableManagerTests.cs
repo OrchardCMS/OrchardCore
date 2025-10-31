@@ -519,7 +519,8 @@ public class DefaultShapeTableManagerTests : IDisposable
         serviceCollection.AddMemoryCache();
         serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
         serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
-        serviceCollection.AddKeyedSingleton<IDictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, ShapeTable>());
+        serviceCollection.AddKeyedSingleton<IDictionary<string, Task<ShapeTable>>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, Task<ShapeTable>>());
+        serviceCollection.AddSingleton<ILocalLock, LocalLock>();
         serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
         serviceCollection.AddSingleton<IHostEnvironment>(new StubHostingEnvironment());
 
