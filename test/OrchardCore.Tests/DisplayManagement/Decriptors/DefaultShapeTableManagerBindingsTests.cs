@@ -147,5 +147,7 @@ public class DefaultShapeTableManagerBindingsTests : IDisposable
     public void Dispose()
     {
         (_sp as IDisposable)?.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 }
