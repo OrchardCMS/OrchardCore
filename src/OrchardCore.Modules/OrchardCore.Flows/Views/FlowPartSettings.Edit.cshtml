@@ -14,11 +14,21 @@
 </div>
 <div class="mb-3">
     <label asp-for="DefaultAlignment" class="form-label">@T["What default alignment should be used?"]</label>
-    <select asp-for="DefaultAlignment" class="form-select" id="type-part-editor-select">
+    <select asp-for="DefaultAlignment" class="form-select" id="type-part-alignment-select">
         <option value="">@T["Please choose an alignment"]</option>
         @foreach (var alignment in Enum.GetValues(typeof(FlowAlignment)))
         {
-            <option value="@alignment">@T[alignment.ToString()]</option>
+            var alignmentText = alignment switch
+            {
+                FlowAlignment.Left => T["Left"],
+                FlowAlignment.Right => T["Right"],
+                FlowAlignment.Center => T["Center"],
+                FlowAlignment.Justify => T["Justify"],
+                FlowAlignment.Inherit => T["Inherit"],
+                _ => T["Unknown"]
+            };
+
+            <option value="@alignment">@alignmentText</option>
         }
     </select>
 </div>
