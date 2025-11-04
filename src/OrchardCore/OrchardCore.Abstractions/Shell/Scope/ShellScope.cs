@@ -208,9 +208,25 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Execute a delegate using a child scope created from the current one.
     /// </summary>
+    public static async Task UsingChildScopeAsync<T>(Func<ShellScope, T, Task> execute, T arg, bool activateShell = true)
+    {
+        await (await CreateChildScopeAsync()).UsingAsync(execute, arg, activateShell);
+    }
+
+    /// <summary>
+    /// Execute a delegate using a child scope created from the current one.
+    /// </summary>
     public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute, bool activateShell = true)
     {
         await (await CreateChildScopeAsync(settings)).UsingAsync(execute, activateShell);
+    }
+
+    /// <summary>
+    /// Execute a delegate using a child scope created from the current one.
+    /// </summary>
+    public static async Task UsingChildScopeAsync<T>(ShellSettings settings, Func<ShellScope, T, Task> execute, T arg, bool activateShell = true)
+    {
+        await (await CreateChildScopeAsync(settings)).UsingAsync(execute, arg, activateShell);
     }
 
     /// <summary>
@@ -222,9 +238,17 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     }
 
     /// <summary>
+    /// Execute a delegate using a child scope created from the current one.
+    /// </summary>
+    public static async Task UsingChildScopeAsync<T>(string tenant, Func<ShellScope, T, Task> execute, T arg, bool activateShell = true)
+    {
+        await (await CreateChildScopeAsync(tenant)).UsingAsync(execute, arg, activateShell);
+    }
+
+    /// <summary>
     /// Start holding this shell scope along the async flow.
     /// </summary>
-    public void StartAsyncFlow()
+    private void StartAsyncFlow()
     // Use an object indirection to hold the current scope in the 'AsyncLocal',
     // so that it can be cleared in all execution contexts when it is cleared.
         => _current.Value = new ShellScopeHolder { Scope = this };
@@ -242,13 +266,34 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
     /// <summary>
     /// Executes a delegate using this shell scope in an isolated async flow,
+    /// but only as a service scope without managing the shell state and
+    /// without invoking any tenant event.
+    /// </summary>
+    public Task UsingServiceScopeAsync<T>(Func<ShellScope, T, Task> execute, T arg)
+    {
+        _state |= ShellScopeStates.ServiceScopeOnly;
+        return UsingAsync(execute, arg);
+    }
+
+    /// <summary>
+    /// Executes a delegate using this shell scope in an isolated async flow,
     /// while managing the shell state and invoking tenant events.
     /// </summary>
-    public async Task UsingAsync(Func<ShellScope, Task> execute, bool activateShell = true)
+    public Task UsingAsync(Func<ShellScope, Task> execute, bool activateShell = true)
+        => UsingAsyncCore((scope, func) => func(scope), execute, activateShell);
+
+    /// <summary>
+    /// Executes a delegate using this shell scope in an isolated async flow,
+    /// while managing the shell state and invoking tenant events.
+    /// </summary>
+    public Task UsingAsync<T>(Func<ShellScope, T, Task> execute, T arg, bool activateShell = true)
+        => UsingAsyncCore(execute, arg, activateShell);
+
+    private async Task UsingAsyncCore<T>(Func<ShellScope, T, Task> execute, T arg, bool activateShell)
     {
         if (Current == this)
         {
-            await execute(Current);
+            await execute(this, arg);
             return;
         }
 
@@ -264,7 +309,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                         await ActivateShellInternalAsync();
                     }
 
-                    await execute(this);
+                    await execute(this, arg);
                 }
                 finally
                 {
@@ -486,23 +531,24 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
                 // Use 'UsingAsync()' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
                 // trigger another one, but still prevent the shell to be activated in a deferred task.
-                await scope.UsingAsync(async scope =>
+                await scope.UsingAsync(async (scope, shellContext, deferredTask) =>
                 {
-                    var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
-
                     try
                     {
-                        await task(scope);
+                        await deferredTask(scope);
                     }
                     catch (Exception e)
                     {
+                        var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
+
                         logger?.LogError(e,
                             "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
-                            task.GetType().FullName, ShellContext.Settings.Name);
+                            deferredTask.GetType().FullName, shellContext.Settings.Name);
 
                         await scope.HandleExceptionAsync(e);
                     }
                 },
+                ShellContext, task,
                 activateShell: false);
             }
         }

@@ -1,3 +1,4 @@
+
 namespace OrchardCore.Environment.Shell.Scope;
 
 public static class ShellScopeExtensions
@@ -90,4 +91,32 @@ public static class ShellScopeExtensions
 
         return scope;
     }
+
+    /// <summary>
+    /// Executes a delegate using this shell scope in an isolated async flow,
+    /// while managing the shell state and invoking tenant events.
+    /// </summary>
+    public static Task UsingAsync<T1, T2>(this ShellScope scope, Func<ShellScope, T1, T2, Task> execute, T1 arg1, T2 arg2, bool activateShell = true)
+        => scope.UsingAsync((scope, state) => state.execute(scope, state.arg1, state.arg2), (execute, arg1, arg2), activateShell);
+
+    /// <summary>
+    /// Executes a delegate using this shell scope in an isolated async flow,
+    /// while managing the shell state and invoking tenant events.
+    /// </summary>
+    public static Task UsingAsync<T1, T2, T3>(this ShellScope scope, Func<ShellScope, T1, T2, T3, Task> execute, T1 arg1, T2 arg2, T3 arg3, bool activateShell = true)
+        => scope.UsingAsync((scope, state) => state.execute(scope, state.arg1, state.arg2, state.arg3), (execute, arg1, arg2, arg3), activateShell);
+
+    /// <summary>
+    /// Executes a delegate using this shell scope in an isolated async flow,
+    /// while managing the shell state and invoking tenant events.
+    /// </summary>
+    public static Task UsingAsync<T1, T2, T3, T4>(this ShellScope scope, Func<ShellScope, T1, T2, T3, T4, Task> execute, T1 arg1, T2 arg2, T3 arg3, T4 arg4, bool activateShell = true)
+        => scope.UsingAsync((scope, state) => state.execute(scope, state.arg1, state.arg2, state.arg3, state.arg4), (execute, arg1, arg2, arg3, arg4), activateShell);
+
+    /// <summary>
+    /// Executes a delegate using this shell scope in an isolated async flow,
+    /// while managing the shell state and invoking tenant events.
+    /// </summary>
+    public static Task UsingAsync<T1, T2, T3, T4, T5>(this ShellScope scope, Func<ShellScope, T1, T2, T3, T4, T5, Task> execute, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, bool activateShell = true)
+        => scope.UsingAsync((scope, state) => state.execute(scope, state.arg1, state.arg2, state.arg3, state.arg4, state.arg5), (execute, arg1, arg2, arg3, arg4, arg5), activateShell);
 }
