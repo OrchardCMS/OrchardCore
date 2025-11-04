@@ -15,10 +15,10 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
     private readonly AsyncServiceScope _serviceScope;
     private Dictionary<object, object> _items;
-    private List<Func<ShellScope, Task>> _beforeDispose;
+    private InlineList<Func<ShellScope, Task>> _beforeDispose;
+    private InlineList<Func<ShellScope, Task>> _deferredTasks;
+    private InlineList<Func<ShellScope, Exception, Task>> _exceptionHandlers;
     private HashSet<string> _deferredSignals;
-    private List<Func<ShellScope, Task>> _deferredTasks;
-    private List<Func<ShellScope, Exception, Task>> _exceptionHandlers;
 
     private ShellScopeStates _state;
 
@@ -404,16 +404,14 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         ThrowIfTerminating();
 
-        var list = _beforeDispose ??= [];
-
         if (last)
         {
             // Note: The callbacks are invoked in reverse order, so adding at index 0 makes it last.
-            list.Insert(0, callback);
+            _beforeDispose.Insert(0, callback);
         }
         else
         {
-            list.Add(callback);
+            _beforeDispose.Add(callback);
         }
     }
 
@@ -434,7 +432,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         ThrowIfTerminating();
 
-        (_deferredTasks ??= []).Add(task);
+        _deferredTasks.Add(task);
     }
 
     /// <summary>
@@ -444,7 +442,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         ThrowIfTerminating();
 
-        (_exceptionHandlers ??= []).Add(callback);
+        _exceptionHandlers.Add(callback);
     }
 
     /// <summary>
@@ -472,7 +470,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     public async Task HandleExceptionAsync(Exception e)
     {
-        if (_exceptionHandlers == null)
+        if (_exceptionHandlers.Count <= 0)
         {
             return;
         }
@@ -489,13 +487,10 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     private async Task BeforeDisposeAsync()
     {
-        if (_beforeDispose != null)
+        for (var i = _beforeDispose.Count - 1; i >= 0; i--)
         {
-            for (var i = _beforeDispose.Count - 1; i >= 0; i--)
-            {
-                var callback = _beforeDispose[i];
-                await callback(this);
-            }
+            var callback = _beforeDispose[i];
+            await callback(this);
         }
 
         if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
@@ -512,7 +507,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
             }
         }
 
-        if (_deferredTasks?.Count > 0)
+        if (_deferredTasks.Count > 0)
         {
             var shellHost = ShellContext.ServiceProvider.GetRequiredService<IShellHost>();
 
