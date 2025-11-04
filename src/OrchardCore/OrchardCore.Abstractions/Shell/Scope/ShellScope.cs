@@ -408,11 +408,12 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
         if (last)
         {
-            list.Add(callback);
+            // Note: The callbacks are invoked in reverse order, so adding at index 0 makes it last.
+            list.Insert(0, callback);
         }
         else
         {
-            list.Insert(0, callback);
+            list.Add(callback);
         }
     }
 
@@ -490,8 +491,9 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         if (_beforeDispose != null)
         {
-            foreach (var callback in _beforeDispose)
+            for (var i = _beforeDispose.Count - 1; i >= 0; i--)
             {
+                var callback = _beforeDispose[i];
                 await callback(this);
             }
         }
