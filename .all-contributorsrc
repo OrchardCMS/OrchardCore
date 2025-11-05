@@ -3421,6 +3421,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "harshasiddartha",
+      "name": "harshasiddartha",
+      "avatar_url": "https://avatars.githubusercontent.com/u/147021873?v=4",
+      "profile": "https://github.com/harshasiddartha",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
