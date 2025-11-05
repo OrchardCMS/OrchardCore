@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Html
 @using OrchardCore.Flows.Models
 @model OrchardCore.Flows.ViewModels.FlowPartSettingsViewModel
 
@@ -18,14 +19,14 @@
         <option value="">@T["Please choose an alignment"]</option>
         @foreach (var alignment in Enum.GetValues(typeof(FlowAlignment)))
         {
-            var alignmentText = alignment switch
+            IHtmlContent alignmentText = alignment switch
             {
                 FlowAlignment.Left => T["Left"],
                 FlowAlignment.Right => T["Right"],
                 FlowAlignment.Center => T["Center"],
                 FlowAlignment.Justify => T["Justify"],
                 FlowAlignment.Inherit => T["Inherit"],
-                _ => T["Unknown"]
+                _ => new HtmlString(alignment.ToString())
             };
 
             <option value="@alignment">@alignmentText</option>
