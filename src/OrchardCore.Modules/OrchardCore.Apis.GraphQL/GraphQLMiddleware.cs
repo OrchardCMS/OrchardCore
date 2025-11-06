@@ -45,33 +45,40 @@ public class GraphQLMiddleware : IMiddleware
         _graphQLTextSerializer = graphQLTextSerializer;
         _logger = logger;
     }
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (!IsGraphQLRequest(context))
         {
-            await next(context);
+            return next(context);
         }
         else
         {
-            var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
-            var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
-            if (authenticateResult.Succeeded)
-            {
-                context.User = authenticateResult.Principal;
-            }
-            var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
-            var authorized = await authorizationService.AuthorizeAsync(context.User, GraphQLPermissions.ExecuteGraphQL);
-
-            if (authorized)
-            {
-                await ExecuteAsync(context);
-            }
-            else
-            {
-                await context.ChallengeAsync("Api");
-            }
+            return ProcessGraphQLRequestAsync(context);
         }
     }
+
+    private async Task ProcessGraphQLRequestAsync(HttpContext context)
+    {
+        var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
+        var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
+        if (authenticateResult.Succeeded)
+        {
+            context.User = authenticateResult.Principal;
+        }
+        var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
+        var authorized = await authorizationService.AuthorizeAsync(context.User, GraphQLPermissions.ExecuteGraphQL);
+
+        if (authorized)
+        {
+            await ExecuteAsync(context);
+        }
+        else
+        {
+            await context.ChallengeAsync("Api");
+        }
+    }
+
     private bool IsGraphQLRequest(HttpContext context)
     {
         return context.Request.Path.StartsWithNormalizedSegments(_settings.Path, StringComparison.OrdinalIgnoreCase);

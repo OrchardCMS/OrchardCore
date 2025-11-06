@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Workflows.Helpers;
@@ -36,13 +37,46 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
         _logger = logger;
     }
 
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var httpMethod = context.HttpContext.Request.Method;
         var routeValues = context.RouteData.Values;
-        var workflowTypeEntries = await _workflowTypeRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
-        var workflowEntries = await _workflowRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
 
+        var workflowTypeEntriesTask = _workflowTypeRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
+        var workflowEntriesTask = _workflowRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
+
+        if (workflowEntriesTask.IsCompletedSuccessfully && workflowTypeEntriesTask.IsCompletedSuccessfully)
+        {
+            var workflowTypeEntries = workflowTypeEntriesTask.Result;
+            var workflowEntries = workflowEntriesTask.Result;
+
+            if(!workflowTypeEntries.Any() && !workflowEntries.Any())
+            {
+                return next();
+            }
+
+            return ProcessWorkflowsAsync(routeValues, workflowTypeEntries, workflowEntries, next);
+        }
+        else
+        {
+            return Awaited(this, routeValues, next, workflowTypeEntriesTask, workflowEntriesTask);
+
+            static async Task Awaited(
+                WorkflowActionFilter workflowActionFilter,
+                RouteValueDictionary routeValues,
+                ActionExecutionDelegate next,
+                Task<IEnumerable<Models.WorkflowRoutesEntry>> workflowTypeEntriesTask,
+                Task<IEnumerable<Models.WorkflowRoutesEntry>> workflowEntriesTask)
+            {
+                var workflowTypeEntries = await workflowTypeEntriesTask;
+                var workflowEntries = await workflowEntriesTask;
+                await workflowActionFilter.ProcessWorkflowsAsync(routeValues, workflowTypeEntries, workflowEntries, next);
+            }
+        }
+    }
+
+    private async Task ProcessWorkflowsAsync(RouteValueDictionary routeValues, IEnumerable<Models.WorkflowRoutesEntry> workflowTypeEntries, IEnumerable<Models.WorkflowRoutesEntry> workflowEntries, ActionExecutionDelegate next)
+    { 
         if (workflowTypeEntries.Any())
         {
             var workflowTypeIds = workflowTypeEntries.Select(x => long.Parse(x.WorkflowId)).ToList();

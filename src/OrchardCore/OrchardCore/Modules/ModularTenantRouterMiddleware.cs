@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules;
@@ -16,7 +17,7 @@ public class ModularTenantRouterMiddleware
     public ModularTenantRouterMiddleware(RequestDelegate _, ILogger<ModularTenantRouterMiddleware> logger)
         => _logger = logger;
 
-    public async Task Invoke(HttpContext httpContext)
+    public Task Invoke(HttpContext httpContext)
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -39,9 +40,20 @@ public class ModularTenantRouterMiddleware
         // Do we need to rebuild the pipeline?
         if (!shellContext.HasPipeline())
         {
-            await shellContext.BuildPipelineAsync();
+            return Awaited(shellContext, httpContext);
         }
 
-        await shellContext.Pipeline.Invoke(httpContext);
+        return shellContext.Pipeline.Invoke(httpContext);
+
+        static async Task Awaited(ShellContext shellContext, HttpContext httpContext)
+        {
+            // Do we need to rebuild the pipeline?
+            if (!shellContext.HasPipeline())
+            {
+                await shellContext.BuildPipelineAsync();
+            }
+
+            await shellContext.Pipeline.Invoke(httpContext);
+        }
     }
 }
