@@ -680,7 +680,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         try
         {
-            await _session.FlushAsync(cancellationToken);
+            await _session.SaveChangesAsync(cancellationToken);
         }
         catch (ConcurrencyException exception)
         {
