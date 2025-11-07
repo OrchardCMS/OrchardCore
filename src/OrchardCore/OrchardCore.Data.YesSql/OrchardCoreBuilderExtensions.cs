@@ -1,5 +1,5 @@
 using System.Buffers;
-using System.Data;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
@@ -178,6 +178,22 @@ public static class OrchardCoreBuilderExtensions
             services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
             services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
         });
+
+        builder.Configure(app =>
+        {
+            app.Use((context, next) =>
+            {
+                // Ensure that any changes made to the YesSql session are persisted before the response is sent.
+                var session = context.RequestServices.GetService<ISession>();
+                if (session != null)
+                {
+                    var cancellationToken = context.RequestAborted;
+                    context.Response.OnStarting(async () => await session.SaveChangesAsync(cancellationToken));
+                }
+                return next(context);
+            });
+        },
+        order: int.MinValue);
 
         return builder;
     }
