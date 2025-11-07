@@ -8,6 +8,7 @@ using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
 using OrchardCore.Environment.Shell;
+using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -191,6 +192,8 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
         // authorization and end session views support flowing the entire payload and not just the request_uri.
         options.EnableAuthorizationRequestCaching = true;
         options.EnableEndSessionRequestCaching = true;
+
+        options.Handlers.AddRange(OpenIdServerHandlers.DefaultHandlers);
     }
 
     public void Configure(OpenIddictServerDataProtectionOptions options)
