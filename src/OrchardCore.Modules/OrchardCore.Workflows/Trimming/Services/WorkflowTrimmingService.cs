@@ -46,7 +46,6 @@ public class WorkflowTrimmingService : IWorkflowTrimmingService
             return 0;
         }
 
-        // Convert statuses to string instead of int
         var statuses = settings.Statuses.Select(x => x).ToArray();
         var workflowInstances = await _session
             .Query<Workflow, WorkflowIndex>(x => x.WorkflowStatus.IsIn(statuses) && x.CreatedUtc <= dateThreshold)
