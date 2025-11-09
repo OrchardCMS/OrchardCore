@@ -92,8 +92,8 @@ public sealed class WorkflowController : Controller
 
         query = model.Options.Filter switch
         {
-            WorkflowFilter.Finished => query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Finished),
-            WorkflowFilter.Faulted => query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Faulted),
+            WorkflowFilter.Finished => query.Where(x => x.WorkflowStatus == WorkflowStatus.Finished),
+            WorkflowFilter.Faulted => query.Where(x => x.WorkflowStatus == WorkflowStatus.Faulted),
             _ => query,
         };
 
