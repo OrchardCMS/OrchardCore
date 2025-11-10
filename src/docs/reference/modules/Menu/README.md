@@ -1,5 +1,63 @@
 # Menu (`OrchardCore.Menu`)
 
+## Rendering Menus
+
+Menus can be rendered in your theme using either Razor tag helpers or Liquid. This section describes how to render a menu on the frontend of your site.
+
+### Razor Tag Helper
+
+In Razor views, you can use the `<menu>` tag helper to render a menu:
+
+```html
+<menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
+```
+
+#### Tag Helper Attributes
+
+| Attribute                | Description                                                                                      |
+|--------------------------|--------------------------------------------------------------------------------------------------|
+| `alias`                  | The alias of the menu to render (e.g., `alias:main-menu`).                                      |
+| `cache-id`               | Optional. A unique identifier for caching the menu output.                                       |
+| `cache-context`          | Optional. Cache contexts to vary the cached output (e.g., `user.roles`).                         |
+| `cache-tag`              | Optional. Tags to associate with the cached entry for invalidation purposes.                     |
+| `cache-fixed-duration`   | Optional. Fixed duration for caching (e.g., `00:05:00` for 5 minutes).                           |
+| `cache-sliding-duration` | Optional. Sliding expiration duration for caching.                                                |
+
+#### Example with Cache Context
+
+```html
+<menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" cache-context="user.roles" />
+```
+
+This example caches the menu for 5 minutes and varies the cache based on the user's roles, so authenticated users with different roles can see different menu items.
+
+### Liquid
+
+In Liquid templates, you can use the `shape` tag to render a menu:
+
+```liquid
+{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}
+```
+
+#### Liquid Parameters
+
+| Parameter                | Description                                                                                      |
+|--------------------------|--------------------------------------------------------------------------------------------------|
+| `alias`                  | The alias of the menu to render (e.g., `alias:main-menu`).                                      |
+| `cache_id`               | Optional. A unique identifier for caching the menu output.                                       |
+| `cache_context`          | Optional. Cache contexts to vary the cached output (e.g., `user.roles`).                         |
+| `cache_tag`              | Optional. Tags to associate with the cached entry for invalidation purposes.                     |
+| `cache_fixed_duration`   | Optional. Fixed duration for caching (e.g., `00:05:00` for 5 minutes).                           |
+| `cache_sliding_duration` | Optional. Sliding expiration duration for caching.                                                |
+
+#### Example with Cache Context
+
+```liquid
+{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu", cache_context: "user.roles" %}
+```
+
+This example caches the menu for 5 minutes and varies the cache based on the user's roles.
+
 ## Shapes
 
 ### `Menu`
