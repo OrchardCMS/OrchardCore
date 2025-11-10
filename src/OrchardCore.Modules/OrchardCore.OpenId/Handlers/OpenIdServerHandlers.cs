@@ -14,22 +14,29 @@ internal static class OpenIdServerHandlers
     ];
 
     /// <summary>
-    /// Ensures that changes to any of the OpenId Stores are committed to the database before the response is
-    /// transmitted to the client.
+    /// Ensures that changes to any of the OpenId Stores are committed to the database before generated tokens
+    /// are transmitted to the client.
     /// </summary>
-    public sealed class PersistStores(ISession session) : IOpenIddictServerHandler<ApplyAuthorizationResponseContext>
+    public sealed class PersistStores(ISession session) : IOpenIddictServerHandler<GenerateTokenContext>
     {
         /// <summary>
         /// Gets the default descriptor definition assigned to this handler.
         /// </summary>
         public static OpenIddictServerHandlerDescriptor Descriptor { get; }
-            = OpenIddictServerHandlerDescriptor.CreateBuilder<ApplyAuthorizationResponseContext>()
+            = OpenIddictServerHandlerDescriptor.CreateBuilder<GenerateTokenContext>()
                 .UseScopedHandler(static provider => new PersistStores(provider.GetRequiredService<ISession>()))
-                .SetOrder(0)
+                .SetOrder(int.MaxValue)
                 .SetType(OpenIddictServerHandlerType.Custom)
                 .Build();
 
         /// <inheritdoc/>
-        public async ValueTask HandleAsync(ApplyAuthorizationResponseContext context) => await session.SaveChangesAsync();
+        public async ValueTask HandleAsync(GenerateTokenContext context)
+        {
+            if (context.IsRejected)
+            {
+                return;
+            }
+            await session.SaveChangesAsync();
+        }
     }
 }
