@@ -156,7 +156,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
         var uri = _linkGenerator.GetUriByAction(
             _httpContextAccessor.HttpContext,
             nameof(Controllers.EmailConfirmationController.ConfirmEmail),
-            _emailConfigurationControllerName,
+            _emailConfirmationControllerName ,
             new { area = UserConstants.Features.Users, userId = user.UserId, code });
 
         context.Properties["EmailConfirmationUrl"] = uri;
