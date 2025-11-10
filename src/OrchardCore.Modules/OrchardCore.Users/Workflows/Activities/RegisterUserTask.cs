@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Workflows.Activities;
 
 public class RegisterUserTask : TaskActivity<RegisterUserTask>
 {
-    private static readonly string _emailConfigurationControllerName = typeof(Controllers.EmailConfirmationController).ControllerName();
+    private static readonly string _emailConfirmationControllerName = typeof(Controllers.EmailConfirmationController).ControllerName();
     private readonly IUserService _userService;
     private readonly UserManager<IUser> _userManager;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
