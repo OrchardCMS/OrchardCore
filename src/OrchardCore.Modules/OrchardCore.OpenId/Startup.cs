@@ -93,8 +93,7 @@ public sealed class ServerStartup : StartupBase
             {
                 options.UseAspNetCore();
                 options.UseDataProtection();
-
-                options.Services.TryAdd(OpenIdServerHandlers.DefaultHandlers.Select(descriptor => descriptor.ServiceDescriptor));
+                options.AddEventHandler(PersistStoresHandler.Descriptor);
             });
 
         services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();

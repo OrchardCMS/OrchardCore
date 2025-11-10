@@ -192,8 +192,6 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
         // authorization and end session views support flowing the entire payload and not just the request_uri.
         options.EnableAuthorizationRequestCaching = true;
         options.EnableEndSessionRequestCaching = true;
-
-        options.Handlers.AddRange(OpenIdServerHandlers.DefaultHandlers);
     }
 
     public void Configure(OpenIddictServerDataProtectionOptions options)
