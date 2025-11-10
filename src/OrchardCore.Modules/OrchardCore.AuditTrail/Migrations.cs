@@ -1,11 +1,13 @@
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using YesSql;
 using YesSql.Sql;
 
 namespace OrchardCore.AuditTrail;
 
-public sealed class Migrations : DataMigration
+public sealed class Migrations(ISession session) : DataMigration
 {
     public async Task<int> CreateAsync()
     {
@@ -38,14 +40,19 @@ public sealed class Migrations : DataMigration
 
     public async Task<int> UpdateFrom1Async()
     {
-        await SchemaBuilder.AlterIndexTableAsync<AuditTrailEventIndex>(
-            table =>
-                table.AlterColumn(
-                    nameof(AuditTrailEventIndex.UserId),
-                    column => column.WithType(typeof(string), 255)
-            ),
-            collection: AuditTrailEvent.Collection
-        );
+        // SQLite has no VARCHAR length limits and lacks ALTER INDEX support,
+        // therefore we skip the following migration on that provider.
+        if (session.Store.Configuration.SqlDialect.Name != DatabaseProviderValue.Sqlite)
+        {
+            await SchemaBuilder.AlterIndexTableAsync<AuditTrailEventIndex>(
+                table =>
+                    table.AlterColumn(
+                        nameof(AuditTrailEventIndex.UserId),
+                        column => column.WithType(typeof(string), 255)
+                ),
+                collection: AuditTrailEvent.Collection
+            );
+        }
 
         return 2;
     }
