@@ -36,7 +36,7 @@ public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings
             model.AllowChangingUsername = settings.AllowChangingUsername;
             model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
         }).Location("Content:5#General")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.ManageUsers))
+        .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 

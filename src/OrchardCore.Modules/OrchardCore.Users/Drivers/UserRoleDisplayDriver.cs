@@ -78,7 +78,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
             model.Roles = roleEntries.ToArray();
         })
         .Location("Content:1.10")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user));
+        .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
