@@ -88,7 +88,7 @@
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
   <ItemGroup>
-    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="9.4.0" />
+    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="10.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.0" />
@@ -102,7 +102,7 @@
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
     <!-- dotnet/extensions repository -->
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.10.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageVersion Include="System.IO.Hashing" Version="10.0.0" />
