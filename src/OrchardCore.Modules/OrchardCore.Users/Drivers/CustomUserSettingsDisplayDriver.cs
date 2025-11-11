@@ -55,7 +55,7 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
                 })
                 .Location($"Content:10#{contentTypeDefinition.DisplayName}")
                 .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
-                .RenderWhen(async () => await _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
         }
 
         return Combine(results);

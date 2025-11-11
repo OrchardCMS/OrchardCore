@@ -38,7 +38,7 @@ public sealed class SmsAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriv
             ? EmailAuthenticatorLoginSettings.DefaultBody
             : settings.Body;
         }).Location("Content:15#Two-Factor Authentication")
-        .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
