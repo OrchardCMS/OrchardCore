@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Reflection;
 
 namespace OrchardCore.DisplayManagement;
@@ -33,12 +34,20 @@ public static class Arguments
         var propertiesAccessor = _propertiesAccessors.GetOrAdd(propertyObject.GetType(), type =>
         {
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            var names = properties.Select(x => x.Name).ToArray();
+            var names = new string[properties.Length];
+
+            for (var i = 0; i < properties.Length; i++)
+            {
+                names[i] = properties[i].Name;
+            }
 
             return obj =>
             {
-                // properties and names are referenced in the closure
-                var values = properties.Select(x => x.GetValue(obj, null)).ToArray();
+                var values = new object[properties.Length];
+                for (var i = 0; i < properties.Length; i++)
+                {
+                    values[i] = properties[i].GetValue(obj, null);
+                }
                 return new NamedEnumerable<object>(values, names);
             };
         });
@@ -48,23 +57,27 @@ public static class Arguments
 
     private sealed class NamedEnumerable<T> : INamedEnumerable<T>
     {
-        private readonly List<T> _arguments;
-        private readonly List<string> _names;
+        private readonly T[] _arguments;
+        private readonly string[] _names;
         private readonly T[] _positional;
         private IDictionary<string, T> _named;
 
         public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
         {
-            _arguments = arguments.ToList();
-            _names = names.ToList();
+            _arguments = arguments as T[] ?? arguments.ToArray();
+            _names = names as string[] ?? names.ToArray();
 
-            ArgumentOutOfRangeException.ThrowIfLessThan(_arguments.Count, _names.Count);
+            ArgumentOutOfRangeException.ThrowIfLessThan(_arguments.Length, _names.Length);
 
-            _positional = [];
-
-            if (_arguments.Count != _names.Count)
+            var positionalCount = _arguments.Length - _names.Length;
+            if (positionalCount > 0)
             {
-                _positional = _arguments.Take(_arguments.Count - _names.Count).ToArray();
+                _positional = new T[positionalCount];
+                Array.Copy(_arguments, 0, _positional, 0, positionalCount);
+            }
+            else
+            {
+                _positional = [];
             }
         }
 
@@ -75,30 +88,28 @@ public static class Arguments
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            return _arguments.GetEnumerator();
+            return ((IEnumerable<T>)_arguments).GetEnumerator();
         }
 
-        IList<T> INamedEnumerable<T>.Positional
-        {
-            get { return _positional; }
-        }
+        IList<T> INamedEnumerable<T>.Positional => _positional;
 
-        IDictionary<string, T> INamedEnumerable<T>.Named
-        {
-            get { return _named ??= new Named(_arguments, _names); }
-        }
+        IDictionary<string, T> INamedEnumerable<T>.Named => _named ??= new Named(_arguments, _names);
 
         private sealed class Named : IDictionary<string, T>
         {
-            private readonly IList<T> _arguments;
-            private readonly IList<string> _names;
+            private readonly T[] _arguments;
+            private readonly string[] _names;
+            private readonly FrozenDictionary<string, int> _nameToIndex;
             private IEnumerable<KeyValuePair<string, T>> _enumerable;
 
-            public Named(IList<T> arguments, IList<string> names)
+            public Named(T[] arguments, string[] names)
             {
-                if (arguments.Count != names.Count)
+                var positionalCount = arguments.Length - names.Length;
+
+                if (positionalCount > 0)
                 {
-                    _arguments = arguments.Skip(arguments.Count - names.Count).ToArray();
+                    _arguments = new T[names.Length];
+                    Array.Copy(arguments, positionalCount, _arguments, 0, names.Length);
                 }
                 else
                 {
@@ -106,11 +117,28 @@ public static class Arguments
                 }
 
                 _names = names;
+
+                var indexMap = new Dictionary<string, int>(names.Length);
+                for (var i = 0; i < names.Length; i++)
+                {
+                    indexMap[names[i]] = i;
+                }
+                _nameToIndex = indexMap.ToFrozenDictionary();
             }
 
             private IEnumerable<KeyValuePair<string, T>> MakeEnumerable()
             {
-                return _enumerable ??= _arguments.Zip(_names, (arg, name) => new KeyValuePair<string, T>(name, arg));
+                if (_enumerable != null)
+                {
+                    return _enumerable;
+                }
+
+                var pairs = new KeyValuePair<string, T>[_names.Length];
+                for (var i = 0; i < _names.Length; i++)
+                {
+                    pairs[i] = new KeyValuePair<string, T>(_names[i], _arguments[i]);
+                }
+                return _enumerable = pairs;
             }
 
             IEnumerator<KeyValuePair<string, T>> IEnumerable<KeyValuePair<string, T>>.GetEnumerator()
@@ -135,7 +163,8 @@ public static class Arguments
 
             bool ICollection<KeyValuePair<string, T>>.Contains(KeyValuePair<string, T> item)
             {
-                return MakeEnumerable().Contains(item);
+                return _nameToIndex.TryGetValue(item.Key, out var index) &&
+                       EqualityComparer<T>.Default.Equals(_arguments[index], item.Value);
             }
 
             void ICollection<KeyValuePair<string, T>>.CopyTo(KeyValuePair<string, T>[] array, int arrayIndex)
@@ -148,19 +177,13 @@ public static class Arguments
                 throw new NotImplementedException();
             }
 
-            int ICollection<KeyValuePair<string, T>>.Count
-            {
-                get { return _names.Count; }
-            }
+            int ICollection<KeyValuePair<string, T>>.Count => _names.Length;
 
-            bool ICollection<KeyValuePair<string, T>>.IsReadOnly
-            {
-                get { return true; }
-            }
+            bool ICollection<KeyValuePair<string, T>>.IsReadOnly => true;
 
             bool IDictionary<string, T>.ContainsKey(string key)
             {
-                return _names.Contains(key);
+                return _nameToIndex.ContainsKey(key);
             }
 
             void IDictionary<string, T>.Add(string key, T value)
@@ -175,44 +198,28 @@ public static class Arguments
 
             bool IDictionary<string, T>.TryGetValue(string key, out T value)
             {
-                var pair = MakeEnumerable().FirstOrDefault(kv => kv.Key == key);
+                if (_nameToIndex.TryGetValue(key, out var index))
+                {
+                    value = _arguments[index];
+                    return true;
+                }
 
-                // pair is a value type. in case of key-miss,
-                // will default to key=(string)null,value=(object)null
-
-                value = pair.Value;
-                return pair.Key != null;
+                value = default;
+                return false;
             }
 
-            // TBD
             T IDictionary<string, T>.this[string key]
             {
                 get
                 {
-                    if (((IDictionary<string, T>)this).TryGetValue(key, out var result))
-                    {
-                        return result;
-                    }
-                    else
-                    {
-                        return default;
-                    }
+                    return _nameToIndex.TryGetValue(key, out var index) ? _arguments[index] : default;
                 }
                 set { throw new NotImplementedException(); }
             }
 
-            ICollection<string> IDictionary<string, T>.Keys
-            {
-                get
-                {
-                    return _names;
-                }
-            }
+            ICollection<string> IDictionary<string, T>.Keys => _names;
 
-            ICollection<T> IDictionary<string, T>.Values
-            {
-                get { return _arguments; }
-            }
+            ICollection<T> IDictionary<string, T>.Values => _arguments;
         }
     }
 
