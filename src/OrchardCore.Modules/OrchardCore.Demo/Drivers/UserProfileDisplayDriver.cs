@@ -29,7 +29,7 @@ public sealed class UserProfileDisplayDriver : SectionDisplayDriver<User, UserPr
             model.LastName = profile.LastName;
         })
         .Location("Content:2")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile));
+        .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UserProfile profile, UpdateEditorContext context)

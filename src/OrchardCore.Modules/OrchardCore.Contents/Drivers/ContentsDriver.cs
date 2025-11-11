@@ -99,7 +99,7 @@ public sealed class ContentsDriver : ContentDisplayDriver
 
         return Combine(
             Dynamic("Content_PublishButton").Location("Actions:10")
-                .RenderWhen(() => _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem)),
+                .RenderWhen(async() => await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem)),
             Dynamic("Content_SaveDraftButton").Location("Actions:20")
                 .RenderWhen(async () =>
                 {
