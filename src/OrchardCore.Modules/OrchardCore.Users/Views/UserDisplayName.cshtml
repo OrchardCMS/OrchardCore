@@ -1,16 +1,2 @@
-@{
-    var originalType = Model.Metadata.Type;
-
-    Model.Metadata.Alternates.Clear();
-    Model.Metadata.Type = "UserDisplayNameIcon";
-}
-
-@await DisplayAsync(Model)
-
-@{
-    Model.Metadata.Type = "UserDisplayNameText";
-    Model.Metadata.ChildContent = null;
-}
-
-@await DisplayAsync(Model)
-
+@await DisplayAsAsync(Model, "UserDisplayNameIcon")
+@await DisplayAsAsync(Model, "UserDisplayNameText")
