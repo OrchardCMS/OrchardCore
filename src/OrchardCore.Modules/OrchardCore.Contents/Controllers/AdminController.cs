@@ -510,6 +510,46 @@ public sealed class AdminController : Controller, IUpdateModel
     }
 
     [HttpPost]
+    [ActionName(nameof(Edit))]
+    [FormValueRequired("submit.Unpublish")]
+    public async Task<IActionResult> EditAndUnpublishPOST(
+    string contentItemId,
+    [Bind(Prefix = "submit.Unpublish")] string submitPublish,
+    string returnUrl)
+    {
+        var stayOnSamePage = submitPublish == "submit.UnpublishAndContinue";
+
+        var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+
+        if (content == null)
+        {
+            return NotFound();
+        }
+
+        if (!await IsAuthorizedAsync(CommonPermissions.PublishContent, content))
+        {
+            return Forbid();
+        }
+
+        return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        {
+            await _contentManager.UpdateAsync(contentItem);
+            var unpublished = await _contentManager.UnpublishAsync(contentItem);
+
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+            if (unpublished)
+            {
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                ? H["Your content has been unpublished."]
+                : H["Your {0} has been unpublished.", typeDefinition.DisplayName]);
+            }
+
+            return unpublished;
+        });
+    }
+
+    [HttpPost]
     [Admin("Contents/ContentItems/{contentItemId}/Clone", "AdminCloneContentItem")]
     public async Task<IActionResult> Clone(string contentItemId, string returnUrl)
     {
