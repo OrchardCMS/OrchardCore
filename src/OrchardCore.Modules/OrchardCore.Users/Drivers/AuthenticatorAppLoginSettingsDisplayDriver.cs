@@ -31,7 +31,7 @@ public sealed class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriv
             model.UseEmailAsAuthenticatorDisplayName = settings.UseEmailAsAuthenticatorDisplayName;
             model.TokenLength = settings.TokenLength;
         }).Location("Content:12#Two-Factor Authentication")
-        .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 

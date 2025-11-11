@@ -36,7 +36,7 @@ public sealed class ExternalLoginSettingsDisplayDriver : SiteDisplayDriver<Exter
             model.UseScriptToSyncProperties = settings.UseScriptToSyncProperties;
             model.SyncPropertiesScript = settings.SyncPropertiesScript;
         }).Location("Content:5#External Login;10")
-        .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
