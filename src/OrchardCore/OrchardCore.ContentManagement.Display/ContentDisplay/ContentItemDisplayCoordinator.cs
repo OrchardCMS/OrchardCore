@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement.Display;
 /// <summary>
 /// Provides a concrete implementation of a display handler coordinating part, field and content item drivers.
 /// </summary>
-public class ContentItemDisplayCoordinator : IContentDisplayHandler
+public partial class ContentItemDisplayCoordinator : IContentDisplayHandler
 {
     private readonly IContentPartDisplayDriverResolver _contentPartDisplayDriverResolver;
     private readonly IContentFieldDisplayDriverResolver _contentFieldDisplayDriverResolver;
@@ -205,7 +205,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
         var contentShape = context.Shape as IZoneHolding;
         var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
-            Arguments.From(new
+            Arguments.From(new Args
             {
                 Identifier = contentItem.ContentItemId,
             }));
@@ -296,7 +296,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
         var contentShape = context.Shape as IZoneHolding;
         var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
-            Arguments.From(new
+            Arguments.From(new Args
             {
                 Identifier = contentItem.ContentItemId,
             }));
@@ -406,5 +406,11 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         });
 
         return typePartShapeResult;
+    }
+
+    [GenerateArgumentsProvider]
+    private partial class Args
+    {
+        public string Identifier { get; set; }
     }
 }

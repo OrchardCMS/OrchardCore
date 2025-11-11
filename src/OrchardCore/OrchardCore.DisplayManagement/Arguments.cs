@@ -1,14 +1,10 @@
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Frozen;
-using System.Reflection;
 
 namespace OrchardCore.DisplayManagement;
 
 public static class Arguments
 {
-    private static readonly ConcurrentDictionary<Type, Func<object, NamedEnumerable<object>>> _propertiesAccessors = new();
-
     public static INamedEnumerable<T> FromT<T>(IEnumerable<T> arguments, IEnumerable<string> names)
     {
         return new NamedEnumerable<T>(arguments, names);
@@ -24,42 +20,47 @@ public static class Arguments
         return From(dictionary.Values, dictionary.Keys);
     }
 
+    public static INamedEnumerable<object> From(Dictionary<string, object> dictionary)
+    {
+        return From(dictionary.Values, dictionary.Keys);
+    }
+
     public static INamedEnumerable<string> From(IDictionary<string, string> dictionary)
     {
         return new NamedEnumerable<string>(dictionary.Values, dictionary.Keys);
     }
 
-    public static INamedEnumerable<object> From(object propertyObject)
+    public static INamedEnumerable<string> From(Dictionary<string, string> dictionary)
     {
-        var propertiesAccessor = _propertiesAccessors.GetOrAdd(propertyObject.GetType(), type =>
+        return new NamedEnumerable<string>(dictionary.Values, dictionary.Keys);
+    }
+
+    /// <summary>
+    /// Creates an <see cref="INamedEnumerable{T}"/> from an object's properties.
+    /// This method uses a compile-time generated accessor for types implementing <see cref="IArgumentsProvider"/>.
+    /// For other types, it will use a slower fallback that caches reflection operations.
+    /// </summary>
+    /// <remarks>
+    /// For optimal performance, types should implement <see cref="IArgumentsProvider"/> and use source generators
+    /// or manual implementation to provide property access without reflection.
+    /// </remarks>
+    public static INamedEnumerable<object> From<T>(T propertyObject) where T : notnull
+    {
+        // Fast path for types that implement IArgumentsProvider
+        if (propertyObject is IArgumentsProvider provider)
         {
-            var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            var names = new string[properties.Length];
+            return provider.GetArguments();
+        }
 
-            for (var i = 0; i < properties.Length; i++)
-            {
-                names[i] = properties[i].Name;
-            }
-
-            return obj =>
-            {
-                var values = new object[properties.Length];
-                for (var i = 0; i < properties.Length; i++)
-                {
-                    values[i] = properties[i].GetValue(obj, null);
-                }
-                return new NamedEnumerable<object>(values, names);
-            };
-        });
-
-        return propertiesAccessor(propertyObject);
+        // Fallback to cached reflection-based approach for anonymous types and other objects
+        return ArgumentsReflectionHelper.FromReflection(propertyObject);
     }
 
     private sealed class NamedEnumerable<T> : INamedEnumerable<T>
     {
         private readonly T[] _arguments;
         private readonly string[] _names;
-        private readonly T[] _positional;
+        private readonly ArraySegment<T> _positional;
         private IDictionary<string, T> _named;
 
         public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
@@ -72,12 +73,11 @@ public static class Arguments
             var positionalCount = _arguments.Length - _names.Length;
             if (positionalCount > 0)
             {
-                _positional = new T[positionalCount];
-                Array.Copy(_arguments, 0, _positional, 0, positionalCount);
+                _positional = new ArraySegment<T>(_arguments, 0, positionalCount);
             }
             else
             {
-                _positional = [];
+                _positional = ArraySegment<T>.Empty;
             }
         }
 
@@ -97,9 +97,9 @@ public static class Arguments
 
         private sealed class Named : IDictionary<string, T>
         {
-            private readonly T[] _arguments;
+            private readonly ArraySegment<T> _arguments;
             private readonly string[] _names;
-            private readonly FrozenDictionary<string, int> _nameToIndex;
+            private FrozenDictionary<string, int> _nameToIndex;
             private IEnumerable<KeyValuePair<string, T>> _enumerable;
 
             public Named(T[] arguments, string[] names)
@@ -108,8 +108,7 @@ public static class Arguments
 
                 if (positionalCount > 0)
                 {
-                    _arguments = new T[names.Length];
-                    Array.Copy(arguments, positionalCount, _arguments, 0, names.Length);
+                    _arguments = new ArraySegment<T>(arguments, positionalCount, names.Length);
                 }
                 else
                 {
@@ -117,11 +116,19 @@ public static class Arguments
                 }
 
                 _names = names;
+            }
 
-                var indexMap = new Dictionary<string, int>(names.Length);
-                for (var i = 0; i < names.Length; i++)
+            private void EnsureNameToIndex()
+            {
+                if (_nameToIndex != null)
                 {
-                    indexMap[names[i]] = i;
+                    return;
+                }
+
+                var indexMap = new Dictionary<string, int>(_names.Length);
+                for (var i = 0; i < _names.Length; i++)
+                {
+                    indexMap[_names[i]] = i;
                 }
                 _nameToIndex = indexMap.ToFrozenDictionary();
             }
@@ -163,6 +170,8 @@ public static class Arguments
 
             bool ICollection<KeyValuePair<string, T>>.Contains(KeyValuePair<string, T> item)
             {
+                EnsureNameToIndex();
+
                 return _nameToIndex.TryGetValue(item.Key, out var index) &&
                        EqualityComparer<T>.Default.Equals(_arguments[index], item.Value);
             }
@@ -183,6 +192,7 @@ public static class Arguments
 
             bool IDictionary<string, T>.ContainsKey(string key)
             {
+                EnsureNameToIndex();
                 return _nameToIndex.ContainsKey(key);
             }
 
@@ -198,6 +208,8 @@ public static class Arguments
 
             bool IDictionary<string, T>.TryGetValue(string key, out T value)
             {
+                EnsureNameToIndex();
+
                 if (_nameToIndex.TryGetValue(key, out var index))
                 {
                     value = _arguments[index];
@@ -212,6 +224,8 @@ public static class Arguments
             {
                 get
                 {
+                    EnsureNameToIndex();
+
                     return _nameToIndex.TryGetValue(key, out var index) ? _arguments[index] : default;
                 }
                 set { throw new NotImplementedException(); }

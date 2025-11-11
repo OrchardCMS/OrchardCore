@@ -15,7 +15,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Menu;
 
-public class MenuShapes : ShapeTableProvider
+public partial class MenuShapes : ShapeTableProvider
 {
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
@@ -87,7 +87,7 @@ public class MenuShapes : ShapeTableProvider
                         continue;
                     }
 
-                    var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
+                    var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new Args
                     {
                         ContentItem = contentItem,
                         Level = 0,
@@ -128,7 +128,7 @@ public class MenuShapes : ShapeTableProvider
                             continue;
                         }
 
-                        var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
+                        var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new Args
                         {
                             ContentItem = contentItem,
                             Level = level + 1,
@@ -290,5 +290,13 @@ public class MenuShapes : ShapeTableProvider
         }
 
         return result.ToString();
+    }
+
+    [GenerateArgumentsProvider]
+    private partial class Args
+    {
+        public ContentItem ContentItem { get; set; }
+        public int Level { get; set; }
+        public IShape Menu { get; set; }
     }
 }

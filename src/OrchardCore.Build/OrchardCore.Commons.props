@@ -45,4 +45,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.SourceGenerators\OrchardCore.SourceGenerators.csproj" 
+                      Condition=" $(MSBuildProjectName) != 'OrchardCore.SourceGenerators' "
+                      OutputItemType="Analyzer" 
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
 </Project>
