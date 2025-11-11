@@ -8,7 +8,6 @@ using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
 using OrchardCore.Environment.Shell;
-using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using static OpenIddict.Abstractions.OpenIddictConstants;
