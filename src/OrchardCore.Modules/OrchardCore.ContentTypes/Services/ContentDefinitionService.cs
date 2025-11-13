@@ -59,7 +59,7 @@ public class ContentDefinitionService : IContentDefinitionService
         }
         else
         {
-            if (!name[0].IsLetter())
+            if (!char.IsAsciiLetter(name[0]))
             {
                 throw new ArgumentException("Content type name must start with a letter", nameof(name));
             }

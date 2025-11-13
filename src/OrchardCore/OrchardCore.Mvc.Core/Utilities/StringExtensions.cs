@@ -53,13 +53,13 @@ public static class StringExtensions
 
         // Search beginning of word.
         var backup = characterCount;
-        while (characterCount > 0 && text[characterCount - 1].IsLetter())
+        while (characterCount > 0 && char.IsAsciiLetter(text[characterCount - 1]))
         {
             characterCount--;
         }
 
         // Search previous word.
-        while (characterCount > 0 && text[characterCount - 1].IsSpace())
+        while (characterCount > 0 && char.IsWhiteSpace(text[characterCount - 1]))
         {
             characterCount--;
         }
@@ -90,7 +90,7 @@ public static class StringExtensions
         for (var i = 0; i < friendlier.Length; i++)
         {
             var current = friendlier[i];
-            if (IsLetter(current) || (char.IsDigit(current) && cursor > 0))
+            if (char.IsAsciiLetter(current) || (char.IsDigit(current) && cursor > 0))
             {
                 if (previousIsNotLetter && i != 0 && cursor > 0)
                 {
@@ -158,7 +158,7 @@ public static class StringExtensions
     }
 
     // Not accounting for only \r (e.g. Apple OS 9 carriage return only new lines).
-    [Obsolete("This method will be removed in future releases. Use string.ReplaceLineEndings() instead")]
+    [Obsolete("This method will be removed in future releases. Use string.ReplaceLineEndings() instead.")]
     public static string ReplaceNewLinesWith(this string text, string replacement)
     {
         return string.IsNullOrWhiteSpace(text)
@@ -202,14 +202,14 @@ public static class StringExtensions
 
         name = RemoveDiacritics(name);
         name = name.Strip(c =>
-            !c.IsLetter()
+            !char.IsAsciiLetter(c)
             && !char.IsDigit(c)
             );
 
         name = name.Trim();
 
         // Don't allow non A-Z chars as first letter, as they are not allowed in prefixes.
-        while (name.Length > 0 && !IsLetter(name[0]))
+        while (name.Length > 0 && !char.IsAsciiLetter(name[0]))
         {
             name = name[1..];
         }
@@ -225,11 +225,13 @@ public static class StringExtensions
     /// <summary>
     /// Whether the char is a letter between A and Z or not.
     /// </summary>
+    [Obsolete("This method will be removed in future releases. Use char.IsAsciiLetter() instead.")]
     public static bool IsLetter(this char c)
     {
         return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z');
     }
 
+    [Obsolete("This method will be removed in future releases. Use char.IsWhiteSpace() instead.")]
     public static bool IsSpace(this char c)
     {
         return (c == '\r' || c == '\n' || c == '\t' || c == '\f' || c == ' ');
