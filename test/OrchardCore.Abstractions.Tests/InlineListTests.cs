@@ -1,6 +1,7 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace OrchardCore;
@@ -632,7 +633,7 @@ public class InlineListTests
         list.Add(3);
 
         // Act & Assert
-        Assert.True(list.Contains(2));
+        Assert.Contains(2, list);
     }
 
     [Fact]
@@ -645,7 +646,7 @@ public class InlineListTests
         list.Add(3);
 
         // Act & Assert
-        Assert.False(list.Contains(99));
+        Assert.DoesNotContain(99, list);
     }
 
     [Fact]
@@ -655,7 +656,7 @@ public class InlineListTests
         var list = new InlineList<int>();
 
         // Act & Assert
-        Assert.False(list.Contains(1));
+        Assert.DoesNotContain(1, list);
     }
 
     [Fact]
@@ -668,7 +669,7 @@ public class InlineListTests
         list.Add("b");
 
         // Act & Assert
-        Assert.True(list.Contains(null));
+        Assert.Contains(null, list);
     }
 
     #endregion

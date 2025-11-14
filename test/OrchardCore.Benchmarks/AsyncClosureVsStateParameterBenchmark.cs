@@ -295,7 +295,7 @@ public class AsyncClosureVsStateParameterBenchmark
 
     #region Reference type state (larger allocations)
 
-    private class StateObject
+    private sealed class StateObject
     {
         public string StringValue { get; set; }
         public int IntValue { get; set; }
