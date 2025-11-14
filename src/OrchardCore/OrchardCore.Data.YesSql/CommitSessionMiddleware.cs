@@ -66,9 +66,10 @@ public class CommitSessionMiddleware
 
                 try
                 {
-                    // Check if DocumentStore was resolved during this request
-                    if (context.Items.ContainsKey("OrchardCore:DocumentStoreResolved"))
+                    // Check if Session was resolved during this request
+                    if (context.Items.ContainsKey("OrchardCore:SessionResolved"))
                     {
+                        // Try DocumentStore first (it provides better commit semantics with after-commit callbacks)
                         var documentStore = context.RequestServices.GetService<IDocumentStore>();
                         if (documentStore != null)
                         {
@@ -76,16 +77,16 @@ public class CommitSessionMiddleware
                             await documentStore.CommitAsync();
                             context.Items["OrchardCore:Committed"] = true;
                         }
-                    }
-                    // Otherwise, check if Session was resolved
-                    else if (context.Items.ContainsKey("OrchardCore:SessionResolved"))
-                    {
-                        var session = context.RequestServices.GetService<YesSqlSession>();
-                        if (session != null)
+                        else
                         {
-                            _logger.LogDebug("Committing ISession before response");
-                            await session.SaveChangesAsync();
-                            context.Items["OrchardCore:Committed"] = true;
+                            // Fallback to direct session commit
+                            var session = context.RequestServices.GetService<YesSqlSession>();
+                            if (session != null)
+                            {
+                                _logger.LogDebug("Committing ISession before response");
+                                await session.SaveChangesAsync();
+                                context.Items["OrchardCore:Committed"] = true;
+                            }
                         }
                     }
                 }
