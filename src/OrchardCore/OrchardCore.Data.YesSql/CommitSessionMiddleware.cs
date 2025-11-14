@@ -23,9 +23,9 @@ public class CommitSessionMiddleware
 
     public async Task InvokeAsync(HttpContext context, IOptions<EnsureCommittedOptions> options)
     {
-        var ensureCommittedOptions = options.Value;
+        var ensureCommittedOptions = options?.Value;
 
-        if (!ensureCommittedOptions.Enabled)
+        if (ensureCommittedOptions == null || !ensureCommittedOptions.Enabled)
         {
             await _next(context);
             return;
@@ -54,49 +54,57 @@ public class CommitSessionMiddleware
         }
 
         // Register the commit callback to run before the response starts
-        context.Response.OnStarting(async () =>
+        try
         {
-            // Check if already committed
-            if (context.Items.ContainsKey("OrchardCore:Committed"))
+            context.Response.OnStarting(async () =>
             {
-                return;
-            }
-
-            try
-            {
-                // Check if DocumentStore was resolved during this request
-                if (context.Items.ContainsKey("OrchardCore:DocumentStoreResolved"))
+                // Check if already committed
+                if (context.Items.ContainsKey("OrchardCore:Committed"))
                 {
-                    var documentStore = context.RequestServices.GetService<IDocumentStore>();
-                    if (documentStore != null)
+                    return;
+                }
+
+                try
+                {
+                    // Check if DocumentStore was resolved during this request
+                    if (context.Items.ContainsKey("OrchardCore:DocumentStoreResolved"))
                     {
-                        _logger.LogDebug("Committing IDocumentStore before response");
-                        await documentStore.CommitAsync();
-                        context.Items["OrchardCore:Committed"] = true;
+                        var documentStore = context.RequestServices.GetService<IDocumentStore>();
+                        if (documentStore != null)
+                        {
+                            _logger.LogDebug("Committing IDocumentStore before response");
+                            await documentStore.CommitAsync();
+                            context.Items["OrchardCore:Committed"] = true;
+                        }
+                    }
+                    // Otherwise, check if Session was resolved
+                    else if (context.Items.ContainsKey("OrchardCore:SessionResolved"))
+                    {
+                        var session = context.RequestServices.GetService<YesSqlSession>();
+                        if (session != null)
+                        {
+                            _logger.LogDebug("Committing ISession before response");
+                            await session.SaveChangesAsync();
+                            context.Items["OrchardCore:Committed"] = true;
+                        }
                     }
                 }
-                // Otherwise, check if Session was resolved
-                else if (context.Items.ContainsKey("OrchardCore:SessionResolved"))
+                catch (Exception ex)
                 {
-                    var session = context.RequestServices.GetService<YesSqlSession>();
-                    if (session != null)
+                    _logger.LogError(ex, "Failed to commit database changes before response");
+
+                    if (ensureCommittedOptions.FailureBehavior == CommitFailureBehavior.ThrowOnCommitFailure)
                     {
-                        _logger.LogDebug("Committing ISession before response");
-                        await session.SaveChangesAsync();
-                        context.Items["OrchardCore:Committed"] = true;
+                        throw;
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to commit database changes before response");
-
-                if (ensureCommittedOptions.FailureBehavior == CommitFailureBehavior.ThrowOnCommitFailure)
-                {
-                    throw;
-                }
-            }
-        });
+            });
+        }
+        catch (InvalidOperationException)
+        {
+            // Response may have already started, which is fine
+            _logger.LogDebug("Could not register OnStarting callback - response may have already started");
+        }
 
         await _next(context);
     }

@@ -170,7 +170,13 @@ public static class OrchardCoreBuilderExtensions
 
             services.AddScoped<IDocumentStore>(sp =>
             {
-                var session = sp.GetRequiredService<YesSqlSession>();
+                var session = sp.GetService<YesSqlSession>();
+                
+                if (session == null)
+                {
+                    return null;
+                }
+                
                 var documentStore = new DocumentStore(session);
 
                 // Set a flag in HttpContext.Items to indicate that IDocumentStore was resolved
