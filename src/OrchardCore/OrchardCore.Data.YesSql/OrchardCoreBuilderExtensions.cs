@@ -1,5 +1,7 @@
 using System.Buffers;
 using System.Data;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
@@ -19,6 +21,7 @@ using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
 using YesSql.Serialization;
+using YesSqlSession = YesSql.ISession;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -35,11 +38,15 @@ public static class OrchardCoreBuilderExtensions
     {
         builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
 
+        // Register the startup filter for commit-before-response middleware
+        builder.ApplicationServices.AddSingleton<IStartupFilter, CommitSessionStartupFilter>();
+
         builder.ConfigureServices((services, serviceProvider) =>
         {
             var configuration = serviceProvider.GetService<IShellConfiguration>();
 
             services.Configure<YesSqlOptions>(configuration.GetSection("OrchardCore_YesSql"));
+            services.Configure<EnsureCommittedOptions>(configuration.GetSection("OrchardCore_EnsureCommitted"));
             services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
             services.AddScoped<IDataMigrationManager, DataMigrationManager>();
             services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
@@ -151,30 +158,30 @@ public static class OrchardCoreBuilderExtensions
 
                 session.RegisterIndexes(scopedServices.ToArray());
 
-                // Register automated document store commit and rollback when the ISession is used
-                // on the DI scope of the shell. All other scopes will not be automatically committed.
-                var shellScope = ShellScope.Current;
-                if (sp == shellScope?.ServiceProvider)
+                // Set a flag in HttpContext.Items to indicate that ISession was resolved
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                if (httpContextAccessor?.HttpContext != null)
                 {
-                    shellScope
-                        .RegisterBeforeDispose(scope =>
-                        {
-                            return scope.ServiceProvider
-                                .GetRequiredService<IDocumentStore>()
-                                .CommitAsync();
-                        })
-                        .AddExceptionHandler((scope, e) =>
-                        {
-                            return scope.ServiceProvider
-                                .GetRequiredService<IDocumentStore>()
-                                .CancelAsync();
-                        });
+                    httpContextAccessor.HttpContext.Items["OrchardCore:SessionResolved"] = true;
                 }
 
                 return session;
             });
 
-            services.AddScoped<IDocumentStore, DocumentStore>();
+            services.AddScoped<IDocumentStore>(sp =>
+            {
+                var session = sp.GetRequiredService<YesSqlSession>();
+                var documentStore = new DocumentStore(session);
+
+                // Set a flag in HttpContext.Items to indicate that IDocumentStore was resolved
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                if (httpContextAccessor?.HttpContext != null)
+                {
+                    httpContextAccessor.HttpContext.Items["OrchardCore:DocumentStoreResolved"] = true;
+                }
+
+                return documentStore;
+            });
             services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
             services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
         });
