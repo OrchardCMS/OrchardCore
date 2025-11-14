@@ -147,10 +147,18 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
 
         sb.AppendLine($"{currentIndent}{accessibilityStr} {keyword} {typeSymbol.Name} : global::OrchardCore.DisplayManagement.IArgumentsProvider");
         sb.AppendLine($"{currentIndent}{{");
+        sb.AppendLine($"{currentIndent}    private static readonly string[] s_names = new string[]");
+        sb.AppendLine($"{currentIndent}    {{");
+        for (int i = 0; i < properties.Count; i++)
+        {
+            var property = properties[i];
+            sb.AppendLine($"{currentIndent}        \"{property.Name}\",");
+        }
+        sb.AppendLine($"{currentIndent}    }};");
+
         sb.AppendLine($"{currentIndent}    global::OrchardCore.DisplayManagement.INamedEnumerable<object> global::OrchardCore.DisplayManagement.IArgumentsProvider.GetArguments()");
         sb.AppendLine($"{currentIndent}    {{");
         sb.AppendLine($"{currentIndent}        var values = new object[{properties.Count}];");
-        sb.AppendLine($"{currentIndent}        var names = new string[{properties.Count}];");
         sb.AppendLine();
 
         for (int i = 0; i < properties.Count; i++)
@@ -158,11 +166,10 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
             var property = properties[i];
             // Use 'this.' prefix to ensure we're accessing the instance property correctly
             sb.AppendLine($"{currentIndent}        values[{i}] = this.{property.Name};");
-            sb.AppendLine($"{currentIndent}        names[{i}] = \"{property.Name}\";");
         }
 
         sb.AppendLine();
-        sb.AppendLine($"{currentIndent}        return global::OrchardCore.DisplayManagement.Arguments.From(values, names);");
+        sb.AppendLine($"{currentIndent}        return global::OrchardCore.DisplayManagement.Arguments.From(values, s_names);");
         sb.AppendLine($"{currentIndent}    }}");
         sb.AppendLine($"{currentIndent}}}");
 
