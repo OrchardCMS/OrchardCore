@@ -22,38 +22,44 @@ using TimeZoneConverter;
 
 namespace OrchardCore.DisplayManagement.Liquid;
 
-public class LiquidViewTemplate
+internal static class LiquidViewTemplate
 {
     public const string ViewsFolder = "Views";
     public const string ViewExtension = ".liquid";
-    public static readonly MemoryCache Cache = new(new MemoryCacheOptions());
-    public IFluidTemplate FluidTemplate { get; }
+    private static readonly MemoryCache s_cache = new(new MemoryCacheOptions());
 
-    public LiquidViewTemplate(IFluidTemplate fluidTemplate)
-    {
-        FluidTemplate = fluidTemplate;
-    }
-
-    internal static async Task RenderAsync(RazorPage<dynamic> page)
+    internal static Task RenderAsync(RazorPage<dynamic> page)
     {
         var services = page.Context.RequestServices;
-        var liquidViewParser = services.GetRequiredService<LiquidViewParser>();
         var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
-        var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
 
-        var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
-        var template = await ParseAsync(liquidViewParser, path, templateOptions.FileProvider, Cache, isDevelopment);
+        var templateTask = ParseAsync(path, services, s_cache);
+
+        return !templateTask.IsCompletedSuccessfully
+            ? Awaited(templateTask, page, services)
+            : RenderAsyncCore(page, services, templateTask.Result);
+
+        static async Task Awaited(Task<IFluidTemplate> templateTask, RazorPage<dynamic> page, IServiceProvider services)
+        {
+            var template = await templateTask;
+            await RenderAsyncCore(page, services, template);
+        }
+    }
+
+    private static async Task RenderAsyncCore(RazorPage<dynamic> page, IServiceProvider services, IFluidTemplate template)
+    {
+        var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
         var context = new LiquidTemplateContext(services, templateOptions);
         var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
+        // Defer the buffer disposing so that a template can be rendered twice.
+        var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
+        ShellScope.Current.RegisterBeforeDispose((scope, content) => content.Dispose(), content);
+
         try
         {
-            // Defer the buffer disposing so that a template can be rendered twice.
-            var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
-            ShellScope.Current.RegisterBeforeDispose(scope => content.Dispose());
-
             await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
-            await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);
+            await template.RenderAsync(content, htmlEncoder, context);
 
             // Use ViewBufferTextWriter.Write(object) from ASP.NET directly since it will use a special code path
             // for IHtmlContent. This prevent the TextWriter methods from copying the content from our buffer
@@ -67,10 +73,16 @@ public class LiquidViewTemplate
         }
     }
 
-    public static Task<LiquidViewTemplate> ParseAsync(LiquidViewParser parser, string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
+    private static Task<IFluidTemplate> ParseAsync(string path, IServiceProvider services, IMemoryCache cache)
     {
         return cache.GetOrCreateAsync(path, async entry =>
         {
+            var parser = services.GetRequiredService<LiquidViewParser>();
+            var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
+            var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
+
+            var fileProvider = templateOptions.FileProvider;
+
             entry.SetSlidingExpiration(TimeSpan.FromHours(1));
             var fileInfo = fileProvider.GetFileInfo(path);
 
@@ -84,7 +96,7 @@ public class LiquidViewTemplate
 
             if (parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
             {
-                return new LiquidViewTemplate(template);
+                return template;
             }
 
             throw new Exception($"Failed to parse liquid file {path}: {string.Join(System.Environment.NewLine, errors)}");
@@ -94,7 +106,7 @@ public class LiquidViewTemplate
 
 public static class LiquidViewTemplateExtensions
 {
-    public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model)
+    public static async Task<string> RenderAsync(this IFluidTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model)
     {
         var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
         var viewContext = viewContextAccessor.ViewContext;
@@ -104,7 +116,7 @@ public static class LiquidViewTemplateExtensions
         try
         {
             await context.EnterScopeAsync(viewContext, model);
-            return await template.FluidTemplate.RenderAsync(context, encoder);
+            return await template.RenderAsync(context, encoder);
         }
         finally
         {
@@ -112,7 +124,7 @@ public static class LiquidViewTemplateExtensions
         }
     }
 
-    public static async Task RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model)
+    public static async Task RenderAsync(this IFluidTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model)
     {
         var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
         var viewContext = viewContextAccessor.ViewContext;
@@ -122,7 +134,7 @@ public static class LiquidViewTemplateExtensions
         try
         {
             await context.EnterScopeAsync(viewContext, model);
-            await template.FluidTemplate.RenderAsync(writer, encoder, context);
+            await template.RenderAsync(writer, encoder, context);
         }
         finally
         {
@@ -174,7 +186,7 @@ public static class LiquidViewTemplateExtensions
 
 public static class LiquidTemplateContextExtensions
 {
-    internal static async Task EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
+    internal static async ValueTask EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
     {
         if (!context.IsInitialized)
         {
