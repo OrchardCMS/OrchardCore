@@ -1,4 +1,6 @@
 using System.Text;
+using Cysharp.Text;
+using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.Queries.Sql;
@@ -11,15 +13,13 @@ public class SqlTranslator
     private readonly string _tablePrefix;
     private HashSet<string> _tableAliases;
     private HashSet<string> _ctes;
-    private StringBuilder _builder;
 
     public SqlTranslator(string schema, ISqlDialect dialect, string tablePrefix, IDictionary<string, object> parameters)
     {
         _schema = schema;
         _dialect = dialect;
         _tablePrefix = tablePrefix;
-        _parameters = parameters ?? new Dictionary<string, object>();
-        _builder = new StringBuilder();
+        _parameters = parameters;
     }
 
     public string Translate(StatementList statementList)
@@ -27,22 +27,30 @@ public class SqlTranslator
         // First, collect all table aliases and CTE names
         CollectAliasesAndCtes(statementList);
 
-        var statementsBuilder = new StringBuilder();
+        var statementsBuilder = ZString.CreateStringBuilder();
 
-        foreach (var statementLine in statementList.Statements)
+        try
         {
-            TranslateStatementLine(statementsBuilder, statementLine);
-        }
+            for (var i = 0; i < statementList.Statements.Count; i++)
+            {
+                if (i > 0)
+                {
+                    statementsBuilder.Append(' ');
+                }
+                TranslateStatementLine(ref statementsBuilder, statementList.Statements[i]);
+                statementsBuilder.Append(';');
+            }
 
-        statementsBuilder.Append(';');
-        return statementsBuilder.ToString();
+            return statementsBuilder.ToString();
+        }
+        finally
+        {
+            statementsBuilder.Dispose();
+        }
     }
 
     private void CollectAliasesAndCtes(StatementList statementList)
     {
-        _tableAliases = new HashSet<string>();
-        _ctes = new HashSet<string>();
-
         foreach (var statementLine in statementList.Statements)
         {
             foreach (var unionStatement in statementLine.UnionStatements)
@@ -54,6 +62,7 @@ public class SqlTranslator
                 {
                     foreach (var cte in statement.WithClause.CTEs)
                     {
+                        _ctes ??= new HashSet<string>();
                         _ctes.Add(cte.Name);
                     }
                 }
@@ -72,10 +81,12 @@ public class SqlTranslator
             {
                 if (tableSource is TableSourceItem item && item.Alias != null)
                 {
+                    _tableAliases ??= new HashSet<string>();
                     _tableAliases.Add(item.Alias.ToString());
                 }
                 else if (tableSource is TableSourceSubQuery subQuery)
                 {
+                    _tableAliases ??= new HashSet<string>();
                     _tableAliases.Add(subQuery.Alias);
                 }
             }
@@ -88,6 +99,7 @@ public class SqlTranslator
                     {
                         if (table.Alias != null)
                         {
+                            _tableAliases ??= new HashSet<string>();
                             _tableAliases.Add(table.Alias.ToString());
                         }
                     }
@@ -96,26 +108,26 @@ public class SqlTranslator
         }
     }
 
-    private void TranslateStatementLine(StringBuilder builder, StatementLine statementLine)
+    private void TranslateStatementLine(ref Utf16ValueStringBuilder builder, StatementLine statementLine)
     {
         foreach (var unionStatement in statementLine.UnionStatements)
         {
-            TranslateUnionStatement(builder, unionStatement);
+            TranslateUnionStatement(ref builder, unionStatement);
         }
     }
 
-    private void TranslateUnionStatement(StringBuilder builder, UnionStatement unionStatement)
+    private void TranslateUnionStatement(ref Utf16ValueStringBuilder builder, UnionStatement unionStatement)
     {
         var statement = unionStatement.Statement;
 
         // WITH clause (CTEs)
         if (statement.WithClause != null)
         {
-            TranslateWithClause(builder, statement.WithClause);
+            TranslateWithClause(ref builder, statement.WithClause);
         }
 
         // SELECT statement
-        TranslateSelectStatement(builder, statement.SelectStatement);
+        TranslateSelectStatement(ref builder, statement.SelectStatement);
 
         // UNION clause
         if (unionStatement.UnionClause != null)
@@ -130,7 +142,7 @@ public class SqlTranslator
         }
     }
 
-    private void TranslateWithClause(StringBuilder builder, WithClause withClause)
+    private void TranslateWithClause(ref Utf16ValueStringBuilder builder, WithClause withClause)
     {
         builder.Append("WITH ");
 
@@ -162,7 +174,7 @@ public class SqlTranslator
             
             for (var j = 0; j < cte.Query.Count; j++)
             {
-                TranslateUnionStatement(builder, cte.Query[j]);
+                TranslateUnionStatement(ref builder, cte.Query[j]);
             }
             
             builder.Append(')');
@@ -171,86 +183,94 @@ public class SqlTranslator
         builder.Append(' ');
     }
 
-    private void TranslateSelectStatement(StringBuilder builder, SelectStatement selectStatement)
+    private void TranslateSelectStatement(ref Utf16ValueStringBuilder builder, SelectStatement selectStatement)
     {
         var sqlBuilder = _dialect.CreateBuilder(_tablePrefix);
+        var _builder = ZString.CreateStringBuilder();
 
-        // SELECT restriction (DISTINCT/ALL)
-        if (selectStatement.Restriction == SelectRestriction.Distinct)
+        try
         {
-            sqlBuilder.Distinct();
-        }
-        else if (selectStatement.Restriction == SelectRestriction.All)
-        {
-            // ALL is the default, no need to add it
-        }
+            // SELECT restriction (DISTINCT/ALL)
+            if (selectStatement.Restriction == SelectRestriction.Distinct)
+            {
+                sqlBuilder.Distinct();
+            }
+            else if (selectStatement.Restriction == SelectRestriction.All)
+            {
+                // ALL is the default, no need to add it
+            }
 
-        // SELECT clause
-        sqlBuilder.Select();
-        _builder.Clear();
-        TranslateColumnItemList(_builder, selectStatement.ColumnItemList);
-        sqlBuilder.Selector(_builder.ToString());
-
-        // FROM clause
-        if (selectStatement.FromClause != null)
-        {
+            // SELECT clause
+            sqlBuilder.Select();
             _builder.Clear();
-            TranslateFromClause(_builder, selectStatement.FromClause);
-            sqlBuilder.From(_builder.ToString());
-        }
+            TranslateColumnItemList(ref _builder, selectStatement.ColumnItemList);
+            sqlBuilder.Selector(_builder.ToString());
 
-        // WHERE clause
-        if (selectStatement.WhereClause != null)
+            // FROM clause
+            if (selectStatement.FromClause != null)
+            {
+                _builder.Clear();
+                TranslateFromClause(ref _builder, selectStatement.FromClause);
+                sqlBuilder.From(_builder.ToString());
+            }
+
+            // WHERE clause
+            if (selectStatement.WhereClause != null)
+            {
+                _builder.Clear();
+                TranslateExpression(ref _builder, selectStatement.WhereClause.Expression);
+                sqlBuilder.WhereAnd(_builder.ToString());
+            }
+
+            // GROUP BY clause
+            if (selectStatement.GroupByClause != null)
+            {
+                _builder.Clear();
+                TranslateGroupByClause(ref _builder, selectStatement.GroupByClause);
+                sqlBuilder.GroupBy(_builder.ToString());
+            }
+
+            // HAVING clause
+            if (selectStatement.HavingClause != null)
+            {
+                _builder.Clear();
+                TranslateExpression(ref _builder, selectStatement.HavingClause.Expression);
+                sqlBuilder.Having(_builder.ToString());
+            }
+
+            // ORDER BY clause
+            if (selectStatement.OrderByClause != null)
+            {
+                _builder.Clear();
+                TranslateOrderByClause(ref _builder, selectStatement.OrderByClause);
+                sqlBuilder.OrderBy(_builder.ToString());
+            }
+
+            // LIMIT clause
+            if (selectStatement.LimitClause != null)
+            {
+                _builder.Clear();
+                TranslateExpression(ref _builder, selectStatement.LimitClause.Expression);
+                sqlBuilder.Take(_builder.ToString());
+            }
+
+            // OFFSET clause
+            if (selectStatement.OffsetClause != null)
+            {
+                _builder.Clear();
+                TranslateExpression(ref _builder, selectStatement.OffsetClause.Expression);
+                sqlBuilder.Skip(_builder.ToString());
+            }
+
+            builder.Append(sqlBuilder.ToSqlString());
+        }
+        finally
         {
-            _builder.Clear();
-            TranslateExpression(_builder, selectStatement.WhereClause.Expression);
-            sqlBuilder.WhereAnd(_builder.ToString());
+            _builder.Dispose();
         }
-
-        // GROUP BY clause
-        if (selectStatement.GroupByClause != null)
-        {
-            _builder.Clear();
-            TranslateGroupByClause(_builder, selectStatement.GroupByClause);
-            sqlBuilder.GroupBy(_builder.ToString());
-        }
-
-        // HAVING clause
-        if (selectStatement.HavingClause != null)
-        {
-            _builder.Clear();
-            TranslateExpression(_builder, selectStatement.HavingClause.Expression);
-            sqlBuilder.Having(_builder.ToString());
-        }
-
-        // ORDER BY clause
-        if (selectStatement.OrderByClause != null)
-        {
-            _builder.Clear();
-            TranslateOrderByClause(_builder, selectStatement.OrderByClause);
-            sqlBuilder.OrderBy(_builder.ToString());
-        }
-
-        // LIMIT clause
-        if (selectStatement.LimitClause != null)
-        {
-            _builder.Clear();
-            TranslateExpression(_builder, selectStatement.LimitClause.Expression);
-            sqlBuilder.Take(_builder.ToString());
-        }
-
-        // OFFSET clause
-        if (selectStatement.OffsetClause != null)
-        {
-            _builder.Clear();
-            TranslateExpression(_builder, selectStatement.OffsetClause.Expression);
-            sqlBuilder.Skip(_builder.ToString());
-        }
-
-        builder.Append(sqlBuilder.ToSqlString());
     }
 
-    private void TranslateColumnItemList(StringBuilder builder, IReadOnlyList<ColumnItem> columnItems)
+    private void TranslateColumnItemList(ref Utf16ValueStringBuilder builder, IReadOnlyList<ColumnItem> columnItems)
     {
         // Check if it's SELECT *
         if (columnItems.Count == 1 && 
@@ -269,13 +289,13 @@ public class SqlTranslator
                 builder.Append(", ");
             }
 
-            TranslateColumnItem(builder, columnItems[i]);
+            TranslateColumnItem(ref builder, columnItems[i]);
         }
     }
 
-    private void TranslateColumnItem(StringBuilder builder, ColumnItem columnItem)
+    private void TranslateColumnItem(ref Utf16ValueStringBuilder builder, ColumnItem columnItem)
     {
-        TranslateColumnSource(builder, columnItem.Source);
+        TranslateColumnSource(ref builder, columnItem.Source);
 
         if (columnItem.Alias != null)
         {
@@ -284,24 +304,24 @@ public class SqlTranslator
         }
     }
 
-    private void TranslateColumnSource(StringBuilder builder, ColumnSource columnSource)
+    private void TranslateColumnSource(ref Utf16ValueStringBuilder builder, ColumnSource columnSource)
     {
         if (columnSource is ColumnSourceIdentifier identifierSource)
         {
-            TranslateIdentifierInSelectContext(builder, identifierSource.Identifier);
+            TranslateIdentifierInSelectContext(ref builder, identifierSource.Identifier);
         }
         else if (columnSource is ColumnSourceFunction functionSource)
         {
-            TranslateFunctionCall(builder, functionSource.FunctionCall);
+            TranslateFunctionCall(ref builder, functionSource.FunctionCall);
 
             if (functionSource.OverClause != null)
             {
-                TranslateOverClause(builder, functionSource.OverClause);
+                TranslateOverClause(ref builder, functionSource.OverClause);
             }
         }
     }
 
-    private void TranslateOverClause(StringBuilder builder, OverClause overClause)
+    private void TranslateOverClause(ref Utf16ValueStringBuilder builder, OverClause overClause)
     {
         builder.Append(" OVER (");
 
@@ -314,7 +334,7 @@ public class SqlTranslator
                 {
                     builder.Append(", ");
                 }
-                TranslateColumnItem(builder, overClause.PartitionBy.Columns[i]);
+                TranslateColumnItem(ref builder, overClause.PartitionBy.Columns[i]);
             }
         }
 
@@ -325,13 +345,13 @@ public class SqlTranslator
                 builder.Append(' ');
             }
             builder.Append("ORDER BY ");
-            TranslateOrderByList(builder, overClause.OrderBy.Items);
+            TranslateOrderByList(ref builder, overClause.OrderBy.Items);
         }
 
         builder.Append(')');
     }
 
-    private void TranslateFromClause(StringBuilder builder, FromClause fromClause)
+    private void TranslateFromClause(ref Utf16ValueStringBuilder builder, FromClause fromClause)
     {
         for (var i = 0; i < fromClause.TableSources.Count; i++)
         {
@@ -340,7 +360,7 @@ public class SqlTranslator
                 builder.Append(", ");
             }
 
-            TranslateTableSource(builder, fromClause.TableSources[i]);
+            TranslateTableSource(ref builder, fromClause.TableSources[i]);
         }
 
         // JOIN clauses
@@ -348,16 +368,16 @@ public class SqlTranslator
         {
             foreach (var join in fromClause.Joins)
             {
-                TranslateJoinStatement(builder, join);
+                TranslateJoinStatement(ref builder, join);
             }
         }
     }
 
-    private void TranslateTableSource(StringBuilder builder, TableSource tableSource)
+    private void TranslateTableSource(ref Utf16ValueStringBuilder builder, TableSource tableSource)
     {
         if (tableSource is TableSourceItem item)
         {
-            TranslateIdentifierInFromContext(builder, item.Identifier);
+            TranslateIdentifierInFromContext(ref builder, item.Identifier);
 
             if (item.Alias != null)
             {
@@ -371,7 +391,7 @@ public class SqlTranslator
             
             for (var i = 0; i < subQuery.Query.Count; i++)
             {
-                TranslateUnionStatement(builder, subQuery.Query[i]);
+                TranslateUnionStatement(ref builder, subQuery.Query[i]);
             }
             
             builder.Append(") AS ");
@@ -379,7 +399,7 @@ public class SqlTranslator
         }
     }
 
-    private void TranslateJoinStatement(StringBuilder builder, JoinStatement join)
+    private void TranslateJoinStatement(ref Utf16ValueStringBuilder builder, JoinStatement join)
     {
         builder.Append(' ');
 
@@ -406,7 +426,7 @@ public class SqlTranslator
             }
 
             var table = join.Tables[i];
-            TranslateIdentifierInFromContext(builder, table.Identifier);
+            TranslateIdentifierInFromContext(ref builder, table.Identifier);
 
             if (table.Alias != null)
             {
@@ -416,10 +436,10 @@ public class SqlTranslator
         }
 
         builder.Append(" ON ");
-        TranslateExpression(builder, join.Conditions);
+        TranslateExpression(ref builder, join.Conditions);
     }
 
-    private void TranslateGroupByClause(StringBuilder builder, GroupByClause groupByClause)
+    private void TranslateGroupByClause(ref Utf16ValueStringBuilder builder, GroupByClause groupByClause)
     {
         for (var i = 0; i < groupByClause.Columns.Count; i++)
         {
@@ -428,16 +448,16 @@ public class SqlTranslator
                 builder.Append(", ");
             }
 
-            TranslateColumnSource(builder, groupByClause.Columns[i]);
+            TranslateColumnSource(ref builder, groupByClause.Columns[i]);
         }
     }
 
-    private void TranslateOrderByClause(StringBuilder builder, OrderByClause orderByClause)
+    private void TranslateOrderByClause(ref Utf16ValueStringBuilder builder, OrderByClause orderByClause)
     {
-        TranslateOrderByList(builder, orderByClause.Items);
+        TranslateOrderByList(ref builder, orderByClause.Items);
     }
 
-    private void TranslateOrderByList(StringBuilder builder, IReadOnlyList<OrderByItem> items)
+    private void TranslateOrderByList(ref Utf16ValueStringBuilder builder, IReadOnlyList<OrderByItem> items)
     {
         for (var i = 0; i < items.Count; i++)
         {
@@ -450,13 +470,14 @@ public class SqlTranslator
 
             // Check for RANDOM() special case
             if (item.Identifier.Parts.Count == 1 && 
-                item.Identifier.Parts[0].Equals("RANDOM", StringComparison.OrdinalIgnoreCase))
+                item.Identifier.Parts[0].Equals("RANDOM", StringComparison.OrdinalIgnoreCase) &&
+                item.Arguments != null)
             {
                 builder.Append(_dialect.RandomOrderByClause);
                 continue;
             }
 
-            TranslateIdentifierInSelectContext(builder, item.Identifier);
+            TranslateIdentifierInSelectContext(ref builder, item.Identifier);
 
             if (item.Direction == OrderDirection.Asc)
             {
@@ -469,24 +490,24 @@ public class SqlTranslator
         }
     }
 
-    private void TranslateExpression(StringBuilder builder, Expression expression)
+    private void TranslateExpression(ref Utf16ValueStringBuilder builder, Expression expression)
     {
         switch (expression)
         {
             case BinaryExpression binary:
-                TranslateBinaryExpression(builder, binary);
+                TranslateBinaryExpression(ref builder, binary);
                 break;
             case UnaryExpression unary:
-                TranslateUnaryExpression(builder, unary);
+                TranslateUnaryExpression(ref builder, unary);
                 break;
             case BetweenExpression between:
-                TranslateBetweenExpression(builder, between);
+                TranslateBetweenExpression(ref builder, between);
                 break;
             case InExpression inExpr:
-                TranslateInExpression(builder, inExpr);
+                TranslateInExpression(ref builder, inExpr);
                 break;
             case IdentifierExpression identifier:
-                TranslateIdentifierInSelectContext(builder, identifier.Identifier);
+                TranslateIdentifierInSelectContext(ref builder, identifier.Identifier);
                 break;
             case LiteralExpression<bool> boolLiteral:
                 builder.Append(_dialect.GetSqlValue(boolLiteral.Value));
@@ -498,29 +519,29 @@ public class SqlTranslator
                 builder.Append(_dialect.GetSqlValue(decimalLiteral.Value));
                 break;
             case FunctionCall functionCall:
-                TranslateFunctionCall(builder, functionCall);
+                TranslateFunctionCall(ref builder, functionCall);
                 break;
             case TupleExpression tuple:
-                TranslateTupleExpression(builder, tuple);
+                TranslateTupleExpression(ref builder, tuple);
                 break;
             case ParenthesizedSelectStatement parSelect:
-                TranslateParenthesizedSelectStatement(builder, parSelect);
+                TranslateParenthesizedSelectStatement(ref builder, parSelect);
                 break;
             case ParameterExpression parameter:
-                TranslateParameterExpression(builder, parameter);
+                TranslateParameterExpression(ref builder, parameter);
                 break;
             default:
                 throw new SqlParserException($"Unsupported expression type: {expression.GetType().Name}");
         }
     }
 
-    private void TranslateBinaryExpression(StringBuilder builder, BinaryExpression binary)
+    private void TranslateBinaryExpression(ref Utf16ValueStringBuilder builder, BinaryExpression binary)
     {
-        TranslateExpression(builder, binary.Left);
+        TranslateExpression(ref builder, binary.Left);
         builder.Append(' ');
         builder.Append(GetBinaryOperatorString(binary.Operator));
         builder.Append(' ');
-        TranslateExpression(builder, binary.Right);
+        TranslateExpression(ref builder, binary.Right);
     }
 
     private static string GetBinaryOperatorString(BinaryOperator op)
@@ -552,10 +573,10 @@ public class SqlTranslator
         };
     }
 
-    private void TranslateUnaryExpression(StringBuilder builder, UnaryExpression unary)
+    private void TranslateUnaryExpression(ref Utf16ValueStringBuilder builder, UnaryExpression unary)
     {
         builder.Append(GetUnaryOperatorString(unary.Operator));
-        TranslateExpression(builder, unary.Expression);
+        TranslateExpression(ref builder, unary.Expression);
     }
 
     private static string GetUnaryOperatorString(UnaryOperator op)
@@ -570,9 +591,9 @@ public class SqlTranslator
         };
     }
 
-    private void TranslateBetweenExpression(StringBuilder builder, BetweenExpression between)
+    private void TranslateBetweenExpression(ref Utf16ValueStringBuilder builder, BetweenExpression between)
     {
-        TranslateExpression(builder, between.Expression);
+        TranslateExpression(ref builder, between.Expression);
         builder.Append(' ');
         
         if (between.IsNot)
@@ -581,14 +602,14 @@ public class SqlTranslator
         }
         
         builder.Append("BETWEEN ");
-        TranslateExpression(builder, between.Lower);
+        TranslateExpression(ref builder, between.Lower);
         builder.Append(" AND ");
-        TranslateExpression(builder, between.Upper);
+        TranslateExpression(ref builder, between.Upper);
     }
 
-    private void TranslateInExpression(StringBuilder builder, InExpression inExpr)
+    private void TranslateInExpression(ref Utf16ValueStringBuilder builder, InExpression inExpr)
     {
-        TranslateExpression(builder, inExpr.Expression);
+        TranslateExpression(ref builder, inExpr.Expression);
         builder.Append(' ');
         
         if (inExpr.IsNot)
@@ -598,19 +619,14 @@ public class SqlTranslator
         
         builder.Append("IN (");
 
-        for (var i = 0; i < inExpr.Values.Count; i++)
-        {
-            if (i > 0)
-            {
-                builder.Append(", ");
-            }
-            TranslateExpression(builder, inExpr.Values[i]);
-        }
+        var arguments = TranslateFunctionArguments(inExpr.Values);
+
+        builder.AppendJoin(", ", arguments);
 
         builder.Append(')');
     }
 
-    private void TranslateTupleExpression(StringBuilder builder, TupleExpression tuple)
+    private void TranslateTupleExpression(ref Utf16ValueStringBuilder builder, TupleExpression tuple)
     {
         builder.Append('(');
         for (var i = 0; i < tuple.Expressions.Count; i++)
@@ -619,24 +635,24 @@ public class SqlTranslator
             {
                 builder.Append(", ");
             }
-            TranslateExpression(builder, tuple.Expressions[i]);
+            TranslateExpression(ref builder, tuple.Expressions[i]);
         }
         builder.Append(')');
     }
 
-    private void TranslateParenthesizedSelectStatement(StringBuilder builder, ParenthesizedSelectStatement parSelect)
+    private void TranslateParenthesizedSelectStatement(ref Utf16ValueStringBuilder builder, ParenthesizedSelectStatement parSelect)
     {
         builder.Append('(');
-        TranslateSelectStatement(builder, parSelect.SelectStatement);
+        TranslateSelectStatement(ref builder, parSelect.SelectStatement);
         builder.Append(')');
     }
 
-    private void TranslateParameterExpression(StringBuilder builder, ParameterExpression parameter)
+    private void TranslateParameterExpression(ref Utf16ValueStringBuilder builder, ParameterExpression parameter)
     {
         var name = parameter.Name.ToString();
         builder.Append("@" + name);
 
-        if (!_parameters.ContainsKey(name))
+        if (_parameters != null && !_parameters.ContainsKey(name))
         {
             if (parameter.DefaultValue != null)
             {
@@ -662,7 +678,7 @@ public class SqlTranslator
         };
     }
 
-    private void TranslateFunctionCall(StringBuilder builder, FunctionCall functionCall)
+    private void TranslateFunctionCall(ref Utf16ValueStringBuilder builder, FunctionCall functionCall)
     {
         var funcName = functionCall.Name.ToString();
         var arguments = TranslateFunctionArguments(functionCall.Arguments);
@@ -682,9 +698,16 @@ public class SqlTranslator
 
     private string TranslateSelectStatementToString(SelectStatement selectStatement)
     {
-        var tempBuilder = new StringBuilder();
-        TranslateSelectStatement(tempBuilder, selectStatement);
-        return tempBuilder.ToString();
+        var tempBuilder = ZString.CreateStringBuilder();
+        try
+        {
+            TranslateSelectStatement(ref tempBuilder, selectStatement);
+            return tempBuilder.ToString();
+        }
+        finally
+        {
+            tempBuilder.Dispose();
+        }
     }
 
     private string[] TranslateExpressionListToArray(IReadOnlyList<Expression> expressions)
@@ -692,14 +715,21 @@ public class SqlTranslator
         var result = new string[expressions.Count];
         for (var i = 0; i < expressions.Count; i++)
         {
-            var tempBuilder = new StringBuilder();
-            TranslateExpression(tempBuilder, expressions[i]);
-            result[i] = tempBuilder.ToString();
+            var tempBuilder = ZString.CreateStringBuilder();
+            try
+            {
+                TranslateExpression(ref tempBuilder, expressions[i]);
+                result[i] = tempBuilder.ToString();
+            }
+            finally
+            {
+                tempBuilder.Dispose();
+            }
         }
         return result;
     }
 
-    private void TranslateIdentifierInSelectContext(StringBuilder builder, Identifier identifier)
+    private void TranslateIdentifierInSelectContext(ref Utf16ValueStringBuilder builder, Identifier identifier)
     {
         // In SELECT context, first part is table name unless it's an alias
         if (identifier.Parts.Count == 1)
@@ -715,7 +745,7 @@ public class SqlTranslator
                     builder.Append('.');
                 }
 
-                if (i == 0 && !_tableAliases.Contains(identifier.Parts[i]))
+                if (i == 0 && (_tableAliases == null || !_tableAliases.Contains(identifier.Parts[i])))
                 {
                     // First part is a table name, needs table prefix
                     builder.Append(_dialect.QuoteForTableName(_tablePrefix + identifier.Parts[i], _schema));
@@ -723,7 +753,7 @@ public class SqlTranslator
                 else
                 {
                     // It's an alias or column name
-                    if (_tableAliases.Contains(identifier.Parts[i]))
+                    if (_tableAliases != null && _tableAliases.Contains(identifier.Parts[i]))
                     {
                         builder.Append(identifier.Parts[i]);
                     }
@@ -736,12 +766,12 @@ public class SqlTranslator
         }
     }
 
-    private void TranslateIdentifierInFromContext(StringBuilder builder, Identifier identifier)
+    private void TranslateIdentifierInFromContext(ref Utf16ValueStringBuilder builder, Identifier identifier)
     {
         // In FROM context, identifier is a table name unless it's a CTE
         for (var i = 0; i < identifier.Parts.Count; i++)
         {
-            if (i == 0 && !_ctes.Contains(identifier.Parts[i]))
+            if (i == 0 && (_ctes == null || !_ctes.Contains(identifier.Parts[i])))
             {
                 // It's a table name, add prefix
                 builder.Append(_dialect.QuoteForTableName(_tablePrefix + identifier.Parts[i], _schema));

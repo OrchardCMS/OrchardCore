@@ -275,11 +275,13 @@ public class OrderByClause : ISqlNode
 public class OrderByItem : ISqlNode
 {
     public Identifier Identifier { get; }
+    public FunctionArguments? Arguments { get; }
     public OrderDirection Direction { get; }
 
-    public OrderByItem(Identifier identifier, OrderDirection direction)
+    public OrderByItem(Identifier identifier, FunctionArguments? arguments, OrderDirection direction)
     {
         Identifier = identifier;
+        Arguments = arguments;
         Direction = direction;
     }
 }
@@ -421,9 +423,9 @@ public class InExpression : Expression
 {
     public Expression Expression { get; }
     public bool IsNot { get; }
-    public IReadOnlyList<Expression> Values { get; }
+    public FunctionArguments Values { get; }
 
-    public InExpression(Expression expression, IReadOnlyList<Expression> values, bool isNot = false)
+    public InExpression(Expression expression, FunctionArguments values, bool isNot = false)
     {
         Expression = expression;
         Values = values;
@@ -464,6 +466,10 @@ public class FunctionCall : Expression
 }
 
 public abstract class FunctionArguments : ISqlNode
+{
+}
+
+public class EmptyArguments : FunctionArguments
 {
 }
 

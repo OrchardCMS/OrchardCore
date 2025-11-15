@@ -1,21 +1,15 @@
 #nullable enable
 
-using System.Text.Json.Nodes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Parlot;
 using Parlot.Fluent;
-using static System.Net.Mime.MediaTypeNames;
-using static Parlot.Fluent.Parsers;
 
 namespace OrchardCore.Queries.Sql;
 
 /// <summary>
-/// SQL parser using Parlot library (compatible with Parlot 1.5.1)
+/// SQL parser.
 /// </summary>
 public class ParlotSqlParser
 {
-    private static Parser<TextSpan> Comments;
-
     public static readonly Parser<StatementList> Statements;
 
     static ParlotSqlParser()
@@ -29,7 +23,6 @@ public class ParlotSqlParser
         var AT = Terms.Char('@');
         var STAR = Terms.Char('*');
         var EQ = Terms.Char('=');
-        var COLON = Terms.Char(':');
 
         // Keywords
         var SELECT = Terms.Text("SELECT", caseInsensitive: true);
@@ -64,28 +57,34 @@ public class ParlotSqlParser
         var OVER = Terms.Text("OVER", caseInsensitive: true);
         var PARTITION = Terms.Text("PARTITION", caseInsensitive: true);
 
-        var multilineComments = Terms.Text("/*").AndSkip(Terms.NoneOf("*").AndSkip(Terms.Text("*/")));
-        var singlelineComments = Terms.Text("--").AndSkip(Terms.NoneOf("\n").And(Terms.Char('\n')));
-        var spaces = Literals.WhiteSpace();
-        Comments = multilineComments.Or(singlelineComments).Or(spaces.Then(x => x.ToString())).Then(x => new TextSpan(x));
+        var keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "SELECT", "FROM", "WHERE", "AS", "JOIN", "INNER", "LEFT", "RIGHT", "ON",
+            "GROUP", "BY", "HAVING", "ORDER", "ASC", "DESC", "LIMIT", "OFFSET",
+            "UNION", "ALL", "DISTINCT", "WITH", "AND", "OR", "NOT", "BETWEEN",
+            "IN", "LIKE", "LIMIT", "TRUE", "FALSE", "OVER", "PARTITION",
+        };
 
         // Literals
         var numberLiteral = Terms.Decimal().Then<Expression>(d => new LiteralExpression<decimal>(d));
 
         var stringLiteral = Terms.String(StringLiteralQuotes.Single)
-            .Then<Expression>(s => new LiteralExpression<string>(s.ToString()));
+            .Then<Expression>(s => new LiteralExpression<string>(s.Span.ToString()));
 
         var booleanLiteral = TRUE.Then<Expression>(new LiteralExpression<bool>(true))
             .Or(FALSE.Then<Expression>(new LiteralExpression<bool>(false)));
 
-        // Identifiers - simplified version compatible with Parlot 1.5.1
-        // Support: identifier, [identifier], "identifier"
-        var bracketedIdentifier = Between(Terms.Char('['), Terms.Identifier(), Terms.Char(']'));
-        var quotedIdentifier = Between(Terms.Char('"'), Terms.Identifier(), Terms.Char('"'));
-        var simpleIdentifier = Terms.Identifier().Or(bracketedIdentifier).Or(quotedIdentifier);
+        // Identifiers
+        var simpleIdentifier = Terms.Identifier()
+            .Or(Between(Terms.Char('['), Literals.NoneOf("]"), Terms.Char(']')))
+            .Or(Between(Terms.Char('"'), Literals.NoneOf("\""), Terms.Char('"')));
 
         var identifier = Separated(DOT, simpleIdentifier)
-            .Then(parts => new Identifier(parts.Select(p => p.ToString()).ToArray()));
+            .Then(parts => new Identifier(parts.Select(p => p.Span.ToString()).ToArray()));
+
+        // Without the keywords check "FROM a WHERE" would interpret "WHERE" as an alias since "AS" is optional
+        var identifierNoKeywords = Separated(DOT, simpleIdentifier).When((ctx, parts) => parts.Count > 0 && !keywords.Contains(parts[0].ToString()))
+            .Then(parts => new Identifier(parts.Select(p => p.Span.ToString()).ToArray()));
 
         // Deferred parsers
         var expression = Deferred<Expression>();
@@ -100,20 +99,12 @@ public class ParlotSqlParser
         var starArg = STAR.Then<FunctionArguments>(_ => new StarArgument());
         var selectArg = selectStatement.Then<FunctionArguments>(s => new SelectStatementArgument(s));
         var exprListArg = expressionList.Then<FunctionArguments>(exprs => new ExpressionListArguments(exprs));
-        var functionArgs = starArg.Or(selectArg).Or(exprListArg);
+        var emptyArg = Always<FunctionArguments>(new EmptyArguments());
+        var functionArgs = starArg.Or(selectArg).Or(exprListArg).Or(emptyArg);
 
-        // TODO: FunctionCall should support multiple arguments
         // Function call
         var functionCall = identifier.And(Between(LPAREN, functionArgs, RPAREN))
             .Then<Expression>(x => new FunctionCall(x.Item1, x.Item2));
-
-        // Parameter with optional default value
-        var defaultValue = COLON.SkipAnd(expression);
-        var parameter = AT.SkipAnd(identifier).And(defaultValue.Optional()).Then<Expression>(x =>
-        {
-            var (name, defaultVal) = x;
-            return new ParameterExpression(name, defaultVal.OrSome(null));
-        });
 
         // Tuple
         var tuple = Between(LPAREN, expressionList, RPAREN)
@@ -126,28 +117,34 @@ public class ParlotSqlParser
         // Basic term
         var identifierExpr = identifier.Then<Expression>(id => new IdentifierExpression(id));
 
-        var term = functionCall
-            .Or(parameter)
+        var termNoParameter = functionCall
             .Or(parSelectStatement)
             .Or(tuple)
             .Or(booleanLiteral)
             .Or(stringLiteral)
             .Or(numberLiteral)
-            .Or(identifierExpr);
+            .Or(identifierExpr)
+            ;
+
+        // Parameter
+        var parameter = AT.SkipAnd(identifier).And(Literals.Char(':').SkipAnd(termNoParameter).Optional()).Then<Expression>(x => new ParameterExpression(x.Item1, x.Item2.HasValue ? x.Item2.Value : null));
+
+        var term = termNoParameter.Or(parameter);
 
         // Unary expressions
-        var unaryMinus = Terms.Char('-').SkipAnd(term).Then<Expression>(x => new UnaryExpression(UnaryOperator.Minus, x));
-        var unaryPlus = Terms.Char('+').SkipAnd(term).Then<Expression>(x => new UnaryExpression(UnaryOperator.Plus, x));
-        var unaryNot = NOT.SkipAnd(term).Then<Expression>(x => new UnaryExpression(UnaryOperator.Not, x));
-        var unaryBitwiseNot = Terms.Char('~').SkipAnd(term).Then<Expression>(x => new UnaryExpression(UnaryOperator.BitwiseNot, x));
+        var unaryMinus = Terms.Char('-').And(term).Then<Expression>(x => new UnaryExpression(UnaryOperator.Minus, x.Item2));
+        var unaryPlus = Terms.Char('+').And(term).Then<Expression>(x => new UnaryExpression(UnaryOperator.Plus, x.Item2));
+        var unaryNot = NOT.And(term).Then<Expression>(x => new UnaryExpression(UnaryOperator.Not, x.Item2));
+        var unaryBitwiseNot = Terms.Char('~').And(term).Then<Expression>(x => new UnaryExpression(UnaryOperator.BitwiseNot, x.Item2));
 
         var unaryExpr = unaryMinus.Or(unaryPlus).Or(unaryNot).Or(unaryBitwiseNot);
         var primary = unaryExpr.Or(term);
 
-        // Binary operators with proper precedence
+        // Binary operators
         var notLike = NOT.AndSkip(LIKE);
         var likeOp = notLike.Or(LIKE);
 
+        // Build expression with proper precedence
         var multiplicative = primary.LeftAssociative(
             (Terms.Char('*'), (a, b) => new BinaryExpression(a, BinaryOperator.Multiply, b)),
             (Terms.Char('/'), (a, b) => new BinaryExpression(a, BinaryOperator.Divide, b)),
@@ -201,7 +198,7 @@ public class ParlotSqlParser
                 return new BetweenExpression(expr, lower, upper, notKeyword.HasValue);
             });
 
-        var inExpr = andExpr.And(NOT.Optional()).AndSkip(IN).AndSkip(LPAREN).And(expressionList).AndSkip(RPAREN)
+        var inExpr = andExpr.And(NOT.Optional()).AndSkip(IN).AndSkip(LPAREN).And(functionArgs).AndSkip(RPAREN)
             .Then<Expression>(result =>
             {
                 var (expr, notKeyword, values) = result;
@@ -217,8 +214,8 @@ public class ParlotSqlParser
         var columnItemList = Separated(COMMA, columnItem.Or(STAR.Then(new ColumnItem(new ColumnSourceIdentifier(new Identifier("*")), null))));
         var orderByList = Separated(COMMA, orderByItem);
 
-        var orderByClause = ORDER.SkipAnd(BY).SkipAnd(orderByList)
-            .Then(x => new OrderByClause(x));
+        var orderByClause = ORDER.AndSkip(BY).And(orderByList)
+            .Then(x => new OrderByClause(x.Item2));
 
         var partitionBy = PARTITION.AndSkip(BY).And(columnItemList)
             .Then(x => new PartitionByClause(x.Item2));
@@ -243,7 +240,7 @@ public class ParlotSqlParser
         var columnSource = columnSourceFunc.Or(columnSourceId);
 
         // Column item with alias
-        var columnAlias = AS.SkipAnd(identifier);
+        var columnAlias = AS.Optional().SkipAnd(identifierNoKeywords);
 
         columnItem.Parser = columnSource.And(columnAlias.Optional())
             .Then(result =>
@@ -253,7 +250,7 @@ public class ParlotSqlParser
             });
 
         // Table source
-        var tableAlias = AS.SkipAnd(identifier);
+        var tableAlias = AS.Optional().SkipAnd(identifierNoKeywords);
 
         var tableSourceItem = identifier.And(tableAlias.Optional())
             .Then(result =>
@@ -287,7 +284,9 @@ public class ParlotSqlParser
         var joinStatement = joinKind.Else(JoinKind.None).AndSkip(JOIN).And(tableSourceItemList).And(joinCondition)
             .Then(result =>
             {
-                var (kind, tables, conditions) = result;
+                var kind = result.Item1;
+                var tables = result.Item2;
+                var conditions = result.Item3;
                 return new JoinStatement(tables, conditions, kind);
             });
 
@@ -297,34 +296,43 @@ public class ParlotSqlParser
         var fromClause = FROM.SkipAnd(tableSourceList).And(joins)
             .Then(result =>
             {
-                var (tables, joinList) = result;
-                return new FromClause(tables, joinList);
+                // FROM, tableSourceList, joins -> 3 items
+                var tables = result.Item1;
+                var joinList = result.Item2;
+                return new FromClause(tables, joinList.Any() ? joinList : null);
             });
 
         // WHERE clause
-        var whereClause = WHERE.SkipAnd(expression).Then(x => new WhereClause(x));
+        var whereClause = WHERE.And(expression).Then(x => new WhereClause(x.Item2));
 
         // GROUP BY clause
         var columnSourceList = Separated(COMMA, columnSource);
-        var groupByClause = GROUP.SkipAnd(BY).SkipAnd(columnSourceList)
-            .Then(x => new GroupByClause(x));
+        var groupByClause = GROUP.AndSkip(BY).And(columnSourceList)
+            .Then(x => new GroupByClause(x.Item2));
 
         // HAVING clause
-        var havingClause = HAVING.SkipAnd(expression).Then(x => new HavingClause(x));
+        var havingClause = HAVING.And(expression).Then(x => new HavingClause(x.Item2));
 
         // ORDER BY item
         var orderDirection = ASC.Then(OrderDirection.Asc).Or(DESC.Then(OrderDirection.Desc));
 
-        orderByItem.Parser = identifier.And(orderDirection.Optional())
-            .Then(result =>
-            {
-                var (id, dir) = result;
-                return new OrderByItem(id, dir.OrSome(OrderDirection.NotSpecified));
-            });
+        orderByItem.Parser =
+            identifier.And(Between(LPAREN, functionArgs, RPAREN))
+                .Then(result =>
+                {
+                    var (id, arguments) = result;
+                    return new OrderByItem(id, arguments, OrderDirection.NotSpecified);
+                }).Or(
+            identifier.And(orderDirection.Optional())
+                .Then(result =>
+                {
+                    var (id, dir) = result;
+                    return new OrderByItem(id, null, dir.OrSome(OrderDirection.NotSpecified));
+                }));
 
         // LIMIT and OFFSET clauses
-        var limitClause = LIMIT.SkipAnd(expression).Then(x => new LimitClause(x));
-        var offsetClause = OFFSET.SkipAnd(expression).Then(x => new OffsetClause(x));
+        var limitClause = LIMIT.And(expression).Then(x => new LimitClause(x.Item2));
+        var offsetClause = OFFSET.And(expression).Then(x => new OffsetClause(x.Item2));
 
         // SELECT statement
         var selectRestriction = ALL.Then(SelectRestriction.All).Or(DISTINCT.Then(SelectRestriction.Distinct));
@@ -358,7 +366,7 @@ public class ParlotSqlParser
 
         // WITH clause (CTEs)
         var columnNames = Separated(COMMA, simpleIdentifier)
-            .Then(names => names.Select(n => n.ToString()).ToArray());
+            .Then(names => names.Select(n => n.Span.ToString()).ToArray());
 
         var cteColumnList = Between(LPAREN, columnNames, RPAREN);
 
@@ -401,16 +409,22 @@ public class ParlotSqlParser
         var statementLine = unionStatementList.AndSkip(SEMICOLON.Optional())
             .Then(x => new StatementLine(x));
 
-        // Statement list
-        var statementList = OneOrMany(statementLine)
-            .Then(statements => new StatementList(statements));
+        var commentsBuilder = new CommentsBuilder(Literals.WhiteSpace(includeNewLines: true));
+        commentsBuilder.WithSingleLine("--");
+        commentsBuilder.WithMultiLine("/*", "*/");
 
-        Statements = statementList;
+        var comments = commentsBuilder.Build();
+
+        // Statement list
+        var statementList = ZeroOrMany(SkipWhiteSpace(statementLine))
+            .Then(statements => new StatementList(statements)).AndSkip(comments.Optional()).Eof();
+
+        Statements = statementList.WithWhiteSpaceParser(comments);
     }
 
     public static StatementList? Parse(string input)
     {
-        if (TryParse(input, out var result, out var error))
+        if (TryParse(input, out var result, out var _))
         {
             return result;
         }
@@ -420,9 +434,6 @@ public class ParlotSqlParser
 
     public static bool TryParse(string input, out StatementList? result, out ParseError? error)
     {
-        var context = new ParseContext(new Scanner(input));
-        context.WhiteSpaceParser = Comments;
-
-        return Statements.TryParse(context, out result, out error);
+        return Statements.TryParse(input, out result, out error);
     }
 }

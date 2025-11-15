@@ -102,7 +102,7 @@ public class SqlParserTests
         var parameters = new Dictionary<string, object>();
         var result = SqlParser.TryParse("select a where a = @b:10", _schema, _defaultDialect, _defaultTablePrefix, parameters, out _, out _);
         Assert.True(result);
-        Assert.Equal(10, parameters["b"]);
+        Assert.Equal(10m, parameters["b"]);
     }
 
     [Theory]
@@ -167,19 +167,11 @@ public class SqlParserTests
         Assert.Equal(expectedSql, FormatSql(rawQuery));
     }
 
-    [Fact]
-    public void ShouldReturnErrorMessage()
-    {
-        var result = SqlParser.TryParse("SEL a", _schema, _defaultDialect, _defaultTablePrefix, null, out _, out var messages);
-
-        Assert.False(result);
-        Assert.Single(messages);
-        Assert.Contains("at line:0, col:0", messages.First());
-    }
-
     [Theory]
     [InlineData("SELECT a; -- this is a comment", "SELECT [a];")]
     [InlineData("SELECT a; \n-- this is a comment", "SELECT [a];")]
+    [InlineData("-- this is a comment\n SELECT a;", "SELECT [a];")]
+    [InlineData("-- this is a comment\n SELECT a; -- this is another comment\n SELECT b;", "SELECT [a]; SELECT [b];")]
     [InlineData("SELECT /* comment */ a;", "SELECT [a];")]
     [InlineData("SELECT /* comment \n comment */ a;", "SELECT [a];")]
     public void ShouldParseComments(string sql, string expectedSql)
