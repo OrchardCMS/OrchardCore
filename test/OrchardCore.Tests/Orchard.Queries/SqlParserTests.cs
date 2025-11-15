@@ -173,7 +173,7 @@ public class SqlParserTests
     [InlineData("-- this is a comment\n SELECT a;", "SELECT [a];")]
     [InlineData("-- this is a comment\n SELECT a; -- this is another comment\n SELECT b;", "SELECT [a]; SELECT [b];")]
     [InlineData("SELECT /* comment */ a;", "SELECT [a];")]
-    [InlineData("SELECT /* comment \n comment */ a;", "SELECT [a];")]
+    [InlineData("/* comment \n comment */SELECT /* comment \n comment */ a /* comment \n comment */;/* comment \n comment */", "SELECT [a];")]
     public void ShouldParseComments(string sql, string expectedSql)
     {
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out _);

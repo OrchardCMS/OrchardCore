@@ -62,7 +62,7 @@ public class ParlotSqlParser
             "SELECT", "FROM", "WHERE", "AS", "JOIN", "INNER", "LEFT", "RIGHT", "ON",
             "GROUP", "BY", "HAVING", "ORDER", "ASC", "DESC", "LIMIT", "OFFSET",
             "UNION", "ALL", "DISTINCT", "WITH", "AND", "OR", "NOT", "BETWEEN",
-            "IN", "LIKE", "LIMIT", "TRUE", "FALSE", "OVER", "PARTITION",
+            "IN", "LIKE", "TRUE", "FALSE", "OVER", "PARTITION",
         };
 
         // Literals
@@ -416,7 +416,7 @@ public class ParlotSqlParser
         var comments = commentsBuilder.Build();
 
         // Statement list
-        var statementList = ZeroOrMany(SkipWhiteSpace(statementLine))
+        var statementList = ZeroOrMany(statementLine)
             .Then(statements => new StatementList(statements)).AndSkip(comments.Optional()).Eof();
 
         Statements = statementList.WithWhiteSpaceParser(comments);
