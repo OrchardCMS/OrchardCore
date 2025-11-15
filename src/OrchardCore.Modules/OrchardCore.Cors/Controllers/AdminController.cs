@@ -14,6 +14,8 @@ namespace OrchardCore.Cors.Controllers;
 [Admin]
 public sealed class AdminController : Controller
 {
+    private const string AnyOrigin = "*";
+
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
     private readonly IAuthorizationService _authorizationService;
@@ -116,7 +118,7 @@ public sealed class AdminController : Controller
                 ExposedHeaders = settingViewModel.ExposedHeaders,
             });
 
-            if (settingViewModel.AllowAnyOrigin && settingViewModel.AllowCredentials)
+            if (IsAnyOriginAllowed(settingViewModel) && settingViewModel.AllowCredentials)
             {
                 policyWarnings.Add(settingViewModel.Name);
             }
@@ -139,4 +141,7 @@ public sealed class AdminController : Controller
 
         return View(model);
     }
+
+    private static bool IsAnyOriginAllowed(CorsPolicyViewModel corsPolicyViewModel) => corsPolicyViewModel.AllowAnyOrigin
+        || (corsPolicyViewModel.AllowedOrigins.Length == 1 && corsPolicyViewModel.AllowedOrigins[0] == AnyOrigin);
 }
