@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Locking;
 
 namespace OrchardCore.DisplayManagement.Descriptors;
 
@@ -25,24 +26,19 @@ public class DefaultShapeTableManager : IShapeTableManager
     private static readonly object _syncLock = new();
 
     // Singleton cache to hold a tenant's theme ShapeTable.
-    private readonly IDictionary<string, ShapeTable> _shapeTableCache;
+    private readonly IDictionary<string, Task<ShapeTable>> _shapeTableCache;
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger _logger;
-    private readonly SemaphoreSlim _semaphore;
 
     public DefaultShapeTableManager(
-        [FromKeyedServices(nameof(DefaultShapeTableManager))] IDictionary<string, ShapeTable> shapeTableCache,
-        IServiceProvider serviceProvider,
-        ILogger<DefaultShapeTableManager> logger)
+        [FromKeyedServices(nameof(DefaultShapeTableManager))] IDictionary<string, Task<ShapeTable>> shapeTableCache,
+        IServiceProvider serviceProvider)
     {
         _shapeTableCache = shapeTableCache;
         _serviceProvider = serviceProvider;
-        _semaphore = new SemaphoreSlim(1, 1);
-        _logger = logger;
     }
 
-    public async Task<ShapeTable> GetShapeTableAsync(string themeId)
+    public Task<ShapeTable> GetShapeTableAsync(string themeId)
     {
         // This method is intentionally not awaited since most calls
         // are from cache.
@@ -51,35 +47,39 @@ public class DefaultShapeTableManager : IShapeTableManager
             return shapeTable;
         }
 
-        await _semaphore.WaitAsync();
-        try
-        {
-            if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out shapeTable))
-            {
-                return shapeTable;
-            }
+        return GetShapeTableInternalAsync(themeId);
+    }
 
-            return await BuildShapeTableAsync(themeId);
-        }
-        finally
+    private async Task<ShapeTable> GetShapeTableInternalAsync(string themeId)
+    {
+        // Use a local lock to avoid multiple concurrent builds of the same shape table. Using the ILocalLock
+        // avoids holding on to a semaphore for the whole application lifetime.
+        var localLock = _serviceProvider.GetRequiredService<ILocalLock>();
+
+        using var locker = await localLock.AcquireLockAsync(nameof(DefaultShapeTableManager));
+
+        if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out var shapeTable))
         {
-            _semaphore.Release();
+            return shapeTable.Result;
         }
+
+        return await BuildShapeTableAsync(themeId);
     }
 
     private async Task<ShapeTable> BuildShapeTableAsync(string themeId)
     {
-        _logger.LogInformation("Start building shape table for {Theme}", themeId);
-
         // These services are resolved lazily since they are only required when initializing the shape tables
         // during the first request. And binding strategies would be expensive to build since this service is called many times
         // per request.
 
+        var logger = _serviceProvider.GetRequiredService<ILogger<DefaultShapeTableManager>>();
         var hostingEnvironment = _serviceProvider.GetRequiredService<IHostEnvironment>();
         var bindingStrategies = _serviceProvider.GetRequiredService<IEnumerable<IShapeTableProvider>>();
         var shellFeaturesManager = _serviceProvider.GetRequiredService<IShellFeaturesManager>();
         var extensionManager = _serviceProvider.GetRequiredService<IExtensionManager>();
         var typeFeatureProvider = _serviceProvider.GetRequiredService<ITypeFeatureProvider>();
+
+        logger.LogInformation("Start building shape table for {Theme}", themeId);
 
         HashSet<string> excludedFeatures;
 
@@ -93,13 +93,14 @@ public class DefaultShapeTableManager : IShapeTableManager
 
         foreach (var bindingStrategy in bindingStrategies)
         {
-            var strategyFeature = typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+            foreach (var strategyFeature in typeFeatureProvider.GetFeaturesForDependency(bindingStrategy.GetType()))
+            {
+                var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
+                await bindingStrategy.DiscoverAsync(builder);
+                var builtAlterations = builder.BuildAlterations();
 
-            var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
-            await bindingStrategy.DiscoverAsync(builder);
-            var builtAlterations = builder.BuildAlterations();
-
-            BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
+                BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
+            }
         }
 
         // Here we don't use a lock for thread safety but for atomicity.
@@ -139,9 +140,9 @@ public class DefaultShapeTableManager : IShapeTableManager
             bindings: descriptors.SelectMany(sd => sd.Bindings).ToFrozenDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
         );
 
-        _logger.LogInformation("Done building shape table for {Theme}", themeId);
+        logger.LogInformation("Done building shape table for {Theme}", themeId);
 
-        _shapeTableCache[themeId ?? DefaultThemeIdKey] = shapeTable;
+        _shapeTableCache[themeId ?? DefaultThemeIdKey] = Task.FromResult(shapeTable);
 
         return shapeTable;
     }

@@ -20,6 +20,8 @@ If your company works with Orchard Core and would like to incentivize community 
 
 - 2024: [Hisham Bin Ateya](https://github.com/hishamco)
 
+- 2025: [Mike Alhayek](https://github.com/MikeAlhayek)
+
 ## Organizing the Jean-Thierry Kéchichian Community Award
 
 This is how we organize the Jean-Thierry Kéchichian Community Award:
