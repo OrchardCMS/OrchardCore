@@ -168,7 +168,26 @@ public static class OrchardCoreBuilderExtensions
                 return session;
             });
 
-            services.AddScoped<IDocumentStore, DocumentStore>();
+            services.AddScoped<IDocumentStore>(sp =>
+            {
+                var session = sp.GetService<YesSqlSession>();
+                
+                if (session == null)
+                {
+                    return null;
+                }
+                
+                var documentStore = new DocumentStore(session);
+
+                // Set a flag in HttpContext.Items to indicate that IDocumentStore was resolved
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                if (httpContextAccessor?.HttpContext != null)
+                {
+                    httpContextAccessor.HttpContext.Items["OrchardCore:DocumentStoreResolved"] = true;
+                }
+
+                return documentStore;
+            });
             services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
             services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
         });
