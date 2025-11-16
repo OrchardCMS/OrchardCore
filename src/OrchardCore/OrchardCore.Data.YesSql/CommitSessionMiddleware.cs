@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using YesSqlSession = YesSql.ISession;
 
@@ -21,38 +20,8 @@ public class CommitSessionMiddleware
         _logger = logger;
     }
 
-    public async Task InvokeAsync(HttpContext context, IOptions<EnsureCommittedOptions> options)
+    public async Task InvokeAsync(HttpContext context)
     {
-        var ensureCommittedOptions = options?.Value;
-
-        if (ensureCommittedOptions == null || !ensureCommittedOptions.Enabled)
-        {
-            await _next(context);
-            return;
-        }
-
-        // Check if we should filter by path
-        if (ensureCommittedOptions.FlushOnPaths?.Length > 0)
-        {
-            var currentPath = context.Request.Path.Value ?? string.Empty;
-            var shouldFlush = false;
-
-            foreach (var path in ensureCommittedOptions.FlushOnPaths)
-            {
-                if (currentPath.StartsWith(path, StringComparison.OrdinalIgnoreCase))
-                {
-                    shouldFlush = true;
-                    break;
-                }
-            }
-
-            if (!shouldFlush)
-            {
-                await _next(context);
-                return;
-            }
-        }
-
         // Track if an exception occurs during the request
         var exceptionOccurred = false;
 
@@ -102,11 +71,7 @@ public class CommitSessionMiddleware
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to commit database changes before response");
-
-                    if (ensureCommittedOptions.FailureBehavior == CommitFailureBehavior.ThrowOnCommitFailure)
-                    {
-                        throw;
-                    }
+                    throw;
                 }
             });
         }

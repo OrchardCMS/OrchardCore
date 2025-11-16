@@ -46,7 +46,6 @@ public static class OrchardCoreBuilderExtensions
             var configuration = serviceProvider.GetService<IShellConfiguration>();
 
             services.Configure<YesSqlOptions>(configuration.GetSection("OrchardCore_YesSql"));
-            services.Configure<EnsureCommittedOptions>(configuration.GetSection("OrchardCore_EnsureCommitted"));
             services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
             services.AddScoped<IDataMigrationManager, DataMigrationManager>();
             services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
