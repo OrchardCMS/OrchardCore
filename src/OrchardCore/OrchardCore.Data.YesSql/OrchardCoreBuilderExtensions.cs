@@ -165,6 +165,35 @@ public static class OrchardCoreBuilderExtensions
                     httpContextAccessor.HttpContext.Items["OrchardCore:SessionResolved"] = true;
                 }
 
+                // Register automated document store commit and rollback when the ISession is used
+                // on the DI scope of the shell. This acts as a fallback for non-HTTP contexts
+                // or when the middleware doesn't commit (e.g., independent ShellScope).
+                var shellScope = ShellScope.Current;
+                if (sp == shellScope?.ServiceProvider)
+                {
+                    shellScope
+                        .RegisterBeforeDispose(scope =>
+                        {
+                            // Check if already committed via middleware
+                            var httpContext = httpContextAccessor?.HttpContext;
+                            if (httpContext?.Items.ContainsKey("OrchardCore:Committed") == true)
+                            {
+                                // Already committed via middleware, skip
+                                return Task.CompletedTask;
+                            }
+
+                            return scope.ServiceProvider
+                                .GetRequiredService<IDocumentStore>()
+                                .CommitAsync();
+                        })
+                        .AddExceptionHandler((scope, e) =>
+                        {
+                            return scope.ServiceProvider
+                                .GetRequiredService<IDocumentStore>()
+                                .CancelAsync();
+                        });
+                }
+
                 return session;
             });
 

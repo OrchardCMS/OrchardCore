@@ -17,6 +17,8 @@ The previous implementation registered a commit callback in `BeforeDispose` that
 
 Database commits now occur **before** the HTTP response is sent, using ASP.NET Core's `Response.OnStarting` callback. This ensures that all database changes are durable before the client receives a success response.
 
+For non-HTTP contexts (background jobs, shell initialization, independent ShellScopes), the original `BeforeDispose` commit mechanism is still used as a fallback to ensure compatibility.
+
 ## Changes Made
 
 ### 1. New Middleware: `CommitSessionMiddleware`
@@ -29,7 +31,15 @@ A new middleware automatically commits the `IDocumentStore` or `ISession` before
 - Commits are skipped if already executed
 - **Commits are skipped if an exception occurs during request processing** to prevent committing potentially inconsistent state
 
-### 2. Configuration Options: `EnsureCommittedOptions`
+### 2. BeforeDispose Fallback
+
+The original `BeforeDispose` commit mechanism has been retained as a fallback for non-HTTP contexts:
+
+- If the commit was already performed via the middleware (HTTP request context), the BeforeDispose callback is skipped
+- If no HTTP request context exists (background jobs, shell initialization, independent ShellScopes), the BeforeDispose callback handles the commit
+- This ensures backward compatibility and proper behavior in all execution contexts
+
+### 3. Configuration Options: `EnsureCommittedOptions`
 
 New configuration options control the commit behavior:
 
@@ -50,10 +60,6 @@ New configuration options control the commit behavior:
   - `ThrowOnCommitFailure`: Throws an exception when commit fails, preventing the response from being sent
   - `LogOnly`: Logs the error but allows the response to be sent
 - `FlushOnPaths` (string[], default: `[]`): Optional list of path prefixes; when non-empty, only requests matching these paths will trigger commits
-
-### 3. Removed BeforeDispose Handler
-
-The previous `RegisterBeforeDispose` handler that committed changes during scope disposal has been removed from `AddDataAccess`.
 
 ## Migration Guide
 
