@@ -179,4 +179,44 @@ public class CommitSessionMiddlewareTests
         Assert.Equal(CommitFailureBehavior.ThrowOnCommitFailure, options.FailureBehavior);
         Assert.Empty(options.FlushOnPaths);
     }
+
+    [Fact]
+    public async Task Middleware_WhenExceptionOccurs_DoesNotCommit()
+    {
+        // Arrange
+        var options = Options.Create(new EnsureCommittedOptions { Enabled = true });
+        var mockLogger = new Mock<ILogger<CommitSessionMiddleware>>();
+        var mockDocumentStore = new Mock<IDocumentStore>();
+        var mockSession = new Mock<YesSqlSession>();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(mockDocumentStore.Object);
+        services.AddSingleton(mockSession.Object);
+        var serviceProvider = services.BuildServiceProvider();
+
+        var context = new DefaultHttpContext
+        {
+            RequestServices = serviceProvider,
+        };
+        context.Items["OrchardCore:SessionResolved"] = true;
+
+        var middleware = new CommitSessionMiddleware(
+            next: (innerHttpContext) =>
+            {
+                // Simulate an exception during request processing
+                throw new InvalidOperationException("Test exception");
+            },
+            logger: mockLogger.Object
+        );
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        {
+            await middleware.InvokeAsync(context, options);
+        });
+
+        // Verify that commit was never called due to the exception
+        mockDocumentStore.Verify(ds => ds.CommitAsync(), Times.Never);
+        mockSession.Verify(s => s.SaveChangesAsync(), Times.Never);
+    }
 }

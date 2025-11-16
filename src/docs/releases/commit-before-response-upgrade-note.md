@@ -27,6 +27,7 @@ A new middleware automatically commits the `IDocumentStore` or `ISession` before
 - Otherwise, if `ISession` was resolved, it calls `ISession.SaveChangesAsync()`
 - Commits run only once per request
 - Commits are skipped if already executed
+- **Commits are skipped if an exception occurs during request processing** to prevent committing potentially inconsistent state
 
 ### 2. Configuration Options: `EnsureCommittedOptions`
 
@@ -106,6 +107,16 @@ For performance optimization or debugging, you can limit commits to specific req
 2. **Explicit Commits:** For critical operations, continue to call `SaveChangesAsync()` explicitly where logically appropriate. The middleware acts as a safety net.
 3. **Monitor Logs:** Watch for commit failures in your logs, especially if using `LogOnly` behavior
 4. **Test Thoroughly:** Test your application to ensure the new commit timing doesn't introduce unexpected side effects
+5. **Exception Handling:** The middleware automatically skips commits when exceptions occur during request processing, preventing inconsistent state from being persisted
+
+## Exception Handling
+
+The middleware is designed to handle exceptions gracefully:
+
+- **No Commit on Exception:** If an exception occurs during request processing, the database commit is skipped automatically
+- **Transaction Rollback:** This prevents potentially inconsistent or partial data from being committed
+- **Error Responses:** Exceptions still propagate normally, ensuring proper error responses to clients
+- **Data Integrity:** This behavior maintains data integrity by only committing when requests complete successfully
 
 ## Breaking Changes
 

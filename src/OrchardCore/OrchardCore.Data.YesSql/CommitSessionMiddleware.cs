@@ -53,11 +53,21 @@ public class CommitSessionMiddleware
             }
         }
 
+        // Track if an exception occurs during the request
+        var exceptionOccurred = false;
+
         // Register the commit callback to run before the response starts
         try
         {
             context.Response.OnStarting(async () =>
             {
+                // Don't commit if an exception occurred during the request
+                if (exceptionOccurred)
+                {
+                    _logger.LogDebug("Skipping commit due to exception during request");
+                    return;
+                }
+
                 // Check if already committed
                 if (context.Items.ContainsKey("OrchardCore:Committed"))
                 {
@@ -107,6 +117,15 @@ public class CommitSessionMiddleware
             _logger.LogDebug("Could not register OnStarting callback - response may have already started");
         }
 
-        await _next(context);
+        try
+        {
+            await _next(context);
+        }
+        catch
+        {
+            // Mark that an exception occurred to prevent commit
+            exceptionOccurred = true;
+            throw;
+        }
     }
 }
