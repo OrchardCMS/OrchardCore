@@ -38,9 +38,6 @@ public static class OrchardCoreBuilderExtensions
     {
         builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
 
-        // Register the startup filter for commit-before-response middleware
-        builder.ApplicationServices.AddSingleton<IStartupFilter, CommitSessionStartupFilter>();
-
         builder.ConfigureServices((services, serviceProvider) =>
         {
             var configuration = serviceProvider.GetService<IShellConfiguration>();
@@ -157,27 +154,85 @@ public static class OrchardCoreBuilderExtensions
 
                 session.RegisterIndexes(scopedServices.ToArray());
 
-                // Set a flag in HttpContext.Items to indicate that ISession was resolved
+                // Get HttpContext to register OnStarting callback and set flags
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
-                if (httpContextAccessor?.HttpContext != null)
+                var httpContext = httpContextAccessor?.HttpContext;
+                
+                if (httpContext != null)
                 {
-                    httpContextAccessor.HttpContext.Items["OrchardCore:SessionResolved"] = true;
+                    // Set a flag to indicate that ISession was resolved
+                    httpContext.Items["OrchardCore:SessionResolved"] = true;
+
+                    // Register OnStarting callback to commit before response
+                    try
+                    {
+                        httpContext.Response.OnStarting(async () =>
+                        {
+                            // Check if already committed
+                            if (httpContext.Items.ContainsKey("OrchardCore:Committed"))
+                            {
+                                return;
+                            }
+
+                            // Check if an exception occurred during the request
+                            if (httpContext.Items.ContainsKey("OrchardCore:ExceptionOccurred"))
+                            {
+                                return;
+                            }
+
+                            try
+                            {
+                                var logger = sp.GetService<ILogger<YesSqlSession>>();
+                                
+                                // Prefer DocumentStore if it was resolved
+                                if (httpContext.Items.ContainsKey("OrchardCore:DocumentStoreResolved"))
+                                {
+                                    var documentStore = httpContext.RequestServices.GetService<IDocumentStore>();
+                                    if (documentStore != null)
+                                    {
+                                        logger?.LogDebug("Committing IDocumentStore before response");
+                                        await documentStore.CommitAsync();
+                                        httpContext.Items["OrchardCore:Committed"] = true;
+                                    }
+                                }
+                                else
+                                {
+                                    var currentSession = httpContext.RequestServices.GetService<YesSqlSession>();
+                                    if (currentSession != null)
+                                    {
+                                        logger?.LogDebug("Committing ISession before response");
+                                        await currentSession.SaveChangesAsync();
+                                        httpContext.Items["OrchardCore:Committed"] = true;
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                var logger = sp.GetService<ILogger<YesSqlSession>>();
+                                logger?.LogError(ex, "Failed to commit database changes before response");
+                                throw;
+                            }
+                        });
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // Response may have already started, which is fine
+                    }
                 }
 
                 // Register automated document store commit and rollback when the ISession is used
                 // on the DI scope of the shell. This acts as a fallback for non-HTTP contexts
-                // or when the middleware doesn't commit (e.g., independent ShellScope).
+                // or when the OnStarting callback doesn't commit (e.g., independent ShellScope).
                 var shellScope = ShellScope.Current;
                 if (sp == shellScope?.ServiceProvider)
                 {
                     shellScope
                         .RegisterBeforeDispose(scope =>
                         {
-                            // Check if already committed via middleware
-                            var httpContext = httpContextAccessor?.HttpContext;
+                            // Check if already committed via OnStarting callback
                             if (httpContext?.Items.ContainsKey("OrchardCore:Committed") == true)
                             {
-                                // Already committed via middleware, skip
+                                // Already committed via OnStarting, skip
                                 return Task.CompletedTask;
                             }
 
@@ -187,6 +242,12 @@ public static class OrchardCoreBuilderExtensions
                         })
                         .AddExceptionHandler((scope, e) =>
                         {
+                            // Mark that an exception occurred to prevent commit
+                            if (httpContext != null)
+                            {
+                                httpContext.Items["OrchardCore:ExceptionOccurred"] = true;
+                            }
+
                             return scope.ServiceProvider
                                 .GetRequiredService<IDocumentStore>()
                                 .CancelAsync();
@@ -207,11 +268,54 @@ public static class OrchardCoreBuilderExtensions
                 
                 var documentStore = new DocumentStore(session);
 
-                // Set a flag in HttpContext.Items to indicate that IDocumentStore was resolved
+                // Get HttpContext to register OnStarting callback and set flags
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
-                if (httpContextAccessor?.HttpContext != null)
+                var httpContext = httpContextAccessor?.HttpContext;
+                
+                if (httpContext != null)
                 {
-                    httpContextAccessor.HttpContext.Items["OrchardCore:DocumentStoreResolved"] = true;
+                    // Set a flag to indicate that IDocumentStore was resolved
+                    httpContext.Items["OrchardCore:DocumentStoreResolved"] = true;
+
+                    // Register OnStarting callback to commit before response (if not already registered by ISession)
+                    if (!httpContext.Items.ContainsKey("OrchardCore:SessionResolved"))
+                    {
+                        try
+                        {
+                            httpContext.Response.OnStarting(async () =>
+                            {
+                                // Check if already committed
+                                if (httpContext.Items.ContainsKey("OrchardCore:Committed"))
+                                {
+                                    return;
+                                }
+
+                                // Check if an exception occurred during the request
+                                if (httpContext.Items.ContainsKey("OrchardCore:ExceptionOccurred"))
+                                {
+                                    return;
+                                }
+
+                                try
+                                {
+                                    var logger = sp.GetService<ILogger<IDocumentStore>>();
+                                    logger?.LogDebug("Committing IDocumentStore before response");
+                                    await documentStore.CommitAsync();
+                                    httpContext.Items["OrchardCore:Committed"] = true;
+                                }
+                                catch (Exception ex)
+                                {
+                                    var logger = sp.GetService<ILogger<IDocumentStore>>();
+                                    logger?.LogError(ex, "Failed to commit database changes before response");
+                                    throw;
+                                }
+                            });
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // Response may have already started, which is fine
+                        }
+                    }
                 }
 
                 return documentStore;
