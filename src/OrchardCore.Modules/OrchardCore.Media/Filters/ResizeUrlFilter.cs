@@ -93,14 +93,14 @@ public class ResizeUrlFilter : ILiquidFilter
             queryStringParams["rmode"] = mode.ToStringValue();
         }
 
-        if (!quality.IsNil())
-        {
-            queryStringParams["quality"] = quality.ToStringValue();
-        }
-
         if (!format.IsNil())
         {
             queryStringParams["format"] = format.ToStringValue();
+        }
+
+        if (!quality.IsNil())
+        {
+            queryStringParams["quality"] = quality.ToStringValue();
         }
 
         if (!anchorValue.IsNil())
