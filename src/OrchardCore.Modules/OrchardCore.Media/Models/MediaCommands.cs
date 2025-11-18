@@ -1,129 +1,106 @@
+#nullable enable
+
 namespace OrchardCore.Media.Models;
 
-public class MediaCommands
+public sealed class MediaCommands
 {
-    private SortedDictionary<int, string> _commands = new();
-
-    public const int Width = 0;
+    private const int Width = 0;
     public const string WidthCommand = "width";
 
-    public const int Height = 1;
+    private const int Height = 1;
     public const string HeightCommand = "height";
 
-    public const int ResizeMode = 2;
+    private const int ResizeMode = 2;
     public const string ResizeModeCommand = "rmode";
 
-    public const int ResizeFocalPoint = 3;
+    private const int ResizeFocalPoint = 3;
     public const string ResizeFocalPointCommand = "rxy";
 
-    public const int Format = 4;
+    private const int Format = 4;
     public const string FormatCommand = "format";
 
-    public const int BackgroundColor = 5;
+    private const int BackgroundColor = 5;
     public const string BackgroundColorCommand = "bgcolor";
 
-    public const int Quality = 6;
+    private const int Quality = 6;
     public const string QualityCommand = "quality";
+
+    private const int CommandCount = 7;
+
+    // Array index corresponds to the integer constants above.
+    // Null means "not set".
+    private readonly string?[] _values = new string?[CommandCount];
+
+    // Index -> command name (kept in ascending order for predictable enumeration).
+    private static readonly string[] _indexToName =
+    {
+        WidthCommand,
+        HeightCommand,
+        ResizeModeCommand,
+        ResizeFocalPointCommand,
+        FormatCommand,
+        BackgroundColorCommand,
+        QualityCommand,
+    };
 
     public MediaCommands() { }
 
     public void SetCommands(IEnumerable<KeyValuePair<string, string>> commands)
     {
-        foreach (var command in commands)
+        foreach (var (key, value) in commands)
         {
-            switch (command.Key)
+            switch (key)
             {
                 case WidthCommand:
-                    SetWidth(command.Value);
+                    _values[Width] = value;
                     break;
                 case HeightCommand:
-                    SetHeight(command.Value);
+                    _values[Height] = value;
                     break;
                 case ResizeModeCommand:
-                    SetResizeMode(command.Value);
+                    _values[ResizeMode] = value;
                     break;
                 case ResizeFocalPointCommand:
-                    SetResizeFocalPoint(command.Value);
+                    _values[ResizeFocalPoint] = value;
                     break;
                 case FormatCommand:
-                    SetFormat(command.Value);
-                    break;
-                case BackgroundColorCommand:
-                    SetBackgroundColor(command.Value);
+                    _values[Format] = value;
                     break;
                 case QualityCommand:
-                    SetQuality(command.Value);
+                    _values[Quality] = value;
+                    break;
+                case BackgroundColorCommand:
+                    _values[BackgroundColor] = value;
                     break;
                 default:
+                    // Unknown keys are ignored.
                     break;
             }
         }
     }
 
-    public void SetWidth(string value)
-    {
-        _commands[Width] = value;
-    }
+    public void SetWidth(string value) => _values[Width] = value;
 
-    public void SetHeight(string value)
-    {
-        _commands[Height] = value;
-    }
+    public void SetHeight(string value) => _values[Height] = value;
 
-    public void SetResizeMode(string value)
-    {
-        _commands[ResizeMode] = value;
-    }
+    public void SetResizeMode(string value) => _values[ResizeMode] = value;
 
-    public void SetResizeFocalPoint(string value)
-    {
-        _commands[ResizeFocalPoint] = value;
-    }
+    public void SetResizeFocalPoint(string value) => _values[ResizeFocalPoint] = value;
 
-    public void SetFormat(string value)
-    {
-        _commands[Format] = value;
-    }
+    public void SetFormat(string value) => _values[Format] = value;
 
-    public void SetBackgroundColor(string value)
-    {
-        _commands[BackgroundColor] = value;
-    }
+    public void SetBackgroundColor(string value) => _values[BackgroundColor] = value;
 
-    public void SetQuality(string value)
-    {
-        _commands[Quality] = value;
-    }
+    public void SetQuality(string value) => _values[Quality] = value;
 
     public IEnumerable<KeyValuePair<string, string>> GetValues()
     {
-        foreach (var item in _commands.Keys)
+        for (var i = 0; i < CommandCount; i++)
         {
-            switch (item)
+            var v = _values[i];
+            if (v is not null)
             {
-                case Width:
-                    yield return new KeyValuePair<string, string>(WidthCommand, _commands[item]);
-                    break;
-                case Height:
-                    yield return new KeyValuePair<string, string>(HeightCommand, _commands[item]);
-                    break;
-                case ResizeMode:
-                    yield return new KeyValuePair<string, string>(ResizeModeCommand, _commands[item]);
-                    break;
-                case ResizeFocalPoint:
-                    yield return new KeyValuePair<string, string>(ResizeFocalPointCommand, _commands[item]);
-                    break;
-                case Format:
-                    yield return new KeyValuePair<string, string>(FormatCommand, _commands[item]);
-                    break;
-                case BackgroundColor:
-                    yield return new KeyValuePair<string, string>(BackgroundColorCommand, _commands[item]);
-                    break;
-                case Quality:
-                    yield return new KeyValuePair<string, string>(QualityCommand, _commands[item]);
-                    break;
-                default:
-                    break;
+                yield return new KeyValuePair<string, string>(_indexToName[i], v);
             }
         }
     }
