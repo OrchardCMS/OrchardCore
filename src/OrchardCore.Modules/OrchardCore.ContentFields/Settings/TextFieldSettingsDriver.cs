@@ -32,6 +32,7 @@ public sealed class TextFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
             var settings = partFieldDefinition.GetSettings<TextFieldSettings>();
 
             model.Hint = settings.Hint;
+            model.Placeholder = settings.Placeholder;
             model.Required = settings.Required;
             model.DefaultValue = settings.DefaultValue;
             model.Type = settings.Type;
@@ -66,6 +67,7 @@ public sealed class TextFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
         context.Builder.WithSettings(new TextFieldSettings
         {
             Hint = model.Hint,
+            Placeholder = model.Placeholder,
             Required = model.Required,
             DefaultValue = model.DefaultValue,
             Type = model.Type,
