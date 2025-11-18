@@ -1,3 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
+using OrchardCore.Media.Fields;
+using OrchardCore.Media.Models;
 using Format = OrchardCore.Media.Processing.Format;
 using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
 
@@ -19,38 +22,39 @@ public class MediaProfileService : IMediaProfileService
 
         if (mediaProfilesDocument.MediaProfiles.TryGetValue(name, out var mediaProfile))
         {
-            var commands = new Dictionary<string, string>();
+            var mediaCommands = new MediaCommands();
+
             if (mediaProfile.Width > 0)
             {
-                commands["width"] = mediaProfile.Width.ToString();
+                mediaCommands.SetWidth(mediaProfile.Width.ToString());
             }
 
             if (mediaProfile.Height > 0)
             {
-                commands["height"] = mediaProfile.Height.ToString();
+                mediaCommands.SetHeight(mediaProfile.Height.ToString());
             }
 
             if (mediaProfile.Mode != ResizeMode.Undefined)
             {
-                commands["rmode"] = mediaProfile.Mode.ToString().ToLower();
+                mediaCommands.SetResizeMode(mediaProfile.Mode.ToString().ToLower());
             }
 
             if (mediaProfile.Format != Format.Undefined)
             {
-                commands["format"] = mediaProfile.Format.ToString().ToLower();
+                mediaCommands.SetFormat(mediaProfile.Format.ToString().ToLower());
             }
 
             if (mediaProfile.Quality > 0 && mediaProfile.Quality < 100)
             {
-                commands["quality"] = mediaProfile.Quality.ToString();
+                mediaCommands.SetQuality(mediaProfile.Quality.ToString());
             }
 
             if (!string.IsNullOrEmpty(mediaProfile.BackgroundColor))
             {
-                commands["bgcolor"] = mediaProfile.BackgroundColor;
+                mediaCommands.SetBackgroundColor(mediaProfile.BackgroundColor);
             }
 
-            return commands;
+            return new Dictionary<string,string>(mediaCommands.GetValues());
         }
         else
         {
@@ -59,3 +63,4 @@ public class MediaProfileService : IMediaProfileService
         }
     }
 }
+

@@ -1,6 +1,8 @@
 using System.Globalization;
 using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Media.Fields;
+using OrchardCore.Media.Models;
+using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Processing;
 
@@ -35,45 +37,50 @@ internal sealed class ImageSharpUrlFormatter
             return path;
         }
 
-        queryStringParams ??= new Dictionary<string, string>();
+        var mediaCommands = new MediaCommands();
+
+        if (queryStringParams != null)
+        {
+            mediaCommands.SetCommands(queryStringParams);
+        }
 
         if (width.HasValue)
         {
-            queryStringParams["width"] = width.ToString();
+            mediaCommands.SetWidth(width.ToString());
         }
 
         if (height.HasValue)
         {
-            queryStringParams["height"] = height.ToString();
+            mediaCommands.SetHeight(height.ToString());
         }
 
         if (resizeMode != ResizeMode.Undefined)
         {
-            queryStringParams["rmode"] = resizeMode.ToString().ToLower();
+            mediaCommands.SetResizeMode(resizeMode.ToString().ToLower());
         }
 
         // The format is set before quality such that the quality is not
         // invalidated when the url is generated.
         if (format != Format.Undefined)
         {
-            queryStringParams["format"] = format.ToString().ToLower();
+            mediaCommands.SetFormat(format.ToString().ToLower());
         }
 
         if (quality.HasValue)
         {
-            queryStringParams["quality"] = quality.ToString();
+            mediaCommands.SetQuality(quality.ToString());
         }
 
         if (anchor != null)
         {
-            queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
+            mediaCommands.SetResizeFocalPoint(anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture));
         }
 
         if (!string.IsNullOrEmpty(bgcolor))
         {
-            queryStringParams["bgcolor"] = bgcolor;
+            mediaCommands.SetBackgroundColor(bgcolor);
         }
 
-        return QueryHelpers.AddQueryString(path, queryStringParams);
+        return QueryHelpers.AddQueryString(path, mediaCommands.GetValues());
     }
 }
