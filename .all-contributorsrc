@@ -3439,6 +3439,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "milosh-96",
+      "name": "Miloš Jovanović",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13017737?v=4",
+      "profile": "https://bejzbol.net",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
