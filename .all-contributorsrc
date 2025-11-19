@@ -3430,6 +3430,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "redzepiredzep",
+      "name": "Redzep Redžepi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/148947177?v=4",
+      "profile": "https://github.com/redzepiredzep",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
