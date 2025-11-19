@@ -70,27 +70,27 @@ public class ResizeUrlFilter : ILiquidFilter
     {
         if (!width.IsNil())
         {
-            mediaCommands.SetWidth(width.ToStringValue());
+            mediaCommands.Width = width.ToStringValue();
         }
 
         if (!height.IsNil())
         {
-            mediaCommands.SetHeight(height.ToStringValue());
+            mediaCommands.Height = height.ToStringValue();
         }
 
         if (!mode.IsNil())
         {
-            mediaCommands.SetResizeMode(mode.ToStringValue());
+            mediaCommands.ResizeMode = mode.ToStringValue();
         }
 
         if (!format.IsNil())
         {
-            mediaCommands.SetFormat(format.ToStringValue());
+            mediaCommands.Format = format.ToStringValue();
         }
 
         if (!quality.IsNil())
         {
-            mediaCommands.SetQuality(quality.ToStringValue());
+            mediaCommands.Quality = quality.ToStringValue();
         }
 
         if (!anchorValue.IsNil())
@@ -108,13 +108,13 @@ public class ResizeUrlFilter : ILiquidFilter
             }
             if (anchor != null)
             {
-                mediaCommands.SetResizeFocalPoint(anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture));
+                mediaCommands.ResizeFocalPoint = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
             }
         }
 
         if (!bgcolor.IsNil())
         {
-            mediaCommands.SetBackgroundColor(bgcolor.ToStringValue());
+            mediaCommands.BackgroundColor = bgcolor.ToStringValue();
         }
     }
 }

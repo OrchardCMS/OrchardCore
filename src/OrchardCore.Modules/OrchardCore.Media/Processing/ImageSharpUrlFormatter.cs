@@ -46,39 +46,39 @@ internal sealed class ImageSharpUrlFormatter
 
         if (width.HasValue)
         {
-            mediaCommands.SetWidth(width.ToString());
+            mediaCommands.Width = width.ToString();
         }
 
         if (height.HasValue)
         {
-            mediaCommands.SetHeight(height.ToString());
+            mediaCommands.Height = height.ToString();
         }
 
         if (resizeMode != ResizeMode.Undefined)
         {
-            mediaCommands.SetResizeMode(resizeMode.ToString().ToLower());
+            mediaCommands.ResizeMode = resizeMode.ToString().ToLower();
         }
 
         // The format is set before quality such that the quality is not
         // invalidated when the url is generated.
         if (format != Format.Undefined)
         {
-            mediaCommands.SetFormat(format.ToString().ToLower());
+            mediaCommands.Format = format.ToString().ToLower();
         }
 
         if (quality.HasValue)
         {
-            mediaCommands.SetQuality(quality.ToString());
+            mediaCommands.Quality = quality.ToString();
         }
 
         if (anchor != null)
         {
-            mediaCommands.SetResizeFocalPoint(anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture));
+            mediaCommands.ResizeFocalPoint = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
         }
 
         if (!string.IsNullOrEmpty(bgcolor))
         {
-            mediaCommands.SetBackgroundColor(bgcolor);
+            mediaCommands.BackgroundColor = bgcolor;
         }
 
         return QueryHelpers.AddQueryString(path, mediaCommands.GetValues());

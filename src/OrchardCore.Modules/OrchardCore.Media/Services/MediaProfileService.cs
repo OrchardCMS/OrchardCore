@@ -26,35 +26,35 @@ public class MediaProfileService : IMediaProfileService
 
             if (mediaProfile.Width > 0)
             {
-                mediaCommands.SetWidth(mediaProfile.Width.ToString());
+                mediaCommands.Width = mediaProfile.Width.ToString();
             }
 
             if (mediaProfile.Height > 0)
             {
-                mediaCommands.SetHeight(mediaProfile.Height.ToString());
+                mediaCommands.Height = mediaProfile.Height.ToString();
             }
 
             if (mediaProfile.Mode != ResizeMode.Undefined)
             {
-                mediaCommands.SetResizeMode(mediaProfile.Mode.ToString().ToLower());
+                mediaCommands.ResizeMode = mediaProfile.Mode.ToString().ToLower();
             }
 
             if (mediaProfile.Format != Format.Undefined)
             {
-                mediaCommands.SetFormat(mediaProfile.Format.ToString().ToLower());
+                mediaCommands.Format = mediaProfile.Format.ToString().ToLower();
             }
 
             if (mediaProfile.Quality > 0 && mediaProfile.Quality < 100)
             {
-                mediaCommands.SetQuality(mediaProfile.Quality.ToString());
+                mediaCommands.Quality = mediaProfile.Quality.ToString();
             }
 
             if (!string.IsNullOrEmpty(mediaProfile.BackgroundColor))
             {
-                mediaCommands.SetBackgroundColor(mediaProfile.BackgroundColor);
+                mediaCommands.BackgroundColor = mediaProfile.BackgroundColor;
             }
 
-            return new Dictionary<string,string>(mediaCommands.GetValues());
+            return new Dictionary<string, string>(mediaCommands.GetValues());
         }
         else
         {

@@ -70,27 +70,27 @@ public class AssetUrlShortcodeProvider : IShortcodeProvider
 
             if (width != null)
             {
-                mediaCommands.SetWidth(width);
+                mediaCommands.Width = width;
             }
 
             if (height != null)
             {
-                mediaCommands.SetHeight(height);
+                mediaCommands.Height = height;
             }
 
             if (mode != null)
             {
-                mediaCommands.SetResizeMode(mode);
+                mediaCommands.ResizeMode = mode;
             }
 
             if (quality != null)
             {
-                mediaCommands.SetQuality(quality);
+                mediaCommands.Quality = quality;
             }
 
             if (format != null)
             {
-                mediaCommands.SetFormat(format);
+                mediaCommands.Format = format;
             }
 
             content = QueryHelpers.AddQueryString(content, mediaCommands.GetValues());

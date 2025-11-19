@@ -23,13 +23,13 @@ public class MediaCommandsTests
         var commands = new MediaCommands();
 
         // set in an arbitrary order
-        commands.SetFormat("jpg");
-        commands.SetWidth("100");
-        commands.SetQuality("80");
-        commands.SetResizeMode("crop");
-        commands.SetBackgroundColor("#ffffff");
-        commands.SetResizeFocalPoint("0.5,0.5");
-        commands.SetHeight("50");
+        commands.Format = "jpg";
+        commands.Width = "100";
+        commands.Quality = "80";
+        commands.ResizeMode = "crop";
+        commands.BackgroundColor = "#ffffff";
+        commands.ResizeFocalPoint = "0.5,0.5";
+        commands.Height = "50";
 
         var list = commands.GetValues().ToList();
 
@@ -85,8 +85,8 @@ public class MediaCommandsTests
     {
         var commands = new MediaCommands();
 
-        commands.SetWidth("100");
-        commands.SetWidth("300"); // overwrite
+        commands.Width = "100";
+        commands.Width = "300"; // overwrite
 
         var list = commands.GetValues().ToList();
 
@@ -94,4 +94,22 @@ public class MediaCommandsTests
         Assert.Equal(MediaCommands.WidthCommand, list[0].Key);
         Assert.Equal("300", list[0].Value);
     }
+
+    [Fact]
+    public void SettingCommandToNull_RemovesValue()
+    {
+        var commands = new MediaCommands();
+
+        commands.Width = "100";
+
+        var list = commands.GetValues().ToList();
+
+        Assert.Single(list);
+
+        commands.Width = null; // remove
+        list = commands.GetValues().ToList();
+        Assert.Empty(list);
+
+    }
+
 }
