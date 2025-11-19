@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using OrchardCore.Media.Fields;
 using OrchardCore.Media.Models;
 using Format = OrchardCore.Media.Processing.Format;
 using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
@@ -22,44 +20,43 @@ public class MediaProfileService : IMediaProfileService
 
         if (mediaProfilesDocument.MediaProfiles.TryGetValue(name, out var mediaProfile))
         {
-            var mediaCommands = new MediaCommands();
+            var commands = new Dictionary<string, string>();
 
             if (mediaProfile.Width > 0)
             {
-                mediaCommands.Width = mediaProfile.Width.ToString();
+                commands[MediaCommands.WidthCommand] = mediaProfile.Width.ToString();
             }
 
             if (mediaProfile.Height > 0)
             {
-                mediaCommands.Height = mediaProfile.Height.ToString();
+                commands[MediaCommands.HeightCommand] = mediaProfile.Height.ToString();
             }
 
             if (mediaProfile.Mode != ResizeMode.Undefined)
             {
-                mediaCommands.ResizeMode = mediaProfile.Mode.ToString().ToLower();
+                commands[MediaCommands.ResizeModeCommand] = mediaProfile.Mode.ToString().ToLower();
             }
 
             if (mediaProfile.Format != Format.Undefined)
             {
-                mediaCommands.Format = mediaProfile.Format.ToString().ToLower();
+                commands[MediaCommands.FormatCommand] = mediaProfile.Format.ToString().ToLower();
             }
 
             if (mediaProfile.Quality > 0 && mediaProfile.Quality < 100)
             {
-                mediaCommands.Quality = mediaProfile.Quality.ToString();
+                commands[MediaCommands.QualityCommand] = mediaProfile.Quality.ToString();
             }
 
             if (!string.IsNullOrEmpty(mediaProfile.BackgroundColor))
             {
-                mediaCommands.BackgroundColor = mediaProfile.BackgroundColor;
+                commands[MediaCommands.BackgroundColorCommand] = mediaProfile.BackgroundColor;
             }
 
-            return new Dictionary<string, string>(mediaCommands.GetValues());
+            return commands;
         }
         else
         {
             return _nullProfile;
-
         }
     }
 }

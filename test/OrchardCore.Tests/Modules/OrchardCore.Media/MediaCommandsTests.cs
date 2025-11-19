@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using Xunit;
 using OrchardCore.Media.Models;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;

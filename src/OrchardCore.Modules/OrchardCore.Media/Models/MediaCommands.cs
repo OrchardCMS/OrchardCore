@@ -2,7 +2,7 @@
 
 namespace OrchardCore.Media.Models;
 
-public sealed class MediaCommands
+internal sealed class MediaCommands
 {
     public const string WidthCommand = "width";
     public const string HeightCommand = "height";
