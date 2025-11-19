@@ -1,11 +1,15 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Rules;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddRules(this IServiceCollection services)
+        => services.AddScoped<IRuleService, RuleService>();
+
     public static IServiceCollection AddRule<TCondition, TEvaluator, TDisplayDriver>(this IServiceCollection services)
         where TCondition : Condition, new()
         where TEvaluator : class, IConditionEvaluator

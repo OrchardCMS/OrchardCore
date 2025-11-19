@@ -17,12 +17,12 @@ public sealed class Startup : StartupBase
 
         // Rule services.
         services
+            .AddRules()
             .AddDisplayDriver<Rule, RuleDisplayDriver>()
             .AddSingleton<IConditionIdGenerator, ConditionIdGenerator>()
             .AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>()
             .AddScoped<IConditionResolver, ConditionResolver>()
-            .AddScoped<IConditionOperatorResolver, ConditionOperatorResolver>()
-            .AddScoped<IRuleService, RuleService>();
+            .AddScoped<IConditionOperatorResolver, ConditionOperatorResolver>();
 
         // All condition.
         services.AddRule<AllConditionGroup, AllConditionEvaluator, AllConditionDisplayDriver>();
