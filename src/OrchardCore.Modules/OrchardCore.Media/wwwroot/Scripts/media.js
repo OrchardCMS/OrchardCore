@@ -3095,6 +3095,13 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                       self.mediaItems.push(y);
                     });
                     self.initialized = true;
+
+                    // Preselect first thumbnail if only single image is allowed
+                    if (!allowMultiple && self.mediaItems.length === 1) {
+                      self.$nextTick(function () {
+                        self.selectedMedia = self.mediaItems[0];
+                      });
+                    }
                   }
                 },
                 error: function error(_error) {
@@ -3256,9 +3263,19 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
           alert($('#onlyOneItemMessage').val());
           mediaFieldApp.mediaItems.push(files[0]);
           mediaFieldApp.initialized = true;
+          // Preselect the newly added media item
+          mediaFieldApp.$nextTick(function () {
+            mediaFieldApp.selectedMedia = mediaFieldApp.mediaItems[0];
+          });
         } else {
           mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
           mediaFieldApp.initialized = true;
+          // Preselect first thumbnail if only single image is allowed
+          if (!allowMultiple && mediaFieldApp.mediaItems.length === 1) {
+            mediaFieldApp.$nextTick(function () {
+              mediaFieldApp.selectedMedia = mediaFieldApp.mediaItems[0];
+            });
+          }
         }
       },
       removeSelected: function removeSelected(event) {
