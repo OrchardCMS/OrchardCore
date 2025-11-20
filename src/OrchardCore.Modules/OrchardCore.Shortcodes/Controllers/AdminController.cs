@@ -350,6 +350,7 @@ public sealed class AdminController : Controller
         try
         {
             var nodes = new ShortcodesParser().Parse($"[{name}]");
+
             return nodes.Count == 1 &&
                 nodes[0] is Shortcode shortcodeNode &&
                 shortcodeNode.Identifier.Equals(name, StringComparison.OrdinalIgnoreCase);
