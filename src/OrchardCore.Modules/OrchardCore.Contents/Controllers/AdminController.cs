@@ -843,7 +843,7 @@ public sealed class AdminController : Controller, IUpdateModel
         return RedirectToAction(nameof(List));
     }
 
-    private async Task<IActionResult> PublishOrUnpublishAsync(bool stayOnSamePage, string contentItemId, string returnUrl, bool published)
+    private async Task<IActionResult> PublishOrUnpublishAsync(bool stayOnSamePage, string contentItemId, string returnUrl, bool publish)
     {
         var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
@@ -861,8 +861,8 @@ public sealed class AdminController : Controller, IUpdateModel
         {
             await _contentManager.UpdateAsync(contentItem);
             var result = published
-            ? await _contentManager.PublishAsync(contentItem)
-            : await _contentManager.UnpublishAsync(contentItem);
+                ? await _contentManager.PublishAsync(contentItem)
+                : await _contentManager.UnpublishAsync(contentItem);
 
             var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
@@ -870,15 +870,17 @@ public sealed class AdminController : Controller, IUpdateModel
             {
                 if (published)
                 {
-                    await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                    ? H["Your content has been published."]
-                    : H["Your {0} has been published.", typeDefinition.DisplayName]);
+                    await _notifier.SuccessAsync(
+                        string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                            ? H["Your content has been published."]
+                            : H["Your {0} has been published.", typeDefinition.DisplayName]);
                 }
                 else
                 {
-                    await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                    ? H["Your content has been unpublished."]
-                    : H["Your {0} has been unpublished.", typeDefinition.DisplayName]);
+                    await _notifier.SuccessAsync(
+                        string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                            ? H["Your content has been unpublished."]
+                            : H["Your {0} has been unpublished.", typeDefinition.DisplayName]);
                 }
             }
 
