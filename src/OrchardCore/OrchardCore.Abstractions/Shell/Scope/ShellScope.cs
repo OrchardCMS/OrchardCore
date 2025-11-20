@@ -344,7 +344,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Activate the shell, if not yet done, by calling the related tenant event handlers.
     /// </summary>
-    private async Task ActivateShellInternalAsync()
+    private async ValueTask ActivateShellInternalAsync()
     {
         if (ShellContext.IsActivated)
         {
@@ -584,7 +584,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// Terminates the shell, if released and in its last scope, by calling the related event handlers,
     /// and specifies if the shell context should be disposed consequently to this scope being disposed.
     /// </summary>
-    private async Task TerminateShellInternalAsync()
+    private async ValueTask TerminateShellInternalAsync()
     {
         if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
