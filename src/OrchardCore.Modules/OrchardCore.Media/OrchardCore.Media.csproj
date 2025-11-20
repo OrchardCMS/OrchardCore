@@ -50,4 +50,8 @@
     <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+  </ItemGroup>
+
 </Project>
