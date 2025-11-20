@@ -483,8 +483,8 @@ public sealed class AdminController : Controller, IUpdateModel
     [FormValueRequired("submit.Unpublish")]
     public async Task<IActionResult> EditAndUnpublishPOST(
     string contentItemId,
-    [Bind(Prefix = "submit.Unpublish")] string submitPublish,
-    string returnUrl) => await PublishOrUnpublishAsync(submitPublish == "submit.UnpublishAndContinue", contentItemId, returnUrl, published: false);
+    [Bind(Prefix = "submit.Unpublish")] string submitUnpublish,
+    string returnUrl) => await PublishOrUnpublishAsync(submitUnpublish == "submit.UnpublishAndContinue", contentItemId, returnUrl, published: false);
 
     [HttpPost]
     public async Task<IActionResult> Delete(string contentItemId, string returnUrl)
