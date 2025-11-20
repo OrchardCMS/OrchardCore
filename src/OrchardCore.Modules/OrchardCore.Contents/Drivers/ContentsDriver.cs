@@ -106,7 +106,7 @@ public sealed class ContentsDriver : ContentDisplayDriver
                 .RenderWhen(async () => contentTypeDefinition.IsDraftable()
                     && await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem)),
             Dynamic("Content_DeleteButton").Location("Actions:40")
-                .RenderWhen(() => _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem))
+                .RenderWhen(async () => await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem) && contentItem.CreatedUtc.HasValue)
             );
     }
 }
