@@ -50,10 +50,12 @@ public sealed class AdminController : Controller
 
         if (flowMetadata)
         {
+            var settings = (await _contentDefinitionManager.GetTypeDefinitionAsync(parentContentType))?.Parts.SingleOrDefault(x => x.Name == partName)?.GetSettings<FlowPartSettings>();
             var metadata = new FlowMetadata();
             contentItem.Weld(metadata);
             colSize = (int)Math.Round(metadata.Size / 100.0 * 12);
-            containedContentTypes = await GetContainedContentTypesAsync(parentContentType, partName);
+            containedContentTypes = await GetContainedContentTypesAsync(settings);
+            metadata.Alignment = GetDefaultAlignment(settings);
 
             cardCollectionType = nameof(FlowPart);
         }
@@ -100,10 +102,8 @@ public sealed class AdminController : Controller
         return View("Display", model);
     }
 
-    private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(string contentType, string partName)
+    private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(FlowPartSettings settings)
     {
-        var settings = (await _contentDefinitionManager.GetTypeDefinitionAsync(contentType))?.Parts.SingleOrDefault(x => x.Name == partName)?.GetSettings<FlowPartSettings>();
-
         if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
         {
             return await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync();
@@ -124,5 +124,15 @@ public sealed class AdminController : Controller
         }
 
         return definitions;
+    }
+    private static FlowAlignment GetDefaultAlignment(FlowPartSettings settings)
+    {
+        
+        if (settings?.DefaultAlignment == null)
+        {
+            return FlowAlignment.Justify;
+        }
+
+        return settings.DefaultAlignment.Value;
     }
 }
