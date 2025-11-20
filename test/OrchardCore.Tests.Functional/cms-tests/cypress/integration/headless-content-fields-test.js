@@ -38,16 +38,16 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
         // Click Add Field button
-        cy.get('#add-field').click();
+        cy.contains('a', 'Add Field').click();
         
-        // Select TextField
-        cy.get('select[name="FieldTypeName"]').select('TextField');
+        // Select TextField using radio button
+        cy.get('input[type="radio"][value="TextField"]').check();
         
         // Enter field name
         cy.get('#DisplayName').type('Text Field');
         
         // Submit the field
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         // Wait for the page to reload
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
@@ -60,10 +60,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('BooleanField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="BooleanField"]').check();
         cy.get('#DisplayName').type('Boolean Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'Boolean Field');
@@ -73,10 +73,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('NumericField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="NumericField"]').check();
         cy.get('#DisplayName').type('Numeric Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'Numeric Field');
@@ -86,10 +86,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('DateField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="DateField"]').check();
         cy.get('#DisplayName').type('Date Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'Date Field');
@@ -99,10 +99,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('DateTimeField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="DateTimeField"]').check();
         cy.get('#DisplayName').type('DateTime Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'DateTime Field');
@@ -112,10 +112,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('TimeField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="TimeField"]').check();
         cy.get('#DisplayName').type('Time Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'Time Field');
@@ -125,10 +125,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('HtmlField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="HtmlField"]').check();
         cy.get('#DisplayName').type('Html Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'Html Field');
@@ -138,10 +138,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('MarkdownField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="MarkdownField"]').check();
         cy.get('#DisplayName').type('Markdown Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'Markdown Field');
@@ -151,10 +151,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('LinkField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="LinkField"]').check();
         cy.get('#DisplayName').type('Link Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'Link Field');
@@ -164,10 +164,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('ContentPickerField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="ContentPickerField"]').check();
         cy.get('#DisplayName').type('ContentPicker Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'ContentPicker Field');
@@ -177,10 +177,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('UserPickerField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="UserPickerField"]').check();
         cy.get('#DisplayName').type('UserPicker Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'UserPicker Field');
@@ -190,10 +190,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('MultiTextField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="MultiTextField"]').check();
         cy.get('#DisplayName').type('MultiText Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'MultiText Field');
@@ -203,10 +203,10 @@ describe('Headless Recipe Content Type and Fields test', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin/ContentTypes/Edit/${contentTypeName}`);
         
-        cy.get('#add-field').click();
-        cy.get('select[name="FieldTypeName"]').select('YoutubeField');
+        cy.contains('a', 'Add Field').click();
+        cy.get('input[type="radio"][value="YoutubeField"]').check();
         cy.get('#DisplayName').type('Youtube Field');
-        cy.get('button[type="submit"]').contains('Add').click();
+        cy.btnSaveClick();
         
         cy.url().should('include', '/Admin/ContentTypes/Edit/' + contentTypeName);
         cy.get('.list-group').should('contain', 'Youtube Field');
