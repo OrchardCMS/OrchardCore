@@ -91,15 +91,4 @@ public class HtmlContentValue : FluidValue
     {
         _value.WriteTo(writer, (HtmlEncoder)encoder);
     }
-
-    [Obsolete("GetValue is obsolete, prefer the GetValueAsync method.")]
-    protected override FluidValue GetValue(string name, TemplateContext context)
-    {
-        return NilValue.Instance;
-    }
-
-    protected override FluidValue GetIndex(FluidValue index, TemplateContext context)
-    {
-        return NilValue.Instance;
-    }
 }
