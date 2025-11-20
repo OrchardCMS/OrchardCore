@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc;
 
-public sealed class RazorCompilationOptionsSetup : IConfigureOptions<MvcRazorRuntimeCompilationOptions>
+// Note: MvcRazorRuntimeCompilationOptions is deprecated in .NET 10
+// This class is kept for backward compatibility but will be removed in future versions
+#pragma warning disable ASPDEPR003 // Razor runtime compilation is obsolete
+public sealed class RazorCompilationOptionsSetup : IConfigureOptions<Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.MvcRazorRuntimeCompilationOptions>
 {
     private readonly IHostEnvironment _hostingEnvironment;
     private readonly IApplicationContext _applicationContext;
@@ -17,7 +19,7 @@ public sealed class RazorCompilationOptionsSetup : IConfigureOptions<MvcRazorRun
         _applicationContext = applicationContext;
     }
 
-    public void Configure(MvcRazorRuntimeCompilationOptions options)
+    public void Configure(Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.MvcRazorRuntimeCompilationOptions options)
     {
         // In dev mode or if there is no 'refs' folder, we don't register razor runtime compilation services.
         var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
@@ -40,3 +42,4 @@ public sealed class RazorCompilationOptionsSetup : IConfigureOptions<MvcRazorRun
         }
     }
 }
+#pragma warning restore ASPDEPR003
