@@ -13,6 +13,7 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents.Recipes;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -484,6 +485,30 @@ public sealed class AdminController : Controller, IUpdateModel
     string contentItemId,
     [Bind(Prefix = "submit.Unpublish")] string submitPublish,
     string returnUrl) => await PublishOrUnpublishAsync(submitPublish == "submit.UnpublishAndContinue", contentItemId, returnUrl, published: false);
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(string contentItemId, string returnUrl)
+    {
+        var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+
+        if (contentItem == null)
+        {
+            return NotFound();
+        }
+
+        if (!await IsAuthorizedAsync(CommonPermissions.DeleteContent, contentItem))
+        {
+            return Forbid();
+        }
+
+        await _contentManager.RemoveAsync(contentItem);
+
+        await _notifier.SuccessAsync(H["Your content has been deleted."]);
+
+        return Url.IsLocalUrl(returnUrl)
+            ? this.LocalRedirect(returnUrl, true)
+            : RedirectToAction(nameof(List));
+    }
 
     [HttpPost]
     [Admin("Contents/ContentItems/{contentItemId}/Clone", "AdminCloneContentItem")]
