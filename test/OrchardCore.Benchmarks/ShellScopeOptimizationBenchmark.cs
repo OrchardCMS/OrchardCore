@@ -15,11 +15,14 @@ namespace OrchardCore.Benchmarks;
 /// </summary>
 [MemoryDiagnoser]
 [SimpleJob(iterationCount: 50)]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "")]
 public class ShellScopeOptimizationBenchmark
 {
     private readonly string _tenant = "Default";
     private readonly object _contextData = new();
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
     private readonly Exception _testException = new InvalidOperationException("Test exception");
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 
     #region UsingAsync Pattern - Closure vs State Parameter
 
@@ -100,7 +103,7 @@ public class ShellScopeOptimizationBenchmark
             callbacks.Add(new CallbackState
             {
                 Index = i,
-                Tenant = _tenant
+                Tenant = _tenant,
             });
         }
 
@@ -146,7 +149,7 @@ public class ShellScopeOptimizationBenchmark
             callbacks.Add(new CallbackState
             {
                 Index = i,
-                Tenant = _tenant
+                Tenant = _tenant,
             });
         }
 
@@ -205,7 +208,7 @@ public class ShellScopeOptimizationBenchmark
             {
                 Index = i,
                 Tenant = _tenant,
-                ContextData = _contextData
+                ContextData = _contextData,
             });
         }
 
@@ -265,7 +268,7 @@ public class ShellScopeOptimizationBenchmark
             handlers.Add(new ExceptionHandlerState
             {
                 Index = i,
-                Tenant = _tenant
+                Tenant = _tenant,
             });
         }
 
@@ -282,53 +285,6 @@ public class ShellScopeOptimizationBenchmark
     {
         public int Index { get; set; }
         public string Tenant { get; set; }
-    }
-
-    #endregion
-
-    #region Deferred Signals - HashSet vs InlineList + HashSet
-
-    [Benchmark]
-    public void DeferredSignal_OriginalWithHashSet()
-    {
-        HashSet<string> signals = null;
-
-        // Add signals (typical scenario: 2-3 signals)
-        for (var i = 0; i < 3; i++)
-        {
-            signals ??= new HashSet<string>();
-            signals.Add($"signal_{i}");
-        }
-
-        // Process signals
-        if (signals?.Count > 0)
-        {
-            foreach (var signal in signals)
-            {
-                _ = signal.Length;
-            }
-        }
-    }
-
-    [Benchmark]
-    public void DeferredSignal_OptimizedWithHashSet()
-    {
-        HashSet<string> signals = null;
-
-        // Add signals
-        for (var i = 0; i < 3; i++)
-        {
-            (signals ??= []).Add($"signal_{i}");
-        }
-
-        // Process signals
-        if (signals?.Count > 0)
-        {
-            foreach (var signal in signals)
-            {
-                _ = signal.Length;
-            }
-        }
     }
 
     #endregion
@@ -413,7 +369,7 @@ public class ShellScopeOptimizationBenchmark
             beforeDisposeCallbacks.Add(new CallbackState
             {
                 Index = i,
-                Tenant = _tenant
+                Tenant = _tenant,
             });
         }
 
@@ -422,14 +378,14 @@ public class ShellScopeOptimizationBenchmark
         {
             Index = 0,
             Tenant = _tenant,
-            ContextData = _contextData
+            ContextData = _contextData,
         });
 
         // Setup exception handler
         exceptionHandlers.Add(new ExceptionHandlerState
         {
             Index = 0,
-            Tenant = _tenant
+            Tenant = _tenant,
         });
 
         // Execute main operation
@@ -499,7 +455,7 @@ public class ShellScopeOptimizationBenchmark
             callbacks.Add(new OptimizedCallback
             {
                 Index = i,
-                Data = _contextData
+                Data = _contextData,
             });
         }
 
@@ -565,7 +521,7 @@ public class ShellScopeOptimizationBenchmark
             var state = new CallbackState
             {
                 Index = i,
-                Tenant = _tenant
+                Tenant = _tenant,
             };
 
             await Task.Yield();
@@ -620,7 +576,7 @@ public class ShellScopeOptimizationBenchmark
         {
             RequestId = Guid.NewGuid().ToString(),
             UserId = "user123",
-            StartTime = DateTime.UtcNow
+            StartTime = DateTime.UtcNow,
         };
 
         await ExecuteWithStateParameter(async (scope, state) =>

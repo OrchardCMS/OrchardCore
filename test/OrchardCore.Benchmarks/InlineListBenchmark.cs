@@ -12,6 +12,7 @@ namespace OrchardCore.Benchmarks;
 /// </summary>
 [MemoryDiagnoser]
 [SimpleJob(iterationCount: 50)]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "")]
 public class InlineListBenchmark
 {
     private const int SmallSize = 3;    // Typical for ShellScope callbacks
@@ -171,7 +172,7 @@ public class InlineListBenchmark
             list.Add(new Callback
             {
                 Function = x => x * 2,
-                State = new object()
+                State = new object(),
             });
         }
 
@@ -190,7 +191,7 @@ public class InlineListBenchmark
             list.Add(new Callback
             {
                 Function = x => x * 2,
-                State = new object()
+                State = new object(),
             });
         }
 
@@ -221,7 +222,7 @@ public class InlineListBenchmark
             {
                 Index = i,
                 Name = $"callback_{i}",
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
             });
         }
 
@@ -242,7 +243,7 @@ public class InlineListBenchmark
             {
                 Index = i,
                 Name = $"callback_{i}",
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
             });
         }
 
@@ -277,7 +278,7 @@ public class InlineListBenchmark
                 {
                     await System.Threading.Tasks.Task.Yield();
                 },
-                State = new object()
+                State = new object(),
             });
         }
 
@@ -304,7 +305,7 @@ public class InlineListBenchmark
                 {
                     await System.Threading.Tasks.Task.Yield();
                 },
-                State = new object()
+                State = new object(),
             });
         }
 
@@ -492,9 +493,20 @@ public class InlineListBenchmark
         }
 
         var total = 0;
-        foreach (var item in beforeDispose) total += item;
-        foreach (var item in deferredTasks) total += item;
-        foreach (var item in exceptionHandlers) total += item;
+        foreach (var item in beforeDispose)
+        {
+            total += item;
+        }
+
+        foreach (var item in deferredTasks)
+        {
+            total += item;
+        }
+
+        foreach (var item in exceptionHandlers)
+        {
+            total += item;
+        }
     }
 
     [Benchmark]
@@ -513,9 +525,20 @@ public class InlineListBenchmark
         }
 
         var total = 0;
-        for (var i = 0; i < beforeDispose.Count; i++) total += beforeDispose[i];
-        for (var i = 0; i < deferredTasks.Count; i++) total += deferredTasks[i];
-        for (var i = 0; i < exceptionHandlers.Count; i++) total += exceptionHandlers[i];
+        for (var i = 0; i < beforeDispose.Count; i++)
+        {
+            total += beforeDispose[i];
+        }
+
+        for (var i = 0; i < deferredTasks.Count; i++)
+        {
+            total += deferredTasks[i];
+        }
+
+        for (var i = 0; i < exceptionHandlers.Count; i++)
+        {
+            total += exceptionHandlers[i];
+        }
     }
 
     #endregion

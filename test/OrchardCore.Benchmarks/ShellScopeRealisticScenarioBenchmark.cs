@@ -11,6 +11,7 @@ namespace OrchardCore.Benchmarks;
 /// </summary>
 [MemoryDiagnoser]
 [SimpleJob(iterationCount: 50)]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "")]
 public class ShellScopeRealisticScenarioBenchmark
 {
     private readonly MockShellContext _shellContext = new();
@@ -67,7 +68,7 @@ public class ShellScopeRealisticScenarioBenchmark
         {
             RequestId = _requestId,
             TenantName = _tenantName,
-            StartTime = DateTime.UtcNow
+            StartTime = DateTime.UtcNow,
         };
 
         await UsingAsync_Optimized(async (scope, state) =>
@@ -132,7 +133,7 @@ public class ShellScopeRealisticScenarioBenchmark
         {
             RequestId = _requestId,
             TenantName = _tenantName,
-            StartTime = DateTime.UtcNow
+            StartTime = DateTime.UtcNow,
         };
 
         var beforeDisposeCallbacks = new InlineList<CallbackWithState>();
@@ -145,14 +146,14 @@ public class ShellScopeRealisticScenarioBenchmark
             beforeDisposeCallbacks.Add(new CallbackWithState
             {
                 RequestId = state.RequestId,
-                TenantName = state.TenantName
+                TenantName = state.TenantName,
             });
 
             // Register signal callback
             beforeDisposeCallbacks.Add(new CallbackWithState
             {
                 RequestId = state.RequestId,
-                TenantName = state.TenantName
+                TenantName = state.TenantName,
             });
 
             await ProcessRequest_Optimized(state.RequestId, state.TenantName);
@@ -225,7 +226,7 @@ public class ShellScopeRealisticScenarioBenchmark
             RequestId = _requestId,
             TenantName = _tenantName,
             StartTime = DateTime.UtcNow,
-            UserContext = new object()
+            UserContext = new object(),
         };
 
         var deferredTasks = new InlineList<DeferredTaskState>();
@@ -239,7 +240,7 @@ public class ShellScopeRealisticScenarioBenchmark
             {
                 RequestId = state.RequestId,
                 TenantName = state.TenantName,
-                UserContext = state.UserContext
+                UserContext = state.UserContext,
             });
 
             await ProcessRequest_Optimized(state.RequestId, state.TenantName);
@@ -321,7 +322,7 @@ public class ShellScopeRealisticScenarioBenchmark
             {
                 RequestId = Guid.NewGuid(),
                 TenantName = $"Tenant_{i}",
-                StartTime = DateTime.UtcNow
+                StartTime = DateTime.UtcNow,
             };
 
             tasks[i] = Task.Run(async () =>
@@ -419,7 +420,7 @@ public class ShellScopeRealisticScenarioBenchmark
             RequestId = _requestId,
             TenantName = _tenantName,
             StartTime = DateTime.UtcNow,
-            UserContext = new object()
+            UserContext = new object(),
         };
 
         var beforeDisposeCallbacks = new InlineList<ComplexCallbackState>();
@@ -439,7 +440,7 @@ public class ShellScopeRealisticScenarioBenchmark
                 beforeDisposeCallbacks.Add(new ComplexCallbackState
                 {
                     RequestId = state.RequestId,
-                    Index = i
+                    Index = i,
                 });
             }
 
@@ -448,7 +449,7 @@ public class ShellScopeRealisticScenarioBenchmark
             {
                 RequestId = state.RequestId,
                 TenantName = state.TenantName,
-                UserContext = state.UserContext
+                UserContext = state.UserContext,
             });
 
             // Register signals
@@ -567,13 +568,13 @@ public class ShellScopeRealisticScenarioBenchmark
         }
     }
 
-    private async Task ProcessRequest_Original(Guid requestId, string tenantName)
+    private static async Task ProcessRequest_Original(Guid requestId, string tenantName)
     {
         await Task.Yield();
         _ = requestId.ToString().Length + tenantName.Length;
     }
 
-    private async Task ProcessRequest_Optimized(Guid requestId, string tenantName)
+    private static async Task ProcessRequest_Optimized(Guid requestId, string tenantName)
     {
         await Task.Yield();
         _ = requestId.ToString().Length + tenantName.Length;
