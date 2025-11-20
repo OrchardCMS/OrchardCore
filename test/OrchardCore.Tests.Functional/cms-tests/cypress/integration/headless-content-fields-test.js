@@ -1,6 +1,17 @@
 /// <reference types="Cypress" />
 import { generateTenantInfo } from 'cypress-orchardcore/dist/utils';
 
+/**
+ * This test suite validates content type creation and field management in the Headless recipe.
+ * It creates a new content type, adds various field types, creates and edits content items.
+ * 
+ * The test covers the following field types:
+ * - TextField, BooleanField, NumericField
+ * - DateField, DateTimeField, TimeField
+ * - HtmlField, MarkdownField, LinkField
+ * - ContentPickerField, UserPickerField
+ * - MultiTextField, YoutubeField
+ */
 describe('Headless Recipe Content Type and Fields test', function () {
     let tenant;
     const contentTypeName = 'TestContentType';
