@@ -475,39 +475,7 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> EditAndPublishPOST(
         string contentItemId,
         [Bind(Prefix = "submit.Publish")] string submitPublish,
-        string returnUrl)
-    {
-        var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
-
-        var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-        if (content == null)
-        {
-            return NotFound();
-        }
-
-        if (!await IsAuthorizedAsync(CommonPermissions.PublishContent, content))
-        {
-            return Forbid();
-        }
-
-        return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
-        {
-            await _contentManager.UpdateAsync(contentItem);
-            var published = await _contentManager.PublishAsync(contentItem);
-
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-
-            if (published)
-            {
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                ? H["Your content has been published."]
-                : H["Your {0} has been published.", typeDefinition.DisplayName]);
-            }
-
-            return published;
-        });
-    }
+        string returnUrl) => await PublishOrUnpublishAsync(submitPublish == "submit.PublishAndContinue", contentItemId, returnUrl, published: true);
 
     [HttpPost]
     [ActionName(nameof(Edit))]
@@ -515,39 +483,7 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> EditAndUnpublishPOST(
     string contentItemId,
     [Bind(Prefix = "submit.Unpublish")] string submitPublish,
-    string returnUrl)
-    {
-        var stayOnSamePage = submitPublish == "submit.UnpublishAndContinue";
-
-        var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-        if (content == null)
-        {
-            return NotFound();
-        }
-
-        if (!await IsAuthorizedAsync(CommonPermissions.PublishContent, content))
-        {
-            return Forbid();
-        }
-
-        return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
-        {
-            await _contentManager.UpdateAsync(contentItem);
-            var unpublished = await _contentManager.UnpublishAsync(contentItem);
-
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-
-            if (unpublished)
-            {
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                ? H["Your content has been unpublished."]
-                : H["Your {0} has been unpublished.", typeDefinition.DisplayName]);
-            }
-
-            return unpublished;
-        });
-    }
+    string returnUrl) => await PublishOrUnpublishAsync(submitPublish == "submit.UnpublishAndContinue", contentItemId, returnUrl, published: false);
 
     [HttpPost]
     [Admin("Contents/ContentItems/{contentItemId}/Clone", "AdminCloneContentItem")]
@@ -881,5 +817,48 @@ public sealed class AdminController : Controller, IUpdateModel
         TempData[nameof(ModelState)] = JsonSerializer.Serialize(errors);
 
         return RedirectToAction(nameof(List));
+    }
+
+    private async Task<IActionResult> PublishOrUnpublishAsync(bool stayOnSamePage, string contentItemId, string returnUrl, bool published)
+    {
+        var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+
+        if (content == null)
+        {
+            return NotFound();
+        }
+
+        if (!await IsAuthorizedAsync(CommonPermissions.PublishContent, content))
+        {
+            return Forbid();
+        }
+
+        return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        {
+            await _contentManager.UpdateAsync(contentItem);
+            var result = published
+            ? await _contentManager.PublishAsync(contentItem)
+            : await _contentManager.UnpublishAsync(contentItem);
+
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+            if (result)
+            {
+                if (published)
+                {
+                    await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                    ? H["Your content has been published."]
+                    : H["Your {0} has been published.", typeDefinition.DisplayName]);
+                }
+                else
+                {
+                    await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                    ? H["Your content has been unpublished."]
+                    : H["Your {0} has been unpublished.", typeDefinition.DisplayName]);
+                }
+            }
+
+            return result;
+        });
     }
 }
