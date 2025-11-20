@@ -475,7 +475,7 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> EditAndPublishPOST(
         string contentItemId,
         [Bind(Prefix = "submit.Publish")] string submitPublish,
-        string returnUrl) => await PublishOrUnpublishAsync(submitPublish == "submit.PublishAndContinue", contentItemId, returnUrl, published: true);
+        string returnUrl) => await PublishOrUnpublishAsync(submitPublish == "submit.PublishAndContinue", contentItemId, returnUrl, publish: true);
 
     [HttpPost]
     [ActionName(nameof(Edit))]
@@ -483,7 +483,7 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> EditAndUnpublishPOST(
     string contentItemId,
     [Bind(Prefix = "submit.Unpublish")] string submitUnpublish,
-    string returnUrl) => await PublishOrUnpublishAsync(submitUnpublish == "submit.UnpublishAndContinue", contentItemId, returnUrl, published: false);
+    string returnUrl) => await PublishOrUnpublishAsync(submitUnpublish == "submit.UnpublishAndContinue", contentItemId, returnUrl, publish: false);
 
     [HttpPost]
     public async Task<IActionResult> Delete(string contentItemId, string returnUrl)
@@ -860,7 +860,7 @@ public sealed class AdminController : Controller, IUpdateModel
         return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.UpdateAsync(contentItem);
-            var result = published
+            var result = publish
                 ? await _contentManager.PublishAsync(contentItem)
                 : await _contentManager.UnpublishAsync(contentItem);
 
@@ -868,7 +868,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
             if (result)
             {
-                if (published)
+                if (publish)
                 {
                     await _notifier.SuccessAsync(
                         string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
