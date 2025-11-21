@@ -63,7 +63,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
             if (contentType.Parts.Any(ctd => string.Equals(ctd.Name, nameof(LocalizationPart), StringComparison.Ordinal)))
             {
                 // When limiting items Content item is valid if it is for the default culture.
-                var defaultCulture = await _localizationService.GetDefaultCultureAsync();
+                var defaultCulture = (await _localizationService.GetDefaultCultureAsync()).ToLowerInvariant();
 
                 // Get all content items here for reference. Then reduce by default culture.
                 // We know that the content item should be localized.
