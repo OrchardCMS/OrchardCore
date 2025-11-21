@@ -860,14 +860,15 @@ public sealed class AdminController : Controller, IUpdateModel
         return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.UpdateAsync(contentItem);
-            var result = publish
+
+            var hasBeenPublishedOrUnpublished = publish
                 ? await _contentManager.PublishAsync(contentItem)
                 : await _contentManager.UnpublishAsync(contentItem);
 
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-
-            if (result)
+            if (hasBeenPublishedOrUnpublished)
             {
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
                 if (publish)
                 {
                     await _notifier.SuccessAsync(
@@ -884,7 +885,7 @@ public sealed class AdminController : Controller, IUpdateModel
                 }
             }
 
-            return result;
+            return hasBeenPublishedOrUnpublished;
         });
     }
 }
