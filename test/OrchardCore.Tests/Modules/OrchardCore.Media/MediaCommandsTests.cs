@@ -106,7 +106,5 @@ public class MediaCommandsTests
         commands.Width = null; // remove
         list = commands.GetValues().ToList();
         Assert.Empty(list);
-
     }
-
 }
