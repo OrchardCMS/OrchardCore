@@ -409,17 +409,17 @@ public class ParlotSqlParser
         var statementLine = unionStatementList.AndSkip(SEMICOLON.Optional())
             .Then(x => new StatementLine(x));
 
-        var commentsBuilder = new CommentsBuilder(Literals.WhiteSpace(includeNewLines: true));
-        commentsBuilder.WithSingleLine("--");
-        commentsBuilder.WithMultiLine("/*", "*/");
-
-        var comments = commentsBuilder.Build();
-
         // Statement list
         var statementList = ZeroOrMany(statementLine)
-            .Then(statements => new StatementList(statements)).AndSkip(comments.Optional()).Eof();
+            .Then(statements => new StatementList(statements))
+            .AndSkip(Terms.WhiteSpace().Optional()) // allow trailing whitespace
+            .Eof();
 
-        Statements = statementList.WithWhiteSpaceParser(comments);
+        Statements = statementList.WithComments(comments =>
+        {
+            comments.WithSingleLine("--");
+            comments.WithMultiLine("/*", "*/");
+        });
     }
 
     public static StatementList? Parse(string input)
