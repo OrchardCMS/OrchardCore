@@ -96,10 +96,10 @@ public class ParlotSqlParser
         var expressionList = Separated(COMMA, expression);
 
         // Function arguments
-        var starArg = STAR.Then<FunctionArguments>(_ => new StarArgument());
+        var starArg = STAR.Then<FunctionArguments>(_ => StarArgument.Instance);
         var selectArg = selectStatement.Then<FunctionArguments>(s => new SelectStatementArgument(s));
         var exprListArg = expressionList.Then<FunctionArguments>(exprs => new ExpressionListArguments(exprs));
-        var emptyArg = Always<FunctionArguments>(new EmptyArguments());
+        var emptyArg = Always<FunctionArguments>(EmptyArguments.Instance);
         var functionArgs = starArg.Or(selectArg).Or(exprListArg).Or(emptyArg);
 
         // Function call
@@ -211,7 +211,7 @@ public class ParlotSqlParser
         var columnSourceId = identifier.Then<ColumnSource>(id => new ColumnSourceIdentifier(id));
 
         // Deferred for OVER clause components
-        var columnItemList = Separated(COMMA, columnItem.Or(STAR.Then(new ColumnItem(new ColumnSourceIdentifier(new Identifier("*")), null))));
+        var columnItemList = Separated(COMMA, columnItem.Or(STAR.Then(new ColumnItem(new ColumnSourceIdentifier(Identifier.Star), null))));
         var orderByList = Separated(COMMA, orderByItem);
 
         var orderByClause = ORDER.AndSkip(BY).And(orderByList)
@@ -284,9 +284,7 @@ public class ParlotSqlParser
         var joinStatement = joinKind.Else(JoinKind.None).AndSkip(JOIN).And(tableSourceItemList).And(joinCondition)
             .Then(result =>
             {
-                var kind = result.Item1;
-                var tables = result.Item2;
-                var conditions = result.Item3;
+                var (kind, tables, conditions) = result;
                 return new JoinStatement(tables, conditions, kind);
             });
 
@@ -296,9 +294,7 @@ public class ParlotSqlParser
         var fromClause = FROM.SkipAnd(tableSourceList).And(joins)
             .Then(result =>
             {
-                // FROM, tableSourceList, joins -> 3 items
-                var tables = result.Item1;
-                var joinList = result.Item2;
+                var (tables, joinList) = result;
                 return new FromClause(tables, joinList.Any() ? joinList : null);
             });
 
