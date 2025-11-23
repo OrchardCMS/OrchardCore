@@ -1,6 +1,4 @@
-using System.Text;
 using Cysharp.Text;
-using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.Queries.Sql;
@@ -56,7 +54,7 @@ public class SqlTranslator
             foreach (var unionStatement in statementLine.UnionStatements)
             {
                 var statement = unionStatement.Statement;
-                
+
                 // Collect CTE names
                 if (statement.WithClause != null)
                 {
@@ -171,12 +169,12 @@ public class SqlTranslator
             }
 
             builder.Append(" AS (");
-            
+
             for (var j = 0; j < cte.Query.Count; j++)
             {
                 TranslateUnionStatement(ref builder, cte.Query[j]);
             }
-            
+
             builder.Append(')');
         }
 
@@ -273,7 +271,7 @@ public class SqlTranslator
     private void TranslateColumnItemList(ref Utf16ValueStringBuilder builder, IReadOnlyList<ColumnItem> columnItems)
     {
         // Check if it's SELECT *
-        if (columnItems.Count == 1 && 
+        if (columnItems.Count == 1 &&
             columnItems[0].Source is ColumnSourceIdentifier idSource &&
             idSource.Identifier.Parts.Count == 1 &&
             idSource.Identifier.Parts[0] == "*")
@@ -388,12 +386,12 @@ public class SqlTranslator
         else if (tableSource is TableSourceSubQuery subQuery)
         {
             builder.Append('(');
-            
+
             for (var i = 0; i < subQuery.Query.Count; i++)
             {
                 TranslateUnionStatement(ref builder, subQuery.Query[i]);
             }
-            
+
             builder.Append(") AS ");
             builder.Append(subQuery.Alias);
         }
@@ -469,7 +467,7 @@ public class SqlTranslator
             var item = items[i];
 
             // Check for RANDOM() special case
-            if (item.Identifier.Parts.Count == 1 && 
+            if (item.Identifier.Parts.Count == 1 &&
                 item.Identifier.Parts[0].Equals("RANDOM", StringComparison.OrdinalIgnoreCase) &&
                 item.Arguments != null)
             {
@@ -595,12 +593,12 @@ public class SqlTranslator
     {
         TranslateExpression(ref builder, between.Expression);
         builder.Append(' ');
-        
+
         if (between.IsNot)
         {
             builder.Append("NOT ");
         }
-        
+
         builder.Append("BETWEEN ");
         TranslateExpression(ref builder, between.Lower);
         builder.Append(" AND ");
@@ -611,12 +609,12 @@ public class SqlTranslator
     {
         TranslateExpression(ref builder, inExpr.Expression);
         builder.Append(' ');
-        
+
         if (inExpr.IsNot)
         {
             builder.Append("NOT ");
         }
-        
+
         builder.Append("IN (");
 
         var arguments = TranslateFunctionArguments(inExpr.Values);
