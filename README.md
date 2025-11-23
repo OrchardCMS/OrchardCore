@@ -80,6 +80,10 @@ Cloudsmith is the only fully hosted, cloud-native, universal package management 
 
 See [our Code of Conduct](https://docs.orchardcore.net/en/latest/contributing/#code-of-conduct).
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=OrchardCMS/OrchardCore&type=Date)](https://star-history.com/#OrchardCMS/OrchardCore&Date)
+
 ## .NET Foundation
 
 This project is supported by the [.NET Foundation](http://www.dotnetfoundation.org).
