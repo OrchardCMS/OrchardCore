@@ -2922,7 +2922,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 // <media-field-thumbs-container> component
 // different media field editors share this component to present the thumbs.
 Vue.component('mediaFieldThumbsContainer', {
-  template: /* html */"\n    <div :id=\"idPrefix + '_mediaContainerMain'\">\n         <div v-if=\"mediaItems.length < 1\" class=\"card text-center\">\n            <div class= \"card-body\">\n                <span class=\"hint\">{{T.noImages}}</span>\n            </div>\n         </div>\n         <ol ref=\"multiDragContainer\" class=\"media-items-grid d-flex flex-row align-items-start flex-wrap\" >\n            <li v-for=\"media in mediaItems\"\n                :key=\"media.vuekey\"\n                class=\"media-thumb-item media-container-main-list-item card overflow\"\n                :style=\"{width: thumbSize + 2 + 'px'}\"\n                v-on:click=\"selectMedia(media)\"\n                v-if=\"!media.isRemoved\">\n                    <div v-if=\"media.mediaPath!== 'not-found'\">\n                        <div class=\"thumb-container\" :style=\"{height: thumbSize + 'px'}\" >\n                            <img v-if=\"media.mime.startsWith('image')\"\n                                :src=\"buildMediaUrl(media.url, thumbSize)\"\n                                :data-mime=\"media.mime\"\n                                width=\"100%\"\n                            />\n                            <i v-else :class=\"getfontAwesomeClassNameForFileName(media.name, 'fa-4x')\" :data-mime=\"media.mime\"></i>\n                        </div>\n                        <div class=\"media-container-main-item-title card-body\">\n                            <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\"\n                                v-on:click.stop=\"selectAndDeleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                            <a :href=\"media.url\" target=\"_blank\" class=\"btn btn-light btn-sm float-end inline-media-button view-button\"\"><i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i></a>\n                            <span class=\"media-filename card-text small\" :title=\"media.mediaPath\">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\n                        </div>\n                    </div>\n                    <div v-else>\n                        <div class=\"thumb-container flex-column\" :style=\"{height: thumbSize + 'px'}\">\n                            <i class=\"fa-solid fa-ban text-danger d-block\" aria-hidden=\"true\"></i>\n                            <span class=\"text-danger small d-block\">{{ T.mediaNotFound }}</span>\n                            <span class=\"text-danger small d-block text-center\">{{ T.discardWarning }}</span>\n                        </div>\n                        <div class=\"media-container-main-item-title card-body\">\n                            <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\"\n                                v-on:click.stop=\"selectAndDeleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                            <span class=\"media-filename card-text small text-danger\" :title=\"media.name\">{{ media.name }}</span>\n                        </div>\n                  </div>\n            </li>\n         </ol>\n    </div>\n    ",
+  template: /* html */"\n    <div :id=\"idPrefix + '_mediaContainerMain'\">\n         <div v-if=\"mediaItems.length < 1\" class=\"card text-center\">\n            <div class= \"card-body\">\n                <span class=\"hint\">{{T.noImages}}</span>\n            </div>\n         </div>\n         <ol ref=\"multiDragContainer\" class=\"media-items-grid d-flex flex-row align-items-start flex-wrap\" >\n            <li v-for=\"media in mediaItems\"\n                :key=\"media.vuekey\"\n                class=\"media-thumb-item media-container-main-list-item card overflow\"\n                :class=\"{'media-thumb-item-active': !allowMultiple && selectedMedia === media}\"\n                :style=\"{width: thumbSize + 2 + 'px'}\"\n                v-on:click=\"selectMedia(media)\"\n                v-if=\"!media.isRemoved\">\n                    <div v-if=\"media.mediaPath!== 'not-found'\">\n                        <div class=\"thumb-container\" :style=\"{height: thumbSize + 'px'}\" >\n                            <img v-if=\"media.mime.startsWith('image')\"\n                                :src=\"buildMediaUrl(media.url, thumbSize)\"\n                                :data-mime=\"media.mime\"\n                                width=\"100%\"\n                            />\n                            <i v-else :class=\"getfontAwesomeClassNameForFileName(media.name, 'fa-4x')\" :data-mime=\"media.mime\"></i>\n                        </div>\n                        <div class=\"media-container-main-item-title card-body\">\n                            <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\"\n                                v-on:click.stop=\"selectAndDeleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                            <a :href=\"media.url\" target=\"_blank\" class=\"btn btn-light btn-sm float-end inline-media-button view-button\"\"><i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i></a>\n                            <span class=\"media-filename card-text small\" :title=\"media.mediaPath\">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\n                        </div>\n                    </div>\n                    <div v-else>\n                        <div class=\"thumb-container flex-column\" :style=\"{height: thumbSize + 'px'}\">\n                            <i class=\"fa-solid fa-ban text-danger d-block\" aria-hidden=\"true\"></i>\n                            <span class=\"text-danger small d-block\">{{ T.mediaNotFound }}</span>\n                            <span class=\"text-danger small d-block text-center\">{{ T.discardWarning }}</span>\n                        </div>\n                        <div class=\"media-container-main-item-title card-body\">\n                            <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\"\n                                v-on:click.stop=\"selectAndDeleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                            <span class=\"media-filename card-text small text-danger\" :title=\"media.name\">{{ media.name }}</span>\n                        </div>\n                  </div>\n            </li>\n         </ol>\n    </div>\n    ",
   data: function data() {
     return {
       T: {},
@@ -3095,6 +3095,13 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                       self.mediaItems.push(y);
                     });
                     self.initialized = true;
+
+                    // Preselect first thumbnail if only single image is allowed
+                    if (!allowMultiple && self.mediaItems.length === 1) {
+                      self.$nextTick(function () {
+                        self.selectedMedia = self.mediaItems[0];
+                      });
+                    }
                   }
                 },
                 error: function error(_error) {
@@ -3256,9 +3263,19 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
           alert($('#onlyOneItemMessage').val());
           mediaFieldApp.mediaItems.push(files[0]);
           mediaFieldApp.initialized = true;
+          // Preselect the newly added media item
+          mediaFieldApp.$nextTick(function () {
+            mediaFieldApp.selectedMedia = mediaFieldApp.mediaItems[0];
+          });
         } else {
           mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
           mediaFieldApp.initialized = true;
+          // Preselect first thumbnail if only single image is allowed
+          if (!allowMultiple && mediaFieldApp.mediaItems.length === 1) {
+            mediaFieldApp.$nextTick(function () {
+              mediaFieldApp.selectedMedia = mediaFieldApp.mediaItems[0];
+            });
+          }
         }
       },
       removeSelected: function removeSelected(event) {
