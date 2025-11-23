@@ -12,7 +12,9 @@ public class SqlParser
             if (!ParlotSqlParser.TryParse(sql, out var statementList, out var error))
             {
                 query = null;
-                messages = new string[] { $"Parse error: {error.Message} at position {error.Position}" };
+                messages = error != null 
+                    ? new string[] { $"Parse error: {error.Message} at position {error.Position}" }
+                    : new string[] { "Parse error: Unknown parsing error" };
                 return false;
             }
 
