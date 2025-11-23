@@ -261,4 +261,17 @@ public class SqlParserTests
         Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
         Assert.Equal(expectedSql, FormatSql(rawQuery));
     }
+
+    [Theory]
+    [InlineData("select a where b='foo' order by c", "SELECT [a] WHERE [b] = N'foo' ORDER BY [c];")]
+    [InlineData("select a where b='foo' order by c limit 5", "SELECT TOP (5) [a] WHERE [b] = N'foo' ORDER BY [c];")]
+    [InlineData("SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC", "SELECT [DocumentId] FROM [tp_ContentItemIndex] WHERE [ContentType] = N'BlogPost' ORDER BY [CreatedUtc] DESC;")]
+    [InlineData("SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3", "SELECT TOP (3) [DocumentId] FROM [tp_ContentItemIndex] WHERE [ContentType] = N'BlogPost' ORDER BY [CreatedUtc] DESC;")]
+    public void ShouldParseWhereWithOrderBy(string sql, string expectedSql)
+    {
+        var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+        
+        Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
+        Assert.Equal(expectedSql, FormatSql(rawQuery));
+    }
 }
