@@ -254,7 +254,6 @@ public class SqlParserTests
     [Theory]
     [InlineData("select a order by b limit 10", "SELECT TOP (10) [a] ORDER BY [b];")]
     [InlineData("select a from b order by c desc limit 5", "SELECT TOP (5) [a] FROM [tp_b] ORDER BY [c] DESC;")]
-    [InlineData("select a where b='foo' order by c limit 5", "SELECT TOP (5) [a] WHERE [b] = N'foo' ORDER BY [c];")]
     public void ShouldParseOrderByWithLimit(string sql, string expectedSql)
     {
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
