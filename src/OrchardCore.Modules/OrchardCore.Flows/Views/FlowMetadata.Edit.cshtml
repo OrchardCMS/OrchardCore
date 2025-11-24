@@ -2,8 +2,14 @@
 @model FlowMetadata
 
 <div class="btn-group btn-group-sm" role="group">
-    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fa-solid fa-align-@Model.Alignment.ToString().ToLowerInvariant()" aria-hidden="true" aria-hidden="true"></i>
+    @{
+        var iconClass = Model.Alignment != FlowAlignment.Inherit
+        ? $"fa-align-{Model.Alignment.ToString().ToLowerInvariant()}"
+        : "fa-indent";
+    }
+    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle"
+            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa-solid @iconClass" aria-hidden="true"></i>
     </button>
     <div class="dropdown-menu btn-group-toggle" data-bs-toggle="buttons">
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Left ? "active" : null)">
@@ -17,6 +23,9 @@
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Justify ? "active" : null)">
             <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Justify" type="radio" autocomplete="off" value="Justify"><i class="fa-solid fa-align-justify" aria-hidden="true"></i> @T["Justify"]
+        </label>
+        <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Inherit ? "active" : null)">
+            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Inherit" type="radio" autocomplete="off" value="Inherit"><i class="fa-solid fa-indent" aria-hidden="true"></i> @T["Inherit"]
         </label>
     </div>
 </div>

@@ -17,7 +17,7 @@ using OrchardCore.Routing;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
-using Parlot;
+using Shortcodes;
 
 namespace OrchardCore.Shortcodes.Controllers;
 
@@ -347,7 +347,17 @@ public sealed class AdminController : Controller
 
     private static bool IsValidShortcodeName(string name)
     {
-        var scanner = new Scanner(name);
-        return scanner.ReadIdentifier(out var result) && name.Length == result.Length;
+        try
+        {
+            var nodes = new ShortcodesParser().Parse($"[{name}]");
+
+            return nodes.Count == 1 &&
+                nodes[0] is Shortcode shortcodeNode &&
+                shortcodeNode.Identifier.Equals(name, StringComparison.OrdinalIgnoreCase);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 }

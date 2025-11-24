@@ -18,12 +18,14 @@ public sealed class ForwardedHeadersOptionsConfiguration : IConfigureOptions<For
         var reverseProxySettings = _reverseProxyService.GetSettingsAsync().GetAwaiter().GetResult();
         options.ForwardedHeaders = reverseProxySettings.ForwardedHeaders;
 
-        options.KnownNetworks.Clear();
+        // In .NET 10, KnownNetworks is obsolete, use KnownIPNetworks instead
+        options.KnownIPNetworks.Clear();
         options.KnownProxies.Clear();
 
         foreach (var network in reverseProxySettings.KnownNetworks)
         {
-            options.KnownNetworks.Add(IPNetwork.Parse(network));
+            // In .NET 10, use System.Net.IPNetwork instead of the obsolete IPNetwork
+            options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(network));
         }
 
         foreach (var proxy in reverseProxySettings.KnownProxies)
