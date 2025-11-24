@@ -25,37 +25,37 @@ public class ParlotSqlParser
         var EQ = Terms.Char('=');
 
         // Keywords
-        var SELECT = Terms.Text("SELECT", caseInsensitive: true);
-        var FROM = Terms.Text("FROM", caseInsensitive: true);
-        var WHERE = Terms.Text("WHERE", caseInsensitive: true);
-        var AS = Terms.Text("AS", caseInsensitive: true);
-        var JOIN = Terms.Text("JOIN", caseInsensitive: true);
-        var INNER = Terms.Text("INNER", caseInsensitive: true);
-        var LEFT = Terms.Text("LEFT", caseInsensitive: true);
-        var RIGHT = Terms.Text("RIGHT", caseInsensitive: true);
-        var ON = Terms.Text("ON", caseInsensitive: true);
-        var GROUP = Terms.Text("GROUP", caseInsensitive: true);
-        var BY = Terms.Text("BY", caseInsensitive: true);
-        var HAVING = Terms.Text("HAVING", caseInsensitive: true);
-        var ORDER = Terms.Text("ORDER", caseInsensitive: true);
-        var ASC = Terms.Text("ASC", caseInsensitive: true);
-        var DESC = Terms.Text("DESC", caseInsensitive: true);
-        var LIMIT = Terms.Text("LIMIT", caseInsensitive: true);
-        var OFFSET = Terms.Text("OFFSET", caseInsensitive: true);
-        var UNION = Terms.Text("UNION", caseInsensitive: true);
-        var ALL = Terms.Text("ALL", caseInsensitive: true);
-        var DISTINCT = Terms.Text("DISTINCT", caseInsensitive: true);
-        var WITH = Terms.Text("WITH", caseInsensitive: true);
-        var AND = Terms.Text("AND", caseInsensitive: true);
-        var OR = Terms.Text("OR", caseInsensitive: true);
-        var NOT = Terms.Text("NOT", caseInsensitive: true);
-        var BETWEEN = Terms.Text("BETWEEN", caseInsensitive: true);
-        var IN = Terms.Text("IN", caseInsensitive: true);
-        var LIKE = Terms.Text("LIKE", caseInsensitive: true);
-        var TRUE = Terms.Text("TRUE", caseInsensitive: true);
-        var FALSE = Terms.Text("FALSE", caseInsensitive: true);
-        var OVER = Terms.Text("OVER", caseInsensitive: true);
-        var PARTITION = Terms.Text("PARTITION", caseInsensitive: true);
+        var SELECT = Terms.Keyword("SELECT", caseInsensitive: true);
+        var FROM = Terms.Keyword("FROM", caseInsensitive: true);
+        var WHERE = Terms.Keyword("WHERE", caseInsensitive: true);
+        var AS = Terms.Keyword("AS", caseInsensitive: true);
+        var JOIN = Terms.Keyword("JOIN", caseInsensitive: true);
+        var INNER = Terms.Keyword("INNER", caseInsensitive: true);
+        var LEFT = Terms.Keyword("LEFT", caseInsensitive: true);
+        var RIGHT = Terms.Keyword("RIGHT", caseInsensitive: true);
+        var ON = Terms.Keyword("ON", caseInsensitive: true);
+        var GROUP = Terms.Keyword("GROUP", caseInsensitive: true);
+        var BY = Terms.Keyword("BY", caseInsensitive: true);
+        var HAVING = Terms.Keyword("HAVING", caseInsensitive: true);
+        var ORDER = Terms.Keyword("ORDER", caseInsensitive: true);
+        var ASC = Terms.Keyword("ASC", caseInsensitive: true);
+        var DESC = Terms.Keyword("DESC", caseInsensitive: true);
+        var LIMIT = Terms.Keyword("LIMIT", caseInsensitive: true);
+        var OFFSET = Terms.Keyword("OFFSET", caseInsensitive: true);
+        var UNION = Terms.Keyword("UNION", caseInsensitive: true);
+        var ALL = Terms.Keyword("ALL", caseInsensitive: true);
+        var DISTINCT = Terms.Keyword("DISTINCT", caseInsensitive: true);
+        var WITH = Terms.Keyword("WITH", caseInsensitive: true);
+        var AND = Terms.Keyword("AND", caseInsensitive: true);
+        var OR = Terms.Keyword("OR", caseInsensitive: true);
+        var NOT = Terms.Keyword("NOT", caseInsensitive: true);
+        var BETWEEN = Terms.Keyword("BETWEEN", caseInsensitive: true);
+        var IN = Terms.Keyword("IN", caseInsensitive: true);
+        var LIKE = Terms.Keyword("LIKE", caseInsensitive: true);
+        var TRUE = Terms.Keyword("TRUE", caseInsensitive: true);
+        var FALSE = Terms.Keyword("FALSE", caseInsensitive: true);
+        var OVER = Terms.Keyword("OVER", caseInsensitive: true);
+        var PARTITION = Terms.Keyword("PARTITION", caseInsensitive: true);
 
         var keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -102,9 +102,9 @@ public class ParlotSqlParser
         var emptyArg = Always<FunctionArguments>(EmptyArguments.Instance);
         var functionArgs = starArg.Or(selectArg).Or(exprListArg).Or(emptyArg);
 
-        // Function call
+        // Function call for column sources (allows any identifier including keywords)
         var functionCall = identifier.And(Between(LPAREN, functionArgs, RPAREN))
-            .Then<Expression>(x => new FunctionCall(x.Item1, x.Item2));
+            .Then(x => new FunctionCall(x.Item1, x.Item2));
 
         // Tuple
         var tuple = Between(LPAREN, expressionList, RPAREN)
@@ -114,10 +114,14 @@ public class ParlotSqlParser
         var parSelectStatement = Between(LPAREN, selectStatement, RPAREN)
             .Then<Expression>(s => new ParenthesizedSelectStatement(s));
 
-        // Basic term
-        var identifierExpr = identifier.Then<Expression>(id => new IdentifierExpression(id));
+        // Basic term - use identifierNoKeywords to prevent keywords from being parsed as identifiers in expressions
+        var identifierExpr = identifierNoKeywords.Then<Expression>(id => new IdentifierExpression(id));
 
-        var termNoParameter = functionCall
+        // Function calls in expressions must use identifierNoKeywords to prevent keywords from being parsed as function names
+        var functionCallExpr = identifierNoKeywords.And(Between(LPAREN, functionArgs, RPAREN))
+            .Then<Expression>(x => new FunctionCall(x.Item1, x.Item2));
+
+        var termNoParameter = functionCallExpr
             .Or(parSelectStatement)
             .Or(tuple)
             .Or(booleanLiteral)
@@ -126,7 +130,7 @@ public class ParlotSqlParser
             .Or(identifierExpr)
             ;
 
-        // Parameter
+        // Parameter - keywords are allowed as parameter names
         var parameter = AT.SkipAnd(identifier).And(Literals.Char(':').SkipAnd(termNoParameter).Optional()).Then<Expression>(x => new ParameterExpression(x.Item1, x.Item2.HasValue ? x.Item2.Value : null));
 
         var term = termNoParameter.Or(parameter);
