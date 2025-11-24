@@ -44,7 +44,7 @@
                             <input type="checkbox" class="form-check-input" id="select-all">
                             <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
                             <label id="items" for="select-all">
-                                @T.Plural(Model.Models.Count, "1 item", "{0} items")
+                                @T.Plural(Model.Models.Count, "{0} item", "{0} items")
                                 <span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">
                                     @T.Plural(Model.Models.Count, " / {0} item in total", " / {0} items in total")
                                 </span>

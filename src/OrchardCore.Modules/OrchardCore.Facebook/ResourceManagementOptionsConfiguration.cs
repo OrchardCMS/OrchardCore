@@ -15,9 +15,9 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         _siteService = siteService;
     }
 
-    public async void Configure(ResourceManagementOptions options)
+    public void Configure(ResourceManagementOptions options)
     {
-        var settings = await _siteService.GetSettingsAsync<FacebookSettings>();
+        var settings = _siteService.GetSettings<FacebookSettings>();
 
         var manifest = new ResourceManifest();
 
