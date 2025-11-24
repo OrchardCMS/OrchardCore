@@ -31,19 +31,16 @@ public class ResizeUrlFilter : ILiquidFilter
         // Profile is a named argument only.
         var profile = arguments["profile"];
 
-        MediaCommands mediaCommands = new MediaCommands();
+        var mediaCommands = new MediaCommands();
         FluidValue width, height, mode, quality, format, anchor, bgcolor;
-        bool useNamed = !profile.IsNil() || arguments.Names.Any();
+
+        // Never mix named and indexed arguments as this leads to unpredictable results.
+        // Additional commands to a profile must be named as well.
+        var useNamed = !profile.IsNil() || arguments.Names.Any();
 
         if (!profile.IsNil())
         {
             mediaCommands.SetCommands(await _mediaProfileService.GetMediaProfileCommands(profile.ToStringValue()));
-            useNamed = true;
-        }
-        else
-        {
-            // Never mix named and indexed arguments as this leads to unpredictable results.
-            useNamed = arguments.Names.Any();
         }
 
         width = useNamed ? arguments["width"] : arguments.At(0);
