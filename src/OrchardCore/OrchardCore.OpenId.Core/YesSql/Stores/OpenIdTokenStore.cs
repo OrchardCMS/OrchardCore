@@ -45,6 +45,8 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
         cancellationToken.ThrowIfCancellationRequested();
 
         await _session.SaveAsync(token, collection: OpenIdCollection, cancellationToken: cancellationToken);
+        // Commit the transaction immediately to avoid a race condition if the token is used before this ASP.NET request scope is disposed.
+        // This can happen when the response header includes the token since the response starts streaming before the request is fully processed.
         await _session.SaveChangesAsync(cancellationToken);
     }
 
@@ -435,6 +437,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
             await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
         }
 
+        // Commit the transaction immediately to prevent the revoked token from being used.
         await _session.SaveChangesAsync(cancellationToken);
 
         return tokens.Count;
@@ -468,6 +471,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
             await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
         }
 
+        // Commit the transaction immediately to prevent the revoked token from being used.
         await _session.SaveChangesAsync(cancellationToken);
 
         return tokens.Count;
@@ -501,6 +505,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
             await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
         }
 
+        // Commit the transaction immediately to prevent the revoked token from being used.
         await _session.SaveChangesAsync(cancellationToken);
 
         return tokens.Count;
@@ -533,6 +538,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
             await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection, cancellationToken: cancellationToken);
         }
 
+        // Commit the transaction immediately to prevent the revoked token from being used.
         await _session.SaveChangesAsync(cancellationToken);
 
         return tokens.Count;
@@ -680,6 +686,8 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         try
         {
+            // Commit the transaction immediately to avoid a race condition if the token is used before this ASP.NET request scope is disposed.
+            // This can happen when the response header includes the token since the response starts streaming before the request is fully processed.
             await _session.SaveChangesAsync(cancellationToken);
         }
         catch (ConcurrencyException exception)
