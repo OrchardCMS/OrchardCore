@@ -10,7 +10,7 @@ namespace OrchardCore.Queries.Sql;
 /// </summary>
 public class ParlotSqlParser
 {
-    public static readonly Parser<StatementList> Statements;
+public static readonly Parser<StatementList> Statements;
 
     static ParlotSqlParser()
     {
@@ -56,7 +56,8 @@ public class ParlotSqlParser
         var FALSE = Terms.Keyword("FALSE", caseInsensitive: true);
         var OVER = Terms.Keyword("OVER", caseInsensitive: true);
         var PARTITION = Terms.Keyword("PARTITION", caseInsensitive: true);
-
+        
+        // Keywords can't be used as identifiers or function names
         var keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "SELECT", "FROM", "WHERE", "AS", "JOIN", "INNER", "LEFT", "RIGHT", "ON",
@@ -69,23 +70,23 @@ public class ParlotSqlParser
         var numberLiteral = Terms.Decimal().Then<Expression>(d => new LiteralExpression<decimal>(d));
 
         var stringLiteral = Terms.String(StringLiteralQuotes.Single)
-            .Then<Expression>(s => new LiteralExpression<string>(s.Span.ToString()));
+            .Then<Expression>(s => new LiteralExpression<string>(s.ToString()));
 
         var booleanLiteral = TRUE.Then<Expression>(new LiteralExpression<bool>(true))
             .Or(FALSE.Then<Expression>(new LiteralExpression<bool>(false)));
 
         // Identifiers
-        var simpleIdentifier = Terms.Identifier()
-            .Or(Between(Terms.Char('['), Literals.NoneOf("]"), Terms.Char(']')))
-            .Or(Between(Terms.Char('"'), Literals.NoneOf("\""), Terms.Char('"')));
+        var simpleIdentifier = Terms.Identifier().Then(x => x.ToString())
+            .Or(Between(Terms.Char('['), Literals.NoneOf("]"), Terms.Char(']')).Then(x => x.ToString()))
+            .Or(Between(Terms.Char('"'), Literals.NoneOf("\""), Terms.Char('"')).Then(x => x.ToString()));
 
         var identifier = Separated(DOT, simpleIdentifier)
-            .Then(parts => new Identifier(parts.Select(p => p.Span.ToString()).ToArray()));
+            .Then(parts => new Identifier(parts));
 
         // Without the keywords check "FROM a WHERE" would interpret "WHERE" as an alias since "AS" is optional
-        var identifierNoKeywords = Separated(DOT, simpleIdentifier).When((ctx, parts) => parts.Count > 0 && !keywords.Contains(parts[0].ToString()))
-            .Then(parts => new Identifier(parts.Select(p => p.Span.ToString()).ToArray()));
-
+        var identifierNoKeywords = Separated(DOT, simpleIdentifier).When((ctx, parts) => parts.Count > 0 && !keywords.Contains(parts[0]))
+            .Then(parts => new Identifier(parts));
+            
         // Deferred parsers
         var expression = Deferred<Expression>();
         var selectStatement = Deferred<SelectStatement>();
@@ -102,9 +103,9 @@ public class ParlotSqlParser
         var emptyArg = Always<FunctionArguments>(EmptyArguments.Instance);
         var functionArgs = starArg.Or(selectArg).Or(exprListArg).Or(emptyArg);
 
-        // Function call for column sources (allows any identifier including keywords)
+        // Function call
         var functionCall = identifier.And(Between(LPAREN, functionArgs, RPAREN))
-            .Then(x => new FunctionCall(x.Item1, x.Item2));
+            .Then<Expression>(x => new FunctionCall(x.Item1, x.Item2));
 
         // Tuple
         var tuple = Between(LPAREN, expressionList, RPAREN)
@@ -114,14 +115,10 @@ public class ParlotSqlParser
         var parSelectStatement = Between(LPAREN, selectStatement, RPAREN)
             .Then<Expression>(s => new ParenthesizedSelectStatement(s));
 
-        // Basic term - use identifierNoKeywords to prevent keywords from being parsed as identifiers in expressions
-        var identifierExpr = identifierNoKeywords.Then<Expression>(id => new IdentifierExpression(id));
+        // Basic term
+        var identifierExpr = identifier.Then<Expression>(id => new IdentifierExpression(id));
 
-        // Function calls in expressions must use identifierNoKeywords to prevent keywords from being parsed as function names
-        var functionCallExpr = identifierNoKeywords.And(Between(LPAREN, functionArgs, RPAREN))
-            .Then<Expression>(x => new FunctionCall(x.Item1, x.Item2));
-
-        var termNoParameter = functionCallExpr
+        var termNoParameter = functionCall
             .Or(parSelectStatement)
             .Or(tuple)
             .Or(booleanLiteral)
@@ -215,7 +212,7 @@ public class ParlotSqlParser
         var columnSourceId = identifier.Then<ColumnSource>(id => new ColumnSourceIdentifier(id));
 
         // Deferred for OVER clause components
-        var columnItemList = Separated(COMMA, columnItem.Or(STAR.Then(new ColumnItem(new ColumnSourceIdentifier(Identifier.Star), null))));
+        var columnItemList = Separated(COMMA, columnItem.Or(STAR.Then(new ColumnItem(new ColumnSourceIdentifier(Identifier.STAR), null))));
         var orderByList = Separated(COMMA, orderByItem);
 
         var orderByClause = ORDER.AndSkip(BY).And(orderByList)
@@ -365,8 +362,7 @@ public class ParlotSqlParser
             });
 
         // WITH clause (CTEs)
-        var columnNames = Separated(COMMA, simpleIdentifier)
-            .Then(names => names.Select(n => n.Span.ToString()).ToArray());
+        var columnNames = Separated(COMMA, simpleIdentifier);
 
         var cteColumnList = Between(LPAREN, columnNames, RPAREN);
 
@@ -377,7 +373,7 @@ public class ParlotSqlParser
             .Then(result =>
             {
                 var (name, columns, query) = result;
-                return new CommonTableExpression(name.ToString(), query, columns.OrSome(null));
+                return new CommonTableExpression(name, query, columns.OrSome(null));
             });
 
         var cteList = Separated(COMMA, cte);
@@ -417,8 +413,11 @@ public class ParlotSqlParser
 
         Statements = statementList.WithComments(comments =>
         {
-            comments.WithSingleLine("--");
-            comments.WithMultiLine("/*", "*/");
+            comments
+                .WithWhiteSpaceOrNewLine()
+                .WithSingleLine("--")
+                .WithMultiLine("/*", "*/")
+                ;
         });
     }
 
@@ -434,6 +433,7 @@ public class ParlotSqlParser
 
     public static bool TryParse(string input, out StatementList? result, out ParseError? error)
     {
-        return Statements.TryParse(input, out result, out error);
+        var context = new ParseContext(new Scanner(input), disableLoopDetection: true);
+        return Statements.TryParse(context, out result, out error);
     }
 }

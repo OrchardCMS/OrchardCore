@@ -539,22 +539,19 @@ public sealed class ParameterExpression : Expression
 // Identifiers
 public sealed class Identifier : ISqlNode
 {
-    public static readonly Identifier Star = new("*");
+    public static readonly Identifier STAR = new (["*"]);
+
+    private string _cachedToString = null!;
 
     public IReadOnlyList<string> Parts { get; }
-    private string? _cachedFullName;
 
-    public Identifier(string name) : this(new[] { name })
+    public Identifier(IReadOnlyList<string> parts)
     {
-    }
-
-    public Identifier(params string[] parts)
-    {
-        Parts = parts.ToArray();
+        Parts = parts;
     }
 
     public override string ToString()
     {
-        return _cachedFullName ??= string.Join('.', Parts);
+        return _cachedToString ??= (Parts.Count == 1 ? Parts[0] : string.Join(".", Parts));
     }
 }
