@@ -1,0 +1,11 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+	var contentItemId = HttpContextAccessor.HttpContext.Request.RouteValues["contentItemId"];
+	var returnUrl = HttpContextAccessor.HttpContext.Request.RouteValues["returnUrl"];
+}
+<a class="btn btn-danger mb-1" role="button"
+	asp-action="Delete" asp-route-contentItemId="@contentItemId" asp-route-returnUrl="@returnUrl" data-url-af="RemoveUrl UnsafeUrl"
+	data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content item?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">
+    @T["Delete"]
+</a>
