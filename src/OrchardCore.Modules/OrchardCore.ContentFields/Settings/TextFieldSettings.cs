@@ -13,5 +13,5 @@ public class TextFieldSettings : FieldSettings
     /// </summary>
     public string Pattern { get; set; }
 
-    public string Placeholder { get; set; }
+    public string Placeholder { get; set; } = string.Empty;
 }
