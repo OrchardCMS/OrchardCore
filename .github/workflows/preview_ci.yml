@@ -41,7 +41,7 @@ jobs:
     - name: Unit Tests
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
-        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
+        dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-build
     - name: Functional Tests
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
