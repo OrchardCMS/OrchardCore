@@ -69,23 +69,11 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
             }
         }
         
-        // Convert colors with #RGB format to #RRGGBB, because the color editor will use black color all the time.
-        if (contentPartFieldSettings.Editor == TextFieldColorEditor)
+        if (contentPartFieldSettings.Editor == TextFieldColorEditor &&
+            !string.IsNullOrEmpty(model.DefaultValue) &&
+            !HexColorRegex().IsMatch(model.DefaultValue))
         {
-            if (!HexColorRegex().IsMatch(model.DefaultValue))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, S["A value for {0} should be in '#RGB' or '#RRGGBB' formats.", partFieldDefinition.DisplayName()]);
-            }
-
-            if (model.DefaultValue.Length == 4)
-            {
-                var colorChars = model.DefaultValue.ToCharArray();
-                var r = colorChars[1];
-                var g = colorChars[2];
-                var b = colorChars[3];
-
-                model.DefaultValue = $"#{r}{r}{g}{g}{b}{b}";
-            }
+            context.Updater.ModelState.AddModelError(Prefix, S["A value for {0} should be in #RGB, #RGBA, #RRGGBB, or #RRGGBBAA formats.", partFieldDefinition.DisplayName()]);
         }
 
         context.Builder.WithSettings(new TextFieldSettings
@@ -100,6 +88,7 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
         return Edit(partFieldDefinition, context);
     }
 
-    [GeneratedRegex(@"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")]
+    // Supports the hexadecimal color codes in the formats #RGB, #RGBA, #RRGGBB, and #RRGGBBAA.
+    [GeneratedRegex(@"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")]
     private static partial Regex HexColorRegex();
 }
