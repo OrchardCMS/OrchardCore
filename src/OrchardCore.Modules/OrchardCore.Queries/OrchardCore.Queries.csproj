@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Irony" />
+    <PackageReference Include="Parlot" />
   </ItemGroup>
 
 </Project>

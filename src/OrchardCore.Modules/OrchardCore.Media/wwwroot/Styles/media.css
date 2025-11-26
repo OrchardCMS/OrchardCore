@@ -794,7 +794,7 @@ ol.media-items-grid {
   border: 2px dashed #ccc;
 }
 
-[dir] .sortable-selected {
+[dir] .sortable-selected, [dir] .media-thumb-item-active {
   border: 2px solid #2196f3;
   box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
 }

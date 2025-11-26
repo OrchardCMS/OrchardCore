@@ -3412,6 +3412,42 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "xnavrat4",
+      "name": "Patrik Navratil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/100190956?v=4",
+      "profile": "https://github.com/xnavrat4",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "harshasiddartha",
+      "name": "harshasiddartha",
+      "avatar_url": "https://avatars.githubusercontent.com/u/147021873?v=4",
+      "profile": "https://github.com/harshasiddartha",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "redzepiredzep",
+      "name": "Redzep Redžepi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/148947177?v=4",
+      "profile": "https://github.com/redzepiredzep",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "milosh-96",
+      "name": "Miloš Jovanović",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13017737?v=4",
+      "profile": "https://bejzbol.net",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

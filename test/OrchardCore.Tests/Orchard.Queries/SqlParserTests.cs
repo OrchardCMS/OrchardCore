@@ -102,7 +102,7 @@ public class SqlParserTests
         var parameters = new Dictionary<string, object>();
         var result = SqlParser.TryParse("select a where a = @b:10", _schema, _defaultDialect, _defaultTablePrefix, parameters, out _, out _);
         Assert.True(result);
-        Assert.Equal(10, parameters["b"]);
+        Assert.Equal(10m, parameters["b"]);
     }
 
     [Theory]
@@ -167,21 +167,13 @@ public class SqlParserTests
         Assert.Equal(expectedSql, FormatSql(rawQuery));
     }
 
-    [Fact]
-    public void ShouldReturnErrorMessage()
-    {
-        var result = SqlParser.TryParse("SEL a", _schema, _defaultDialect, _defaultTablePrefix, null, out _, out var messages);
-
-        Assert.False(result);
-        Assert.Single(messages);
-        Assert.Contains("at line:0, col:0", messages.First());
-    }
-
     [Theory]
     [InlineData("SELECT a; -- this is a comment", "SELECT [a];")]
     [InlineData("SELECT a; \n-- this is a comment", "SELECT [a];")]
+    [InlineData("-- this is a comment\n SELECT a;", "SELECT [a];")]
+    [InlineData("-- this is a comment\n SELECT a; -- this is another comment\n SELECT b;", "SELECT [a]; SELECT [b];")]
     [InlineData("SELECT /* comment */ a;", "SELECT [a];")]
-    [InlineData("SELECT /* comment \n comment */ a;", "SELECT [a];")]
+    [InlineData("/* comment \n comment */SELECT /* comment \n comment */ a /* comment \n comment */;/* comment \n comment */", "SELECT [a];")]
     public void ShouldParseComments(string sql, string expectedSql)
     {
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out _);
@@ -256,6 +248,30 @@ public class SqlParserTests
 
         // Assert
         Assert.True(result);
+        Assert.Equal(expectedSql, FormatSql(rawQuery));
+    }
+
+    [Theory]
+    [InlineData("select a order by b limit 10", "SELECT TOP (10) [a] ORDER BY [b];")]
+    [InlineData("select a from b order by c desc limit 5", "SELECT TOP (5) [a] FROM [tp_b] ORDER BY [c] DESC;")]
+    public void ShouldParseOrderByWithLimit(string sql, string expectedSql)
+    {
+        var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+        
+        Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
+        Assert.Equal(expectedSql, FormatSql(rawQuery));
+    }
+
+    [Theory]
+    [InlineData("select a where b='foo' order by c", "SELECT [a] WHERE [b] = N'foo' ORDER BY [c];")]
+    [InlineData("select a where b='foo' order by c limit 5", "SELECT TOP (5) [a] WHERE [b] = N'foo' ORDER BY [c];")]
+    [InlineData("SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC", "SELECT [DocumentId] FROM [tp_ContentItemIndex] WHERE [ContentType] = N'BlogPost' ORDER BY [CreatedUtc] DESC;")]
+    [InlineData("SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3", "SELECT TOP (3) [DocumentId] FROM [tp_ContentItemIndex] WHERE [ContentType] = N'BlogPost' ORDER BY [CreatedUtc] DESC;")]
+    public void ShouldParseWhereWithOrderBy(string sql, string expectedSql)
+    {
+        var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+        
+        Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
         Assert.Equal(expectedSql, FormatSql(rawQuery));
     }
 }
