@@ -18,16 +18,87 @@ public class PlacementInfo
 
     private static readonly char[] _delimiters = [PositionDelimiter, TabDelimiter, GroupDelimiter, CardDelimiter, ColumnDelimiter];
 
-    public string Location { get; set; }
-    public string Source { get; set; }
-    public string ShapeType { get; set; }
-    public string DefaultPosition { get; set; }
-    public AlternatesCollection Alternates { get; set; }
-    public AlternatesCollection Wrappers { get; set; }
+    /// <summary>
+    /// A shared instance representing a hidden placement.
+    /// </summary>
+    public static readonly PlacementInfo Hidden = new() { Location = HiddenLocation };
+
+    public string Location { get; init; }
+    public string Source { get; init; }
+    public string ShapeType { get; init; }
+    public string DefaultPosition { get; init; }
+    public AlternatesCollection Alternates { get; init; }
+    public AlternatesCollection Wrappers { get; init; }
+
+    /// <summary>
+    /// Creates a new <see cref="PlacementInfo"/> with the specified location.
+    /// Returns a cached instance for common locations.
+    /// </summary>
+    public static PlacementInfo FromLocation(string location)
+    {
+        if (string.IsNullOrEmpty(location))
+        {
+            return null;
+        }
+
+        if (location == HiddenLocation)
+        {
+            return Hidden;
+        }
+
+        return new PlacementInfo { Location = location };
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="PlacementInfo"/> by merging this instance with additional properties.
+    /// Returns this instance if no properties need to be changed.
+    /// </summary>
+    public PlacementInfo WithSource(string source)
+    {
+        if (Source == source)
+        {
+            return this;
+        }
+
+        return new PlacementInfo
+        {
+            Location = Location,
+            Source = source,
+            ShapeType = ShapeType,
+            DefaultPosition = DefaultPosition,
+            Alternates = Alternates,
+            Wrappers = Wrappers,
+        };
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="PlacementInfo"/> by merging this instance with location and default position.
+    /// Returns this instance if no properties need to be changed.
+    /// </summary>
+    public PlacementInfo WithDefaults(string location, string defaultPosition)
+    {
+        var needsLocation = Location == null && location != null;
+        var needsDefaultPosition = DefaultPosition == null && defaultPosition != null;
+
+        if (!needsLocation && !needsDefaultPosition)
+        {
+            return this;
+        }
+
+        return new PlacementInfo
+        {
+            Location = Location ?? location,
+            Source = Source,
+            ShapeType = ShapeType,
+            DefaultPosition = DefaultPosition ?? defaultPosition,
+            Alternates = Alternates,
+            Wrappers = Wrappers,
+        };
+    }
 
     public bool IsLayoutZone()
     {
-        return Location.StartsWith('/');
+        return Location?.StartsWith('/') == true;
     }
 
     public bool IsHidden()
@@ -43,6 +114,11 @@ public class PlacementInfo
     /// <returns></returns>
     public string[] GetZones()
     {
+        if (string.IsNullOrEmpty(Location))
+        {
+            return [];
+        }
+
         string zones;
         var location = Location;
 
@@ -67,6 +143,11 @@ public class PlacementInfo
 
     public string GetPosition()
     {
+        if (string.IsNullOrEmpty(Location))
+        {
+            return DefaultPosition ?? "";
+        }
+
         var contentDelimiter = Location.IndexOf(PositionDelimiter);
         if (contentDelimiter == -1)
         {
@@ -84,6 +165,11 @@ public class PlacementInfo
 
     public string GetTab()
     {
+        if (string.IsNullOrEmpty(Location))
+        {
+            return "";
+        }
+
         var tabDelimiter = Location.IndexOf(TabDelimiter);
         if (tabDelimiter == -1)
         {
@@ -105,6 +191,11 @@ public class PlacementInfo
     /// </summary>
     public string GetGroup()
     {
+        if (string.IsNullOrEmpty(Location))
+        {
+            return null;
+        }
+
         var groupDelimiter = Location.IndexOf(GroupDelimiter);
         if (groupDelimiter == -1)
         {
@@ -126,6 +217,11 @@ public class PlacementInfo
     /// </summary>
     public string GetCard()
     {
+        if (string.IsNullOrEmpty(Location))
+        {
+            return null;
+        }
+
         var cardDelimiter = Location.IndexOf(CardDelimiter);
         if (cardDelimiter == -1)
         {
@@ -147,6 +243,11 @@ public class PlacementInfo
     /// </summary>
     public string GetColumn()
     {
+        if (string.IsNullOrEmpty(Location))
+        {
+            return null;
+        }
+
         var colDelimiter = Location.IndexOf(ColumnDelimiter);
         if (colDelimiter == -1)
         {

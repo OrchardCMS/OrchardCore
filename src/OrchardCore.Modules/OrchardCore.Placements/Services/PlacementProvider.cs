@@ -62,30 +62,23 @@ public class PlacementProvider : IShapePlacementProvider
                         continue;
                     }
 
-                    placement ??= new PlacementInfo
+                    var alternates = placementRule.Alternates?.Length > 0
+                        ? (placement?.Alternates).Combine(new AlternatesCollection(placementRule.Alternates))
+                        : placement?.Alternates;
+
+                    var wrappers = placementRule.Wrappers?.Length > 0
+                        ? (placement?.Wrappers).Combine(new AlternatesCollection(placementRule.Wrappers))
+                        : placement?.Wrappers;
+
+                    placement = new PlacementInfo
                     {
-                        Source = "OrchardCore.Placements",
+                        Source = placement == null ? "OrchardCore.Placements" : $"{placement.Source},OrchardCore.Placements",
+                        Location = !string.IsNullOrEmpty(placementRule.Location) ? placementRule.Location : placement?.Location,
+                        ShapeType = !string.IsNullOrEmpty(placementRule.ShapeType) ? placementRule.ShapeType : placement?.ShapeType,
+                        DefaultPosition = placement?.DefaultPosition,
+                        Alternates = alternates,
+                        Wrappers = wrappers,
                     };
-
-                    if (!string.IsNullOrEmpty(placementRule.Location))
-                    {
-                        placement.Location = placementRule.Location;
-                    }
-
-                    if (!string.IsNullOrEmpty(placementRule.ShapeType))
-                    {
-                        placement.ShapeType = placementRule.ShapeType;
-                    }
-
-                    if (placementRule.Alternates?.Length > 0)
-                    {
-                        placement.Alternates = placement.Alternates.Combine(new AlternatesCollection(placementRule.Alternates));
-                    }
-
-                    if (placementRule.Wrappers?.Length > 0)
-                    {
-                        placement.Wrappers = placement.Wrappers.Combine(new AlternatesCollection(placementRule.Wrappers));
-                    }
                 }
             }
 

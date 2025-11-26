@@ -85,16 +85,29 @@ public class ShapeResult : IDisplayResult
         }
 
         // If no placement is found, use the default location.
-        placement ??= new PlacementInfo
+        if (placement == null)
         {
-            Location = _defaultLocation,
-        };
-
-        // If a placement was found without actual location, use the default.
-        // It can happen when just setting alternates or wrappers for instance.
-        placement.Location ??= _defaultLocation;
-
-        placement.DefaultPosition ??= context.DefaultPosition;
+            placement = PlacementInfo.FromLocation(_defaultLocation);
+            
+            // Only create a new instance if we need to add default position
+            if (placement != null && context.DefaultPosition != null)
+            {
+                placement = placement.WithDefaults(_defaultLocation, context.DefaultPosition);
+            }
+            else if (placement == null)
+            {
+                placement = new PlacementInfo
+                {
+                    Location = _defaultLocation,
+                    DefaultPosition = context.DefaultPosition,
+                };
+            }
+        }
+        else
+        {
+            // Use the WithDefaults method to avoid unnecessary allocations
+            placement = placement.WithDefaults(_defaultLocation, context.DefaultPosition);
+        }
 
         // If the placement should be hidden, then stop rendering execution.
         if (placement.IsHidden())

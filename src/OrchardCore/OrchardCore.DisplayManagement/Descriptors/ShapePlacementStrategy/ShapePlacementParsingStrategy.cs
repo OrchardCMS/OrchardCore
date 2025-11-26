@@ -84,19 +84,10 @@ public class ShapePlacementParsingStrategy : ShapeTableProvider, IShapeTableHarv
                 var placement = new PlacementInfo
                 {
                     Location = filter.Location,
+                    Alternates = filter.Alternates?.Length > 0 ? new AlternatesCollection(filter.Alternates) : null,
+                    Wrappers = filter.Wrappers?.Length > 0 ? new AlternatesCollection(filter.Wrappers) : null,
+                    ShapeType = filter.ShapeType,
                 };
-
-                if (filter.Alternates?.Length > 0)
-                {
-                    placement.Alternates = new AlternatesCollection(filter.Alternates);
-                }
-
-                if (filter.Wrappers?.Length > 0)
-                {
-                    placement.Wrappers = new AlternatesCollection(filter.Wrappers);
-                }
-
-                placement.ShapeType = filter.ShapeType;
 
                 builder.Describe(shapeType)
                     .From(featureDescriptor)
