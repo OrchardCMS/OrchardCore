@@ -147,7 +147,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ILocalizationService, DefaultLocalizationService>();
         services.AddScoped<ICalendarManager, DefaultCalendarManager>();
         services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
-        services.AddScoped<ICultureAliasProvider, DefaultCultureAliasProvider>();
 
         services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
         services.AddTransient<IConfigureOptions<DocumentJsonSerializerOptions>, DocumentJsonSerializerOptionsConfiguration>();
