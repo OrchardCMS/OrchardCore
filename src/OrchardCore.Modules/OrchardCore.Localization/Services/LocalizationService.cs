@@ -53,7 +53,8 @@ public class LocalizationService : ILocalizationService
             ;
     }
 
-    public CultureInfo[] GetAllCulturesAndAliases()
+    /// <inheritdocs />
+    public IEnumerable<CultureInfo> GetAllCulturesAndAliases()
     {
         var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
             .Union(_cultureAliases)

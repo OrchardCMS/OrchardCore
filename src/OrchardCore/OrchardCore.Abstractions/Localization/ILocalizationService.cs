@@ -20,7 +20,7 @@ public interface ILocalizationService
     /// <summary>
     /// Gets all cultures recognized by .NET, including culture aliases.
     /// </summary>
-    CultureInfo[] GetAllCulturesAndAliases();
+    IEnumerable<CultureInfo> GetAllCulturesAndAliases();
     /// <summary>
     /// Get whether to set the request culture to a parent culture in case the culture is not determined.
     /// </summary>
