@@ -9,7 +9,7 @@ public class LocalizationServiceTest
     [Fact]
     public void GetAllCulturesAndAliases_ShouldContainsChineseCultures()
     {
-        //// Arrange
+        // Arrange
         var localizationService = new LocalizationService(Mock.Of<ISiteService>());
 
         // Act

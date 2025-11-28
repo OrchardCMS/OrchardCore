@@ -60,7 +60,7 @@ public class LocalizationService : ILocalizationService
             .Union(_cultureAliases)
             .OrderBy(c => c.Name);
 
-        return cultures.ToArray();
+        return cultures;
     }
 
     private async Task InitializeLocalizationSettingsAsync()
