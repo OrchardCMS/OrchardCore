@@ -23,6 +23,7 @@ using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
+using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
@@ -92,6 +93,7 @@ public sealed class ServerStartup : StartupBase
             {
                 options.UseAspNetCore();
                 options.UseDataProtection();
+                options.AddEventHandler(PersistStoresHandler.Descriptor);
             });
 
         services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
