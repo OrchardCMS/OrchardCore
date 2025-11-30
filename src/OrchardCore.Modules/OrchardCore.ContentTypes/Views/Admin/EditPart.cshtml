@@ -3,7 +3,7 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
 
-@inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
+@inject OrchardCore.ContentManagement.IContentDefinitionService ContentDefinitionService
 
 @{
     var orderedFields = Model.PartDefinition.Fields
