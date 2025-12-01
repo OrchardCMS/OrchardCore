@@ -6,11 +6,6 @@ namespace OrchardCore.Setup.Events;
 /// Defines methods for handling setup events, including performing setup operations and marking their success or
 /// failure.
 /// </summary>
-/// <remarks>Implement this interface to provide custom logic for setup processes that require asynchronous
-/// handling of configuration, initialization, or error reporting. Methods are designed to be called during the setup
-/// lifecycle to signal progress or outcome. Implementations should ensure thread safety if setup events may be
-/// triggered concurrently.
-/// </remarks>
 public interface ISetupEventHandler
 {
     /// <summary>
