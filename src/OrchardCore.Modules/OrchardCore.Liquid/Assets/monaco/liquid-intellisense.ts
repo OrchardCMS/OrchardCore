@@ -88,11 +88,11 @@ interface ILiquidContextInfo {
     inObject: boolean;
 }
 
-function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.Position, triggerCharacter: string): ILiquidContextInfo {
-    var inTag: boolean;
-    var inObject: boolean;
-    var showTags: boolean;
-    var showFilters: boolean;
+function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.Position, triggerCharacter?: string|undefined): ILiquidContextInfo {
+    var inTag: boolean = false;
+    var inObject: boolean = false;
+    var showTags: boolean = false;
+    var showFilters: boolean = false;
 
     var findStart = model.findPreviousMatch("\\{(%|\\{)", position, true, false, null, true);
     if (findStart && findStart.matches && !position.isBefore(findStart.range.getEndPosition())) {
@@ -104,11 +104,11 @@ function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.
 
         var searchPattern = inTag ? "%}" : "}}";
         var findEnd = model.findNextMatch(searchPattern, position, false, false, null, true);
-        var currentRange = findStart.range.plusRange(findEnd.range);
+        var currentRange = findEnd ? findStart.range.plusRange(findEnd.range) : findStart.range.setEndPosition(position.lineNumber, position.column);
         if (currentRange.containsPosition(position)) {
             if (inTag) {
                 var findTagName = model.findNextMatch("\\{%\\s*([a-zA-Z-_]+)", findStart.range.getStartPosition(), true, false, null, true);
-                if (findTagName && currentRange.containsRange(findTagName.range) && findTagName.matches.length > 1) {
+                if (findTagName && currentRange.containsRange(findTagName.range) && findTagName.matches && findTagName.matches.length > 1) {
                     if (findTagName.matches[1] == "assign") {
                         showFilters = true;
                     } else {

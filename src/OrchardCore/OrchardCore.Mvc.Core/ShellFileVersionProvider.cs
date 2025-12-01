@@ -66,10 +66,12 @@ public class ShellFileVersionProvider : IFileVersionProvider
         // Try to get the hash from the cache shared across tenants.
         if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
         {
+#pragma warning disable CA1831 // Use AsSpan instead of Range-based indexers for string
             if (_sharedCache.TryGetValue(resolvedPath[requestPathBase.Value.Length..], out value))
             {
                 return QueryHelpers.AddQueryString(path, VersionKey, value);
             }
+#pragma warning restore CA1831
         }
 
         var cacheKey = resolvedPath;

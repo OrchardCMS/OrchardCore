@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Indexing.Core;
 using OrchardCore.Navigation;
 using OrchardCore.Search.AzureAI.Drivers;
 using OrchardCore.Search.AzureAI.Models;
@@ -29,21 +30,6 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        builder
-            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                .AddClass("search")
-                .Id("search")
-                .Add(S["Indexing"], S["Indexing"].PrefixPosition(), indexing => indexing
-                    .Add(S["Azure AI Indices"], S["Azure AI Indices"].PrefixPosition(), indexes => indexes
-                        .Action("Index", "Admin", "OrchardCore.Search.AzureAI")
-                        .AddClass("azureaiindices")
-                        .Id("azureaiindices")
-                        .Permission(AzureAISearchPermissions.ManageAzureAISearchIndexes)
-                        .LocalNav()
-                    )
-                )
-            );
-
         if (_azureAISearchSettings.DisableUIConfiguration)
         {
             return ValueTask.CompletedTask;
@@ -57,8 +43,8 @@ public sealed class AdminMenu : AdminNavigationProvider
                        .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
                        .AddClass("azure-ai-search")
                            .Id("azureaisearch")
-                           .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AzureAISearchDefaultSettingsDisplayDriver.GroupId })
-                           .Permission(AzureAISearchPermissions.ManageAzureAISearchIndexes)
+                           .Action("Index", "Admin", _routeValues)
+                           .Permission(AzureAISearchPermissions.ManageAzureAISearchISettings)
                            .LocalNav()
                        )
                    )
@@ -74,7 +60,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .AddClass("azure-ai-search")
                         .Id("azureaisearch")
                         .Action("Index", "Admin", _routeValues)
-                        .Permission(AzureAISearchPermissions.ManageAzureAISearchIndexes)
+                        .Permission(IndexingPermissions.ManageIndexes)
                         .LocalNav()
                     )
                 )

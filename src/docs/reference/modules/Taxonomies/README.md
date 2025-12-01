@@ -390,6 +390,10 @@ You can access the `TagNames` property directly with the following accessor:
 
 Provides taxonomy filters in the admin contents list.
 
+## Listing Taxonomy Items
+
+When listing taxonomy items in the front end, you can use the `IContentTaxonomyListFilter` to filter content items by taxonomy terms or manipulate the query.
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/DpaN02c2sDI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

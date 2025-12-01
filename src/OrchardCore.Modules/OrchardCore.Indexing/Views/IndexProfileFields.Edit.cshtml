@@ -1,0 +1,17 @@
+@using OrchardCore
+@using OrchardCore.Indexing.ViewModels
+
+@model EditIndexProfileViewModel
+
+<div class="mb-3" asp-validation-class-for="IndexName">
+    <label asp-for="IndexName" class="form-label">@T["Index Name"]</label>
+    <input asp-for="IndexName" class="form-control" asp-is-disabled="!Model.IsNew" />
+    <span asp-validation-for="IndexName" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Name" class="form-label">@T["Name"]</label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+    <span class="hint">@T["A unique name for the index."]</span>
+</div>

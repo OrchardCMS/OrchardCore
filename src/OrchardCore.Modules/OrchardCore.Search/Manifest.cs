@@ -10,6 +10,10 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Search",
     Name = "Search",
-    Description = "The Search module adds frontend search capabilities.",
-    Category = "Search"
+    Description = "Provides frontend search capabilities against indexes.",
+    Category = "Search",
+    Dependencies =
+    [
+        "OrchardCore.Indexing",
+    ]
 )]

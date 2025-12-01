@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Indexing;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Queries;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -12,15 +14,15 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
 {
-    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
+    private readonly IIndexProfileStore _store;
 
     internal readonly IStringLocalizer S;
 
     public ElasticsearchQueryDisplayDriver(
-        IStringLocalizer<ElasticsearchQueryDisplayDriver> stringLocalizer,
-        ElasticsearchIndexSettingsService elasticIndexSettingsService)
+        IIndexProfileStore store,
+        IStringLocalizer<ElasticsearchQueryDisplayDriver> stringLocalizer)
     {
-        _elasticIndexSettingsService = elasticIndexSettingsService;
+        _store = store;
         S = stringLocalizer;
     }
 
@@ -39,7 +41,7 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
 
     public override IDisplayResult Edit(Query query, BuildEditorContext context)
     {
-        if (query.Source != ElasticsearchQuerySource.SourceName)
+        if (query.Source != ElasticsearchConstants.ProviderName)
         {
             return null;
         }
@@ -51,7 +53,7 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
             model.Query = metadata.Template;
             model.Index = metadata.Index;
             model.ReturnContentItems = query.ReturnContentItems;
-            model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            model.Indexes = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
 
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(metadata.Template))

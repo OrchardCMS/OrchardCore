@@ -19,15 +19,21 @@
 
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(fn) {
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", fn);
+        } else {
+            fn();
+        }
+    }
+
+    onDocumentReady(function () {
+        const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
+
+        if (!divEditor) {
+            return;
+        }
         require(['vs/editor/editor.main'], function () {
-
-            const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
-
-            if (!divEditor) {
-                return;
-            }
-
             var settings = @Html.Raw(monacoSettings.Options);
             if (settings.automaticLayout == undefined) {
                 settings.automaticLayout = true;

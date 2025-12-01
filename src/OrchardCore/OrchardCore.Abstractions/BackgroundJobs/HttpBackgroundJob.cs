@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
@@ -10,6 +9,11 @@ namespace OrchardCore.BackgroundJobs;
 
 public static class HttpBackgroundJob
 {
+    private static volatile int _activeJobsCount;
+
+    // Gets the number of active background jobs that are currently running. 
+    internal static int ActiveJobsCount => _activeJobsCount;
+
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
@@ -20,6 +24,13 @@ public static class HttpBackgroundJob
         // Allow a job to be triggered e.g. during a tenant setup, but later on only check if the tenant is running.
         if (!scope.ShellContext.Settings.IsRunning() && !scope.ShellContext.Settings.IsInitializing())
         {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
+            logger.LogWarning(
+                "Background job '{JobName}' was not executed because tenant '{TenantName}' is not running or initializing. Current state: {TenantState}.",
+                jobName,
+                scope.ShellContext.Settings.Name,
+                scope.ShellContext.Settings.State);
+
             return Task.CompletedTask;
         }
 
@@ -28,24 +39,45 @@ public static class HttpBackgroundJob
 
         if (httpContextAccessor.HttpContext == null)
         {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
+            logger.LogWarning(
+                "Background job '{JobName}' was not executed because it requires an HTTP context. Tenant: '{TenantName}'",
+                jobName,
+                scope.ShellContext.Settings.Name);
+
             return Task.CompletedTask;
         }
 
         // Record the current logged in user.
         var userPrincipal = httpContextAccessor.HttpContext.User.Clone();
 
+        // Increment the active jobs count to track the number of background jobs running.
+        Interlocked.Increment(ref _activeJobsCount);
+
         // Fire and forget in an isolated child scope.
         _ = ShellScope.UsingChildScopeAsync(async scope =>
         {
+            scope.RegisterBeforeDispose(scope =>
+            {
+                // Decrement the active jobs count when the job is disposed.
+                Interlocked.Decrement(ref _activeJobsCount);
+            }, true);
+
             var timeoutTask = Task.Delay(60_000);
 
             // Wait for the current 'HttpContext' to be released with a timeout of 60s.
             while (httpContextAccessor.HttpContext != null)
             {
-                await Task.Delay(1_000);
+                await Task.Delay(100);
 
                 if (timeoutTask.IsCompleted)
                 {
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
+                    logger.LogWarning(
+                        "Background job '{JobName}' timed out waiting for HTTP context to be released after 60 seconds on tenant '{TenantName}'. Job will be skipped.",
+                        jobName,
+                        scope.ShellContext.Settings.Name);
+
                     return;
                 }
             }
@@ -57,6 +89,13 @@ public static class HttpBackgroundJob
             // Can't be executed e.g. if a tenant setup failed.
             if (!shellContext.Settings.IsRunning())
             {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
+                logger.LogWarning(
+                    "Background job '{JobName}' was not executed because tenant '{TenantName}' is no longer running after context reload. Current state: {TenantState}.",
+                    jobName,
+                    shellContext.Settings.Name,
+                    shellContext.Settings.State);
+
                 return;
             }
 
@@ -65,17 +104,6 @@ public static class HttpBackgroundJob
 
             // Restore the current user.
             httpContextAccessor.HttpContext.User = userPrincipal;
-
-            // Here the 'IActionContextAccessor.ActionContext' need to be cleared, this 'AsyncLocal'
-            // field is not cleared by 'AspnetCore' and still references the previous 'HttpContext'.
-            var actionContextAccessor = scope.ServiceProvider.GetService<IActionContextAccessor>();
-
-            if (actionContextAccessor is not null)
-            {
-                // Clear the stale 'ActionContext' that may be used e.g.
-                // by 'ILiquidTemplateManager.RenderStringAsync()'.
-                actionContextAccessor.ActionContext = null;
-            }
 
             // Use a new scope as the shell context may have been reloaded.
             await ShellScope.UsingChildScopeAsync(async scope =>

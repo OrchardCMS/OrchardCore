@@ -1,6 +1,8 @@
+using Elastic.Clients.Elasticsearch;
 using Json.Path;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Search.Abstractions;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
@@ -18,9 +20,9 @@ public class ElasticsearchQueryService
         _logger = logger;
     }
 
-    public async Task PopulateResultAsync(ElasticsearchSearchContext request, SearchResult result)
+    public async Task PopulateResultAsync(ElasticsearchSearchContext context, SearchResult result)
     {
-        var searchResult = await _elasticIndexManager.SearchAsync(request);
+        var searchResult = await _elasticIndexManager.SearchAsync(context);
 
         result.ContentItemIds = [];
 
@@ -29,6 +31,7 @@ public class ElasticsearchQueryService
             return;
         }
 
+        result.TotalCount = searchResult.TotalCount;
         result.Highlights = [];
 
         foreach (var item in searchResult.TopDocs)
@@ -73,14 +76,14 @@ public class ElasticsearchQueryService
         return contentItemIds;
     }
 
-    public Task<ElasticsearchResult> SearchAsync(string indexName, string query)
+    public Task<ElasticsearchResult> SearchAsync(IndexProfile index, string query)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentNullException.ThrowIfNull(index);
         ArgumentException.ThrowIfNullOrEmpty(query);
 
         try
         {
-            return _elasticIndexManager.SearchAsync(indexName, query);
+            return _elasticIndexManager.SearchAsync(index, query);
         }
         catch (Exception ex)
         {

@@ -28,7 +28,7 @@ public class TaxonomyFieldIndexHandler : ContentFieldIndexHandler<TaxonomyField>
         {
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key + IndexingConstants.IdsKey, contentItemId, options);
+                context.DocumentIndex.Set(key + ContentIndexingConstants.IdsKey, contentItemId, options);
             }
         }
 
@@ -46,7 +46,7 @@ public class TaxonomyFieldIndexHandler : ContentFieldIndexHandler<TaxonomyField>
         {
             foreach (var contentItem in inheritedContentItems)
             {
-                context.DocumentIndex.Set(key + IndexingConstants.InheritedKey, contentItem.ContentItemId, options);
+                context.DocumentIndex.Set(key + ContentIndexingConstants.InheritedKey, contentItem.ContentItemId, options);
             }
         }
     }

@@ -1,0 +1,16 @@
+@using OrchardCore.Infrastructure.Entities
+
+@model ModelViewModel
+
+<zone Name="Title">
+    <h1>@RenderTitleSegments(T["New '{0}' index", Model.DisplayName])</h1>
+</zone>
+
+<form method="post" enctype="multipart/form-data" class="no-multisubmit">
+    @Html.ValidationSummary()
+    @await DisplayAsync(Model.Editor)
+
+    <button class="btn btn-primary" type="submit">@T["Save"]</button>
+
+    <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+</form>

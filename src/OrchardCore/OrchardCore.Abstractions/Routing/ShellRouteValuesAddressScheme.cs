@@ -11,8 +11,8 @@ public sealed class ShellRouteValuesAddressScheme : IEndpointAddressScheme<Route
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IEnumerable<IShellRouteValuesAddressScheme> _schemes;
+    private readonly object _synLock = new();
 
-    private bool _defaultSchemeInitialized;
     private IEndpointAddressScheme<RouteValuesAddress> _defaultScheme;
 
     public ShellRouteValuesAddressScheme(IHttpContextAccessor httpContextAccessor, IEnumerable<IShellRouteValuesAddressScheme> schemes)
@@ -36,17 +36,17 @@ public sealed class ShellRouteValuesAddressScheme : IEndpointAddressScheme<Route
             }
         }
 
-        if (!_defaultSchemeInitialized)
+        if (_defaultScheme is null)
         {
-            lock (this)
+            lock (_synLock)
             {
-                // Try once to get and cache the default scheme but not me.
-                _defaultScheme = _httpContextAccessor.HttpContext?.RequestServices
-                    .GetServices<IEndpointAddressScheme<RouteValuesAddress>>()
-                    .Where(scheme => scheme.GetType() != GetType())
-                    .LastOrDefault();
-
-                _defaultSchemeInitialized = true;
+                if (_defaultScheme is null)
+                {
+                    // Try once to get and cache the default scheme but not me.
+                    _defaultScheme = _httpContextAccessor.HttpContext?.RequestServices
+                        .GetServices<IEndpointAddressScheme<RouteValuesAddress>>()
+                        .LastOrDefault(scheme => scheme.GetType() != GetType());
+                }
             }
         }
 

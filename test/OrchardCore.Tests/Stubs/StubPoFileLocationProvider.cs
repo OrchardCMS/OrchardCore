@@ -2,7 +2,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.Tests;
 
-public class StubPoFileLocationProvider : ILocalizationFileLocationProvider
+public class StubPoFileLocationProvider : ILocalizationFileLocationProvider, IDisposable
 {
     private readonly PhysicalFileProvider _fileProvider;
     private readonly string _resourcesContainer;
@@ -18,4 +18,6 @@ public class StubPoFileLocationProvider : ILocalizationFileLocationProvider
     {
         yield return _fileProvider.GetFileInfo(Path.Combine(_resourcesContainer, cultureName + ".po"));
     }
+
+    public void Dispose() => _fileProvider?.Dispose();
 }

@@ -20,7 +20,7 @@ public static class JsonNodeExtensions
         return default;
     }
 
-    public static bool TryGetEnumValue<TEnum>(this JsonNode node, out Enum value)
+    public static bool TryGetEnumValue<TEnum>(this JsonNode node, out TEnum? value)
         where TEnum : struct, Enum
     {
         value = node.GetEnumValue<TEnum>();

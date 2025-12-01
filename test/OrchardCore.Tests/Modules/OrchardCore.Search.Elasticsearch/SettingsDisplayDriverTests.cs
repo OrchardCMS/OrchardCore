@@ -3,17 +3,17 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.Documents;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Indexing;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Scripting;
 using OrchardCore.Search.Elasticsearch.Core.Models;
-using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Tests.Modules.OrchardCore.ContentFields.Settings;
 using OrchardCore.Tests.Stubs;
@@ -37,7 +37,6 @@ public partial class SettingsDisplayDriverTests
             .AddScoped<IShapeFactory, DefaultShapeFactory>()
             .AddScoped<IExtensionManager, StubExtensionManager>()
             .AddScoped<IShapeTableManager, TestShapeTableManager>()
-            .AddScoped<IDocumentManager<ElasticIndexSettingsDocument>, MockElasticIndexSettingsDocumentManager>()
             .AddSingleton<IDistributedLock, LocalLock>();
 
         _shapeTable = new ShapeTable
@@ -77,10 +76,44 @@ public partial class SettingsDisplayDriverTests
                 Indices = ["idx1", "idx2", "testIndex"],
             };
 
-            // Act
+            var indexes = new List<IndexProfile>
+            {
+                new IndexProfile
+                {
+                    Id = "idx1",
+                    IndexName = "idx1",
+                    IndexFullName = "idx1",
+                    ProviderName = "elasticsearch",
+                    Type = "Content",
+                    Name = "Test Index",
+                },
+                new IndexProfile
+                {
+                    Id = "idx2",
+                    IndexName = "idx2",
+                    IndexFullName = "idx2",
+                    ProviderName = "elasticsearch",
+                    Type = "Content",
+                    Name = "Test Index",
+                },
+                new IndexProfile
+                {
+                    Id = "testIndex",
+                    IndexName = "testIndex",
+                    IndexFullName = "testIndex",
+                    ProviderName = "elasticsearch",
+                    Type = "Content",
+                    Name = "Test Index",
+                },
+            };
+
             var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
-            var elasticService = new ElasticsearchIndexSettingsService();
-            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldElasticEditorSettingsDriver(elasticService));
+            var storeMock = new Mock<IIndexProfileStore>();
+            storeMock.Setup(x => x.GetByProviderAsync(It.IsAny<string>()))
+                .ReturnsAsync(indexes);
+
+            // Act
+            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldElasticEditorSettingsDriver(storeMock.Object));
             var shape = (ContentPickerFieldElasticEditorSettings)shapeResult.Shape;
 
             // Assert

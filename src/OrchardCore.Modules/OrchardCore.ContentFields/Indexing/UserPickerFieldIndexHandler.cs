@@ -33,7 +33,7 @@ public class UserPickerFieldIndexHandler : ContentFieldIndexHandler<UserPickerFi
         {
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, IndexingConstants.NullValue, options);
+                context.DocumentIndex.Set(key, ContentIndexingConstants.NullValue, options);
             }
         }
 

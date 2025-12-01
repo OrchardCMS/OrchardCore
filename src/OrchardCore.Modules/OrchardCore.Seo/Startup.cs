@@ -34,7 +34,7 @@ public sealed class Startup : StartupBase
 
         // This must be last, and the module dependent on Contents so this runs after the part handlers.
         services.AddScoped<IContentHandler, SeoMetaSettingsHandler>();
-        services.AddScoped<IContentItemIndexHandler, SeoMetaPartContentIndexHandler>();
+        services.AddScoped<IDocumentIndexHandler, SeoMetaPartContentIndexHandler>();
 
         services.AddPermissionProvider<SeoPermissionProvider>();
         services.AddSiteDisplayDriver<RobotsSettingsDisplayDriver>();

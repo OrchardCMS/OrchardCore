@@ -6,9 +6,9 @@ using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.Search.Lucene;
 
-public class LuceneContentPickerShapeProvider : IShapeAttributeProvider
+public sealed class LuceneContentPickerShapeProvider : IShapeAttributeProvider
 {
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public LuceneContentPickerShapeProvider(IStringLocalizer<LuceneContentPickerShapeProvider> stringLocalizer)
     {

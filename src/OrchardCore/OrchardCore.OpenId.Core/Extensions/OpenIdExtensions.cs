@@ -7,7 +7,6 @@ using OrchardCore.OpenId.Services.Managers;
 using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Migrations;
 using OrchardCore.OpenId.YesSql.Models;
-using OrchardCore.OpenId.YesSql.Resolvers;
 using OrchardCore.OpenId.YesSql.Stores;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -35,12 +34,23 @@ public static class OpenIdExtensions
                .ReplaceScopeManager(typeof(OpenIdScopeManager<>))
                .ReplaceTokenManager(typeof(OpenIdTokenManager<>));
 
+        // Note: OpenIddict 7.0+ no longer registers the managers under their own type.
+        // To avoid a breaking change, the typed managers are manually registered here.
+        builder.Services.TryAddScoped(typeof(OpenIdApplicationManager<>));
+        builder.Services.TryAddScoped(typeof(OpenIdAuthorizationManager<>));
+        builder.Services.TryAddScoped(typeof(OpenIdScopeManager<>));
+        builder.Services.TryAddScoped(typeof(OpenIdTokenManager<>));
+
         // Register proxy delegates so that the Orchard managers can be directly
         // resolved from the DI using the non-generic, Orchard-specific interfaces.
-        builder.Services.TryAddScoped(provider => (IOpenIdApplicationManager)provider.GetRequiredService<IOpenIddictApplicationManager>());
-        builder.Services.TryAddScoped(provider => (IOpenIdAuthorizationManager)provider.GetRequiredService<IOpenIddictAuthorizationManager>());
-        builder.Services.TryAddScoped(provider => (IOpenIdScopeManager)provider.GetRequiredService<IOpenIddictScopeManager>());
-        builder.Services.TryAddScoped(provider => (IOpenIdTokenManager)provider.GetRequiredService<IOpenIddictTokenManager>());
+        builder.Services.TryAddScoped(static provider => (IOpenIdApplicationManager)
+            provider.GetRequiredService<IOpenIddictApplicationManager>());
+        builder.Services.TryAddScoped(static provider => (IOpenIdAuthorizationManager)
+            provider.GetRequiredService<IOpenIddictAuthorizationManager>());
+        builder.Services.TryAddScoped(static provider => (IOpenIdScopeManager)
+            provider.GetRequiredService<IOpenIddictScopeManager>());
+        builder.Services.TryAddScoped(static provider => (IOpenIdTokenManager)
+            provider.GetRequiredService<IOpenIddictTokenManager>());
 
         return builder;
     }
@@ -59,25 +69,15 @@ public static class OpenIdExtensions
                .SetDefaultScopeEntity<OpenIdScope>()
                .SetDefaultTokenEntity<OpenIdToken>();
 
-        builder.ReplaceApplicationStoreResolver<OpenIdApplicationStoreResolver>()
-               .ReplaceAuthorizationStoreResolver<OpenIdAuthorizationStoreResolver>()
-               .ReplaceScopeStoreResolver<OpenIdScopeStoreResolver>()
-               .ReplaceTokenStoreResolver<OpenIdTokenStoreResolver>();
+        builder.ReplaceApplicationStore(typeof(OpenIdApplicationStore<>))
+               .ReplaceAuthorizationStore(typeof(OpenIdAuthorizationStore<>))
+               .ReplaceScopeStore(typeof(OpenIdScopeStore<>))
+               .ReplaceTokenStore(typeof(OpenIdTokenStore<>));
 
-        builder.Services.TryAddSingleton<OpenIdApplicationStoreResolver.TypeResolutionCache>();
-        builder.Services.TryAddSingleton<OpenIdAuthorizationStoreResolver.TypeResolutionCache>();
-        builder.Services.TryAddSingleton<OpenIdScopeStoreResolver.TypeResolutionCache>();
-        builder.Services.TryAddSingleton<OpenIdTokenStoreResolver.TypeResolutionCache>();
-
-        builder.Services.TryAddScoped(typeof(OpenIdApplicationStore<>));
-        builder.Services.TryAddScoped(typeof(OpenIdAuthorizationStore<>));
-        builder.Services.TryAddScoped(typeof(OpenIdScopeStore<>));
-        builder.Services.TryAddScoped(typeof(OpenIdTokenStore<>));
-
-        builder.Services.AddIndexProvider<OpenIdApplicationIndexProvider>();
-        builder.Services.AddIndexProvider<OpenIdAuthorizationIndexProvider>();
-        builder.Services.AddIndexProvider<OpenIdScopeIndexProvider>();
-        builder.Services.AddIndexProvider<OpenIdTokenIndexProvider>();
+        builder.Services.AddIndexProvider<OpenIdApplicationIndexProvider>()
+                        .AddIndexProvider<OpenIdAuthorizationIndexProvider>()
+                        .AddIndexProvider<OpenIdScopeIndexProvider>()
+                        .AddIndexProvider<OpenIdTokenIndexProvider>();
 
         return builder;
     }

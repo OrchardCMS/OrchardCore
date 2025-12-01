@@ -21,7 +21,7 @@ jobs:
     name: Test building assets
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
     - name: Rebuild packages
       run: |
         npm install -g corepack
@@ -110,7 +110,7 @@ jobs:
             Write-Host "No uncommitted changes found. Repository is clean."
         }
     - name: Upload changed files as artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
       if: failure()
       with:
         name: changed-files

@@ -46,7 +46,7 @@ function copyMigrationsRecipeFile(dir) {
 }
 
 // Host the dotnet application, does not rebuild
-export function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = 'net9.0' } = {}) {
+export function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = 'net10.0' } = {}) {
     if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
         global.log("Application already built, skipping build");
     } else {
@@ -78,24 +78,28 @@ export function host(dir, assembly, { appDataLocation = './App_Data', dotnetVers
 }
 
 // combines the functions above, useful when triggering tests from CI
-export function e2e(dir, assembly, { dotnetVersion = 'net9.0' } = {}) {
+export function e2e(dir, assembly, { dotnetVersion = 'net10.0' } = {}) {
     copyMigrationsRecipeFile(dir);
     deleteDirectory(path.join(dir, "App_Data_Tests"));
     var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 
-    let test = child_process.exec("npx cypress run");
-    test.stdout.on("data", data => {
-        console.log(data);
-    });
+    // Wait for server to start up before launching Cypress
+    global.log("Waiting for server to start...");
+    setTimeout(() => {
+        let test = child_process.exec("npx cypress run");
+        test.stdout.on("data", data => {
+            console.log(data);
+        });
 
-    test.stderr.on("data", data => {
-        console.log(`stderr: ${data}`);
-    });
+        test.stderr.on("data", data => {
+            console.log(`stderr: ${data}`);
+        });
 
-    test.on("close", code => {
-        console.log(`Cypress process exited with code ${code}`);
-        server.kill("SIGINT");
-        process.exit(code);
-    });
+        test.on("close", code => {
+            console.log(`Cypress process exited with code ${code}`);
+            server.kill("SIGINT");
+            process.exit(code);
+        });
+    }, 10000); // Wait 10 seconds for server to start
 }
 

@@ -1,5 +1,6 @@
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 
@@ -14,10 +15,10 @@ internal sealed class BlobModularTenantEvents : ModularTenantEvents
     private readonly ILogger _logger;
 
     public BlobModularTenantEvents(
-        BlobOptions blobOptions,
+        IOptions<BlobOptions> blobOptions,
         ILogger<BlobModularTenantEvents> logger)
     {
-        _blobOptions = blobOptions;
+        _blobOptions = blobOptions.Value;
         _logger = logger;
     }
 

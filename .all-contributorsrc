@@ -3376,6 +3376,78 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "buzznick",
+      "name": "Nick Jackson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6950723?v=4",
+      "profile": "https://buzzinteractive.co.uk/who-we-are/nick-jackson",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Buzz-Al",
+      "name": "Buzz-Al",
+      "avatar_url": "https://avatars.githubusercontent.com/u/218998992?v=4",
+      "profile": "https://github.com/Buzz-Al",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ShivamGovBuilt",
+      "name": "Shivam Pandey",
+      "avatar_url": "https://avatars.githubusercontent.com/u/123058863?v=4",
+      "profile": "https://github.com/ShivamGovBuilt",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "TurkyAhmed",
+      "name": "TurkyAhmed",
+      "avatar_url": "https://avatars.githubusercontent.com/u/138265111?v=4",
+      "profile": "https://github.com/TurkyAhmed",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "xnavrat4",
+      "name": "Patrik Navratil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/100190956?v=4",
+      "profile": "https://github.com/xnavrat4",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "harshasiddartha",
+      "name": "harshasiddartha",
+      "avatar_url": "https://avatars.githubusercontent.com/u/147021873?v=4",
+      "profile": "https://github.com/harshasiddartha",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "redzepiredzep",
+      "name": "Redzep Redžepi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/148947177?v=4",
+      "profile": "https://github.com/redzepiredzep",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "milosh-96",
+      "name": "Miloš Jovanović",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13017737?v=4",
+      "profile": "https://bejzbol.net",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

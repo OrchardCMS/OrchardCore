@@ -1,10 +1,9 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.BackgroundJobs;
+using OrchardCore.Indexing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
-using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 
@@ -13,9 +12,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// </summary>
 public sealed class ElasticsearchIndexResetStep : NamedRecipeStepHandler
 {
-    public ElasticsearchIndexResetStep()
+    private readonly IIndexProfileManager _indexProfileManager;
+    private readonly IServiceProvider _serviceProvider;
+
+    public ElasticsearchIndexResetStep(
+        IIndexProfileManager indexProfileManager,
+        IServiceProvider serviceProvider)
         : base("elastic-index-reset")
     {
+        _indexProfileManager = indexProfileManager;
+        _serviceProvider = serviceProvider;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -24,37 +30,35 @@ public sealed class ElasticsearchIndexResetStep : NamedRecipeStepHandler
 
         if (model != null && (model.IncludeAll || model.Indices.Length > 0))
         {
-            await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-reset", async scope =>
+            var indexes = model.IncludeAll
+            ? (await _indexProfileManager.GetByProviderAsync(ElasticsearchConstants.ProviderName))
+            : (await _indexProfileManager.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
+
+            var indexManagers = new Dictionary<string, IIndexManager>();
+
+            foreach (var index in indexes)
             {
-                var elasticIndexingService = scope.ServiceProvider.GetService<ElasticsearchIndexingService>();
-                var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticsearchIndexSettingsService>();
-                var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexManager>();
-
-                var indexNames = model.IncludeAll
-                ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray()
-                : model.Indices;
-
-                foreach (var indexName in indexNames)
+                if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
                 {
-                    var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
-
-                    if (elasticIndexSettings == null)
-                    {
-                        continue;
-                    }
-
-                    if (!await elasticIndexManager.ExistsAsync(indexName))
-                    {
-                        await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
-                    }
-                    else
-                    {
-                        await elasticIndexingService.ResetIndexAsync(elasticIndexSettings.IndexName);
-                    }
+                    indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+                    indexManagers[index.ProviderName] = indexManager;
                 }
 
-                await elasticIndexingService.ProcessContentItemsAsync(indexNames);
-            });
+                if (indexManager is null)
+                {
+                    continue;
+                }
+
+                await _indexProfileManager.ResetAsync(index);
+                await _indexProfileManager.UpdateAsync(index);
+
+                if (!await indexManager.ExistsAsync(index.IndexFullName))
+                {
+                    await indexManager.CreateAsync(index);
+                }
+
+                await _indexProfileManager.SynchronizeAsync(index);
+            }
         }
     }
 }

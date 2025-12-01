@@ -60,7 +60,7 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
 
         // The default Markdown option is to entity escape html
         // so filters must be run after the markdown has been processed.
-        var html = markdownService.ToHtml(ctx.Source.Markdown);
+        var html = markdownService.ToHtml(ctx.Source.Markdown ?? string.Empty);
 
         // The liquid rendering is for backwards compatibility and can be removed in a future version.
         if (!settings.SanitizeHtml)

@@ -24,7 +24,7 @@ public class FlowPartIndexHandler : ContentPartIndexHandler<FlowPart>
         if (FlowPart.Widgets.Count != 0)
         {
             // Lazy resolution to prevent cyclic dependency.
-            var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
+            var contentItemIndexHandlers = _serviceProvider.GetServices<IDocumentIndexHandler>();
 
             foreach (var contentItemIndexHandler in contentItemIndexHandlers)
             {
@@ -40,7 +40,7 @@ public class FlowPartIndexHandler : ContentPartIndexHandler<FlowPart>
                         keys.Add($"{key}.{contentItem.ContentType}");
                     }
 
-                    var buildIndexContext = new BuildIndexContext(context.DocumentIndex, contentItem, keys, context.Settings);
+                    var buildIndexContext = new BuildDocumentIndexContext(context.DocumentIndex, contentItem, keys, context.Settings);
 
                     await contentItemIndexHandler.BuildIndexAsync(buildIndexContext);
                 }

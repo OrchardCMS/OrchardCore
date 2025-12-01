@@ -59,7 +59,7 @@ public class RecipeExecutorTests
     [Fact]
     public async Task ContentDefinitionStep_WhenPartNameIsMissing_RecipeExecutionException()
     {
-        var context = new BlogContext();
+        using var context = new BlogContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {

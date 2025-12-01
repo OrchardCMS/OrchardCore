@@ -48,6 +48,7 @@ public sealed class Startup : StartupBase
         var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
         localizationOptions.CultureInfoUseUserOverride = !cultureOptions.IgnoreSystemSettings;
+        localizationOptions.FallBackToParentUICultures = localizationOptions.FallBackToParentCultures = localizationService.FallBackToParentCultures;
         localizationOptions
             .SetDefaultCulture(defaultCulture)
             .AddSupportedCultures(supportedCultures)

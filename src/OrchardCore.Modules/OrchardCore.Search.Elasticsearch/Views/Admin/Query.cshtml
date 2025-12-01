@@ -2,16 +2,10 @@
 @using OrchardCore.ContentManagement
 @using System.Text.Json
 @using Json.Path
+@using OrchardCore.Environment.Shell
 @inject IContentManager ContentManager
-
+@inject IShellFeaturesManager ShellFeaturesManager
 @{
-    var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"{
-  ""query"": {
-    ""match_all"": { }
-  },
-  ""size"": 10
-}"));
-
     var hasFields = Model.Fields?.Any() == true;
     var hasDocuments = Model.Documents?.Any() == true;
 }
@@ -25,20 +19,17 @@
 <form asp-action="Query" method="post">
     <div asp-validation-summary="All"></div>
     <div class="mb-3">
-        <label asp-for="IndexName" class="form-label">@T["Index"]</label>
-        <select asp-for="IndexName" class="form-control">
-            @foreach (var index in Model.Indices)
-            {
-                <option value="@index">@index</option>
-            }
+        <label asp-for="Id" class="form-label">@T["Index"]</label>
+        <select asp-for="Id" class="form-control" asp-items="Model.Indexes">
+            <option value="">@T["Select an index"]</option>
         </select>
         <span class="hint">@T["The Elasticsearch index to search on"]</span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="DecodedQuery" class="form-label">@T["Template"]</label>
+        <label asp-for="DecodedQuery" class="form-label">@T["Query"]</label>
         <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
-        <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch", Query = matchAllQuery, IndexName = Model.IndexName }))]</span>
+        <span class="hint">@T["You can use the <a href=\"{0}\">Match all query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch", query = Model.MatchAllQuery, id = Model.Id }))]</span>
         <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
     </div>
 
@@ -49,7 +40,7 @@
     </div>
 
     <div class="mb-3">
-        <button type="submit" class="btn btn-primary">@T["Query"]</button>
+        <button type="submit" class="btn btn-primary">@T["Run Query"]</button>
     </div>
 </form>
 
@@ -60,10 +51,10 @@
     }
 </div>
 
-@if (hasDocuments || hasFields)
+@if ((hasDocuments || hasFields) && await ShellFeaturesManager.IsFeatureEnabledAsync("OrchardCore.Queries"))
 {
     <div class="mb-3">
-        <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Elasticsearch", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+        <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Elasticsearch", query = Model.DecodedQuery })" class="btn btn-success">@T["Save Query"]</a>
     </div>
 }
 

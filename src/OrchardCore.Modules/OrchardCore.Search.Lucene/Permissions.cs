@@ -1,10 +1,11 @@
+using OrchardCore.Indexing;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.Lucene;
 
 public sealed class Permissions : IPermissionProvider
 {
-    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+    private readonly IIndexProfileStore _indexStore;
 
     [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.ManageLuceneIndexes'.")]
     public static readonly Permission ManageLuceneIndexes = LuceneSearchPermissions.ManageLuceneIndexes;
@@ -12,9 +13,9 @@ public sealed class Permissions : IPermissionProvider
     [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.QueryLuceneApi'.")]
     public static readonly Permission QueryLuceneApi = LuceneSearchPermissions.QueryLuceneApi;
 
-    public Permissions(LuceneIndexSettingsService luceneIndexSettingsService)
+    public Permissions(IIndexProfileStore indexStore)
     {
-        _luceneIndexSettingsService = luceneIndexSettingsService;
+        _indexStore = indexStore;
     }
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -25,9 +26,9 @@ public sealed class Permissions : IPermissionProvider
             LuceneSearchPermissions.QueryLuceneApi,
         };
 
-        var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
+        var indexes = await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName);
 
-        foreach (var index in luceneIndexSettings)
+        foreach (var index in indexes)
         {
             permissions.Add(LuceneIndexPermissionHelper.GetLuceneIndexPermission(index.IndexName));
         }

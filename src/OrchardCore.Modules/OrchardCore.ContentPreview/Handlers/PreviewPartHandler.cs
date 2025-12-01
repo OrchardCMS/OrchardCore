@@ -51,7 +51,7 @@ public class PreviewPartHandler : ContentPartHandler<PreviewPart>
                 previewAspect.PreviewUrl = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
                     new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
 
-                previewAspect.PreviewUrl = previewAspect.PreviewUrl.Replace("\r", string.Empty).Replace("\n", string.Empty);
+                previewAspect.PreviewUrl = previewAspect.PreviewUrl.ReplaceLineEndings(string.Empty);
             });
         }
 

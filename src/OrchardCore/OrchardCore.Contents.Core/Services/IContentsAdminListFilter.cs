@@ -8,7 +8,7 @@ namespace OrchardCore.Contents.Services;
 /// <summary>
 /// Provides custom filters to the content items admin listing.
 /// <see cref="IContentsAdminListFilterProvider"/> is the preferred way to extend the contents list.
-/// This abstraction remains to support backwards compatability, and alternate extension points.
+/// This abstraction remains to support backwards compatibility, and alternate extension points.
 /// </summary>
 public interface IContentsAdminListFilter
 {

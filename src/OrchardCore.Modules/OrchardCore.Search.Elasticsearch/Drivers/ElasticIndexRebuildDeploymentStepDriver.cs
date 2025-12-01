@@ -1,18 +1,18 @@
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Indexing;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
 public sealed class ElasticIndexRebuildDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticsearchIndexRebuildDeploymentStep>
 {
-    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
+    private readonly IIndexProfileStore _indexStore;
 
-    public ElasticIndexRebuildDeploymentStepDriver(ElasticsearchIndexSettingsService elasticIndexSettingsService)
+    public ElasticIndexRebuildDeploymentStepDriver(IIndexProfileStore indexStore)
     {
-        _elasticIndexSettingsService = elasticIndexSettingsService;
+        _indexStore = indexStore;
     }
 
     public override Task<IDisplayResult> DisplayAsync(ElasticsearchIndexRebuildDeploymentStep step, BuildDisplayContext context)
@@ -30,7 +30,7 @@ public sealed class ElasticIndexRebuildDeploymentStepDriver : DisplayDriver<Depl
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
-            model.AllIndexNames = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexStore.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
     }
 

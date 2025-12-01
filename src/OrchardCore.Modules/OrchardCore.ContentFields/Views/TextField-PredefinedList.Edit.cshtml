@@ -3,7 +3,16 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var listSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
+}
 
+@if (settings.Type == FieldBehaviorType.GeneratedHidden || settings.Type == FieldBehaviorType.GeneratedDisabled)
+{
+    <input type="hidden" asp-for="Text" />
+
+    return;
+}
+
+@{
     var options = new List<SelectListItem>();
     var selectedValue = string.IsNullOrEmpty(Model.Text) ? listSettings.DefaultValue : Model.Text;
 

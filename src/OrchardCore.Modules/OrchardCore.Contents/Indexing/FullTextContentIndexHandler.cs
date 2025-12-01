@@ -5,13 +5,18 @@ using OrchardCore.Indexing;
 
 namespace OrchardCore.Contents.Indexing;
 
-public class FullTextContentIndexHandler(IContentManager contentManager) : IContentItemIndexHandler
+public class FullTextContentIndexHandler(IContentManager contentManager) : IDocumentIndexHandler
 {
     private readonly IContentManager _contentManager = contentManager;
 
-    public async Task BuildIndexAsync(BuildIndexContext context)
+    public async Task BuildIndexAsync(BuildDocumentIndexContext context)
     {
-        var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(context.ContentItem);
+        if (context.Record is not ContentItem contentItem)
+        {
+            return;
+        }
+
+        var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem);
 
         using var stringBuilder = ZString.CreateStringBuilder();
 
@@ -28,6 +33,6 @@ public class FullTextContentIndexHandler(IContentManager contentManager) : ICont
             return;
         }
 
-        context.DocumentIndex.Set(IndexingConstants.FullTextKey, value, DocumentIndexOptions.Sanitize);
+        context.DocumentIndex.Set(ContentIndexingConstants.FullTextKey, value, DocumentIndexOptions.Sanitize);
     }
 }
