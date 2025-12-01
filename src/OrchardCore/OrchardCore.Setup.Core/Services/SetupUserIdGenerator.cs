@@ -1,14 +1,13 @@
 using OrchardCore.Entities;
-using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Setup.Services;
 
 /// <summary>
-/// Represents a class that generates unique user id for setup that will be stored in <see cref="RecipeEnvironmentFeature"/>.
+/// Provides functionality to generate unique identifiers for setup users using a specified ID generator implementation.
 /// </summary>
-/// <remarks>
-/// The generated user id will be used to keep track the admin user id during the setup process.
-/// </remarks>
+/// <remarks>This class acts as an adapter for the <see cref="IIdGenerator"/> interface, allowing setup user IDs
+/// to be generated consistently across different environments. Thread safety and uniqueness guarantees depend on the
+/// underlying <see cref="IIdGenerator"/> implementation.</remarks>
 public class SetupUserIdGenerator : ISetupUserIdGenerator
 {
     private readonly IIdGenerator _generator;

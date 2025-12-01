@@ -19,7 +19,8 @@ using YesSql;
 namespace OrchardCore.Setup.Services;
 
 /// <summary>
-/// Represents a setup service, which is responsible for setting up the tenant.
+/// Provides services for retrieving setup recipes and performing application setup operations, including initializing
+/// tenants and configuring the database during the setup process.
 /// </summary>
 public class SetupService : ISetupService
 {

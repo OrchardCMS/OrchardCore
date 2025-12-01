@@ -6,11 +6,8 @@ using OrchardCore.Users.Models;
 namespace OrchardCore.Users.Services;
 
 /// <summary>
-/// Represents a setup event handler, which allows you to execute a code during the setup process.
+/// Handles setup events by creating the initial administrator user during application setup.
 /// </summary>
-/// <remarks>
-/// During setup, creates the admin user account.
-/// </remarks>
 public class SetupEventHandler : ISetupEventHandler
 {
     private readonly IUserService _userService;
@@ -20,6 +17,7 @@ public class SetupEventHandler : ISetupEventHandler
         _userService = userService;
     }
 
+    /// <inheritdoc/>
     public Task SetupAsync(SetupContext context)
     {
         var user = new User
