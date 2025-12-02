@@ -27,7 +27,7 @@
         .brand-wrapper-title {
             display: block;
             position: absolute;
-            left: calc(var(--oc-start-navigation-width) + 10px);
+            left: calc(var(--oc-start-navigation-width) + 10px); /*rtl:right: calc(var(--oc-start-navigation-width) + 10px);*/
         }
     }
 
@@ -46,7 +46,7 @@
 
 .left-sidebar-compact .ta-navbar-top {
     .brand-wrapper-title {
-        left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+        left: calc(var(--oc-start-navigation-width-when-compact) + 15px); /*rtl:right: calc(var(--oc-start-navigation-width-when-compact) + 15px);*/
     }
 }
 

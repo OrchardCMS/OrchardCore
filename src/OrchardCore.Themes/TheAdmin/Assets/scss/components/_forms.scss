@@ -78,7 +78,7 @@ input[type="password"]::-ms-clear {
 }
 
 .has-filter .form-control-feedback {
-    left: 4.25rem;
+    left: 4.25rem; /*rtl:1rem*/
     top: 0.25rem;
 }
 

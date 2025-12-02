@@ -1,6 +1,10 @@
 .action-bar {
     border-bottom: var(--oc-media-border-content);
 
+    .ms-2 {
+        margin-right: 0.5rem !important; /*rtl:margin-left: 0.5rem !important;*/
+    }
+
     .media-filter {
         margin-top: 3px;
 
