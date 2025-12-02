@@ -492,7 +492,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     private static void ProcessSuccessfulSearchResponse(IndexProfile indexProfile, ElasticsearchResult elasticTopDocs, SearchResponse<JsonObject> searchResponse)
     {
         elasticTopDocs.Count = searchResponse.Hits.Count;
-        elasticTopDocs.TotalCount = searchResponse.HitsMetadata?.Total?.Value2 ?? 0;
+        elasticTopDocs.TotalCount = searchResponse.HitsMetadata?.Total?.Value1?.Value ?? 0;
         elasticTopDocs.SearchResponse = searchResponse;
 
         var metadata = indexProfile.As<ElasticsearchIndexMetadata>();

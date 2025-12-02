@@ -144,6 +144,9 @@ For SQL and Lucene queries you can then define a custom field type name in their
 
 This feature provides a new type of query targeting the SQL database.
 
+!!! note
+    SQL queries can be used as a data source for custom widgets. If parameterized, widgets can control queries by providing values for the query parameters. For example, in the Blog Theme, the `RecentBlogPosts` Query has a parameter for SQL `LIMIT`: `SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' AND Published = 1 ORDER BY CreatedUtc DESC LIMIT @limit:3`. This allows you to add a numeric field 'Limit' to your custom widget and then provide the value of that field to the query.
+
 ### Queries recipe step
 
 Here is an example for creating a SQL query from a Queries recipe step:

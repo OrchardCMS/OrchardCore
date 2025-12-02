@@ -12,4 +12,5 @@ public class FlowPartSettingsViewModel
     public string[] ContainedContentTypes { get; set; } = [];
 
     public bool CollapseContainedItems { get; set; }
+    public FlowAlignment? DefaultAlignment { get; set; }
 }

@@ -180,6 +180,7 @@ nav:
                   - Title: reference/modules/Title/README.md
                   - Autoroute: reference/modules/Autoroute/README.md
                   - Alias: reference/modules/Alias/README.md
+                  - Archive Later: reference/modules/ArchiveLater/README.md
                   - Html: reference/modules/Html/README.md
                   - Markdown: reference/modules/Markdown/README.md
                   - List: reference/modules/Lists/README.md
@@ -288,6 +289,7 @@ nav:
       - Libraries: reference/libraries/README.md
       - Glossary: reference/glossary/README.md
   - Releases Notes:
+      - 2.2.1: releases/2.2.1.md
       - 2.2.0: releases/2.2.0.md
       - 2.1.9: releases/2.1.9.md
       - 2.1.8: releases/2.1.8.md
