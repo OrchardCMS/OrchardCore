@@ -24,7 +24,7 @@ public class ModularTenantRouterMiddleware
             _logger.LogInformation("Begin Routing Request");
         }
 
-        var shellContext = ShellScope.Context;
+        var shellContext = httpContext.Features.Get<ShellContextFeature>().ShellContext;
 
         // Define a new 'PathBase' for the current request based on the tenant 'RequestUrlPrefix'.
         // Because IIS or another middleware might have already set it, we just append the prefix.
