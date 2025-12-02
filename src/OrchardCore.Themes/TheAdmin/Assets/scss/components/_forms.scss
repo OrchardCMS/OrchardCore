@@ -78,8 +78,12 @@ input[type="password"]::-ms-clear {
 }
 
 .has-filter .form-control-feedback {
-    left: 4.25rem; /*rtl:1rem*/
+    left: 4.25rem; /*rtl:ignore*/
     top: 0.25rem;
+}
+
+[dir="rtl"] .has-filter .form-control-feedback {
+    left: 1rem;
 }
 
 .has-search .form-control-feedback {

@@ -2,7 +2,13 @@
     border-bottom: var(--oc-media-border-content);
 
     .ms-2 {
-        margin-right: 0.5rem !important; /*rtl:margin-left: 0.5rem !important;*/
+        margin-right: 0.5rem !important;
+        margin-left: 0 !important;
+    }
+
+    [dir="rtl"] .ms-2 {
+        margin-right: 0 !important;
+        margin-left: 0.5rem !important;
     }
 
     .media-filter {
