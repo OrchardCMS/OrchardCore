@@ -1,5 +1,5 @@
 # TARGETARCH and TARGETOS are set automatically when --platform is provided.
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-rc AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 ARG TARGETOS
 LABEL stage=build-env
 WORKDIR /source
@@ -14,8 +14,8 @@ COPY Directory.Packages.props .
 RUN dotnet publish src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Release -o /app --framework net10.0 /p:RunAnalyzers=false
 
 # build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-rc-nanoserver-1809 AS build_windows
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-rc AS build_linux
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-nanoserver-ltsc2025 AS build_windows
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS build_linux
 FROM build_${TARGETOS} AS aspnet
 
 EXPOSE 80
