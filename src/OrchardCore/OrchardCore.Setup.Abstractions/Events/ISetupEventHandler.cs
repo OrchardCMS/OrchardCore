@@ -3,8 +3,7 @@ using OrchardCore.Setup.Services;
 namespace OrchardCore.Setup.Events;
 
 /// <summary>
-/// Defines methods for handling setup events, including performing setup operations and marking their success or
-/// failure.
+/// Defines methods for handling setup events.
 /// </summary>
 public interface ISetupEventHandler
 {
@@ -23,7 +22,7 @@ public interface ISetupEventHandler
     Task FailedAsync(SetupContext context) => Task.CompletedTask;
 
     /// <summary>
-    /// Occurs when the setup operation is succeed.
+    /// Occurs when the setup operation succeeded.
     /// </summary>
     /// <returns>A <see cref="Task"/> that has already completed successfully.</returns>
     Task SucceededAsync() => Task.CompletedTask;
