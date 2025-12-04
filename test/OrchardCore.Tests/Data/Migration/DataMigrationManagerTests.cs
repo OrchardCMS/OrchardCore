@@ -90,7 +90,7 @@ public class DataMigrationManagerTests
             NullLogger<DataMigrationManager>.Instance);
     }
 
-    private class Migration1 : DataMigration
+    private sealed class Migration1 : DataMigration
     {
         public bool CreateCalled { get; private set; }
 
@@ -126,7 +126,7 @@ public class DataMigrationManagerTests
         public void Uninstall() => UninstallCalled = true;
     }
 
-    private class Migration2 : DataMigration
+    private sealed class Migration2 : DataMigration
     {
         public bool CreateCalled { get; private set; }
 
@@ -149,7 +149,7 @@ public class DataMigrationManagerTests
         }
     }
 
-    private class FakeQuery : IQuery
+    private sealed class FakeQuery : IQuery
     {
         public IQuery<object> Any()
             => throw new NotImplementedException();
@@ -160,7 +160,7 @@ public class DataMigrationManagerTests
             => throw new NotImplementedException();
     }
 
-    private class FakeQuery<T> : IQuery<T> where T : class
+    private sealed class FakeQuery<T> : IQuery<T> where T : class
     {
         public IQuery<T> All(params Func<IQuery<T>, IQuery<T>>[] predicates)
             => throw new NotImplementedException();
