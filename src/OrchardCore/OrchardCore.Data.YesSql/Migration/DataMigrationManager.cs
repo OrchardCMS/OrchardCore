@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;
@@ -11,10 +13,24 @@ namespace OrchardCore.Data.Migration;
 /// <summary>
 /// Represents a class that manages the database migrations.
 /// </summary>
-public class DataMigrationManager : IDataMigrationManager
+public partial class DataMigrationManager : IDataMigrationManager
 {
     private const string _updateFromPrefix = "UpdateFrom";
     private const string _asyncSuffix = "Async";
+
+    private static readonly Expression<Func<MethodInfo, bool>> _createMethodExpression = m
+        => m.Name == "Create" && m.ReturnType == typeof(int) || m.Name == "CreateAsync" && m.ReturnType == typeof(Task<int>);
+
+    private static readonly Expression<Func<MethodInfo, bool>> _updateMethodExpression = m
+        => UpdateFromRegex().IsMatch(m.Name) && m.ReturnType == typeof(int) ||
+        UpdateFromAsyncRegex().IsMatch(m.Name) && m.ReturnType == typeof(Task<int>);
+
+    private static readonly Expression<Func<MethodInfo, bool>> _uninstallMethodExpression = m
+        => m.Name == "Uninstall" && m.ReturnType == typeof(void) || m.Name == "UninstallAsync" && m.ReturnType == typeof(Task);
+
+    private static readonly Func<MethodInfo, bool> _createMethod = _createMethodExpression.Compile();
+    private static readonly Func<MethodInfo, bool> _updateMethod = _updateMethodExpression.Compile();
+    private static readonly Func<MethodInfo, bool> _uninstallMethod = _uninstallMethodExpression.Compile();
 
     private readonly IEnumerable<IDataMigration> _dataMigrations;
     private readonly ISession _session;
@@ -312,24 +328,19 @@ public class DataMigrationManager : IDataMigrationManager
     /// </summary>
     private static MethodInfo GetMethod(IDataMigration dataMigration, string name)
     {
-        var methodInfo = dataMigration.GetType()
-            .GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
+        var methodInfo = dataMigration.GetType().GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
 
-        if (methodInfo is null)
-        {
-            return null;
-        }
-
-        if (methodInfo.Name == "Create" && methodInfo.ReturnType == typeof(int) ||
-            methodInfo.Name == "CreateAsync" && methodInfo.ReturnType == typeof(Task<int>) ||
-            methodInfo.Name == "Update" && methodInfo.ReturnType == typeof(int) ||
-            methodInfo.Name == "UpdateAsync" && methodInfo.ReturnType == typeof(Task<int>) ||
-            methodInfo.Name == "Update" && methodInfo.ReturnType == typeof(void) ||
-            methodInfo.Name == "UpdateAsync" && methodInfo.ReturnType == typeof(Task))
+        if (methodInfo is not null && (_createMethod(methodInfo) || _updateMethod(methodInfo) || _uninstallMethod(methodInfo)))
         {
             return methodInfo;
         }
 
         return null;
     }
+
+    [GeneratedRegex(@"^UpdateFrom(\d+)$")]
+    private static partial Regex UpdateFromRegex();
+
+    [GeneratedRegex(@"^UpdateFrom(\d+)Async$")]
+    private static partial Regex UpdateFromAsyncRegex();
 }
