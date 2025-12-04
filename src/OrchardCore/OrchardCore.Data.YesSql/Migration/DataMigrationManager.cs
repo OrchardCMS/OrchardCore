@@ -21,15 +21,15 @@ public partial class DataMigrationManager : IDataMigrationManager
     private static readonly Expression<Func<MethodInfo, bool>> _createMethodExpression = m
         => m.Name == "Create" && m.ReturnType == typeof(int) || m.Name == "CreateAsync" && m.ReturnType == typeof(Task<int>);
 
-    private static readonly Expression<Func<MethodInfo, bool>> _updateMethodExpression = m
-        => UpdateFromRegex().IsMatch(m.Name) && m.ReturnType == typeof(int) ||
-        UpdateFromAsyncRegex().IsMatch(m.Name) && m.ReturnType == typeof(Task<int>);
+    //private static readonly Expression<Func<MethodInfo, bool>> _updateMethodExpression = m
+    //    => UpdateFromRegex().IsMatch(m.Name) && m.ReturnType == typeof(int) ||
+    //    UpdateFromAsyncRegex().IsMatch(m.Name) && m.ReturnType == typeof(Task<int>);
 
     private static readonly Expression<Func<MethodInfo, bool>> _uninstallMethodExpression = m
         => m.Name == "Uninstall" && m.ReturnType == typeof(void) || m.Name == "UninstallAsync" && m.ReturnType == typeof(Task);
 
     private static readonly Func<MethodInfo, bool> _createMethod = _createMethodExpression.Compile();
-    private static readonly Func<MethodInfo, bool> _updateMethod = _updateMethodExpression.Compile();
+    //private static readonly Func<MethodInfo, bool> _updateMethod = _updateMethodExpression.Compile();
     private static readonly Func<MethodInfo, bool> _uninstallMethod = _uninstallMethodExpression.Compile();
 
     private readonly IEnumerable<IDataMigration> _dataMigrations;
@@ -98,7 +98,10 @@ public partial class DataMigrationManager : IDataMigrationManager
                 return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
             }
 
-            return GetMethod(dataMigration, "Create") != null;
+            return dataMigration.GetType()
+                .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                .Where(_createMethod)
+                .SingleOrDefault() is not null;
         });
 
         return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToArray();
@@ -119,7 +122,10 @@ public partial class DataMigrationManager : IDataMigrationManager
             // get current version for this migration
             var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
-            var uninstallMethod = GetMethod(migration, "Uninstall");
+            var uninstallMethod = migration.GetType()
+                .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                .Where(_uninstallMethod)
+                .SingleOrDefault();
 
             if (uninstallMethod != null)
             {
@@ -217,7 +223,10 @@ public partial class DataMigrationManager : IDataMigrationManager
                 if (current == 0)
                 {
                     // Try to get a Create method.
-                    var createMethod = GetMethod(migration, "Create");
+                    var createMethod = migration.GetType()
+                        .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                        .Where(_createMethod)
+                        .SingleOrDefault();
 
                     if (createMethod == null)
                     {
@@ -323,24 +332,9 @@ public partial class DataMigrationManager : IDataMigrationManager
         return null;
     }
 
-    /// <summary>
-    /// Returns the method from a data migration class that matches the given name if found.
-    /// </summary>
-    private static MethodInfo GetMethod(IDataMigration dataMigration, string name)
-    {
-        var methodInfo = dataMigration.GetType().GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
+    //[GeneratedRegex(@"^UpdateFrom(\d+)$")]
+    //private static partial Regex UpdateFromRegex();
 
-        if (methodInfo is not null && (_createMethod(methodInfo) || _updateMethod(methodInfo) || _uninstallMethod(methodInfo)))
-        {
-            return methodInfo;
-        }
-
-        return null;
-    }
-
-    [GeneratedRegex(@"^UpdateFrom(\d+)$")]
-    private static partial Regex UpdateFromRegex();
-
-    [GeneratedRegex(@"^UpdateFrom(\d+)Async$")]
-    private static partial Regex UpdateFromAsyncRegex();
+    //[GeneratedRegex(@"^UpdateFrom(\d+)Async$")]
+    //private static partial Regex UpdateFromAsyncRegex();
 }
