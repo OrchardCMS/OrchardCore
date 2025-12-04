@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;
@@ -20,16 +19,10 @@ public partial class DataMigrationManager : IDataMigrationManager
 
     private static readonly Expression<Func<MethodInfo, bool>> _createMethodExpression = m
         => m.Name == "Create" && m.ReturnType == typeof(int) || m.Name == "CreateAsync" && m.ReturnType == typeof(Task<int>);
-
-    //private static readonly Expression<Func<MethodInfo, bool>> _updateMethodExpression = m
-    //    => UpdateFromRegex().IsMatch(m.Name) && m.ReturnType == typeof(int) ||
-    //    UpdateFromAsyncRegex().IsMatch(m.Name) && m.ReturnType == typeof(Task<int>);
-
     private static readonly Expression<Func<MethodInfo, bool>> _uninstallMethodExpression = m
         => m.Name == "Uninstall" && m.ReturnType == typeof(void) || m.Name == "UninstallAsync" && m.ReturnType == typeof(Task);
 
     private static readonly Func<MethodInfo, bool> _createMethod = _createMethodExpression.Compile();
-    //private static readonly Func<MethodInfo, bool> _updateMethod = _updateMethodExpression.Compile();
     private static readonly Func<MethodInfo, bool> _uninstallMethod = _uninstallMethodExpression.Compile();
 
     private readonly IEnumerable<IDataMigration> _dataMigrations;
@@ -331,10 +324,4 @@ public partial class DataMigrationManager : IDataMigrationManager
 
         return null;
     }
-
-    //[GeneratedRegex(@"^UpdateFrom(\d+)$")]
-    //private static partial Regex UpdateFromRegex();
-
-    //[GeneratedRegex(@"^UpdateFrom(\d+)Async$")]
-    //private static partial Regex UpdateFromAsyncRegex();
 }
