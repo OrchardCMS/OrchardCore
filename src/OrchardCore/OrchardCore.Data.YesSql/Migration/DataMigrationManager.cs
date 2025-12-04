@@ -120,10 +120,7 @@ public partial class DataMigrationManager : IDataMigrationManager
                 .Where(_uninstallMethod)
                 .SingleOrDefault();
 
-            if (uninstallMethod != null)
-            {
-                await InvokeMethodAsync(uninstallMethod, migration);
-            }
+            uninstallMethod?.Invoke(migration, []);
 
             if (dataMigrationRecord == null)
             {
