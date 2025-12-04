@@ -312,18 +312,20 @@ public class DataMigrationManager : IDataMigrationManager
     /// </summary>
     private static MethodInfo GetMethod(IDataMigration dataMigration, string name)
     {
-        // First try to find a method that match the given name. (Ex. Create())
-        var methodInfo = dataMigration.GetType().GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
+        var methodInfo = dataMigration.GetType()
+            .GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
 
-        if (methodInfo != null && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
+        if (methodInfo is null)
         {
-            return methodInfo;
+            return null;
         }
 
-        // At this point, try to find a method that matches the given name and ends with Async. (Ex. CreateAsync())
-        methodInfo = dataMigration.GetType().GetMethod(name + _asyncSuffix, BindingFlags.Public | BindingFlags.Instance);
-
-        if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
+        if (methodInfo.Name == "Create" && methodInfo.ReturnType == typeof(int) ||
+            methodInfo.Name == "CreateAsync" && methodInfo.ReturnType == typeof(Task<int>) ||
+            methodInfo.Name == "Update" && methodInfo.ReturnType == typeof(int) ||
+            methodInfo.Name == "UpdateAsync" && methodInfo.ReturnType == typeof(Task<int>) ||
+            methodInfo.Name == "Update" && methodInfo.ReturnType == typeof(void) ||
+            methodInfo.Name == "UpdateAsync" && methodInfo.ReturnType == typeof(Task))
         {
             return methodInfo;
         }
