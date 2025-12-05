@@ -60,7 +60,7 @@ public static class OrchardCoreBuilderExtensions
                 services.AddScoped<IViewLocationExpanderProvider, ThemeViewLocationExpanderProvider>();
 
                 services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
-                services.AddKeyedSingleton<IDictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, ShapeTable>());
+                services.AddKeyedSingleton<IDictionary<string, Task<ShapeTable>>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, Task<ShapeTable>>());
                 services.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
 
                 services.AddShapeTableProvider<ShapeAttributeBindingStrategy>();
@@ -94,6 +94,7 @@ public static class OrchardCoreBuilderExtensions
                 services.AddShapeAttributes<DateTimeShapes>();
                 services.AddShapeAttributes<PageTitleShapes>();
 
+                services.AddTagHelpers<UserDisplayNameTagHelper>();
                 services.AddTagHelpers<AddAlternateTagHelper>();
                 services.AddTagHelpers<AddClassTagHelper>();
                 services.AddTagHelpers<AddWrapperTagHelper>();

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Caching.Distributed;
@@ -126,6 +127,9 @@ public sealed class RedisDataProtectionStartup : StartupBase
     {
         if (services.Any(d => d.ServiceType == typeof(IRedisService)))
         {
+            // Remove any previously registered options setups.
+            services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
+
             services.AddTransient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>();
         }
     }

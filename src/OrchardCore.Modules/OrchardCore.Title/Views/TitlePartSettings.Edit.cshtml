@@ -13,7 +13,7 @@
 
 <div class="row mb-3">
     <div class="col-sm-6">
-        <label asp-for="Options" class="form-label">@T["Options"]</label>
+        <label asp-for="Options" class="form-label">@T["Behavior option"]</label>
         <select asp-for="Options" class="form-select">
             <option value="@nameof(TitlePartOptions.Editable)" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
             <option value="@nameof(TitlePartOptions.EditableRequired)" selected="@(Model.Options == TitlePartOptions.EditableRequired)">@T["Title is editable and required"]</option>
