@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration.Records;
@@ -12,18 +11,10 @@ namespace OrchardCore.Data.Migration;
 /// <summary>
 /// Represents a class that manages the database migrations.
 /// </summary>
-public partial class DataMigrationManager : IDataMigrationManager
+public class DataMigrationManager : IDataMigrationManager
 {
     private const string _updateFromPrefix = "UpdateFrom";
     private const string _asyncSuffix = "Async";
-
-    private static readonly Expression<Func<MethodInfo, bool>> _createMethodExpression = m
-        => m.Name == "Create" && m.ReturnType == typeof(int) || m.Name == "CreateAsync" && m.ReturnType == typeof(Task<int>);
-    private static readonly Expression<Func<MethodInfo, bool>> _uninstallMethodExpression = m
-        => m.Name == "Uninstall" && m.ReturnType == typeof(void) || m.Name == "UninstallAsync" && m.ReturnType == typeof(Task);
-
-    private static readonly Func<MethodInfo, bool> _createMethod = _createMethodExpression.Compile();
-    private static readonly Func<MethodInfo, bool> _uninstallMethod = _uninstallMethodExpression.Compile();
 
     private readonly IEnumerable<IDataMigration> _dataMigrations;
     private readonly ISession _session;
@@ -91,10 +82,7 @@ public partial class DataMigrationManager : IDataMigrationManager
                 return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
             }
 
-            return dataMigration.GetType()
-                .GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(_createMethod)
-                .SingleOrDefault() is not null;
+            return GetCreateMethod(dataMigration) != null;
         });
 
         return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToArray();
@@ -115,12 +103,23 @@ public partial class DataMigrationManager : IDataMigrationManager
             // get current version for this migration
             var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
-            var uninstallMethod = migration.GetType()
-                .GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(_uninstallMethod)
-                .SingleOrDefault();
+            var uninstallMethod = GetUninstallMethod(migration);
 
-            uninstallMethod?.Invoke(migration, []);
+            if (uninstallMethod != null)
+            {
+                if (uninstallMethod.ReturnType == typeof(Task))
+                {
+                    await (Task)uninstallMethod.Invoke(migration, []);
+                }
+                else if (uninstallMethod.ReturnType == typeof(void))
+                {
+                    uninstallMethod.Invoke(migration, []);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Invalid return type used in a migration method.");
+                }
+            }
 
             if (dataMigrationRecord == null)
             {
@@ -213,10 +212,7 @@ public partial class DataMigrationManager : IDataMigrationManager
                 if (current == 0)
                 {
                     // Try to get a Create method.
-                    var createMethod = migration.GetType()
-                        .GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                        .Where(_createMethod)
-                        .SingleOrDefault();
+                    var createMethod = GetCreateMethod(migration);
 
                     if (createMethod == null)
                     {
@@ -224,7 +220,7 @@ public partial class DataMigrationManager : IDataMigrationManager
                         continue;
                     }
 
-                    current = await InvokeMethodAsync(createMethod, migration);
+                    current = await InvokeCreateOrUpdateMethodAsync(createMethod, migration);
                 }
 
                 var lookupTable = CreateUpgradeLookupTable(migration);
@@ -233,7 +229,7 @@ public partial class DataMigrationManager : IDataMigrationManager
                 {
                     _logger.LogInformation("Applying migration for '{Migration}' in '{FeatureId}' from version {Version}.", migration.GetType().FullName, featureId, current);
 
-                    current = await InvokeMethodAsync(methodInfo, migration);
+                    current = await InvokeCreateOrUpdateMethodAsync(methodInfo, migration);
                 }
 
                 // If current is 0, it means no upgrade/create method was found or succeeded.
@@ -258,7 +254,7 @@ public partial class DataMigrationManager : IDataMigrationManager
         }
     }
 
-    private static async Task<int> InvokeMethodAsync(MethodInfo method, IDataMigration migration)
+    private static async Task<int> InvokeCreateOrUpdateMethodAsync(MethodInfo method, IDataMigration migration)
     {
         if (method.ReturnType == typeof(Task<int>))
         {
@@ -317,6 +313,48 @@ public partial class DataMigrationManager : IDataMigrationManager
             {
                 return new Tuple<int, MethodInfo>(versionValue, methodInfo);
             }
+        }
+
+        return null;
+    }
+
+    private static MethodInfo GetCreateMethod(IDataMigration dataMigration)
+    {
+        var methodName = "Create";
+        // First try to find a method that match the given name. (Ex. Create())
+        var methodInfo = dataMigration.GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+
+        if (methodInfo != null && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
+        {
+            return methodInfo;
+        }
+
+        // At this point, try to find a method that matches the given name and ends with Async. (Ex. CreateAsync())
+        methodInfo = dataMigration.GetType().GetMethod(methodName + _asyncSuffix, BindingFlags.Public | BindingFlags.Instance);
+
+        if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
+        {
+            return methodInfo;
+        }
+
+        return null;
+    }
+
+    private static MethodInfo GetUninstallMethod(IDataMigration dataMigration)
+    {
+        var methodName = "Uninstall";
+        var methodInfo = dataMigration.GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+
+        if (methodInfo != null && (methodInfo.ReturnType == typeof(void) || methodInfo.ReturnType == typeof(Task)))
+        {
+            return methodInfo;
+        }
+
+        methodInfo = dataMigration.GetType().GetMethod(methodName + _asyncSuffix, BindingFlags.Public | BindingFlags.Instance);
+
+        if (methodInfo != null && methodInfo.ReturnType == typeof(Task))
+        {
+            return methodInfo;
         }
 
         return null;
