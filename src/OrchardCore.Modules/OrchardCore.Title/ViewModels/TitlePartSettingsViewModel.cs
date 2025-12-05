@@ -11,4 +11,6 @@ public class TitlePartSettingsViewModel
 
     [BindNever]
     public TitlePartSettings TitlePartSettings { get; set; }
+
+    public string Placeholder { get; set; }
 }

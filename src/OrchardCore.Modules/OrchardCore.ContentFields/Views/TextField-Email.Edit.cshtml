@@ -16,7 +16,7 @@
     <div class="@Orchard.GetEndClasses()">
         <div class="input-group">
             <span class="input-group-text">@@</span>
-            <input asp-for="Text" class="form-control content-preview-text" type="email" asp-is-disabled="settings.Type == FieldBehaviorType.GeneratedDisabled" />
+            <input asp-for="Text" class="form-control content-preview-text" type="email" placeholder="@settings.Placeholder" asp-is-disabled="settings.Type == FieldBehaviorType.GeneratedDisabled" />
             <span asp-validation-for="Text"></span>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))

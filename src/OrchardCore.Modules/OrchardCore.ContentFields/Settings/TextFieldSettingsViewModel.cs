@@ -7,6 +7,8 @@ public class TextFieldSettingsViewModel
 {
     public string Hint { get; set; }
 
+    public string Placeholder { get; set; } = string.Empty;
+
     public bool Required { get; set; }
 
     public string DefaultValue { get; set; }

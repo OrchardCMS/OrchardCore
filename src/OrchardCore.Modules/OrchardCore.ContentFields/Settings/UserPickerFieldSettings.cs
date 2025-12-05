@@ -11,4 +11,6 @@ public class UserPickerFieldSettings : FieldSettings
     public bool DisplayAllUsers { get; set; } = true;
 
     public string[] DisplayedRoles { get; set; } = [];
+
+    public string Placeholder { get; set; } = string.Empty;
 }

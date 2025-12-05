@@ -34,6 +34,7 @@ public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDi
             model.Pattern = settings.Pattern;
             model.RenderTitle = settings.RenderTitle;
             model.TitlePartSettings = settings;
+            model.Placeholder = settings.Placeholder;
         }).Location("Content");
     }
 
@@ -44,7 +45,8 @@ public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDi
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             m => m.Pattern,
             m => m.Options,
-            m => m.RenderTitle);
+            m => m.RenderTitle,
+            m => m.Placeholder);
 
         if (model.Options == TitlePartOptions.GeneratedHidden || model.Options == TitlePartOptions.GeneratedDisabled)
         {
@@ -63,6 +65,7 @@ public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDi
             Pattern = model.Pattern,
             Options = model.Options,
             RenderTitle = model.RenderTitle,
+            Placeholder = model.Placeholder,
         });
 
         return Edit(contentTypePartDefinition, context);

@@ -9,4 +9,6 @@ public class YoutubeFieldSettings : FieldSettings
     public int Width { get; set; }
 
     public int Height { get; set; }
+
+    public string Placeholder { get; set; } = string.Empty;
 }
