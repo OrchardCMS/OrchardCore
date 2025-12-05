@@ -35,40 +35,6 @@
 }
 
 /* Import the files from main folder before importing any component */
-/* 
-    IMPORTANT: Never import Bootstrap directly into the theme. 
-    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
-*/
-:root {
-  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
-  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
-  --oc-zindex-dropdown: 1000;
-  --oc-height-dropdown: 250px;
-  --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: 1034;
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: 1033;
-  --oc-link-padding-left: 16px;
-  --oc-editor-fullscreen: 1054;
-  --oc-selected-indicator-color: var(--bs-primary);
-  /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 980;
-  --oc-second-action-bar-zindex: 983;
-  /* Undefined Bootstrap variables */
-  --bs-dropdown-zindex: 1000;
-  --bs-zindex-fixed: 1030;
-  --bs-bg-opacity: 1;
-}
-
 .w-xs-25 {
   width: 25% !important;
 }
@@ -181,40 +147,6 @@ a:hover {
 }
 
 /* Import the components files */
-/* 
-    IMPORTANT: Never import Bootstrap directly into the theme. 
-    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
-*/
-:root {
-  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
-  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
-  --oc-zindex-dropdown: 1000;
-  --oc-height-dropdown: 250px;
-  --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: 1034;
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: 1033;
-  --oc-link-padding-left: 16px;
-  --oc-editor-fullscreen: 1054;
-  --oc-selected-indicator-color: var(--bs-primary);
-  /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 980;
-  --oc-second-action-bar-zindex: 983;
-  /* Undefined Bootstrap variables */
-  --bs-dropdown-zindex: 1000;
-  --bs-zindex-fixed: 1030;
-  --bs-bg-opacity: 1;
-}
-
 .action-bar {
   top: 3.3rem;
   z-index: var(--oc-action-bar-zindex);
@@ -663,40 +595,6 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   background: unset;
 }
 
-/* 
-    IMPORTANT: Never import Bootstrap directly into the theme. 
-    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
-*/
-:root {
-  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
-  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
-  --oc-zindex-dropdown: 1000;
-  --oc-height-dropdown: 250px;
-  --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: 1034;
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: 1033;
-  --oc-link-padding-left: 16px;
-  --oc-editor-fullscreen: 1054;
-  --oc-selected-indicator-color: var(--bs-primary);
-  /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 980;
-  --oc-second-action-bar-zindex: 983;
-  /* Undefined Bootstrap variables */
-  --bs-dropdown-zindex: 1000;
-  --bs-zindex-fixed: 1030;
-  --bs-bg-opacity: 1;
-}
-
 :root {
   --oc-mde-zindex: var(--oc-editor-fullscreen) !important;
 }
@@ -759,40 +657,6 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
 
 .dropdown-item:hover, .dropdown-item:focus {
   text-decoration: none;
-}
-
-/* 
-    IMPORTANT: Never import Bootstrap directly into the theme. 
-    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
-*/
-:root {
-  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
-  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
-  --oc-zindex-dropdown: 1000;
-  --oc-height-dropdown: 250px;
-  --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: 1034;
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: 1033;
-  --oc-link-padding-left: 16px;
-  --oc-editor-fullscreen: 1054;
-  --oc-selected-indicator-color: var(--bs-primary);
-  /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 980;
-  --oc-second-action-bar-zindex: 983;
-  /* Undefined Bootstrap variables */
-  --bs-dropdown-zindex: 1000;
-  --bs-zindex-fixed: 1030;
-  --bs-bg-opacity: 1;
 }
 
 .hint {
@@ -8478,80 +8342,12 @@ ul.pager {
   margin-bottom: 1rem;
 }
 
-/* 
-    IMPORTANT: Never import Bootstrap directly into the theme. 
-    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
-*/
-:root {
-  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
-  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
-  --oc-zindex-dropdown: 1000;
-  --oc-height-dropdown: 250px;
-  --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: 1034;
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: 1033;
-  --oc-link-padding-left: 16px;
-  --oc-editor-fullscreen: 1054;
-  --oc-selected-indicator-color: var(--bs-primary);
-  /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 980;
-  --oc-second-action-bar-zindex: 983;
-  /* Undefined Bootstrap variables */
-  --bs-dropdown-zindex: 1000;
-  --bs-zindex-fixed: 1030;
-  --bs-bg-opacity: 1;
-}
-
 .ui-sortable {
   min-height: 1rem;
 }
 
 ul.ui-sortable:not(:has(> li)) {
   border: var(--bs-border-width) dashed var(--bs-border-color) !important;
-}
-
-/* 
-    IMPORTANT: Never import Bootstrap directly into the theme. 
-    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
-*/
-:root {
-  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
-  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
-  --oc-zindex-dropdown: 1000;
-  --oc-height-dropdown: 250px;
-  --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: 1034;
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: 1033;
-  --oc-link-padding-left: 16px;
-  --oc-editor-fullscreen: 1054;
-  --oc-selected-indicator-color: var(--bs-primary);
-  /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 980;
-  --oc-second-action-bar-zindex: 983;
-  /* Undefined Bootstrap variables */
-  --bs-dropdown-zindex: 1000;
-  --bs-zindex-fixed: 1030;
-  --bs-bg-opacity: 1;
 }
 
 .tab-pane {
@@ -8893,40 +8689,6 @@ textarea.form-control.input-validation-error {
   color: var(--bs-black);
   background-color: #f8f9fa;
   border-color: #f8f9fa;
-}
-
-/* 
-    IMPORTANT: Never import Bootstrap directly into the theme. 
-    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
-*/
-:root {
-  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
-  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
-  --oc-zindex-dropdown: 1000;
-  --oc-height-dropdown: 250px;
-  --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: 1034;
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: 1033;
-  --oc-link-padding-left: 16px;
-  --oc-editor-fullscreen: 1054;
-  --oc-selected-indicator-color: var(--bs-primary);
-  /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 980;
-  --oc-second-action-bar-zindex: 983;
-  /* Undefined Bootstrap variables */
-  --bs-dropdown-zindex: 1000;
-  --bs-zindex-fixed: 1030;
-  --bs-bg-opacity: 1;
 }
 
 [data-bs-theme=dark] {
