@@ -333,6 +333,7 @@ nav:
       - Contributing documentation: contributing/contributing-documentation.md
       - Reviewing pull requests: contributing/reviewing-pull-requests.md
       - Benchmarking: contributing/benchmarking.md
+      - Contributing to orchardcore.net: contributing/contributing-to-orchardcore-net.md
       - Developer Meetings: contributing/meetings.md
   - Community:
       - Contributors: community/contributors/README.md
