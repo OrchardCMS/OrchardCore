@@ -76,3 +76,19 @@
     </div>
     <span class="hint">@T["(Optional) The stereotype of the content type. e.g., Widget, MenuItem, ..."]</span>
 </div>
+
+<div class="mb-3">
+    <div class="w-md-75 w-xl-50">
+        <label asp-for="Category" class="form-label">@T["Category"]</label>
+        <input asp-for="Category" type="text" class="form-control">
+    </div>
+    <span class="hint">@T["(Optional) Category for grouping content types in block pickers. e.g., Common, Media, Layout, ..."]</span>
+</div>
+
+<div class="mb-3">
+    <div class="w-md-75 w-xl-50">
+        <label asp-for="PreviewImagePath" class="form-label">@T["Preview Image Path"]</label>
+        <input asp-for="PreviewImagePath" type="text" class="form-control">
+    </div>
+    <span class="hint">@T["(Optional) Path to preview image for block pickers. e.g., ~/ThemeName/blocks/MyBlock.png"]</span>
+</div>

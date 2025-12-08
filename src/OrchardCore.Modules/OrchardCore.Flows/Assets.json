@@ -10,5 +10,17 @@
     "name": "flows",
     "source": "Assets/scss/flows.edit.scss",
     "tags": ["admin", "dashboard", "css"]
+  },
+  {
+    "action": "min",
+    "name": "contentTypePicker",
+    "source": "Assets/js/contentTypePicker.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "sass",
+    "name": "contentTypePicker",
+    "source": "Assets/scss/contentTypePicker.scss",
+    "tags": ["admin", "dashboard", "css"]
   }
 ]

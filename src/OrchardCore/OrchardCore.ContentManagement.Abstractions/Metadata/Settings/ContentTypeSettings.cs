@@ -36,4 +36,14 @@ public class ContentTypeSettings
     /// Gets or sets the description name of this content type.
     /// </summary>
     public string Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the category for grouping content types in block pickers.
+    /// </summary>
+    public string Category { get; set; }
+
+    /// <summary>
+    /// Gets or sets the preview image path for block pickers.
+    /// </summary>
+    public string PreviewImagePath { get; set; }
 }

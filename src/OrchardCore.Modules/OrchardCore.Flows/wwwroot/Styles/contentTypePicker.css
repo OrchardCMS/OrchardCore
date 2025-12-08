@@ -1,0 +1,77 @@
+/* Content Type Picker Modal Styles */
+#contentTypePickerApp {
+  min-height: 400px;
+}
+#contentTypePickerApp .content-type-picker-sidebar {
+  padding-right: 1rem;
+}
+#contentTypePickerApp .content-type-picker-sidebar .content-type-picker-search {
+  margin-bottom: 1rem;
+}
+#contentTypePickerApp .content-type-picker-sidebar .content-type-picker-categories .nav-link {
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  color: var(--bs-body-color);
+}
+#contentTypePickerApp .content-type-picker-sidebar .content-type-picker-categories .nav-link:hover {
+  background-color: var(--bs-tertiary-bg);
+}
+#contentTypePickerApp .content-type-picker-sidebar .content-type-picker-categories .nav-link.active {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+}
+#contentTypePickerApp .content-type-picker-grid .content-type-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#contentTypePickerApp .content-type-picker-grid .content-type-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+#contentTypePickerApp .content-type-picker-grid .content-type-card .card-img-top {
+  height: 120px;
+  object-fit: cover;
+  background-color: var(--bs-tertiary-bg);
+}
+#contentTypePickerApp .content-type-picker-grid .content-type-card .card-img-top.img-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--bs-secondary-color);
+}
+#contentTypePickerApp .content-type-picker-grid .content-type-card .card-body {
+  padding: 0.75rem;
+}
+#contentTypePickerApp .content-type-picker-grid .content-type-card .card-body .card-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+#contentTypePickerApp .content-type-picker-grid .content-type-card .card-body .card-text {
+  font-size: 0.8rem;
+  color: var(--bs-secondary-color);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+#contentTypePickerApp .content-type-picker-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--bs-secondary-color);
+}
+#contentTypePickerApp .content-type-picker-empty i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Modal sizing */
+.modal-content-type-picker .modal-dialog {
+  max-width: 900px;
+}
+.modal-content-type-picker .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}

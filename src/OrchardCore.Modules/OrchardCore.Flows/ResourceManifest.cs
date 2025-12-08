@@ -20,6 +20,15 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .DefineScript("flowpart-edit")
             .SetDependencies("jQuery")
             .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js", "~/OrchardCore.Flows/Scripts/flows.edit.js");
+
+        _manifest
+            .DefineStyle("contenttypepicker")
+            .SetUrl("~/OrchardCore.Flows/Styles/contentTypePicker.min.css", "~/OrchardCore.Flows/Styles/contentTypePicker.css");
+
+        _manifest
+            .DefineScript("contenttypepicker")
+            .SetDependencies("jQuery", "vuejs")
+            .SetUrl("~/OrchardCore.Flows/Scripts/contentTypePicker.min.js", "~/OrchardCore.Flows/Scripts/contentTypePicker.js");
     }
 
     public void Configure(ResourceManagementOptions options)

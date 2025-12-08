@@ -1,0 +1,53 @@
+@* Shared Content Type Picker Vue Application - Rendered once per page *@
+<div id="contentTypePickerApp" class="d-none">
+    <div class="row">
+        <!-- Sidebar with search and categories -->
+        <div class="col-md-3 content-type-picker-sidebar">
+            <div class="content-type-picker-search">
+                <input v-model="searchFilter"
+                       type="search"
+                       class="form-control"
+                       placeholder="@T["Search"]"
+                       aria-label="@T["Search"]">
+            </div>
+            <ul class="nav nav-pills flex-column content-type-picker-categories">
+                <li v-for="category in categories" :key="category" class="nav-item">
+                    <a class="nav-link"
+                       :class="{ active: selectedCategory === category }"
+                       href="javascript:;"
+                       v-on:click="selectCategory(category)">
+                        {{ category }}
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Content type grid -->
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 content-type-picker-grid">
+                <div v-for="contentType in filteredContentTypes" :key="contentType.name" class="col">
+                    <div class="card h-100 content-type-card" v-on:click="selectContentType(contentType)">
+                        <img v-if="contentType.previewImage"
+                             :src="getPreviewImageUrl(contentType)"
+                             class="card-img-top"
+                             :alt="contentType.displayName"
+                             v-on:error="handleImageError($event, contentType)">
+                        <div v-else class="card-img-top img-placeholder">
+                            <i class="fa fa-cube" aria-hidden="true"></i>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title">{{ contentType.displayName }}</h6>
+                            <p v-if="contentType.description" class="card-text text-muted">{{ contentType.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty state -->
+            <div v-if="filteredContentTypes.length === 0" class="content-type-picker-empty">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <p>@T["No content types match your search criteria."]</p>
+            </div>
+        </div>
+    </div>
+</div>
