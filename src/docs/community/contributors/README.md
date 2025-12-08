@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-373-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-374-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -517,6 +517,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://bejzbol.net"><img src="https://avatars.githubusercontent.com/u/13017737?v=4?s=100" width="100px;" alt="Miloš Jovanović"/><br /><sub><b>Miloš Jovanović</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=milosh-96" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/plamco"><img src="https://avatars.githubusercontent.com/u/62053593?v=4?s=100" width="100px;" alt="plamco"/><br /><sub><b>plamco</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=plamco" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
