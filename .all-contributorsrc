@@ -3430,6 +3430,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "redzepiredzep",
+      "name": "Redzep Redžepi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/148947177?v=4",
+      "profile": "https://github.com/redzepiredzep",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "milosh-96",
+      "name": "Miloš Jovanović",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13017737?v=4",
+      "profile": "https://bejzbol.net",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

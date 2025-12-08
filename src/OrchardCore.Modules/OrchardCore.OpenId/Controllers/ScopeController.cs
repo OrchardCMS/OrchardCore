@@ -94,7 +94,7 @@ public sealed class ScopeController : Controller
             return Forbid();
         }
 
-        if (await _scopeManager.FindByNameAsync(model.Name) != null)
+        if (ModelState.IsValid && await _scopeManager.FindByNameAsync(model.Name) != null)
         {
             ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
         }
