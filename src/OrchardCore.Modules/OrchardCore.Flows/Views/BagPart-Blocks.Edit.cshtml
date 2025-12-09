@@ -84,8 +84,7 @@
         @* Multiple content types - show content type picker modal *@
         <button type="button"
                 id="@buttonId"
-                class="btn btn-primary btn-sm"
-                data-modal-title="@(string.IsNullOrEmpty(Model.ModalTitleText) ? T["Select Block"].Value : Model.ModalTitleText)">
+                class="btn btn-primary btn-sm">
             <i class="fa fa-plus" aria-hidden="true"></i> @(string.IsNullOrEmpty(Model.AddButtonText) ? T["Add Block"] : Model.AddButtonText)
         </button>
     }
@@ -99,8 +98,8 @@
     <style asp-name="flowpart-edit" at="Head"></style>
 }
 
-@* Content type picker resources - rendered once per page *@
-@if (Context.Items["ContentTypePicker.Init"] == null)
+@* Content type picker resources - rendered once per page (skip for AJAX requests to prevent duplicate modals) *@
+@if (Context.Items["ContentTypePicker.Init"] == null && !Context.Request.Headers.XRequestedWith.Contains("XMLHttpRequest"))
 {
     Context.Items["ContentTypePicker.Init"] = new object();
     <script asp-name="contenttypepicker" at="Foot"></script>
@@ -169,7 +168,7 @@
                 parentContentType: '@parentContentType',
                 partName: '@partName',
                 contentTypes: contentTypes,
-                modalTitle: button.dataset.modalTitle,
+                modalTitle: '@(string.IsNullOrEmpty(Model.ModalTitleText) ? T["Select Block"].Value : Model.ModalTitleText)',
                 onContentTypeSelected: contentTypePickerSelectContentType
             });
         });

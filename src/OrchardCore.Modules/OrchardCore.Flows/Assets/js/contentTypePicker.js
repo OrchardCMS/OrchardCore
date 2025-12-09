@@ -81,15 +81,15 @@ function initializeContentTypePickerApplication(pathBase) {
     });
 
     // Set up shared modal
-    var modalElement = document.getElementById('contentTypePickerModal');
+    var modalElement = document.getElementById("contentTypePickerModal");
     if (modalElement) {
         sharedContentTypePickerModal = new bootstrap.Modal(modalElement);
 
         // Reset state when modal is hidden
-        modalElement.addEventListener('hidden.bs.modal', function () {
+        modalElement.addEventListener("hidden.bs.modal", function () {
             if (contentTypePickerApp) {
-                contentTypePickerApp.searchFilter = '';
-                contentTypePickerApp.selectedCategory = 'All';
+                contentTypePickerApp.searchFilter = "";
+                contentTypePickerApp.selectedCategory = "All";
                 contentTypePickerApp.currentConfig = null;
             }
         });
@@ -103,7 +103,8 @@ function showContentTypePicker(config) {
 
         // Update modal title if provided
         if (config.modalTitle) {
-            var titleElement = document.getElementById('contentTypePickerModalLabel');
+            var titleElement = document.getElementById("contentTypePickerModalLabel");
+
             if (titleElement) {
                 titleElement.textContent = config.modalTitle;
             }
@@ -135,7 +136,7 @@ function contentTypePickerSelectContentType(contentType, config) {
         .data("part-name", config.partName);
 
     // Append to body so delegated event handler can find it, trigger click, then remove
-    $trigger.appendTo('body').trigger("click").remove();
+    $trigger.appendTo("body").trigger("click").remove();
 
     // Close the shared modal
     hideContentTypePicker();
