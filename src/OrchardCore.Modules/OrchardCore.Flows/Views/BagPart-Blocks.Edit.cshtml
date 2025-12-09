@@ -84,7 +84,8 @@
         @* Multiple content types - show content type picker modal *@
         <button type="button"
                 id="@buttonId"
-                class="btn btn-primary btn-sm">
+                class="btn btn-primary btn-sm"
+                data-modal-title="@(string.IsNullOrEmpty(Model.ModalTitleText) ? T["Select Block"].Value : Model.ModalTitleText)">
             <i class="fa fa-plus" aria-hidden="true"></i> @(string.IsNullOrEmpty(Model.AddButtonText) ? T["Add Block"] : Model.AddButtonText)
         </button>
     }
@@ -172,7 +173,7 @@
                 parentContentType: '@parentContentType',
                 partName: '@partName',
                 contentTypes: contentTypes,
-                modalTitle: '@(string.IsNullOrEmpty(Model.ModalTitleText) ? T["Select Block"].Value : Model.ModalTitleText)',
+                modalTitle: button.dataset.modalTitle,
                 onContentTypeSelected: contentTypePickerSelectContentType
             });
         });
