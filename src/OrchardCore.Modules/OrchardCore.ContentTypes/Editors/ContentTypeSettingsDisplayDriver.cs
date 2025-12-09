@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -13,6 +14,7 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
 {
     private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
     private readonly IStereotypeService _stereotypeService;
+    private readonly IContentDefinitionService _contentDefinitionService;
     private readonly ContentTypeDefinitionOptions _options;
 
     internal readonly IStringLocalizer S;
@@ -20,11 +22,13 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
     public ContentTypeSettingsDisplayDriver(
         IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer,
         IOptions<ContentTypeDefinitionOptions> options,
-        IStereotypeService stereotypeService)
+        IStereotypeService stereotypeService,
+        IContentDefinitionService contentDefinitionService)
     {
         S = stringLocalizer;
         _options = options.Value;
         _stereotypeService = stereotypeService;
+        _contentDefinitionService = contentDefinitionService;
     }
 
     public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
@@ -114,6 +118,12 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         }
 
         options.Stereotypes = await _stereotypeService.GetStereotypesAsync();
+
+        options.Categories = (await _contentDefinitionService.GetTypesAsync())
+            .Select(t => t.TypeDefinition.GetSettings<ContentTypeSettings>()?.Category)
+            .Where(c => !string.IsNullOrEmpty(c))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(c => c);
 
         return options;
     }
