@@ -1,5 +1,6 @@
 var contentTypePickerApp;
 var contentTypePickerInitialized;
+var sharedContentTypePickerModal;
 
 function initializeContentTypePickerApplication(pathBase) {
     if (contentTypePickerInitialized) {
@@ -83,12 +84,42 @@ function initializeContentTypePickerApplication(pathBase) {
             },
         },
     });
+
+    // Set up shared modal
+    var modalElement = document.getElementById('contentTypePickerModal');
+    if (modalElement) {
+        sharedContentTypePickerModal = new bootstrap.Modal(modalElement);
+
+        // Reset state when modal is hidden
+        modalElement.addEventListener('hidden.bs.modal', function () {
+            if (contentTypePickerApp) {
+                contentTypePickerApp.searchFilter = '';
+                contentTypePickerApp.selectedCategory = 'All';
+                contentTypePickerApp.currentConfig = null;
+            }
+        });
+    }
+}
+
+// Show the shared modal with configuration
+function showContentTypePicker(config) {
+    if (contentTypePickerApp && sharedContentTypePickerModal) {
+        contentTypePickerApp.configure(config);
+        sharedContentTypePickerModal.show();
+    }
+}
+
+// Hide the shared modal
+function hideContentTypePicker() {
+    if (sharedContentTypePickerModal) {
+        sharedContentTypePickerModal.hide();
+    }
 }
 
 // Integration function to trigger existing add-widget functionality
 function contentTypePickerSelectContentType(contentType, config) {
     // Create a synthetic element with the required data attributes
-    var $trigger = $('<a class="add-widget">')
+    var $trigger = $('<a class="add-widget" style="display:none;">')
         .data("target-id", config.targetId)
         .data("html-field-prefix", config.htmlFieldPrefix)
         .data("prefixes-name", config.prefixesName)
@@ -99,17 +130,9 @@ function contentTypePickerSelectContentType(contentType, config) {
         .data("parent-content-type", config.parentContentType)
         .data("part-name", config.partName);
 
-    // Trigger the existing add-widget handler from flows.edit.js
-    $trigger.trigger("click");
+    // Append to body so delegated event handler can find it, trigger click, then remove
+    $trigger.appendTo('body').trigger("click").remove();
 
-    // Close the modal
-    if (config.modalId) {
-        var modalElement = document.getElementById(config.modalId);
-        if (modalElement) {
-            var modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-                modal.hide();
-            }
-        }
-    }
+    // Close the shared modal
+    hideContentTypePicker();
 }
