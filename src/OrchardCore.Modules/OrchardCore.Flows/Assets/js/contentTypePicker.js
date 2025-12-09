@@ -105,6 +105,15 @@ function initializeContentTypePickerApplication(pathBase) {
 function showContentTypePicker(config) {
     if (contentTypePickerApp && sharedContentTypePickerModal) {
         contentTypePickerApp.configure(config);
+
+        // Update modal title if provided
+        if (config.modalTitle) {
+            var titleElement = document.getElementById('contentTypePickerModalLabel');
+            if (titleElement) {
+                titleElement.textContent = config.modalTitle;
+            }
+        }
+
         sharedContentTypePickerModal.show();
     }
 }

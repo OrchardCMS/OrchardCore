@@ -85,7 +85,7 @@
         <button type="button"
                 id="@buttonId"
                 class="btn btn-primary btn-sm">
-            <i class="fa fa-plus" aria-hidden="true"></i> @T["Add Block"]
+            <i class="fa fa-plus" aria-hidden="true"></i> @(string.IsNullOrEmpty(Model.AddButtonText) ? T["Add Block"] : Model.AddButtonText)
         </button>
     }
 </div>
@@ -172,6 +172,7 @@
                 parentContentType: '@parentContentType',
                 partName: '@partName',
                 contentTypes: contentTypes,
+                modalTitle: '@(string.IsNullOrEmpty(Model.ModalTitleText) ? T["Select Block"].Value : Model.ModalTitleText)',
                 onContentTypeSelected: contentTypePickerSelectContentType
             });
         });
