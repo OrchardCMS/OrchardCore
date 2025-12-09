@@ -1,5 +1,5 @@
 // <media-items-grid> component
-Vue.component('media-items-grid', {
+var mediaItemsGridComponent = {
     template: `
         <ol class="row media-items-grid">
                 <li v-for="media in filteredMediaItems"
@@ -67,4 +67,4 @@ Vue.component('media-items-grid', {
             return getClassNameForFilename(filename) + ' ' + thumbsize;
         }
     }
-});
+};

@@ -1,5 +1,5 @@
 // <upload-list> component
-Vue.component('uploadList', {
+var uploadListComponent = {
     template: '\
         <div class="upload-list" v-show="files.length > 0"> \
             <div class="header" @click="expanded = !expanded"> \
@@ -99,4 +99,4 @@ Vue.component('uploadList', {
             this.updateCount();
         }
     }
-});
+};

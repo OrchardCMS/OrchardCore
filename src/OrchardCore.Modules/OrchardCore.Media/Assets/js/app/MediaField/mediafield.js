@@ -15,21 +15,22 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
         document.getElementById("mediaApp").classList.add("d-none");
     });
 
-    mediaFieldApps.push(mediaFieldApp = new Vue({
-        el: mediaFieldEditor.get(0),
-        data: {
-            mediaItems: [],
-            selectedMedia: null,
-            smallThumbs: false,
-            idPrefix: idprefix,
-            initialized: false,
-            allowMediaText: allowMediaText,
-            backupMediaText: '',
-            allowAnchors: allowAnchors,
-            allowedExtensions: allowedExtensions,
-            backupAnchor: null,
-            mediaTextModal: null,
-            anchoringModal: null
+    const app = Vue.createApp({
+        data() {
+            return {
+                mediaItems: [],
+                selectedMedia: null,
+                smallThumbs: false,
+                idPrefix: idprefix,
+                initialized: false,
+                allowMediaText: allowMediaText,
+                backupMediaText: '',
+                allowAnchors: allowAnchors,
+                allowedExtensions: allowedExtensions,
+                backupAnchor: null,
+                mediaTextModal: null,
+                anchoringModal: null
+            };
         },
         created: function () {
             var self = this;
@@ -127,18 +128,6 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             var self = this;
 
             self.paths = initialPaths;
-
-            self.$on('selectAndDeleteMediaRequested', function (media) {
-                self.selectAndDeleteMedia(media);
-            });
-
-            self.$on('selectMediaRequested', function (media) {
-                self.selectMedia(media);
-            });
-
-            self.$on('filesUploaded', function (files) {
-                self.addMediaFiles(files);
-            });
         },
         methods: {
             selectMedia: function (media) {
@@ -291,5 +280,14 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
             }
         }
-    }));
+    });
+
+    // Register components
+    app.component('mediaFieldThumbsContainer', mediaFieldThumbsContainerComponent);
+    app.component('mediaFieldGalleryContainer', mediaFieldGalleryContainerComponent);
+    app.component('mediaFieldGalleryListItem', mediaFieldGalleryListItemComponent);
+    app.component('mediaFieldGalleryCardItem', mediaFieldGalleryCardItemComponent);
+
+    mediaFieldApp = app.mount(mediaFieldEditor.get(0));
+    mediaFieldApps.push(mediaFieldApp);
 }

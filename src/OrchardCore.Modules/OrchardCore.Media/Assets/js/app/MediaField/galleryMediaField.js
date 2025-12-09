@@ -1,6 +1,6 @@
 const MEDIA_FIELD_GALLERY = "mediaFieldGallery_";
 
-Vue.component("mediaFieldGalleryListItem", {
+var mediaFieldGalleryListItemComponent = {
     template:
     /*html*/
     `
@@ -78,9 +78,9 @@ Vue.component("mediaFieldGalleryListItem", {
             return url + (url.indexOf("?") == -1 ? "?" : "&") + "width=32&height=32";
         },
     },
-});
+};
 
-Vue.component("mediaFieldGalleryCardItem", {
+var mediaFieldGalleryCardItemComponent = {
     template:
     /*html*/
     `
@@ -169,9 +169,9 @@ Vue.component("mediaFieldGalleryCardItem", {
             return (url + (url.indexOf("?") == -1 ? "?" : "&") + "width=240&height=240");
         },
     },
-});
+};
 
-Vue.component("mediaFieldGalleryContainer", {
+var mediaFieldGalleryContainerComponent = {
     template:
     /*html*/
     `
@@ -445,4 +445,4 @@ Vue.component("mediaFieldGalleryContainer", {
             );
         },
     }
-});
+};

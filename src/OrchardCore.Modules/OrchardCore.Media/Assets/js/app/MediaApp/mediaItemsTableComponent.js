@@ -1,5 +1,5 @@
 // <media-items-table> component
-Vue.component('media-items-table', {
+var mediaItemsTableComponent = {
     template: `
         <table class="table media-items-table m-0">
             <thead>
@@ -119,4 +119,4 @@ Vue.component('media-items-table', {
              return   getClassNameForFilename(filename) + ' ' + thumbsize;
         }
     }
-});
+};

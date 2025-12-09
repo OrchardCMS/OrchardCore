@@ -1,6 +1,6 @@
 // <media-field-thumbs-container> component
 // different media field editors share this component to present the thumbs.
-Vue.component('mediaFieldThumbsContainer', {
+var mediaFieldThumbsContainerComponent = {
     template:
     /* html */
     `
@@ -140,4 +140,4 @@ Vue.component('mediaFieldThumbsContainer', {
             return getClassNameForFilename(filename) + ' ' + thumbsize;
         }
     }
-});
+};

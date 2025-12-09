@@ -1,8 +1,5 @@
-// This component receives a list of all the items, unpaged.
-// As the user interacts with the pager, it raises events with the items in the current page.
-// It's the parent's responsibility to listen for these events and display the received items
 // <pager> component
-Vue.component('pager', {
+var pagerComponent = {
     template: `
     <div>
         <nav id="media-pager" class="d-flex justify-content-center" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">
@@ -157,4 +154,4 @@ Vue.component('pager', {
             this.current = 0;
         }
     }
-});
+};

@@ -1,5 +1,5 @@
 // <folder> component
-Vue.component('folder', {
+var folderComponent = {
     template: `
         <li :class="{selected: isSelected}" 
                 v-on:dragleave.prevent = "handleDragLeave($event);" 
@@ -190,4 +190,4 @@ Vue.component('folder', {
         }
 
     }
-});
+};

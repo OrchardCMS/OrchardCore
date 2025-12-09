@@ -1,7 +1,37 @@
 var initialized;
 var mediaApp;
 
-var bus = new Vue();
+// Simple event emitter to replace Vue 2 event bus
+class EventBus {
+    constructor() {
+        this.events = {};
+    }
+    
+    $on(event, callback) {
+        if (!this.events[event]) {
+            this.events[event] = [];
+        }
+        this.events[event].push(callback);
+    }
+    
+    $emit(event, ...args) {
+        if (this.events[event]) {
+            this.events[event].forEach(callback => callback(...args));
+        }
+    }
+    
+    $off(event, callback) {
+        if (this.events[event]) {
+            if (callback) {
+                this.events[event] = this.events[event].filter(cb => cb !== callback);
+            } else {
+                delete this.events[event];
+            }
+        }
+    }
+}
+
+var bus = new EventBus();
 
 function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl, pathBase) {
 
@@ -31,20 +61,21 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 canCreateFolder: $('#allowNewRootFolders').val() === 'true'
             };
 
-            mediaApp = new Vue({
-                el: '#mediaApp',
-                data: {
-                    selectedFolder: {},
-                    mediaItems: [],
-                    selectedMedias: [],
-                    errors: [],
-                    dragDropThumbnail: new Image(),
-                    smallThumbs: false,
-                    gridView: false,
-                    mediaFilter: '',
-                    sortBy: '',
-                    sortAsc: true,
-                    itemsInPage: []
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        selectedFolder: {},
+                        mediaItems: [],
+                        selectedMedias: [],
+                        errors: [],
+                        dragDropThumbnail: new Image(),
+                        smallThumbs: false,
+                        gridView: false,
+                        mediaFilter: '',
+                        sortBy: '',
+                        sortAsc: true,
+                        itemsInPage: []
+                    };
                 },
                 created: function () {
                     var self = this;
@@ -451,6 +482,17 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     }
                 }
             });
+
+            // Register components
+            app.component('folder', folderComponent);
+            app.component('media-items-grid', mediaItemsGridComponent);
+            app.component('media-items-table', mediaItemsTableComponent);
+            app.component('pager', pagerComponent);
+            app.component('sortIndicator', sortIndicatorComponent);
+            app.component('upload', uploadComponent);
+            app.component('uploadList', uploadListComponent);
+
+            mediaApp = app.mount('#mediaApp');
 
             $('#create-folder-name').keydown(function (e) {
                 if (e.key == 'Enter') {

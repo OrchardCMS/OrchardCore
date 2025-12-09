@@ -1,5 +1,5 @@
 // <sort-indicator> component
-Vue.component('sortIndicator', {
+var sortIndicatorComponent = {
     template: `
         <div v-show="isActive" class="sort-indicator">
             <span v-show="asc"><i class="small fa fa-chevron-up"></i></span>
@@ -16,4 +16,4 @@ Vue.component('sortIndicator', {
             return this.colname.toLowerCase() == this.selectedcolname.toLowerCase();
         }
     }
-});
+};
