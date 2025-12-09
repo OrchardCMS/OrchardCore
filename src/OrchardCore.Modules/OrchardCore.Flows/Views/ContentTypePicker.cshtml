@@ -2,8 +2,8 @@
 <div id="contentTypePickerApp">
     <div class="row">
         <!-- Sidebar with search and categories -->
-        <div class="col-md-3 content-type-picker-sidebar">
-            <div class="content-type-picker-search">
+        <div class="col-sm-3 col-md-3 col-lg-2 content-type-picker-sidebar">
+            <div class="content-type-picker-search mb-3">
                 <input v-model="searchFilter"
                        type="search"
                        class="form-control"
@@ -23,7 +23,7 @@
         </div>
 
         <!-- Content type grid -->
-        <div class="col-md-9">
+        <div class="col-sm-9 col-md-9 col-lg-10">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 content-type-picker-grid">
                 <div v-for="contentType in filteredContentTypes" :key="contentType.name" class="col">
                     <div class="card h-100 content-type-card" v-on:click="selectContentType(contentType)">

@@ -3,32 +3,6 @@
 #contentTypePickerApp {
     min-height: 400px;
 
-    .content-type-picker-sidebar {
-        padding-right: 1rem;
-
-        .content-type-picker-search {
-            margin-bottom: 1rem;
-        }
-
-        .content-type-picker-categories {
-            .nav-link {
-                cursor: pointer;
-                padding: 0.5rem 1rem;
-                border-radius: 0.25rem;
-                color: var(--bs-body-color);
-
-                &:hover {
-                    background-color: var(--bs-tertiary-bg);
-                }
-
-                &.active {
-                    background-color: var(--bs-primary);
-                    color: var(--bs-white);
-                }
-            }
-        }
-    }
-
     .content-type-picker-grid {
         .content-type-card {
             cursor: pointer;
@@ -37,21 +11,19 @@
                 box-shadow 0.2s;
 
             &:hover {
-                transform: translateY(-2px);
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
 
             .card-img-top {
-                height: 120px;
-                object-fit: cover;
-                background-color: var(--bs-tertiary-bg);
 
                 &.img-placeholder {
+                    height: 120px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     font-size: 2rem;
                     color: var(--bs-secondary-color);
+                    background-color: var(--bs-tertiary-bg);
                 }
             }
 
@@ -85,17 +57,5 @@
             font-size: 3rem;
             margin-bottom: 1rem;
         }
-    }
-}
-
-/* Modal sizing */
-.modal-content-type-picker {
-    .modal-dialog {
-        max-width: 900px;
-    }
-
-    .modal-body {
-        max-height: 70vh;
-        overflow-y: auto;
     }
 }
