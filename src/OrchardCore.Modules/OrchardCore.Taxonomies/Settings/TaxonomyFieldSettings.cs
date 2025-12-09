@@ -23,4 +23,9 @@ public class TaxonomyFieldSettings : FieldSettings
     /// Whether the field allows the user to add new Terms to the taxonomy (similar to tags).
     /// </summary>
     public bool Open { get; set; }
+
+    /// <summary>
+    /// Gets or sets the placeholder text displayed when the input field is empty.
+    /// </summary>
+    public string Placeholder { get; set; } = string.Empty;
 }

@@ -28,4 +28,9 @@ public class TitlePartSettings
     /// </summary>
     [DefaultValue(true)]
     public bool RenderTitle { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the placeholder text displayed when the input field is empty.
+    /// </summary>
+    public string Placeholder { get; set; } = string.Empty;
 }
