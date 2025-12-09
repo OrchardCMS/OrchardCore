@@ -24,8 +24,11 @@ function initializeContentTypePickerApplication(pathBase) {
                 var self = this;
                 return this.contentTypes.filter(function (contentType) {
                     // Filter by category
-                    if (self.selectedCategory !== "All" && contentType.category !== self.selectedCategory) {
-                        return false;
+                    // Items without a category are only shown when "All" is selected
+                    if (self.selectedCategory !== "All") {
+                        if (!contentType.category || contentType.category !== self.selectedCategory) {
+                            return false;
+                        }
                     }
                     // Filter by search term
                     if (self.searchFilter) {

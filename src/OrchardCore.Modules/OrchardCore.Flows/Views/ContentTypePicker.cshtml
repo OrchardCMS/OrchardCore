@@ -24,9 +24,9 @@
 
         <!-- Content type grid -->
         <div class="col-sm-9 col-md-9 col-lg-10">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 content-type-picker-grid">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2 content-type-picker-grid">
                 <div v-for="contentType in filteredContentTypes" :key="contentType.name" class="col">
-                    <div class="card h-100 content-type-card" v-on:click="selectContentType(contentType)">
+                    <div class="card h-100 content-type-card">
                         <img v-if="contentType.thumbnail"
                              :src="getThumbnailUrl(contentType)"
                              class="card-img-top"
@@ -36,8 +36,11 @@
                             <i class="fa fa-cube" aria-hidden="true"></i>
                         </div>
                         <div class="card-body">
-                            <h6 class="card-title">{{ contentType.displayName }}</h6>
+                            <h5 class="card-title">{{ contentType.displayName }}</h5>
                             <p v-if="contentType.description" class="card-text text-muted">{{ contentType.description }}</p>
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" class="btn btn-primary btn-sm" v-on:click="selectContentType(contentType)">@T["Add"]</button>
                         </div>
                     </div>
                 </div>

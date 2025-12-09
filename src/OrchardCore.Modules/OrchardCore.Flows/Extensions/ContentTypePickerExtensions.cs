@@ -5,15 +5,13 @@ namespace OrchardCore.Flows.Extensions;
 
 public static class ContentTypePickerExtensions
 {
-    private const string DefaultCategory = "Uncategorised";
-
     /// <summary>
-    /// Gets the category for the content type, defaulting to "Uncategorised" if not set.
+    /// Gets the category for the content type, or null if not set.
     /// </summary>
     public static string GetCategory(this ContentTypeDefinition contentTypeDefinition)
     {
         var category = contentTypeDefinition.GetSettings<ContentTypeSettings>()?.Category;
-        return !string.IsNullOrEmpty(category) ? category : DefaultCategory;
+        return !string.IsNullOrEmpty(category) ? category : null;
     }
 
     /// <summary>
