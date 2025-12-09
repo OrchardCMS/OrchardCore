@@ -1,12 +1,20 @@
 var initialized;
 var mediaApp;
 
-// Simple event emitter to replace Vue 2 event bus
+/**
+ * Simple event emitter to replace Vue 2 event bus
+ * Provides $on, $emit, and $off methods for cross-component communication
+ */
 class EventBus {
     constructor() {
         this.events = {};
     }
     
+    /**
+     * Register an event listener
+     * @param {string} event - Event name
+     * @param {Function} callback - Callback function to execute when event is emitted
+     */
     $on(event, callback) {
         if (!this.events[event]) {
             this.events[event] = [];
@@ -14,12 +22,22 @@ class EventBus {
         this.events[event].push(callback);
     }
     
+    /**
+     * Emit an event with optional arguments
+     * @param {string} event - Event name
+     * @param {...*} args - Arguments to pass to event listeners
+     */
     $emit(event, ...args) {
         if (this.events[event]) {
             this.events[event].forEach(callback => callback(...args));
         }
     }
     
+    /**
+     * Remove an event listener
+     * @param {string} event - Event name
+     * @param {Function} [callback] - Specific callback to remove, or omit to remove all listeners for the event
+     */
     $off(event, callback) {
         if (this.events[event]) {
             if (callback) {

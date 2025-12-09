@@ -1569,12 +1569,21 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 var initialized;
 var mediaApp;
 
-// Simple event emitter to replace Vue 2 event bus
+/**
+ * Simple event emitter to replace Vue 2 event bus
+ * Provides $on, $emit, and $off methods for cross-component communication
+ */
 var EventBus = /*#__PURE__*/function () {
   function EventBus() {
     _classCallCheck(this, EventBus);
     this.events = {};
   }
+
+  /**
+   * Register an event listener
+   * @param {string} event - Event name
+   * @param {Function} callback - Callback function to execute when event is emitted
+   */
   return _createClass(EventBus, [{
     key: "$on",
     value: function $on(event, callback) {
@@ -1583,6 +1592,12 @@ var EventBus = /*#__PURE__*/function () {
       }
       this.events[event].push(callback);
     }
+
+    /**
+     * Emit an event with optional arguments
+     * @param {string} event - Event name
+     * @param {...*} args - Arguments to pass to event listeners
+     */
   }, {
     key: "$emit",
     value: function $emit(event) {
@@ -1595,6 +1610,12 @@ var EventBus = /*#__PURE__*/function () {
         });
       }
     }
+
+    /**
+     * Remove an event listener
+     * @param {string} event - Event name
+     * @param {Function} [callback] - Specific callback to remove, or omit to remove all listeners for the event
+     */
   }, {
     key: "$off",
     value: function $off(event, callback) {
