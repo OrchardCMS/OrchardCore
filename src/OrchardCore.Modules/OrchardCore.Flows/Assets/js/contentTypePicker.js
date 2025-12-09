@@ -77,14 +77,6 @@ function initializeContentTypePickerApplication(pathBase) {
                 }
                 return null;
             },
-            handleImageError: function (event, contentType) {
-                // Replace the broken image with a placeholder div
-                var img = event.target;
-                var placeholder = document.createElement("div");
-                placeholder.className = "card-img-top img-placeholder";
-                placeholder.innerHTML = '<i class="fa fa-cube" aria-hidden="true"></i>';
-                img.parentNode.replaceChild(placeholder, img);
-            },
         },
     });
 

@@ -30,11 +30,7 @@
                         <img v-if="contentType.thumbnail"
                              :src="getThumbnailUrl(contentType)"
                              class="card-img-top"
-                             :alt="contentType.displayName"
-                             v-on:error="handleImageError($event, contentType)">
-                        <div v-else class="card-img-top img-placeholder">
-                            <i class="fa fa-cube" aria-hidden="true"></i>
-                        </div>
+                             :alt="contentType.displayName">
                         <div class="card-body">
                             <h5 class="card-title">{{ contentType.displayName }}</h5>
                             <p v-if="contentType.description" class="card-text text-muted">{{ contentType.description }}</p>
