@@ -21,7 +21,7 @@ public class ContentTypeSettingsViewModel
 
     public string Category { get; set; }
 
-    public string PreviewImagePath { get; set; }
+    public string ThumbnailPath { get; set; }
 
     [BindNever]
     public ContentTypeDefinitionDriverOptions Options { get; set; }

@@ -64,15 +64,15 @@ function initializeContentTypePickerApplication(pathBase) {
                     this.currentConfig.onContentTypeSelected(contentType, this.currentConfig);
                 }
             },
-            getPreviewImageUrl: function (contentType) {
-                if (contentType.previewImage) {
+            getThumbnailUrl: function (contentType) {
+                if (contentType.thumbnail) {
                     // Handle tilde paths
-                    if (contentType.previewImage.startsWith("~/")) {
-                        return this.pathBase + contentType.previewImage.substring(1);
+                    if (contentType.thumbnail.startsWith("~/")) {
+                        return this.pathBase + contentType.thumbnail.substring(1);
                     }
-                    return contentType.previewImage;
+                    return contentType.thumbnail;
                 }
-                return this.pathBase + "/OrchardCore.Flows/Images/content-type-placeholder.png";
+                return null;
             },
             handleImageError: function (event, contentType) {
                 // Replace the broken image with a placeholder div

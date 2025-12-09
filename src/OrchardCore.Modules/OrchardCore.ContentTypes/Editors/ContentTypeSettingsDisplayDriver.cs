@@ -40,7 +40,7 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
             model.Stereotype = settings.Stereotype;
             model.Description = settings.Description;
             model.Category = settings.Category;
-            model.PreviewImagePath = settings.PreviewImagePath;
+            model.ThumbnailPath = settings.ThumbnailPath;
             model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
         }).Location("Content:5");
     }
@@ -55,7 +55,7 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         context.Builder.WithDescription(model.Description);
         context.Builder.Stereotype(stereotype);
         context.Builder.WithCategory(model.Category);
-        context.Builder.WithPreviewImagePath(model.PreviewImagePath);
+        context.Builder.WithThumbnailPath(model.ThumbnailPath);
 
         if (!IsAlphaNumericOrEmpty(stereotype))
         {

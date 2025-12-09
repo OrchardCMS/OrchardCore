@@ -27,8 +27,8 @@
             <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 content-type-picker-grid">
                 <div v-for="contentType in filteredContentTypes" :key="contentType.name" class="col">
                     <div class="card h-100 content-type-card" v-on:click="selectContentType(contentType)">
-                        <img v-if="contentType.previewImage"
-                             :src="getPreviewImageUrl(contentType)"
+                        <img v-if="contentType.thumbnail"
+                             :src="getThumbnailUrl(contentType)"
                              class="card-img-top"
                              :alt="contentType.displayName"
                              v-on:error="handleImageError($event, contentType)">

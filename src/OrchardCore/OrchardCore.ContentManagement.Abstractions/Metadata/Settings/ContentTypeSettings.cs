@@ -43,7 +43,7 @@ public class ContentTypeSettings
     public string Category { get; set; }
 
     /// <summary>
-    /// Gets or sets the preview image path for block pickers.
+    /// Gets or sets the thumbnail path for block pickers.
     /// </summary>
-    public string PreviewImagePath { get; set; }
+    public string ThumbnailPath { get; set; }
 }

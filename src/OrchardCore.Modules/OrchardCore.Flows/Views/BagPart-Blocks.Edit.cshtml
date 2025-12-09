@@ -4,6 +4,7 @@
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
 @using OrchardCore.Mvc.Utilities
+@using System.Text.Json;
 @model BagPartEditViewModel
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
@@ -150,15 +151,15 @@
         var button = document.getElementById('@buttonId');
         if (!button) return;
 
-        var contentTypes = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        var contentTypes = @Html.Raw(JsonSerializer.Serialize(
             Model.ContainedContentTypeDefinitions.Select(t => new {
                 name = t.Name,
                 displayName = t.DisplayName,
                 description = t.GetSettings<ContentTypeSettings>()?.Description ?? "",
                 category = t.GetCategory(),
-                previewImage = t.GetPreviewImage(themeId)
+                thumbnail = t.GetThumbnail()
             }),
-            new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
         ));
 
         button.addEventListener('click', function() {
