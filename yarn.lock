@@ -2475,7 +2475,7 @@ __metadata:
     blueimp-file-upload: "npm:10.32.0"
     bootstrap: "npm:5.3.8"
     jquery: "npm:3.7.1"
-    vue: "npm:2.6.14"
+    vue: "npm:3.5.13"
   languageName: unknown
   linkType: soft
 
