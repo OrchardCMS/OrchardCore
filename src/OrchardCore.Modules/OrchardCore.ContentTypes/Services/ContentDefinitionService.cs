@@ -125,7 +125,13 @@ public class ContentDefinitionService : IContentDefinitionService
 
         // Ensure it has its own part.
         await _contentDefinitionManager.AlterTypeDefinitionAsync(name, builder => builder.WithPart(name));
-        await _contentDefinitionManager.AlterTypeDefinitionAsync(name, cfg => cfg.Creatable().Draftable().Versionable().Listable().Securable());
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(name, cfg => cfg
+            .Creatable()
+            .Draftable()
+            .Versionable()
+            .Listable()
+            .Securable()
+            .WithThumbnailPath("~/TheAdmin/placeholder.png"));
 
         var context = new ContentTypeCreatedContext
         {

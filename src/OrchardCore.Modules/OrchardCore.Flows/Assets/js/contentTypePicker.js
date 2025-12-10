@@ -131,7 +131,7 @@ function contentTypePickerSelectContentType(contentType, config) {
         .data("contenttypes-name", config.contentTypesName)
         .data("contentitems-name", config.contentItemsName)
         .data("widget-type", contentType.name)
-        .data("flowmetadata", false)
+        .data("flowmetadata", config.flowmetadata || false)
         .data("parent-content-type", config.parentContentType)
         .data("part-name", config.partName);
 
