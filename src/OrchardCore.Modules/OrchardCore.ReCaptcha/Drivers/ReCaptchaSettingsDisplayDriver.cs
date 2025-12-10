@@ -4,9 +4,9 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.ViewModels;
 using OrchardCore.Settings;
+using OrchardCore.ReCaptcha.Settings;
 
 namespace OrchardCore.ReCaptcha.Drivers;
 

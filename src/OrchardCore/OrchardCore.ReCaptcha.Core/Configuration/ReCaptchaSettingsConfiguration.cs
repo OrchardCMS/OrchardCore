@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Settings;
+using OrchardCore.ReCaptcha.Settings;
 
 namespace OrchardCore.ReCaptcha.Configuration;
 

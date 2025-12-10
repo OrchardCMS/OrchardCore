@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.ReCaptcha.Configuration;
+using OrchardCore.ReCaptcha.Settings;
 
 namespace OrchardCore.ReCaptcha.Services;
 

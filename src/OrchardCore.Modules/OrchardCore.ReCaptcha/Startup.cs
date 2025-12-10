@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Core;
 using OrchardCore.ReCaptcha.Drivers;
 using OrchardCore.ReCaptcha.Users.Handlers;
@@ -11,6 +10,7 @@ using OrchardCore.Settings.Deployment;
 using OrchardCore.Users;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
+using OrchardCore.ReCaptcha.Settings;
 
 namespace OrchardCore.ReCaptcha;
 

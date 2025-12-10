@@ -7,27 +7,31 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
-using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Settings;
+using OrchardCore.ReCaptcha.Settings;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ReCaptcha.Services;
 
 [Feature("OrchardCore.ReCaptcha")]
 public sealed class ReCaptchaShape : IShapeAttributeProvider
 {
-    private readonly ISiteService _siteService;
+    // private readonly ISiteService _siteService;
+    private readonly ReCaptchaSettings _reCaptchaSettings;
     private readonly ILocalizationService _localizationService;
     private readonly IResourceManager _resourceManager;
     private readonly ILogger _logger;
 
     public ReCaptchaShape(
-        ISiteService siteService,
+        //ISiteService siteService,
+        IOptions<ReCaptchaSettings> optionsAccessor,
         ILocalizationService localizationService,
         IResourceManager resourceManager,
         ILogger<ReCaptchaShape> logger)
     {
-        _siteService = siteService;
+        //_siteService = siteService;
+        _reCaptchaSettings = optionsAccessor.Value;
         _localizationService = localizationService;
         _resourceManager = resourceManager;
         _logger = logger;
@@ -36,21 +40,19 @@ public sealed class ReCaptchaShape : IShapeAttributeProvider
     [Shape]
     public async Task<IHtmlContent> ReCaptcha(string language, string onload)
     {
-        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
-
-        if (!settings.ConfigurationExists())
+        if (!_reCaptchaSettings.ConfigurationExists())
         {
             return HtmlString.Empty;
         }
 
         var script = new TagBuilder("script");
-        script.MergeAttribute("src", await GetReCaptchaScriptUrlAsync(settings.ReCaptchaScriptUri, language, onload));
+        script.MergeAttribute("src", await GetReCaptchaScriptUrlAsync(_reCaptchaSettings.ReCaptchaScriptUri, language, onload));
 
         _resourceManager.RegisterFootScript(script);
 
         var div = new TagBuilder("div");
         div.AddCssClass("g-recaptcha");
-        div.MergeAttribute("data-sitekey", settings.SiteKey);
+        div.MergeAttribute("data-sitekey", _reCaptchaSettings.SiteKey);
 
         return div;
     }

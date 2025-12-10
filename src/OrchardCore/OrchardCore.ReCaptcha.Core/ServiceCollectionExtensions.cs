@@ -6,6 +6,7 @@ using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.ReCaptcha.TagHelpers;
 using Polly;
+using OrchardCore.ReCaptcha.Settings;
 
 namespace OrchardCore.ReCaptcha.Core;
 
