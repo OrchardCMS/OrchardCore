@@ -7,6 +7,13 @@ function initializeContentTypePickerApplication(pathBase) {
         return;
     }
 
+    // Check if the Vue app element exists in the DOM
+    var appElement = document.getElementById("contentTypePickerApp");
+    if (!appElement) {
+        // Element not found - don't set initialized flag so it can be retried
+        return;
+    }
+
     contentTypePickerInitialized = true;
 
     contentTypePickerApp = new Vue({
@@ -85,6 +92,13 @@ function initializeContentTypePickerApplication(pathBase) {
     if (modalElement) {
         sharedContentTypePickerModal = new bootstrap.Modal(modalElement);
 
+        // Blur focused element before modal hides to prevent aria-hidden warning
+        modalElement.addEventListener("hide.bs.modal", function () {
+            if (document.activeElement && modalElement.contains(document.activeElement)) {
+                document.activeElement.blur();
+            }
+        });
+
         // Reset state when modal is hidden
         modalElement.addEventListener("hidden.bs.modal", function () {
             if (contentTypePickerApp) {
@@ -98,6 +112,11 @@ function initializeContentTypePickerApplication(pathBase) {
 
 // Show the shared modal with configuration
 function showContentTypePicker(config) {
+    // Try to initialize if not already done (handles late DOM injection)
+    if (!contentTypePickerInitialized) {
+        initializeContentTypePickerApplication(config.pathBase || "");
+    }
+
     if (contentTypePickerApp && sharedContentTypePickerModal) {
         contentTypePickerApp.configure(config);
 
@@ -117,6 +136,10 @@ function showContentTypePicker(config) {
 // Hide the shared modal
 function hideContentTypePicker() {
     if (sharedContentTypePickerModal) {
+        // Blur any focused element to prevent aria-hidden warning
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
         sharedContentTypePickerModal.hide();
     }
 }
@@ -136,7 +159,13 @@ function contentTypePickerSelectContentType(contentType, config) {
             return $(e).val().substring(0, $(e).val().lastIndexOf("-")) === htmlFieldPrefix;
         })
         .map(function (i, e) {
-            return parseInt($(e).val().substring($(e).val().lastIndexOf("-") + 1)) || 0;
+            return (
+                parseInt(
+                    $(e)
+                        .val()
+                        .substring($(e).val().lastIndexOf("-") + 1),
+                ) || 0
+            );
         });
 
     var index = indexes.length ? Math.max(...indexes) + 1 : 0;

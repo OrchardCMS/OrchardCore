@@ -70,14 +70,15 @@
 </div>
 
 @* Shared resources - rendered once per page *@
-@if (Context.Items["FlowPartBlocks.Edit"] == null)
+@if (Context.Items["BagPart.Edit"] == null)
 {
-    Context.Items["FlowPartBlocks.Edit"] = new object();
+    Context.Items["BagPart.Edit"] = new object();
+    <script asp-name="flowpart-edit" at="Foot"></script>
     <style asp-name="flowpart-edit" at="Head"></style>
 }
 
-@* Content type picker resources - rendered once per page (skip for AJAX requests to prevent duplicate modals) *@
-@if (Context.Items["ContentTypePicker.Init"] == null && !Context.Request.Headers.XRequestedWith.Contains("XMLHttpRequest"))
+@* Content type picker resources - rendered once per page *@
+@if (Context.Items["ContentTypePicker.Init"] == null)
 {
     Context.Items["ContentTypePicker.Init"] = new object();
     <script asp-name="contenttypepicker" at="Foot"></script>

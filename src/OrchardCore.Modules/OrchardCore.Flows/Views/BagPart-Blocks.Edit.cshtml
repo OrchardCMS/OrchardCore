@@ -8,7 +8,6 @@
 @model BagPartEditViewModel
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@inject IThemeManager ThemeManager
 @{
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
@@ -16,13 +15,8 @@
     var parentContentType = Model.BagPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
     var totalItems = Model.ContainedContentTypeDefinitions.Count();
-
     // Unique ID for this instance's button
     var buttonId = Html.Id("openContentTypePicker");
-
-    // Get theme for default image paths
-    var theme = await ThemeManager.GetThemeAsync();
-    var themeId = theme?.Id ?? "TheTheme";
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
@@ -91,14 +85,15 @@
 </div>
 
 @* Shared resources - rendered once per page *@
-@if (Context.Items["BagPartBlocks.Edit"] == null)
+@if (Context.Items["BagPart.Edit"] == null)
 {
-    Context.Items["BagPartBlocks.Edit"] = new object();
+    Context.Items["BagPart.Edit"] = new object();
+    <script asp-name="flowpart-edit" at="Foot"></script>
     <style asp-name="flowpart-edit" at="Head"></style>
 }
 
-@* Content type picker resources - rendered once per page (skip for AJAX requests to prevent duplicate modals) *@
-@if (Context.Items["ContentTypePicker.Init"] == null && !Context.Request.Headers.XRequestedWith.Contains("XMLHttpRequest"))
+@* Content type picker resources - rendered once per page *@
+@if (Context.Items["ContentTypePicker.Init"] == null)
 {
     Context.Items["ContentTypePicker.Init"] = new object();
     <script asp-name="contenttypepicker" at="Foot"></script>
