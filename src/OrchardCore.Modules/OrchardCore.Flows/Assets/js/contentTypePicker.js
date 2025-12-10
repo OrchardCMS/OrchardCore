@@ -110,8 +110,19 @@ function initializeContentTypePickerApplication(pathBase) {
     }
 }
 
+// Remove any duplicate modals that may have been injected via AJAX
+function removeDuplicateModals() {
+    var modals = document.querySelectorAll("#contentTypePickerModal");
+    for (var i = 1; i < modals.length; i++) {
+        modals[i].remove();
+    }
+}
+
 // Show the shared modal with configuration
 function showContentTypePicker(config) {
+    // Remove any duplicate modals first
+    removeDuplicateModals();
+
     // Try to initialize if not already done (handles late DOM injection)
     if (!contentTypePickerInitialized) {
         initializeContentTypePickerApplication(config.pathBase || "");

@@ -83,27 +83,43 @@
     Context.Items["ContentTypePicker.Init"] = new object();
     <script asp-name="contenttypepicker" at="Foot"></script>
 
-    @* Shared modal with embedded Vue app - rendered ONCE *@
-    <div class="modal fade modal-content-type-picker"
-         id="contentTypePickerModal"
-         tabindex="-1"
-         aria-labelledby="contentTypePickerModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="contentTypePickerModalLabel">@T["Select Widget"]</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@T["Close"]"></button>
-                </div>
-                <div class="modal-body">
-                    @await DisplayAsync(await New.ContentTypePicker())
+    @* Shared modal with embedded Vue app - only added to DOM if not already present *@
+    <template id="contentTypePickerModalTemplate">
+        <div class="modal fade modal-content-type-picker"
+             id="contentTypePickerModal"
+             tabindex="-1"
+             aria-labelledby="contentTypePickerModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="contentTypePickerModalLabel">@T["Select Widget"]</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@T["Close"]"></button>
+                    </div>
+                    <div class="modal-body">
+                        @await DisplayAsync(await New.ContentTypePicker())
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </template>
 
     <script at="Foot">
-        initializeContentTypePickerApplication('@Context.Request.PathBase');
+        (function() {
+            // Only add modal to DOM if it doesn't already exist
+            if (!document.getElementById('contentTypePickerModal')) {
+                var template = document.getElementById('contentTypePickerModalTemplate');
+                if (template) {
+                    document.body.appendChild(template.content.cloneNode(true));
+                    template.remove();
+                }
+            } else {
+                // Remove the template since modal already exists
+                var template = document.getElementById('contentTypePickerModalTemplate');
+                if (template) template.remove();
+            }
+            initializeContentTypePickerApplication('@Context.Request.PathBase');
+        })();
     </script>
 }
 
