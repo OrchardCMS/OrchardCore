@@ -24,7 +24,7 @@
     <div id="@widgetTemplatePlaceholderId"
          class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0"
          data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })"
-         data-widget-types="@widgetTypesStringified">
+         data-content-types="@widgetTypesStringified">
         @{
             var index = 0;
         }
@@ -70,10 +70,9 @@
 </div>
 
 @* Shared resources - rendered once per page *@
-@if (Context.Items["FlowPart.Edit"] == null)
+@if (Context.Items["FlowPartBlocks.Edit"] == null)
 {
-    Context.Items["FlowPart.Edit"] = new object();
-    <script asp-name="flowpart-edit" at="Foot"></script>
+    Context.Items["FlowPartBlocks.Edit"] = new object();
     <style asp-name="flowpart-edit" at="Head"></style>
 }
 
@@ -196,7 +195,7 @@
 
                 widgetItemDestId = widgetDragItem.parent().attr('id');
                 if (widgetItemDestId !== widgetItemSourceId) {
-                    if (lastContainer[0] != this && this.dataset.widgetTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
+                    if (lastContainer[0] != this && this.dataset.contentTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
                         var inputs = widgetDragItem.children("input[name*='@partName']");
 
                         var destination = $('#' + widgetItemDestId);
@@ -250,7 +249,7 @@
             },
             over: function(event, ui) {
                 var $self = $(this);
-                if (lastContainer[0] != this && this.dataset.widgetTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
+                if (lastContainer[0] != this && this.dataset.contentTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
                     lastContainer.toggleClass('widget-dropzone-hint');
                     lastContainer = $self;
                     $self.toggleClass('widget-dropzone-hint');

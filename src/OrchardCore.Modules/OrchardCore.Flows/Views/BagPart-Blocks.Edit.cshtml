@@ -91,10 +91,9 @@
 </div>
 
 @* Shared resources - rendered once per page *@
-@if (Context.Items["BagPart.Edit"] == null)
+@if (Context.Items["BagPartBlocks.Edit"] == null)
 {
-    Context.Items["BagPart.Edit"] = new object();
-    <script asp-name="flowpart-edit" at="Foot"></script>
+    Context.Items["BagPartBlocks.Edit"] = new object();
     <style asp-name="flowpart-edit" at="Head"></style>
 }
 
