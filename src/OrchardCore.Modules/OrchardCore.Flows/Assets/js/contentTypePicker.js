@@ -121,23 +121,64 @@ function hideContentTypePicker() {
     }
 }
 
-// Integration function to trigger existing add-widget functionality
+// Direct widget creation via AJAX
 function contentTypePickerSelectContentType(contentType, config) {
-    // Create a synthetic element with the required data attributes
-    var $trigger = $('<a class="add-widget" style="display:none;">')
-        .data("target-id", config.targetId)
-        .data("html-field-prefix", config.htmlFieldPrefix)
-        .data("prefixes-name", config.prefixesName)
-        .data("contenttypes-name", config.contentTypesName)
-        .data("contentitems-name", config.contentItemsName)
-        .data("widget-type", contentType.name)
-        .data("flowmetadata", config.flowmetadata || false)
-        .data("parent-content-type", config.parentContentType)
-        .data("part-name", config.partName);
+    var targetId = config.targetId;
+    var htmlFieldPrefix = config.htmlFieldPrefix;
+    var $target = $("#" + targetId);
+    var createEditorUrl = $target.data("buildeditorurl");
 
-    // Append to body so delegated event handler can find it, trigger click, then remove
-    $trigger.appendTo("body").trigger("click").remove();
+    // Calculate next prefix index
+    var indexes = $target
+        .closest("form")
+        .find("input[name*='Prefixes']")
+        .filter(function (i, e) {
+            return $(e).val().substring(0, $(e).val().lastIndexOf("-")) === htmlFieldPrefix;
+        })
+        .map(function (i, e) {
+            return parseInt($(e).val().substring($(e).val().lastIndexOf("-") + 1)) || 0;
+        });
 
-    // Close the shared modal
+    var index = indexes.length ? Math.max(...indexes) + 1 : 0;
+    var prefix = htmlFieldPrefix + "-" + index.toString();
+
+    // Build URL with proper encoding
+    var params = new URLSearchParams({
+        id: contentType.name,
+        prefix: prefix,
+        prefixesName: config.prefixesName,
+        contentTypesName: config.contentTypesName,
+        contentItemsName: config.contentItemsName,
+        targetId: targetId,
+        flowmetadata: config.flowmetadata || false,
+        parentContentType: config.parentContentType,
+        partName: config.partName,
+    });
+
+    // Add optional cardCollectionType
+    if (config.cardCollectionType) {
+        params.append("cardCollectionType", config.cardCollectionType);
+    }
+
+    $.ajax({
+        url: createEditorUrl + "?" + params.toString(),
+    }).done(function (data) {
+        var result = JSON.parse(data);
+
+        // Insert before element if specified, otherwise append to target
+        if (config.insertBefore) {
+            $(result.Content).insertBefore(config.insertBefore);
+        } else {
+            $target.append(result.Content);
+        }
+
+        // Execute scripts
+        $(result.Scripts)
+            .filter("script")
+            .each(function () {
+                $.globalEval(this.text || this.textContent || this.innerHTML || "");
+            });
+    });
+
     hideContentTypePicker();
 }

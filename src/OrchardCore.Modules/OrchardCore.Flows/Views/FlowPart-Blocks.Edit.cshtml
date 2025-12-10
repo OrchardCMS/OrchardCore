@@ -35,7 +35,7 @@
 
             dynamic contentCard = await New.ContentCard(
                 CollectionShape: Model,
-                CollectionShapeType: nameof(FlowPart),
+                CollectionShapeType: "FlowPartBlocks",
                 ContentItem: widget,
                 BuildEditor: true,
                 ParentContentType: parentContentType,
@@ -146,6 +146,7 @@
             partName: '@partName',
             contentTypes: contentTypes,
             flowmetadata: true,
+            cardCollectionType: 'FlowPartBlocks',
             modalTitle: '@T["Select Widget"].Value',
             onContentTypeSelected: contentTypePickerSelectContentType
         });
