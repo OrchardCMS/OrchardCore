@@ -19,6 +19,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
+    private readonly ContentTypesOptions _contentTypesOptions;
     private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
@@ -29,11 +30,13 @@ public class ContentDefinitionService : IContentDefinitionService
             IEnumerable<ContentPart> contentParts,
             IEnumerable<ContentField> contentFields,
             IOptions<ContentOptions> contentOptions,
+            IOptions<ContentTypesOptions> contentTypesOptions,
             ILogger<IContentDefinitionService> logger,
             IStringLocalizer<ContentDefinitionService> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
+        _contentTypesOptions = contentTypesOptions.Value;
 
         foreach (var element in contentParts.Select(x => x.GetType()))
         {
@@ -125,13 +128,20 @@ public class ContentDefinitionService : IContentDefinitionService
 
         // Ensure it has its own part.
         await _contentDefinitionManager.AlterTypeDefinitionAsync(name, builder => builder.WithPart(name));
-        await _contentDefinitionManager.AlterTypeDefinitionAsync(name, cfg => cfg
-            .Creatable()
-            .Draftable()
-            .Versionable()
-            .Listable()
-            .Securable()
-            .WithThumbnailPath("~/TheAdmin/placeholder.png"));
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(name, cfg =>
+        {
+            cfg.Creatable()
+                .Draftable()
+                .Versionable()
+                .Listable()
+                .Securable()
+                .WithThumbnailPath(_contentTypesOptions.DefaultThumbnailPath);
+
+            if (!string.IsNullOrWhiteSpace(_contentTypesOptions.DefaultCategory))
+            {
+                cfg.WithCategory(_contentTypesOptions.DefaultCategory);
+            }
+        });
 
         var context = new ContentTypeCreatedContext
         {
