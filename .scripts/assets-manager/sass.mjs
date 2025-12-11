@@ -177,16 +177,21 @@ function runSass(config) {
                                     console.log(`RTL (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(normalTarget));
                                 }
 
-                                let { code, map } = transform({
-                                    code: Buffer.from(scssResult.css),
-                                    minify: true,
-                                    sourceMap: true,
-                                });
+                                try {
+                                    let { code, map } = transform({
+                                        code: Buffer.from(scssResult.css, 'utf-8'),
+                                        minify: true,
+                                        sourceMap: true,
+                                    });
 
-                                if (code) {
-                                    const minifiedTarget = path.join(dest, path.parse(target).name + ".min.css");
-                                    fs.outputFile(minifiedTarget, code);
-                                    console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(minifiedTarget));
+                                    if (code) {
+                                        const minifiedTarget = path.join(dest, path.parse(target).name + ".min.css");
+                                        fs.outputFile(minifiedTarget, code);
+                                        console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(minifiedTarget));
+                                    }
+                                } catch (error) {
+                                    console.warn(`Failed to minify ${normalTarget}:`, error.message);
+                                    console.log(`Skipping minification for ${path.parse(target).name}.css`);
                                 }
 
 /*                                 if (mode === "production" && map) {
