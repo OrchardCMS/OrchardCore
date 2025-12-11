@@ -443,7 +443,7 @@ internal sealed class ModularBackgroundService : BackgroundService
 
         // Set the PathBase only if it's not just "/". Otherwise, the original path base is kept, which may
         // contain the RequestUrlPrefix if any.
-        if (!string.IsNullOrEmpty(uri.AbsolutePath) && uri.AbsolutePath != "/")
+        if (uri.AbsolutePath != "/")
         {
             context.Request.PathBase = uri.AbsolutePath;
         }
@@ -452,6 +452,5 @@ internal sealed class ModularBackgroundService : BackgroundService
         {
             context.Request.QueryString = new QueryString(uri.Query);
         }
-    }
     }
 }
