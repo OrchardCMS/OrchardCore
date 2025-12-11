@@ -4,9 +4,7 @@ Based on [Concurrently](https://github.com/open-cli-tools/concurrently) the Orch
 
 `Concurrently`, is a concurrent shell runner which allows to trigger any possible shell command.
 
-Old assets are not compiled as ES6 modules so they don't need these bundlers. For that matter we kept the old `gulpfile.js` which will be now triggered by `Concurrently` when doing `yarn build -gr`.
-
-Concurrently uses an `Assets.json` file that defines actions to execute. The old Gulp pipeline uses a `GulpAssets.json` file that defines actions to execute.
+Concurrently uses an `Assets.json` file that defines actions to execute.
 
 Parcel is the easiest way to build assets so far as it doesn't require any configuration. It is a zero file configuration bundler which means we use the same configuration for all assets. It is the recommended builder for those who want to easily start with a bundler. Though, Vite is more suited for Vue apps.
 
@@ -28,15 +26,13 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
 What to do if you change an SCSS, JS, or TS/TSX file in any of Orchard Core's projects, and want to update the output files (that go into the `wwwroot` folders)?
 
 1. Make sure you completed the above "Prerequisites" steps.
-2. Run `yarn build -gr` from the command line in the root of the repository. This will build all changed assets.
+2. Run `yarn build` from the command line in the root of the repository. This will build all changed assets.
 
 Alternatively, if you make a lot of changes during development that you want to test quickly, you don't need to run the full build every time. Instead, use `yarn watch` to automatically build assets when you save a file. For this, run `yarn watch -n asset-name`, where `asset-name` is the `name` property you can find for the given file in the `Assets.json` file of the given project's root folder. E.g., for the Audit Trail module's `audittrailui.scss` file it's `audittrail`, so the command is `yarn watch -n audittrail`. You can also watch multiple assets at once by separating their names with commas, e.g., `yarn watch -n audittrail, audit-trail-diff-viewer`.
 
 ## All features
 
-- Build everything (including gulp rebuild): `yarn build -gr`
-- Build assets manager assets only: `yarn build`
-- Build with gulp: `yarn build -g`
+- Build all assets: `yarn build`
 - Build module by name: `yarn build -n asset-name`
 - Build assets by tag: `yarn build -t tagname`
 - Watch module by name: `yarn watch -n asset-name`.
@@ -46,8 +42,7 @@ Alternatively, if you make a lot of changes during development that you want to 
 - Makes uses of latest yarn version 4.6.0.
 - Makes use of yarn workspaces which allows to import files from different locations in the app for sharing ES6 modules.
 - VS Code launcher debug option added as "Asset Bundler Tool Debug"
-- Gulp pipeline moved using GulpAssets.json file
-- New Assets.json file definitions for building with new tool.
+- Assets.json file definitions for building assets.
 - Concurrently will retry building up to 3 times making CI build less prone to fail.
 - All tasks can be run from within Visual Studio with the [Task Runner Explorer extension](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.TaskRunnerExplorer).
 
