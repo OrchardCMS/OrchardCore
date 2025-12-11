@@ -502,9 +502,23 @@
     "tags": ["admin", "css"]
   },
   {
-    "action": "sass",
+    "action": "copy",
     "name": "trumbowyg",
-    "source": "../../../node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss",
+    "source": "../../../node_modules/trumbowyg/dist/ui/trumbowyg.css",
+    "dest": "wwwroot/Styles/trumbowyg/",
+    "tags": ["css"]
+  },
+  {
+    "action": "copy",
+    "name": "trumbowyg",
+    "source": "../../../node_modules/trumbowyg/dist/ui/trumbowyg.min.css",
+    "dest": "wwwroot/Styles/trumbowyg/",
+    "tags": ["css"]
+  },
+  {
+    "action": "copy",
+    "name": "trumbowyg",
+    "source": "../../../node_modules/trumbowyg/dist/ui/trumbowyg.min.css.map",
     "dest": "wwwroot/Styles/trumbowyg/",
     "tags": ["css"]
   },
