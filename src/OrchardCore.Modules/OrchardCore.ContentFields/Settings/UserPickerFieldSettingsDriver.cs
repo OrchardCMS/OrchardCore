@@ -33,6 +33,7 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
 
             model.Roles = roleEntries;
             model.DisplayAllUsers = settings.DisplayAllUsers || !roleEntries.Where(x => x.IsSelected).Any();
+            model.Placeholder = settings.Placeholder;
         }).Location("Content");
     }
 
@@ -47,6 +48,7 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             Hint = model.Hint,
             Required = model.Required,
             Multiple = model.Multiple,
+            Placeholder = model.Placeholder,
         };
 
         var roles = await _roleService.GetAssignableRolesAsync();

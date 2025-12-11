@@ -12,4 +12,6 @@ public class TextFieldSettings : FieldSettings
     /// The pattern used to build the value.
     /// </summary>
     public string Pattern { get; set; }
+
+    public string Placeholder { get; set; } = string.Empty;
 }
