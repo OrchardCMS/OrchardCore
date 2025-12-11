@@ -1,0 +1,32 @@
+[
+  {
+    "action": "sass",
+    "name": "media",
+    "source": "Assets/scss/media.scss",
+    "tags": ["admin", "dashboard", "css"]
+  },
+  {
+    "action": "concat",
+    "name": "media",
+    "source": [
+      "../../../node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
+      "../../../node_modules/blueimp-file-upload/js/jquery.fileupload.js",
+      "Assets/js/app/Shared/uploadComponent.js",
+      "Assets/js/app/Shared/uploadListComponent.js",
+      "Assets/js/app/MediaApp/font-awesome-thumbnails.js",
+      "Assets/js/app/MediaApp/pagerComponent.js",
+      "Assets/js/app/MediaApp/sortIndicatorComponent.js",
+      "Assets/js/app/MediaApp/folderComponent.js",
+      "Assets/js/app/MediaApp/mediaItemsTableComponent.js",
+      "Assets/js/app/MediaApp/mediaItemsGridComponent.js",
+      "Assets/js/app/MediaApp/fileupload.js",
+      "Assets/js/app/MediaApp/app.js",
+      "Assets/js/app/MediaField/mediafieldsAppsArray.js",
+      "Assets/js/app/MediaField/mediaFieldThumbsContainer.js",
+      "Assets/js/app/MediaField/attachedMediaField.js",
+      "Assets/js/app/MediaField/galleryMediaField.js",
+      "Assets/js/app/MediaField/mediafield.js"
+    ],
+    "tags": ["admin", "dashboard", "js"]
+  }
+]
