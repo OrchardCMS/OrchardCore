@@ -342,11 +342,13 @@ yarn
 # Build all assets
 yarn build
 
-# Build a specific module's assets
-yarn build -n [module-name]
+# Build specific asset groups by name
+# The name comes from the "name" property in Assets.json entries
+yarn build -n [asset-group-name]
 
-# Example: Build only Media module assets
-yarn build -n media
+# Examples:
+yarn build -n media                # Media module assets
+yarn build -n trumbowyg-plugins    # Trumbowyg plugins (Resources module)
 ```
 
 ### Assets.json Configuration
