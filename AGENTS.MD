@@ -434,7 +434,7 @@ public class YourField : ContentField
 - Use `sealed` for classes that should not be inherited
 - Use file-scoped namespaces
 - Prefer collection expressions (`[]`) over `new List<T>()`
-- Avoir use of primary constructors
+- Avoid use of primary constructors
 
 ### Naming Conventions
 
