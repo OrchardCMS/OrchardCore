@@ -10,7 +10,7 @@ var pagerComponent = {
                 <li class="page-item" :class="{disabled : !canDoPrev}">
                     <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ T.pagerPreviousButton }}</a>
                 </li>
-                <li v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks">
+                <li class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks">
                     <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="'Goto Page' + link">
                         {{link}}
                         <span v-if="current == link -1" class="visually-hidden">(current)</span>
@@ -46,6 +46,7 @@ var pagerComponent = {
         </nav>
         </div>
         `,
+    inject: ['bus'],
     props: {
         sourceItems: Array
     },
@@ -119,29 +120,31 @@ var pagerComponent = {
             var start = this.pageSize * this.current;
             var end = start + this.pageSize;
             var result = this.sourceItems.slice(start, end);
-            bus.$emit('pagerEvent', result);
+            this.bus.$emit('pagerEvent', result);
             return result;
         },
         pageLinks: function () {
 
             var links = [];
 
+            // Add up to 2 pages before current (1-indexed display)
+            if (this.current >= 2) {
+                links.push(this.current - 1); // page number: current - 1
+            }
+            if (this.current >= 1) {
+                links.push(this.current); // page number: current
+            }
+
+            // Add current page (1-indexed display)
             links.push(this.current + 1);
 
-            // Add 2 items before current
-            var beforeCurrent = this.current > 0 ? this.current : -1;
-            links.unshift(beforeCurrent);
-
-            var beforeBeforeCurrent = this.current > 1 ? this.current - 1 : -1;
-            links.unshift(beforeBeforeCurrent);
-
-
-            // Add 2 items after current
-            var afterCurrent = this.totalPages - this.current > 1 ? this.current + 2 : -1;
-            links.push(afterCurrent);
-
-            var afterAfterCurrent = this.totalPages - this.current > 2 ? this.current + 3 : -1;
-            links.push(afterAfterCurrent);
+            // Add up to 2 pages after current (1-indexed display)
+            if (this.current + 1 < this.totalPages) {
+                links.push(this.current + 2); // page number: current + 2
+            }
+            if (this.current + 2 < this.totalPages) {
+                links.push(this.current + 3); // page number: current + 3
+            }
 
             return links;
         }

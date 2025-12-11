@@ -25,6 +25,7 @@ var folderComponent = {
             </ol>
         </li>
         `,
+    inject: ['bus'],
     props: {
         model: Object,
         selectedInMediaApp: Object,
@@ -65,23 +66,28 @@ var folderComponent = {
     },
     created: function () {
         var self = this;
-        bus.$on('deleteFolder', function (folder) {
+        this.bus.$on('deleteFolder', function (folder) {
             if (self.children) {
                 var index = self.children && self.children.indexOf(folder)
                 if (index > -1) {
                     self.children.splice(index, 1)
-                    bus.$emit('folderDeleted');
+                    self.bus.$emit('folderDeleted');
                 }
             }
         });
 
-        bus.$on('addFolder', function (target, folder) {
-            if (self.model == target) {
+        this.bus.$on('addFolder', function (target, folder) {
+            // Compare by path instead of object reference since Vue 3 uses Proxy objects
+            if (self.model.path === target.path) {
                 if (self.children !== null) {
                     self.children.push(folder);
+                } else {
+                    // Initialize children array if it's null and open the folder to show the new child
+                    self.children = [folder];
+                    self.open = true;
                 }                
                 folder.parent = self.model;
-                bus.$emit('folderAdded', folder);
+                self.bus.$emit('folderAdded', folder);
             }
         });
     },
@@ -104,14 +110,14 @@ var folderComponent = {
             }
         },
         select: function () {
-            bus.$emit('folderSelected', this.model);
+            this.bus.$emit('folderSelected', this.model);
             this.loadChildren();
         },
         createFolder: function () {           
-            bus.$emit('createFolderRequested');
+            this.bus.$emit('createFolderRequested');
         },
         deleteFolder: function () {
-            bus.$emit('deleteFolderRequested');
+            this.bus.$emit('deleteFolderRequested');
         },
         loadChildren: function () {            
             var self = this;
@@ -178,11 +184,11 @@ var folderComponent = {
                             targetFolder: targetFolder
                         },
                         success: function () {
-                            bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
+                            self.bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
                         },
                         error: function (error) {
                             console.error(error.responseText);
-                            bus.$emit('mediaListMoved', error.responseText);
+                            self.bus.$emit('mediaListMoved', error.responseText);
                         }
                     });
                 }
