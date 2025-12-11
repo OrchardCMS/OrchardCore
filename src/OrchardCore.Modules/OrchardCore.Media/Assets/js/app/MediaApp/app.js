@@ -510,6 +510,9 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             app.component('upload', uploadComponent);
             app.component('uploadList', uploadListComponent);
 
+            // Make EventBus available to all components via provide/inject
+            app.provide('bus', bus);
+
             mediaApp = app.mount('#mediaApp');
 
             $('#create-folder-name').keydown(function (e) {

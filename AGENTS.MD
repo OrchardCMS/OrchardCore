@@ -343,12 +343,6 @@ yarn
 
 # Build all assets including gulp
 yarn build -gr
-
-# Build specific module assets
-yarn build -n asset-name
-
-# Watch for changes
-yarn watch -n asset-name
 ```
 
 ### Assets.json Configuration

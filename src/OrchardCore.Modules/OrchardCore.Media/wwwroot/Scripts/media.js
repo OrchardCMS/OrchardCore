@@ -2051,6 +2051,9 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
       app.component('sortIndicator', sortIndicatorComponent);
       app.component('upload', uploadComponent);
       app.component('uploadList', uploadListComponent);
+
+      // Make EventBus available to all components via provide/inject
+      app.provide('bus', bus);
       mediaApp = app.mount('#mediaApp');
       $('#create-folder-name').keydown(function (e) {
         if (e.key == 'Enter') {
@@ -2191,6 +2194,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 // <folder> component
 var folderComponent = {
   template: "\n        <li :class=\"{selected: isSelected}\" \n                v-on:dragleave.prevent = \"handleDragLeave($event);\" \n                v-on:dragover.prevent.stop=\"handleDragOver($event);\" \n                v-on:drop.prevent.stop = \"moveMediaToFolder(model, $event)\" >\n            <div :class=\"{folderhovered: isHovered , treeroot: level == 1}\" >\n                <a href=\"javascript:;\" :style=\"{ padding".concat(document.dir == "ltr" ? "Left" : "Right", ":padding + 'px' }\" v-on:click=\"select\"  draggable=\"false\" class=\"folder-menu-item\">\n                  <span v-on:click.stop=\"toggle\" class=\"expand\" :class=\"{opened: open, closed: !open, empty: empty}\"><i v-if=\"open\" class=\"fa-solid fa-chevron-").concat(document.dir == "ltr" ? "right" : "left", "\"></i></span> \n                  <div class=\"folder-name ms-2\">{{model.name}}</div>\n                    <div class=\"btn-group folder-actions\" >\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"createFolder\" v-if=\"canCreateFolder && (isSelected || isRoot)\"><i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i></a>\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"deleteFolder\" v-if=\"canDeleteFolder && isSelected && !isRoot\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                    </div>\n                </a>\n            </div>\n            <ol v-show=\"open\">\n                <folder v-for=\"folder in children\"\n                        :key=\"folder.path\"\n                        :model=\"folder\"\n                        :selected-in-media-app=\"selectedInMediaApp\"\n                        :level=\"level + 1\">\n                </folder>\n            </ol>\n        </li>\n        "),
+  inject: ['bus'],
   props: {
     model: Object,
     selectedInMediaApp: Object,
@@ -2231,22 +2235,27 @@ var folderComponent = {
   },
   created: function created() {
     var self = this;
-    bus.$on('deleteFolder', function (folder) {
+    this.bus.$on('deleteFolder', function (folder) {
       if (self.children) {
         var index = self.children && self.children.indexOf(folder);
         if (index > -1) {
           self.children.splice(index, 1);
-          bus.$emit('folderDeleted');
+          self.bus.$emit('folderDeleted');
         }
       }
     });
-    bus.$on('addFolder', function (target, folder) {
-      if (self.model == target) {
+    this.bus.$on('addFolder', function (target, folder) {
+      // Compare by path instead of object reference since Vue 3 uses Proxy objects
+      if (self.model.path === target.path) {
         if (self.children !== null) {
           self.children.push(folder);
+        } else {
+          // Initialize children array if it's null and open the folder to show the new child
+          self.children = [folder];
+          self.open = true;
         }
         folder.parent = self.model;
-        bus.$emit('folderAdded', folder);
+        self.bus.$emit('folderAdded', folder);
       }
     });
   },
@@ -2268,14 +2277,14 @@ var folderComponent = {
       }
     },
     select: function select() {
-      bus.$emit('folderSelected', this.model);
+      this.bus.$emit('folderSelected', this.model);
       this.loadChildren();
     },
     createFolder: function createFolder() {
-      bus.$emit('createFolderRequested');
+      this.bus.$emit('createFolderRequested');
     },
     deleteFolder: function deleteFolder() {
-      bus.$emit('deleteFolderRequested');
+      this.bus.$emit('deleteFolderRequested');
     },
     loadChildren: function loadChildren() {
       var self = this;
@@ -2335,11 +2344,11 @@ var folderComponent = {
                 targetFolder: targetFolder
               },
               success: function success() {
-                bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
+                self.bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
               },
               error: function error(_error2) {
                 console.error(_error2.responseText);
-                bus.$emit('mediaListMoved', _error2.responseText);
+                self.bus.$emit('mediaListMoved', _error2.responseText);
               }
             });
           }
@@ -2404,6 +2413,7 @@ function getClassNameForFilename(filename) {
 // <media-items-grid> component
 var mediaItemsGridComponent = {
   template: "\n        <ol class=\"row media-items-grid\">\n                <li v-for=\"media in filteredMediaItems\"\n                    :key=\"media.name\" \n                    class=\"media-item media-container-main-list-item card p-0\"\n                    :style=\"{width: thumbSize + 2 + 'px'}\"\n                    :class=\"{selected: isMediaSelected(media)}\"\n                    v-on:click.stop=\"toggleSelectionOfMedia(media)\"\n                    draggable=\"true\" v-on:dragstart=\"dragStart(media, $event)\">\n                    <div class=\"thumb-container\" :style=\"{height: thumbSize +'px'}\">\n                        <img v-if=\"media.mime.startsWith('image')\"\n                                :src=\"buildMediaUrl(media.url, thumbSize)\"\n                                :data-mime=\"media.mime\"\n                                :style=\"{maxHeight: thumbSize +'px', maxWidth: thumbSize +'px'}\" />\n                        <i v-else :class=\"getfontAwesomeClassNameForFileName(media.name, 'fa-5x')\" :data-mime=\"media.mime\"></i>\n                    </div>\n                <div class=\"media-container-main-item-title card-body\">\n                        <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button edit-button\" v-on:click.stop=\"renameMedia(media)\"><i class=\"fa-solid fa-pen-to-square\" aria-hidden=\"true\"></i></a>\n                        <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-end inline-media-button delete-button\" v-on:click.stop=\"deleteMedia(media)\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                        <a :href=\"media.url\" target=\"_blank\" class=\"btn btn-light btn-sm float-end inline-media-button view-button\"\"><i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i></a>\n                        <span class=\"media-filename card-text small\" :title=\"media.name\">{{ media.name }}</span>\n                    </div>\n                 </li>\n        </ol>\n        ",
+  inject: ['bus'],
   data: function data() {
     return {
       T: {}
@@ -2431,16 +2441,16 @@ var mediaItemsGridComponent = {
       return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
     },
     toggleSelectionOfMedia: function toggleSelectionOfMedia(media) {
-      bus.$emit('mediaToggleRequested', media);
+      this.bus.$emit('mediaToggleRequested', media);
     },
     renameMedia: function renameMedia(media) {
-      bus.$emit('renameMediaRequested', media);
+      this.bus.$emit('renameMediaRequested', media);
     },
     deleteMedia: function deleteMedia(media) {
-      bus.$emit('deleteMediaRequested', media);
+      this.bus.$emit('deleteMediaRequested', media);
     },
     dragStart: function dragStart(media, e) {
-      bus.$emit('mediaDragStartRequested', media, e);
+      this.bus.$emit('mediaDragStartRequested', media, e);
     },
     getfontAwesomeClassNameForFileName: function getfontAwesomeClassNameForFilename(filename, thumbsize) {
       return getClassNameForFilename(filename) + ' ' + thumbsize;
@@ -2450,6 +2460,7 @@ var mediaItemsGridComponent = {
 // <media-items-table> component
 var mediaItemsTableComponent = {
   template: "\n        <table class=\"table media-items-table m-0\">\n            <thead>\n                <tr class=\"header-row\">\n                    <th scope=\"col\" class=\"thumbnail-column\">{{ T.imageHeader }}</th>\n                    <th scope=\"col\" v-on:click=\"changeSort('name')\">\n                       {{ T.nameHeader }}\n                         <sort-indicator colname=\"name\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator>\n                    </th>\n                    <th scope=\"col\" v-on:click=\"changeSort('lastModify')\"> \n                       {{ T.lastModifyHeader }} \n                         <sort-indicator colname=\"lastModify\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator> \n                    </th> \n                    <th scope=\"col\" v-on:click=\"changeSort('size')\">\n                        <span class=\"optional-col\">\n                            {{ T.sizeHeader }}\n                         <sort-indicator colname=\"size\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator>\n                        </span>\n                    </th>\n                    <th scope=\"col\" v-on:click=\"changeSort('mime')\">\n                        <span class=\"optional-col\">\n                           {{ T.typeHeader }}\n                         <sort-indicator colname=\"mime\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator>\n                        </span>\n                    </th>\n                </tr>\n            </thead>\n            <tbody>\n                    <tr v-for=\"media in filteredMediaItems\"\n                          class=\"media-item\"\n                          :class=\"{selected: isMediaSelected(media)}\"\n                          v-on:click.stop=\"toggleSelectionOfMedia(media)\"\n                          draggable=\"true\" v-on:dragstart=\"dragStart(media, $event)\"\n                          :key=\"media.name\">\n                             <td class=\"thumbnail-column\">\n                                <div class=\"img-wrapper\">\n                                    <img v-if=\"media.mime.startsWith('image')\" draggable=\"false\" :src=\"buildMediaUrl(media.url, thumbSize)\" />\n                                    <i v-else :class=\"getfontAwesomeClassNameForFileName(media.name, 'fa-4x')\" :data-mime=\"media.mime\"></i>\n                                </div>\n                            </td>\n                            <td>\n                                <div class=\"media-name-cell\">\n                                   <span class=\"break-word\"> {{ media.name }} </span>\n                                    <div class=\"buttons-container\">\n                                        <a href=\"javascript:;\" class=\"btn btn-link btn-sm me-1 edit-button\" v-on:click.stop=\"renameMedia(media)\"> {{ T.editButton }} </a >\n                                        <a href=\"javascript:;\" class=\"btn btn-link btn-sm delete-button\" v-on:click.stop=\"deleteMedia(media)\"> {{ T.deleteButton }} </a>\n                                        <a :href=\"media.url\" target=\"_blank\" class=\"btn btn-link btn-sm view-button\"> {{ T.viewButton }} </a>\n                                    </div>\n                                </div>\n                            </td>\n                            <td>\n                                <div class=\"text-col\"> {{ printDateTime(media.lastModify) }} </div>\n                            </td>\n                            <td>\n                                <div class=\"text-col optional-col\"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div>\n                            </td>\n                            <td>\n                                <div class=\"text-col optional-col\">{{ media.mime }}</div>\n                            </td>\n                   </tr>\n            </tbody>\n        </table>\n        ",
+  inject: ['bus'],
   data: function data() {
     return {
       T: {}
@@ -2484,19 +2495,19 @@ var mediaItemsTableComponent = {
       return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
     },
     changeSort: function changeSort(newSort) {
-      bus.$emit('sortChangeRequested', newSort);
+      this.bus.$emit('sortChangeRequested', newSort);
     },
     toggleSelectionOfMedia: function toggleSelectionOfMedia(media) {
-      bus.$emit('mediaToggleRequested', media);
+      this.bus.$emit('mediaToggleRequested', media);
     },
     renameMedia: function renameMedia(media) {
-      bus.$emit('renameMediaRequested', media);
+      this.bus.$emit('renameMediaRequested', media);
     },
     deleteMedia: function deleteMedia(media) {
-      bus.$emit('deleteMediaRequested', media);
+      this.bus.$emit('deleteMediaRequested', media);
     },
     dragStart: function dragStart(media, e) {
-      bus.$emit('mediaDragStartRequested', media, e);
+      this.bus.$emit('mediaDragStartRequested', media, e);
     },
     printDateTime: function printDateTime(datemillis) {
       var d = new Date(datemillis);
@@ -2509,7 +2520,8 @@ var mediaItemsTableComponent = {
 };
 // <pager> component
 var pagerComponent = {
-  template: "\n    <div>\n        <nav id=\"media-pager\" class=\"d-flex justify-content-center\" aria-label=\"Pagination Navigation\" role=\"navigation\" :data-computed-trigger=\"itemsInCurrentPage.length\">\n            <ul class=\"pagination pagination-sm m-0\">\n                <li class=\"page-item media-first-button\" :class=\"{disabled : !canDoFirst}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoFirst ? 0 : -1\" v-on:click=\"goFirst\">{{ T.pagerFirstButton }}</a>\n                </li>\n                <li class=\"page-item\" :class=\"{disabled : !canDoPrev}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoPrev ? 0 : -1\" v-on:click=\"previous\">{{ T.pagerPreviousButton }}</a>\n                </li>\n                <li v-if=\"link !== -1\" class=\"page-item page-number\"  :class=\"{active : current == link - 1}\" v-for=\"link in pageLinks\">\n                    <a class=\"page-link\" href=\"#\" v-on:click=\"goTo(link - 1)\" :aria-label=\"'Goto Page' + link\">\n                        {{link}}\n                        <span v-if=\"current == link -1\" class=\"visually-hidden\">(current)</span>\n                    </a>\n                </li>\n                <li class=\"page-item\" :class=\"{disabled : !canDoNext}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoNext ? 0 : -1\" v-on:click=\"next\">{{ T.pagerNextButton }}</a>\n                </li>\n                <li class=\"page-item media-last-button\" :class=\"{disabled : !canDoLast}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoLast ? 0 : -1\" v-on:click=\"goLast\">{{ T.pagerLastButton }}</a>\n                </li>\n                <li class=\"page-item ms-4 page-size-info\">\n                    <div style=\"display: flex;\">\n                        <span class=\"page-link disabled text-muted page-size-label\">{{ T.pagerPageSizeLabel }}</span>\n                        <select id=\"pageSizeSelect\" class=\"page-link\" v-model=\"pageSize\">\n                            <option v-for=\"option in pageSizeOptions\" v-bind:value=\"option\">\n                                {{option}}\n                            </option>\n                        </select>\n                    </div>\n                </li>\n            </ul>\n        </nav>\n        <nav class=\"d-flex justify-content-center\">\n            <ul class=\"pagination pagination-sm m-0 mt-2\">\n                <li class=\"page-item ms-4 page-info\">\n                    <span class=\"page-link disabled text-muted \">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span>\n                </li>\n                <li class=\"page-item ms-4 total-info\">\n                    <span class=\"page-link disabled text-muted \"> {{ T.pagerTotalLabel }} {{total}}</span>\n                </li>\n            </ul>\n        </nav>\n        </div>\n        ",
+  template: "\n    <div>\n        <nav id=\"media-pager\" class=\"d-flex justify-content-center\" aria-label=\"Pagination Navigation\" role=\"navigation\" :data-computed-trigger=\"itemsInCurrentPage.length\">\n            <ul class=\"pagination pagination-sm m-0\">\n                <li class=\"page-item media-first-button\" :class=\"{disabled : !canDoFirst}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoFirst ? 0 : -1\" v-on:click=\"goFirst\">{{ T.pagerFirstButton }}</a>\n                </li>\n                <li class=\"page-item\" :class=\"{disabled : !canDoPrev}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoPrev ? 0 : -1\" v-on:click=\"previous\">{{ T.pagerPreviousButton }}</a>\n                </li>\n                <li class=\"page-item page-number\"  :class=\"{active : current == link - 1}\" v-for=\"link in pageLinks\">\n                    <a class=\"page-link\" href=\"#\" v-on:click=\"goTo(link - 1)\" :aria-label=\"'Goto Page' + link\">\n                        {{link}}\n                        <span v-if=\"current == link -1\" class=\"visually-hidden\">(current)</span>\n                    </a>\n                </li>\n                <li class=\"page-item\" :class=\"{disabled : !canDoNext}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoNext ? 0 : -1\" v-on:click=\"next\">{{ T.pagerNextButton }}</a>\n                </li>\n                <li class=\"page-item media-last-button\" :class=\"{disabled : !canDoLast}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoLast ? 0 : -1\" v-on:click=\"goLast\">{{ T.pagerLastButton }}</a>\n                </li>\n                <li class=\"page-item ms-4 page-size-info\">\n                    <div style=\"display: flex;\">\n                        <span class=\"page-link disabled text-muted page-size-label\">{{ T.pagerPageSizeLabel }}</span>\n                        <select id=\"pageSizeSelect\" class=\"page-link\" v-model=\"pageSize\">\n                            <option v-for=\"option in pageSizeOptions\" v-bind:value=\"option\">\n                                {{option}}\n                            </option>\n                        </select>\n                    </div>\n                </li>\n            </ul>\n        </nav>\n        <nav class=\"d-flex justify-content-center\">\n            <ul class=\"pagination pagination-sm m-0 mt-2\">\n                <li class=\"page-item ms-4 page-info\">\n                    <span class=\"page-link disabled text-muted \">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span>\n                </li>\n                <li class=\"page-item ms-4 total-info\">\n                    <span class=\"page-link disabled text-muted \"> {{ T.pagerTotalLabel }} {{total}}</span>\n                </li>\n            </ul>\n        </nav>\n        </div>\n        ",
+  inject: ['bus'],
   props: {
     sourceItems: Array
   },
@@ -2583,24 +2595,30 @@ var pagerComponent = {
       var start = this.pageSize * this.current;
       var end = start + this.pageSize;
       var result = this.sourceItems.slice(start, end);
-      bus.$emit('pagerEvent', result);
+      this.bus.$emit('pagerEvent', result);
       return result;
     },
     pageLinks: function pageLinks() {
       var links = [];
+
+      // Add up to 2 pages before current (1-indexed display)
+      if (this.current >= 2) {
+        links.push(this.current - 1); // page number: current - 1
+      }
+      if (this.current >= 1) {
+        links.push(this.current); // page number: current
+      }
+
+      // Add current page (1-indexed display)
       links.push(this.current + 1);
 
-      // Add 2 items before current
-      var beforeCurrent = this.current > 0 ? this.current : -1;
-      links.unshift(beforeCurrent);
-      var beforeBeforeCurrent = this.current > 1 ? this.current - 1 : -1;
-      links.unshift(beforeBeforeCurrent);
-
-      // Add 2 items after current
-      var afterCurrent = this.totalPages - this.current > 1 ? this.current + 2 : -1;
-      links.push(afterCurrent);
-      var afterAfterCurrent = this.totalPages - this.current > 2 ? this.current + 3 : -1;
-      links.push(afterAfterCurrent);
+      // Add up to 2 pages after current (1-indexed display)
+      if (this.current + 1 < this.totalPages) {
+        links.push(this.current + 2); // page number: current + 2
+      }
+      if (this.current + 2 < this.totalPages) {
+        links.push(this.current + 3); // page number: current + 3
+      }
       return links;
     }
   },
