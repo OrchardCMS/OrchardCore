@@ -22,13 +22,9 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js", "~/OrchardCore.Flows/Scripts/flows.edit.js");
 
         _manifest
-            .DefineStyle("contenttypepicker")
-            .SetUrl("~/OrchardCore.Flows/Styles/contentTypePicker.min.css", "~/OrchardCore.Flows/Styles/contentTypePicker.css");
-
-        _manifest
-            .DefineScript("contenttypepicker")
+            .DefineScript("content-type-picker")
             .SetDependencies("jQuery", "vuejs:2")
-            .SetUrl("~/OrchardCore.Flows/Scripts/contentTypePicker.min.js", "~/OrchardCore.Flows/Scripts/contentTypePicker.js");
+            .SetUrl("~/OrchardCore.Flows/Scripts/content-type-picker.min.js", "~/OrchardCore.Flows/Scripts/content-type-picker.js");
     }
 
     public void Configure(ResourceManagementOptions options)

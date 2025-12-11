@@ -13,8 +13,8 @@
   },
   {
     "action": "min",
-    "name": "contentTypePicker",
-    "source": "Assets/js/contentTypePicker.js",
+    "name": "content-type-picker",
+    "source": "Assets/js/content-type-picker.js",
     "tags": ["admin", "dashboard", "js"]
   }
 ]
