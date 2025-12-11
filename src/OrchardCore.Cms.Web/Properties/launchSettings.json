@@ -18,11 +18,11 @@
     "Kestrel": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "https://localhost:50334",
+      "launchUrl": "https://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:50334;http://localhost:50335"
-    }
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+    } 
   }
 }
