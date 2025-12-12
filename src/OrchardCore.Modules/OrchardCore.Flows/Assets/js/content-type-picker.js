@@ -25,6 +25,7 @@ function initializeContentTypePickerApplication(pathBase) {
             selectedCategory: "All",
             pathBase: pathBase || "",
             currentConfig: null,
+            hasError: false,
         },
         computed: {
             filteredContentTypes: function () {
@@ -62,9 +63,10 @@ function initializeContentTypePickerApplication(pathBase) {
                 });
                 this.categories = ["All"].concat(Object.keys(categorySet).sort());
 
-                // Reset filters
+                // Reset filters and error state
                 this.searchFilter = "";
                 this.selectedCategory = "All";
+                this.hasError = false;
             },
             selectCategory: function (category) {
                 this.selectedCategory = category;
@@ -105,6 +107,7 @@ function initializeContentTypePickerApplication(pathBase) {
                 contentTypePickerApp.searchFilter = "";
                 contentTypePickerApp.selectedCategory = "All";
                 contentTypePickerApp.currentConfig = null;
+                contentTypePickerApp.hasError = false;
             }
         });
     }
@@ -218,7 +221,11 @@ function contentTypePickerSelectContentType(contentType, config) {
             .each(function () {
                 $.globalEval(this.text || this.textContent || this.innerHTML || "");
             });
-    });
 
-    hideContentTypePicker();
+        hideContentTypePicker();
+    }).fail(function () {
+        if (contentTypePickerApp) {
+            contentTypePickerApp.hasError = true;
+        }
+    });
 }

@@ -1,5 +1,9 @@
 @* Shared Content Type Picker Vue Application - Rendered once per page *@
 <div id="contentTypePickerApp">
+    <!-- Error message -->
+    <div v-if="hasError" class="alert alert-danger mb-3" role="alert">
+        @T["Failed to add the item. Please try again."]
+    </div>
     <div class="row">
         <!-- Sidebar with search and categories -->
         <div class="col-sm-3 col-md-3 col-lg-2 content-type-picker-sidebar">
@@ -47,6 +51,7 @@
                 <i class="fa fa-search" aria-hidden="true"></i>
                 <p>@T["No content types match your search criteria."]</p>
             </div>
+
         </div>
     </div>
 </div>
