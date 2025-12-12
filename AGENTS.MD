@@ -567,6 +567,8 @@ public class YourIntegrationTests : IClassFixture<OrchardTestFixture>
 
 ### Manual Testing
 
+Use the Playwright MCP to do manual testing that involve browsing the web application.
+
 #### Clearing Application State
 
 To start with a fresh installation:
@@ -580,7 +582,7 @@ rm -rf src/OrchardCore.Cms.Web/App_Data
 # The application will prompt for setup on next run
 ```
 
-The application is ready when the message `Application started.` is writting on the console.
+The application is ready when the message `Application started.` is writing on the console.
 
 #### Starting the Application
 
@@ -628,6 +630,22 @@ After setup, you can enable additional features:
 - **OrchardCore.ContentTypes**: Content type editor
 
 **Pro Tip**: You can enable multiple features at once by checking their boxes and clicking "Enable" at the bottom.
+
+### Functional Testing with Cypress
+
+Create new functional tests under `test/OrchardCore.Tests.Functional/cypress/` following the existing spec patterns.
+
+Run the Cypress functional tests:
+
+```bash
+cd test/OrchardCore.Tests.Functional
+
+# Required before first usage
+npm install
+
+# Run all functional tests
+npm run cms:test
+```
 
 ## Common Extension Points
 
