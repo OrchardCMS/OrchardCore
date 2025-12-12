@@ -7,20 +7,21 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
     var idprefix = mediaFieldEditor.attr("id");
     var mediaFieldApp;
 
-    mediaFieldApps.push(mediaFieldApp = new Vue({
-        el: mediaFieldEditor.get(0),
-        data: {
-            mediaItems: [],
-            selectedMedia: null,
-            smallThumbs: false,
-            idPrefix: idprefix,
-            initialized: false,
-            allowMediaText: allowMediaText,
-            backupMediaText: '',
-            allowAnchors: allowAnchors,
-            backupAnchor: null,
-            mediaTextmodal: null,
-            anchoringModal: null
+    const app = Vue.createApp({
+        data() {
+            return {
+                mediaItems: [],
+                selectedMedia: null,
+                smallThumbs: false,
+                idPrefix: idprefix,
+                initialized: false,
+                allowMediaText: allowMediaText,
+                backupMediaText: '',
+                allowAnchors: allowAnchors,
+                backupAnchor: null,
+                mediaTextmodal: null,
+                anchoringModal: null
+            };
         },
         created: function () {
             var self = this;
@@ -339,5 +340,14 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
             }
         }
-    }));
+    });
+
+    // Register components
+    app.component('mediaFieldThumbsContainer', mediaFieldThumbsContainerComponent);
+    app.component('mediaFieldGalleryContainer', mediaFieldGalleryContainerComponent);
+    app.component('mediaFieldGalleryListItem', mediaFieldGalleryListItemComponent);
+    app.component('mediaFieldGalleryCardItem', mediaFieldGalleryCardItemComponent);
+
+    mediaFieldApp = app.mount(mediaFieldEditor.get(0));
+    mediaFieldApps.push(mediaFieldApp);
 }
