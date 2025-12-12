@@ -1,0 +1,1 @@
+[formulas]{pointer-events:none;display:inline-block;position:relative}[formulas][inline=false]{width:100%;display:block}[formulas]:after{content:"✎";opacity:0;cursor:pointer;pointer-events:auto;background-color:#ffffffd4;position:absolute;inset:0;box-shadow:0 0 5px 5px #ffffffd4}[formulas]:hover:after{opacity:1}

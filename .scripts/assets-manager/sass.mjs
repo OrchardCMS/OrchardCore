@@ -178,7 +178,7 @@ function runSass(config) {
                                 }
 
                                 let { code, map } = transform({
-                                    code: Buffer.from(scssResult.css),
+                                    code: Buffer.from(scssResult.css, 'utf-8'),
                                     minify: true,
                                     sourceMap: true,
                                 });

@@ -74,17 +74,6 @@
       "processId": "${command:pickProcess}"
     },
     {
-      "name": "Gulp Debug",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
-      "stopOnEntry": false,
-      "args": [],
-      "cwd": "${workspaceRoot}",
-      "runtimeArgs": ["--nolazy"],
-      "console": "internalConsole"
-    },
-    {
       "name": "Asset Bundler Tool Debug",
       "program": "${workspaceFolder}/.scripts/assets-manager/build.mjs",
       "request": "launch",

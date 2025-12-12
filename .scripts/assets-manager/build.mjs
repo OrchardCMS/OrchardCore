@@ -206,30 +206,22 @@ const buildProcesses = groups
                 }
                 console.log(chalk.yellow("Use sass or build type to transpile/minify files from group: ", group.name));
                 break;
+            case "concat":
+                if (task === "build" || task === "dry-run") {
+                    return {
+                        order: group.order,
+                        name: group.name ?? "CONCAT",
+                        command: `node ${path.join(__dirname, "concat.mjs")} ${task} ${encodedGroup}`,
+                    };
+                }
+                console.log(chalk.yellow("Use concat or build type to concatenate files from group: ", group.name));
+                break;
             default:
                 console.log(chalk.yellow("The following group was not handled by our build process"), group.name);
                 break;
         }
     })
     .filter((el) => el != undefined); // remove undefined entries
-
-// Add the gulp build process if the user passes the -g cli flag
-let gulpBuildStr = parsedArgs["g"];
-let gulpRebuildStr = parsedArgs["r"];
-
-if (gulpBuildStr != undefined && gulpRebuildStr == undefined) {
-    buildProcesses.push({
-        order: 0,
-        name: "gulp build",
-        command: `gulp build`,
-    });
-} else if (gulpBuildStr != undefined && gulpRebuildStr != undefined) {
-    buildProcesses.push({
-        order: 0,
-        name: "gulp rebuild",
-        command: `gulp rebuild`,
-    });
-}
 
 if (buildProcesses.length <= 0) {
     console.log(chalk.yellow("Nothing to build, exiting..."));

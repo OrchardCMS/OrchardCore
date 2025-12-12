@@ -1,12 +1,15 @@
 # Gulp Pipeline
 
-Will be deprecated. Use new [Assets Manager](../assets-manager/README.md) instead.
+!!! warning "DEPRECATED"
+    The Gulp pipeline has been removed as of Orchard Core 2.1. Please use the [Assets Manager](../assets-manager/README.md) instead.
+    
+    This documentation is kept for historical reference only.
 
-Orchard Core includes a processing pipeline for client-side assets (typically scripts and stylesheets) which is used to perform front-end development workflow tasks such as transpilation, minification and bundling of client-side assets in both core projects and extensions (i.e. modules and themes). Many of the built-in modules and themes in Orchard Core use this pipeline to process client-side assets, and you can enable your own extensions to use it as well.
+Orchard Core included a processing pipeline for client-side assets (typically scripts and stylesheets) which was used to perform front-end development workflow tasks such as transpilation, minification and bundling of client-side assets in both core projects and extensions (i.e. modules and themes).
 
 # Overview
 
-The client-side asset pipeline is powered by [Gulp](http://gulpjs.com), a popular open-source task runner based on [Node.js](https://nodejs.org) that can be used to automate a wide variety of tasks in a development workflow. The pipeline defines a set of Gulp *tasks* that can be executed by Gulp using either the command line or using the **Task Runner Explorer** tool window in Visual Studio 2022 or later. For those using Visual Studio Code you can use its terminal.
+The client-side asset pipeline was powered by [Gulp](http://gulpjs.com), a popular open-source task runner based on [Node.js](https://nodejs.org) that can be used to automate a wide variety of tasks in a development workflow.
 
 Physically, the client-side asset pipeline consists of two files in the Orchard Core solution folder:
 

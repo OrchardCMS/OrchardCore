@@ -335,14 +335,20 @@ using OrchardCore.DisplayManagement.Manifest;
 Orchard Core uses an asset manager for compiling SCSS, TypeScript, and JavaScript.
 
 ```bash
-# Install Yarn
-
 # Install dependencies (from repository root)
 corepack enable
 yarn
 
-# Build all assets including gulp
-yarn build -gr
+# Build all assets
+yarn build
+
+# Build specific asset groups by name
+# The name comes from the "name" property in Assets.json entries
+yarn build -n [asset-group-name]
+
+# Examples:
+yarn build -n media                # Media module assets
+yarn build -n trumbowyg-plugins    # Trumbowyg plugins (Resources module)
 ```
 
 ### Assets.json Configuration
