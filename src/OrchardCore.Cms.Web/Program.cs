@@ -6,7 +6,6 @@ builder.Host.UseNLogHost();
 
 builder.Services
     .AddOrchardCms()
-    .ConfigureReCaptchaSettings()
     .AddSetupFeatures("OrchardCore.AutoSetup");
 
 var app = builder.Build();
