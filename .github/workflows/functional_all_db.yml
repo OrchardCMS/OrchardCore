@@ -31,11 +31,11 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.7.0
+      image: cypress/included:15.7.1
     steps:
-    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - uses: ./.github/actions/setup-dotnet
-    - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+    - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
       with:
         node-version: "15"
         package-manager-cache: false
@@ -59,11 +59,11 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.7.0
+      image: cypress/included:15.7.1
     env:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
@@ -87,7 +87,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.7.0
+      image: cypress/included:15.7.1
     services:
       postgres:
         image: postgres:11
@@ -106,7 +106,7 @@ jobs:
       OrchardCore__DatabaseProvider: "Postgres"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
@@ -130,7 +130,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.7.0
+      image: cypress/included:15.7.1
     services:
       mysql:
         image: mysql:8
@@ -145,7 +145,7 @@ jobs:
       OrchardCore__DatabaseProvider: "MySql"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
@@ -169,7 +169,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.7.0
+      image: cypress/included:15.7.1
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
@@ -183,7 +183,7 @@ jobs:
       OrchardCore__DatabaseProvider: "SqlConnection"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |

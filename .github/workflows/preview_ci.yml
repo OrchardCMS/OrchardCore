@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-24.04
     name: Build, Test, Deploy
     steps:
-    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - name: Check if should publish
       id: check-publish
       shell: pwsh
@@ -23,7 +23,7 @@ jobs:
         Write-Output "Commits found in the last 24 hours: $hasCommitFromLastDay."
         $shouldPublish = ($hasCommitFromLastDay -and '${{ github.event_name }}' -eq 'schedule') -or ('${{ github.event_name }}' -eq 'workflow_dispatch')
         "should-publish=$($shouldPublish ? 'true' : 'false')" >> $Env:GITHUB_OUTPUT
-    - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+    - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
       if: steps.check-publish.outputs.should-publish == 'true'
       with:
         node-version: "15"
@@ -41,7 +41,7 @@ jobs:
     - name: Unit Tests
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
-        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
+        dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-build
     - name: Functional Tests
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |

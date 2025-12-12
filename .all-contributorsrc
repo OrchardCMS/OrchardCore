@@ -3448,6 +3448,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "plamco",
+      "name": "plamco",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62053593?v=4",
+      "profile": "https://github.com/plamco",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
