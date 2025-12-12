@@ -135,12 +135,8 @@ public class ContentDefinitionService : IContentDefinitionService
                 .Versionable()
                 .Listable()
                 .Securable()
-                .WithThumbnailPath(_contentTypesOptions.DefaultThumbnailPath);
-
-            if (!string.IsNullOrWhiteSpace(_contentTypesOptions.DefaultCategory))
-            {
-                cfg.WithCategory(_contentTypesOptions.DefaultCategory);
-            }
+                .WithThumbnailPath(_contentTypesOptions.DefaultThumbnailPath)
+                .WithCategory(_contentTypesOptions.DefaultCategory);
         });
 
         var context = new ContentTypeCreatedContext
