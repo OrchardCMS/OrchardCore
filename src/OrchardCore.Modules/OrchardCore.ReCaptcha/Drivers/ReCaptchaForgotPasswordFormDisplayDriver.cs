@@ -20,11 +20,6 @@ public sealed class ReCaptchaForgotPasswordFormDisplayDriver : DisplayDriver<For
     {
         var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
 
-        if (!settings.ConfigurationExists())
-        {
-            return null;
-        }
-
         return Dynamic("ReCaptcha", (m) =>
         {
             m.language = CultureInfo.CurrentUICulture.Name;
