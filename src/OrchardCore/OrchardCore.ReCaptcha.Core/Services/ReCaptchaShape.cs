@@ -17,20 +17,17 @@ namespace OrchardCore.ReCaptcha.Services;
 [Feature("OrchardCore.ReCaptcha")]
 public sealed class ReCaptchaShape : IShapeAttributeProvider
 {
-    //private readonly ISiteService _siteService;
     private readonly ReCaptchaSettings _reCaptchaSettings;
     private readonly ILocalizationService _localizationService;
     private readonly IResourceManager _resourceManager;
     private readonly ILogger _logger;
 
     public ReCaptchaShape(
-        //ISiteService siteService,
         IOptions<ReCaptchaSettings> optionsAccessor,
         ILocalizationService localizationService,
         IResourceManager resourceManager,
         ILogger<ReCaptchaShape> logger)
     {
-        //_siteService = siteService;
         _reCaptchaSettings = optionsAccessor.Value;
         _localizationService = localizationService;
         _resourceManager = resourceManager;

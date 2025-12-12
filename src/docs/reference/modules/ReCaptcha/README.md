@@ -9,6 +9,37 @@ There are four features in the module:
 In order to activate the ReCaptcha feature, you have to create an account with Google and enter the secret and site key in the Admin section.
 You can sign up here: <https://developers.google.com/recaptcha/>
 
+## Recaptcha Settings Configuration
+
+When initializing the app, you can use configure the settings to override a tenant's site settings from the admin user interface.
+
+The following extension method `ConfigureReCaptchaSettings()` will configure the configuration values when initializing the app.
+Configuration settings may at the root of OrchardCore Section or to a specific tenant.
+
+```json
+{
+    "OrchardCore": {
+        "Default": {
+                "OrchardCore.ReCaptcha": {
+                    "SiteKey": "",
+                    "SecretKey": ""
+            }
+        }
+    } 
+}
+```
+
+```json
+{
+    "OrchardCore": {
+            "OrchardCore.ReCaptcha": {
+                "SiteKey": "",
+                "SecretKey": ""
+        }
+    } 
+}
+```
+
 ### Users protection
 
 You can enable this feature in the admin section and your login pages will be protected against robots.
