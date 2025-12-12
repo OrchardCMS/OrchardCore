@@ -189,6 +189,7 @@
 @* Sortable initialization - always needed *@
 <script at="Foot">
 (function() {
+    var widgetDragItem, lastContainer, draggedWidget, widgetItemSourceId, widgetItemDestId;
     var widgetTemplatePlaceholder = document.getElementById('@widgetTemplatePlaceholderId');
     if (widgetTemplatePlaceholder && $('#@widgetTemplatePlaceholderId').length === 1) {
         $('#@widgetTemplatePlaceholderId').sortable({
