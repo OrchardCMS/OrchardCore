@@ -373,6 +373,11 @@ public class ContainerService : IContainerService
             default:
                 throw new NotSupportedException("Unknown status filter.");
         }
+
+        if (!string.IsNullOrEmpty(containedItemOptions.ContentType))
+        {
+            query.With<ContentItemIndex>(x => x.ContentType == containedItemOptions.ContentType);
+        }
     }
 
     private static Expression<Func<ContainedPartIndex, bool>> CreateOrderedContainedPartIndexFilter(int? before, int? after, string contentItemId)
