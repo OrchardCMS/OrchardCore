@@ -1,0 +1,279 @@
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.Flows.Extensions
+@using OrchardCore.Flows.Models
+@using OrchardCore.Flows.ViewModels
+@using OrchardCore.Mvc.Utilities
+@using System.Text.Json;
+@model FlowPartEditViewModel
+@inject IContentManager ContentManager
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@{
+    var widgetContentTypes = Model.ContainedContentTypeDefinitions;
+    var widgetTypesStringified = string.Join(";", widgetContentTypes.Select(x => x.Name));
+    var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
+    var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
+    var parentContentType = Model.FlowPart.ContentItem.ContentType;
+    string partName = ((dynamic)Model).Metadata.Name;
+    // Unique ID for this instance's button
+    var buttonId = Html.Id("openContentTypePicker");
+}
+
+<script asp-name="jQuery-ui" at="Foot"></script>
+
+<div class="mb-3">
+    <div id="@widgetTemplatePlaceholderId"
+         class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0"
+         data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })"
+         data-content-types="@widgetTypesStringified">
+        @{
+            var index = 0;
+        }
+        @foreach (var widget in Model.FlowPart.Widgets)
+        {
+            var metadata = ((ContentItem)widget).As<FlowMetadata>();
+            var colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
+
+            dynamic contentCard = await New.ContentCard(
+                CollectionShape: Model,
+                CollectionShapeType: "FlowPartBlocks",
+                ContentItem: widget,
+                BuildEditor: true,
+                ParentContentType: parentContentType,
+                ContainedContentTypes: Model.ContainedContentTypeDefinitions,
+                CollectionPartName: partName,
+                ColumnSize: colSize,
+                TargetId: widgetTemplatePlaceholderId,
+                Inline: false,
+                CanMove: true,
+                CanDelete: true,
+                HtmlFieldPrefix: htmlFieldPrefix,
+                PrefixValue: Model.Prefixes != null && Model.Prefixes.Length > index ? Model.Prefixes[index++] : htmlFieldPrefix + '-' + (index++).ToString(),
+                PrefixesId: Html.IdFor(x => x.Prefixes),
+                PrefixesName: Html.NameFor(x => x.Prefixes),
+                ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                ContentTypesName: Html.NameFor(x => x.ContentTypes),
+                ContentItemsId: Html.IdFor(x => x.ContentItems),
+                ContentItemsName: Html.NameFor(x => x.ContentItems)
+            );
+            @await DisplayAsync(contentCard)
+        }
+    </div>
+    <div class="btn-widget-add-below-wrapper w-100 my-2">
+        <div class="btn-widget-add-below w-100 border border-info">
+            <div class="btn-group">
+                <button type="button" id="@buttonId" title="@T["Add Widget"]" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Shared resources - rendered once per page *@
+@if (Context.Items["BagPart.Edit"] == null)
+{
+    Context.Items["BagPart.Edit"] = new object();
+    <script asp-name="flowpart-edit" at="Foot"></script>
+    <style asp-name="flowpart-edit" at="Head"></style>
+}
+
+@* Content type picker resources - rendered once per page *@
+@if (Context.Items["ContentTypePicker.Init"] == null)
+{
+    Context.Items["ContentTypePicker.Init"] = new object();
+    <script asp-name="content-type-picker" at="Foot"></script>
+
+    @* Shared modal with embedded Vue app - only added to DOM if not already present *@
+    <template id="contentTypePickerModalTemplate">
+        <div class="modal fade modal-content-type-picker"
+             id="contentTypePickerModal"
+             tabindex="-1"
+             aria-labelledby="contentTypePickerModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="contentTypePickerModalLabel">@T["Select Widget"]</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@T["Close"]"></button>
+                    </div>
+                    <div class="modal-body">
+                        @await DisplayAsync(await New.ContentTypePicker())
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script at="Foot">
+        (function() {
+            // Only add modal to DOM if it doesn't already exist
+            if (!document.getElementById('contentTypePickerModal')) {
+                var template = document.getElementById('contentTypePickerModalTemplate');
+                if (template) {
+                    document.body.appendChild(template.content.cloneNode(true));
+                    template.remove();
+                }
+            } else {
+                // Remove the template since modal already exists
+                var template = document.getElementById('contentTypePickerModalTemplate');
+                if (template) template.remove();
+            }
+            initializeContentTypePickerApplication('@Context.Request.PathBase');
+        })();
+    </script>
+}
+
+@* Render mock widgets to ensure resources are included *@
+@foreach (var type in widgetContentTypes)
+{
+    @if (Context.Items["FlowPart.Edit:" + type.Name] == null)
+    {
+        Context.Items["FlowPart.Edit:" + type.Name] = new object();
+        var contentItem = await ContentManager.NewAsync(type.Name);
+        await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, string.Empty, $"z{Guid.NewGuid():n}"));
+    }
+}
+
+@* Instance-specific initialization for content type picker *@
+<script at="Foot">
+(function() {
+    var button = document.getElementById('@buttonId');
+    if (!button) return;
+
+    var contentTypes = @Html.Raw(JsonSerializer.Serialize(
+        widgetContentTypes.Select(t => new {
+            name = t.Name,
+            displayName = t.DisplayName,
+            description = t.GetSettings<ContentTypeSettings>()?.Description ?? "",
+            category = t.GetCategory(),
+            thumbnail = t.GetThumbnail()
+        }),
+        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+    ));
+
+    button.addEventListener('click', function() {
+        showContentTypePicker({
+            targetId: '@widgetTemplatePlaceholderId',
+            htmlFieldPrefix: '@htmlFieldPrefix',
+            prefixesName: '@Html.NameFor(x => x.Prefixes)',
+            contentTypesName: '@Html.NameFor(x => x.ContentTypes)',
+            contentItemsName: '@Html.NameFor(x => x.ContentItems)',
+            parentContentType: '@parentContentType',
+            partName: '@partName',
+            contentTypes: contentTypes,
+            flowmetadata: true,
+            cardCollectionType: 'FlowPartBlocks',
+            modalTitle: '@T["Select Widget"].Value',
+            onContentTypeSelected: contentTypePickerSelectContentType
+        });
+    });
+})();
+</script>
+
+@* Sortable initialization - always needed *@
+<script at="Foot">
+(function() {
+    var widgetDragItem, originalContainer, lastContainer, draggedWidget, widgetItemSourceId, widgetItemDestId, sourceNameGuid, destNameGuid;
+    var widgetTemplatePlaceholder = document.getElementById('@widgetTemplatePlaceholderId');
+    if (widgetTemplatePlaceholder && $('#@widgetTemplatePlaceholderId').length === 1) {
+        $('#@widgetTemplatePlaceholderId').sortable({
+            handle: ".widget-editor-handle",
+            cursor: "move",
+            opacity: 0.7,
+            tolerance: "pointer",
+            placeholder: {
+                element: function(currentItem) {
+                    return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                },
+                update: function(container, p) {
+                    return;
+                }
+            },
+            toleranceElement: '> div',
+            connectWith: '.widget-template-placeholder.widget-template-placeholder-flowpart',
+            start: function(event, ui) {
+                widgetDragItem = ui.item;
+                originalContainer = ui.item.parent();
+                lastContainer = ui.item.parent();
+                lastContainer.toggleClass('widget-dropzone-hint');
+
+                draggedWidget = widgetDragItem.find('.card').first();
+                draggedWidget.toggleClass('border-primary');
+
+                widgetItemSourceId = widgetDragItem.parent().attr('id');
+
+                var classList = widgetDragItem.attr('class').split(' ');
+                $.each(classList, function(id, item) {
+                    if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
+                });
+            },
+            stop: function(event, ui) {
+                lastContainer.toggleClass('widget-dropzone-hint');
+                widgetDragItem.find('.card').first().toggleClass('border-primary');
+
+                widgetItemDestId = widgetDragItem.parent().attr('id');
+                if (widgetItemDestId !== widgetItemSourceId) {
+                    if (lastContainer[0] != this && this.dataset.contentTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
+                        var inputs = widgetDragItem.children("input[name*='@partName']");
+
+                        var destination = $('#' + widgetItemDestId);
+                        var source = $('#' + widgetItemSourceId);
+
+                        var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.lastIndexOf('_') + 1);
+                        sourceNameGuid = sourceGuid.replaceAll('_', '.');
+
+                        if (destination.length > 0) {
+                            var destGuid = widgetItemDestId.substring(0, widgetItemDestId.lastIndexOf('_') + 1);
+                            destNameGuid = destGuid.replaceAll('_', '.');
+
+                            if (source.length > 0) {
+                                inputs.each(function(index, item) {
+                                    if ($(this).attr('id') !== undefined) {
+                                        $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
+                                    }
+                                    $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
+                                });
+                            } else {
+                                inputs.each(function(index, item) {
+                                    if ($(this).attr('id') !== undefined) {
+                                        $(this).attr('id', destGuid + $(this).attr('id'));
+                                    }
+                                    $(this).attr('name', destNameGuid + $(this).attr('name'));
+                                });
+                            }
+                        } else if (source.length > 0) {
+                            inputs.each(function(index, item) {
+                                if ($(this).attr('id') !== undefined) {
+                                    $(this).attr('id', $(this).attr('id').replace(sourceGuid, ''));
+                                }
+                                $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
+                            });
+                        }
+                    } else {
+                        event.preventDefault();
+                    }
+                }
+
+                if (lastContainer[0] != this) {
+                    $(document).trigger('contentpreview:render');
+                }
+
+                // Clear the global variables
+                widgetDragItem = null;
+                draggedWidget = null;
+                lastContainer = null;
+                widgetItemSourceId = null;
+                widgetItemDestId = null;
+            },
+            over: function(event, ui) {
+                var $self = $(this);
+                if (lastContainer[0] != this && this.dataset.contentTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
+                    lastContainer.toggleClass('widget-dropzone-hint');
+                    lastContainer = $self;
+                    $self.toggleClass('widget-dropzone-hint');
+                }
+            }
+        });
+    }
+})();
+</script>
