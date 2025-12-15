@@ -5,8 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.4.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.14.1" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.15" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.14.3" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.17" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
@@ -46,7 +46,7 @@
     <PackageVersion Include="ncrontab" Version="3.4.0" />
     <PackageVersion Include="NJsonSchema" Version="11.5.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="6.1.0" />
-    <PackageVersion Include="NodaTime" Version="3.2.2" />
+    <PackageVersion Include="NodaTime" Version="3.2.3" />
     <PackageVersion Include="OpenIddict.Core" Version="7.2.0" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.2.0" />
     <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.2.0" />
@@ -86,23 +86,23 @@
   <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
   <ItemGroup>
     <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.1" />
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
-    <PackageVersion Include="System.IO.Hashing" Version="10.0.0" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.0" />
+    <PackageVersion Include="System.IO.Hashing" Version="10.0.1" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.1" />
   </ItemGroup>
 </Project>
