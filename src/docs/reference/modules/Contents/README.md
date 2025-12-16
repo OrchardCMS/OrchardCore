@@ -3,7 +3,7 @@
 This module provides Content Management services.
 
 ## Content Life Cycle
-~~there are three types of content item versions~~
+
 The content life cycle is managed through different content item versions. In Orchard Core, the content item could be:
 
 - **Draft**: A version that is being worked on but has not yet been published or saved as the latest version.
