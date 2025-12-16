@@ -11,7 +11,7 @@ The content life cycle is managed through different content item versions. In Or
 - **Unpublished**: A version that has been removed from public view but is still stored in the system (`Draft`).
 - **Deleted**: A version that has been marked for removal from the system.
 - **Cloned**: A copy of an existing content item that can be modified independently (`Draft`).
-- **Scheduled**: A version that is set to be achieved or published at a future date and time. For more information refer to [Archive Later Module](../ArchiveLater/README.md) and [Publish Later Module](../PublishLater/README.md).
+- **Scheduled**: A version that is set to be archived or published at a future date and time. For more information refer to [Archive Later Module](../ArchiveLater/README.md) and [Publish Later Module](../PublishLater/README.md).
 
 The `Latest` refers to the most recent version of the content item, which may include unpublished changes.
 
