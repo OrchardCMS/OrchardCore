@@ -2,6 +2,22 @@
 
 This module provides Content Management services.
 
+## Content Life Cycle
+~~there are three types of content item versions~~
+The content life cycle is managed through different content item versions. In Orchard Core, the content item could be:
+
+- **Draft**: A version that is being worked on but has not yet been published or saved as the latest version.
+- **Published**: The version that is currently live on the website and visible to visitors.
+- **Unpublished**: A version that has been removed from public view but is still stored in the system (`Draft`).
+- **Deleted**: A version that has been marked for removal from the system.
+- **Cloned**: A copy of an existing content item that can be modified independently (`Draft`).
+- **Scheduled**: A version that is set to be achvied or published at a future date and time. For more information refer to [Archive Later Module](../ArchiveLater/README.md) and [Publish Later Module](../PublishLater/README.md).
+
+The `Latest` refers to the most recent version of the content item, which may include unpublished changes.
+
+!!! note
+    The `IContentManager.PublishAsync()` only raises the publishing events if the content item is draft.
+
 ## CommonPart
 
 Attach this part to your content items to edit the common properties like `CreatedUtc` and `Owner` of a `ContentItem`.
