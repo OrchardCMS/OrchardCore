@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Widgets.Models;
@@ -13,17 +12,14 @@ namespace OrchardCore.Widgets.Controllers;
 public sealed class AdminController : Controller
 {
     private readonly IContentManager _contentManager;
-    private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
     public AdminController(
         IContentManager contentManager,
-        IContentItemDisplayManager contentItemDisplayManager,
         IShapeFactory shapeFactory,
         IUpdateModelAccessor updateModelAccessor)
     {
-        _contentItemDisplayManager = contentItemDisplayManager;
         _contentManager = contentManager;
         _shapeFactory = shapeFactory;
         _updateModelAccessor = updateModelAccessor;
