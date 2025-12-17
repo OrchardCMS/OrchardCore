@@ -8,6 +8,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
+using OrchardCore.Widgets.Models;
 
 namespace OrchardCore.Flows.Controllers;
 
@@ -65,35 +66,36 @@ public sealed class AdminController : Controller
         }
 
         // Create a Card Shape
-        var contentCard = await _shapeFactory.New.ContentCard(
+        var contentCard = await _shapeFactory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+        {
             // Updater is the controller for AJAX Requests
-            Updater: _updateModelAccessor.ModelUpdater,
+            shape.Updater = _updateModelAccessor.ModelUpdater;
             // Shape Specific
-            CollectionShapeType: cardCollectionType,
-            ContentItem: contentItem,
-            BuildEditor: true,
-            ParentContentType: parentContentType,
-            CollectionPartName: partName,
-            ContainedContentTypes: containedContentTypes,
+            shape.CollectionShapeType = cardCollectionType;
+            shape.ContentItem = contentItem;
+            shape.BuildEditor = true;
+            shape.ParentContentType = parentContentType;
+            shape.CollectionPartName = partName;
+            shape.ContainedContentTypes = containedContentTypes;
             // Card Specific Properties
-            TargetId: targetId,
-            Inline: true,
-            CanMove: true,
-            CanDelete: true,
+            shape.TargetId = targetId;
+            shape.Inline = true;
+            shape.CanMove = true;
+            shape.CanDelete = true;
             // Input hidden
             // Prefixes
-            PrefixValue: prefix,
-            PrefixesName: prefixesName,
+            shape.PrefixValue = prefix;
+            shape.PrefixesName = prefixesName;
             // ContentTypes
-            ContentTypesName: contentTypesName,
+            shape.ContentTypesName = contentTypesName;
             // ContentItems
-            ContentItemsName: contentItemsName
-        );
-        // Only Add ColumnSize Property if Part has FlowMetadata
-        if (flowMetadata)
-        {
-            contentCard.ColumnSize = colSize;
-        }
+            shape.ContentItemsName = contentItemsName;
+            // Only Add ColumnSize Property if Part has FlowMetadata
+            if (flowMetadata)
+            {
+                shape.ColumnSize = colSize;
+            }
+        });
 
         var model = new BuildEditorViewModel
         {
