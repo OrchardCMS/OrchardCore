@@ -18,6 +18,7 @@ public class ContentCardShape
     public bool Inline { get; set; }
     public bool CanMove { get; set; }
     public bool CanDelete { get; set; }
+    public bool CanInsert { get; set; } = true;
     public string PrefixValue { get; set; }
     public string PrefixesName { get; set; }
     public string PrefixesId { get; set; }
