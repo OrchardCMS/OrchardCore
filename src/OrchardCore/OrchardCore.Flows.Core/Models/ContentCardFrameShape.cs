@@ -1,6 +1,6 @@
 using OrchardCore.DisplayManagement;
 
-namespace OrchardCore.Widgets.Models;
+namespace OrchardCore.Flows.Models;
 
 public class ContentCardFrameShape
 {

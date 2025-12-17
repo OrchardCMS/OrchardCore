@@ -1,6 +1,6 @@
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.Widgets.Models;
+using OrchardCore.Flows.Models;
 
 namespace OrchardCore.Widgets;
 

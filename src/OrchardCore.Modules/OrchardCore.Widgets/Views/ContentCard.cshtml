@@ -1,13 +1,12 @@
 @using OrchardCore.DisplayManagement
-@using OrchardCore.Widgets.Models
+@using OrchardCore.Flows.Models
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@inject OrchardCore.DisplayManagement.IShapeFactory ShapeFactory
 
 @{
     var contentDefinitions = await ContentDefinitionManager.ListTypeDefinitionsAsync();
     //Set Model (Current Shape) as Child content of Outer Frame, Later this Model is used to render other shapes
-    var contentCardFrameShape = (ContentCardFrameShape)await ShapeFactory.CreateAsync<ContentCardFrameShape>("ContentCard_Frame");
+    var contentCardFrameShape = (ContentCardFrameShape)await Factory.CreateAsync<ContentCardFrameShape>("ContentCard_Frame");
 
     var contentItem = Model.ContentItem;
     Model.ContentTypeValue = contentItem.ContentType;

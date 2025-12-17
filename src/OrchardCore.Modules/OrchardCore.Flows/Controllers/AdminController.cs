@@ -7,7 +7,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
-using OrchardCore.Widgets.Models;
 
 namespace OrchardCore.Flows.Controllers;
 

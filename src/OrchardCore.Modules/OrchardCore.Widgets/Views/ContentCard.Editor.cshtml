@@ -1,6 +1,5 @@
-@using OrchardCore.Widgets.Models
+@using OrchardCore.Flows.Models
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@inject OrchardCore.DisplayManagement.IShapeFactory ShapeFactory
 
 @{
     Model.Metadata.Alternates.Clear();
@@ -10,7 +9,7 @@
 @await DisplayAsync(Model)
 
 @{
-    var inputShape = await ShapeFactory.CreateAsync<ContentCardFieldsEditShape>("ContentCard_Fields_Edit", shape =>
+    var inputShape = await Factory.CreateAsync<ContentCardFieldsEditShape>("ContentCard_Fields_Edit", shape =>
     {
         shape.CardShape = Model;
     });

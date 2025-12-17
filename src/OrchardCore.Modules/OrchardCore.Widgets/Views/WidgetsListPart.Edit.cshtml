@@ -3,13 +3,13 @@
 @using OrchardCore.Widgets.Models
 @using OrchardCore.Widgets.ViewModels
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Flows.Models
 
 @model WidgetsListPartEditViewModel
 
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@inject OrchardCore.DisplayManagement.IShapeFactory ShapeFactory
 
 @{
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
@@ -39,7 +39,7 @@
                             foreach (var widget in Model.WidgetsListPart.Widgets[zone])
                             {
                                 //Create a Card Shape
-                                var contentCard = await ShapeFactory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+                                var contentCard = await Factory.CreateAsync<ContentCardShape>("ContentCard", shape =>
                                 {
                                     //For Updater
                                     shape.CollectionShape = Model;

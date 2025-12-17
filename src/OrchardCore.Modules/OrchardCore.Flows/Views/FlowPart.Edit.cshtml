@@ -1,13 +1,11 @@
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
 @using OrchardCore.Mvc.Utilities
-@using OrchardCore.Widgets.Models
 
 @model FlowPartEditViewModel
 
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@inject OrchardCore.DisplayManagement.IShapeFactory ShapeFactory
 
 @{
     var widgetContentTypes = Model.ContainedContentTypeDefinitions;
@@ -29,7 +27,7 @@
                 var colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
 
                 //Create a Card Shape
-                var contentCard = await ShapeFactory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+                var contentCard = await Factory.CreateAsync<ContentCardShape>("ContentCard", shape =>
                 {
                     //For Updater
                     shape.CollectionShape = Model;

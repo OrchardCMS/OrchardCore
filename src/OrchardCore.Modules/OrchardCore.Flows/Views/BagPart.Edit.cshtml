@@ -1,11 +1,9 @@
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
 @using OrchardCore.Mvc.Utilities
-@using OrchardCore.Widgets.Models
 @model BagPartEditViewModel
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@inject OrchardCore.DisplayManagement.IShapeFactory ShapeFactory
 @{
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
@@ -23,7 +21,7 @@
             foreach (var widget in Model.AccessibleWidgets)
             {
                 //Create a Card Shape
-                var contentCard = await ShapeFactory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+                var contentCard = await Factory.CreateAsync<ContentCardShape>("ContentCard", shape =>
                 {
                     // FOR Updater
                     shape.CollectionShape = Model;

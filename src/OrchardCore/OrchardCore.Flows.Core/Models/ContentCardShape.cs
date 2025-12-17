@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace OrchardCore.Widgets.Models;
+namespace OrchardCore.Flows.Models;
 
 public class ContentCardShape
 {
