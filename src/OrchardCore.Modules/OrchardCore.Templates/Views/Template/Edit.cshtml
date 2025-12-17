@@ -4,8 +4,6 @@
     var culture = CultureInfo.CurrentUICulture;
 }
 
-@await DisplayAsync(await New.ShortcodeModal())
-
 @if (Model.AdminTemplates)
 {
     <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Admin Template"])</h1></zone>
