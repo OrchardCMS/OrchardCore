@@ -33,6 +33,19 @@ public class SqlParserTests
     }
 
     [Theory]
+    [InlineData("select 'a'", "SELECT N'a';")]
+    [InlineData("select 1", "SELECT 1;")]
+    [InlineData("select 1.0", "SELECT 1.0;")]
+    [InlineData("select 1.11", "SELECT 1.11;")]
+    [InlineData("select 1, 'a', true", "SELECT 1, N'a', [true];")]
+    public void ShouldParseColumnValues(string sql, string expectedSql)
+    {
+        var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out _);
+        Assert.True(result);
+        Assert.Equal(expectedSql, FormatSql(rawQuery));
+    }
+
+    [Theory]
     [InlineData("select a from t", "SELECT [a] FROM [tp_t];")]
     [InlineData("SELECT a FROM t", "SELECT [a] FROM [tp_t];")]
     [InlineData("SELECT a FROM t as t1", "SELECT [a] FROM [tp_t] AS t1;")]
