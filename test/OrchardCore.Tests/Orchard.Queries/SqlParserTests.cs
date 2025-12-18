@@ -115,7 +115,8 @@ public class SqlParserTests
         var parameters = new Dictionary<string, object>();
         var result = SqlParser.TryParse("select a where a = @b:10", _schema, _defaultDialect, _defaultTablePrefix, parameters, out _, out _);
         Assert.True(result);
-        Assert.Equal(10m, parameters["b"]);
+        // The type needs to be an integral value to comply with SQL Server expectations
+        Assert.Equal((long)10, parameters["b"]);
     }
 
     [Theory]
