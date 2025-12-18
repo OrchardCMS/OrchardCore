@@ -9,14 +9,14 @@ The content life cycle is managed through different content item versions. In Or
 - **Draft**: A version that is being worked on but has not yet been published or saved as the latest version.
 - **Published**: The version that is currently live on the website and visible to visitors.
 - **Unpublished**: A version that has been removed from public view but is still stored in the system (`Draft`).
-- **Deleted**: A version that has been marked for removal from the system.
+- **Removed**: A version that has been marked for removal from the system. It is invisible to both visitors and administrators but still exists in the database. Can be accessed and restored via the [Audit Trail module](../AuditTrail/README.md).
 - **Cloned**: A copy of an existing content item that can be modified independently (`Draft`).
 - **Scheduled**: A version that is set to be archived or published at a future date and time. For more information refer to [Archive Later Module](../ArchiveLater/README.md) and [Publish Later Module](../PublishLater/README.md).
 
-The `Latest` refers to the most recent version of the content item, which may include unpublished changes.
+The `Latest` version refers to the most recent version of the content item, which may include unpublished changes.
 
 !!! note
-    The `IContentManager.PublishAsync()` only raises the publishing events if the content item is a draft.
+    `IContentManager.PublishAsync()` only raises the publishing events if the content item is a draft.
 
 ## CommonPart
 
