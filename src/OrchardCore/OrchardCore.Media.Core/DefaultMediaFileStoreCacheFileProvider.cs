@@ -127,8 +127,9 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
     public Task<bool> TryDeleteDirectoryAsync(string path)
     {
         var directoryInfo = GetFileInfo(path);
-        
-        if (!directoryInfo.Exists)
+
+        // directoryInfo.Exists doesn't work here.
+        if (!Directory.Exists(directoryInfo.PhysicalPath))
         {
             return Task.FromResult(false);
         }
