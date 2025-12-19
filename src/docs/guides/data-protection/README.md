@@ -4,12 +4,16 @@ This guide provides comprehensive information about implementing data protection
 
 ## Overview
 
-Data Protection is a critical security feature in ASP.NET Core that Orchard Core leverages to protect sensitive data such as authentication cookies, anti-forgery tokens, and temporary data. In a multi-tenant or load-balanced environment, it's essential to ensure that data protection keys are shared across all nodes and persisted properly.
+Data Protection is a critical security feature in ASP.NET Core that Orchard Core leverages to protect sensitive data such as authentication cookies, anti-forgery tokens, persisted secrets that need to be decrypted (e.g. SMTP passwords but not user passwords), and temporary data. In a multi-tenant or load-balanced environment, it's essential to ensure that data protection keys are shared across all nodes and persisted properly.
 
 Orchard Core provides several options for persisting data protection keys:
 
+- Local storage in the `App_Data` folder's tenant-specific folder (like `App_Data/Sites/Default/DataProtection-Keys`)
 - [Azure Blob Storage](#azure-blob-storage-data-protection)
 - [Redis](#redis-data-protection)
+- 
+
+This guide will focus on the distributed options, since the local storage one just works out of the box without any configuration.
 
 ## Why Distributed Data Protection Matters
 
@@ -19,7 +23,7 @@ In a single-server deployment, data protection keys are stored locally by defaul
 2. **Multi-tenant setups**: Each tenant needs isolated but persistent key storage
 3. **Application restarts**: Locally stored keys may be lost, invalidating existing cookies and tokens
 
-Distributed data protection solves these issues by storing keys in a centralized location accessible to all application instances.
+Distributed data protection solves these issues by storing keys in one or more shared locations accessible to all application instances.
 
 ## Azure Blob Storage Data Protection
 
@@ -149,9 +153,9 @@ MyApp:Default:DataProtection-Keys
 ### Persistence Considerations
 
 !!! warning
-    Redis data protection is enabled. Ensure your Redis server has a backup strategy in place to prevent data loss. Use either AOF (Append-Only File) or RDB (Redis Database) persistence.
+    Data protection keyrings are not cache files and must be kept in durable storage. Ensure that your Redis server has a backup strategy in place to prevent data loss. Use either AOF (Append-Only File) or RDB (Redis Database) persistence.
 
-For more details on Redis persistence, visit: https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/
+For more details on Redis persistence, visit the [Redis documentation](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/).
 
 The Redis Data Protection module will automatically check if persistence is enabled (when `AllowAdmin` is true) and log a warning if it's not configured.
 
