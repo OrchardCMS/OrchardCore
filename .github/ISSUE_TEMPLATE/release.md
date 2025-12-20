@@ -50,6 +50,27 @@ assignees: ''
   - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
   - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
   - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
+- [ ] **Templates Tests**: Test the CLI templates by creating new projects using the latest preview version from Cloudsmith:
+
+```
+cd \code\orchardcore
+
+dotnet build -c Release -f net10.0 -p:Version=3.0.0
+dotnet pack -c Release --no-build -p:Version=3.0.0 -p:TreatWarningsAsErrors=false
+
+mkdir c:\temp\orchardcorefeed
+dotnet nuget push ".\src\**\*.nupkg" -s "c:\temp\orchardcorefeed"
+
+dotnet new install OrchardCore.ProjectTemplates::3.0.0 --nuget-source c:\temp\orchardcorefeed
+
+cd c:\temp\orchardcorefeed
+mkdir occms
+dotnet new occms
+cd occms
+dotnet nuget add source c:\temp\orchardcorefeed
+dotnet run occms
+```
+
 - [ ] **Re-certify for Red Hat**: If a new major version of Red Hat Enterprise Linux is released (e.g., v10 after v9), re-certify Orchard Core. Refer to:
   - Orchard's [Red Hat Ecosystem Catalog profile](https://catalog.redhat.com/software/applications/detail/223797) for the last certified version.
   - [Red Hat Customer Portal](https://access.redhat.com/articles/3078) for the latest version details.
