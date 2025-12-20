@@ -64,6 +64,7 @@ dotnet nuget push ".\src\**\*.nupkg" -s "c:\temp\orchardcorefeed"
 dotnet new install OrchardCore.ProjectTemplates::3.0.0 --nuget-source c:\temp\orchardcorefeed
 
 cd c:\temp\orchardcorefeed
+mkdir occms
 dotnet new occms
 cd occms
 dotnet nuget add source c:\temp\orchardcorefeed
