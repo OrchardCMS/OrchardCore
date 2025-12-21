@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.4.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.14.3" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.15.2" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.17" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
@@ -27,7 +27,7 @@
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
     <PackageVersion Include="Parlot" Version="1.5.6" />
-    <PackageVersion Include="libphonenumber-csharp" Version="9.0.20" />
+    <PackageVersion Include="libphonenumber-csharp" Version="9.0.21" />
     <PackageVersion Include="Lorem.Universal.NET" Version="5.0.0" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00017" />
