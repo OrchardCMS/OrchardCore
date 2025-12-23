@@ -21,7 +21,7 @@
         }
         else
         {
-            <textarea asp-for="Text" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+            <textarea asp-for="Text" class="form-control content-preview-text" placeholder="@settings.Placeholder" dir="@culture.GetLanguageDirection()"></textarea>
         }
         <span asp-validation-for="Text"></span>
         <span class="hint">@settings.Hint</span>

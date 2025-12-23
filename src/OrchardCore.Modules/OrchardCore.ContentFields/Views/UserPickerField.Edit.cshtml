@@ -38,7 +38,7 @@
             <div class="w-lg-75 w-xxl-50">
                 <input asp-for="UserIds" type="hidden" v-model="selectedIds" />
                 <vue-multiselect v-model="value" :options="options" track-by="id"
-                                 label="displayText" placeholder="@T["Type to search"]"
+                                 label="displayText" placeholder="@(string.IsNullOrEmpty(settings.Placeholder) ? T["Type to search"] : settings.Placeholder)"
                                  @@search-change="asyncFind" @@select="onSelect"
                                  :searchable="true" :close-on-select="true" :reset-after="true"
                                  :show-labels="true" :hide-selected="@multiple"
