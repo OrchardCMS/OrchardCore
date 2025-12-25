@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
@@ -11,6 +12,15 @@ public class RecentBlogPostsQueryTests
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
+
+        // The recipe includes a RebuildIndex step which runs as a background job.
+        // We need to ensure it completes before creating new content to avoid race conditions.
+        await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
+        await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
+        
+        // Wait for any nested background jobs (SynchronizeAsync spawns additional jobs)
+        await Task.Delay(1000, TestContext.Current.CancellationToken);
+        await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
 
         var blogPostContentItemId = await context
             .CreateContentItem("BlogPost", builder =>
@@ -26,25 +36,48 @@ public class RecentBlogPostsQueryTests
                     });
             });
 
-        // Indexing of the content item happens in the deferred-task and may not be immediate available,
-        // so we wait until the indexing is done before querying.
-        await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
+        // Wait for the new blog post to be indexed
+        await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);        
+        // Background jobs can spawn other background jobs, creating a window where ActiveJobsCount == 0
+        // but a new job is about to be queued. We need to wait multiple times with delays to ensure
+        // all nested jobs complete.
+        for (var i = 0; i < 3; i++)
+        {
+            await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
+            await Task.Delay(300, TestContext.Current.CancellationToken);
+        }
+        
+        // Final wait to ensure all jobs are done
         await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
 
-        // Indexing may still be running, so we wait a bit to ensure the content item is indexed.
-        await Task.Delay(2000, TestContext.Current.CancellationToken);
+        // Poll the index until both blog posts are available or timeout.
+        // This handles any remaining race conditions in the indexing operations.
+        JsonArray jsonArray = null;
+        var maxAttempts = 15;
+        var delayMs = 300;
+        
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            var result = await context
+                .GraphQLClient
+                .Content
+                .Query("RecentBlogPosts", builder =>
+                {
+                    builder
+                        .WithField("displayText")
+                        .WithField("contentItemId");
+                });
 
-        var result = await context
-            .GraphQLClient
-            .Content
-            .Query("RecentBlogPosts", builder =>
+            jsonArray = result["data"]?["recentBlogPosts"]?.AsArray();
+
+            if (jsonArray != null && jsonArray.Count == 2)
             {
-                builder
-                    .WithField("displayText")
-                    .WithField("contentItemId");
-            });
+                break;
+            }
 
-        var jsonArray = result["data"]?["recentBlogPosts"]?.AsArray();
+            // Wait before retrying
+            await Task.Delay(delayMs, TestContext.Current.CancellationToken);
+        }
 
         Assert.NotNull(jsonArray);
         Assert.Equal(2, jsonArray.Count);
