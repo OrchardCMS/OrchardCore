@@ -7,6 +7,13 @@ namespace OrchardCore.Tests.Apis.GraphQL;
 
 public class RecentBlogPostsQueryTests
 {
+    // Timing constants for handling concurrent background job race conditions
+    private const int NestedJobSpawnDelayMs = 1000;  // Time to wait for jobs to spawn nested jobs
+    private const int NestedJobWaitCycles = 3;        // Number of wait cycles for nested job completion
+    private const int NestedJobCycleDelayMs = 300;    // Delay between nested job wait cycles
+    private const int IndexPollingMaxAttempts = 15;   // Maximum attempts to poll for index results
+    private const int IndexPollingDelayMs = 300;      // Delay between index polling attempts
+
     [Fact]
     public async Task ShouldListBlogPostWhenCallingAQuery()
     {
@@ -17,9 +24,9 @@ public class RecentBlogPostsQueryTests
         // We need to ensure it completes before creating new content to avoid race conditions.
         await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
         await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
-        
+
         // Wait for any nested background jobs (SynchronizeAsync spawns additional jobs)
-        await Task.Delay(1000, TestContext.Current.CancellationToken);
+        await Task.Delay(NestedJobSpawnDelayMs, TestContext.Current.CancellationToken);
         await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
 
         var blogPostContentItemId = await context
@@ -37,26 +44,24 @@ public class RecentBlogPostsQueryTests
             });
 
         // Wait for the new blog post to be indexed
-        await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);        
+        await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
         // Background jobs can spawn other background jobs, creating a window where ActiveJobsCount == 0
         // but a new job is about to be queued. We need to wait multiple times with delays to ensure
         // all nested jobs complete.
-        for (var i = 0; i < 3; i++)
+        for (var i = 0; i < NestedJobWaitCycles; i++)
         {
             await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
-            await Task.Delay(300, TestContext.Current.CancellationToken);
+            await Task.Delay(NestedJobCycleDelayMs, TestContext.Current.CancellationToken);
         }
-        
+
         // Final wait to ensure all jobs are done
         await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
 
         // Poll the index until both blog posts are available or timeout.
         // This handles any remaining race conditions in the indexing operations.
         JsonArray jsonArray = null;
-        var maxAttempts = 15;
-        var delayMs = 300;
-        
-        for (var attempt = 0; attempt < maxAttempts; attempt++)
+
+        for (var attempt = 0; attempt < IndexPollingMaxAttempts; attempt++)
         {
             var result = await context
                 .GraphQLClient
@@ -76,7 +81,7 @@ public class RecentBlogPostsQueryTests
             }
 
             // Wait before retrying
-            await Task.Delay(delayMs, TestContext.Current.CancellationToken);
+            await Task.Delay(IndexPollingDelayMs, TestContext.Current.CancellationToken);
         }
 
         Assert.NotNull(jsonArray);
