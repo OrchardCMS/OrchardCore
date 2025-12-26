@@ -27,6 +27,8 @@ public sealed class AdminController : Controller
     private readonly AdminOptions _adminOptions;
     private readonly INotifier _notifier;
     private readonly ISession _session;
+    //private readonly IDeploymentPlanService _deploymentPlanService;
+    private readonly ITypeFeatureProvider _typeFeatureProvider;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -39,7 +41,9 @@ public sealed class AdminController : Controller
         IShellFeaturesManager shellFeaturesManager,
         IOptions<AdminOptions> adminOptions,
         INotifier notifier,
+        //IDeploymentPlanService deploymentPlanService,
         ISession session,
+        ITypeFeatureProvider typeFeatureProvider,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -51,6 +55,8 @@ public sealed class AdminController : Controller
         _adminOptions = adminOptions.Value;
         _notifier = notifier;
         _session = session;
+        //_deploymentPlanService = deploymentPlanService;
+        _typeFeatureProvider = typeFeatureProvider;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -137,9 +143,13 @@ public sealed class AdminController : Controller
                 return;
             }
 
-            var deploymentSteps = await GetDeploymentStepsAsync();
+            var featureDeploymentStepTypeNames = _typeFeatureProvider.GetTypesForFeature(feature)
+                .Where(type => type.IsSubclassOfRawGeneric(typeof(DeploymentSourceBase<>)))
+                .Select(type => type.GetGenericArguments()[0]?.FullName);
 
-            if (deploymentSteps.Any(step => id.StartsWith(step.GetType().GetGenericArguments()[0].Assembly.GetName().Name)))
+            var deploymentStepTypeNames = await GetDeploymentStepNamesAsync();
+
+            if (deploymentStepTypeNames.Intersect(featureDeploymentStepTypeNames).Any())
             {
                 await _notifier.ErrorAsync(H["This feature cannot be disabled because it is used by a deployment plan. Please remove it from the deployment plans before disabling it."]);
 
@@ -253,10 +263,15 @@ public sealed class AdminController : Controller
         }
     }
 
-    private async Task<IEnumerable<DeploymentStep>> GetDeploymentStepsAsync()
+    private async Task<IEnumerable<string>> GetDeploymentStepNamesAsync()
     {
         var deploymentPlans = await _session.Query<DeploymentPlan>().ListAsync();
 
-        return deploymentPlans.SelectMany(plan => plan.DeploymentSteps);
+        // TODO: Needs to check why the GetDeploymentPlansAsync() returns null in this context.
+        //await _deploymentPlanService.GetDeploymentPlansAsync();
+
+        var deploymentSteps = deploymentPlans.SelectMany(plan => plan.DeploymentSteps);
+
+        return deploymentSteps.Select(step => step.GetType().GenericTypeArguments[0].FullName);
     }
 }
