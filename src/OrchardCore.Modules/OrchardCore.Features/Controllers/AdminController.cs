@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -12,6 +13,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
+using YesSql;
 
 namespace OrchardCore.Features.Controllers;
 
@@ -24,6 +26,7 @@ public sealed class AdminController : Controller
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly AdminOptions _adminOptions;
     private readonly INotifier _notifier;
+    private readonly ISession _session;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -36,6 +39,7 @@ public sealed class AdminController : Controller
         IShellFeaturesManager shellFeaturesManager,
         IOptions<AdminOptions> adminOptions,
         INotifier notifier,
+        ISession session,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -46,6 +50,7 @@ public sealed class AdminController : Controller
         _shellFeaturesManager = shellFeaturesManager;
         _adminOptions = adminOptions.Value;
         _notifier = notifier;
+        _session = session;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -128,6 +133,15 @@ public sealed class AdminController : Controller
             if (!isProxy && id == FeaturesConstants.FeatureId)
             {
                 await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
+
+                return;
+            }
+
+            var deploymentSteps = await GetDeploymentStepsAsync();
+
+            if (deploymentSteps.Any(step => id.StartsWith(step.GetType().GetGenericArguments()[0].Assembly.GetName().Name)))
+            {
+                await _notifier.ErrorAsync(H["This feature cannot be disabled because it is used by a deployment plan. Please remove it from the deployment plans before disabling it."]);
 
                 return;
             }
@@ -237,5 +251,12 @@ public sealed class AdminController : Controller
         {
             await _notifier.SuccessAsync(H["{0} was {1}.", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
         }
+    }
+
+    private async Task<IEnumerable<DeploymentStep>> GetDeploymentStepsAsync()
+    {
+        var deploymentPlans = await _session.Query<DeploymentPlan>().ListAsync();
+
+        return deploymentPlans.SelectMany(plan => plan.DeploymentSteps);
     }
 }
