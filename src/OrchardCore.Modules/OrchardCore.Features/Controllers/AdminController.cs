@@ -13,7 +13,6 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
-using YesSql;
 
 namespace OrchardCore.Features.Controllers;
 
@@ -26,8 +25,7 @@ public sealed class AdminController : Controller
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly AdminOptions _adminOptions;
     private readonly INotifier _notifier;
-    private readonly ISession _session;
-    //private readonly IDeploymentPlanService _deploymentPlanService;
+    private readonly IDeploymentPlanService _deploymentPlanService;
     private readonly ITypeFeatureProvider _typeFeatureProvider;
 
     internal readonly IStringLocalizer S;
@@ -41,8 +39,7 @@ public sealed class AdminController : Controller
         IShellFeaturesManager shellFeaturesManager,
         IOptions<AdminOptions> adminOptions,
         INotifier notifier,
-        //IDeploymentPlanService deploymentPlanService,
-        ISession session,
+        IDeploymentPlanService deploymentPlanService,
         ITypeFeatureProvider typeFeatureProvider,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -54,8 +51,7 @@ public sealed class AdminController : Controller
         _shellFeaturesManager = shellFeaturesManager;
         _adminOptions = adminOptions.Value;
         _notifier = notifier;
-        _session = session;
-        //_deploymentPlanService = deploymentPlanService;
+        _deploymentPlanService = deploymentPlanService;
         _typeFeatureProvider = typeFeatureProvider;
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -265,10 +261,7 @@ public sealed class AdminController : Controller
 
     private async Task<IEnumerable<string>> GetDeploymentStepNamesAsync()
     {
-        var deploymentPlans = await _session.Query<DeploymentPlan>().ListAsync();
-
-        // TODO: Needs to check why the GetDeploymentPlansAsync() returns null in this context.
-        //await _deploymentPlanService.GetDeploymentPlansAsync();
+        var deploymentPlans = await _deploymentPlanService.GetAllDeploymentPlansAsync();
 
         var deploymentSteps = deploymentPlans.SelectMany(plan => plan.DeploymentSteps);
 
