@@ -516,20 +516,15 @@ public class PagerShapes : IShapeAttributeProvider
             {
                 tagBuilder.AddCssClass("disabled");
             }
+            
+            return HtmlString.Empty;
         }
 
         var routeValues = shape.GetProperty<RouteValueDictionary>("RouteValues") ?? [];
-        if (!Disabled)
-        {
-            shape.Attributes["href"] = Url.Action((string)routeValues["action"], (string)routeValues["controller"], routeValues);
-        }
-        else
-        {
-            shape.Attributes.Remove("href");
-        }
+
+        shape.Attributes["href"] = Url.Action((string)routeValues["action"], (string)routeValues["controller"], routeValues);
 
         var tag = shape.GetTagBuilder("a");
-
         tag.InnerHtml.AppendHtml(CoerceHtmlString(Value));
         return tag;
     }
