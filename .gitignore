@@ -218,3 +218,6 @@ src/Templates/**/content/**/.template.config/
 
 # BenchmarkDotNet artifacts
 BenchmarkDotNet.Artifacts
+
+# playwright mcp snapshots
+/.playwright-mcp
