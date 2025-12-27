@@ -308,6 +308,10 @@ public class SqlTranslator
         {
             TranslateIdentifierInSelectContext(ref builder, identifierSource.Identifier);
         }
+        else if (columnSource is ColumnSourceValue valueSource)
+        {
+            TranslateExpression(ref builder, valueSource.Value);
+        }
         else if (columnSource is ColumnSourceFunction functionSource)
         {
             TranslateFunctionCall(ref builder, functionSource.FunctionCall);
@@ -513,8 +517,11 @@ public class SqlTranslator
             case LiteralExpression<string> stringLiteral:
                 builder.Append(_dialect.GetSqlValue(stringLiteral.Value));
                 break;
-            case LiteralExpression<decimal> decimalLiteral:
-                builder.Append(_dialect.GetSqlValue(decimalLiteral.Value));
+            case LiteralExpression<decimal> numberLiteral:
+                builder.Append(_dialect.GetSqlValue(numberLiteral.Value));
+                break;
+            case LiteralExpression<long> numberLiteral:
+                builder.Append(_dialect.GetSqlValue(numberLiteral.Value));
                 break;
             case FunctionCall functionCall:
                 TranslateFunctionCall(ref builder, functionCall);
@@ -529,7 +536,7 @@ public class SqlTranslator
                 TranslateParameterExpression(ref builder, parameter);
                 break;
             default:
-                throw new SqlParserException($"Unsupported expression type: {expression.GetType().Name}");
+                throw new SqlParserException($"SqlTranslator found an unsupported expression type: {expression.GetType().Name}");
         }
     }
 
@@ -672,6 +679,7 @@ public class SqlTranslator
             LiteralExpression<bool> boolLiteral => boolLiteral.Value,
             LiteralExpression<string> stringLiteral => stringLiteral.Value,
             LiteralExpression<decimal> decimalLiteral => decimalLiteral.Value,
+            LiteralExpression<long> integerLiteral => integerLiteral.Value,
             _ => throw new SqlParserException("Unsupported default parameter value type")
         };
     }
