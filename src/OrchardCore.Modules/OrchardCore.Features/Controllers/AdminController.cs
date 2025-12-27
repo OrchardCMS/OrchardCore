@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -24,6 +25,8 @@ public sealed class AdminController : Controller
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly AdminOptions _adminOptions;
     private readonly INotifier _notifier;
+    private readonly IDeploymentPlanService _deploymentPlanService;
+    private readonly ITypeFeatureProvider _typeFeatureProvider;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -36,6 +39,8 @@ public sealed class AdminController : Controller
         IShellFeaturesManager shellFeaturesManager,
         IOptions<AdminOptions> adminOptions,
         INotifier notifier,
+        IDeploymentPlanService deploymentPlanService,
+        ITypeFeatureProvider typeFeatureProvider,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -46,6 +51,8 @@ public sealed class AdminController : Controller
         _shellFeaturesManager = shellFeaturesManager;
         _adminOptions = adminOptions.Value;
         _notifier = notifier;
+        _deploymentPlanService = deploymentPlanService;
+        _typeFeatureProvider = typeFeatureProvider;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -128,6 +135,19 @@ public sealed class AdminController : Controller
             if (!isProxy && id == FeaturesConstants.FeatureId)
             {
                 await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
+
+                return;
+            }
+
+            var featureDeploymentStepTypeNames = _typeFeatureProvider.GetTypesForFeature(feature)
+                .Where(type => type.IsSubclassOfRawGeneric(typeof(DeploymentSourceBase<>)))
+                .Select(type => type.GetGenericArguments()[0]?.FullName);
+
+            var deploymentStepTypeNames = await GetDeploymentStepNamesAsync();
+
+            if (deploymentStepTypeNames.Intersect(featureDeploymentStepTypeNames).Any())
+            {
+                await _notifier.ErrorAsync(H["This feature cannot be disabled because it is used by a deployment plan. Please remove it from the deployment plans before disabling it."]);
 
                 return;
             }
@@ -237,5 +257,14 @@ public sealed class AdminController : Controller
         {
             await _notifier.SuccessAsync(H["{0} was {1}.", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
         }
+    }
+
+    private async Task<IEnumerable<string>> GetDeploymentStepNamesAsync()
+    {
+        var deploymentPlans = await _deploymentPlanService.GetAllDeploymentPlansAsync();
+
+        var deploymentSteps = deploymentPlans.SelectMany(plan => plan.DeploymentSteps);
+
+        return deploymentSteps.Select(step => step.GetType().GenericTypeArguments[0].FullName);
     }
 }
