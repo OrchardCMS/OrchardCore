@@ -20,7 +20,6 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         ".webp",
 
         // Documents
-        ".pdf", // (Portable Document Format; Adobe Acrobat)
         ".doc",
         ".docx", // (Microsoft Word Document)
         ".ppt",
