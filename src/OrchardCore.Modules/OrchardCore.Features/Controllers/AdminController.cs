@@ -25,8 +25,6 @@ public sealed class AdminController : Controller
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly AdminOptions _adminOptions;
     private readonly INotifier _notifier;
-    private readonly IDeploymentPlanService _deploymentPlanService;
-    private readonly ITypeFeatureProvider _typeFeatureProvider;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -39,8 +37,6 @@ public sealed class AdminController : Controller
         IShellFeaturesManager shellFeaturesManager,
         IOptions<AdminOptions> adminOptions,
         INotifier notifier,
-        IDeploymentPlanService deploymentPlanService,
-        ITypeFeatureProvider typeFeatureProvider,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -51,8 +47,6 @@ public sealed class AdminController : Controller
         _shellFeaturesManager = shellFeaturesManager;
         _adminOptions = adminOptions.Value;
         _notifier = notifier;
-        _deploymentPlanService = deploymentPlanService;
-        _typeFeatureProvider = typeFeatureProvider;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -139,20 +133,16 @@ public sealed class AdminController : Controller
                 return;
             }
 
-            var featureDeploymentStepTypeNames = _typeFeatureProvider.GetTypesForFeature(feature)
-                .Where(type => type.IsSubclassOfRawGeneric(typeof(DeploymentSourceBase<>)))
-                .Select(type => type.GetGenericArguments()[0]?.FullName);
+            var disabledFeatures = await _shellFeaturesManager.DisableFeaturesAsync([feature], force: true);
 
-            var deploymentStepTypeNames = await GetDeploymentStepNamesAsync();
-
-            if (deploymentStepTypeNames.Intersect(featureDeploymentStepTypeNames).Any())
+            if (disabledFeatures.Any())
+            {
+                await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name ?? feature.Id]);
+            }
+            else
             {
                 await _notifier.ErrorAsync(H["This feature cannot be disabled because it is used by a deployment plan. Please remove it from the deployment plans before disabling it."]);
-
-                return;
             }
-
-            await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
         });
 
         if (!found)
@@ -257,14 +247,5 @@ public sealed class AdminController : Controller
         {
             await _notifier.SuccessAsync(H["{0} was {1}.", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
         }
-    }
-
-    private async Task<IEnumerable<string>> GetDeploymentStepNamesAsync()
-    {
-        var deploymentPlans = await _deploymentPlanService.GetAllDeploymentPlansAsync();
-
-        var deploymentSteps = deploymentPlans.SelectMany(plan => plan.DeploymentSteps);
-
-        return deploymentSteps.Select(step => step.GetType().GenericTypeArguments[0].FullName);
     }
 }
