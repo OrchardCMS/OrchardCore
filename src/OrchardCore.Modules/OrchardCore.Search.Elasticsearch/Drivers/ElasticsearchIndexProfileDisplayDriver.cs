@@ -1,5 +1,7 @@
 using System.Text;
+using System.Text.Encodings.Web;
 using Elastic.Clients.Elasticsearch;
+using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -8,6 +10,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.ViewModels;
@@ -18,16 +21,22 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
 {
     private readonly ElasticsearchOptions _elasticsearchOptions;
     private readonly ElasticsearchClient _elasticsearchClient;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly JavaScriptEncoder _javaScriptEncoder;
 
     internal readonly IStringLocalizer S;
 
     public ElasticsearchIndexProfileDisplayDriver(
         ElasticsearchClient elasticsearchClient,
         IOptions<ElasticsearchOptions> elasticsearchOptions,
+        ILiquidTemplateManager liquidTemplateManager,
+        JavaScriptEncoder javaScriptEncoder,
         IStringLocalizer<ElasticsearchIndexProfileDisplayDriver> stringLocalizer)
     {
         _elasticsearchOptions = elasticsearchOptions.Value;
         _elasticsearchClient = elasticsearchClient;
+        _liquidTemplateManager = liquidTemplateManager;
+        _javaScriptEncoder = javaScriptEncoder;
         S = stringLocalizer;
     }
 
@@ -141,10 +150,17 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
             }
             else
             {
-                using var stream = new MemoryStream(Encoding.UTF8.GetBytes(query));
-
                 try
                 {
+                    // Render the Liquid template with a sample term before validation to support Liquid templates like {{ term }}.
+                    var renderedQuery = await _liquidTemplateManager.RenderStringAsync(query, _javaScriptEncoder,
+                        new Dictionary<string, FluidValue>()
+                        {
+                            ["term"] = new StringValue("sample_search_term"),
+                        });
+
+                    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(renderedQuery));
+
                     await _elasticsearchClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
 
                     queryMetadata.DefaultQuery = query;
