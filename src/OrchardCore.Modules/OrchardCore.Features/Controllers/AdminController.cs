@@ -141,7 +141,7 @@ public sealed class AdminController : Controller
             }
             else
             {
-                await _notifier.ErrorAsync(H["This feature cannot be disabled because it is used by a deployment plan. Please remove it from the deployment plans before disabling it."]);
+                await _notifier.ErrorAsync(H["This feature cannot be disabled because it is already in use."]);
             }
         });
 

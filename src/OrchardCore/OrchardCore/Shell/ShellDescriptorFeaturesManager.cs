@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Deployment;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -15,23 +14,20 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
     private readonly IExtensionManager _extensionManager;
     private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
     private readonly IShellDescriptorManager _shellDescriptorManager;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ITypeFeatureProvider _typeFeatureProvider;
+    private readonly IEnumerable<IFeatureUsageChecker> _featureUsageCheckers;
     private readonly ILogger _logger;
 
     public ShellDescriptorFeaturesManager(
         IExtensionManager extensionManager,
         IEnumerable<ShellFeature> shellFeatures,
         IShellDescriptorManager shellDescriptorManager,
-        IServiceProvider serviceProvider,
-        ITypeFeatureProvider typeFeatureProvider,
+        IEnumerable<IFeatureUsageChecker> featureUsageCheckers,
         ILogger<ShellFeaturesManager> logger)
     {
         _extensionManager = extensionManager;
         _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
         _shellDescriptorManager = shellDescriptorManager;
-        _serviceProvider = serviceProvider;
-        _typeFeatureProvider = typeFeatureProvider;
+        _featureUsageCheckers = featureUsageCheckers;
         _logger = logger;
     }
 
@@ -67,31 +63,33 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
             .Reverse()
             .ToList();
 
-        var deploymentStepTypeNames = await GetDeploymentStepNamesAsync();
-
-        // Check if the actual feature is used by any deployment step, don't go throught its dependencies.
-        var featureToDisable = allFeaturesToDisable.Last();
-        if (IsFeatureInUse(featureToDisable))
+        foreach (var featureUsageChecker in _featureUsageCheckers)
         {
-            await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), featureToDisable, _logger);
+            // Check if the actual feature is used by any deployment step, don't go throught its dependencies.
+            var featureToDisable = allFeaturesToDisable.Last();
 
-            allFeaturesToDisable.Clear();
-        }
-        else
-        {
-            foreach (var feature in allFeaturesToDisable)
+            if (await featureUsageChecker.IsFeatureInUseAsync(featureToDisable))
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Disabling feature '{FeatureName}'", feature.Id);
-                }
+                await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), featureToDisable, _logger);
 
-                if (!IsFeatureInUse(feature))
+                allFeaturesToDisable.Clear();
+            }
+            else
+            {
+                foreach (var feature in allFeaturesToDisable)
                 {
-                    enabledFeatureIds.Remove(feature.Id);
-                }
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Disabling feature '{FeatureName}'", feature.Id);
+                    }
 
-                await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
+                    if (!await featureUsageChecker.IsFeatureInUseAsync(feature))
+                    {
+                        enabledFeatureIds.Remove(feature.Id);
+                    }
+
+                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
+                }
             }
         }
 
@@ -174,23 +172,6 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
         }
 
         return (allFeaturesToDisable, allFeaturesToEnable);
-
-        bool IsFeatureInUse(IFeatureInfo feature)
-        {
-            var featureDeploymentStepTypeNames = _typeFeatureProvider.GetTypesForFeature(feature)
-                .Where(type => type.IsSubclassOfRawGeneric(typeof(DeploymentSourceBase<>)) && type.GetGenericArguments().Length != 0)
-                .Select(type => type.GetGenericArguments()[0].FullName)
-                .ToList();
-
-            if (deploymentStepTypeNames.Intersect(featureDeploymentStepTypeNames).Any())
-            {
-                _logger.LogWarning("The feature '{FeatureName}' cannot be disabled because it is already in use.", feature.Id);
-
-                return true;
-            }
-
-            return false;
-        }
     }
 
     /// <summary>
@@ -245,21 +226,5 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
         }
 
         return featuresToDisable;
-    }
-
-    private async Task<IEnumerable<string>> GetDeploymentStepNamesAsync()
-    {
-        var deploymentPlanService = _serviceProvider.GetService<IDeploymentPlanService>();
-
-        if (deploymentPlanService is null)
-        {
-            return [];
-        }
-
-        var deploymentPlans = await deploymentPlanService.GetAllDeploymentPlansAsync();
-
-        var deploymentSteps = deploymentPlans.SelectMany(plan => plan.DeploymentSteps);
-
-        return deploymentSteps.Select(step => step.GetType().GenericTypeArguments[0].FullName);
     }
 }
