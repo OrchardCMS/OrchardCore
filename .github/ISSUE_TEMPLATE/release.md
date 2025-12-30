@@ -3,6 +3,7 @@ name: Publish a major or minor release
 about: Publish a new Orchard Core release
 title: 'Release v'
 labels: release
+type: task
 assignees: ''
 
 ---

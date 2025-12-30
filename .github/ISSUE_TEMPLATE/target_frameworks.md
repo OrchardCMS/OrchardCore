@@ -4,6 +4,7 @@ about: Update supported TFMs
 title: 'Change target frameworks'
 labels: 
 assignees: ''
+type: task
 ---
 
 - [ ] Update `global.json` to the required SDK version.
