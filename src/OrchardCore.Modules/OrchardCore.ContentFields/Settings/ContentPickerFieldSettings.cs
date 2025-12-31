@@ -13,6 +13,8 @@ public class ContentPickerFieldSettings : FieldSettings
 
     public string[] DisplayedStereotypes { get; set; } = [];
 
+    public string Placeholder { get; set; } = string.Empty;
+
     /// <summary>
     /// The Liquid pattern used to build the title.
     /// </summary>
