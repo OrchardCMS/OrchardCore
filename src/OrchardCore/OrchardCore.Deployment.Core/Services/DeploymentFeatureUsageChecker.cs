@@ -9,9 +9,6 @@ namespace OrchardCore.Deployment.Core.Services;
 /// Provides functionality to determine whether a feature is disabled and currently in use by any deployment plan, preventing its
 /// deactivation if it is referenced.
 /// </summary>
-/// <param name="deploymentPlanService">The service used to retrieve deployment plans for feature usage analysis.</param>
-/// <param name="typeFeatureProvider">The provider that maps features to their associated types for inspection.</param>
-/// <param name="logger">The logger used to record warnings or informational messages related to feature usage checks.</param>
 public class DeploymentFeatureUsageChecker(
     IDeploymentPlanService deploymentPlanService,
     ITypeFeatureProvider typeFeatureProvider,
