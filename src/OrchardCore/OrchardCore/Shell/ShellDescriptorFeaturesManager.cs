@@ -63,32 +63,35 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
             .Reverse()
             .ToList();
 
-        foreach (var featureUsageChecker in _featureUsageCheckers)
+        if (featuresToDisable.Any())
         {
-            // Check if the actual feature is in use, don't go throught its dependencies.
-            var featureToDisable = allFeaturesToDisable.Last();
-
-            if (await featureUsageChecker.IsDisabledFeatureInUseAsync(featureToDisable))
+            foreach (var featureUsageChecker in _featureUsageCheckers)
             {
-                await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), featureToDisable, _logger);
+                // Check if the actual disabled feature is in use, don't go throught its dependencies.
+                var featureToDisable = allFeaturesToDisable.Last();
 
-                allFeaturesToDisable.Clear();
-            }
-            else
-            {
-                foreach (var feature in allFeaturesToDisable)
+                if (await featureUsageChecker.IsDisabledFeatureInUseAsync(featureToDisable))
                 {
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation("Disabling feature '{FeatureName}'", feature.Id);
-                    }
+                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), featureToDisable, _logger);
 
-                    if (!await featureUsageChecker.IsDisabledFeatureInUseAsync(feature))
+                    allFeaturesToDisable.Clear();
+                }
+                else
+                {
+                    foreach (var feature in allFeaturesToDisable)
                     {
-                        enabledFeatureIds.Remove(feature.Id);
-                    }
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Disabling feature '{FeatureName}'", feature.Id);
+                        }
 
-                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
+                        if (!await featureUsageChecker.IsDisabledFeatureInUseAsync(feature))
+                        {
+                            enabledFeatureIds.Remove(feature.Id);
+                        }
+
+                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
+                    }
                 }
             }
         }

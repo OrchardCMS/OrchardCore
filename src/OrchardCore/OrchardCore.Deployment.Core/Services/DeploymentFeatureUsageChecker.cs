@@ -22,12 +22,11 @@ public class DeploymentFeatureUsageChecker(
     {
         var deploymentStepTypeNames = await GetDeploymentStepNamesAsync();
 
-        var featureDeploymentStepTypeNames = typeFeatureProvider.GetTypesForFeature(feature)
-                .Where(type => type.IsSubclassOfRawGeneric(typeof(DeploymentSourceBase<>)) && type.GetGenericArguments().Length != 0)
-                .Select(type => type.GetGenericArguments()[0].FullName)
-                .ToList();
+        var featureDeploymentSourceTypeNames = typeFeatureProvider.GetTypesForFeature(feature)
+            .Where(type => typeof(IDeploymentSource).IsAssignableFrom(type))
+            .Select(type => type.FullName);
 
-        if (deploymentStepTypeNames.Intersect(featureDeploymentStepTypeNames).Any())
+        if (deploymentStepTypeNames.Any(deploymentStep => featureDeploymentSourceTypeNames.Any(deploymentSource => deploymentSource.Contains(deploymentStep))))
         {
             logger.LogWarning("The feature '{FeatureName}' cannot be disabled because it is used by a deployment plan. Please remove it from the deployment plans before disabling it.", feature.Id);
 
