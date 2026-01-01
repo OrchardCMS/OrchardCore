@@ -65,10 +65,10 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
 
         foreach (var featureUsageChecker in _featureUsageCheckers)
         {
-            // Check if the actual feature is used by any deployment step, don't go throught its dependencies.
+            // Check if the actual feature is in use, don't go throught its dependencies.
             var featureToDisable = allFeaturesToDisable.Last();
 
-            if (await featureUsageChecker.IsFeatureInUseAsync(featureToDisable))
+            if (await featureUsageChecker.IsDisabledFeatureInUseAsync(featureToDisable))
             {
                 await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), featureToDisable, _logger);
 
@@ -83,7 +83,7 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
                         _logger.LogInformation("Disabling feature '{FeatureName}'", feature.Id);
                     }
 
-                    if (!await featureUsageChecker.IsFeatureInUseAsync(feature))
+                    if (!await featureUsageChecker.IsDisabledFeatureInUseAsync(feature))
                     {
                         enabledFeatureIds.Remove(feature.Id);
                     }

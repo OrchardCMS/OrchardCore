@@ -6,7 +6,7 @@ using OrchardCore.Environment.Shell;
 namespace OrchardCore.Deployment.Core.Services;
 
 /// <summary>
-/// Provides functionality to determine whether a feature is currently in use by any deployment plan, preventing its
+/// Provides functionality to determine whether a feature is disabled and currently in use by any deployment plan, preventing its
 /// deactivation if it is referenced.
 /// </summary>
 /// <param name="deploymentPlanService">The service used to retrieve deployment plans for feature usage analysis.</param>
@@ -18,7 +18,7 @@ public class DeploymentFeatureUsageChecker(
     ILogger<DeploymentFeatureUsageChecker> logger) : IFeatureUsageChecker
 {
     /// <inheritdoc/>
-    public async Task<bool> IsFeatureInUseAsync(IFeatureInfo feature)
+    public async Task<bool> IsDisabledFeatureInUseAsync(IFeatureInfo feature)
     {
         var deploymentStepTypeNames = await GetDeploymentStepNamesAsync();
 
