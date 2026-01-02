@@ -838,6 +838,16 @@ html[dir="rtl"][dir=rtl] .bootstrap-select .bs-ok-default:after {
   background: unset;
 }
 
+[dir="ltr"] .bootstrap-select .popover-header .close {
+  float: right !important;
+  padding-right: 0px;
+}
+
+[dir="rtl"] .bootstrap-select .popover-header .close {
+  float: left !important;
+  padding-left: 0px;
+}
+
 :root {
   --oc-mde-zindex: var(--oc-editor-fullscreen) !important;
 }
