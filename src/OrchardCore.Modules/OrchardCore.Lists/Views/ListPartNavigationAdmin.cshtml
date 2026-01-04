@@ -36,7 +36,7 @@
             {
                 var contentTypeDefinition = authorizedContentTypeDefinitions.FirstOrDefault();
 
-                <a class="btn btn-secondary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.Container.ContentItemId" asp-route-ListPart.ContainerContentType="@Model.ContainerContentTypeDefinition?.Name" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
+                <a class="btn btn-secondary me-1" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.Container.ContentItemId" asp-route-ListPart.ContainerContentType="@Model.ContainerContentTypeDefinition?.Name" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
                     @T["Create {0}", contentTypeDefinition.DisplayName]
                 </a>
             }
@@ -55,6 +55,10 @@
                         </li>
                     }
                 </ul>
+            }
+            @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ListContent, Model.Container))
+            {
+                <a class="btn btn-secondary" role="button" href="javascript:history.back();">@T["Cancel"]</a>
             }
         </div>
     </div>
