@@ -1,5 +1,5 @@
 // <upload> component
-Vue.component('upload', {
+var uploadComponent = {
     template: '\
         <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
             <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa-solid fa-xmark" aria-hidden="true"></i> </span>\
@@ -54,4 +54,4 @@ Vue.component('upload', {
             bus.$emit('removalRequest', this.model);
         }
     }
-});
+};

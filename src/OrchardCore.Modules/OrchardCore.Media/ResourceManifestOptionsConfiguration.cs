@@ -14,7 +14,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         _manifest
             .DefineScript("media")
             .SetUrl("~/OrchardCore.Media/Scripts/media.min.js", "~/OrchardCore.Media/Scripts/media.js")
-            .SetDependencies("vuejs:2", "Sortable", "vue-draggable:2", "jQuery-ui", "credential-helpers", "bootstrap")
+            .SetDependencies("vuejs:3", "Sortable", "jQuery-ui", "credential-helpers", "bootstrap")
             .SetVersion("1.0.0");
 
         _manifest

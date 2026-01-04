@@ -1,7 +1,55 @@
 var initialized;
 var mediaApp;
 
-var bus = new Vue();
+/**
+ * Simple event emitter to replace Vue 2 event bus
+ * Provides $on, $emit, and $off methods for cross-component communication
+ */
+class EventBus {
+    constructor() {
+        this.events = {};
+    }
+    
+    /**
+     * Register an event listener
+     * @param {string} event - Event name
+     * @param {Function} callback - Callback function to execute when event is emitted
+     */
+    $on(event, callback) {
+        if (!this.events[event]) {
+            this.events[event] = [];
+        }
+        this.events[event].push(callback);
+    }
+    
+    /**
+     * Emit an event with optional arguments
+     * @param {string} event - Event name
+     * @param {...*} args - Arguments to pass to event listeners
+     */
+    $emit(event, ...args) {
+        if (this.events[event]) {
+            this.events[event].forEach(callback => callback(...args));
+        }
+    }
+    
+    /**
+     * Remove an event listener
+     * @param {string} event - Event name
+     * @param {Function} [callback] - Specific callback to remove, or omit to remove all listeners for the event
+     */
+    $off(event, callback) {
+        if (this.events[event]) {
+            if (callback) {
+                this.events[event] = this.events[event].filter(cb => cb !== callback);
+            } else {
+                delete this.events[event];
+            }
+        }
+    }
+}
+
+var bus = new EventBus();
 
 function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl, pathBase) {
 
@@ -31,20 +79,21 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 canCreateFolder: $('#allowNewRootFolders').val() === 'true'
             };
 
-            mediaApp = new Vue({
-                el: '#mediaApp',
-                data: {
-                    selectedFolder: {},
-                    mediaItems: [],
-                    selectedMedias: [],
-                    errors: [],
-                    dragDropThumbnail: new Image(),
-                    smallThumbs: false,
-                    gridView: false,
-                    mediaFilter: '',
-                    sortBy: '',
-                    sortAsc: true,
-                    itemsInPage: []
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        selectedFolder: {},
+                        mediaItems: [],
+                        selectedMedias: [],
+                        errors: [],
+                        dragDropThumbnail: new Image(),
+                        smallThumbs: false,
+                        gridView: false,
+                        mediaFilter: '',
+                        sortBy: '',
+                        sortAsc: true,
+                        itemsInPage: []
+                    };
                 },
                 created: function () {
                     var self = this;
@@ -451,6 +500,20 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     }
                 }
             });
+
+            // Register components
+            app.component('folder', folderComponent);
+            app.component('media-items-grid', mediaItemsGridComponent);
+            app.component('media-items-table', mediaItemsTableComponent);
+            app.component('pager', pagerComponent);
+            app.component('sortIndicator', sortIndicatorComponent);
+            app.component('upload', uploadComponent);
+            app.component('uploadList', uploadListComponent);
+
+            // Make EventBus available to all components via provide/inject
+            app.provide('bus', bus);
+
+            mediaApp = app.mount('#mediaApp');
 
             $('#create-folder-name').keydown(function (e) {
                 if (e.key == 'Enter') {

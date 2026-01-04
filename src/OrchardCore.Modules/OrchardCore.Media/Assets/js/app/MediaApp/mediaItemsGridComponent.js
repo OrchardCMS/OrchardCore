@@ -1,5 +1,5 @@
 // <media-items-grid> component
-Vue.component('media-items-grid', {
+var mediaItemsGridComponent = {
     template: `
         <ol class="row media-items-grid">
                 <li v-for="media in filteredMediaItems"
@@ -25,6 +25,7 @@ Vue.component('media-items-grid', {
                  </li>
         </ol>
         `,
+    inject: ['bus'],
     data: function () {
         return {
             T: {}
@@ -52,19 +53,19 @@ Vue.component('media-items-grid', {
             return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
         },
         toggleSelectionOfMedia: function (media) {
-            bus.$emit('mediaToggleRequested', media);
+            this.bus.$emit('mediaToggleRequested', media);
         },
         renameMedia: function (media) {
-            bus.$emit('renameMediaRequested', media);
+            this.bus.$emit('renameMediaRequested', media);
         },
         deleteMedia: function (media) {
-            bus.$emit('deleteMediaRequested', media);
+            this.bus.$emit('deleteMediaRequested', media);
         },
         dragStart: function (media, e) {
-            bus.$emit('mediaDragStartRequested', media, e);
+            this.bus.$emit('mediaDragStartRequested', media, e);
         },
         getfontAwesomeClassNameForFileName:function getfontAwesomeClassNameForFilename(filename, thumbsize){
             return getClassNameForFilename(filename) + ' ' + thumbsize;
         }
     }
-});
+};
