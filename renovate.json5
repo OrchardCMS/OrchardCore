@@ -71,6 +71,23 @@
             enabled: false,
         },
         {
+            // Enable automatic updates for Vue and related packages
+            matchManagers: [
+                'npm',
+            ],
+            matchPackageNames: [
+                'vue',
+                'vuedraggable',
+                'vue-multiselect',
+                '@vitejs/plugin-vue',
+            ],
+            matchPackagePatterns: [
+                '^@vue/',
+            ],
+            enabled: true,
+            groupName: 'Vue and related packages',
+        },
+        {
             // See the the comment in global.json on why this is disabled.
             groupName: 'global.json',
             matchFileNames: ['global.json'],
