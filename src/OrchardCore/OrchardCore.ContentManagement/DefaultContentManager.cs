@@ -925,6 +925,7 @@ public class DefaultContentManager : IContentManager
         if (context.Cancel)
         {
             var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
             if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
             {
                 await _notifier.ErrorAsync(H["Deletion of '{0}' has been cancelled.", contentItem.DisplayText]);
