@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.4.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.16" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.16.2" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.17" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
@@ -26,7 +26,7 @@
     <PackageVersion Include="Jint" Version="4.4.2" />
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
-    <PackageVersion Include="Parlot" Version="1.5.6" />
+    <PackageVersion Include="Parlot" Version="1.5.7" />
     <PackageVersion Include="libphonenumber-csharp" Version="9.0.21" />
     <PackageVersion Include="Lorem.Universal.NET" Version="5.0.0" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00017" />
@@ -46,7 +46,7 @@
     <PackageVersion Include="ncrontab" Version="3.4.0" />
     <PackageVersion Include="NJsonSchema" Version="11.5.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="6.1.0" />
-    <PackageVersion Include="NodaTime" Version="3.2.3" />
+    <PackageVersion Include="NodaTime" Version="3.3.0" />
     <PackageVersion Include="OpenIddict.Core" Version="7.2.0" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.2.0" />
     <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.2.0" />
