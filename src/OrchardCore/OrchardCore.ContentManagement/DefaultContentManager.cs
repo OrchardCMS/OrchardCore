@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.CompiledQueries;
@@ -10,6 +11,7 @@ using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
@@ -32,8 +34,10 @@ public class DefaultContentManager : IContentManager
     private readonly IContentItemIdGenerator _idGenerator;
     private readonly IClock _clock;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly INotifier _notifier;
 
     protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public DefaultContentManager(
         IContentDefinitionManager contentDefinitionManager,
@@ -44,7 +48,9 @@ public class DefaultContentManager : IContentManager
         ILogger<DefaultContentManager> logger,
         IClock clock,
         IUpdateModelAccessor updateModelAccessor,
-        IStringLocalizer<DefaultContentManager> localizer)
+        IStringLocalizer<DefaultContentManager> localizer,
+        IHtmlLocalizer<DefaultContentManager> htmlLocalizer,
+        INotifier notifier)
     {
         _contentDefinitionManager = contentDefinitionManager;
         Handlers = handlers;
@@ -55,6 +61,8 @@ public class DefaultContentManager : IContentManager
         _clock = clock;
         _updateModelAccessor = updateModelAccessor;
         S = localizer;
+        H = htmlLocalizer;
+        _notifier = notifier;
     }
 
     public IEnumerable<IContentHandler> Handlers { get; private set; }
@@ -913,6 +921,27 @@ public class DefaultContentManager : IContentManager
         var context = new RemoveContentContext(contentItem, true);
 
         await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
+
+        if (context.Cancel)
+        {
+            var typeDefinition = await _contentDefinitionManager
+                .GetTypeDefinitionAsync(contentItem.ContentType);
+
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            {
+                await _notifier.ErrorAsync(
+                    H["Deletion of '{0}' has been cancelled.", contentItem.DisplayText]);
+            }
+            else
+            {
+                await _notifier.ErrorAsync(
+                    H["Deletion of {0} '{1}' has been cancelled.",
+                        typeDefinition.DisplayName,
+                        contentItem.DisplayText]);
+            }
+
+            return;
+        }
 
         foreach (var version in activeVersions)
         {
