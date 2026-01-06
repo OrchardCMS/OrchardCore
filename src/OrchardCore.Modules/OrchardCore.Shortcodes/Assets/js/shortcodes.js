@@ -56,14 +56,12 @@ var shortcodesApp;
 function initializeShortcodesApp(element) {
     if (element && !shortcodesApp) {
         var elementId = element.id;
+        
+        var shortcodes = JSON.parse(element.dataset.shortcodes || "[]");
+        var categories = JSON.parse(element.dataset.categories || "[]");
 
-        shortcodesApp = new Vue({
-            el: '#' + elementId,
-            data : function () {
-                
-                var shortcodes = JSON.parse(element.dataset.shortcodes || "[]");
-                var categories = JSON.parse(element.dataset.categories || "[]");
-
+        const app = Vue.createApp({
+            data() {
                 return {
                     filter: '',
                     allShortcodes: shortcodes,
@@ -123,6 +121,8 @@ function initializeShortcodesApp(element) {
                 }
             }
         });
+
+        shortcodesApp = app.mount('#' + elementId);
 
         return shortcodesApp;
     }
