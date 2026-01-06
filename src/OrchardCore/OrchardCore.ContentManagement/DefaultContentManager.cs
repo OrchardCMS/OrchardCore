@@ -924,20 +924,14 @@ public class DefaultContentManager : IContentManager
 
         if (context.Cancel)
         {
-            var typeDefinition = await _contentDefinitionManager
-                .GetTypeDefinitionAsync(contentItem.ContentType);
-
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
             if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
             {
-                await _notifier.ErrorAsync(
-                    H["Deletion of '{0}' has been cancelled.", contentItem.DisplayText]);
+                await _notifier.ErrorAsync(H["Deletion of '{0}' has been cancelled.", contentItem.DisplayText]);
             }
             else
             {
-                await _notifier.ErrorAsync(
-                    H["Deletion of {0} '{1}' has been cancelled.",
-                        typeDefinition.DisplayName,
-                        contentItem.DisplayText]);
+                await _notifier.ErrorAsync(H["Deletion of {0} '{1}' has been cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
             }
 
             return;

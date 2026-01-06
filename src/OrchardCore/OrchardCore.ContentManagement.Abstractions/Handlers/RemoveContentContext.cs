@@ -8,5 +8,6 @@ public class RemoveContentContext : ContentContextBase
     }
 
     public bool NoActiveVersionLeft { get; }
+
     public bool Cancel { get; set; }
 }
