@@ -31,7 +31,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.7.1
+      image: cypress/included:15.8.1
     steps:
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - uses: ./.github/actions/setup-dotnet
@@ -44,7 +44,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run mvc:test
-    - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       if: failure()
       with:
         name: functional-mvc-screenshots
@@ -59,7 +59,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.7.1
+      image: cypress/included:15.8.1
     env:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
@@ -70,7 +70,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       if: failure()
       with:
         name: functional-cms-sqlite-failure
@@ -87,7 +87,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.7.1
+      image: cypress/included:15.8.1
     services:
       postgres:
         image: postgres:11
@@ -113,7 +113,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       if: failure()
       with:
         name: functional-cms-postgresql-failure
@@ -130,7 +130,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.7.1
+      image: cypress/included:15.8.1
     services:
       mysql:
         image: mysql:8
@@ -152,7 +152,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       if: failure()
       with:
         name: functional-cms-mysql-failure
@@ -169,7 +169,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.7.1
+      image: cypress/included:15.8.1
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
@@ -190,7 +190,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       if: failure()
       with:
         name: functional-cms-mssql-failure

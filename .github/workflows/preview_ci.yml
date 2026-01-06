@@ -49,7 +49,7 @@ jobs:
         npm install
         npm run cms:test
         npm run mvc:test
-    - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       if: failure()
       with:
         name: Functional Test failure
@@ -63,10 +63,10 @@ jobs:
         dotnet nuget push './src/**/*.nupkg' -t 600 -k ${{secrets.CLOUDSMITH_API_KEY}} -n -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
     - name: Set up Docker Buildx
       if: steps.check-publish.outputs.should-publish == 'true'
-      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
+      uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
     - name: Login to DockerHub
       if: steps.check-publish.outputs.should-publish == 'true'
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
