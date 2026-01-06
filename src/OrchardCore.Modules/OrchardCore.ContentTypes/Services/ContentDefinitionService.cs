@@ -341,17 +341,12 @@ public class ContentDefinitionService : IContentDefinitionService, IContentDefin
 
     public async Task<EditPartViewModel> AddPartAsync(CreatePartViewModel partViewModel)
     {
-        var partDefinition = await AddPartAsync(partViewModel.Name);
+        var partDefinition = await ((IContentDefinitionCoordinator)this).AddPartAsync(partViewModel.Name);
 
         return partDefinition != null ? new EditPartViewModel(partDefinition) : null;
     }
 
     async Task<ContentPartDefinition> IContentDefinitionCoordinator.AddPartAsync(string name)
-    {
-        return await AddPartAsync(name);
-    }
-
-    private async Task<ContentPartDefinition> AddPartAsync(string name)
     {
         if (await _contentDefinitionManager.LoadPartDefinitionAsync(name) is not null)
         {
