@@ -64,28 +64,22 @@
             matchCurrentVersion: '/^8\\./',
         },
         {
-            // See https://github.com/OrchardCMS/OrchardCore/issues/16318 on why we have NPM updates disabled.
+            // See https://github.com/OrchardCMS/OrchardCore/issues/16318 on why we have most of the NPM updates disabled.
             matchManagers: [
                 'npm',
             ],
             enabled: false,
         },
         {
-            // Enable automatic updates for Vue and related packages
+            // Enable automatic updates for Vue and related packages.
             matchManagers: [
                 'npm',
             ],
             matchPackageNames: [
-                'vue',
-                'vuedraggable',
-                'vue-multiselect',
-                '@vitejs/plugin-vue',
-            ],
-            matchPackagePatterns: [
-                '^@vue/',
+                'vue*',
             ],
             enabled: true,
-            groupName: 'Vue and related packages',
+            groupName: 'Vue Packages',
         },
         {
             // See the the comment in global.json on why this is disabled.
