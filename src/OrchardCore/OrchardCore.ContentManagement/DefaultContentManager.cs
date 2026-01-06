@@ -928,11 +928,11 @@ public class DefaultContentManager : IContentManager
 
             if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
             {
-                await _notifier.ErrorAsync(H["Deletion of '{0}' has been cancelled.", contentItem.DisplayText]);
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deletion of '{0}' has been cancelled.", contentItem.DisplayText]);
             }
             else
             {
-                await _notifier.ErrorAsync(H["Deletion of {0} '{1}' has been cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deleting {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
             }
 
             return;
