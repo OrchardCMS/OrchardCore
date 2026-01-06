@@ -12,7 +12,7 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentTypes.Services;
 
-public class ContentDefinitionService : IContentDefinitionService
+public class ContentDefinitionService : IContentDefinitionService, IContentDefinitionCoordinator
 {
     private readonly IEnumerable<Type> _contentPartTypes;
     private readonly IEnumerable<Type> _contentFieldTypes;
@@ -341,8 +341,18 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task<EditPartViewModel> AddPartAsync(CreatePartViewModel partViewModel)
     {
-        var name = partViewModel.Name;
+        var partDefinition = await AddPartAsync(partViewModel.Name);
 
+        return partDefinition != null ? new EditPartViewModel(partDefinition) : null;
+    }
+
+    async Task<ContentPartDefinition> IContentDefinitionCoordinator.AddPartAsync(string name)
+    {
+        return await AddPartAsync(name);
+    }
+
+    private async Task<ContentPartDefinition> AddPartAsync(string name)
+    {
         if (await _contentDefinitionManager.LoadPartDefinitionAsync(name) is not null)
         {
             throw new Exception(S["Cannot add part named '{0}'. It already exists.", name]);
@@ -360,7 +370,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
             _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartCreated(ctx), context, _logger);
 
-            return new EditPartViewModel(partDefinition);
+            return partDefinition;
         }
 
         return null;
