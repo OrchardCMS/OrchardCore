@@ -1043,8 +1043,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/vue@3.5.21/dist/vue.global.js"
             )
             .SetCdnIntegrity(
-                "sha384-Pkluc5u8xwF+DnP5SiLvKt6lR5pCxF6i7+F6PGUKqfNNJK5jvRbY5mYAMKpbFPLp",
-                "sha384-lW7b5b2Y+h6WGRjZMh5lMPB4t5g4yF8LzMrV4c8p8hN4m8M8N8n8N4N8N4m8m8M8"
+                "sha384-zetqE2Wv1xmpVIoc/oWxmF4pC91pSoacyCVJtf7sAta7jtjkUJXgM5M0+pBMDRsA",
+                "sha384-vkNCbj3Po1BFBo81i8pWAwg5jBS2QJgbg6Ld6RZ6D7j4opBaExPAMZpldwr8SueJ"
             )
             .SetVersion("3.5.21");
 
