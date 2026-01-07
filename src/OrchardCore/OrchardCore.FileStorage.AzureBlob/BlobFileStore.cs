@@ -124,6 +124,8 @@ public class BlobFileStore : IFileStore
 
     private async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentByHierarchyAsync(string path = null)
     {
+        path = this.NormalizePath(path);
+        
         var prefix = this.Combine(_basePrefix, path);
         prefix = NormalizePrefix(prefix);
 
@@ -158,6 +160,8 @@ public class BlobFileStore : IFileStore
 
     private async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentFlatAsync(string path = null)
     {
+        path = this.NormalizePath(path);
+        
         // Folders are considered case sensitive in blob storage.
         var directories = new HashSet<string>();
 
