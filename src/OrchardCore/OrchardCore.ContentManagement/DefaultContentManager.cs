@@ -10,7 +10,6 @@ using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
@@ -917,6 +916,17 @@ public class DefaultContentManager : IContentManager
 
         if (context.Cancel)
         {
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            {
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deletion of '{0}' has been cancelled.", contentItem.DisplayText]);
+            }
+            else
+            {
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deleting {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+            }
+
             return;
         }
 
