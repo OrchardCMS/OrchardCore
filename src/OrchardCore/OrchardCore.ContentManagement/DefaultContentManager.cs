@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.CompiledQueries;
@@ -34,10 +33,8 @@ public class DefaultContentManager : IContentManager
     private readonly IContentItemIdGenerator _idGenerator;
     private readonly IClock _clock;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly INotifier _notifier;
 
     protected readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
 
     public DefaultContentManager(
         IContentDefinitionManager contentDefinitionManager,
@@ -48,9 +45,7 @@ public class DefaultContentManager : IContentManager
         ILogger<DefaultContentManager> logger,
         IClock clock,
         IUpdateModelAccessor updateModelAccessor,
-        IStringLocalizer<DefaultContentManager> localizer,
-        IHtmlLocalizer<DefaultContentManager> htmlLocalizer,
-        INotifier notifier)
+        IStringLocalizer<DefaultContentManager> localizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         Handlers = handlers;
@@ -61,8 +56,6 @@ public class DefaultContentManager : IContentManager
         _clock = clock;
         _updateModelAccessor = updateModelAccessor;
         S = localizer;
-        H = htmlLocalizer;
-        _notifier = notifier;
     }
 
     public IEnumerable<IContentHandler> Handlers { get; private set; }
@@ -924,16 +917,6 @@ public class DefaultContentManager : IContentManager
 
         if (context.Cancel)
         {
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
-            {
-                await _notifier.ErrorAsync(H["Deletion of '{0}' has been cancelled.", contentItem.DisplayText]);
-            }
-            else
-            {
-                await _notifier.ErrorAsync(H["Deletion of {0} '{1}' has been cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
-            }
-
             return;
         }
 
