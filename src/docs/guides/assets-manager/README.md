@@ -11,7 +11,7 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
 ## Prerequisites
 
 1. Install the current 22.x version of [Node.js](https://nodejs.org/en/download). If you are already using a different version of Node.js for other projects, we recommend using Node Version Manager (see [here](https://github.com/nvm-sh/nvm) for the original project for *nix systems, and [here](https://github.com/coreybutler/nvm-windows) for Windows).
-2. From the root of the repository, run the following commands. Be sure to indeed run **exactly** these, and verify that Yarn v4.6.x got installed.
+2. From the root of the repository, run the following commands. Be sure to indeed run **exactly** these, and verify that the Yarn version matches the `packageManager` value in the root `package.json` (currently v4.9.x).
     ```cmd
     REM On Windows may require to run command shell with administrator privileges.
     corepack enable 
@@ -39,7 +39,7 @@ Alternatively, if you make a lot of changes during development that you want to 
 - Host with bundler dev server: `yarn host -n asset-name`.
 - Action on multiple assets with `-n` filter: `yarn {build, watch or host} -n asset-name1, asset-name2`  
 - Clean folders with `yarn clean`. Will also clean parcel-cache folder.
-- Makes uses of latest yarn version 4.6.0.
+- Makes use of the Yarn version pinned in the root `package.json`.
 - Makes use of yarn workspaces which allows to import files from different locations in the app for sharing ES6 modules.
 - VS Code launcher debug option added as "Asset Bundler Tool Debug"
 - Assets.json file definitions for building assets.
@@ -151,8 +151,8 @@ yarn create vite
 Here is an example of a Vue app using Typescript:
 
 ```cmd
-➤ YN0000: · Yarn 4.6.0
-➤ YN0000: · Yarn 4.6.0
+➤ YN0000: · Yarn 4.9.4
+➤ YN0000: · Yarn 4.9.4
 ➤ YN0000: ┌ Resolution step
 ➤ YN0085: │ + create-vite@npm:6.2.0
 ➤ YN0000: └ Completed
@@ -270,8 +270,8 @@ Allows to run any command through Concurrently.
     "name": "itwin-viewer-app",
     "source": "Assets/itwin-viewer-app",
     "scripts": {
-      "build": "yarn run build",
-      "watch": "yarn run start"
+      "build": "yarn build",
+      "watch": "yarn start"
     }
   }
 ]
