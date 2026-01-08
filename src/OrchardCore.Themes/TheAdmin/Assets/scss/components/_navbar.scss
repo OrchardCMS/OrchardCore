@@ -27,6 +27,10 @@
             position: absolute;
             left: calc(var(--oc-start-navigation-width) + 10px);
         }
+
+        [dir="rtl"] & .brand-wrapper-title {
+            right: calc(var(--oc-start-navigation-width) + 10px);
+        }
     }
 
     @include media-breakpoint-down(sm) {
@@ -45,6 +49,11 @@
 .left-sidebar-compact .ta-navbar-top {
     .brand-wrapper-title {
         left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+    }
+
+    [dir="rtl"] & .brand-wrapper-title {
+        right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+        left: auto;
     }
 }
 
