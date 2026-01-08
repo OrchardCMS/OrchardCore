@@ -896,7 +896,7 @@ public class DefaultContentManager : IContentManager
         return aspect;
     }
 
-    public async Task RemoveAsync(ContentItem contentItem)
+    public async Task<bool> RemoveAsync(ContentItem contentItem)
     {
         ArgumentNullException.ThrowIfNull(contentItem);
 
@@ -907,7 +907,7 @@ public class DefaultContentManager : IContentManager
 
         if (!activeVersions.Any())
         {
-            return;
+            return false;
         }
 
         var context = new RemoveContentContext(contentItem, true);
@@ -927,7 +927,7 @@ public class DefaultContentManager : IContentManager
                 _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deleting {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
             }
 
-            return;
+            return false;
         }
 
         foreach (var version in activeVersions)
@@ -938,6 +938,7 @@ public class DefaultContentManager : IContentManager
         }
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
+        return true;
     }
 
     public async Task DiscardDraftAsync(ContentItem contentItem)
