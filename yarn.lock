@@ -2555,9 +2555,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.ShortCodes/Assets":
+"@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes/Assets":
   version: 0.0.0-use.local
-  resolution: "@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.ShortCodes/Assets"
+  resolution: "@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
