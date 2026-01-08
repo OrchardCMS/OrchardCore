@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentTypes.Shapes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Flows.Models;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.ViewModels;
 

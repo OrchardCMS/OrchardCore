@@ -1,6 +1,6 @@
 using OrchardCore.DisplayManagement;
 
-namespace OrchardCore.Flows.Models;
+namespace OrchardCore.ContentTypes.Shapes;
 
 public class ContentCardFieldsEditShape
 {
