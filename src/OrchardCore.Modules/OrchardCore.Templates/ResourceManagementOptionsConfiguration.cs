@@ -15,11 +15,6 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .DefineScript("templatepreview-edit")
             .SetUrl("~/OrchardCore.Templates/Scripts/templatepreview.edit.min.js", "~/OrchardCore.Templates/Scripts/templatepreview.edit.js")
             .SetVersion("1.0.0");
-
-        _manifest
-            .DefineScript("monaco-workaround")
-            .SetUrl("~/OrchardCore.Templates/Scripts/monaco-workaround.min.js", "~/OrchardCore.Templates/Scripts/monaco-workaround.js")
-            .SetVersion("1.0.0");
     }
 
     public void Configure(ResourceManagementOptions options)
