@@ -3457,6 +3457,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "MissAndileN",
+      "name": "Andile Ntuli",
+      "avatar_url": "https://avatars.githubusercontent.com/u/139638609?v=4",
+      "profile": "https://andilentuli-portfolio.netlify.app/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
