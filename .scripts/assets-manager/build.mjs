@@ -138,7 +138,8 @@ const buildProcesses = groups
                 return {
                     order: group.order,
                     name: group.name ?? "PARCEL",
-                    command: `node ${path.join(__dirname, "parcel.mjs")} ${task} ${encodedGroup}`,
+                    command: `node ${path.join(__dirname, "parcel.mjs")} ${task}`,
+                    env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                 };
             case "webpack":
                 // parcel only handles build and watch
@@ -149,7 +150,8 @@ const buildProcesses = groups
                 return {
                     order: group.order,
                     name: group.name ?? "WEBPACK",
-                    command: `node ${path.join(__dirname, "webpack.mjs")} ${task} ${encodedGroup}`,
+                    command: `node ${path.join(__dirname, "webpack.mjs")} ${task}`,
+                    env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                 };
             case "vite":
                 // parcel only handles build and watch
@@ -160,7 +162,8 @@ const buildProcesses = groups
                 return {
                     order: group.order,
                     name: group.name ?? "VITE",
-                    command: `node ${path.join(__dirname, "vite.mjs")} ${task} ${encodedGroup}`,
+                    command: `node ${path.join(__dirname, "vite.mjs")} ${task}`,
+                    env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                 };
             case "run":
                 script = group?.scripts[task]; //get's the script that matches the current type of command (build/watch or others)
@@ -181,7 +184,8 @@ const buildProcesses = groups
                     return {
                         order: group.order,
                         name: group.name ?? "COPY",
-                        command: `node ${path.join(__dirname, "copy.mjs")} ${task} ${encodedGroup}`,
+                        command: `node ${path.join(__dirname, "copy.mjs")} ${task}`,
+                        env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                     };
                 }
                 console.log(chalk.yellow("Use copy or build type to copy files from group: ", group.name));
@@ -191,7 +195,8 @@ const buildProcesses = groups
                     return {
                         order: group.order,
                         name: group.name ?? "MIN",
-                        command: `node ${path.join(__dirname, "min.mjs")} ${task} ${encodedGroup}`,
+                        command: `node ${path.join(__dirname, "min.mjs")} ${task}`,
+                        env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                     };
                 }
                 console.log(chalk.yellow("Use min or build type to minify files from group: ", group.name));
@@ -201,7 +206,8 @@ const buildProcesses = groups
                     return {
                         order: group.order,
                         name: group.name ?? "SASS",
-                        command: `node ${path.join(__dirname, "sass.mjs")} ${task} ${encodedGroup}`,
+                        command: `node ${path.join(__dirname, "sass.mjs")} ${task}`,
+                        env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                     };
                 }
                 console.log(chalk.yellow("Use sass or build type to transpile/minify files from group: ", group.name));
@@ -211,7 +217,8 @@ const buildProcesses = groups
                     return {
                         order: group.order,
                         name: group.name ?? "CONCAT",
-                        command: `node ${path.join(__dirname, "concat.mjs")} ${task} ${encodedGroup}`,
+                        command: `node ${path.join(__dirname, "concat.mjs")} ${task}`,
+                        env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                     };
                 }
                 console.log(chalk.yellow("Use concat or build type to concatenate files from group: ", group.name));
