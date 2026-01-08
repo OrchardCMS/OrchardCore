@@ -65,15 +65,7 @@ else
 </form>
 
 
-<script asp-name="edit-template" at="Foot" depends-on="liquid-intellisense monaco">
-    // Workaround for Monaco Editor bug with browser autocomplete events
-    // See: https://github.com/microsoft/monaco-editor/issues/4325
-    document.addEventListener('keydown', function(e) {
-        if (e && typeof e.getModifierState !== 'function') {
-            e.getModifierState = function() { return false; };
-        }
-    }, true);
-
+<script asp-name="edit-template" at="Foot" depends-on="liquid-intellisense monaco monaco-workaround">
     document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
             var settings = {

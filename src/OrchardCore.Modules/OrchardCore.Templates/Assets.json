@@ -4,5 +4,11 @@
       "name": "templates",
       "source": "Assets/js/templatepreview.edit.js",
       "tags": ["admin", "dashboard", "js"]
+    },
+    {
+      "action": "min",
+      "name": "monaco-workaround",
+      "source": "Assets/js/monaco-workaround.js",
+      "tags": ["admin", "js"]
     }
 ]
