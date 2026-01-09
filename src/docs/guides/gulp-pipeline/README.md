@@ -1,12 +1,15 @@
 # Gulp Pipeline
 
-Will be deprecated. Use new [Assets Manager](../assets-manager/README.md) instead.
+!!! warning "DEPRECATED"
+    The Gulp pipeline has been removed as of Orchard Core 2.1. Please use the [Assets Manager](../assets-manager/README.md) instead.
+    
+    This documentation is kept for historical reference only.
 
-Orchard Core includes a processing pipeline for client-side assets (typically scripts and stylesheets) which is used to perform front-end development workflow tasks such as transpilation, minification and bundling of client-side assets in both core projects and extensions (i.e. modules and themes). Many of the built-in modules and themes in Orchard Core use this pipeline to process client-side assets, and you can enable your own extensions to use it as well.
+Orchard Core included a processing pipeline for client-side assets (typically scripts and stylesheets) which was used to perform front-end development workflow tasks such as transpilation, minification and bundling of client-side assets in both core projects and extensions (i.e. modules and themes).
 
 # Overview
 
-The client-side asset pipeline is powered by [Gulp](http://gulpjs.com), a popular open-source task runner based on [Node.js](https://nodejs.org) that can be used to automate a wide variety of tasks in a development workflow. The pipeline defines a set of Gulp *tasks* that can be executed by Gulp using either the command line or using the **Task Runner Explorer** tool window in Visual Studio 2022 or later. For those using Visual Studio Code you can use its terminal.
+The client-side asset pipeline was powered by [Gulp](http://gulpjs.com), a popular open-source task runner based on [Node.js](https://nodejs.org) that can be used to automate a wide variety of tasks in a development workflow.
 
 Physically, the client-side asset pipeline consists of two files in the Orchard Core solution folder:
 
@@ -25,34 +28,16 @@ There are several reasons why the pipeline has been implemented at the solution 
 
 The client-side asset pipeline is not configured by default to be invoked automatically when opening or building Orchard Core. To minimize build time and make it as easy as possible to get started with Orchard Core, all built-in modules and themes in Orchard Core are kept in source control with their processed output files included. This means you don't have to activate and run the client-side asset pipeline to build or run Orchard Core out of the box. You only need to run the client-side asset pipeline if you make changes to these assets, or wish to use it to process assets in your own extensions.
 
-# Getting started
+# Getting started (replacement)
 
-## Installing prerequisites
+The Gulp pipeline is removed and can no longer be executed.
 
-The client-side asset pipeline requires Node.js to be installed. If you are using Visual Studio 2022 or later, Node.js is typically already installed as part of Visual Studio. If you are not using Visual Studio, or if you selected not to include Node.js when installing Visual Studio, you will need to install Node.js manually from <https://nodejs.org>.
+To build/watch assets locally, use the [Assets Manager](../assets-manager/README.md):
 
-Next you will need to use NPM to install all the packages the client-side asset pipeline needs, including Gulp itself. Using the command line, navigate to the Orchard Core solution folder and execute the command `npm install`, which will install all dependencies referenced in the `package.json` file. In Visual Studio 2022 or later, you can instead simply open the `package.json` file and save it without making any changes - this will trigger an automatic `npm install` behind the scenes.
+1. Follow its prerequisites (Node + Corepack/Yarn).
+2. From the repo root run `yarn build` (or `yarn watch -n <asset-name>`).
 
-## Executing tasks
-
-There are three different Gulp tasks that you can invoke to execute the pipeline in different ways.
-
-- **build** performs an incremental build of all asset groups in the solution; asset groups whose outputs are already newer than all their inputs are not processed.
-- **rebuild** performs an unconditional full build of all asset groups in the solution, even if their outputs are already newer than their inputs.
-- **watch** monitors all asset groups in the solution for changes to their inputs, and rebuilds an asset group if one or more of its inputs are modified.
-
-Note: These tasks also take the asset manifest files themselves into consideration when evaluating changes; a modification to the asset manifest file (`GulpAssets.json`) is treated the same as a modification to one of the input asset files declared in the manifest.
-
-The way you typically execute the Gulp tasks depends on whether you are using Visual Studio or not.
-
-### Using the command line
-
-1. Make sure you have Node.js installed and added to your `PATH` varable.
-2. Make sure you have installed all the required Node.js packages using the `npm install` command as described above.
-3. Navigate to the Orchard Core solution folder where the file `gulpfile.js` is located.
-4. Execute one of the commands `gulp build`, `gulp rebuild` and `gulp watch` to execute the corresponding Gulp task.
-
-Note: If Gulp fails on your system, try downgrading to an older Node.js version. If you are using [Node Version Manager](https://github.com/nvm-sh/nvm) ([for Windows](https://github.com/coreybutler/nvm-windows)) you can type `nvm install 18` or `nvm use 18` to switch to the latest version of Node.js 18.
+The remainder of this document describes the removed Gulp pipeline for historical reference.
 
 ### Using Visual Studio
 
@@ -64,7 +49,7 @@ Initially you may see an error message in Task Runner Explorer:
 
 ![](images/gulpfile-failed-to-load.png)
 
-This can happen if you have not installed the necessary dependency packages (see the section on installing prerequisites above) or if you have recently installed dependency packages and Task Runner Explorer has not yet retried the parsing of the Gulp file after that. Once you have installed all the dependency packages, just click the refresh icon and wait for it to reload:
+This can happen if you have not installed the necessary dependency packages (see the notes above) or if you have recently installed dependency packages and Task Runner Explorer has not yet retried the parsing of the Gulp file after that. Once you have installed all the dependency packages, just click the refresh icon and wait for it to reload:
 
 ![](images/task-runner-explorer-refresh.png)
 
