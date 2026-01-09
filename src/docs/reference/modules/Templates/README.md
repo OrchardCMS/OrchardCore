@@ -785,8 +785,10 @@ To access the full user object with custom properties and content parts, inject 
         // Access custom content parts if the user is a content item
         if (user is User userContent)
         {
-            // Access custom fields or parts attached to the user
-            var customField = userContent.Content.MyCustomPart?.MyField?.Text;
+            // Access custom fields or parts attached to the user (example with ProfilePart)
+            // Note: ProfilePart is a hypothetical custom part - replace with your actual part name
+            var firstName = userContent.Content.ProfilePart?.FirstName?.Text;
+            var lastName = userContent.Content.ProfilePart?.LastName?.Text;
         }
     }
 }
@@ -809,7 +811,8 @@ Create `UserDisplayNameText.cshtml` to display a full name:
     
     if (user is User userContent)
     {
-        // Assuming you have a custom part with FirstName and LastName fields
+        // Example: Access a custom ProfilePart with FirstName and LastName fields
+        // Replace ProfilePart with your actual custom part name
         var firstName = userContent.Content.ProfilePart?.FirstName?.Text;
         var lastName = userContent.Content.ProfilePart?.LastName?.Text;
         
