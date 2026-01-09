@@ -12,14 +12,23 @@
   position: relative;
   white-space: nowrap;
 }
+
 .trumbowyg-dropdown-mention button:after {
   content: "";
   position: absolute;
   top: 0;
-  right: 0;
   width: 15%;
   height: 100%;
   background-size: 100%;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
   pointer-events: none;
+}
+
+[dir="ltr"] .trumbowyg-dropdown-mention button:after {
+  right: 0;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
+}
+
+[dir="rtl"] .trumbowyg-dropdown-mention button:after {
+  left: 0;
+  background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
 }
