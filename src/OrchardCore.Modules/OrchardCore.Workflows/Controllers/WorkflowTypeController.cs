@@ -405,23 +405,28 @@ public sealed class WorkflowTypeController : Controller
             activityDesignShapes.Add(await BuildActivityDisplay(activityContext, index++, id, newLocalId, "Design"));
         }
 
-        var activitiesDataQuery = activityContexts.Select(x => new
+        var activitiesDataQuery = new List<object>();
+
+        foreach (var activityContext in activityContexts)
         {
-            Id = x.ActivityRecord.ActivityId,
-            x.ActivityRecord.X,
-            x.ActivityRecord.Y,
-            x.ActivityRecord.Name,
-            x.ActivityRecord.IsStart,
-            IsEvent = x.Activity.IsEvent(),
-            Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray(),
-        });
+            activitiesDataQuery.Add(new
+            {
+                Id = activityContext.ActivityRecord.ActivityId,
+                activityContext.ActivityRecord.X,
+                activityContext.ActivityRecord.Y,
+                activityContext.ActivityRecord.Name,
+                activityContext.ActivityRecord.IsStart,
+                IsEvent = activityContext.Activity.IsEvent(),
+                Outcomes = (await activityContext.Activity.GetPossibleOutcomesAsync(workflowContext, activityContext)).ToArray(),
+            });
+        }
 
         var workflowTypeData = new
         {
             workflowType.Id,
             workflowType.Name,
             workflowType.IsEnabled,
-            Activities = activitiesDataQuery.ToArray(),
+            Activities = activitiesDataQuery,
             workflowType.Transitions,
         };
 

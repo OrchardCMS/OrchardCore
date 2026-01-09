@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -16,6 +17,7 @@ namespace OrchardCore.Users.Workflows.Activities;
 
 public class RegisterUserTask : TaskActivity<RegisterUserTask>
 {
+    private static readonly string _emailConfirmationControllerName = typeof(Controllers.EmailConfirmationController).ControllerName();
     private readonly IUserService _userService;
     private readonly UserManager<IUser> _userManager;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -151,7 +153,10 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
     {
         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-        var uri = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail", "Registration",
+        var uri = _linkGenerator.GetUriByAction(
+            _httpContextAccessor.HttpContext,
+            nameof(Controllers.EmailConfirmationController.ConfirmEmail),
+            _emailConfirmationControllerName,
             new { area = UserConstants.Features.Users, userId = user.UserId, code });
 
         context.Properties["EmailConfirmationUrl"] = uri;

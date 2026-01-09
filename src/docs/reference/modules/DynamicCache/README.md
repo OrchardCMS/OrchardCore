@@ -123,6 +123,13 @@ Example: `myShape.Cache("myshape")`
 | `AddTag(string)`                  | Adds a tag to the cache entry to that it can be invalidated by this tag value. |
 | `RemoveTag(string)`               | Removes the specified tag.                                                     |
 
+`ShapeResult.Cache(string cacheId, Action<CacheContext> cache = null)`
+
+When called on a `ShapeResult` instance, sets the caching properties of the shape to render. Returns the same `ShapeResult` instance.
+
+Example: A use case for this method would be in a [Notification Module](../Notifications/README.md), to cache unread user notifications. For more information, see the [NotificationNavbarDisplayDriver](
+https://github.com/OrchardCMS/OrchardCore/blob/bf11088ecc45210369ef75a596072661ab45ea0c/src/OrchardCore.Modules/OrchardCore.Notifications/Drivers/NotificationNavbarDisplayDriver.cs#L60-L80).
+
 !!! note
     `AddDependency` differs from `AddContext` in that it doesn't store multiple values for each context,
     but invalidates the cached shape content when the value of the context varies.

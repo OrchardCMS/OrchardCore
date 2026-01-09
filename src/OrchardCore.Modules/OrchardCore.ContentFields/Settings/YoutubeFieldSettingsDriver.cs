@@ -19,6 +19,7 @@ public sealed class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDispl
             model.Height = settings.Height != default ? settings.Height : 315;
             model.Width = settings.Width != default ? settings.Width : 560;
             model.Required = settings.Required;
+            model.Placeholder = settings.Placeholder;
         }).Location("Content");
     }
 

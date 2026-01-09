@@ -3403,6 +3403,78 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "TurkyAhmed",
+      "name": "TurkyAhmed",
+      "avatar_url": "https://avatars.githubusercontent.com/u/138265111?v=4",
+      "profile": "https://github.com/TurkyAhmed",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "xnavrat4",
+      "name": "Patrik Navratil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/100190956?v=4",
+      "profile": "https://github.com/xnavrat4",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "harshasiddartha",
+      "name": "harshasiddartha",
+      "avatar_url": "https://avatars.githubusercontent.com/u/147021873?v=4",
+      "profile": "https://github.com/harshasiddartha",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "redzepiredzep",
+      "name": "Redzep Redžepi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/148947177?v=4",
+      "profile": "https://github.com/redzepiredzep",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "milosh-96",
+      "name": "Miloš Jovanović",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13017737?v=4",
+      "profile": "https://bejzbol.net",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "plamco",
+      "name": "plamco",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62053593?v=4",
+      "profile": "https://github.com/plamco",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "MissAndileN",
+      "name": "Andile Ntuli",
+      "avatar_url": "https://avatars.githubusercontent.com/u/139638609?v=4",
+      "profile": "https://andilentuli-portfolio.netlify.app/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "moamen-0",
+      "name": "Moamen Hassan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/140275501?v=4",
+      "profile": "https://moamen-0.github.io/Moamen-Hassan-Portfolio/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

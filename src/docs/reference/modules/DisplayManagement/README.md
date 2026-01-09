@@ -100,7 +100,7 @@ Properties can be passed to a shape by adding attributes to the shape tag helper
 </shape>
 ```
 
-This is the same as `<shape type="MyShape" pro-foo="1" prop-bar="a" prop-content="@someHtmlContentVariable" />` where you'd have to construct `someHtmlContentVariable` separately. Of course, you can mix and match the different formats, for example, to only use `<add-property>` when you want to pass HTML content as property.
+This is the same as `<shape type="MyShape" prop-foo="1" prop-bar="a" prop-content="@someHtmlContentVariable" />` where you'd have to construct `someHtmlContentVariable` separately. Of course, you can mix and match the different formats, for example, to only use `<add-property>` when you want to pass HTML content as property.
 
 ### Date Time shapes
 

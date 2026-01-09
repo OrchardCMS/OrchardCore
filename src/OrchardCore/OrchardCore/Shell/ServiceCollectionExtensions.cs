@@ -63,7 +63,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddFeatureValidation(this IServiceCollection services)
         => services
             .AddScoped<IFeatureValidationProvider, FeatureProfilesValidationProvider>()
-            .AddScoped<IFeatureValidationProvider, DefaultTenantOnlyFeatureValidationProvider>();
+            .AddScoped<IFeatureValidationProvider, DefaultTenantOnlyFeatureValidationProvider>()
+            .AddScoped<IFeatureValidationProvider, ApplicationFeatureValidationProvider>();
 
     public static IServiceCollection ConfigureFeatureProfilesRuleOptions(this IServiceCollection services)
         => services
