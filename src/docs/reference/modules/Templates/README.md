@@ -785,8 +785,8 @@ To access the full user object with custom properties and content parts, inject 
         // Access custom content parts if the user is a content item
         if (user is User userContent)
         {
-            // Access custom fields or parts attached to the user (example with ProfilePart)
-            // Note: ProfilePart is a hypothetical custom part - replace with your actual part name
+            // Example: Access a custom ProfilePart with FirstName and LastName fields
+            // Replace ProfilePart with your actual custom part name
             var firstName = userContent.Content.ProfilePart?.FirstName?.Text;
             var lastName = userContent.Content.ProfilePart?.LastName?.Text;
         }
@@ -875,10 +875,11 @@ You can override these defaults or add additional cache configuration via tag he
 ##### Database Query Implications
 
 !!! warning
-    Loading the full user object via `UserManager.FindByNameAsync()` in templates will execute a database query **for each user display**. When displaying lists with many users:
+    Loading the full user object via `UserManager.FindByNameAsync()` in templates will execute a database query **for each user display**, leading to the N+1 query problem. When displaying lists with many users:
     
     - The default templates only use the `UserName` property (no database query)
-    - Custom templates that load the user object should be used carefully
+    - Custom templates that load the user object should be used carefully to avoid performance degradation
+    - Consider using shape table events or content handlers to pre-load user data in bulk
     - Consider using shape table events or content handlers to pre-load user data in bulk
     - Rely on caching to minimize repeated queries for the same users
 
