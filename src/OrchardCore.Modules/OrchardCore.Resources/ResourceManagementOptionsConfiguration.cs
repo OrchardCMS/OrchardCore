@@ -15,7 +15,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
     // Versions
     private const string CodeMirrorVersion = "5.65.7";
-    private const string MonacoEditorVersion = "0.46.0";
+    private const string MonacoEditorVersion = "0.55.1";
 
     // URLs
     private const string CloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
