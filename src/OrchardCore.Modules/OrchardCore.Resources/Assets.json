@@ -399,13 +399,6 @@
     "tags": [ "resources", "js" ]
   },
   {
-    "action": "copy",
-    "name": "monaco",
-    "source": "Assets/Vendor/monaco/**",
-    "dest": "wwwroot/Scripts/monaco/",
-    "tags": [ "resources", "js" ]
-  },
-  {
     "action": "min",
     "generateRTL": true,
     "name": "bootstrap-select-css",
