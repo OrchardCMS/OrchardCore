@@ -1,8 +1,9 @@
+@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentTypes.Shapes
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Widgets.Models
 @using OrchardCore.Widgets.ViewModels
-@using OrchardCore.ContentManagement.Metadata.Models
 
 @model WidgetsListPartEditViewModel
 
@@ -38,38 +39,39 @@
                             foreach (var widget in Model.WidgetsListPart.Widgets[zone])
                             {
                                 //Create a Card Shape
-                                dynamic contentCard = await New.ContentCard(
-                                //For Updater
-                                CollectionShape: Model,
-                                //Shape Specific
-                                CollectionShapeType: nameof(WidgetsListPart),
-                                ContentItem: widget,
-                                BuildEditor: true,
-                                ParentContentType: parentContentType,
-                                CollectionPartName: partName,
-                                //WidgetListPart Specific
-                                ZoneValue: zone,
-                                //Card Specific Properties
-                                TargetId: widgetTemplatePlaceholderId,
-                                Inline: false,
-                                CanMove: true,
-                                CanDelete: true,
-                                //Input hidden
-                                //Prefixes
-                                HtmlFieldPrefix: htmlFieldPrefix,
-                                PrefixValue: htmlFieldPrefix + '-' + zone + '-' + (index++).ToString(),
-                                PrefixesId: Html.IdFor(x => x.Prefixes),
-                                PrefixesName: Html.NameFor(x => x.Prefixes),
-                                //Content Types
-                                ContentTypesId: Html.IdFor(x => x.ContentTypes),
-                                ContentTypesName: Html.NameFor(x => x.ContentTypes),
-                                //Content Items
-                                ContentItemsId: Html.IdFor(x => x.ContentItems),
-                                ContentItemsName: Html.NameFor(x => x.ContentItems),
-                                //Zone
-                                ZonesId: Html.IdFor(x => x.Zones),
-                                ZonesName: Html.NameFor(x => x.Zones)
-                                );
+                                var contentCard = await Factory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+                                {
+                                    //For Updater
+                                    shape.CollectionShape = Model;
+                                    //Shape Specific
+                                    shape.CollectionShapeType = nameof(WidgetsListPart);
+                                    shape.ContentItem = widget;
+                                    shape.BuildEditor = true;
+                                    shape.ParentContentType = parentContentType;
+                                    shape.CollectionPartName = partName;
+                                    //WidgetListPart Specific
+                                    shape.ZoneValue = zone;
+                                    //Card Specific Properties
+                                    shape.TargetId = widgetTemplatePlaceholderId;
+                                    shape.Inline = false;
+                                    shape.CanMove = true;
+                                    shape.CanDelete = true;
+                                    //Input hidden
+                                    //Prefixes
+                                    shape.HtmlFieldPrefix = htmlFieldPrefix;
+                                    shape.PrefixValue = htmlFieldPrefix + '-' + zone + '-' + (index++).ToString();
+                                    shape.PrefixesId = Html.IdFor(x => x.Prefixes);
+                                    shape.PrefixesName = Html.NameFor(x => x.Prefixes);
+                                    //Content Types
+                                    shape.ContentTypesId = Html.IdFor(x => x.ContentTypes);
+                                    shape.ContentTypesName = Html.NameFor(x => x.ContentTypes);
+                                    //Content Items
+                                    shape.ContentItemsId = Html.IdFor(x => x.ContentItems);
+                                    shape.ContentItemsName = Html.NameFor(x => x.ContentItems);
+                                    //Zone
+                                    shape.ZonesId = Html.IdFor(x => x.Zones);
+                                    shape.ZonesName = Html.NameFor(x => x.Zones);
+                                });
                                 @await DisplayAsync(contentCard)
                             }
                         }
