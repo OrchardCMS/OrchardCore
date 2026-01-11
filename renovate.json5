@@ -71,14 +71,16 @@
             enabled: false,
         },
         {
+            // Those NPM packages that we manually updated and want to keep up-to-date.
             matchManagers: [
                 'npm',
             ],
             matchPackageNames: [
+                'monaco-editor',
                 'trumbowyg',
             ],
             enabled: true,
-            groupName: 'Trumbowyg',
+            groupName: 'NPM Packages',
         },
         {
             // See the the comment in global.json on why this is disabled.
