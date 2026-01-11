@@ -1,6 +1,7 @@
 [
   {
     "action": "sass",
+    "generateRTL": true,
     "name": "media",
     "source": "Assets/scss/media.scss",
     "tags": ["admin", "dashboard", "css"]

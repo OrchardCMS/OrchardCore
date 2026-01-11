@@ -10,7 +10,14 @@
  */
 .trumbowyg-dropdown-emoji {
   width: 265px;
+}
+
+[dir="ltr"] .trumbowyg-dropdown-emoji {
   padding: 7px 0 7px 5px;
+}
+
+[dir="rtl"] .trumbowyg-dropdown-emoji {
+  padding: 7px 5px 7px 0;
 }
 
 .trumbowyg-dropdown-emoji svg {
@@ -20,7 +27,6 @@
 .trumbowyg-dropdown-emoji button {
   display: block;
   position: relative;
-  float: left;
   height: 26px;
   width: 26px;
   padding: 0;
@@ -28,17 +34,33 @@
   line-height: 24px;
   text-align: center;
 }
+
+[dir="ltr"] .trumbowyg-dropdown-emoji button {
+  float: left;
+}
+
+[dir="rtl"] .trumbowyg-dropdown-emoji button {
+  float: right;
+}
+
 .trumbowyg-dropdown-emoji button:hover::after, .trumbowyg-dropdown-emoji button:focus::after {
   display: block;
   position: absolute;
   top: -5px;
-  left: -5px;
   height: 27px;
   width: 27px;
   background: inherit;
   box-shadow: #000 0 0 2px;
   z-index: 10;
   background-color: transparent;
+}
+
+[dir="ltr"] .trumbowyg-dropdown-emoji button:hover::after, [dir="ltr"] .trumbowyg-dropdown-emoji button:focus::after {
+  left: -5px;
+}
+
+[dir="rtl"] .trumbowyg-dropdown-emoji button:hover::after, [dir="rtl"] .trumbowyg-dropdown-emoji button:focus::after {
+  right: -5px;
 }
 
 .trumbowyg .emoji {

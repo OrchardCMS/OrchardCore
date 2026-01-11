@@ -14,10 +14,12 @@
   display: inline-block;
   pointer-events: none;
 }
+
 [formulas][inline=false] {
   display: block;
   width: 100%;
 }
+
 [formulas]::after {
   content: "✎";
   position: absolute;
@@ -31,6 +33,7 @@
   cursor: pointer;
   pointer-events: auto;
 }
+
 [formulas]:hover::after {
   opacity: 1;
 }

@@ -24,7 +24,6 @@
 .trumbowyg-dropdown-specialChars button {
   display: block;
   position: relative;
-  float: left;
   height: 26px;
   width: 26px;
   padding: 0;
@@ -32,17 +31,33 @@
   line-height: 24px;
   text-align: center;
 }
+
+[dir="ltr"] .trumbowyg-dropdown-specialChars button {
+  float: left;
+}
+
+[dir="rtl"] .trumbowyg-dropdown-specialChars button {
+  float: right;
+}
+
 .trumbowyg-dropdown-specialChars button:hover::after, .trumbowyg-dropdown-specialChars button:focus::after {
   display: block;
   position: absolute;
   top: -5px;
-  left: -5px;
   height: 27px;
   width: 27px;
   background: inherit;
   box-shadow: #000 0 0 2px;
   z-index: 10;
   background-color: transparent;
+}
+
+[dir="ltr"] .trumbowyg-dropdown-specialChars button:hover::after, [dir="ltr"] .trumbowyg-dropdown-specialChars button:focus::after {
+  left: -5px;
+}
+
+[dir="rtl"] .trumbowyg-dropdown-specialChars button:hover::after, [dir="rtl"] .trumbowyg-dropdown-specialChars button:focus::after {
+  right: -5px;
 }
 
 .trumbowyg .specialChars {
