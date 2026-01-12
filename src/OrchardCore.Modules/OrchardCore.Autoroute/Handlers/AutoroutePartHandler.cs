@@ -245,59 +245,91 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, (JsonObject)contentItem.Content, part.Path);
     }
 
-    private async Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
+    private async Task IterateContainedContentItemsAspectAccessorsAsync(ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, Func<JsonObject, ContentItem, Task> processAsync)
     {
-        foreach (var accessor in containedContentItemsAspect.Accessors)
+        var accessors = containedContentItemsAspect?.Accessors;
+
+        if (accessors == null || accessors.Count == 0 || content == null)
         {
-            var jItems = accessor.Invoke(content);
+            return;
+        }
+        
+        foreach (var accessor in accessors)
+        {
+            var items = accessor
+                .Invoke(content)?
+                .Select(node => node is JsonObject item ? (item, item.ToObject<ContentItem>()) : (null, null)) ?? [];
 
-            foreach (var jItem in jItems.Cast<JsonObject>())
+            foreach (var (json, contentItem) in items)
             {
-                var contentItem = jItem.ToObject<ContentItem>();
-                var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
-
-                if (!handlerAspect.Disabled)
+                if (json != null && contentItem != null)
                 {
-                    var path = handlerAspect.Path;
-                    if (!handlerAspect.Absolute)
-                    {
-                        path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
-                    }
-
-                    entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.GetNormalizedPath())
-                    {
-                        DocumentId = contentItem.Id,
-                    });
+                    await processAsync(json, contentItem);
                 }
-
-                var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
-                var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
-                await PopulateContainedContentItemRoutesAsync(entries, containerContentItemId, childrenAspect, jItem, itemBasePath);
             }
         }
     }
 
-    private async Task ValidateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
+    private Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
     {
-        foreach (var accessor in containedContentItemsAspect.Accessors)
+        return IterateContainedContentItemsAspectAccessorsAsync(containedContentItemsAspect, content, async (jItem, contentItem) =>
         {
-            var jItems = accessor.Invoke(content);
+            var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
 
-            foreach (var jItem in jItems.Cast<JsonObject>())
+            if (!handlerAspect.Disabled)
             {
-                var contentItem = jItem.ToObject<ContentItem>();
-                var containedAutoroutePart = contentItem.As<AutoroutePart>();
-
-                // This is only relevant if the content items have an autoroute part as we adjust the part value as required to guarantee a unique route.
-                // Content items routed only through the handler aspect already guarantee uniqueness.
-                if (containedAutoroutePart != null && !containedAutoroutePart.Disabled)
+                var path = handlerAspect.Path;
+                if (!handlerAspect.Absolute)
                 {
-                    var path = containedAutoroutePart.Path;
+                    path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
+                }
 
-                    if (containedAutoroutePart.Absolute && !await IsAbsolutePathUniqueAsync(path, contentItem.ContentItemId))
+                entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.GetNormalizedPath())
+                {
+                    DocumentId = contentItem.Id,
+                });
+            }
+
+            var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
+            var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+            await PopulateContainedContentItemRoutesAsync(entries, containerContentItemId, childrenAspect, jItem, itemBasePath);
+        });
+    }
+
+    private Task ValidateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
+    {
+        return IterateContainedContentItemsAspectAccessorsAsync(containedContentItemsAspect, content, async (jItem, contentItem) =>
+        {
+            var containedAutoroutePart = contentItem.As<AutoroutePart>();
+
+            // This is only relevant if the content items have an autoroute part as we adjust the part value as required to guarantee a unique route.
+            // Content items routed only through the handler aspect already guarantee uniqueness.
+            if (containedAutoroutePart != null && !containedAutoroutePart.Disabled)
+            {
+                var path = containedAutoroutePart.Path;
+
+                if (containedAutoroutePart.Absolute && !await IsAbsolutePathUniqueAsync(path, contentItem.ContentItemId))
+                {
+                    path = await GenerateUniqueAbsolutePathAsync(path, contentItem.ContentItemId);
+                    containedAutoroutePart.Path = path;
+                    containedAutoroutePart.Apply();
+
+                    // Merge because we have disconnected the content item from it's json owner.
+                    jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
                     {
-                        path = await GenerateUniqueAbsolutePathAsync(path, contentItem.ContentItemId);
-                        containedAutoroutePart.Path = path;
+                        MergeArrayHandling = MergeArrayHandling.Replace,
+                        MergeNullValueHandling = MergeNullValueHandling.Merge,
+                    });
+                }
+                else
+                {
+                    var currentItemBasePath = basePath.EndsWith('/') ? basePath : basePath + '/';
+                    path = currentItemBasePath + containedAutoroutePart.Path.TrimStart('/');
+                    if (!IsRelativePathUnique(entries, path, containedAutoroutePart))
+                    {
+                        path = GenerateRelativeUniquePath(entries, path, containedAutoroutePart);
+                        // Remove base path and update part path.
+                        containedAutoroutePart.Path = path[currentItemBasePath.Length..];
                         containedAutoroutePart.Apply();
 
                         // Merge because we have disconnected the content item from it's json owner.
@@ -307,34 +339,15 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                             MergeNullValueHandling = MergeNullValueHandling.Merge,
                         });
                     }
-                    else
-                    {
-                        var currentItemBasePath = basePath.EndsWith('/') ? basePath : basePath + '/';
-                        path = currentItemBasePath + containedAutoroutePart.Path.TrimStart('/');
-                        if (!IsRelativePathUnique(entries, path, containedAutoroutePart))
-                        {
-                            path = GenerateRelativeUniquePath(entries, path, containedAutoroutePart);
-                            // Remove base path and update part path.
-                            containedAutoroutePart.Path = path[currentItemBasePath.Length..];
-                            containedAutoroutePart.Apply();
 
-                            // Merge because we have disconnected the content item from it's json owner.
-                            jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
-                            {
-                                MergeArrayHandling = MergeArrayHandling.Replace,
-                                MergeNullValueHandling = MergeNullValueHandling.Merge,
-                            });
-                        }
-
-                        path = path[currentItemBasePath.Length..];
-                    }
-
-                    var containedItemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + path;
-                    var childItemAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
-                    await ValidateContainedContentItemRoutesAsync(entries, containerContentItemId, childItemAspect, jItem, containedItemBasePath);
+                    path = path[currentItemBasePath.Length..];
                 }
+
+                var containedItemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + path;
+                var childItemAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+                await ValidateContainedContentItemRoutesAsync(entries, containerContentItemId, childItemAspect, jItem, containedItemBasePath);
             }
-        }
+        });
     }
 
     private static bool IsRelativePathUnique(List<AutorouteEntry> entries, string path, AutoroutePart context)
