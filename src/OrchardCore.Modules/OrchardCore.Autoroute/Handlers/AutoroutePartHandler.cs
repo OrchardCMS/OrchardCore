@@ -270,9 +270,8 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         }
     }
 
-    private Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
-    {
-        return IterateContainedContentItemsAspectAccessorsAsync(containedContentItemsAspect, content, async (jItem, contentItem) =>
+    private Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath) =>
+        IterateContainedContentItemsAspectAccessorsAsync(containedContentItemsAspect, content, async (jItem, contentItem) =>
         {
             var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
 
@@ -294,11 +293,9 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
             await PopulateContainedContentItemRoutesAsync(entries, containerContentItemId, childrenAspect, jItem, itemBasePath);
         });
-    }
 
-    private Task ValidateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
-    {
-        return IterateContainedContentItemsAspectAccessorsAsync(containedContentItemsAspect, content, async (jItem, contentItem) =>
+    private Task ValidateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath) =>
+        IterateContainedContentItemsAspectAccessorsAsync(containedContentItemsAspect, content, async (jItem, contentItem) =>
         {
             var containedAutoroutePart = contentItem.As<AutoroutePart>();
 
@@ -348,7 +345,6 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                 await ValidateContainedContentItemRoutesAsync(entries, containerContentItemId, childItemAspect, jItem, containedItemBasePath);
             }
         });
-    }
 
     private static bool IsRelativePathUnique(List<AutorouteEntry> entries, string path, AutoroutePart context)
     {
