@@ -274,7 +274,14 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         IterateContainedContentItemsAspectAccessorsAsync(containedContentItemsAspect, content, async (jItem, contentItem) =>
         {
             var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
+            if (handlerAspect == null)
+            {
+                return;
+            }
 
+            basePath ??= string.Empty;
+            handlerAspect.Path ??= string.Empty;
+            
             if (!handlerAspect.Disabled)
             {
                 var path = handlerAspect.Path;
@@ -301,14 +308,38 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
             // This is only relevant if the content items have an autoroute part as we adjust the part value as required to guarantee a unique route.
             // Content items routed only through the handler aspect already guarantee uniqueness.
-            if (containedAutoroutePart != null && !containedAutoroutePart.Disabled)
+            if (containedAutoroutePart == null || containedAutoroutePart.Disabled)
             {
-                var path = containedAutoroutePart.Path;
+                return;
+            }
 
-                if (containedAutoroutePart.Absolute && !await IsAbsolutePathUniqueAsync(path, contentItem.ContentItemId))
+            basePath ??= string.Empty;
+            containedAutoroutePart.Path ??= string.Empty;
+
+            var path = containedAutoroutePart.Path;
+
+            if (containedAutoroutePart.Absolute && !await IsAbsolutePathUniqueAsync(path, contentItem.ContentItemId))
+            {
+                path = await GenerateUniqueAbsolutePathAsync(path, contentItem.ContentItemId);
+                containedAutoroutePart.Path = path;
+                containedAutoroutePart.Apply();
+
+                // Merge because we have disconnected the content item from it's json owner.
+                jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
                 {
-                    path = await GenerateUniqueAbsolutePathAsync(path, contentItem.ContentItemId);
-                    containedAutoroutePart.Path = path;
+                    MergeArrayHandling = MergeArrayHandling.Replace,
+                    MergeNullValueHandling = MergeNullValueHandling.Merge,
+                });
+            }
+            else
+            {
+                var currentItemBasePath = basePath.EndsWith('/') ? basePath : basePath + '/';
+                path = currentItemBasePath + containedAutoroutePart.Path.TrimStart('/');
+                if (!IsRelativePathUnique(entries, path, containedAutoroutePart))
+                {
+                    path = GenerateRelativeUniquePath(entries, path, containedAutoroutePart);
+                    // Remove base path and update part path.
+                    containedAutoroutePart.Path = path[currentItemBasePath.Length..];
                     containedAutoroutePart.Apply();
 
                     // Merge because we have disconnected the content item from it's json owner.
@@ -318,32 +349,13 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                         MergeNullValueHandling = MergeNullValueHandling.Merge,
                     });
                 }
-                else
-                {
-                    var currentItemBasePath = basePath.EndsWith('/') ? basePath : basePath + '/';
-                    path = currentItemBasePath + containedAutoroutePart.Path.TrimStart('/');
-                    if (!IsRelativePathUnique(entries, path, containedAutoroutePart))
-                    {
-                        path = GenerateRelativeUniquePath(entries, path, containedAutoroutePart);
-                        // Remove base path and update part path.
-                        containedAutoroutePart.Path = path[currentItemBasePath.Length..];
-                        containedAutoroutePart.Apply();
 
-                        // Merge because we have disconnected the content item from it's json owner.
-                        jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
-                        {
-                            MergeArrayHandling = MergeArrayHandling.Replace,
-                            MergeNullValueHandling = MergeNullValueHandling.Merge,
-                        });
-                    }
-
-                    path = path[currentItemBasePath.Length..];
-                }
-
-                var containedItemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + path;
-                var childItemAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
-                await ValidateContainedContentItemRoutesAsync(entries, containerContentItemId, childItemAspect, jItem, containedItemBasePath);
+                path = path[currentItemBasePath.Length..];
             }
+
+            var containedItemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + path;
+            var childItemAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+            await ValidateContainedContentItemRoutesAsync(entries, containerContentItemId, childItemAspect, jItem, containedItemBasePath);
         });
 
     private static bool IsRelativePathUnique(List<AutorouteEntry> entries, string path, AutoroutePart context)
