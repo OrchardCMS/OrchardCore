@@ -302,7 +302,7 @@
   {
     "action": "copy",
     "name": "vue3",
-    "source": "Assets/node_modules/vue/dist/*.js",
+    "source": "../../../node_modules/vue/dist/*.js",
     "tags": [ "resources", "js" ]
   },
   {
