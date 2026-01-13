@@ -1,7 +1,7 @@
 namespace OrchardCore.Email;
 
 /// <summary>
-/// Provides extension methods to <see cref="ISmtpService"/>.
+/// Provides extension methods to <see cref="IEmailService"/>.
 /// </summary>
 public static class EmailServiceExtensions
 {
