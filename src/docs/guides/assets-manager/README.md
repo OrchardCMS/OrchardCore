@@ -366,8 +366,8 @@ Allows to concatenate files together.
     "action": "concat",
     "name": "media",
     "source": [
-      "../../../node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
-      "../../../node_modules/blueimp-file-upload/js/jquery.fileupload.js",
+      "node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
+      "node_modules/blueimp-file-upload/js/jquery.fileupload.js",
       "Assets/js/app/Shared/uploadComponent.js"
     ],
     "dest": "wwwroot/Scripts"
@@ -378,6 +378,103 @@ Allows to concatenate files together.
 The source field must be an array of files.
 
 The destination should always be a folder as we do not support renaming files.
+
+#### Important: Concat Action and Node Modules
+
+**The `concat` action physically concatenates files** - it does **not** use a bundler or module resolver. This has important implications for how it handles `node_modules` dependencies:
+
+##### How Node Modules Resolution Works
+
+When a source path starts with `node_modules/`, the concat action resolves it from the **workspace root** `node_modules/` directory (where Yarn hoists all workspace dependencies):
+
+```javascript
+// In assetGroups.mjs
+if (src.startsWith("node_modules")) {
+    // Always resolves to: <workspace-root>/node_modules/
+    return path.resolve(path.join(process.cwd(), src)).replace(/\\/g, "/");
+}
+```
+
+##### Version Constraint Requirements
+
+**⚠️ Critical Limitation:** All modules/themes using the same dependency with the `concat` action **must use the same version** of that dependency.
+
+**Why?** Yarn workspaces use "selective hoisting":
+- If all workspaces request the **same version**: Yarn hoists it to the root `node_modules/` ✅
+- If workspaces request **different versions**: Yarn hoists the most common version to root, and installs others locally in each workspace's `node_modules/` ❌
+
+Since `concat` **always** resolves from the root `node_modules/`, it will:
+- ✅ Work correctly when all versions match (hoisted to root)
+- ❌ **Fail** when different versions are needed (ignores local installs)
+
+**Example Problem:**
+```
+OrchardCore.Media/Assets/package.json:     "bootstrap": "5.3.8"
+OrchardCore.Resources/Assets/package.json:  "bootstrap": "5.3.8"  
+SomeTheme/Assets/package.json:              "bootstrap": "4.6.1"  ← Different!
+```
+
+**Result:**
+- `bootstrap@5.3.8` → hoisted to `node_modules/bootstrap/` (most common)
+- `bootstrap@4.6.1` → installed in `SomeTheme/Assets/node_modules/bootstrap/`
+- `concat` action will **always use 5.3.8** from root, even for SomeTheme ❌
+
+##### Best Practices
+
+**1. Coordinate Versions Across Modules**
+When using `concat`, ensure all modules using the same dependency specify the **identical version**:
+
+```json
+// All Assets/package.json files should have:
+{
+  "dependencies": {
+    "bootstrap": "5.3.8",  // ← Same exact version everywhere
+    "jquery": "3.7.1"       // ← Same exact version everywhere
+  }
+}
+```
+
+**2. Use Root Resolutions for Consistency**
+Add a `resolutions` field in the root `package.json` to enforce version consistency:
+
+```json
+// package.json (root)
+{
+  "resolutions": {
+    "bootstrap": "5.3.8",
+    "jquery": "3.7.1"
+  }
+}
+```
+
+This ensures Yarn uses these versions everywhere, preventing accidental version conflicts.
+
+**3. For Different Versions, Use a Bundler Instead**
+If different modules genuinely need different versions of a dependency, use a bundler action (`parcel`, `webpack`, or `vite`) instead of `concat`. Bundlers properly resolve `node_modules` and handle version differences.
+
+**4. Document Shared Dependencies**
+When adding a new dependency to be used with `concat`, communicate with the team to ensure version alignment across modules.
+
+##### Alternative: Local Assets Folder
+
+If you must use `concat` but need full control over dependency versions, copy the required library files directly into your module's `Assets/` folder:
+
+```json
+[
+  {
+    "action": "concat",
+    "name": "media",
+    "source": [
+      "Assets/vendor/blueimp-file-upload/jquery.iframe-transport.js",  // ← Local copy
+      "Assets/vendor/blueimp-file-upload/jquery.fileupload.js",
+      "Assets/js/app/Shared/uploadComponent.js"
+    ],
+    "dest": "wwwroot/Scripts"
+  }
+]
+```
+
+This approach trades convenience for complete version control, but eliminates the shared dependency issue.
 
 ## build.config.mjs
 
