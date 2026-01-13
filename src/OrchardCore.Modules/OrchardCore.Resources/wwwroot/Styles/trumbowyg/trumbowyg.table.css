@@ -11,12 +11,14 @@
 .trumbowyg-dropdown-table {
   max-height: unset;
 }
+
 .trumbowyg-dropdown-table table {
   all: unset;
   display: inline-block;
   margin: 10px;
   border-collapse: collapse;
 }
+
 .trumbowyg-dropdown-table table td {
   all: unset;
   position: relative;
@@ -26,6 +28,7 @@
   cursor: pointer;
   background: #fff;
 }
+
 .trumbowyg-dropdown-table table td::after {
   content: "";
   display: block;
@@ -37,10 +40,12 @@
   border: 1px solid #cecece;
   pointer-events: none;
 }
+
 .trumbowyg-dropdown-table table td.active::after {
   background-color: #000;
   border-color: #000;
 }
+
 .trumbowyg-dropdown-table .trumbowyg-table-size {
   text-align: center;
 }
@@ -69,29 +74,50 @@
 .trumbowyg-table-resize-layers {
   position: absolute;
   top: 0;
-  left: 0;
   width: 0;
   height: 0;
+}
+
+[dir="ltr"] .trumbowyg-table-resize-layers {
+  left: 0;
+}
+
+[dir="rtl"] .trumbowyg-table-resize-layers {
+  right: 0;
 }
 
 .trumbowyg-table-resize-vertical-handle {
   position: absolute;
   width: 5px;
-  margin-left: -3px;
   cursor: col-resize;
+}
+
+[dir="ltr"] .trumbowyg-table-resize-vertical-handle {
+  margin-left: -3px;
+}
+
+[dir="rtl"] .trumbowyg-table-resize-vertical-handle {
+  margin-right: -3px;
 }
 
 .trumbowyg-table-resize-vertical-handle::after {
   content: "";
   position: absolute;
   top: 0;
-  left: 1px;
   width: 3px;
   height: 100%;
   background: #0073ff;
   border-radius: 3px;
   pointer-events: none;
   opacity: 0;
+}
+
+[dir="ltr"] .trumbowyg-table-resize-vertical-handle::after {
+  left: 1px;
+}
+
+[dir="rtl"] .trumbowyg-table-resize-vertical-handle::after {
+  right: 1px;
 }
 
 .trumbowyg-table-resize-vertical-handle:hover::after {
@@ -104,11 +130,11 @@
   padding: 7px 5px;
   overflow: initial;
 }
+
 .trumbowyg-dropdown-tableCellBackgroundColor:not(.trumbowyg-dropdown--color-list) button,
 .trumbowyg-dropdown-tableBorderColor:not(.trumbowyg-dropdown--color-list) button {
   display: block;
   position: relative;
-  float: left;
   text-indent: -9999px;
   height: 20px;
   width: 20px;
@@ -116,6 +142,17 @@
   padding: 0;
   margin: 2px;
 }
+
+[dir="ltr"] .trumbowyg-dropdown-tableCellBackgroundColor:not(.trumbowyg-dropdown--color-list) button,
+[dir="ltr"] .trumbowyg-dropdown-tableBorderColor:not(.trumbowyg-dropdown--color-list) button {
+  float: left;
+}
+
+[dir="rtl"] .trumbowyg-dropdown-tableCellBackgroundColor:not(.trumbowyg-dropdown--color-list) button,
+[dir="rtl"] .trumbowyg-dropdown-tableBorderColor:not(.trumbowyg-dropdown--color-list) button {
+  float: right;
+}
+
 .trumbowyg-dropdown-tableCellBackgroundColor:not(.trumbowyg-dropdown--color-list) button:hover::after, .trumbowyg-dropdown-tableCellBackgroundColor:not(.trumbowyg-dropdown--color-list) button:focus::after,
 .trumbowyg-dropdown-tableBorderColor:not(.trumbowyg-dropdown--color-list) button:hover::after,
 .trumbowyg-dropdown-tableBorderColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
@@ -123,7 +160,6 @@
   display: block;
   position: absolute;
   top: -5px;
-  left: -5px;
   width: 27px;
   height: 27px;
   background: inherit;
@@ -132,11 +168,20 @@
   z-index: 10;
 }
 
+[dir="ltr"] .trumbowyg-dropdown-tableCellBackgroundColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir="ltr"] .trumbowyg-dropdown-tableCellBackgroundColor:not(.trumbowyg-dropdown--color-list) button:focus::after, [dir="ltr"] .trumbowyg-dropdown-tableBorderColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir="ltr"] .trumbowyg-dropdown-tableBorderColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
+  left: -5px;
+}
+
+[dir="rtl"] .trumbowyg-dropdown-tableCellBackgroundColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir="rtl"] .trumbowyg-dropdown-tableCellBackgroundColor:not(.trumbowyg-dropdown--color-list) button:focus::after, [dir="rtl"] .trumbowyg-dropdown-tableBorderColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir="rtl"] .trumbowyg-dropdown-tableBorderColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
+  right: -5px;
+}
+
 .trumbowyg-dropdown-tableCellBackgroundColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button),
 .trumbowyg-dropdown-tableBorderColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button) {
   position: relative;
   color: #fff !important;
 }
+
 .trumbowyg-dropdown-tableCellBackgroundColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):hover::after, .trumbowyg-dropdown-tableCellBackgroundColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):focus::after,
 .trumbowyg-dropdown-tableBorderColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):hover::after,
 .trumbowyg-dropdown-tableBorderColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):focus::after {
@@ -144,9 +189,17 @@
   display: block;
   position: absolute;
   top: 13px;
-  left: 0;
   width: 0;
   height: 0;
   border: 5px solid transparent;
+}
+
+[dir="ltr"] .trumbowyg-dropdown-tableCellBackgroundColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):hover::after, [dir="ltr"] .trumbowyg-dropdown-tableCellBackgroundColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):focus::after, [dir="ltr"] .trumbowyg-dropdown-tableBorderColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):hover::after, [dir="ltr"] .trumbowyg-dropdown-tableBorderColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):focus::after {
+  left: 0;
   border-left-color: #fff;
+}
+
+[dir="rtl"] .trumbowyg-dropdown-tableCellBackgroundColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):hover::after, [dir="rtl"] .trumbowyg-dropdown-tableCellBackgroundColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):focus::after, [dir="rtl"] .trumbowyg-dropdown-tableBorderColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):hover::after, [dir="rtl"] .trumbowyg-dropdown-tableBorderColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):focus::after {
+  right: 0;
+  border-right-color: #fff;
 }
