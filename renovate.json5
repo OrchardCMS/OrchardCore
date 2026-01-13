@@ -71,6 +71,16 @@
             enabled: false,
         },
         {
+            matchManagers: [
+                'npm',
+            ],
+            matchPackageNames: [
+                'trumbowyg',
+            ],
+            enabled: true,
+            groupName: 'Trumbowyg',
+        },
+        {
             // See the the comment in global.json on why this is disabled.
             groupName: 'global.json',
             matchFileNames: ['global.json'],

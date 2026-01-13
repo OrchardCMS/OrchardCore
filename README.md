@@ -27,7 +27,7 @@ Nightly (`main`):
 
 ## Project Status: v2.2.1
 
-The software is production-ready, and capable of serving large mission-critical applications as well, and we're not aware of any fundamental bugs or missing features we deem crucial. Orchard Core continues to evolve, with each version bringing new improvements, and keeping up with the cutting-edge of .NET.
+The software is production-ready and capable of serving large, mission-critical applications. We are not aware of any fundamental bugs or missing features we deem crucial. Orchard Core continues to evolve, with each version bringing new improvements, and keeping up with the cutting-edge of .NET.
 
 Check out [the Reference of Built-in Modules](https://docs.orchardcore.net/en/latest/reference/) to see what kind of features Orchard Core provides built-in.
 
