@@ -310,7 +310,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                     else
                     {
                         var currentItemBasePath = basePath.EndsWith('/') ? basePath : basePath + '/';
-                        path = currentItemBasePath + containedAutoroutePart.Path?.TrimStart('/');
+                        path = currentItemBasePath + containedAutoroutePart.Path.TrimStart('/');
                         if (!IsRelativePathUnique(entries, path, containedAutoroutePart))
                         {
                             path = GenerateRelativeUniquePath(entries, path, containedAutoroutePart);
