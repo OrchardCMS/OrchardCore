@@ -503,6 +503,7 @@
   },
   {
     "action": "copy",
+    "generateRTL": true,
     "name": "trumbowyg",
     "source": "../../../node_modules/trumbowyg/dist/ui/trumbowyg.css",
     "dest": "wwwroot/Styles/trumbowyg/",
@@ -510,6 +511,7 @@
   },
   {
     "action": "copy",
+    "generateRTL": true,
     "name": "trumbowyg",
     "source": "../../../node_modules/trumbowyg/dist/ui/trumbowyg.min.css",
     "dest": "wwwroot/Styles/trumbowyg/",
@@ -524,6 +526,15 @@
   },
   {
     "action": "sass",
+    "generateRTL": true,
+    "name": "trumbowyg-plugins",
+    "source": "Assets/trumbowyg/plugins/trumbowyg-plugins.scss",
+    "dest": "wwwroot/Styles/trumbowyg/",
+    "tags": ["css"]
+  },
+  {
+    "action": "sass",
+    "generateRTL": true,
     "name": "trumbowyg-plugins",
     "source": "Assets/trumbowyg/plugins/*/ui/sass/*.scss",
     "dest": "wwwroot/Styles/trumbowyg/",
