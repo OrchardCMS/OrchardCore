@@ -62,13 +62,13 @@ Runs the Parcel bundler.
 
 ```json
 [
-  {
-    "action": "parcel",
-    "name": "module-microsoft-datasource-wrapper",
-    "source": "Assets/Scripts/datasource-wrapper.js",
-    "dest": "wwwroot/datasource-wrapper",
-    "tags":["vue3"]
-  }
+  {
+    "action": "parcel",
+    "name": "module-microsoft-datasource-wrapper",
+    "source": "Assets/Scripts/datasource-wrapper.js",
+    "dest": "wwwroot/datasource-wrapper",
+    "tags":["vue3"]
+  }
 ]
 ```
 
@@ -97,13 +97,13 @@ Parcel bundleEntrypoint parameter:
 
 ```json
 [
-  {
-    "action": "parcel",
-    "name": "module-microsoft-datasource-wrapper",
-    "source": "Assets/Scripts/datasource-wrapper.js",
+  {
+    "action": "parcel",
+    "name": "module-microsoft-datasource-wrapper",
+    "source": "Assets/Scripts/datasource-wrapper.js",
     "bundleEntrypoint": "bundle-name",
-    "tags":["vue3"]
-  }
+    "tags":["vue3"]
+  }
 ]
 ```
 
@@ -265,15 +265,15 @@ Allows to run any command through Concurrently.
 
 ```json
 [
-  {
-    "action": "run",
-    "name": "itwin-viewer-app",
-    "source": "Assets/itwin-viewer-app",
-    "scripts": {
-      "build": "yarn build",
-      "watch": "yarn start"
-    }
-  }
+  {
+    "action": "run",
+    "name": "itwin-viewer-app",
+    "source": "Assets/itwin-viewer-app",
+    "scripts": {
+      "build": "yarn build",
+      "watch": "yarn start"
+    }
+  }
 ]
 ```
 
@@ -287,19 +287,19 @@ Allows to copy files.
 
 ```json
 [
-  {
-    "action": "copy",
-    "dryRun": true,
-    "name": "copy-bootstrap-js",
-    "source": "node_modules/bootstrap/dist/js/*.js*",
-    "dest": "wwwroot/Scripts"
-  },
-  {
-    "action": "copy",
-    "name": "copy-bootstrap-css",
-    "source": "node_modules/bootstrap/dist/css/*.css*",
-    "dest": "wwwroot/Styles"
-  }
+  {
+    "action": "copy",
+    "dryRun": true,
+    "name": "copy-bootstrap-js",
+    "source": "node_modules/bootstrap/dist/js/*.js*",
+    "dest": "wwwroot/Scripts"
+  },
+  {
+    "action": "copy",
+    "name": "copy-bootstrap-css",
+    "source": "node_modules/bootstrap/dist/css/*.css*",
+    "dest": "wwwroot/Styles"
+  }
 ]
 ```
 
@@ -313,19 +313,19 @@ Allows to minify files.
 
 ```json
 [
-  {
-    "action": "min",
-    "dryRun": true,
-    "name": "copy-bootstrap-js",
-    "source": "node_modules/bootstrap/dist/js/*.js*",
-    "dest": "wwwroot/Scripts"
-  },
-  {
-    "action": "min",
-    "name": "copy-bootstrap-css",
-    "source": "node_modules/bootstrap/dist/css/*.css*",
-    "dest": "wwwroot/Styles"
-  }
+  {
+    "action": "min",
+    "dryRun": true,
+    "name": "copy-bootstrap-js",
+    "source": "node_modules/bootstrap/dist/js/*.js*",
+    "dest": "wwwroot/Scripts"
+  },
+  {
+    "action": "min",
+    "name": "copy-bootstrap-css",
+    "source": "node_modules/bootstrap/dist/css/*.css*",
+    "dest": "wwwroot/Styles"
+  }
 ]
 ```
 
@@ -341,12 +341,12 @@ Allows to transpile scss files.
 
 ```json
 [
-  {
-    "action": "sass",
-    "name": "transpile-bootstrap-scss",
-    "source": "node_modules/bootstrap/dist/css/main.scss",
-    "dest": "wwwroot/Styles"
-  }
+  {
+    "action": "sass",
+    "name": "transpile-bootstrap-scss",
+    "source": "node_modules/bootstrap/dist/css/main.scss",
+    "dest": "wwwroot/Styles"
+  }
 ]
 ```
 
@@ -356,6 +356,28 @@ The destination should always be a folder as we do not support renaming files.
 
 You can use the dry-run task to log to the console where the files will be copied to.
 
+### Concat
+
+Allows to concatenate files together.
+
+```json
+[
+  {
+    "action": "concat",
+    "name": "media",
+    "source": [
+      "../../../node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
+      "../../../node_modules/blueimp-file-upload/js/jquery.fileupload.js",
+      "Assets/js/app/Shared/uploadComponent.js"
+    ],
+    "dest": "wwwroot/Scripts"
+  }
+]
+```
+
+The source field must be an array of files.
+
+The destination should always be a folder as we do not support renaming files.
 
 ## build.config.mjs
 
@@ -368,13 +390,13 @@ For example, if you wanted to override the parcel browserlist:
 ```javascript
 // The type of command running and the current group's json object.
 export function parcel(type, group) {
-  return {
-    defaultTargetOptions: {
-      engines: {
-        browsers: "> 1%, last 4 versions, not dead",
-      },
-    },
-  };
+  return {
+    defaultTargetOptions: {
+      engines: {
+        browsers: "> 1%, last 4 versions, not dead",
+      },
+    },
+  };
 }
 ```
 
@@ -384,24 +406,24 @@ Here is an example for Vite:
 import vue from "@vitejs/plugin-vue";
 
 export function viteConfig(action) {
-  return {
-    plugins: [vue()],
-    build: {
-      minify: false,
-      rollupOptions: {
-        output: {
-          manualChunks: (id) => {
-            if (id.includes("node_modules")) {
-              if (id.includes("@vue") || id.includes("/vue/")) {
-                return "vue";
-              }
-              return "vendor"; // all other package goes here
-            }
-          },
-        },
-      },
-    },
-  };
+  return {
+    plugins: [vue()],
+    build: {
+      minify: false,
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            if (id.includes("node_modules")) {
+              if (id.includes("@vue") || id.includes("/vue/")) {
+                return "vue";
+              }
+              return "vendor"; // all other package goes here
+            }
+          },
+        },
+      },
+    },
+  };
 }
 ```
 
@@ -423,7 +445,7 @@ To be able to compile as ECMAScript there are requirements.
 
 ```json
 {
-  "type": "module",
+  "type": "module",
 }
 ```
 
@@ -439,9 +461,9 @@ Example for an app that will use Vite/TS would be to add this configuration to a
 
 ```json
 resolve: {
-    alias: {
-        'vue': 'vue/dist/vue.esm-bundler.js',
-    },
+    alias: {
+        'vue': 'vue/dist/vue.esm-bundler.js',
+    },
 },
 ```
 
@@ -455,9 +477,152 @@ Also, now when adding a `<script>` tag to the HTML, you will need to use:
 
 Meaning that the ESM script will be interpreted as CommonJS by the browser if the script tag doesn't have it.
 
-+Additionally, Vite by default only allows ES6 builds. It will log a message to the console if you attempt to use its .js builds without the `type="module"` attribute in the script tag; otherwise, it will throw exceptions in the code. Therefore, it is mandatory to include `type="module"` with Vite builds.
-+
-+Parcel allows ES6 builds by setting the `"type": "module"` parameter in the package.json file. If this parameter is not set, Parcel will compile as CommonJS.
-+
-+ESM compiled scripts will load fine in a script tag without the `type="module"` attribute. However, you should try to avoid this. 
-+For more details, see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#applying_the_module_to_your_html
+Additionally, Vite by default only allows ES6 builds. It will log a message to the console if you attempt to use its .js builds without the `type="module"` attribute in the script tag; otherwise, it will throw exceptions in the code. Therefore, it is mandatory to include `type="module"` with Vite builds.
+
+Parcel allows ES6 builds by setting the `"type": "module"` parameter in the package.json file. If this parameter is not set, Parcel will compile as CommonJS.
+
+ESM compiled scripts will load fine in a script tag without the `type="module"` attribute. However, you should try to avoid this. 
+For more details, see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#applying_the_module_to_your_html
+
+---
+
+## Advanced: Architecture and Package Management
+
+The following section describes the internal architecture of the asset management system. This is useful for advanced users who want to understand how the system works or need to manage dependencies.
+
+### Package Structure Overview
+
+The OrchardCore asset management system uses a **three-tier package structure** designed to separate concerns and minimize version conflicts:
+
+#### 1. Root `package.json` - Workspace & Build Toolchain Manager
+**Location:** Root of the repository  
+**Purpose:** 
+- Manages Yarn workspaces for the monorepo
+- Contains **all build tooling dependencies** (Parcel, Vite, Webpack, Sass, PostCSS, etc.)
+- Defines global development dependencies
+- Provides version constraints via `resolutions` to prevent conflicts
+
+**Why it contains build tools:**
+- Single source of truth for all build tool versions
+- Eliminates duplication across the monorepo
+- Simplifies dependency updates (update once, applies everywhere)
+- Yarn workspaces automatically hoists these to the root `node_modules`
+
+#### 2. `.scripts/assets-manager/package.json` - CLI Tool Package
+**Location:** `.scripts/assets-manager/`  
+**Purpose:**
+- Defines the assets-manager CLI tool metadata
+- Provides the executable entry point (`bin: ./build.mjs`)
+- Contains **no dependencies** - inherits everything from workspace root
+
+**Why it's minimal:**
+- The assets-manager is a **CLI orchestrator**, not a library
+- All actual build tools are consumed from the workspace root
+- Keeps the package focused on its core responsibility: orchestrating builds
+
+#### 3. Module/Theme `Assets/package.json` Files
+**Location:** `src/OrchardCore.{Modules,Themes}/*/Assets/`  
+**Purpose:**
+- Contains **runtime dependencies** for the specific module/theme
+- Libraries that get bundled into the application (jQuery, Vue, Bootstrap, etc.)
+- These are the actual packages used by the frontend code
+
+**Why they're separate:**
+- Each module/theme has different runtime requirements
+- Version constraints specific to that module's needs
+- Clear separation: "What I build with" vs "What I ship"
+
+### Dependency Flow
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Root package.json                                       │
+│ - Build tools (Parcel, Vite, Webpack, Sass)             │
+│ - Workspace orchestration                               │
+│ - Version constraints (resolutions)                     │
+└────────────┬────────────────────────────────────────────┘
+             │ (workspace dependency)
+             ▼
+┌─────────────────────────────────────────────────────────┐
+│ .scripts/assets-manager/package.json                    │
+│ - CLI metadata only                                     │
+│ - No dependencies (inherits from root)                  │
+│ - Entry point: build.mjs                                │
+└────────────┬────────────────────────────────────────────┘
+             │ (processes)
+             ▼
+┌─────────────────────────────────────────────────────────┐
+│ Module/Theme Assets/package.json                        │
+│ - Runtime dependencies (jQuery, Vue, etc.)              │
+│ - Libraries that get bundled                            │
+│ - Module-specific versions                              |
+└─────────────────────────────────────────────────────────┘
+```
+
+### Benefits of This Architecture
+
+1. **No Duplication:** Build tools are defined once in the root
+2. **No Version Conflicts:** `resolutions` field enforces consistency
+3. **Easy Maintenance:** Update build tools in one place
+4. **Clear Separation:** Build tools vs runtime dependencies are distinct
+5. **Workspace Efficiency:** Yarn hoisting optimizes disk usage and installation time
+
+### How It Works
+
+When you run `yarn build`:
+1. The root `package.json` script calls `assets-manager build`
+2. Yarn resolves `assets-manager` to `.scripts/assets-manager/build.mjs`
+3. The build script uses build tools (Parcel/Vite/Webpack) from root `node_modules`
+4. For each module, it processes the `Assets.json` and bundles the runtime dependencies
+5. Output goes to the module's `wwwroot` folder
+
+### Managing Dependencies
+
+#### Adding Build Tool Dependencies
+To add or update a build tool (e.g., upgrading Parcel, adding a new PostCSS plugin):
+
+1. Add/update it in the **root** `package.json` under `devDependencies`
+2. Run `yarn install` from the repository root
+3. If you need to enforce a specific version across all workspaces, add it to `resolutions`
+
+**Example:**
+```json
+// package.json (root)
+{
+  "devDependencies": {
+    "parcel": "2.14.0"  // Update version
+  },
+  "resolutions": {
+    "parcel": "2.14.0"  // Enforce everywhere
+  }
+}
+```
+
+#### Adding Module/Theme Runtime Dependencies
+To add a library that your module needs at runtime (e.g., a Vue component library):
+
+1. Navigate to your module's Assets folder: `cd src/OrchardCore.Modules/YourModule/Assets`
+2. Add the dependency: `yarn add your-library`
+3. The dependency is added to `Assets/package.json` in that module only
+4. Import and use it in your module's asset files
+
+**Example:**
+```bash
+cd src/OrchardCore.Modules/OrchardCore.Media/Assets
+yarn add blueimp-file-upload@10.32.0
+```
+
+#### Preventing Version Conflicts
+The root `package.json` includes a `resolutions` field to enforce specific versions:
+
+```json
+{
+  "resolutions": {
+    "postcss": "8.5.3",
+    "sass": "^1.85.1",
+    "glob": "^11.0.1"
+  }
+}
+```
+
+This ensures that even if different modules request different versions, Yarn will use the version specified in `resolutions`. This prevents version conflicts across the workspace.

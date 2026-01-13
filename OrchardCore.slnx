@@ -30,6 +30,7 @@
     <File Path=".scripts/assets-manager/assetGroups.mjs" />
     <File Path=".scripts/assets-manager/build.mjs" />
     <File Path=".scripts/assets-manager/clean.mjs" />
+    <File Path=".scripts/assets-manager/concat.mjs" />
     <File Path=".scripts/assets-manager/config.mjs" />
     <File Path=".scripts/assets-manager/copy.mjs" />
     <File Path=".scripts/assets-manager/min.mjs" />
