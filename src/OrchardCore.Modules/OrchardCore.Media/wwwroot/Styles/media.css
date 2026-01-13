@@ -421,6 +421,14 @@ ol.media-items-grid {
 .action-bar {
   border-bottom: var(--oc-media-border-content);
 }
+.action-bar .ms-2 {
+  margin-right: 0.5rem !important;
+  margin-left: 0 !important;
+}
+.action-bar [dir=rtl] .ms-2 {
+  margin-right: 0 !important;
+  margin-left: 0.5rem !important;
+}
 .action-bar .media-filter {
   margin-top: 3px;
 }
