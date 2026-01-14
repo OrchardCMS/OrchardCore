@@ -2,7 +2,7 @@
 
 ## Overview
 
-OrchardCore's asset management system now uses **NPM package aliasing** to manage multiple versions of the same package without manual copying. This eliminates the need for manually vendored packages in the `Assets/Vendor/` folder.
+OrchardCore's asset management system now uses **NPM package aliasing** to manage multiple versions of the same package without manual copying. This eliminates the need for manually vendored packages in the `Assets/Vendor/` folder, if an NPM package is available.
 
 ## What is NPM Package Aliasing?
 
@@ -53,7 +53,7 @@ In your module's `Assets.json`:
   {
     "action": "copy",
     "name": "bootstrap-4.6.1",
-    "source": "../../../node_modules/bootstrap-4.6.1/dist/**",
+    "source": "node_modules/bootstrap-4.6.1/dist/**",
     "dest": "wwwroot/Vendor/bootstrap-4.6.1/",
     "tags": ["resources", "js"]
   }
@@ -92,13 +92,13 @@ Assets.json:
   {
     "action": "copy",
     "name": "vue2",
-    "source": "../../../node_modules/vue-2.6.14/dist/*.js",
+    "source": "node_modules/vue-2.6.14/dist/*.js",
     "dest": "wwwroot/Vendor/vue-2.6.14/"
   },
   {
     "action": "copy",
     "name": "vue3",
-    "source": "../../../node_modules/vue/dist/*.js",
+    "source": "node_modules/vue/dist/*.js",
     "dest": "wwwroot/Scripts/"
   }
 ]
@@ -176,7 +176,7 @@ Assets.json:
 {
   "action": "copy",
   "name": "vue2",
-  "source": "../../../node_modules/vue-2.6.14/dist/*.js",
+  "source": "node_modules/vue-2.6.14/dist/*.js",
   "dest": "wwwroot/Vendor/vue-2.6.14/"
 }
 ```
@@ -190,7 +190,7 @@ Assets.json:
    ```
 
 2. **Update Assets.json paths**
-   - Change `Assets/Vendor/package-name/` to `../../../node_modules/package-alias/`
+   - Change `Assets/Vendor/package-name/` to `node_modules/package-alias/`
 
 3. **Install dependencies**
    ```bash
@@ -214,7 +214,7 @@ Assets.json:
 
 ### Package Not Found
 
-**Error:** `ENOENT: no such file or directory, stat '../../../node_modules/package-name'`
+**Error:** `ENOENT: no such file or directory, stat 'node_modules/package-name'`
 
 **Solution:** Run `yarn install` from the repository root:
 ```bash
@@ -232,7 +232,7 @@ yarn install
 "vue-2.6.14": "npm:vue@2.6.14"
 
 // Assets.json - alias name must match folder name
-"source": "../../../node_modules/vue-2.6.14/dist/*.js"
+"source": "node_modules/vue-2.6.14/dist/*.js"
 ```
 
 ### Workspace Dependency Conflicts

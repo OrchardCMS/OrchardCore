@@ -474,7 +474,7 @@ if (src.startsWith("node_modules")) {
 
 ##### Version Constraint Requirements
 
-**⚠️ Critical Limitation:** All modules/themes using the same dependency with the `concat` action **must use the same version** of that dependency.
+**⚠️ Critical Limitation:** The `concat` action resolves dependencies from the **workspace root** `node_modules/` directory. This means all modules/themes using the same dependency with `concat` must coordinate their version requirements.
 
 **Why?** Yarn workspaces use "selective hoisting":
 - If all workspaces request the **same version**: Yarn hoists it to the root `node_modules/` ✅
@@ -496,10 +496,66 @@ SomeTheme/Assets/package.json:              "bootstrap": "4.6.1"  ← Different!
 - `bootstrap@4.6.1` → installed in `SomeTheme/Assets/node_modules/bootstrap/`
 - `concat` action will **always use 5.3.8** from root, even for SomeTheme ❌
 
+##### Solutions for Multiple Versions
+
+**Recommended: Use NPM Package Aliasing**
+
+The recommended approach to handle multiple versions is **NPM package aliasing**. This allows you to install different versions of the same package under unique names in the root `node_modules/`:
+
+```json
+// Assets/package.json (in your module)
+{
+  "dependencies": {
+    "bootstrap": "5.3.8",                          // Current version
+    "bootstrap-4.6.1": "npm:bootstrap@4.6.1"       // Legacy version (aliased)
+  }
+}
+```
+
+After running `yarn install`, both versions are hoisted to the root:
+```
+node_modules/
+  bootstrap/             → 5.3.8
+  bootstrap-4.6.1/       → 4.6.1 (aliased)
+```
+
+Now you can reference either version in your `Assets.json`:
+
+```json
+[
+  {
+    "action": "concat",
+    "name": "modern-bootstrap",
+    "source": [
+      "node_modules/bootstrap/dist/js/bootstrap.js",           // Uses 5.3.8
+      "Assets/js/modern-features.js"
+    ],
+    "dest": "wwwroot/Scripts"
+  },
+  {
+    "action": "concat",
+    "name": "legacy-bootstrap",
+    "source": [
+      "node_modules/bootstrap-4.6.1/dist/js/bootstrap.js",     // Uses 4.6.1
+      "Assets/js/legacy-features.js"
+    ],
+    "dest": "wwwroot/Scripts"
+  }
+]
+```
+
+**Benefits:**
+- ✅ Both versions are hoisted to root `node_modules/` and work with `concat`
+- ✅ Managed via package managers (no manual file copying)
+- ✅ Version updates are tracked in `package.json`
+- ✅ No Git bloat from vendored files
+
+See the [Managing Multiple Package Versions](#managing-multiple-package-versions) section and [NPM Aliasing Guide](./NPM_ALIASING_GUIDE.md) for complete documentation.
+
 ##### Best Practices
 
-**1. Coordinate Versions Across Modules**
-When using `concat`, ensure all modules using the same dependency specify the **identical version**:
+**1. Coordinate Versions Across Modules When Possible**
+If all modules can use the same version, keep it simple:
 
 ```json
 // All Assets/package.json files should have:
@@ -512,7 +568,7 @@ When using `concat`, ensure all modules using the same dependency specify the **
 ```
 
 **2. Use Root Resolutions for Consistency**
-Add a `resolutions` field in the root `package.json` to enforce version consistency:
+Add a `resolutions` field in the root `package.json` to enforce version consistency when using a single version:
 
 ```json
 // package.json (root)
@@ -524,17 +580,14 @@ Add a `resolutions` field in the root `package.json` to enforce version consiste
 }
 ```
 
-This ensures Yarn uses these versions everywhere, preventing accidental version conflicts.
+**3. Use NPM Aliasing for Different Versions**
+When different modules genuinely need different versions, use NPM package aliasing as shown above. This is the recommended approach for maintaining multiple versions while keeping them manageable through package managers.
 
-**3. For Different Versions, Use a Bundler Instead**
-If different modules genuinely need different versions of a dependency, use a bundler action (`parcel`, `webpack`, or `vite`) instead of `concat`. Bundlers properly resolve `node_modules` and handle version differences.
+**4. Alternative: Use a Bundler**
+If you need complex dependency resolution or module bundling, consider using a bundler action (`parcel`, `webpack`, or `vite`) instead of `concat`. Bundlers properly resolve `node_modules` and handle version differences automatically.
 
-**4. Document Shared Dependencies**
-When adding a new dependency to be used with `concat`, communicate with the team to ensure version alignment across modules.
-
-##### Alternative: Local Assets Folder
-
-If you must use `concat` but need full control over dependency versions, copy the required library files directly into your module's `Assets/` folder:
+**5. Last Resort: Local Assets Folder**
+Only if NPM aliasing doesn't meet your needs, copy the required library files directly into your module's `Assets/` folder:
 
 ```json
 [
@@ -551,7 +604,7 @@ If you must use `concat` but need full control over dependency versions, copy th
 ]
 ```
 
-This approach trades convenience for complete version control, but eliminates the shared dependency issue.
+This approach trades convenience for complete version control, but eliminates the shared dependency issue. However, NPM aliasing is preferred as it keeps dependencies manageable and trackable.
 
 ## build.config.mjs
 
@@ -697,7 +750,7 @@ The OrchardCore asset management system uses a **three-tier package structure** 
 - Manages Yarn workspaces for the monorepo
 - Contains **all build tooling dependencies** (Parcel, Vite, Webpack, Sass, PostCSS, etc.)
 - Defines global development dependencies
-- Provides version constraints via `resolutions` to prevent conflicts
+- Can provide version constraints via `resolutions` to prevent conflicts
 
 **Why it contains build tools:**
 - Single source of truth for all build tool versions
@@ -810,7 +863,7 @@ yarn add blueimp-file-upload@10.32.0
 ```
 
 #### Preventing Version Conflicts
-The root `package.json` includes a `resolutions` field to enforce specific versions:
+The root `package.json` can include a `resolutions` field to enforce specific versions:
 
 ```json
 {
