@@ -565,6 +565,14 @@
     "action": "sass",
     "generateRTL": true,
     "name": "trumbowyg-plugins",
+    "source": "Assets/trumbowyg/plugins/trumbowyg-plugins.scss",
+    "dest": "wwwroot/Styles/trumbowyg/",
+    "tags": [ "css" ]
+  },
+  {
+    "action": "sass",
+    "generateRTL": true,
+    "name": "trumbowyg-plugins",
     "source": "Assets/trumbowyg/plugins/*/ui/sass/*.scss",
     "dest": "wwwroot/Styles/trumbowyg/",
     "tags": [ "css" ]
