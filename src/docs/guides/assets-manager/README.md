@@ -285,6 +285,7 @@ The scripts keys must match the command used to start the pipeline. If you start
 
 Allows to copy files.
 
+#### Single Source (String)
 ```json
 [
   {
@@ -303,9 +304,85 @@ Allows to copy files.
 ]
 ```
 
-The source field can be a file, or a glob of files.
-The destination should always be a folder as we do not support renaming files.
-You can use the dry-run task to log to the console where the files will be copied to.
+#### Multiple Sources (Array)
+
+Consolidate multiple copy operations into a single entry:
+
+```json
+[
+  {
+    "action": "copy",
+    "name": "bootstrap-4.6.1",
+    "source": [
+      "node_modules/bootstrap-4.6.1/dist/css/bootstrap.css",
+      "node_modules/bootstrap-4.6.1/dist/css/bootstrap.min.css",
+      "node_modules/bootstrap-4.6.1/dist/js/bootstrap.js",
+      "node_modules/bootstrap-4.6.1/dist/js/bootstrap.min.js"
+    ],
+    "dest": "wwwroot/Vendor/bootstrap-4.6.1/",
+    "tags": ["resources", "css", "js"]
+  }
+]
+```
+
+**Benefits:**
+- ✅ Reduces duplication in Assets.json
+- ✅ Groups related files together
+- ✅ Easier to maintain and read
+- ✅ Fully backward compatible with single string sources
+
+**Notes:**
+- The `source` field can be a string (single pattern) or an array of strings (multiple patterns)
+- Each pattern in the array can be a file path, glob pattern, or wildcard
+- The `dest` should always be a folder (we do not support renaming files)
+- You can use the `dry-run` task to preview where files will be copied
+
+#### Important Notes
+
+##### Base Folder Detection
+
+When using `**` in a source pattern, the base folder is auto-detected:
+
+```json
+{
+  "source": "node_modules/bootstrap-4.6.1/dist/**"
+}
+```
+
+- Base folder: `node_modules/bootstrap-4.6.1/dist/`
+- Files are copied relative to this base folder
+- Example: `dist/css/bootstrap.css` → `{dest}/css/bootstrap.css`
+
+##### Mixing Patterns
+
+You can mix different pattern types in the same array:
+
+```json
+{
+  "source": [
+    "node_modules/lib/dist/**",        // Recursive glob
+    "node_modules/lib/extras/*.js",    // Single-level glob
+    "node_modules/lib/readme.md"       // Specific file
+  ]
+}
+```
+
+##### Default Destination
+
+If `dest` is not specified, the default destination is determined from tags and file extension of the **first source**:
+
+```json
+{
+  "action": "copy",
+  "name": "my-scripts",
+  "source": [
+    "node_modules/lib/file1.js",  // First source determines dest
+    "node_modules/lib/file2.css"
+  ],
+  "tags": ["resources", "js"]
+  // dest defaults to: "{basePath}/wwwroot/Scripts/"
+}
+```
 
 ### Min  
 
@@ -580,6 +657,29 @@ Parcel allows ES6 builds by setting the `"type": "module"` parameter in the pack
 
 ESM compiled scripts will load fine in a script tag without the `type="module"` attribute. However, you should try to avoid this. 
 For more details, see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#applying_the_module_to_your_html
+
+## Managing Multiple Package Versions
+
+We use **NPM package aliasing** to manage multiple versions of the same package without manual copying. See the [NPM Aliasing Guide](./NPM_ALIASING_GUIDE.md) for complete documentation.
+
+**Quick Example:**
+```json
+// Assets/package.json
+{
+  "dependencies": {
+    "vue": "3.5.13",                   // Latest version
+    "vue-2.6.14": "npm:vue@2.6.14"     // Legacy version (aliased)
+  }
+}
+```
+
+This allows you to:
+- ✅ Install multiple versions of the same package
+- ✅ Reference them from `node_modules` in your `Assets.json`
+- ✅ Update versions via NPM/Yarn instead of manual copying
+- ✅ Avoid Git bloat from vendored packages
+
+For detailed instructions, migration guides, and best practices, see [NPM_ALIASING_GUIDE.md](./NPM_ALIASING_GUIDE.md).
 
 ---
 

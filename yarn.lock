@@ -1685,6 +1685,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fortawesome/fontawesome-free-5.15.4@npm:@fortawesome/fontawesome-free@5.15.4":
+  version: 5.15.4
+  resolution: "@fortawesome/fontawesome-free@npm:5.15.4"
+  checksum: 10/1ffbe55214d378fc3618f77b50b624a4571f984085318bbef3d81b810f1049451865634a4224f35844b205e6586a0a6473a54ce6e5cd0f0b3be5fbf57ab46901
+  languageName: node
+  linkType: hard
+
+"@fortawesome/fontawesome-free-6.6.0@npm:@fortawesome/fontawesome-free@6.6.0":
+  version: 6.6.0
+  resolution: "@fortawesome/fontawesome-free@npm:6.6.0"
+  checksum: 10/4673599d6a6e66db5542384fbe870ca8c06a450a20c629ed242e5f617a0a035f393fe8dfac9010688aa5d58a44bedc4c789cff0318956ae50c43bf98b4c7cb54
+  languageName: node
+  linkType: hard
+
+"@fortawesome/fontawesome-free-6.7.2@npm:@fortawesome/fontawesome-free@6.7.2":
+  version: 6.7.2
+  resolution: "@fortawesome/fontawesome-free@npm:6.7.2"
+  checksum: 10/88101fee12470ede1e7f2588b86121924259d98889b950e2ccde71d934f4f344b592d1360700de4e92d81262014d3ae33fe995c7799f2be2abddcee3102413d6
+  languageName: node
+  linkType: hard
+
 "@fortawesome/fontawesome-free@npm:7.1.0":
   version: 7.1.0
   resolution: "@fortawesome/fontawesome-free@npm:7.1.0"
@@ -2450,13 +2471,20 @@ __metadata:
   resolution: "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets"
   dependencies:
     "@fortawesome/fontawesome-free": "npm:7.1.0"
+    "@fortawesome/fontawesome-free-5.15.4": "npm:@fortawesome/fontawesome-free@5.15.4"
+    "@fortawesome/fontawesome-free-6.6.0": "npm:@fortawesome/fontawesome-free@6.6.0"
+    "@fortawesome/fontawesome-free-6.7.2": "npm:@fortawesome/fontawesome-free@6.7.2"
     "@popperjs/core": "npm:2.11.8"
     blueimp-file-upload: "npm:^10.32.0"
     bootstrap: "npm:5.3.8"
+    bootstrap-4.6.1: "npm:bootstrap@4.6.1"
     bootstrap-select: "npm:1.14.0-beta3"
     codemirror: "npm:5.65.7"
     fontawesome-iconpicker: "npm:3.2.0"
     jquery: "npm:3.7.1"
+    jquery-3.4.1: "npm:jquery@3.4.1"
+    jquery-3.5.1: "npm:jquery@3.5.1"
+    jquery-3.6.0: "npm:jquery@3.6.0"
     jquery-resizable-dom: "npm:0.35.0"
     jquery.easing: "npm:1.4.1"
     jquery.ui.widget: "npm:1.10.3"
@@ -2464,12 +2492,17 @@ __metadata:
     monaco-editor: "npm:0.46.0"
     nestedSortable: "npm:1.3.4"
     nouislider: "npm:15.7.0"
+    popper.js: "npm:1.16.1"
     sortablejs: "npm:1.15.3"
     trumbowyg: "npm:2.31.0"
     typescript-json-schema: "npm:^0.51.0"
-    vue: "npm:3.5.13"
+    vue: "npm:^3.5.26"
+    vue-2.6.14: "npm:vue@2.6.14"
+    vue-3.5.13: "npm:vue@3.5.13"
     vue-multiselect: "npm:3.2.0"
+    vue-multiselect-2.1.6: "npm:vue-multiselect@2.1.6"
     vuedraggable: "npm:^4.1.0"
+    vuedraggable-2.24.3: "npm:vuedraggable@2.24.3"
   languageName: unknown
   linkType: soft
 
@@ -2531,7 +2564,7 @@ __metadata:
     typescript: "npm:^5.7.3"
     typescript-eslint: "npm:^8.24.0"
     vite: "npm:^6.2.0"
-    vue: "npm:^3.5.13"
+    vue: "npm:^3.5.26"
     vue-hot-reload-api: "npm:^2.3.4"
     vue-tsc: "npm:^2.2.4"
     webpack: "npm:5.94.0"
@@ -5632,6 +5665,16 @@ __metadata:
   version: 1.0.0
   resolution: "boolbase@npm:1.0.0"
   checksum: 10/3e25c80ef626c3a3487c73dbfc70ac322ec830666c9ad915d11b701142fab25ec1e63eff2c450c74347acfd2de854ccde865cd79ef4db1683f7c7b046ea43bb0
+  languageName: node
+  linkType: hard
+
+"bootstrap-4.6.1@npm:bootstrap@4.6.1":
+  version: 4.6.1
+  resolution: "bootstrap@npm:4.6.1"
+  peerDependencies:
+    jquery: 1.9.1 - 3
+    popper.js: ^1.16.1
+  checksum: 10/3930f7309a753c85942dc0d71745d82a23c6181ed8049eb414bb3437e87f75069f4ef70a3e5f2ee92a62de9080e09c3dea22ee96119d73ee32b17cdecc482533
   languageName: node
   linkType: hard
 
@@ -9032,6 +9075,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jquery-3.4.1@npm:jquery@3.4.1":
+  version: 3.4.1
+  resolution: "jquery@npm:3.4.1"
+  checksum: 10/c40dcf94f6d1427b8d28b8f6b9d32f368b01e77cc24095c66c02de146faf0e633ef7c7f5d5815c52367b400f32d7c7f9c87e66d372488ffdd3276b4aeb6e0cef
+  languageName: node
+  linkType: hard
+
+"jquery-3.5.1@npm:jquery@3.5.1":
+  version: 3.5.1
+  resolution: "jquery@npm:3.5.1"
+  checksum: 10/b301ef0561057a8f2967bb15c03ac8ed16f902f0fc3c768be90171e4f3ebf5938c4e86ffcca6424eec9ed38ea210c57252cc8777502f064c241ee7dfcb8a4cc7
+  languageName: node
+  linkType: hard
+
+"jquery-3.6.0@npm:jquery@3.6.0":
+  version: 3.6.0
+  resolution: "jquery@npm:3.6.0"
+  checksum: 10/9785a3a13718ae51a13394e9953cc321fc11fb820e98b92ad1e76bc81086e596b3e7627fd2f23db79f4088cc0862eb2541ad775ea75d3079cc1fec834c28d5ad
+  languageName: node
+  linkType: hard
+
 "jquery-resizable-dom@npm:0.35.0":
   version: 0.35.0
   resolution: "jquery-resizable-dom@npm:0.35.0"
@@ -10696,6 +10760,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"popper.js@npm:1.16.1":
+  version: 1.16.1
+  resolution: "popper.js@npm:1.16.1"
+  checksum: 10/71338c86faf9b66ce60c3cdd7fb2ed742944e5d2765a188f269239fee2980aa6223b77b41302d1b6eb7d724e611092f9a2576d0048ac2071b605291abc72c0cf
+  languageName: node
+  linkType: hard
+
 "portscanner@npm:2.1.1":
   version: 2.1.1
   resolution: "portscanner@npm:2.1.1"
@@ -12307,6 +12378,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sortablejs@npm:1.10.2":
+  version: 1.10.2
+  resolution: "sortablejs@npm:1.10.2"
+  checksum: 10/9bffed8c94980db6e3f4630d0a97a2c97a37e6e8950f787a234848242c4eca73b222b4537464ba2cd8524b61a9300ebab1af70c93dee75c9c25ff483bf644220
+  languageName: node
+  linkType: hard
+
 "sortablejs@npm:1.14.0":
   version: 1.14.0
   resolution: "sortablejs@npm:1.14.0"
@@ -13450,6 +13528,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vue-2.6.14@npm:vue@2.6.14, vue@npm:2.6.14":
+  version: 2.6.14
+  resolution: "vue@npm:2.6.14"
+  checksum: 10/382e261c1d995285b1834f093b53d935a537e6afd18a557131890144bcc5b61c87101db70daf8593bd1cdcfad3dcd90a2f4fea35b6ca0cee1e8c6f7f8f88c104
+  languageName: node
+  linkType: hard
+
+"vue-3.5.13@npm:vue@3.5.13":
+  version: 3.5.13
+  resolution: "vue@npm:3.5.13"
+  dependencies:
+    "@vue/compiler-dom": "npm:3.5.13"
+    "@vue/compiler-sfc": "npm:3.5.13"
+    "@vue/runtime-dom": "npm:3.5.13"
+    "@vue/server-renderer": "npm:3.5.13"
+    "@vue/shared": "npm:3.5.13"
+  peerDependencies:
+    typescript: "*"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10/bcab4ca74c4a37a2bd3f892d6783f8b01748281cd5aedc2f5dd16521b97a3ba0303cf56df5e217eaa712d38ed2a14b75a92d875cf2596973ac985ca806f44e79
+  languageName: node
+  linkType: hard
+
 "vue-eslint-parser@npm:^9.4.3":
   version: 9.4.3
   resolution: "vue-eslint-parser@npm:9.4.3"
@@ -13471,6 +13574,13 @@ __metadata:
   version: 2.3.4
   resolution: "vue-hot-reload-api@npm:2.3.4"
   checksum: 10/948b0a44a1727b297bff86979e0dcb38615b45f9e7760a7b8c57929b4eda0ea7b4eb0393bf33c0d88be1432eff92615b497a2a9b6b418dd9cb38b48f40138e47
+  languageName: node
+  linkType: hard
+
+"vue-multiselect-2.1.6@npm:vue-multiselect@2.1.6":
+  version: 2.1.6
+  resolution: "vue-multiselect@npm:2.1.6"
+  checksum: 10/4697da187cce2e0f6f7db5f265629c098d3fcb0d267835c4ce49aaa2558c9029f0144984ae9f2ac5cbbbd07c55cbce6ce0e27f96b0a491f2c12464c02a9a475b
   languageName: node
   linkType: hard
 
@@ -13512,31 +13622,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:2.6.14":
-  version: 2.6.14
-  resolution: "vue@npm:2.6.14"
-  checksum: 10/382e261c1d995285b1834f093b53d935a537e6afd18a557131890144bcc5b61c87101db70daf8593bd1cdcfad3dcd90a2f4fea35b6ca0cee1e8c6f7f8f88c104
-  languageName: node
-  linkType: hard
-
-"vue@npm:3.5.13":
-  version: 3.5.13
-  resolution: "vue@npm:3.5.13"
-  dependencies:
-    "@vue/compiler-dom": "npm:3.5.13"
-    "@vue/compiler-sfc": "npm:3.5.13"
-    "@vue/runtime-dom": "npm:3.5.13"
-    "@vue/server-renderer": "npm:3.5.13"
-    "@vue/shared": "npm:3.5.13"
-  peerDependencies:
-    typescript: "*"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10/bcab4ca74c4a37a2bd3f892d6783f8b01748281cd5aedc2f5dd16521b97a3ba0303cf56df5e217eaa712d38ed2a14b75a92d875cf2596973ac985ca806f44e79
-  languageName: node
-  linkType: hard
-
 "vue@npm:^2.6.14":
   version: 2.7.16
   resolution: "vue@npm:2.7.16"
@@ -13547,7 +13632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:^3.5.13":
+"vue@npm:^3.5.26":
   version: 3.5.26
   resolution: "vue@npm:3.5.26"
   dependencies:
@@ -13562,6 +13647,15 @@ __metadata:
     typescript:
       optional: true
   checksum: 10/f9c0be20379c72e61fc5c9cd6ffd52f1f261c00ce046bf7e12e3e6dd425e1ccf8924ae64a02d3bd8769a0ed14922e02898a80660f64d6089972601d27c89c0d6
+  languageName: node
+  linkType: hard
+
+"vuedraggable-2.24.3@npm:vuedraggable@2.24.3":
+  version: 2.24.3
+  resolution: "vuedraggable@npm:2.24.3"
+  dependencies:
+    sortablejs: "npm:1.10.2"
+  checksum: 10/b7497e66eb0dce7a552e49b482884f14d158b7f5a91ef2c4f77f69dc830f42565beaa8bc45019b088ef1aa62d7dc16994d4f7595b0aabcdb3d83580f789dd545
   languageName: node
   linkType: hard
 
