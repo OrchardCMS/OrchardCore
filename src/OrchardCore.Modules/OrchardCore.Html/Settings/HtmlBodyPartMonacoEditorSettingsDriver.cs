@@ -26,10 +26,16 @@ public sealed class HtmlBodyPartMonacoEditorSettingsDriver : ContentTypePartDefi
         return Initialize<MonacoSettingsViewModel>("HtmlBodyPartMonacoSettings_Edit", model =>
         {
             var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartMonacoEditorSettings>();
+
             if (string.IsNullOrWhiteSpace(settings.Options))
             {
-                settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
+                settings.Options = JConvert.SerializeObject(new
+                {
+                    automaticLayout = true,
+                    language = "html",
+                }, JOptions.Indented);
             }
+
             model.Options = settings.Options;
         }).Location("Editor");
     }
