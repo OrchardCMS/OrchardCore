@@ -49,6 +49,9 @@
             if (settings.automaticLayout == undefined) {
                 settings.automaticLayout = true;
             }
+            if (settings.language == undefined) {
+                settings.language = 'html';
+            }
 
             const html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
