@@ -54,9 +54,13 @@ public class ContentTypeDefinitionBuilder
         return new ContentTypeDefinition(_name, _displayName, _parts, _settings);
     }
 
-    public ContentTypeDefinitionBuilder Named(string name)
+    [Obsolete("This method has been deprecated, please use WithName() instead.")]
+    public ContentTypeDefinitionBuilder Named(string name) => WithName(name);
+
+    public ContentTypeDefinitionBuilder WithName(string name)
     {
         _name = name;
+
         return this;
     }
 
