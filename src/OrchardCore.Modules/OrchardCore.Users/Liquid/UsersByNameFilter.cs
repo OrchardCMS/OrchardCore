@@ -22,36 +22,6 @@ public class UsersByNameFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        if (input.Type == FluidValues.Dictionary)
-        {
-            if (input.ToObjectValue() is IFluidIndexable values)
-            {
-                var items = new Dictionary<long, string>();
-
-                foreach (var key in values.Keys)
-                {
-                    if (long.TryParse(key, out var id) && values.TryGetValue(key, out var value))
-                    {
-                        items.Add(id, value.ToStringValue());
-                    }
-                }
-
-                var normalizedUserNames = items.Values.Select(userName => _userManager.NormalizeName(userName)).ToArray();
-
-                var cachedUsers = await _session.GetAsync<User>(items.Keys.ToArray());
-
-                var cachedNormalizedNames = cachedUsers.Select(x => x.NormalizedUserName).ToHashSet();
-
-                var missingNormalizedNames = normalizedUserNames.Where(name => !cachedNormalizedNames.Contains(name)).ToList();
-
-                var missingUsers = await _session.Query<User, UserIndex>(x => x.NormalizedUserName.IsIn(missingNormalizedNames)).ListAsync();
-
-                return FluidValue.Create(missingUsers.Concat(cachedUsers).ToList(), ctx.Options);
-            }
-
-            return EmptyValue.Instance;
-        }
-
         if (input.Type == FluidValues.Array)
         {
             // List of usernames
