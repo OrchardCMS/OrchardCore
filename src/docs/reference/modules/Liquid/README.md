@@ -422,6 +422,43 @@ You can use this filter with the UserPicker field to load the picked user's info
 {% endfor %}
 ```
 
+##### users_by_name filter
+
+Loads a single or multiple user objects from the database by username(s). The username is automatically normalized before querying.
+
+The resulting object has access to the same properties as the `users_by_id` filter.
+
+| Property             | Example                      | Description                                                                           |
+|----------------------|------------------------------|---------------------------------------------------------------------------------------|
+| `UserId`             | `42z3ps88pm8d40zn9cfwbee45c` | The id of the authenticated user.                                                     |
+| `UserName`           | `admin`                      | The name of the authenticated user.                                                   |
+| `NormalizedUserName` | `ADMIN`                      | The normailzed name of the authenticated user.                                        |
+| `Email`              | `admin@gmail.com`            | The email of the authenticated user.                                                  |
+| `NormailizedEmail`   | `ADMIN@GMAIL.COM`            | The normalized email of the authenticated user.                                       |
+| `EmailConfirmed`     | `true`                       | True if the user has confirmed his email or if the email confirmation is not required |
+| `IsEnabled`          | `true`                       | True if the user is enabled                                                           |
+| `RoleNames`          | `[Editor,Contributor]`       | An array of role names assigned to the user                                           |
+| `Properties`         | `UserProfile.FirstName.Text` | Holds the Custom Users Settings of the user.                                          |
+
+You can use this filter to load a user by their username:
+
+```liquid
+{% assign user = "admin" | users_by_name %}
+
+{{ user.UserName }} - {{ user.Email }}
+```
+
+You can also use this filter with an array of usernames:
+
+```liquid
+{% assign usernames = "admin,editor,contributor" | split: "," %}
+{% assign users = usernames | users_by_name %}
+
+{% for user in users %}
+  {{ user.UserName }} - {{ user.Email }}
+{% endfor %}
+```
+
 #### User has_permission filter
 
 Checks if the User has permission clearance, optionally on a resource
