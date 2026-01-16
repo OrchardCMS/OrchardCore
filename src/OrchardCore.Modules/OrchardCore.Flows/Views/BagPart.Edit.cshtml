@@ -1,3 +1,4 @@
+@using OrchardCore.ContentTypes.Shapes
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
 @using OrchardCore.Mvc.Utilities
@@ -21,33 +22,34 @@
             foreach (var widget in Model.AccessibleWidgets)
             {
                 //Create a Card Shape
-                dynamic contentCard = await New.ContentCard(
-                // FOR Updater
-                CollectionShape: Model,
-                //Shape Specific
-                CollectionShapeType: nameof(BagPart),
-                ContentItem: widget.ContentItem,
-                BuildEditor: widget.Editable,
-                ParentContentType: parentContentType,
-                CollectionPartName: partName,
-                //Card Specific Properties
-                TargetId: widgetTemplatePlaceholderId,
-                Inline: false,
-                CanMove: widget.Editable,
-                CanDelete: widget.Deletable,
-                //Input hidden
-                //Prefixes
-                HtmlFieldPrefix: htmlFieldPrefix,
-                PrefixValue: htmlFieldPrefix + '-' + (index++).ToString(),
-                PrefixesId: Html.IdFor(x => x.Prefixes),
-                PrefixesName: Html.NameFor(x => x.Prefixes),
-                //Content Types
-                ContentTypesId: Html.IdFor(x => x.ContentTypes),
-                ContentTypesName: Html.NameFor(x => x.ContentTypes),
-                //Content Items
-                ContentItemsId: Html.IdFor(x => x.ContentItems),
-                ContentItemsName: Html.NameFor(x => x.ContentItems)
-                );
+                var contentCard = await Factory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+                {
+                    // FOR Updater
+                    shape.CollectionShape = Model;
+                    //Shape Specific
+                    shape.CollectionShapeType = nameof(BagPart);
+                    shape.ContentItem = widget.ContentItem;
+                    shape.BuildEditor = widget.Editable;
+                    shape.ParentContentType = parentContentType;
+                    shape.CollectionPartName = partName;
+                    //Card Specific Properties
+                    shape.TargetId = widgetTemplatePlaceholderId;
+                    shape.Inline = false;
+                    shape.CanMove = widget.Editable;
+                    shape.CanDelete = widget.Deletable;
+                    //Input hidden
+                    //Prefixes
+                    shape.HtmlFieldPrefix = htmlFieldPrefix;
+                    shape.PrefixValue = htmlFieldPrefix + '-' + (index++).ToString();
+                    shape.PrefixesId = Html.IdFor(x => x.Prefixes);
+                    shape.PrefixesName = Html.NameFor(x => x.Prefixes);
+                    //Content Types
+                    shape.ContentTypesId = Html.IdFor(x => x.ContentTypes);
+                    shape.ContentTypesName = Html.NameFor(x => x.ContentTypes);
+                    //Content Items
+                    shape.ContentItemsId = Html.IdFor(x => x.ContentItems);
+                    shape.ContentItemsName = Html.NameFor(x => x.ContentItems);
+                });
                 @await DisplayAsync(contentCard)
             }
         }

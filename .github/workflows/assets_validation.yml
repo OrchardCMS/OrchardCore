@@ -27,7 +27,7 @@ jobs:
         npm install -g corepack
         corepack enable
         yarn --no-check-resolutions
-        yarn build -gr
+        yarn build
     - name: Check if git has changes
       shell: pwsh
       run: |

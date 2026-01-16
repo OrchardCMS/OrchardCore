@@ -1,3 +1,4 @@
+@using OrchardCore.ContentTypes.Shapes
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
 @using OrchardCore.Mvc.Utilities
@@ -27,33 +28,34 @@
                 var colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
 
                 //Create a Card Shape
-                dynamic contentCard = await New.ContentCard(
+                var contentCard = await Factory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+                {
                     //For Updater
-                    CollectionShape: Model,
+                    shape.CollectionShape = Model;
                     //Shape Specific
-                    CollectionShapeType: nameof(FlowPart),
-                    ContentItem: widget,
-                    BuildEditor: true,
-                    ParentContentType: parentContentType,
-                    ContainedContentTypes: Model.ContainedContentTypeDefinitions,
-                    CollectionPartName: partName,
+                    shape.CollectionShapeType = nameof(FlowPart);
+                    shape.ContentItem = widget;
+                    shape.BuildEditor = true;
+                    shape.ParentContentType = parentContentType;
+                    shape.ContainedContentTypes = Model.ContainedContentTypeDefinitions;
+                    shape.CollectionPartName = partName;
                     //FlowPart Card Specific - For Frame
-                    ColumnSize: colSize,
+                    shape.ColumnSize = colSize;
                     //Card Specific Properties
-                    TargetId: widgetTemplatePlaceholderId,
-                    Inline: false,
-                    CanMove: true,
-                    CanDelete: true,
+                    shape.TargetId = widgetTemplatePlaceholderId;
+                    shape.Inline = false;
+                    shape.CanMove = true;
+                    shape.CanDelete = true;
                     //Input hidden
                     //Prefixes
-                    HtmlFieldPrefix: htmlFieldPrefix,
-                    PrefixValue: Model.Prefixes != null && Model.Prefixes.Length > index ? Model.Prefixes[index++] : htmlFieldPrefix + '-' + (index++).ToString(),
-                    PrefixesName: Html.NameFor(x => x.Prefixes),
+                    shape.HtmlFieldPrefix = htmlFieldPrefix;
+                    shape.PrefixValue = Model.Prefixes != null && Model.Prefixes.Length > index ? Model.Prefixes[index++] : htmlFieldPrefix + '-' + (index++).ToString();
+                    shape.PrefixesName = Html.NameFor(x => x.Prefixes);
                     //Content Types
-                    ContentTypesName: Html.NameFor(x => x.ContentTypes),
+                    shape.ContentTypesName = Html.NameFor(x => x.ContentTypes);
                     //Content Items
-                    ContentItemsName: Html.NameFor(x => x.ContentItems)
-                );
+                    shape.ContentItemsName = Html.NameFor(x => x.ContentItems);
+                });
                 @await DisplayAsync(contentCard)
             }
         }

@@ -946,14 +946,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Styles/trumbowyg/trumbowyg.css"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/ui/trumbowyg.min.css",
-                "https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/ui/trumbowyg.css"
+                "https://cdn.jsdelivr.net/npm/trumbowyg@2.31.0/dist/ui/trumbowyg.min.css",
+                "https://cdn.jsdelivr.net/npm/trumbowyg@2.31.0/dist/ui/trumbowyg.css"
             )
             .SetCdnIntegrity(
-                "sha384-XfI6P0jtm0X3QDEQxS1DotzhIXkJeuSV1wtBOntPaRxzpzTkMWkpZpkuzj8qVHzl",
-                "sha384-GUyfWhYsIKKkAMejJuy50VTSfyfkrrJX2csg7fxJJt7vi+gXH8qxqH29C5GURaum"
+                "sha384-LqNrbFfMePpQMO6AvQziSnLgdzv/vMiSjDkui1MEXDoKDfMObOzIdGhi1Sl+fpEz",
+                "sha384-0dqCsxNlKfFss9fm46V6wbhiBDztFTUWF3gAzSCS6ZObUW/zWUgi9Z/NMqPrAZJX"
             )
-            .SetVersion("2.28.0");
+            .SetVersion("2.31.0");
 
         manifest
             .DefineScript("trumbowyg")
@@ -963,14 +963,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/trumbowyg.min.js",
-                "https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/trumbowyg.js"
+                "https://cdn.jsdelivr.net/npm/trumbowyg@2.31.0/dist/trumbowyg.min.js",
+                "https://cdn.jsdelivr.net/npm/trumbowyg@2.31.0/dist/trumbowyg.js"
             )
             .SetCdnIntegrity(
-                "sha384-O4OAGMDq5hnqt4/WQz+fW6yVgZ02jmw+Yf1j02zIgglnCYXf/7TmET8tFbrTN6u5",
-                "sha384-dNxlebCuuiNWPhPBEd69nEAtkEWa7Z9IWkrL+OSmJ456dlu6TAASXgL72Bn4GGju"
+                "sha384-l4+mVm18V4OOdz6MWO+OmyVods549M2rNdB/NAJkyPmPzuILPswXpFbMBJR9VtSm",
+                "sha384-40pW6SHEA5k9n7CwDgHLcTxfv/HcC3XRIjnLby5vA0tsRjwjWiHWOxS1L0nDvhvq"
             )
-            .SetVersion("2.28.0");
+            .SetVersion("2.31.0");
 
         manifest
             .DefineScript("trumbowyg-shortcodes")
