@@ -25,8 +25,9 @@ public class UsersByNameFilter : ILiquidFilter
         if (input.Type == FluidValues.Array)
         {
             // List of usernames
-            var userNames = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
-            var normalizedUserNames = userNames.Select(userName => _userManager.NormalizeName(userName)).ToArray();
+            var normalizedUserNames = input.Enumerate(ctx)
+                .Select(x => _userManager.NormalizeName(x.ToStringValue()))
+                .ToArray();
 
             return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.NormalizedUserName.IsIn(normalizedUserNames)).ListAsync(), ctx.Options);
         }
