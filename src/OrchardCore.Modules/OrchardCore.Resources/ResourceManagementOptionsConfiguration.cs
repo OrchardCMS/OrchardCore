@@ -489,8 +489,8 @@ public sealed class ResourceManagementOptionsConfiguration
         manifest
             .DefineStyle("nouislider")
             .SetUrl(
-                "~/OrchardCore.Resources/Styles/nouislider.min.css",
-                "~/OrchardCore.Resources/Styles/nouislider.css"
+                "~/OrchardCore.Resources/Styles/nouislider/nouislider.min.css",
+                "~/OrchardCore.Resources/Styles/nouislider/nouislider.css"
             )
             .SetCdn(
                 "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css",

@@ -323,7 +323,7 @@
     "action": "min",
     "name": "nouislider",
     "source": "node_modules/nouislider/dist/nouislider.css",
-    "dest": "wwwroot/Scripts/nouislider/",
+    "dest": "wwwroot/Styles/nouislider/",
     "tags": [ "resources", "css" ]
   },
   {
