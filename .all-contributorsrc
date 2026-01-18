@@ -3457,6 +3457,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "MissAndileN",
+      "name": "Andile Ntuli",
+      "avatar_url": "https://avatars.githubusercontent.com/u/139638609?v=4",
+      "profile": "https://andilentuli-portfolio.netlify.app/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "moamen-0",
+      "name": "Moamen Hassan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/140275501?v=4",
+      "profile": "https://moamen-0.github.io/Moamen-Hassan-Portfolio/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

@@ -45,7 +45,7 @@
                 return;
             }
 
-            var settings = @Html.Raw(monacoSettings.Options);
+            var settings = @Html.Raw(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options);
             if (settings.automaticLayout == undefined) {
                 settings.automaticLayout = true;
             }
