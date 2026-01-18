@@ -29,7 +29,7 @@ These settings need to be available to the `IShellConfiguration` implementation.
 ### Configuration Options
 
 - **ConnectionString**: The Azure Storage account connection string (required)
-- **ContainerName**: The name of the Azure Blob container (defaults to "dataprotection")
+- **ContainerName**: The name of the Azure Blob container (defaults to "dataprotection"). It must be a valid DNS name and conform to Azure container naming rules, e.g. lowercase only.
 - **BlobName**: The specific blob name for storing keys (optional, defaults to tenant-specific path)
 - **CreateContainer**: Whether to automatically create the container if it doesn't exist (defaults to true)
 
