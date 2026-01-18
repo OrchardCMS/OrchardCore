@@ -10,7 +10,7 @@ Orchard Core provides several options for persisting data protection keys:
 
 - Local storage in `App_Data` folder's tenant-specific folder (like `App_Data/Sites/Default/DataProtection-Keys`)
 - [Azure Blob Storage](../../reference/modules/DataProtection.Azure/README.md)
-- [Redis](../../reference/modules/Redis/README.md#redis-data-protection)
+- [Redis](../../reference/modules/Redis/README.md#data-protection)
 
 This guide will focus on the distributed options, since the local storage one just works out of the box without any configuration.
 
@@ -36,4 +36,4 @@ For detailed information about implementing data protection with Azure Blob Stor
 
 For detailed information about implementing data protection with Redis, including configuration options and persistence considerations, see:
 
-[Redis Data Protection](../../reference/modules/Redis/README.md#redis-data-protection)
+[Redis Data Protection](../../reference/modules/Redis/README.md#data-protection)

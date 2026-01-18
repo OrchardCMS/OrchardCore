@@ -2,10 +2,9 @@
 
 ## Purpose
 
-Data Protection (Azure Storage) enables data protection key rings that are by default segregated by tenant and stored in an Azure Blob Storage container.  
-This is useful for load balanced environments where each active node will need to share same key ring.
+The Data Protection (Azure Storage) feature allows data protection key rings to be stored in an Azure Blob Storage container, with keys automatically isolated per tenant. This is particularly important in load-balanced deployments, where all active instances must access the same key ring to operate correctly.
 
-Data Protection is a critical security feature in ASP.NET Core that Orchard Core leverages to protect sensitive data such as authentication cookies, anti-forgery tokens, persisted secrets that need to be decrypted (e.g. SMTP passwords but not user passwords), and temporary data. In a multi-tenant or load-balanced environment, it's essential to ensure that data protection keys are shared across all nodes and persisted properly.
+Data Protection is a core security mechanism in ASP.NET Core and is used by Orchard Core to safeguard sensitive information, including authentication cookies, anti-forgery tokens, decryptable persisted secrets (such as SMTP credentials, excluding user passwords), and temporary data. In multi-tenant or distributed environments, sharing and reliably persisting data protection keys across all nodes is essential to maintain security and system consistency.
 
 ## Configuration
 
