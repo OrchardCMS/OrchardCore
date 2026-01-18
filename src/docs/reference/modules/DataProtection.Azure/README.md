@@ -11,7 +11,7 @@ Data Protection is a critical security feature in ASP.NET Core that Orchard Core
 
 You'll need to specify a storage account connection string and a valid container name. The container will automatically be created if it does not already exist.
 
-These settings need to be available to `IShellConfiguration` implementation. In the simplest case, this will mean updating your `appsettings.json` file:
+These settings need to be available to the `IShellConfiguration` implementation. In the simplest case, this will mean updating your `appsettings.json` file:
 
 ```json
 {
