@@ -48,7 +48,7 @@ The `ContainerName` property and the `BlobName` property are the only templatabl
 If not supplied the `BlobName` will automatically default to a folder per tenant configuration, i.e. `Sites/tenant_name/DataProtectionKeys.xml`
 
 !!! note
-When templating the `ContainerName` using `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased. However, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
+    When templating the `ContainerName` using `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased. However, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
 
 ### Configuring a container per tenant
 
@@ -68,7 +68,6 @@ For more granular isolation, you can configure a separate container for each ten
 ```
 
 !!! note
-Only the default Liquid filters and tags are available during parsing of the Liquid template.
-Extra filters like `slugify` will not be available.
+    Only the default Liquid filters and tags are available during parsing of the Liquid template. Extra filters like `slugify` will not be available.
 
 Refer also to the [Configuration Section](../Configuration/README.md).
