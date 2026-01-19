@@ -14,14 +14,14 @@ These settings need to be available to the `IShellConfiguration` implementation.
 
 ```json
 {
-    "OrchardCore": {
-        "OrchardCore_DataProtection_Azure": {
-            "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=<myaccountname>;AccountKey=<myaccountkey>;EndpointSuffix=core.windows.net",
-            "ContainerName": "dataprotection",
-            "BlobName": "",
-            "CreateContainer": true
-        }
+  "OrchardCore": {
+    "OrchardCore_DataProtection_Azure": {
+      "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=<myaccountname>;AccountKey=<myaccountkey>;EndpointSuffix=core.windows.net",
+      "ContainerName": "dataprotection",
+      "BlobName": "",
+      "CreateContainer": true
     }
+  }
 }
 ```
 
@@ -56,14 +56,14 @@ For more granular isolation, you can configure a separate container for each ten
 
 ```json
 {
-    "OrchardCore": {
-        "OrchardCore_DataProtection_Azure": {
-            "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=<myaccountname>;AccountKey=<myaccountkey>;EndpointSuffix=core.windows.net",
-            "ContainerName": "{{ ShellSettings.Name }}-dataprotection",
-            "BlobName": "{{ ShellSettings.Name }}DataProtectionKeys.xml",
-            "CreateContainer": true
-        }
+  "OrchardCore": {
+    "OrchardCore_DataProtection_Azure": {
+      "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=<myaccountname>;AccountKey=<myaccountkey>;EndpointSuffix=core.windows.net",
+      "ContainerName": "{{ ShellSettings.Name }}-dataprotection",
+      "BlobName": "{{ ShellSettings.Name }}DataProtectionKeys.xml",
+      "CreateContainer": true
     }
+  }
 }
 ```
 
