@@ -35,11 +35,11 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
 
     public async Task<IQuery<ContentItem>> QueryAsync(ContentOptionsViewModel model, IUpdateModel updater)
     {
-        var defaultTermNode = model.FilterResult.OfType<DefaultTermNode>().FirstOrDefault();
+        var defaultTermNode = model.FilterResult?.OfType<DefaultTermNode>().FirstOrDefault();
         var defaultTermName = defaultTermNode?.TermName;
         var defaultOperator = defaultTermNode?.Operation;
 
-        if (defaultTermNode is not null)
+        if (model.FilterResult is not null && defaultTermNode is not null)
         {
             var value = defaultTermNode.ToString();
             if (_contentsAdminListFilterOptions.UseExactMatch
@@ -55,7 +55,7 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
                 defaultTermName = GetDefaultTermName(selectedContentType);
             }
 
-            if (defaultTermName != defaultTermNode.TermName || defaultOperator != defaultTermNode.Operation)
+            if (model.FilterResult is not null && (defaultTermName != defaultTermNode.TermName || defaultOperator != defaultTermNode.Operation))
             {
                 model.FilterResult.TryRemove(defaultTermNode.TermName);
                 model.FilterResult.TryAddOrReplace(new DefaultTermNode(defaultTermName, defaultOperator));
@@ -65,13 +65,16 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
         // Because admin filters can add a different index to the query this must be added as a 'Query<ContentItem>()'.
         var query = _session.Query<ContentItem>();
 
-        query = await model.FilterResult.ExecuteAsync(new ContentQueryContext(_serviceProvider, query));
+        if (model.FilterResult is not null)
+        {
+            query = await model.FilterResult.ExecuteAsync(new ContentQueryContext(_serviceProvider, query));
+        }
 
         // After the 'q=xx' filters have been applied, allow the secondary filter providers to also parse other values for filtering.
         await _contentsAdminListFilters
             .InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger);
 
-        if (defaultOperator != defaultTermNode?.Operation)
+        if (model.FilterResult is not null && defaultOperator != defaultTermNode?.Operation)
         {
             // Restore the original 'defaultTermNode'.
             model.FilterResult.TryRemove(defaultTermName);
@@ -83,7 +86,7 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
 
     private static string GetSelectedContentType(ContentOptionsViewModel model)
     {
-        if (string.IsNullOrEmpty(model.SelectedContentType))
+        if (model.FilterResult is not null && string.IsNullOrEmpty(model.SelectedContentType))
         {
             var typeTermNode = model.FilterResult.OfType<ContentTypeFilterNode>().FirstOrDefault();
             if (typeTermNode is not null)
@@ -91,10 +94,10 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
                 return typeTermNode.Operation.ToString();
             }
 
-            var sterotypeTermNode = model.FilterResult.OfType<StereotypeFilterNode>().FirstOrDefault();
-            if (sterotypeTermNode is not null)
+            var stereotypeTermNode = model.FilterResult.OfType<StereotypeFilterNode>().FirstOrDefault();
+            if (stereotypeTermNode is not null)
             {
-                return sterotypeTermNode.Operation.ToString();
+                return stereotypeTermNode.Operation.ToString();
             }
 
             return null;
