@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ContentManagement;
@@ -12,15 +13,23 @@ public class ContentFieldFactory : ITypeActivatorFactory<ContentField>
 
     private readonly Dictionary<string, ITypeActivator<ContentField>> _contentFieldActivators;
 
-    public ContentFieldFactory(IOptions<ContentOptions> contentOptions)
+    public ContentFieldFactory(IOptions<ContentOptions> contentOptions, ILogger<ContentFieldFactory> logger)
     {
         _contentFieldActivators = [];
 
         // Check content options for configured fields.
         foreach (var fieldOption in contentOptions.Value.ContentFieldOptions)
         {
+            if (_contentFieldActivators.ContainsKey(fieldOption.Type.Name))
+            {
+                logger.LogWarning("The ContentField 'Name' was registered more than once. Content Fields should only be registered once using .AddContentField<{Name}>().", fieldOption.Type.Name);
+
+                continue;
+            }
+
             var activatorType = typeof(GenericTypeActivator<,>).MakeGenericType(fieldOption.Type, typeof(ContentField));
             var activator = (ITypeActivator<ContentField>)Activator.CreateInstance(activatorType);
+
             _contentFieldActivators.Add(fieldOption.Type.Name, activator);
         }
     }
