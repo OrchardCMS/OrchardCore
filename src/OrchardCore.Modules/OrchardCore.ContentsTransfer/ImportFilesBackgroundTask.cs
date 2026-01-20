@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
@@ -31,7 +24,6 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 {
     private ISession _session;
     private IClock _clock;
-    private ILogger _logger;
     private IContentManager _contentManager;
     protected IStringLocalizer S;
 
@@ -39,7 +31,6 @@ public class ImportFilesBackgroundTask : IBackgroundTask
     {
         _session = serviceProvider.GetRequiredService<ISession>();
         _clock = serviceProvider.GetRequiredService<IClock>();
-        _logger = serviceProvider.GetRequiredService<ILogger<ImportFilesBackgroundTask>>();
         _contentManager = serviceProvider.GetRequiredService<IContentManager>();
         var contentImportOptions = serviceProvider.GetRequiredService<IOptions<ContentImportOptions>>().Value;
         S = serviceProvider.GetRequiredService<IStringLocalizer<ImportFilesBackgroundTask>>();
@@ -50,7 +41,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
         var entries = await _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x => x.Status == ContentTransferEntryStatus.New || x.Status == ContentTransferEntryStatus.Processing)
         .OrderBy(x => x.CreatedUtc)
-        .ListAsync();
+        .ListAsync(cancellationToken);
 
         var batchSize = contentImportOptions.ImportBatchSize < 1 ? 100 : contentImportOptions.ImportBatchSize;
 
@@ -222,7 +213,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
                     entry.Put(progressPart);
 
                     _session.Save(entry);
-                    await _session.SaveChangesAsync();
+                    await _session.SaveChangesAsync(cancellationToken);
                 }
             }
 
@@ -233,7 +224,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
             entry.Put(progressPart);
 
             _session.Save(entry);
-            await _session.SaveChangesAsync();
+            await _session.SaveChangesAsync(cancellationToken);
         }
     }
 

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentsTransfer.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;

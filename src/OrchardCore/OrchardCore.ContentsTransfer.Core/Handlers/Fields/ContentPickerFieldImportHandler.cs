@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -160,7 +156,7 @@ public class ContentPickerFieldImportHandler : StandardFieldImportHandler
                 .Select(x => new
                 {
                     ContentType = x.Key,
-                    ContentItems = x.Select(y => y)
+                    ContentItems = x.Select(y => y),
                 }).ToList();
 
             foreach (var record in records)

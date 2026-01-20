@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -6,68 +5,64 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentsTransfer.Models;
 
-namespace OrchardCore.Media.Services
+namespace OrchardCore.ContentsTransfer.Services;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+public class ContentTransferSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-    public class ContentTransferSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
+    public int Order { get; set; } = 900;
+
+    /// <inheritdoc />
+    public bool IsReusable => true;
+
+    /// <inheritdoc />
+    public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
     {
-        public int Order { get; set; } = 900;
+        var options = serviceProvider.GetRequiredService<IOptions<ContentImportOptions>>();
 
-        /// <inheritdoc />
-        public bool IsReusable => true;
+        return new InternalContentTransferSizeFilter(options.Value.GetMaxAllowedSize());
+    }
 
-        /// <inheritdoc />
-        public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
+    private class InternalContentTransferSizeFilter : IAuthorizationFilter, IRequestFormLimitsPolicy
+    {
+        private readonly long _maxFileSize;
+
+        public InternalContentTransferSizeFilter(long maxFileSize)
         {
-            var options = serviceProvider.GetRequiredService<IOptions<ContentImportOptions>>();
-
-            return new InternalContentTransferSizeFilter(options.Value.GetMaxAllowedSize());
+            _maxFileSize = maxFileSize;
         }
 
-        private class InternalContentTransferSizeFilter : IAuthorizationFilter, IRequestFormLimitsPolicy
+        public void OnAuthorization(AuthorizationFilterContext context)
         {
-            private readonly long _maxFileSize;
+            ArgumentNullException.ThrowIfNull(context);
 
-            public InternalContentTransferSizeFilter(long maxFileSize)
+            var effectiveFormPolicy = context.FindEffectivePolicy<IRequestFormLimitsPolicy>();
+            if (effectiveFormPolicy == null || effectiveFormPolicy == this)
             {
-                _maxFileSize = maxFileSize;
+                var features = context.HttpContext.Features;
+                var formFeature = features.Get<IFormFeature>();
+
+                if (formFeature == null || formFeature.Form == null)
+                {
+                    // Request form has not been read yet, so set the limits
+                    var formOptions = new FormOptions
+                    {
+                        MultipartBodyLengthLimit = _maxFileSize,
+                    };
+
+                    features.Set<IFormFeature>(new FormFeature(context.HttpContext.Request, formOptions));
+                }
             }
 
-            public void OnAuthorization(AuthorizationFilterContext context)
+            var effectiveRequestSizePolicy = context.FindEffectivePolicy<IRequestSizePolicy>();
+            if (effectiveRequestSizePolicy == null || effectiveRequestSizePolicy == this)
             {
-                if (context == null)
+                //  Will only be available when running OutOfProcess with Kestrel
+                var maxRequestBodySizeFeature = context.HttpContext.Features.Get<IHttpMaxRequestBodySizeFeature>();
+
+                if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
                 {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                var effectiveFormPolicy = context.FindEffectivePolicy<IRequestFormLimitsPolicy>();
-                if (effectiveFormPolicy == null || effectiveFormPolicy == this)
-                {
-                    var features = context.HttpContext.Features;
-                    var formFeature = features.Get<IFormFeature>();
-
-                    if (formFeature == null || formFeature.Form == null)
-                    {
-                        // Request form has not been read yet, so set the limits
-                        var formOptions = new FormOptions
-                        {
-                            MultipartBodyLengthLimit = _maxFileSize
-                        };
-
-                        features.Set<IFormFeature>(new FormFeature(context.HttpContext.Request, formOptions));
-                    }
-                }
-
-                var effectiveRequestSizePolicy = context.FindEffectivePolicy<IRequestSizePolicy>();
-                if (effectiveRequestSizePolicy == null || effectiveRequestSizePolicy == this)
-                {
-                    //  Will only be available when running OutOfProcess with Kestrel
-                    var maxRequestBodySizeFeature = context.HttpContext.Features.Get<IHttpMaxRequestBodySizeFeature>();
-
-                    if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
-                    {
-                        maxRequestBodySizeFeature.MaxRequestBodySize = _maxFileSize;
-                    }
+                    maxRequestBodySizeFeature.MaxRequestBodySize = _maxFileSize;
                 }
             }
         }

@@ -1,14 +1,7 @@
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentFields.Fields;
-using OrchardCore.ContentsTransfer.Controllers;
 using OrchardCore.ContentsTransfer.Drivers;
 using OrchardCore.ContentsTransfer.Handlers;
 using OrchardCore.ContentsTransfer.Handlers.Fields;
@@ -24,7 +17,6 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Title.Models;
@@ -34,14 +26,10 @@ namespace OrchardCore.ContentsTransfer;
 
 public class Startup : StartupBase
 {
-    private readonly AdminOptions _adminOptions;
     private readonly IShellConfiguration _configuration;
 
-    public Startup(
-        IOptions<AdminOptions> adminOptions,
-        IShellConfiguration configuration)
+    public Startup(IShellConfiguration configuration)
     {
-        _adminOptions = adminOptions.Value;
         _configuration = configuration;
     }
 
@@ -50,7 +38,7 @@ public class Startup : StartupBase
         services.AddSingleton<IContentTransferFileStore>(serviceProvider =>
         {
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-            var path = Path.Combine("App_Data", "Sites", shellSettings.Name, "Temp");
+            var path = Path.Combine(ShellOptionConstants.DefaultAppDataPath, ShellOptionConstants.DefaultSitesPath, shellSettings.Name, "Temp");
             var fileStore = new FileSystemStore(path);
 
             return new ContentTransferFileStore(fileStore);
@@ -87,44 +75,6 @@ public class Startup : StartupBase
 
             return new DefaultContentTypeEntryAdminListFilterParser(parser);
         });
-    }
-
-    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-    {
-        routes.MapAreaControllerRoute(
-            name: "ImportContentFromFile",
-            areaName: ContentTransferConstants.Feature.ModuleId,
-            pattern: _adminOptions.AdminUrlPrefix + "/import/contents/{contentTypeId}",
-            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Import) }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "ImportContentDownloadTemplateTemplate",
-            areaName: ContentTransferConstants.Feature.ModuleId,
-            pattern: _adminOptions.AdminUrlPrefix + "/import/contents/{contentTypeId}/download-template",
-            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.DownloadTemplate) }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "ExportContentToFile",
-            areaName: ContentTransferConstants.Feature.ModuleId,
-            pattern: _adminOptions.AdminUrlPrefix + "/export/contents",
-            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Export) }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "ExportContentDownloadFile",
-            areaName: ContentTransferConstants.Feature.ModuleId,
-            pattern: _adminOptions.AdminUrlPrefix + "/export/contents/{contentTypeId}/download-file/{extension}",
-            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.DownloadExport) }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "ListContentTransferEntries",
-            areaName: ContentTransferConstants.Feature.ModuleId,
-            pattern: _adminOptions.AdminUrlPrefix + "/content-transfer-entries",
-            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.List) }
-        );
     }
 }
 

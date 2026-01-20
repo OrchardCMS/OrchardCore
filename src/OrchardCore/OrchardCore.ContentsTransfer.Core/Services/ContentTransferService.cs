@@ -26,10 +26,7 @@ public class ContentTransferService
     }
     public async Task<DataTableImportResult> ImportAsync(string contentTypeId, DataTable dataTable)
     {
-        if (dataTable == null)
-        {
-            throw new ArgumentNullException(nameof(dataTable));
-        }
+        ArgumentNullException.ThrowIfNull(dataTable);
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeId);
 
