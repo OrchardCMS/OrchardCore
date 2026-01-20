@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OfficeOpenXml;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentFields.Fields;
@@ -49,9 +48,6 @@ public class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        // TODO, this should be moved to configuration.
-        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
         services.AddSingleton<IContentTransferFileStore>(serviceProvider =>
         {
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();

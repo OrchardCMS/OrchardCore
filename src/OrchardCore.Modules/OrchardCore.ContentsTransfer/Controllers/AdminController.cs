@@ -5,6 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -12,8 +15,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
-using OfficeOpenXml;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -37,12 +38,6 @@ namespace OrchardCore.ContentsTransfer.Controllers;
 
 public class AdminController : Controller, IUpdateModel
 {
-    private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
-    {
-        MergeArrayHandling = MergeArrayHandling.Replace,
-        MergeNullValueHandling = MergeNullValueHandling.Ignore,
-    };
-
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
 
@@ -439,35 +434,55 @@ public class AdminController : Controller, IUpdateModel
         var columns = await _contentImportManager.GetColumnsAsync(context);
 
         var content = new MemoryStream();
-        using var package = new ExcelPackage(content);
-        var workSheet = package.Workbook.Worksheets.Add(contentTypeDefinition.DisplayName);
-        var columnIndex = 1;
-
-        foreach (var column in columns)
+        using (var spreadsheetDocument = SpreadsheetDocument.Create(content, SpreadsheetDocumentType.Workbook))
         {
-            if (column.Type == ImportColumnType.ExportOnly)
+            var workbookPart = spreadsheetDocument.AddWorkbookPart();
+            workbookPart.Workbook = new Workbook();
+
+            var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+            var sheetData = new SheetData();
+            worksheetPart.Worksheet = new Worksheet(sheetData);
+
+            var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+            var sheet = new Sheet
             {
-                continue;
+                Id = workbookPart.GetIdOfPart(worksheetPart),
+                SheetId = 1,
+                Name = contentTypeDefinition.DisplayName ?? "Sheet1",
+            };
+            sheets.Append(sheet);
+
+            // Create header row
+            var headerRow = new Row { RowIndex = 1 };
+            uint columnIndex = 1;
+
+            foreach (var column in columns)
+            {
+                if (column.Type == ImportColumnType.ExportOnly)
+                {
+                    continue;
+                }
+
+                var cell = new Cell
+                {
+                    CellReference = GetCellReference(columnIndex, 1),
+                    DataType = CellValues.String,
+                    CellValue = new CellValue(column.Name),
+                };
+                headerRow.Append(cell);
+                columnIndex++;
             }
 
-            var cell = workSheet.Cells[1, columnIndex++];
-
-            cell.Value = column.Name;
-            cell.Style.Font.Bold = true;
-            var description = column.Description;
-
-            if (column.ValidValues != null && column.ValidValues.Length > 0)
-            {
-                description += "Valid values are: " + string.Join(" | ", column.ValidValues);
-            }
-
-            cell.AddComment(description);
+            sheetData.Append(headerRow);
+            workbookPart.Workbook.Save();
         }
 
-        package.Save();
         content.Seek(0, SeekOrigin.Begin);
 
-        return new FileStreamResult(content, "application/octet-stream");
+        return new FileStreamResult(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        {
+            FileDownloadName = $"{contentTypeDefinition.DisplayName ?? contentTypeId}_template.xlsx",
+        };
     }
 
     public async Task<IActionResult> Export()
@@ -568,17 +583,85 @@ public class AdminController : Controller, IUpdateModel
         }
 
         var content = new MemoryStream();
-        using var package = new ExcelPackage(content);
-        var worksheet = package.Workbook.Worksheets.Add(contentTypeDefinition.DisplayName);
-        worksheet.Cells["A1"].LoadFromDataTable(dataTable, true);
+        using (var spreadsheetDocument = SpreadsheetDocument.Create(content, SpreadsheetDocumentType.Workbook))
+        {
+            var workbookPart = spreadsheetDocument.AddWorkbookPart();
+            workbookPart.Workbook = new Workbook();
 
-        worksheet.Protection.IsProtected = false;
-        worksheet.Protection.AllowSelectLockedCells = false;
-        await package.SaveAsync();
+            var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+            var sheetData = new SheetData();
+            worksheetPart.Worksheet = new Worksheet(sheetData);
+
+            var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+            var sheet = new Sheet
+            {
+                Id = workbookPart.GetIdOfPart(worksheetPart),
+                SheetId = 1,
+                Name = contentTypeDefinition.DisplayName ?? "Sheet1",
+            };
+            sheets.Append(sheet);
+
+            // Create header row
+            var headerRow = new Row { RowIndex = 1 };
+            uint columnIndex = 1;
+            foreach (DataColumn column in dataTable.Columns)
+            {
+                var cell = new Cell
+                {
+                    CellReference = GetCellReference(columnIndex, 1),
+                    DataType = CellValues.String,
+                    CellValue = new CellValue(column.ColumnName),
+                };
+                headerRow.Append(cell);
+                columnIndex++;
+            }
+            sheetData.Append(headerRow);
+
+            // Create data rows
+            uint rowIndex = 2;
+            foreach (DataRow dataRow in dataTable.Rows)
+            {
+                var row = new Row { RowIndex = rowIndex };
+                columnIndex = 1;
+                foreach (var item in dataRow.ItemArray)
+                {
+                    var cell = new Cell
+                    {
+                        CellReference = GetCellReference(columnIndex, rowIndex),
+                        DataType = CellValues.String,
+                        CellValue = new CellValue(item?.ToString() ?? string.Empty),
+                    };
+                    row.Append(cell);
+                    columnIndex++;
+                }
+                sheetData.Append(row);
+                rowIndex++;
+            }
+
+            workbookPart.Workbook.Save();
+        }
+
         content.Seek(0, SeekOrigin.Begin);
 
-        // TODO, download the file in a specific format.
-        return new FileStreamResult(content, "application/octet-stream");
+        return new FileStreamResult(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        {
+            FileDownloadName = $"{contentTypeDefinition.DisplayName ?? contentTypeId}_export.xlsx",
+        };
+    }
+
+    private static string GetCellReference(uint columnIndex, uint rowIndex)
+    {
+        var columnName = string.Empty;
+        var tempColumnIndex = columnIndex;
+
+        while (tempColumnIndex > 0)
+        {
+            var mod = (tempColumnIndex - 1) % 26;
+            columnName = Convert.ToChar('A' + mod) + columnName;
+            tempColumnIndex = (tempColumnIndex - mod) / 26;
+        }
+
+        return columnName + rowIndex;
     }
 
     private string CurrentUserId()
