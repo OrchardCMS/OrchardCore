@@ -40,7 +40,7 @@ public class ContentTransferService
 
         var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
-        if (settings.AllowBulkImport)
+        if (!settings.AllowBulkImport)
         {
             return DataTableImportResult.Fail(S["The content type '{0}' does not allow bulk import.", contentTypeId]);
         }
