@@ -167,7 +167,7 @@ const completionItemProvider: monaco.languages.CompletionItemProvider = {
 
 function ConfigureLiquidIntellisense(monaco: any, suggestHtml: boolean = true) {
     if (suggestHtml) {
-        var modeConfiguration: monaco.languages.html.ModeConfiguration = {
+        var modeConfiguration: monaco.html.ModeConfiguration = {
             completionItems: true,
             colors: true,
             foldingRanges: true,
@@ -176,11 +176,11 @@ function ConfigureLiquidIntellisense(monaco: any, suggestHtml: boolean = true) {
             documentFormattingEdits: true,
             documentRangeFormattingEdits: true,
         };
-        var options: monaco.languages.html.Options = {
-            format: monaco.languages.html.htmlDefaults.options.format,
+        var options: monaco.html.Options = {
+            format: monaco.html.htmlDefaults.options.format,
             suggest: { html5: true },
         };
-        monaco.languages.html.registerHTMLLanguageService("liquid", options, modeConfiguration);
+        monaco.html.registerHTMLLanguageService("liquid", options, modeConfiguration);
     }
 
     monaco.languages.registerCompletionItemProvider("liquid", completionItemProvider);

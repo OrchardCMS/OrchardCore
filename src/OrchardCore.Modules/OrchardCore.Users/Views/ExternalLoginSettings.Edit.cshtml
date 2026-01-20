@@ -116,7 +116,7 @@ type Context = {
                 language: "javascript"
             });
             codeEditor = editor;
-            monaco.languages.typescript.javascriptDefaults.addExtraLib(suggestion + "const context = {} as Context", 'suggestion.d.ts');
+            monaco.typescript.javascriptDefaults.addExtraLib(suggestion + "const context = {} as Context", 'suggestion.d.ts');
 
             var docEditor = monaco.editor.create(document.getElementById('doc_editor'), {
                 value: suggestion,

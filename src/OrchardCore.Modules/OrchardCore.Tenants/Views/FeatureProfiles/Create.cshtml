@@ -33,7 +33,7 @@
             var schema = JSON.parse(editor.dataset.schema)
             var model = monaco.editor.createModel(textArea.value, "json", modelUri);
 
-            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+            monaco.json.jsonDefaults.setDiagnosticsOptions({
                 validate: true,
                 schemas: [{
                     uri: "x://orchardcore.tenants.featureprofiles.schema.json",
