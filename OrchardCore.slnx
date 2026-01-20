@@ -78,6 +78,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentLocalization/OrchardCore.ContentLocalization.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentPreview/OrchardCore.ContentPreview.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Contents/OrchardCore.Contents.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.ContentsTransfer/OrchardCore.ContentsTransfer.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentTypes/OrchardCore.ContentTypes.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.CustomSettings/OrchardCore.CustomSettings.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Demo/OrchardCore.Demo.csproj" />
