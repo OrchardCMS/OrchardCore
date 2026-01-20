@@ -1,26 +1,22 @@
-using System;
-using System.Collections.Generic;
+namespace OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentManagement
+public class ContentFieldOption : ContentFieldOptionBase
 {
-    public class ContentFieldOption : ContentFieldOptionBase
+    private readonly List<Type> _handlers = [];
+
+    public ContentFieldOption(Type contentFieldType) : base(contentFieldType)
     {
-        private readonly List<Type> _handlers = [];
+    }
 
-        public ContentFieldOption(Type contentFieldType) : base(contentFieldType)
-        {
-        }
+    public IReadOnlyList<Type> Handlers => _handlers;
 
-        public IReadOnlyList<Type> Handlers => _handlers;
+    internal void AddHandler(Type type)
+    {
+        _handlers.Add(type);
+    }
 
-        internal void AddHandler(Type type)
-        {
-            _handlers.Add(type);
-        }
-
-        internal void RemoveHandler(Type type)
-        {
-            _handlers.Remove(type);
-        }
+    internal void RemoveHandler(Type type)
+    {
+        _handlers.Remove(type);
     }
 }

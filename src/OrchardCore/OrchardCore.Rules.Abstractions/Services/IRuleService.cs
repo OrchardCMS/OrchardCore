@@ -1,9 +1,6 @@
-using System.Threading.Tasks;
+namespace OrchardCore.Rules.Services;
 
-namespace OrchardCore.Rules.Services
+public interface IRuleService
 {
-    public interface IRuleService
-    {
-        ValueTask<bool> EvaluateAsync(Rule rule);
-    }
+    ValueTask<bool> EvaluateAsync(Rule rule);
 }

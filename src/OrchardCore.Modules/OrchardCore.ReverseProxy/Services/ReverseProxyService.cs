@@ -1,23 +1,17 @@
-using System.Threading.Tasks;
-using OrchardCore.Entities;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.ReverseProxy.Services
+namespace OrchardCore.ReverseProxy.Services;
+
+public class ReverseProxyService
 {
-    public class ReverseProxyService
+    private readonly ISiteService _siteService;
+
+    public ReverseProxyService(ISiteService siteService)
     {
-        private readonly ISiteService _siteService;
-
-        public ReverseProxyService(ISiteService siteService)
-        {
-            _siteService = siteService;
-        }
-
-        public async Task<ReverseProxySettings> GetSettingsAsync()
-        {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            return siteSettings.As<ReverseProxySettings>();
-        }
+        _siteService = siteService;
     }
+
+    public Task<ReverseProxySettings> GetSettingsAsync()
+        => _siteService.GetSettingsAsync<ReverseProxySettings>();
 }

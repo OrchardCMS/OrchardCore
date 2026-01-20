@@ -14,7 +14,7 @@
                         fn: function () {
                             trumbowyg.saveRange();
                             $("#mediaApp").detach().appendTo('#mediaModalBody .modal-body');
-                            $("#mediaApp").show();
+                            document.getElementById("mediaApp").classList.remove("d-none");
                             mediaApp.selectedMedias = [];
                             var modal = new bootstrap.Modal($("#mediaModalBody"));
                             modal.show();
@@ -24,7 +24,7 @@
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
                                 
-                                for (i = 0; i < mediaApp.selectedMedias.length; i++) {
+                                for (let i = 0; i < mediaApp.selectedMedias.length; i++) {
                                     var mediaBodyContent = ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
                                     var node = document.createTextNode(mediaBodyContent);
                                     trumbowyg.range.insertNode(node);

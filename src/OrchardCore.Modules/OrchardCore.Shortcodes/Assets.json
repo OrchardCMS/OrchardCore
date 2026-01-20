@@ -1,22 +1,21 @@
 [
   {
-    "generateSourceMaps": true,
+    "action": "sass",
     "generateRTL": true,
-    "inputs": [
-      "Assets/scss/shortcodes.scss"
-    ],
-    "output": "wwwroot/Styles/shortcodes.css"
+    "name": "shortcodes",
+    "source": "Assets/scss/shortcodes.scss",
+    "tags": ["admin", "dashboard", "css"]
   },
   {
-    "inputs": [
-      "Assets/js/shortcodes.js"
-    ],
-    "output": "wwwroot/Scripts/shortcodes.js"
+    "action": "min",
+    "name": "shortcodes-js",
+    "source": "Assets/js/shortcodes.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/shortcode-templates.js"
-    ],
-    "output": "wwwroot/Scripts/shortcode-templates.js"
+    "action": "min",
+    "name": "shortcodes-templates",
+    "source": "Assets/js/shortcode-templates.js",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

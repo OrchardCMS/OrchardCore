@@ -1,41 +1,34 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Tenants.Services;
 
-namespace OrchardCore.Tenants.Recipes
+namespace OrchardCore.Tenants.Recipes;
+
+/// <summary>
+/// This recipe step creates a set of feature profiles.
+/// </summary>
+public sealed class FeatureProfilesStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates a set of feature profiles.
-    /// </summary>
-    public class FeatureProfilesStep : IRecipeStepHandler
+    private readonly FeatureProfilesManager _featureProfilesManager;
+
+    public FeatureProfilesStep(FeatureProfilesManager featureProfilesManager)
+        : base("FeatureProfiles")
     {
-        private readonly FeatureProfilesManager _featureProfilesManager;
+        _featureProfilesManager = featureProfilesManager;
+    }
 
-        public FeatureProfilesStep(FeatureProfilesManager featureProfilesManager)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
+        if (context.Step.TryGetPropertyValue("FeatureProfiles", out var jsonNode) && jsonNode is JsonObject featureProfiles)
         {
-            _featureProfilesManager = featureProfilesManager;
-        }
-
-        public async Task ExecuteAsync(RecipeExecutionContext context)
-        {
-            if (!string.Equals(context.Name, "FeatureProfiles", StringComparison.OrdinalIgnoreCase))
+            foreach (var property in featureProfiles)
             {
-                return;
-            }
+                var name = property.Key;
+                var value = property.Value.ToObject<FeatureProfile>();
 
-            if (context.Step.TryGetPropertyValue("FeatureProfiles", out var jsonNode) && jsonNode is JsonObject featureProfiles)
-            {
-                foreach (var property in featureProfiles)
-                {
-                    var name = property.Key;
-                    var value = property.Value.ToObject<FeatureProfile>();
-
-                    await _featureProfilesManager.UpdateFeatureProfileAsync(name, value);
-                }
+                await _featureProfilesManager.UpdateFeatureProfileAsync(name, value);
             }
         }
     }

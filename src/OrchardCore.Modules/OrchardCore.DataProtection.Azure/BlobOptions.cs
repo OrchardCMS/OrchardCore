@@ -1,8 +1,6 @@
-using Microsoft.Extensions.Options;
-
 namespace OrchardCore.DataProtection.Azure;
 
-public class BlobOptions : IAsyncOptions
+public class BlobOptions
 {
     public string ConnectionString { get; set; }
 

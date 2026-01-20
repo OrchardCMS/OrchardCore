@@ -1,9 +1,6 @@
 # Admin Dashboard (`OrchardCore.AdminDashboard`)
 
-Admin widgets are created using content items and can be secured like any other content item. To create a content type as a dashboard widget, ensure that the content type includes at least the following steps:
-
-- Assign the `DashboardWidget` stereotype to the content type.
-- Attach the `DashboardPart` part to the content type.
+Admin widgets are created using content items and can be secured like any other content item. To create a content type as a dashboard widget, set the stereotype to `DashboardWidget`.
 
 ### Creating a New Widget
 
@@ -20,11 +17,11 @@ Please note that users lacking the `ManageAdminDashboard` permission will requir
 
 Each widget has the following customizable settings:
 
-| Option    | Description                                                   |
-| --------- | ------------------------------------------------------------- |
-| `Position`| A numeric value indicating the widget's order on the page.    |
-| `Width`   | An integer value between 1 and 6, representing the widget's width on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen width. |
-| `Height`  | An integer value between 1 and 6, representing the widget's height on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen height. |
+| Option     | Description                                                                                                                                                               |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Position` | A numeric value indicating the widget's order on the page.                                                                                                                |
+| `Width`    | An integer value between 1 and 6, representing the widget's width on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen width.   |
+| `Height`   | An integer value between 1 and 6, representing the widget's height on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen height. |
 
 ### Styling
 

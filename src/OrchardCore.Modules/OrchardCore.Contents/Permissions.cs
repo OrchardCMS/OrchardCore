@@ -1,54 +1,31 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
-    // Note - in code you should demand PublishContent, EditContent, or DeleteContent.
-    // Do not demand the "Own" variations - those are applied automatically when you demand the main ones.
-
-    // EditOwn is the permission that is ultimately required to create new content. See how the Create() method is implemented in the AdminController.
-
-    public static readonly Permission PublishContent = CommonPermissions.PublishContent;
-    public static readonly Permission PublishOwnContent = CommonPermissions.PublishOwnContent;
-    public static readonly Permission EditContent = CommonPermissions.EditContent;
-    public static readonly Permission EditOwnContent = CommonPermissions.EditOwnContent;
-    public static readonly Permission DeleteContent = CommonPermissions.DeleteContent;
-    public static readonly Permission DeleteOwnContent = CommonPermissions.DeleteOwnContent;
-    public static readonly Permission ViewContent = CommonPermissions.ViewContent;
-    public static readonly Permission ViewOwnContent = CommonPermissions.ViewOwnContent;
-    public static readonly Permission PreviewContent = CommonPermissions.PreviewContent;
-    public static readonly Permission PreviewOwnContent = CommonPermissions.PreviewOwnContent;
-    public static readonly Permission CloneContent = CommonPermissions.CloneContent;
-    public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
-    public static readonly Permission ListContent = CommonPermissions.ListContent;
-    public static readonly Permission EditContentOwner = CommonPermissions.EditContentOwner;
-    public static readonly Permission AccessContentApi = new("AccessContentApi", "Access content via the api");
-
     private readonly IEnumerable<Permission> _readerPermissions =
     [
-        ViewContent,
+        CommonPermissions.ViewContent,
     ];
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        EditContent,
-        EditOwnContent,
-        PublishContent,
-        PublishOwnContent,
-        DeleteContent,
-        DeleteOwnContent,
-        ViewContent,
-        ViewOwnContent,
-        PreviewContent,
-        PreviewOwnContent,
-        CloneContent,
-        CloneOwnContent,
-        AccessContentApi,
-        ListContent,
-        EditContentOwner,
+        CommonPermissions.EditContent,
+        CommonPermissions.EditOwnContent,
+        CommonPermissions.PublishContent,
+        CommonPermissions.PublishOwnContent,
+        CommonPermissions.DeleteContent,
+        CommonPermissions.DeleteOwnContent,
+        CommonPermissions.ViewContent,
+        CommonPermissions.ViewOwnContent,
+        CommonPermissions.PreviewContent,
+        CommonPermissions.PreviewOwnContent,
+        CommonPermissions.CloneContent,
+        CommonPermissions.CloneOwnContent,
+        CommonPermissions.AccessContentApi,
+        CommonPermissions.ListContent,
+        CommonPermissions.EditContentOwner,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -58,62 +35,62 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                PublishContent,
-                EditContent,
-                DeleteContent,
-                PreviewContent,
-                CloneContent,
-                AccessContentApi,
-                ListContent,
-                EditContentOwner,
+                CommonPermissions.PublishContent,
+                CommonPermissions.EditContent,
+                CommonPermissions.DeleteContent,
+                CommonPermissions.PreviewContent,
+                CommonPermissions.CloneContent,
+                CommonPermissions.AccessContentApi,
+                CommonPermissions.ListContent,
+                CommonPermissions.EditContentOwner,
             ],
         },
         new PermissionStereotype
         {
-            Name = "Editor",
+            Name = OrchardCoreConstants.Roles.Editor,
             Permissions =
             [
-                PublishContent,
-                EditContent,
-                DeleteContent,
-                PreviewContent,
-                CloneContent,
-                ListContent,
+                CommonPermissions.PublishContent,
+                CommonPermissions.EditContent,
+                CommonPermissions.DeleteContent,
+                CommonPermissions.PreviewContent,
+                CommonPermissions.CloneContent,
+                CommonPermissions.ListContent,
             ],
         },
         new PermissionStereotype
         {
-            Name = "Author",
+            Name = OrchardCoreConstants.Roles.Author,
             Permissions =
             [
-                PublishOwnContent,
-                EditOwnContent,
-                DeleteOwnContent,
-                PreviewOwnContent,
-                CloneOwnContent,
+                CommonPermissions.PublishOwnContent,
+                CommonPermissions.EditOwnContent,
+                CommonPermissions.DeleteOwnContent,
+                CommonPermissions.PreviewOwnContent,
+                CommonPermissions.CloneOwnContent,
             ],
         },
         new PermissionStereotype
         {
-            Name = "Contributor",
+            Name = OrchardCoreConstants.Roles.Contributor,
             Permissions =
             [
-                EditOwnContent,
-                PreviewOwnContent,
-                CloneOwnContent,
+                CommonPermissions.EditOwnContent,
+                CommonPermissions.PreviewOwnContent,
+                CommonPermissions.CloneOwnContent,
             ],
         },
         new PermissionStereotype
         {
-            Name = "Authenticated",
+            Name = OrchardCoreConstants.Roles.Authenticated,
             Permissions = _readerPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Anonymous",
+            Name = OrchardCoreConstants.Roles.Anonymous,
             Permissions = _readerPermissions,
         },
     ];

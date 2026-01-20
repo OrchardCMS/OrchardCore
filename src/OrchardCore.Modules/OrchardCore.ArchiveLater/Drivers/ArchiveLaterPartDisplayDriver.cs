@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ArchiveLater.Models;
@@ -6,13 +5,12 @@ using OrchardCore.ArchiveLater.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.Contents;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ArchiveLater.Drivers;
 
-public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLaterPart>
+public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLaterPart>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -31,14 +29,14 @@ public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLat
     public override IDisplayResult Display(ArchiveLaterPart part, BuildPartDisplayContext context)
         => Initialize<ArchiveLaterPartViewModel>(
             $"{nameof(ArchiveLaterPart)}_SummaryAdmin",
-            model => PopulateViewModel(part, model)).Location("SummaryAdmin", "Meta:25");
+            model => PopulateViewModel(part, model)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:25");
 
     public override IDisplayResult Edit(ArchiveLaterPart part, BuildPartEditorContext context)
         => Initialize<ArchiveLaterPartViewModel>(
             GetEditorShapeType(context),
             model => PopulateViewModel(part, model)).Location("Actions:10.5");
 
-    public override async Task<IDisplayResult> UpdateAsync(ArchiveLaterPart part, IUpdateModel updater, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ArchiveLaterPart part, UpdatePartEditorContext context)
     {
         var httpContext = _httpContextAccessor.HttpContext;
 
@@ -46,7 +44,7 @@ public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLat
         {
             var viewModel = new ArchiveLaterPartViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
             if (viewModel.ScheduledArchiveLocalDateTime == null || httpContext.Request.Form["submit.Publish"] == "submit.CancelArchiveLater")
             {

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Localization;
@@ -7,17 +5,15 @@ namespace OrchardCore.Localization;
 /// <summary>
 /// Represents the localization module permissions.
 /// </summary>
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
-    /// <summary>
-    /// Gets a permission for managing the cultures.
-    /// </summary>
-    public static readonly Permission ManageCultures = new("ManageCultures", "Manage supported culture");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageCultures,
+        LocalizationPermissions.ManageCultures,
     ];
+
+    [Obsolete("This will be removed in a future release. Instead use 'LocalizationPermissions.ManageCultures'.")]
+    public static readonly Permission ManageCultures = LocalizationPermissions.ManageCultures;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
        => Task.FromResult(_allPermissions);
@@ -26,7 +22,7 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions = _allPermissions,
         },
     ];

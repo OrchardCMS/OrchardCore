@@ -75,7 +75,7 @@ By default anonymous users are not able to execute a GraphQL query.
 
 When identifying content types for GraphQL exposure, we identify those without a stereotype to provide you with control over the behavior of stereotyped content types. A new option, `DiscoverableSterotypes`, has been introduced in `GraphQLContentOptions`. This allows you to specify stereotypes that should be discoverable by default.
 
-For instance, if you have several content types sterotyped as `ExampleStereotype`, you can make them discoverable by incorporating the following code into the startup class:
+For instance, if you have several content types stereotyped as `ExampleStereotype`, you can make them discoverable by incorporating the following code into the startup class:
 
 ```csharp
 services.Configure<GraphQLContentOptions>(options =>

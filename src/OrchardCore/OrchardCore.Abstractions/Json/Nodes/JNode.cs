@@ -1,9 +1,5 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.Json.Settings;
-using System.Threading;
-using System.Threading.Tasks;
+using Json.Path;
 
 #nullable enable
 
@@ -170,26 +166,39 @@ public static class JNode
     public static string? GetNormalizedPath(this JsonNode jsonNode) => jsonNode.GetPath().GetNormalizedPath();
 
     /// <summary>
-    /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using a JSON path.
+    /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using JSONPath.
     /// </summary>
-    public static JsonNode? SelectNode(this JsonNode? jsonNode, string? path)
+    /// <param name="jsonNode">The JSON node which serves as the root of the current search..</param>
+    /// <param name="path">The JSONPath query where <c>$</c> is <paramref name="jsonNode"/>.</param>
+    /// <param name="options">Optional settings to configure the JSONPath parser.</param>
+    /// <remarks>
+    /// This method uses JsonPath.Net to evaluate the <paramref name="path"/>. For more information on JSONPath, see the
+    /// specification at https://www.rfc-editor.org/rfc/rfc9535.html or the JsonPath.Net documentation at
+    /// https://docs.json-everything.net/path/basics/.
+    /// </remarks>
+    public static JsonNode? SelectNode(this JsonNode jsonNode, string path, PathParsingOptions? options = null)
     {
-        if (jsonNode is null || path is null)
+        ArgumentNullException.ThrowIfNull(jsonNode);
+        ArgumentNullException.ThrowIfNull(path);
+
+        path = path.Trim();
+        if (string.IsNullOrEmpty(path))
         {
-            return null;
+            return jsonNode;
         }
 
-        if (jsonNode is JsonObject jsonObject)
+        // Without this JSONPath parsing fails (JsonPath.Parse throws "PathParseException: Path must start with '$'").
+        // Since the path always has to start with "$.", this alteration won't cause any problems. It's also necessary
+        // to maintain backwards compatibility with JSONPaths written for Newtonsoft and for simple direct child
+        // property access too (e.g. when the path is "property" instead of "$.property").
+        if (path[0] != '$')
         {
-            return jsonObject.SelectNode(path);
+            path = "$." + path;
         }
 
-        if (jsonNode is JsonArray jsonArray)
-        {
-            return jsonArray.SelectNode(path);
-        }
-
-        return null;
+        return JsonPath.TryParse(path, out var jsonPath, options)
+            ? jsonPath.Evaluate(jsonNode).Matches?.FirstOrDefault()?.Value
+            : null;
     }
 
     /// <summary>

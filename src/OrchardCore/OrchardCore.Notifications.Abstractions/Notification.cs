@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Notifications;
@@ -12,6 +11,11 @@ public class Notification : Entity
     /// Gets or sets the notification Id.
     /// </summary>
     public string NotificationId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the notification subject.
+    /// </summary>
+    public string Subject { get; set; }
 
     /// <summary>
     /// Gets or sets the notification summary.

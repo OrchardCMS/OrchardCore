@@ -7,13 +7,14 @@ on:
 
 jobs:
   validate-pull-request:
+    # To enable this workflow on a fork, comment out:
+    if: github.repository == 'OrchardCMS/OrchardCore'
     name: Validate Pull Request
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
       - name: Check for Merge Conflict in PR
-        # releases/2.1.0
-        uses: eps1lon/actions-label-merge-conflict@92924ba33a60e436034b0ac3838de523bf7df071
+        uses: eps1lon/actions-label-merge-conflict@1df065ebe6e3310545d4f4c4e862e43bdca146f0 # v3.0.3
         with:
             repoToken: ${{ secrets.GITHUB_TOKEN }}
             commentOnDirty: "This pull request has merge conflicts. Please resolve those before requesting a review."

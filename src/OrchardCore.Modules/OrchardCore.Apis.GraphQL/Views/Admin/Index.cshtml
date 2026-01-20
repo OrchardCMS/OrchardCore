@@ -1,3 +1,4 @@
+@using System.Globalization
 <script asp-src="~/OrchardCore.Apis.GraphQL/Scripts/graphiql-orchard.js" at="Foot"></script>
 
 <style>
@@ -63,6 +64,6 @@
     }
 </style>
 
-<div id="graphiql" data-introspection-url="@Href("~/api/graphql")">
+<div id="graphiql" data-introspection-url="@Href($"~/api/graphql?culture={CultureInfo.CurrentUICulture.Name}")">
     <div class="loader"></div>
 </div>

@@ -1,0 +1,7 @@
+@using Microsoft.AspNetCore.Html
+
+<p class="alert alert-warning" role="alert">
+    @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
+</p>
+
+@await DisplayAsync((IHtmlContent)Model.Metadata.ChildContent)

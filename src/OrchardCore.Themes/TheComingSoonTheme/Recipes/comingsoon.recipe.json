@@ -71,38 +71,23 @@
       "name": "Roles",
       "Roles": [
         {
-          "Name": "Administrator",
-          "Description": "Administrator",
-          "Permissions": []
-        },
-        {
           "Name": "Moderator",
-          "Description": "Moderator",
+          "Description": "Grants users the ability to moderate content.",
           "Permissions": []
         },
         {
           "Name": "Editor",
-          "Description": "Editor",
+          "Description": "Grants users the ability to edit existing content.",
           "Permissions": []
         },
         {
           "Name": "Author",
-          "Description": "Author",
+          "Description": "Grants users the ability to create content.",
           "Permissions": []
         },
         {
           "Name": "Contributor",
-          "Description": "Contributor",
-          "Permissions": []
-        },
-        {
-          "Name": "Authenticated",
-          "Description": "Authenticated",
-          "Permissions": []
-        },
-        {
-          "Name": "Anonymous",
-          "Description": "Anonymous",
+          "Description": "Grants users the ability to contribute content.",
           "Permissions": []
         }
       ]
@@ -372,9 +357,6 @@
           "TitlePart": {
             "Title": "Coming Soon"
           },
-          "HtmlBodyPart": {
-            "Html": "\r\n<div class=\"input-group input-group-newsletter\">\r\n                <input class=\"form-control\" aria-describedby=\"submit-button\" aria-label=\"Enter email address...\" type=\"email\" placeholder=\"Enter email address...\">\r\n                <button class=\"btn btn-primary\" id=\"submit-button\" type=\"button\">Notify Me!</button>\r\n                </div>"
-          },
           "SocialIcons": {
             "ContentItems": [
               {
@@ -580,7 +562,7 @@
               "Y": 130,
               "IsStart": false,
               "Properties": {
-                "FieldName": "Email",
+                "FieldName": "ValidationSummaryPart.Email",
                 "ErrorMessage": "this is not a valid email",
                 "ActivityMetadata": {
                   "Title": "Validate Email"
@@ -672,6 +654,24 @@
                 "Key": "Registration",
                 "ErrorMessage": "Thank you. A confirmation email has been sent."
               }
+            },
+            {
+              "ActivityId": "4pqgncdxysv7xw3x4yf4ppetcv",
+              "Name": "ScriptTask",
+              "X": 720,
+              "Y": 350,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Assign email"
+                },
+                "AvailableOutcomes": [
+                  "Done"
+                ],
+                "Script": {
+                  "Expression": "setProperty(\u0027Email\u0027, requestForm(\u0027ValidationSummaryPart.Email\u0027));\r\nsetOutcome(\u0027Done\u0027);"
+                }
+              }
             }
           ],
           "Transitions": [
@@ -720,12 +720,6 @@
             {
               "Id": 0,
               "SourceActivityId": "4pa4dakwbjt3w401sz726yg0ce",
-              "SourceOutcomeName": "Valid",
-              "DestinationActivityId": "4h209bxt4e3yj73a9kk4dgtmcn"
-            },
-            {
-              "Id": 0,
-              "SourceActivityId": "4pa4dakwbjt3w401sz726yg0ce",
               "SourceOutcomeName": "Invalid",
               "DestinationActivityId": "4pfedcmhy0ka66t6bds315vxw5"
             },
@@ -740,6 +734,18 @@
               "SourceActivityId": "44jhxf8baxnbe4g5z9gkc96g5b",
               "SourceOutcomeName": "Done",
               "DestinationActivityId": "4pfedcmhy0ka66t6bds315vxw5"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "4pa4dakwbjt3w401sz726yg0ce",
+              "SourceOutcomeName": "Valid",
+              "DestinationActivityId": "4pqgncdxysv7xw3x4yf4ppetcv"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "4pqgncdxysv7xw3x4yf4ppetcv",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "4h209bxt4e3yj73a9kk4dgtmcn"
             }
           ]
         }

@@ -6,20 +6,24 @@ using OrchardCore.Twitter;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Category = "Twitter"
+    Category = "X (Twitter)"
 )]
 
 [assembly: Feature(
     Id = TwitterConstants.Features.Twitter,
-    Name = "Twitter Integration",
-    Category = "Twitter",
-    Description = "Provides a TwitterClient and Workflow Activities to integrate with twitter"
+    Name = "X (Twitter) Integration",
+    Category = "X (Twitter)",
+    Description = "Provides a TwitterClient and Workflow Activities to integrate with X (Twitter)"
 )]
 
 [assembly: Feature(
     Id = TwitterConstants.Features.Signin,
-    Name = "Sign in with Twitter",
-    Category = "Twitter",
-    Description = "Authenticates users with their Twitter Account.",
-    Dependencies = [TwitterConstants.Features.Twitter]
+    Name = "Sign in with X (Twitter)",
+    Category = "X (Twitter)",
+    Description = "Authenticates users with their X (Twitter) Account.",
+    Dependencies =
+    [
+        TwitterConstants.Features.Twitter,
+        "OrchardCore.Users.ExternalAuthentication",
+    ]
 )]

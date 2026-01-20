@@ -9,7 +9,7 @@ public class AzureAISearchIndexResetDeploymentStep : DeploymentStep
         Name = "AzureAISearchIndexReset";
     }
 
-    public bool IncludeAll { get; set; } = false;
+    public bool IncludeAll { get; set; }
 
     public string[] Indices { get; set; }
 }

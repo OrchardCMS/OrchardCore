@@ -1,15 +1,14 @@
 using System.Data.Common;
 
-namespace OrchardCore.Data
+namespace OrchardCore.Data;
+
+/// <summary>
+/// Represents a contract to access the <see cref="DbConnection"/>.
+/// </summary>
+public interface IDbConnectionAccessor
 {
     /// <summary>
-    /// Represents a contract to access the <see cref="DbConnection"/>.
+    /// Creates a database connection.
     /// </summary>
-    public interface IDbConnectionAccessor
-    {
-        /// <summary>
-        /// Creates a database connection.
-        /// </summary>
-        DbConnection CreateConnection();
-    }
+    DbConnection CreateConnection();
 }

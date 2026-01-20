@@ -30,9 +30,9 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<style asp-name="vue-multiselect"></style>
+<style asp-name="vue-multiselect" version="2"></style>
 <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
-<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
+<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Shortcode"])</h1></zone>
 
@@ -96,8 +96,8 @@
             <div id="shortcodePreview" style="display: none;">
                 @{
                     var descriptor = new ShortcodeDescriptor();
-                    dynamic shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
-                    shape.Actions = null;
+                    var shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
+                    shape.Properties["Actions"] = null;
                     @await DisplayAsync(shape)
                 }
             </div>

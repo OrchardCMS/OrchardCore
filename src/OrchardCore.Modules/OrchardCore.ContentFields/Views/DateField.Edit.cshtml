@@ -6,11 +6,12 @@
 
 <script asp-name="jQuery-ui-i18n" at="Foot"></script>
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <div class="@Orchard.GetLimitedWidthWrapperClasses()">
             <div class="@Orchard.GetLimitedWidthClasses()">
-                <input asp-for="Value" type="date" class="form-control content-preview-select" required="@settings.Required" />
+                <input asp-for="Value" type="date" class="form-control content-preview-select" />
+                <span asp-validation-for="Value"></span>
             </div>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))

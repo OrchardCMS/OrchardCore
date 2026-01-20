@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Media;
 
 public class MediaConfigurationException : Exception

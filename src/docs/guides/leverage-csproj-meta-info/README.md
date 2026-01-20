@@ -70,22 +70,22 @@ There are several items you may be interested in, depending on your projects, i.
 
 With all _properties_ described as follows.
 
-|Property|Type|Description|
-|-|-|-|
-|`Include`|`string` <sup>1</sup>|Required, signals `MSBuild` that an _item list_ is supported, which `Identity` serves as the attribute `Id`.|
-|`Name`|`string`|Optional, human readable name for the module or feature.|
-|`Base`|`string`|Optional, the base theme from which the assembly is derived. Not applicable to either _features_ or _modules_.|
-|`ModuleType`|`string`|Optional author provided `Type`; defaults to `"Module"` or `"Theme"`. Not applicable to _features_ since this is a _Module_ base class property. <sup>2</sup>|
-|`Category`|`string`|Optional category for the feature.|
-|`Priority`|`int` <sup>1</sup>|Optional integer priority, given as a `string`, defaults to `0`; lower priority given precedence.|
-|`Description`|`string`|Optional descriptive text.|
-|`Author`|`string`|Optional, author provided identification.|
-|`Version`|`string`|Optional, recommended, semantic versioning text, defaults to `"0.0"`.|
-|`Dependencies`|`list`|Optional, semi-colon delimited list of _Module Identifier_ dependencies. <sup>3</sup>|
-|`Tags`|`list`|Optional, semi-colon delimited list of tags. <sup>3</sup>|
-|`DefaultTenant`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to`false`.|
-|`AlwaysEnabled`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to`false`.|
-|`EnabledByDependencyOnly`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to`false`.|
+| Property                  | Type                  | Description                                                                                                                                                   |
+|---------------------------|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Include`                 | `string` <sup>1</sup> | Required, signals `MSBuild` that an _item list_ is supported, which `Identity` serves as the attribute `Id`.                                                  |
+| `Name`                    | `string`              | Optional, human readable name for the module or feature.                                                                                                      |
+| `Base`                    | `string`              | Optional, the base theme from which the assembly is derived. Not applicable to either _features_ or _modules_.                                                |
+| `ModuleType`              | `string`              | Optional author provided `Type`; defaults to `"Module"` or `"Theme"`. Not applicable to _features_ since this is a _Module_ base class property. <sup>2</sup> |
+| `Category`                | `string`              | Optional category for the feature.                                                                                                                            |
+| `Priority`                | `int` <sup>1</sup>    | Optional integer priority, given as a `string`, defaults to `0`; lower priority given precedence.                                                             |
+| `Description`             | `string`              | Optional descriptive text.                                                                                                                                    |
+| `Author`                  | `string`              | Optional, author provided identification.                                                                                                                     |
+| `Version`                 | `string`              | Optional, recommended, semantic versioning text, defaults to `"0.0"`.                                                                                         |
+| `Dependencies`            | `list`                | Optional, semi-colon delimited list of _Module Identifier_ dependencies. <sup>3</sup>                                                                         |
+| `Tags`                    | `list`                | Optional, semi-colon delimited list of tags. <sup>3</sup>                                                                                                     |
+| `DefaultTenant`           | `bool` <sup>1</sup>   | Optional, Boolean, `true                                                                                                                                      |false`, defaults to`false`.|
+| `AlwaysEnabled`           | `bool` <sup>1</sup>   | Optional, Boolean, `true                                                                                                                                      |false`, defaults to`false`.|
+| `EnabledByDependencyOnly` | `bool` <sup>1</sup>   | Optional, Boolean, `true                                                                                                                                      |false`, defaults to`false`.|
 
 <sup>[1] `MSBuild` relays all meta data as `string`, leaving authors to contend with either `string` or `object` type conversions i.e. either `int` or `bool`, which is fine for our purposes.</sup>
 <br/><sup>[2] Depending on the `Attribute` context, `ModuleAttribute` yields `"Module"`, `ThemeAttribute` yields `"Theme"` by default.</sup>
@@ -99,9 +99,9 @@ And for convenience, you may specify all of your assembly Orchard Core attribute
                        ... />
 ```
 
-|Property|Type|Description|
-|-|-|-|
-|`Type`|`string`|Commonly either, `"feature"`, `"theme"` or `"module"`. Anything else not `"feature"` or `"theme"` assumes _Module_.|
+| Property | Type     | Description                                                                                                         |
+|----------|----------|---------------------------------------------------------------------------------------------------------------------|
+| `Type`   | `string` | Commonly either, `"feature"`, `"theme"` or `"module"`. Anything else not `"feature"` or `"theme"` assumes _Module_. |
 
 Otherwise, the `OrchardCoreAttributes` should include all the same _properties_ that the desired `Type` would require.
 
@@ -109,10 +109,10 @@ Otherwise, the `OrchardCoreAttributes` should include all the same _properties_ 
 
 A couple of convenience [`MSBuild` _properties_](https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-properties) are provided, which authors may leverage in order to accommodate their internal target build orders.
 
-|Property|Default|Description|
-|-|-|-|
-|`OrchardCoreEmbeddingAfterTargets`|`AfterResolveReferences`|_Orchard Core_ assembly embedding to occur **_after_** these targets.|
-|`OrchardCoreEmbeddingBeforeTargets`|`GenerateAssemblyInfo`|_Orchard Core_ assembly embedding to occur **_before_** these targets.|
+| Property                            | Default                  | Description                                                            |
+|-------------------------------------|--------------------------|------------------------------------------------------------------------|
+| `OrchardCoreEmbeddingAfterTargets`  | `AfterResolveReferences` | _Orchard Core_ assembly embedding to occur **_after_** these targets.  |
+| `OrchardCoreEmbeddingBeforeTargets` | `GenerateAssemblyInfo`   | _Orchard Core_ assembly embedding to occur **_before_** these targets. |
 
 We do not recommend changing the defaults in any way, but rather to append with your custom targets as desired, i.e.
 
@@ -138,6 +138,6 @@ When you are happy with your `CSPROJ` item lists, then you may comment out the c
 
 ## Summary
 
-In this article we described how to leverage _Orcard Core_ `CSPROJ` _item lists_ and _properties_ in order to enrich and get the absolute most from your authoring experience.
+In this article we described how to leverage _Orchard Core_ `CSPROJ` _item lists_ and _properties_ in order to enrich and get the absolute most from your authoring experience.
 
 Happy coding!

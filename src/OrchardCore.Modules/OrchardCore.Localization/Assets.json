@@ -1,8 +1,8 @@
 [
   {
-    "inputs": [
-      "Assets/js/*.js"
-    ],
-    "output": "wwwroot/Scripts/optionsEditor.js"
+    "action": "min",
+    "name": "loc-optionsEditor",
+    "source": "Assets/js/*.js",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

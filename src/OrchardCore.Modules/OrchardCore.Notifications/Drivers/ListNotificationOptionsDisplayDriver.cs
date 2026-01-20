@@ -1,12 +1,10 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Notifications.Models;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificationOptions>
+public sealed class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificationOptions>
 {
     // Maintain the Options prefix for compatibility with binding.
     protected override void BuildPrefix(ListNotificationOptions model, string htmlFieldPrefix)
@@ -14,9 +12,9 @@ public class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificati
         Prefix = "Options";
     }
 
-    public override IDisplayResult Display(ListNotificationOptions model)
+    public override Task<IDisplayResult> DisplayAsync(ListNotificationOptions model, BuildDisplayContext context)
     {
-        return Combine(
+        return CombineAsync(
             Initialize<ListNotificationOptions>("NotificationsAdminListBulkActions", m => BuildOptionsViewModel(m, model))
                 .Location("BulkActions", "Content:10"),
             View("NotificationsAdminFilters_Thumbnail__Status", model)
@@ -26,11 +24,11 @@ public class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificati
         );
     }
 
-    public override IDisplayResult Edit(ListNotificationOptions model)
+    public override Task<IDisplayResult> EditAsync(ListNotificationOptions model, BuildEditorContext context)
     {
         model.FilterResult.MapTo(model);
 
-        return Combine(
+        return CombineAsync(
             Initialize<ListNotificationOptions>("NotificationsAdminListBulkActions", m => BuildOptionsViewModel(m, model))
                 .Location("BulkActions", "Content:10"),
             Initialize<ListNotificationOptions>("NotificationsAdminListSearch", m => BuildOptionsViewModel(m, model))
@@ -46,12 +44,12 @@ public class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificati
         );
     }
 
-    public override Task<IDisplayResult> UpdateAsync(ListNotificationOptions model, IUpdateModel updater)
+    public override Task<IDisplayResult> UpdateAsync(ListNotificationOptions model, UpdateEditorContext context)
     {
         // Map the incoming values from a form post to the filter result.
         model.FilterResult.MapFrom(model);
 
-        return Task.FromResult(Edit(model));
+        return EditAsync(model, context);
     }
 
     private static void BuildOptionsViewModel(ListNotificationOptions m, ListNotificationOptions model)
@@ -63,7 +61,7 @@ public class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificati
         m.Sorts = model.Sorts;
         m.Statuses = model.Statuses;
         m.BulkActions = model.BulkActions;
-        m.BulkAction = m.BulkAction;
+        m.BulkAction = model.BulkAction;
         m.StartIndex = model.StartIndex;
         m.EndIndex = model.EndIndex;
         m.NotificationsCount = model.NotificationsCount;

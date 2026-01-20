@@ -1,12 +1,26 @@
 {
   "query": {
-    "term": { "Content.ContentItem.ContentType": "BlogPost" }
-  },
-  "sort": {
-    "Content.ContentItem.CreatedUtc": {
-      "order": "desc",
-      "type": "double"
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "Content.ContentItem.ContentType": "BlogPost"
+          }
+        },
+        {
+          "term": {
+            "Content.ContentItem.Published": "true"
+          }
+        }
+      ]
     }
   },
+  "sort": [
+    {
+      "Content.ContentItem.CreatedUtc": {
+        "order": "desc"
+      }
+    }
+  ],
   "size": 3
 }

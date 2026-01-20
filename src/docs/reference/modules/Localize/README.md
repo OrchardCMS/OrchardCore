@@ -56,7 +56,7 @@ Cultures can be added during recipes using the settings step. Here is a sample s
     "DefaultCulture":  "fr",
     "SupportedCultures": [ "fr", "en" ]
   }
-},
+}
 ```
 
 ### Examples
@@ -136,9 +136,9 @@ It is necessary to reference the `OrchardCore.Localization.Abstractions` package
 
 ```
 msgctxt "TheAdmin.Views.Layout"
-msgid "1 book"
+msgid "{0} book"
 msgid_plural "{0} books"
-msgstr[0] "[1 livre]"
+msgstr[0] "[{0} livre]"
 msgstr[1] "[{0} livres]"
 ```
 
@@ -148,8 +148,15 @@ msgstr[1] "[{0} livres]"
 - Inject an instance of `IStringLocalizer` or `IViewLocalizer` (represented as the `T` variable in the following example).
 
 ```csharp
-T.Plural(count, "1 book", "{0} books")
+T.Plural(count, "{0} book", "{0} books")
 ```
+In this example
+* `"{0} book"` is the singular form
+* `"{0} books"` is the plural form
+* `count` will determine if the singular or plural form is used and will replace the {0} placeholder
+
+!!! warning
+    You should not hardcode a number in the singular or plural forms because different languages have different rules about when each form is used.
 
 ### Extract translations to PO files
 
@@ -166,3 +173,7 @@ Then, you will be able to run this command to generate the .po files:
 ``` bash
 extractpo <INTPUT_PATH> <OUTPUT_PATH> [-l|--language {"C#"|"VB"}] [-t|--template {"razor"|"liquid"}]
 ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

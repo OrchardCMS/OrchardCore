@@ -4,64 +4,66 @@ The auto-setup module allows to automatically install the application/tenants on
 
 ## JSON Configuration Parameters
 
-Auto-Setup parameters are defined in appsettings.json. Example excerpt:
+Auto-Setup parameters are defined in `appsettings.json`. Example excerpt:
 
 ```json
-"OrchardCore": {
+{
+  "OrchardCore": {
     "OrchardCore_AutoSetup": {
-        "AutoSetupPath": "",
-        "Tenants": [
-            {
-                "ShellName": "Default",
-                "SiteName": "AutoSetup Example",
-                "SiteTimeZone": "Europe/Amsterdam",
-                "AdminUsername": "admin",
-                "AdminEmail": "info@orchardproject.net",
-                "AdminPassword": "OrchardCoreRules1!",
-                "DatabaseProvider": "Sqlite",
-                "DatabaseConnectionString": "",
-                "DatabaseTablePrefix": "",
-                "RecipeName": "SaaS"
-            },
-            {
-                "ShellName": "AutoSetupTenant",
-                "SiteName": "AutoSetup Tenant",
-                "SiteTimeZone": "Europe/Amsterdam",
-                "AdminUsername": "tenantadmin",
-                "AdminEmail": "tenant@orchardproject.net",
-                "AdminPassword": "OrchardCoreRules1!",
-                "DatabaseProvider": "Sqlite",
-                "DatabaseConnectionString": "",
-                "DatabaseTablePrefix": "tenant",
-                "RecipeName": "Agency",
-                "RequestUrlHost": "",
-                "RequestUrlPrefix": "tenant",
-                "FeatureProfile": "my-profile"
-            }
-        ]
+      "AutoSetupPath": "",
+      "Tenants": [
+        {
+          "ShellName": "Default",
+          "SiteName": "AutoSetup Example",
+          "SiteTimeZone": "Europe/Amsterdam",
+          "AdminUsername": "admin",
+          "AdminEmail": "info@orchardproject.net",
+          "AdminPassword": "OrchardCoreRules1!",
+          "DatabaseProvider": "Sqlite",
+          "DatabaseConnectionString": "",
+          "DatabaseTablePrefix": "",
+          "RecipeName": "SaaS"
+        },
+        {
+          "ShellName": "AutoSetupTenant",
+          "SiteName": "AutoSetup Tenant",
+          "SiteTimeZone": "Europe/Amsterdam",
+          "AdminUsername": "tenantadmin",
+          "AdminEmail": "tenant@orchardproject.net",
+          "AdminPassword": "OrchardCoreRules1!",
+          "DatabaseProvider": "Sqlite",
+          "DatabaseConnectionString": "",
+          "DatabaseTablePrefix": "tenant",
+          "RecipeName": "Agency",
+          "RequestUrlHost": "",
+          "RequestUrlPrefix": "tenant",
+          "FeatureProfile": "my-profile"
+        }
+      ]
     }
+  }
 }
 ```
 
-| Parameter | Description |
-| --- | --- |
+| Parameter       | Description                                                                                                                         |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | `AutoSetupPath` | The URL To Trigger AutoSetup For Each Tenant. If empty, auto-setup will be triggered on first tenant request e.g: /, /tenant-prefix |
-| `Tenants` | The list of the tenants to install. |
+| `Tenants`       | The list of the tenants to install.                                                                                                 |
 
-| Parameter | Description |
-| --- | --- |
-| `ShellName` | The technical shell / tenant name. It can not be empty and must contain characters only. Use "Default" for the default tenant. |
-| `SiteName` | The name of the site. |
-| `AdminUsername` | The tenant username of the super user. |
-| `AdminEmail` | The email of the tenant super user. |
-| `AdminPassword` | The password of the tenant super user. |
-| `DatabaseProvider` | The database provider. |
-| `DatabaseConnectionString` | The connection string. |
-| `DatabaseTablePrefix` | The database table prefix. Can be used to install a tenant on the same database. |
-| `RecipeName` | The tenant installation Recipe name. |
-| `RequestUrlHost` | The tenant host url. |
-| `RequestUrlPrefix` | The tenant url prefix. |
-| `FeatureProfile` | Optionally, the name of the feature profile used by default. Only applicable if the "Feature Profiles" feature is used. See the [documentation of the Tenants module](../Tenants/README.md#feature-profiles) for details. |
+| Parameter                  | Description                                                                                                                                                                                                               |
+|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ShellName`                | The technical shell / tenant name. It can not be empty and must contain characters only. Use "Default" for the default tenant.                                                                                            |
+| `SiteName`                 | The name of the site.                                                                                                                                                                                                     |
+| `AdminUsername`            | The tenant username of the super user.                                                                                                                                                                                    |
+| `AdminEmail`               | The email of the tenant super user.                                                                                                                                                                                       |
+| `AdminPassword`            | The password of the tenant super user.                                                                                                                                                                                    |
+| `DatabaseProvider`         | The database provider.                                                                                                                                                                                                    |
+| `DatabaseConnectionString` | The connection string.                                                                                                                                                                                                    |
+| `DatabaseTablePrefix`      | The database table prefix. Can be used to install a tenant on the same database.                                                                                                                                          |
+| `RecipeName`               | The tenant installation Recipe name.                                                                                                                                                                                      |
+| `RequestUrlHost`           | The tenant host url.                                                                                                                                                                                                      |
+| `RequestUrlPrefix`         | The tenant url prefix.                                                                                                                                                                                                    |
+| `FeatureProfile`           | Optionally, the name of the feature profile used by default. Only applicable if the "Feature Profiles" feature is used. See the [documentation of the Tenants module](../Tenants/README.md#feature-profiles) for details. |
 
 !!! note
     Tenants array must contain the root tenant with `ShellName` equals to `Default`.  
@@ -70,9 +72,28 @@ Auto-Setup parameters are defined in appsettings.json. Example excerpt:
     `/autosetup` - trigger installation of the Root tenant.
     `/mytenant/autosetup` - auto-install mytenant.
 
-### Environment Variables
+### User Secrets and Environment Variables
 
-Since JSON configuration contains admin-sensitive information, it is recommended to use environment variables instead.
+If your JSON configuration contains sensitive information, or you don't want to commit it to the repository (because e.g. Auto Setup is not utilized by the whole development team), it is recommended to use user secrets or environment variables instead.
+
+[User secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets#secret-manager) are available during local development, and they are stored as JSON files. This means you can move the whole configuration from `appsettings.json` as-is. Alternatively, you can set each option directly from the command line (this will flatten any existing structures in the `secrets.json` file):
+
+```shell
+cd src/OrchardCore.Cms.Web
+dotnet user-secrets init
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:ShellName" "Default"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:SiteName" "AutoSetup Example"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:SiteTimeZone" "Europe/Amsterdam"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminUsername" "admin"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminEmail" "info@orchardproject.net"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminPassword" "OrchardCoreRules1!"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:RecipeName" "SaaS"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:DatabaseProvider" "Sqlite"
+```
+
+If you use a setup like the above when working with the full source code of Orchard Core, then all copies of the source will use it, due to `OrchardCore.Cms.Web` having `UserSecretsId` pre-configured. This is really useful when contributing to Orchard Core. However, if you want to remove this functionality, just remove the `UserSecretsId` element from the given copy's `OrchardCore.Cms.Web.csproj`.
+
+[Environment variables](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration#non-prefixed-environment-variables) are available on both server and local machine. But if you have multiple projects, you have to prefix them to avoid clashes.
 
 ```
 "OrchardCore__OrchardCore_AutoSetup__AutoSetupPath": ""

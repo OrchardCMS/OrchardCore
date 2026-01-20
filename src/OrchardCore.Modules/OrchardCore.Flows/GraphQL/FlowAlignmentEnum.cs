@@ -1,18 +1,18 @@
 using GraphQL.Types;
+using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Flows.GraphQL
+namespace OrchardCore.Flows.GraphQL;
+
+public class FlowAlignmentEnum : EnumerationGraphType
 {
-    public class FlowAlignmentEnum : EnumerationGraphType
+    public FlowAlignmentEnum(IStringLocalizer<FlowAlignmentEnum> S)
     {
-        public FlowAlignmentEnum()
-        {
-            Name = "FlowAlignment";
+        Name = "FlowAlignment";
 
-            Description = "The widget alignment.";
-            AddValue("Left", "Left alignment.", 0);
-            AddValue("Center", "Center alignment.", 1);
-            AddValue("Right", "Right alignment.", 2);
-            AddValue("Justify", "Justify alignment.", 3);
-        }
+        Description = S["The widget alignment."];
+        Add("Left", 0, S["Left alignment."]);
+        Add("Center", 1, S["Center alignment."]);
+        Add("Right", 2, S["Right alignment."]);
+        Add("Justify", 3, S["Justify alignment."]);
     }
 }

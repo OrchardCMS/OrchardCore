@@ -54,19 +54,19 @@ You can also specify a `TermContentItemId` to render a part of the term hierarch
     <shape type="Term" TaxonomyContentItemId="taxonomyContentItemId" TermContentItemId="termContentItemId" />
     ```
 
-| Property | Description |
-| --------- | ------------ |
-| `Model.TaxonomyContentItemId` | If defined, contains the content item identifier of the taxonomy to render. |
-| `Model.Items` | The list of term items shapes for the taxonomy. These are shapes of type `TermItem`. |
-| `Model.Differentiator` | If defined, contains the formatted name of the taxonomy (display text). For instance `Categories`. |
-| `Model.TermContentItemId` | If defined, contains the content item identifier of the term to start rendering the hierarchy. |
+| Property                      | Description                                                                                        |
+|-------------------------------|----------------------------------------------------------------------------------------------------|
+| `Model.TaxonomyContentItemId` | If defined, contains the content item identifier of the taxonomy to render.                        |
+| `Model.Items`                 | The list of term items shapes for the taxonomy. These are shapes of type `TermItem`.               |
+| `Model.Differentiator`        | If defined, contains the formatted name of the taxonomy (display text). For instance `Categories`. |
+| `Model.TermContentItemId`     | If defined, contains the content item identifier of the term to start rendering the hierarchy.     |
 
 #### Term Alternates
 
-| Definition | Template | Filename|
-| ---------- | --------- | ------------ |
+| Definition               | Template           | Filename                 |
+|--------------------------|--------------------|--------------------------|
 | `Term__[Differentiator]` | `Term__Categories` | `Term-Categories.cshtml` |
-| `Term__[ContentType]` | `Term__Category` | `Term-Category.cshtml` |
+| `Term__[ContentType]`    | `Term__Category`   | `Term-Category.cshtml`   |
 
 #### Term Examples
 
@@ -106,29 +106,29 @@ You can also specify a `TermContentItemId` to render a part of the term hierarch
 
 The `TermItem` shape is used to render a term item.
 
-| Property | Description |
-| --------- | ------------ |
-| `Model.Term` | The `Term` shape owning this item. |
-| `Model.TaxonomyContentItem` | The `TaxonomyContentItem`. |
-| `Model.TermContentItem` | The `TermContentItem` for this item. |
-| `Model.Level` | The level of the term item. `0` for top level term items. |
-| `Model.Items` | The list of sub term items shapes. These are shapes of type `TermItem`. |
-| `Model.Terms` | The list of term content items for the lower items in the hierarchy. |
-| `Model.Differentiator` | If defined, contains the formatted name of the taxonomy. For instance `Categories`. |
+| Property                    | Description                                                                         |
+|-----------------------------|-------------------------------------------------------------------------------------|
+| `Model.Term`                | The `Term` shape owning this item.                                                  |
+| `Model.TaxonomyContentItem` | The `TaxonomyContentItem`.                                                          |
+| `Model.TermContentItem`     | The `TermContentItem` for this item.                                                |
+| `Model.Level`               | The level of the term item. `0` for top level term items.                           |
+| `Model.Items`               | The list of sub term items shapes. These are shapes of type `TermItem`.             |
+| `Model.Terms`               | The list of term content items for the lower items in the hierarchy.                |
+| `Model.Differentiator`      | If defined, contains the formatted name of the taxonomy. For instance `Categories`. |
 
 !!! note
     When rendering a partial hierarchy of terms using the `TermContentItemId` property, the level is always based of the taxonomy root.
 
 #### TermItem Alternates
 
-| Definition | Template | Filename|
-| ---------- | --------- | ------------ |
-| `TermItem__level__[level]` | `TermItem__level__2` | `TermItem-level-2.cshtml` |
-| `TermItem__[ContentType]` | `TermItem__Category` | `TermItem-Category.cshtml` |
-| `TermItem__[ContentType]__level__[level]` | `TermItem__Category__level__2` | `TermItem-Category-level-2.cshtml` |
-| `TermItem__[Differentiator]` | `TermItem__Categories` | `TermItem-Categories.cshtml` |
-| `TermItem__[Differentiator]__level__[level]` | `TermItem__Categories__level__2` | `TermItem-Categories-level-2.cshtml` |
-| `TermItem__[Differentiator]__[ContentType]` | `TermItem__Categories__Category` | `TermItem-Categories-Category.cshtml` |
+| Definition                                                  | Template                                      | Filename                                      |
+|-------------------------------------------------------------|-----------------------------------------------|-----------------------------------------------|
+| `TermItem__level__[level]`                                  | `TermItem__level__2`                          | `TermItem-level-2.cshtml`                     |
+| `TermItem__[ContentType]`                                   | `TermItem__Category`                          | `TermItem-Category.cshtml`                    |
+| `TermItem__[ContentType]__level__[level]`                   | `TermItem__Category__level__2`                | `TermItem-Category-level-2.cshtml`            |
+| `TermItem__[Differentiator]`                                | `TermItem__Categories`                        | `TermItem-Categories.cshtml`                  |
+| `TermItem__[Differentiator]__level__[level]`                | `TermItem__Categories__level__2`              | `TermItem-Categories-level-2.cshtml`          |
+| `TermItem__[Differentiator]__[ContentType]`                 | `TermItem__Categories__Category`              | `TermItem-Categories-Category.cshtml`         |
 | `TermItem__[Differentiator]__[ContentType]__level__[level]` | `TermItem__Categories__ContentType__level__2` | `TermItem-Categories-Category-level-2.cshtml` |
 
 #### TermItem Example
@@ -180,26 +180,26 @@ The `TermContentItem` shape is used to render the term content item.
 This shape is created by morphing a `TermItem` shape into a `TermContentItem`. Hence all the properties
 available on the `TermItem` shape are still available.
 
-| Property | Description |
-| --------- | ------------ |
-| `Model.Term` | The `Term` shape owning this item. |
-| `Model.TaxonomyContentItem` | The `TaxonomyContentItem`. |
-| `Model.TermContentItem` | The `TermContentItem` for this item. |
-| `Model.Level` | The level of the term item. `0` for top level term items. |
-| `Model.Items` | The list of sub term items shapes. These are shapes of type `TermItem`. |
-| `Model.Terms` | The list of term content items for the lower items in the hierarchy. |
-| `Model.Differentiator` | If defined, contains the formatted name of the term. For instance `Travel`. |
+| Property                    | Description                                                                 |
+|-----------------------------|-----------------------------------------------------------------------------|
+| `Model.Term`                | The `Term` shape owning this item.                                          |
+| `Model.TaxonomyContentItem` | The `TaxonomyContentItem`.                                                  |
+| `Model.TermContentItem`     | The `TermContentItem` for this item.                                        |
+| `Model.Level`               | The level of the term item. `0` for top level term items.                   |
+| `Model.Items`               | The list of sub term items shapes. These are shapes of type `TermItem`.     |
+| `Model.Terms`               | The list of term content items for the lower items in the hierarchy.        |
+| `Model.Differentiator`      | If defined, contains the formatted name of the term. For instance `Travel`. |
 
 #### TermContentItem Alternates
 
-| Definition | Template | Filename|
-| ---------- | --------- | ------------ |
-| `TermContentItem__level__[level]` | `TermContentItem__level__2` | `TermContentItem-level-2.cshtml` |
-| `TermContentItem__[ContentType]` | `TermContentItem__Category` | `TermContentItem-Category.cshtml` |
-| `TermContentItem__[ContentType]__level__[level]` | `TermContentItem__Category__level__2` | `TermContentItem-Category-level-2.cshtml` |
-| `TermContentItem__[Differentiator]` | `TermContentItem__Categories` | `TermContentItem-Categories.cshtml` |
-| `TermContentItem__[Differentiator]__level__[level]` | `TermContentItem__Categories__level__2` | `TermContentItem-Categories-level-2.cshtml` |
-| `TermContentItem__[Differentiator]__[ContentType]` | `TermContentItem__Categories__Category` | `TermContentItem-Categories-Category.cshtml` |
+| Definition                                                         | Template                                          | Filename                                             |
+|--------------------------------------------------------------------|---------------------------------------------------|------------------------------------------------------|
+| `TermContentItem__level__[level]`                                  | `TermContentItem__level__2`                       | `TermContentItem-level-2.cshtml`                     |
+| `TermContentItem__[ContentType]`                                   | `TermContentItem__Category`                       | `TermContentItem-Category.cshtml`                    |
+| `TermContentItem__[ContentType]__level__[level]`                   | `TermContentItem__Category__level__2`             | `TermContentItem-Category-level-2.cshtml`            |
+| `TermContentItem__[Differentiator]`                                | `TermContentItem__Categories`                     | `TermContentItem-Categories.cshtml`                  |
+| `TermContentItem__[Differentiator]__level__[level]`                | `TermContentItem__Categories__level__2`           | `TermContentItem-Categories-level-2.cshtml`          |
+| `TermContentItem__[Differentiator]__[ContentType]`                 | `TermContentItem__Categories__Category`           | `TermContentItem-Categories-Category.cshtml`         |
 | `TermContentItem__[Differentiator]__[ContentType]__level__[level]` | `TermContentItem__Categories__Category__level__2` | `TermContentItem-Categories-Category-level-2.cshtml` |
 
 #### TermContentItem Example
@@ -225,10 +225,10 @@ The shape base class is of type `DisplayTaxonomyFieldViewModel`.
 
 The following properties are available on the `TaxonomyField` class.
 
-| Property | Type | Description |
-| --------- | ---- |------------ |
-| `TaxonomyContentItemId` | `string` | The Content Item id of the taxonomy associated with the field. |
-| `TermContentItemIds` | `string[]` | The list of Content Item ids of the terms selected for this field. |
+| Property                | Type       | Description                                                        |
+|-------------------------|------------|--------------------------------------------------------------------|
+| `TaxonomyContentItemId` | `string`   | The Content Item id of the taxonomy associated with the field.     |
+| `TermContentItemIds`    | `string[]` | The list of Content Item ids of the terms selected for this field. |
 
 ### DisplayTaxonomyFieldViewModel
 
@@ -236,11 +236,11 @@ This class is used when displaying a field.
 
 The following properties are available on the `DisplayTaxonomyFieldViewModel` class.
 
-| Property | Type | Description |
-| --------- | ---- |------------ |
-| `Field` | `TaxonomyField` | The `TaxonomyField` instance|
-| `Part` | `ContentPart` | The part this field attached to |
-| `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition |
+| Property              | Type                         | Description                     |
+|-----------------------|------------------------------|---------------------------------|
+| `Field`               | `TaxonomyField`              | The `TaxonomyField` instance    |
+| `Part`                | `ContentPart`                | The part this field attached to |
+| `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition       |
 
 ## Orchard Helpers
 
@@ -344,14 +344,14 @@ The first argument must be the taxonomy content item or content item id.
 The `TaxonomyIndex` SQL table contains a list of all content items that are associated with a Taxonomy field.  
 Each record corresponds to a selected term for a field.
 
-| Column | Type | Description |
-| --------- | ---- |------------ |
-| TaxonomyContentItemId | `string` | The content item id of the Taxonomy |
-| ContentItemId | `string` | The content item id of the categorized content |
-| ContentType | `string` | The content type of the categorized content |
-| ContentPart | `string` | The content part containing the field |
-| ContentField | `string` | The name of the field in the content part |
-| TermContentItemId | `string` | The content item id of the categorized Term |
+| Column                | Type     | Description                                    |
+|-----------------------|----------|------------------------------------------------|
+| TaxonomyContentItemId | `string` | The content item id of the Taxonomy            |
+| ContentItemId         | `string` | The content item id of the categorized content |
+| ContentType           | `string` | The content type of the categorized content    |
+| ContentPart           | `string` | The content part containing the field          |
+| ContentField          | `string` | The name of the field in the content part      |
+| TermContentItemId     | `string` | The content item id of the categorized Term    |
 
 For instance if a field has two selected terms, there will be two records with all identical column values except for the `TermContentItemId`.
 
@@ -390,6 +390,10 @@ You can access the `TagNames` property directly with the following accessor:
 
 Provides taxonomy filters in the admin contents list.
 
+## Listing Taxonomy Items
+
+When listing taxonomy items in the front end, you can use the `IContentTaxonomyListFilter` to filter content items by taxonomy terms or manipulate the query.
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/DpaN02c2sDI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -399,3 +403,5 @@ Provides taxonomy filters in the admin contents list.
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/G9lkGRD9G_E" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NVjRz5ru7N4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0pmrmmqF8-4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

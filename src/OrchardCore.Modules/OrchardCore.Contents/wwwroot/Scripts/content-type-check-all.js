@@ -1,0 +1,2 @@
+document.addEventListener("DOMContentLoaded",function(e){document.querySelectorAll(".check-all.content-types").forEach(e=>{let t=e.querySelector('input[type="checkbox"].master'),c=e.querySelectorAll('.slaves input[type="checkbox"]:not(:disabled)'),n=function(){t.checked=0==e.querySelectorAll('.slaves input[type="checkbox"]:not(:checked)').length};t.addEventListener("change",function(e){let t=e.target.checked;c.forEach(e=>{e.checked=t})}),c.forEach(e=>{e.addEventListener("change",function(){n()})}),n()})});
+//# sourceMappingURL=content-type-check-all.map

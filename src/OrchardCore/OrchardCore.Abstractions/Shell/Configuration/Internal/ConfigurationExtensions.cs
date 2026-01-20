@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace OrchardCore.Environment.Shell.Configuration.Internal;
@@ -90,16 +84,14 @@ public static class ConfigurationExtensions
         return configuration.ToJsonObject();
     }
 
-    public static async Task<IDictionary<string, string>> ToConfigurationDataAsync(this JsonObject jConfiguration)
+    public static Task<IDictionary<string, string>> ToConfigurationDataAsync(this JsonObject jConfiguration)
     {
         if (jConfiguration is null)
         {
-            return new Dictionary<string, string>();
+            return Task.FromResult<IDictionary<string, string>>(new Dictionary<string, string>());
         }
 
         var configurationString = jConfiguration.ToJsonString(JOptions.Default);
-        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
-
-        return await JsonConfigurationParser.ParseAsync(ms);
+        return Task.FromResult(JsonConfigurationParser.Parse(configurationString));
     }
 }

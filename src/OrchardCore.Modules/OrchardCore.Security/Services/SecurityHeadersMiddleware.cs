@@ -1,33 +1,31 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Security.Options;
 
-namespace OrchardCore.Security.Services
+namespace OrchardCore.Security.Services;
+
+public class SecurityHeadersMiddleware
 {
-    public class SecurityHeadersMiddleware
+    private readonly SecurityHeadersOptions _options;
+    private readonly RequestDelegate _next;
+
+    public SecurityHeadersMiddleware(SecurityHeadersOptions options, RequestDelegate next)
     {
-        private readonly SecurityHeadersOptions _options;
-        private readonly RequestDelegate _next;
+        _options = options;
+        _next = next;
 
-        public SecurityHeadersMiddleware(SecurityHeadersOptions options, RequestDelegate next)
+        foreach (var provider in _options.HeaderPolicyProviders)
         {
-            _options = options;
-            _next = next;
+            provider.InitializePolicy();
+        }
+    }
 
-            foreach (var provider in _options.HeaderPolicyProviders)
-            {
-                provider.InitializePolicy();
-            }
+    public Task Invoke(HttpContext context)
+    {
+        foreach (var provider in _options.HeaderPolicyProviders)
+        {
+            provider.ApplyPolicy(context);
         }
 
-        public Task Invoke(HttpContext context)
-        {
-            foreach (var provider in _options.HeaderPolicyProviders)
-            {
-                provider.ApplyPolicy(context);
-            }
-
-            return _next.Invoke(context);
-        }
+        return _next.Invoke(context);
     }
 }

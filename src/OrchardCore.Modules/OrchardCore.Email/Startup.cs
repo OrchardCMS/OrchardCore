@@ -1,48 +1,24 @@
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Email.Controllers;
+using OrchardCore.Email.Core;
 using OrchardCore.Email.Drivers;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.Migrations;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
-namespace OrchardCore.Email
+namespace OrchardCore.Email;
+
+public sealed class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        private readonly AdminOptions _adminOptions;
+        services.AddEmailServices()
+            .AddSiteDisplayDriver<EmailSettingsDisplayDriver>()
+            .AddPermissionProvider<Permissions>()
+            .AddNavigationProvider<AdminMenu>();
 
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-
-            services.AddTransient<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
-            services.AddScoped<ISmtpService, SmtpService>();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "EmailIndex",
-                areaName: "OrchardCore.Email",
-                pattern: _adminOptions.AdminUrlPrefix + "/Email/Index",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
-            );
-        }
+        services.AddDataMigration<EmailMigrations>();
     }
 }

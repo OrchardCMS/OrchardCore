@@ -1,14 +1,34 @@
+@using Microsoft.AspNetCore.Authorization
 @using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Metadata
+@using OrchardCore.Contents
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Metadata.Models
 
 @model FlowPartViewModel
-@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IAuthorizationService AuthorizationService
+@inject IContentDefinitionManager ContentDefinitionManager
+@{
+    var widgetDefinitions = (await ContentDefinitionManager.ListWidgetTypeDefinitionsAsync())
+    .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+}
 <section class="flow">
     @foreach (var widget in Model.FlowPart.Widgets)
     {
+        if (!widgetDefinitions.TryGetValue(widget.ContentType, out var definition))
+        {
+            continue;
+        }
+
+        if (definition.IsSecurable() && !await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, widget))
+        {
+            continue;
+        }
+
         var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);
         var flowMetadata = widget.As<FlowMetadata>();
 

@@ -1,8 +1,11 @@
-namespace OrchardCore.Queries.ViewModels
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+
+namespace OrchardCore.Queries.ViewModels;
+
+public class QueriesCreateViewModel
 {
-    public class QueriesCreateViewModel
-    {
-        public string SourceName { get; set; }
-        public dynamic Editor { get; set; }
-    }
+    public string SourceName { get; set; }
+
+    [BindNever]
+    public dynamic Editor { get; set; }
 }

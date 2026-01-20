@@ -1,0 +1,7 @@
+# .git-blame-ignore-revs
+
+# Define formatting rules (#16567)
+657342d05a221dfaba1fdf46813c0161dd12d4ec
+
+# Convert to file-scope namespaces (#16539)
+05730cfeb221680240feb3d9edca563bc388a1ef

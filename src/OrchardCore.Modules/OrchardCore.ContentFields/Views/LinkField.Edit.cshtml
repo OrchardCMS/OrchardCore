@@ -3,19 +3,19 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<LinkFieldSettings>();
     var isRequired = settings.Required && string.IsNullOrWhiteSpace(settings.DefaultUrl);
-    var isTextRequired = settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(settings.DefaultText);
     var urlClass = settings.Required ? "required" : null;
     var textClass = settings.LinkTextMode == LinkTextMode.Required ? "required" : null;
     var useFormFloating = string.IsNullOrWhiteSpace(settings.UrlPlaceholder) || string.IsNullOrWhiteSpace(settings.TextPlaceholder);
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Url" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Url" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <div class="row">
             <div class="col-md-6" asp-validation-class-for="Url">
                 <div class="@(useFormFloating ? "form-floating" : string.Empty)">
-                    <input asp-for="Url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
+                    <input asp-for="Url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" />
+                    <span asp-validation-for="Url"></span>
                     @if (useFormFloating)
                     {
                         <label asp-for="Url" class="@urlClass">@T["Url"]</label>
@@ -31,7 +31,7 @@
             {
                 <div class="col-md-6" asp-validation-class-for="Text">
                     <div class="@(useFormFloating ? "form-floating" : string.Empty)">
-                        <input asp-for="Text" type="text" class="form-control content-preview-text" placeholder="@settings.TextPlaceholder" required="@isTextRequired" />
+                        <input asp-for="Text" type="text" class="form-control content-preview-text" placeholder="@settings.TextPlaceholder" />
                         @if (useFormFloating)
                         {
                             <label asp-for="Text" class="@textClass">@T["Link text"]</label>
@@ -44,6 +44,28 @@
                     }
                 </div>
             }
+        </div>
+        <div class="row">
+            <div class="col-md-6" asp-validation-class-for="Target">
+                <label asp-for="Target" class="@Orchard.GetLabelClasses()">
+                    @T["Target"]
+                </label>
+                <div class="@Orchard.GetEndClasses()">
+                    <input asp-for="Target" list="targetOptions" class="form-control" />
+                    <datalist id="targetOptions">
+                        <option value="_self">@T["Opens the linked document in the same frame as it was clicked (default)."]</option>
+                        <option value="_blank">@T["Opens the linked document in a new window or tab."]</option>
+                        <option value="_parent">@T["Opens the linked document in the parent frame."]</option>
+                        <option value="_top">@T["Opens the linked document in the full body of the window."]</option>
+                    </datalist>
+                    <span class="hint">
+                        @T["The target attribute of the anchor tag, see more:"]
+                        <a class="seedoc" target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target">
+                            @T["Target"]
+                        </a>
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 </div>

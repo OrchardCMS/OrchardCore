@@ -1,16 +1,13 @@
-using System.Threading.Tasks;
+namespace OrchardCore.Localization;
 
-namespace OrchardCore.Localization
+/// <summary>
+/// Represents a contract for manage calendars.
+/// </summary>
+public interface ICalendarManager
 {
     /// <summary>
-    /// Represents a contract for manage calendars.
+    /// Gets the current calendar.
     /// </summary>
-    public interface ICalendarManager
-    {
-        /// <summary>
-        /// Gets the current calendar.
-        /// </summary>
-        /// <returns>The current calendar name.</returns>
-        Task<CalendarName> GetCurrentCalendar();
-    }
+    /// <returns>The current calendar name.</returns>
+    Task<CalendarName> GetCurrentCalendar();
 }

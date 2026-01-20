@@ -1,13 +1,36 @@
+@using OrchardCore.ContentManagement
+
 @model SearchResultsViewModel
+
 @inject IContentItemDisplayManager DisplayManager
+@inject IContentManager ContentManager
 
 @if (Model.ContentItems != null && Model.ContentItems.Any())
 {
     <ul class="list-group">
         @foreach (var contentItem in Model.ContentItems)
         {
+            var metadata = await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+
             <li class="list-group-item">
-                @await DisplayAsync(await DisplayManager.BuildDisplayAsync(contentItem, null, "Summary"))
+                @if (Model.Highlights is not null && Model.Highlights.TryGetValue(contentItem.ContentItemId, out var highlights))
+                {
+                    <h2>
+                        <a href="@Url.Action(null, metadata.DisplayRouteValues)">@contentItem.DisplayText</a>
+                    </h2>
+
+                    @foreach (var fragments in highlights.Values)
+                    {
+                        foreach (var fragment in fragments)
+                        {
+                            @Html.Raw(fragment)
+                        }
+                    }
+                }
+                else
+                {
+                    @await DisplayAsync(await DisplayManager.BuildDisplayAsync(contentItem, null, "Summary"))
+                }
             </li>
         }
     </ul>

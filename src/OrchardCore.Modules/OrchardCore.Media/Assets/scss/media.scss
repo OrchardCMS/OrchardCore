@@ -1,5 +1,5 @@
 @import 'variables';
-@import '../../node_modules/bootstrap/scss/mixins/_color-mode';
+@import '../../../../../node_modules/bootstrap/scss/mixins/_color-mode';
 
 @import "main-layout.scss";
 // vuejs components
@@ -7,6 +7,7 @@
 @import "upload-list-component.scss";
 @import "media-items-grid-component.scss";
 @import "media-items-table-component.scss";
+@import "media-field-gallery-component.scss";
 @import "pager-component.scss";
 // others
 @import "_navbar.scss";

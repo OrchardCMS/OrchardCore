@@ -1,34 +1,28 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Microsoft.Authentication
+namespace OrchardCore.Microsoft.Authentication;
+
+public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
 {
-    [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
-    public class AdminMenuMicrosoftAccount : INavigationProvider
+    private static readonly RouteValueDictionary _routeValues = new()
     {
-        private static readonly RouteValueDictionary _routeValues = new()
+        { "area", "OrchardCore.Settings" },
+        { "groupId", MicrosoftAuthenticationConstants.Features.MicrosoftAccount },
+    };
+
+    internal readonly IStringLocalizer S;
+
+    public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        if (NavigationHelper.UseLegacyFormat())
         {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", MicrosoftAuthenticationConstants.Features.MicrosoftAccount },
-        };
-
-        protected readonly IStringLocalizer S;
-
-        public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> localizer)
-        {
-            S = localizer;
-        }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!NavigationHelper.IsAdminMenu(name))
-            {
-                return Task.CompletedTask;
-            }
-
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Authentication"], authentication => authentication
@@ -42,41 +36,24 @@ namespace OrchardCore.Microsoft.Authentication
                     )
                );
 
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
-    }
 
-    [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
-    public class AdminMenuAAD : INavigationProvider
-    {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", MicrosoftAuthenticationConstants.Features.AAD },
-        };
-
-        protected readonly IStringLocalizer S;
-
-        public AdminMenuAAD(IStringLocalizer<AdminMenuAAD> localizer) => S = localizer;
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!NavigationHelper.IsAdminMenu(name))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Microsoft Entra ID"], S["Microsoft Entra ID"].PrefixPosition(), client => client
-                            .AddClass("microsoft-entra-id").Id("microsoft-entra-id")
+        builder
+            .Add(S["Settings"], settings => settings
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
+                    .Add(S["Authentication"], S["Authentication"].PrefixPosition(), authentication => authentication
+                        .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), microsoft => microsoft
+                            .AddClass("microsoft")
+                            .Id("microsoft")
                             .Action("Index", "Admin", _routeValues)
                             .Permission(Permissions.ManageMicrosoftAuthentication)
-                            .LocalNav())
-                ));
+                            .LocalNav()
+                        )
+                    )
+                )
+           );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

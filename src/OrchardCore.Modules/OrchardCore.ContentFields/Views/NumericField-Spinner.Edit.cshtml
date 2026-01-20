@@ -16,7 +16,7 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses()">@name</label>
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@name</label>
     <div class="@Orchard.GetEndClasses()">
         <div class="@Orchard.GetLimitedWidthWrapperClasses()">
             <div class="@Orchard.GetLimitedWidthClasses()">
@@ -25,7 +25,7 @@
                     {
                         <span class="input-group-text">@min</span>
                     }
-                    <input asp-for="Value" typeof="text" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
+                    <input asp-for="Value" typeof="text" class="form-control content-preview-select" placeholder="@settings.Placeholder" />
                     <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), -@(step), @(min), @(max))"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
                     <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), +@(step), @(min), @(max))"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
                     @if (settings.Maximum.HasValue)

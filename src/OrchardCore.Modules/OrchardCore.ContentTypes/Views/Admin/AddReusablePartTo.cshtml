@@ -2,6 +2,8 @@
 @{
     int i = 0;
 }
+
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
 <zone Name="Title"><h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1></zone>
 
 <form asp-action="AddReusablePartTo">
@@ -11,14 +13,14 @@
         @if (Model.PartSelections.Any())
         {
             <div class="mb-3">
-                <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
+                <label data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
                 <input asp-for="DisplayName" class="form-control" autofocus />
                 <span class="hint">@T["Name of the reusable part as it will be displayed in screens."]</span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Name" class="form-label">@T["Technical Name"]</label>
-                <input asp-for="Name" class="form-control" />
+                <input data-name="@Html.IdFor(m => m.DisplayName)" asp-for="Name" class="form-control" />
                 <span class="hint">@T["Technical name of the reusable part."]</span>
             </div>
 
@@ -59,28 +61,3 @@
     </div>
 </form>
 
-<script at="Foot">
-    //<![CDATA[
-    $(function () {
-        var $name = $("#@Html.IdFor(m => m.Name)");
-        var $displayName = $("#@Html.IdFor(m => m.DisplayName)");
-
-        var nameAltered;
-        $name.keypress(function () {
-            nameAltered = true;
-        });
-
-        var compute = function () {
-            // stop processing automatically if altered by the user
-            if (nameAltered) {
-                return true;
-            }
-
-            $name.val(getTechnicalName($displayName.val()));
-        };
-
-        $displayName.keyup(compute);
-        $displayName.blur(compute);
-    })
-    //]]>
-</script>

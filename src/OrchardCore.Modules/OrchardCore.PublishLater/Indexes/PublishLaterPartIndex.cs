@@ -1,4 +1,3 @@
-using System;
 using YesSql.Indexes;
 
 namespace OrchardCore.PublishLater.Indexes;

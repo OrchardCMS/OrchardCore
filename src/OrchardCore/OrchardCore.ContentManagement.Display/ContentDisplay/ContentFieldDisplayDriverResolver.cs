@@ -1,58 +1,55 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.ContentManagement.Display.ContentDisplay
+namespace OrchardCore.ContentManagement.Display.ContentDisplay;
+
+public class ContentFieldDisplayDriverResolver : IContentFieldDisplayDriverResolver
 {
-    public class ContentFieldDisplayDriverResolver : IContentFieldDisplayDriverResolver
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ContentDisplayOptions _contentDisplayOptions;
+
+    public ContentFieldDisplayDriverResolver(
+        IServiceProvider serviceProvider,
+        IOptions<ContentDisplayOptions> contentDisplayOptions
+        )
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ContentDisplayOptions _contentDisplayOptions;
+        _serviceProvider = serviceProvider;
+        _contentDisplayOptions = contentDisplayOptions.Value;
+    }
 
-        public ContentFieldDisplayDriverResolver(
-            IServiceProvider serviceProvider,
-            IOptions<ContentDisplayOptions> contentDisplayOptions
-            )
+    public IList<IContentFieldDisplayDriver> GetDisplayModeDrivers(string fieldName, string displayMode)
+    {
+        var services = new List<IContentFieldDisplayDriver>();
+
+        if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
         {
-            _serviceProvider = serviceProvider;
-            _contentDisplayOptions = contentDisplayOptions.Value;
-        }
-
-        public IList<IContentFieldDisplayDriver> GetDisplayModeDrivers(string fieldName, string displayMode)
-        {
-            var services = new List<IContentFieldDisplayDriver>();
-
-            if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
+            foreach (var displayModeDriverOption in contentFieldDisplayOption.DisplayModeDrivers)
             {
-                foreach (var displayModeDriverOption in contentFieldDisplayOption.DisplayModeDrivers)
+                if (displayModeDriverOption.DisplayMode.Invoke(displayMode))
                 {
-                    if (displayModeDriverOption.DisplayMode.Invoke(displayMode))
-                    {
-                        services.Add((IContentFieldDisplayDriver)_serviceProvider.GetRequiredService(displayModeDriverOption.DisplayDriverType));
-                    }
+                    services.Add((IContentFieldDisplayDriver)_serviceProvider.GetRequiredService(displayModeDriverOption.DisplayDriverType));
                 }
             }
-
-            return services;
         }
 
-        public IList<IContentFieldDisplayDriver> GetEditorDrivers(string fieldName, string editor)
-        {
-            var services = new List<IContentFieldDisplayDriver>();
+        return services;
+    }
 
-            if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
+    public IList<IContentFieldDisplayDriver> GetEditorDrivers(string fieldName, string editor)
+    {
+        var services = new List<IContentFieldDisplayDriver>();
+
+        if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
+        {
+            foreach (var editorDriverOption in contentFieldDisplayOption.EditorDrivers)
             {
-                foreach (var editorDriverOption in contentFieldDisplayOption.EditorDrivers)
+                if (editorDriverOption.Editor.Invoke(editor))
                 {
-                    if (editorDriverOption.Editor.Invoke(editor))
-                    {
-                        services.Add((IContentFieldDisplayDriver)_serviceProvider.GetRequiredService(editorDriverOption.DisplayDriverType));
-                    }
+                    services.Add((IContentFieldDisplayDriver)_serviceProvider.GetRequiredService(editorDriverOption.DisplayDriverType));
                 }
             }
-
-            return services;
         }
+
+        return services;
     }
 }

@@ -6,12 +6,12 @@ This module adds `HTTP` headers to follow security best practices.
 
 Enabling the `OrchardCore.Security` module will allow the user to set the following settings:
 
-| Setting | Description |
-| --- | --- |
+| Setting                 | Description                                             |
+|-------------------------|---------------------------------------------------------|
 | `ContentSecurityPolicy` | Gets or sets the `Content-Security-Policy` HTTP header. |
-| `ContentTypeOptions` | Gets or sets the `X-Content-Type-Options` HTTP header. |
-| `PermissionsPolicy` | Gets or sets the `Permissions-Policy` HTTP header. |
-| `ReferrerPolicy` | Gets or sets the `Referrer-Policy` HTTP header. |
+| `ContentTypeOptions`    | Gets or sets the `X-Content-Type-Options` HTTP header.  |
+| `PermissionsPolicy`     | Gets or sets the `Permissions-Policy` HTTP header.      |
+| `ReferrerPolicy`        | Gets or sets the `Referrer-Policy` HTTP header.         |
 
 !!! note
     The `Content-Security-Policy` HTTP header contains the `frame-ancestors` directive which obsoleted the `X-Frame-Options` HTTP header.
@@ -23,14 +23,18 @@ The `OrchardCore.Security` module allows the user to use configuration values to
 The following configuration values can be customized:
 
 ```json
-    "OrchardCore_Security": {
-      "ContentSecurityPolicy": {},
-      "PermissionsPolicy": { "fullscreen": "self" },
-      "ReferrerPolicy": "no-referrer"
-    }
+{
+  "OrchardCore_Security": {
+    "ContentSecurityPolicy": {},
+    "PermissionsPolicy": {
+      "fullscreen": "self"
+    },
+    "ReferrerPolicy": "no-referrer"
+  }
+}
 ```
 
-For more information please refer to [Configuration](../../core/Configuration/README.md).
+For more information please refer to [Configuration](../Configuration/README.md).
 
 ## Video
 

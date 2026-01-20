@@ -1,7 +1,6 @@
-namespace OrchardCore.ContentTypes.Events
+namespace OrchardCore.ContentTypes.Events;
+
+public class ContentTypeImportingContext : ContentTypeContext
 {
-    public class ContentTypeImportingContext : ContentTypeContext
-    {
-        public string ContentTypeName { get; set; }
-    }
+    public string ContentTypeName { get; set; }
 }

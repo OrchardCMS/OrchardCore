@@ -1,6 +1,6 @@
 namespace OrchardCore.Features;
 
-public class FeaturesConstants
+public static class FeaturesConstants
 {
     public const string FeatureId = "OrchardCore.Features";
 }

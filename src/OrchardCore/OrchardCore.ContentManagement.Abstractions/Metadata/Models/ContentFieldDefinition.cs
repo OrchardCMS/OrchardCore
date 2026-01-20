@@ -1,12 +1,11 @@
-namespace OrchardCore.ContentManagement.Metadata.Models
-{
-    public class ContentFieldDefinition
-    {
-        public ContentFieldDefinition(string name)
-        {
-            Name = name;
-        }
+namespace OrchardCore.ContentManagement.Metadata.Models;
 
-        public string Name { get; private set; }
+public class ContentFieldDefinition
+{
+    public ContentFieldDefinition(string name)
+    {
+        Name = name;
     }
+
+    public string Name { get; private set; }
 }

@@ -1,63 +1,59 @@
-using System;
-using System.Collections.Generic;
+namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 
-namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
+public class BasicShapeTemplateHarvester : IShapeTemplateHarvester
 {
-    public class BasicShapeTemplateHarvester : IShapeTemplateHarvester
+    public IEnumerable<string> SubPaths()
     {
-        public IEnumerable<string> SubPaths()
+        return new[] { "Views", "Views/Items", "Views/Parts", "Views/Fields", "Views/Elements" };
+    }
+
+    public IEnumerable<HarvestShapeHit> HarvestShape(HarvestShapeInfo info)
+    {
+        var lastDash = info.FileName.LastIndexOf('-');
+        var lastDot = info.FileName.LastIndexOf('.');
+        if (lastDot <= 0 || lastDot < lastDash)
         {
-            return new[] { "Views", "Views/Items", "Views/Parts", "Views/Fields", "Views/Elements" };
+            yield return new HarvestShapeHit
+            {
+                ShapeType = Adjust(info.SubPath, info.FileName, null),
+            };
+        }
+        else
+        {
+            var displayType = info.FileName[(lastDot + 1)..];
+            yield return new HarvestShapeHit
+            {
+                ShapeType = Adjust(info.SubPath, info.FileName[..lastDot], displayType),
+                DisplayType = displayType,
+            };
+        }
+    }
+
+    private static string Adjust(string subPath, string fileName, string displayType)
+    {
+        var leader = "";
+        if (subPath.StartsWith("Views/", StringComparison.Ordinal) && subPath != "Views/Items")
+        {
+            leader = string.Concat(subPath.AsSpan("Views/".Length), "_");
         }
 
-        public IEnumerable<HarvestShapeHit> HarvestShape(HarvestShapeInfo info)
+        // canonical shape type names must not have - or . to be compatible
+        // with display and shape api calls)))
+        var shapeType = leader + fileName.Replace("--", "__").Replace("-", "__").Replace('.', '_');
+
+        if (string.IsNullOrEmpty(displayType))
         {
-            var lastDash = info.FileName.LastIndexOf('-');
-            var lastDot = info.FileName.LastIndexOf('.');
-            if (lastDot <= 0 || lastDot < lastDash)
-            {
-                yield return new HarvestShapeHit
-                {
-                    ShapeType = Adjust(info.SubPath, info.FileName, null),
-                };
-            }
-            else
-            {
-                var displayType = info.FileName[(lastDot + 1)..];
-                yield return new HarvestShapeHit
-                {
-                    ShapeType = Adjust(info.SubPath, info.FileName[..lastDot], displayType),
-                    DisplayType = displayType,
-                };
-            }
+            return shapeType.ToLowerInvariant();
         }
 
-        private static string Adjust(string subPath, string fileName, string displayType)
+        var firstBreakingSeparator = shapeType.IndexOf("__", StringComparison.Ordinal);
+        if (firstBreakingSeparator <= 0)
         {
-            var leader = "";
-            if (subPath.StartsWith("Views/", StringComparison.Ordinal) && subPath != "Views/Items")
-            {
-                leader = string.Concat(subPath.AsSpan("Views/".Length), "_");
-            }
-
-            // canonical shape type names must not have - or . to be compatible
-            // with display and shape api calls)))
-            var shapeType = leader + fileName.Replace("--", "__").Replace("-", "__").Replace('.', '_');
-
-            if (string.IsNullOrEmpty(displayType))
-            {
-                return shapeType.ToLowerInvariant();
-            }
-
-            var firstBreakingSeparator = shapeType.IndexOf("__", StringComparison.Ordinal);
-            if (firstBreakingSeparator <= 0)
-            {
-                return (shapeType + "_" + displayType).ToLowerInvariant();
-            }
-
-            return string.Concat(
-                shapeType.AsSpan(0, firstBreakingSeparator), "_", displayType, shapeType.AsSpan(firstBreakingSeparator))
-                .ToLowerInvariant();
+            return (shapeType + "_" + displayType).ToLowerInvariant();
         }
+
+        return string.Concat(
+            shapeType.AsSpan(0, firstBreakingSeparator), "_", displayType, shapeType.AsSpan(firstBreakingSeparator))
+            .ToLowerInvariant();
     }
 }

@@ -1,8 +1,8 @@
 @using OrchardCore.Facebook.ViewModels
 @model FacebookSettingsViewModel
 
-<p class="alert alert-warning">
-    @T["The current tenant will be reloaded when the settings are saved."]
+<p class="alert alert-warning" role="alert">
+    @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#core-components" target="_blank">@T["See documentation"]</a>
 </p>
 

@@ -1,21 +1,24 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Deployment.Remote;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageRemoteInstances = new("ManageRemoteInstances", "Manage remote instances");
-    public static readonly Permission ManageRemoteClients = new("ManageRemoteClients", "Manage remote clients");
-    public static readonly Permission Export = new("ExportRemoteInstances", "Export to remote instances");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageRemoteInstances,
-        ManageRemoteClients,
-        Export,
+        DeploymentPermissions.ManageRemoteInstances,
+        DeploymentPermissions.ManageRemoteClients,
+        DeploymentPermissions.ExportRemoteInstances,
     ];
+
+    [Obsolete("This will be removed in a future release. Instead use 'DeploymentPermissions.ManageRemoteInstances'.")]
+    public static readonly Permission ManageRemoteInstances = DeploymentPermissions.ManageRemoteInstances;
+
+    [Obsolete("This will be removed in a future release. Instead use 'DeploymentPermissions.ManageRemoteClients'.")]
+    public static readonly Permission ManageRemoteClients = DeploymentPermissions.ManageRemoteClients;
+
+    [Obsolete("This will be removed in a future release. Instead use 'DeploymentPermissions.ExportRemoteInstances'.")]
+    public static readonly Permission Export = DeploymentPermissions.ExportRemoteInstances;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
@@ -24,7 +27,7 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions = _allPermissions,
         },
     ];

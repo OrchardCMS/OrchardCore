@@ -56,10 +56,9 @@
         <ol class="menu-item menu-item-links">
             @foreach (var menuItem in menuItems.MenuItems)
             {
-
-                dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-                menuItemShape.MenuPart = Model.MenuPart;
-                menuItemShape.Index = Model.Index + "-" + index++;
+                var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+                menuItemShape.Properties["MenuPart"] = Model.MenuPart;
+                menuItemShape.Properties["Index"] = Model.Index + "-" + index++;
                 @await DisplayAsync(menuItemShape)
             }
         </ol>

@@ -2,6 +2,4 @@ using OrchardCore.Entities;
 
 namespace OrchardCore.Admin.Models;
 
-public class Navbar : Entity
-{
-}
+public class Navbar : Entity;

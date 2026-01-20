@@ -1,4 +1,3 @@
-namespace OrchardCore.ContentTypes.Events
-{
-    public class ContentPartRemovedContext : ContentPartContext { }
-}
+namespace OrchardCore.ContentTypes.Events;
+
+public class ContentPartRemovedContext : ContentPartContext { }

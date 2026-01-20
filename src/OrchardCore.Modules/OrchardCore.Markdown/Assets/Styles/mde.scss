@@ -14,7 +14,7 @@
 
 .EasyMDEContainer {
     display: block;
-    color: black;
+    color: var(--bs-body-color);
 }
 
 .EasyMDEContainer.sided--no-fullscreen {
@@ -109,7 +109,7 @@
 
 .editor-toolbar.fullscreen {
     width: 100%;
-    height: 50px;
+    height: var(--oc-top-nav-height, 50px);
     padding-top: 10px;
     padding-bottom: 10px;
     box-sizing: border-box;
@@ -124,7 +124,7 @@
 
 .editor-toolbar.fullscreen::before {
     width: 20px;
-    height: 50px;
+    height: var(--oc-top-nav-height, 50px);
     background: -moz-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
     background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(var(--bs-body-bg-rgb), 1)), color-stop(100%, rgba(var(--bs-body-bg-rgb), 0)));
     background: -webkit-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
@@ -140,7 +140,7 @@
 
 .editor-toolbar.fullscreen::after {
     width: 20px;
-    height: 50px;
+    height: var(--oc-top-nav-height, 50px);
     background: -moz-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
     background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(var(--bs-body-bg-rgb), 0)), color-stop(100%, rgba(var(--bs-body-bg-rgb), 1)));
     background: -webkit-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
@@ -275,13 +275,13 @@
     position: fixed;
     bottom: 0;
     width: 50%;
-    top: 50px;
+    top: var(--oc-top-nav-height, 50px);
     right: 0;
     z-index: var(--oc-mde-zindex);
     overflow: auto;
     display: none;
     box-sizing: border-box;
-    border: 1px solid #ddd;
+    border: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
     word-wrap: break-word;
 }
 
@@ -315,7 +315,7 @@
 
 .editor-preview table td,
 .editor-preview table th {
-    border: 1px solid #ddd;
+    border: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
     padding: 5px;
 }
 
@@ -373,7 +373,7 @@
     position: relative;
     background: var(--bs-body-bg);
     border-radius: 0;
-    border: 1px solid #fff;
+    border: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
 }
 
 .editor-toolbar .easymde-dropdown:hover {

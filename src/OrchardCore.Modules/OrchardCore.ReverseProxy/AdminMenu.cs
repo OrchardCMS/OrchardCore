@@ -1,33 +1,29 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.ReverseProxy.Drivers;
 
-namespace OrchardCore.ReverseProxy
+namespace OrchardCore.ReverseProxy;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    private static readonly RouteValueDictionary _routeValues = new()
     {
-        private static readonly RouteValueDictionary _routeValues = new()
+        { "area", "OrchardCore.Settings" },
+        { "groupId", ReverseProxySettingsDisplayDriver.GroupId},
+    };
+
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        if (NavigationHelper.UseLegacyFormat())
         {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", ReverseProxySettingsDisplayDriver.GroupId},
-        };
-
-        protected readonly IStringLocalizer S;
-
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!NavigationHelper.IsAdminMenu(name))
-            {
-                return Task.CompletedTask;
-            }
-
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
@@ -41,7 +37,22 @@ namespace OrchardCore.ReverseProxy
                     )
                 );
 
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
+
+        builder
+            .Add(S["Settings"], settings => settings
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
+                    .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), proxy => proxy
+                        .AddClass("reverseproxy")
+                        .Id("reverseproxy")
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageReverseProxySettings)
+                        .LocalNav()
+                    )
+                )
+            );
+
+        return ValueTask.CompletedTask;
     }
 }

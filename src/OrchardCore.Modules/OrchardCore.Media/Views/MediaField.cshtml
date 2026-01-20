@@ -6,7 +6,7 @@
     var mediaTexts = Model.Field?.MediaTexts ?? Array.Empty<string>();
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
-@if (paths.Any())
+@if (paths.Length > 0)
 {
     <div class="field field-type-mediafield field-name-@name">
         <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
@@ -14,14 +14,15 @@
         {
             var path = paths[i];
             var url = Orchard.AssetUrl(path);
-            var text = !string.IsNullOrEmpty(mediaTexts.ElementAtOrDefault(i)) ? mediaTexts[i] : path;
 
             if (Orchard.IsImageFile(path))
             {
-                <img src="@url" alt="@text">
+                var alt = !string.IsNullOrEmpty(mediaTexts.ElementAtOrDefault(i)) ? mediaTexts[i] : string.Empty;
+                <img src="@url" alt="@alt" />
             }
             else
             {
+                var text = !string.IsNullOrEmpty(mediaTexts.ElementAtOrDefault(i)) ? mediaTexts[i] : path;
                 <a href="@url">@text</a>
             }
         }

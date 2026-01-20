@@ -24,16 +24,18 @@
                 {
                     @if (!string.IsNullOrEmpty(Model.LocalizationSet))
                     {
+                        var returnUrl = Context.Request.Query["returnUrl"];
+
                         <div class="list-group">
                             @foreach (var culture in Model.ContentItemCultures)
                             {
                                 @if (!string.IsNullOrEmpty(culture.ContentItemId))
                                 {
-                                    <a class="list-group-item list-group-item-action" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" asp-route-returnUrl="@Context.Request.Query["returnUrl"]" title="@T["Edit {0}", culture.Culture.DisplayName]"><i class="fa-solid fa-edit" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
+                                    <a class="list-group-item list-group-item-action" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" asp-route-returnUrl="@returnUrl" title="@T["Edit {0}", culture.Culture.DisplayName]"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
                                 }
                                 else
                                 {
-                                    <a class="list-group-item list-group-item-action" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" asp-route-returnUrl="@Context.Request.Query["returnUrl"]" title="@T["Create {0}", culture.Culture.DisplayName]"><i class="fa-solid fa-plus" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
+                                    <a class="list-group-item list-group-item-action" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" asp-route-returnUrl="@returnUrl" title="@T["Create {0}", culture.Culture.DisplayName]"><i class="fa-solid fa-plus" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
                                 }
                             }
                         </div>

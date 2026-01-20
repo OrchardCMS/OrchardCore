@@ -1,9 +1,8 @@
 using System.Security.Claims;
 
-namespace OrchardCore.Media
+namespace OrchardCore.Media;
+
+public interface IUserAssetFolderNameProvider
 {
-    public interface IUserAssetFolderNameProvider
-    {
-        string GetUserAssetFolderName(ClaimsPrincipal claimsPrincipal);
-    }
+    string GetUserAssetFolderName(ClaimsPrincipal claimsPrincipal);
 }

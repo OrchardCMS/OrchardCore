@@ -20,7 +20,7 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
     var jCategories = JConvert.SerializeObject(categories);
 
     <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
-    <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.js" asp-name="shortcodes" at="Foot" depends-on="jQuery, vuejs"></script>
+    <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.js" asp-name="shortcodes" at="Foot" depends-on="jQuery,vuejs:2"></script>
 
     @*  This svg is only used by the trumbowyg editors, but is placed here, once, to reduce complexity
         The icon for using a .shortcode-modal-input helper is included via javascript when wrapping the .shortcode-modal-input.

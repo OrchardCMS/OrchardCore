@@ -54,9 +54,9 @@ Here is an example lucene query for finding all BlogPost content items with a Lo
 }
 ```
 
-This will return a result assuming that you have a content item with a **Geopoint Field with Lat -34, Long 138** for example.
+This will return a result assuming that you have a content item with a **GeoPoint Field with Lat -34, Long 138** for example.
 
-See ElasticSearch documentation for more details :
+See Elasticsearch documentation for more details :
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-bounding-box-query.html>
 
 ## Geo Distance
@@ -137,5 +137,5 @@ Visual representation:
 }
 ```
 
-See ElasticSearch documention for more details:  
+See Elasticsearch documentation for more details:  
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-distance-query.html>

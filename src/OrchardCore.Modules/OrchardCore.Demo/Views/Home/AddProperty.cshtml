@@ -1,0 +1,23 @@
+@using Microsoft.AspNetCore.Html
+
+<shape type="EmbedContentInShape">
+    <add-property name="HtmlContent">
+        The inner HTML of the <code>&lt;add-property name="propertyName"&gt;</code> tag helper (which is a direct child
+        of the <code>&lt;shape&gt;</code> tag helper) is converted into HTML and then passed to the shape as a model
+        property. The property's name is the string passed into the <code>name</code> attribute.
+        <shape type="TestContentPartA" Line="Sample Data" Creating="Now" Processing="Later"/>
+        Even other shapes can be included!
+    </add-property>
+    <add-property name="OtherContent">
+        You can have multiple, they are just <code>@nameof(IHtmlContent)</code> type shape properties.
+    </add-property>
+    <add-property name="SomeProperty" value="Some value passed to the attribute." />
+</shape>
+
+<shape type="EmbedContentInShape" HtmlContent="This property is ignored.">
+    <add-property name="HtmlContent">
+        If a <code>&lt;add-property&gt;</code> tag helper exists, it takes precedence over any matching attribute of the
+        <code>&lt;shape&gt;</code> tag helper. This is because child tag helpers are evaluated after the shape is
+        created, right before it's displayed.
+    </add-property>
+</shape>

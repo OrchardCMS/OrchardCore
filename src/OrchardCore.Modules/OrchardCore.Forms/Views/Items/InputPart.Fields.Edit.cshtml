@@ -51,7 +51,7 @@
 </div>
 
 <script at="Foot">
-    var initilizeFieldType = (wrapper) => {
+    var initializeFieldType = (wrapper) => {
         var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
         for (let i = 0; i < selectMenus.length; i++) {
             var selectMenu = selectMenus[i];
@@ -74,9 +74,9 @@
     };
     var wrapper = document.getElementById('@wrapperId')
     if (wrapper != null) {
-        initilizeFieldType(wrapper);
+        initializeFieldType(wrapper);
     }
     document.addEventListener('DOMContentLoaded', function () {
-        initilizeFieldType(document);
+        initializeFieldType(document);
     });
 </script>

@@ -7,8 +7,11 @@
     </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
         @{
-            dynamic bulkActions = await ContentOptionsDisplayManager.BuildDisplayAsync(Model, null, "BulkActions");
-            @await DisplayAsync(bulkActions.Content)
+            var bulkActions = await ContentOptionsDisplayManager.BuildDisplayAsync(Model, null, "BulkActions");
+            if (bulkActions.TryGetProperty<IShape>("Content", out var content))
+            {
+                @await DisplayAsync(content)
+            }
         }
     </ul>
 </div>

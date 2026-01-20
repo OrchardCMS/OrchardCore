@@ -1,7 +1,6 @@
-namespace OrchardCore.ContentManagement
+namespace OrchardCore.ContentManagement;
+
+public interface IContent
 {
-    public interface IContent
-    {
-        ContentItem ContentItem { get; }
-    }
+    ContentItem ContentItem { get; }
 }

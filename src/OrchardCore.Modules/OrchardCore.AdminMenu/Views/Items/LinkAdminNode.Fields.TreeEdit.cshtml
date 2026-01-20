@@ -2,12 +2,11 @@
 @using System.Text.Json
 @using System.Text.Json.Nodes
 
-<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
-<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head"></style>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head"></style>
 
-<script asp-name="vuejs" at="Foot"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="jQuery-ui"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="jQuery"></script>
+<script asp-name="vuejs" at="Foot" version="2"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="bootstrap, jQuery, jQuery.nestedSortable, fontawesome-iconpicker"></script>
 
 <h5>@T["Link"]</h5>
 
@@ -22,6 +21,18 @@
     <label asp-for="LinkUrl" class="form-label">@T["Link Url"]</label>
     <input asp-for="LinkUrl" class="form-control" />
     <span class="hint">@T["The url of the link. A link will be shown only if it or one of their children have a url. The url will be relative to the root of the admin site"]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Target" class="form-label">@T["Target"]</label>
+    <input asp-for="Target" list="targetOptions" class="form-control" />
+    <datalist id="targetOptions">
+        <option value="_self">@T["Opens the linked document in the same frame as it was clicked (this is default)."]</option>
+        <option value="_blank">@T["Opens the linked document in a new window or tab."]</option>
+        <option value="_parent">@T["Opens the linked document in the parent frame."]</option>
+        <option value="_top">@T["Opens the linked document in the full body of the window."]</option>
+    </datalist>
+    <span class="hint">@T["The target attribute of the A tag, see more:"] <a class="seedoc" target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target">target</a></span>
 </div>
 
 <div class="mb-3">
@@ -77,43 +88,41 @@
         var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
     }
 
-    <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
-    <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css" depends-on="vue-multiselect"></style>
+    <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
+    <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css" depends-on="vue-multiselect:2"></style>
 
     <label asp-for="SelectedPermissionNames" class="form-label">@T["Permissions"]</label>
 
     <div id="PermissionPicker" class="vue-multiselect" data-selected-items="@selectedItems" data-all-items="@allItems" v-cloak>
 
-        <div class="mb-3">
-            <ul class="list-group w-xl-50 permission-picker-default__list" v-show="arrayOfItems.length">
-                <li v-for="(item, i) in arrayOfItems"
-                    class="list-group-item permission-picker-default__list-item d-flex align-items-start justify-content-between"
-                    :key="item.name">
-                    <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span></div>
+        <ul class="mb-1 list-group w-xl-50 permission-picker-default__list" v-show="arrayOfItems.length">
+            <li v-for="(item, i) in arrayOfItems"
+                class="list-group-item permission-picker-default__list-item d-flex align-items-start justify-content-between"
+                :key="item.name">
+                <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span></div>
 
-                    <div class="btn-group btn-group-sm align-items-center" role="group">
-                        <button v-on:click="remove(item)" type="button" class="btn btn-secondary permission-picker-default__list-item__delete"><i class="fa-solid fa-trash fa-sm" aria-hidden="true"></i></button>
-                    </div>
-                </li>
-            </ul>
-        </div>
+                <div class="btn-group btn-group-sm align-items-center" role="group">
+                    <button v-on:click="remove(item)" type="button" class="btn btn-secondary permission-picker-default__list-item__delete"><i class="fa-solid fa-trash fa-sm" aria-hidden="true"></i></button>
+                </div>
+            </li>
+        </ul>
 
         <div class="mb-3">
             <div class="w-xl-50">
                 <input asp-for="SelectedPermissionNames" type="hidden" v-model="selectedNames" />
-                <vue-multiselect v-model="value" 
-                                :options="options" 
-                                track-by="name"
-                                label="displayText" 
-                                placeholder="@T["Type to search"]"
-                                @@select="onSelect"
-                                :searchable="true" 
-                                :close-on-select="true" 
-                                :reset-after="true"
-                                :show-labels="true" 
-                                :hide-selected="false"
-                                select-label="@T["Select"]" 
-                                deselect-label="@T["Remove"]">
+                <vue-multiselect v-model="value"
+                                 :options="options"
+                                 track-by="name"
+                                 label="displayText"
+                                 placeholder="@T["Type to search"]"
+                                 @@select="onSelect"
+                                 :searchable="true"
+                                 :close-on-select="true"
+                                 :reset-after="true"
+                                 :show-labels="true"
+                                 :hide-selected="false"
+                                 select-label="@T["Select"]"
+                                 deselect-label="@T["Remove"]">
                     <template slot="option" slot-scope="props">
                         <div v-cloak><span>{{ props.option.displayText }}</span></div>
                     </template>
@@ -125,7 +134,11 @@
             </div>
         </div>
     </div>
-    <script at="Foot" depends-on="admin-menu-permission-picker">initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"))</script>
+    <script at="Foot" depends-on="admin-menu-permission-picker">
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"));
+        });
+    </script>
 </div>
 
 <script at="Foot">

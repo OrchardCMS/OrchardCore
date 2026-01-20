@@ -1,19 +1,22 @@
 <Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk.Web">
 
-  <Import Project="..\OrchardCore.Build\Dependencies.props" />
-
   <!-- Necessary as we reference the Project and not the Package -->
   <Import Project="..\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.props" />
 
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RazorRuntimeCompilation>false</RazorRuntimeCompilation>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- With this GUID, user secrets can be added with "dotnet user-secrets set key value" without further changes in
+         git. See an example use-case at https://docs.orchardcore.net/en/latest/reference/modules/AutoSetup/. -->
+    <UserSecretsId>2cfccf50-2ae4-4017-bbd7-a0e453cbf713</UserSecretsId>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- Disable XML comment warning on single file Program -->
   </PropertyGroup>
+
   <!-- For Unit Tests-->
   <ItemGroup>
     <InternalsVisibleTo Include="OrchardCore.Tests" />
@@ -29,6 +32,12 @@
     <Folder Include="Localization\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\.placeholder">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Condition="'$(RazorRuntimeCompilation)' == 'true'" />
   </ItemGroup>

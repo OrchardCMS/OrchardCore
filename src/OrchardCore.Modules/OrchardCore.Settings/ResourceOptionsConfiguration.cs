@@ -14,7 +14,7 @@ public class ResourceOptionsConfiguration : IPostConfigureOptions<ResourceOption
 
     public void PostConfigure(string name, ResourceOptions options)
     {
-        var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
+        var site = _siteService.GetSiteSettings();
 
         options.ResourceDebugMode = site.ResourceDebugMode;
         options.UseCdn = site.UseCdn;

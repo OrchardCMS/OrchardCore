@@ -1,26 +1,29 @@
+@using OrchardCore.Navigation
 @{
     TagBuilder li = Tag(Model, "li");
 
-    // Morphing the shape to keep Model untouched
+    // Morphing the shape to keep Model untouched.
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "NavigationItemLink";
-    Model.Metadata.Alternates.Add("NavigationItemLink_Id__" + Model.Id);
 
-    var prefix = "icon-class-";
-
-    // Extract classes that are not icons from Model.Classes
-    var notIconClasses = ((IEnumerable<string>)Model.Classes)
-                    .ToList()
-                    .Where(c => !c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
-
-    if (notIconClasses.Count() > 0)
+    if (Model.Id != null)
     {
-        li.Attributes["class"] = string.Join(" ", notIconClasses);
+        Model.Metadata.Alternates.Add("NavigationItemLink_Id__" + Model.Id);
+    }
+
+    // Extract classes that are not icons from 'Model.Classes'.
+    var notIconClasses = ((IEnumerable<string>)Model.Classes)
+        .Where(c => !c.StartsWith(NavigationConstants.CssClassPrefix, StringComparison.OrdinalIgnoreCase))
+        .ToArray();
+
+    if (notIconClasses.Length > 0)
+    {
+        li.Attributes["class"] = string.Join(' ', notIconClasses);
     }
     else
     {
-        // This removes the class attribute on the li element else
-        // an empty class attribute gets rendered
+        // This removes the class attribute on the li element when
+        // an empty class attribute gets rendered.
         li.Attributes.Remove("class");
     }
 
@@ -29,7 +32,7 @@
         li.AddCssClass("active");
     }
 
-    // Render sub-items (MenuItem)
+    // Render sub-items (MenuItem).
     if (Model.HasItems)
     {
         li.AddCssClass("has-items");
@@ -38,7 +41,7 @@
 
         if (li.Attributes.Where(a => a.Key == "id").Count() > 0)
         {
-            figure.Attributes["aria-labelledby"] = li.Attributes["id"] ;
+            figure.Attributes["aria-labelledby"] = li.Attributes["id"];
             figCaption.Attributes["id"] = li.Attributes["id"];
             li.Attributes["id"] = null;
         }

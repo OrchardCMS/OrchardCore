@@ -147,45 +147,46 @@ These type of fields allow you to enter Liquid markup, enabling access to system
 
 The following JavaScript functions are available by default to any activity that supports script expressions:
 
-| Function | Description | Signature |
-| -------- | ----------- | --------- |
-| `workflow` | Returns the `WorkflowExecutionContext` which provides access to all information related to the current workflow execution context. | `workflow(): WorkflowExecutionContext` |
-| `workflowId` | Returns the unique workflow ID. | `workflowId(): String` |
-| `input` | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. | `input(name: string): any` |
-| `output` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
-| `property` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
-| `setProperty` | Stores the specified data in workflow properties. | `setProperty(name: string,data:any):void` |
-| `executeQuery` | Returns the result of the query, see [more](../Queries/#scripting). | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
-| `log` | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'` | `log(level: string, text: string, param: object): void` |
-| `lastResult` | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
-| `correlationId` | Returns the correlation value of the workflow instance. | `correlationId(): string` |
-| `signalUrl` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. | `signalUrl(signal: string): string` |
+| Function           | Description                                                                                                                                                                                                                                                                                      | Signature                                                                                |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| `workflow`         | Returns the `WorkflowExecutionContext` which provides access to all information related to the current workflow execution context.                                                                                                                                                               | `workflow(): WorkflowExecutionContext`                                                   |
+| `workflowId`       | Returns the unique workflow ID.                                                                                                                                                                                                                                                                  | `workflowId(): String`                                                                   |
+| `input`            | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager.                                                                                                                                                    | `input(name: string): any`                                                               |
+| `output`           | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow.                                                                                                                                                                               | `output(name: string, value: any): void`                                                 |
+| `property`         | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to.                                                                                                                                             | `property(name: string): any`                                                            |
+| `setProperty`      | Stores the specified data in workflow properties.                                                                                                                                                                                                                                                | `setProperty(name: string,data:any):void`                                                |
+| `executeQuery`     | Returns the result of the query, see [more](../Queries/README.md#scripting).                                                                                                                                                                                                                     | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
+| `log`              | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'`                                                                                                                                                       | `log(level: string, text: string, param: object): void`                                  |
+| `lastResult`       | Returns the value that the previous activity provided, if any.                                                                                                                                                                                                                                   | `lastResult(): any`                                                                      |
+| `correlationId`    | Returns the correlation value of the workflow instance.                                                                                                                                                                                                                                          | `correlationId(): string`                                                                |
+| `setCorrelationId` | Set the correlation value of the workflow instance.                                                                                                                                                                                                                                              | `setCorrelationId(id:string): void`                                                      |
+| `signalUrl`        | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. | `signalUrl(signal: string): string`                                                      |
 
 #### JavaScript Functions in HTTP activities
 
 The following JavaScript functions are available by default to any HTTP activity that supports script expressions:
 
-| Function | Description | Signature |
-| -------- | ----------- | --------- |
-| `httpContext` | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request. | `httpContext(): HttpContext` |
-| `queryString` | Returns the entire query string (including the leading `?`) when invoked with no arguments, or the value(s) of the parameter name passed in as an argument. | `queryString(): String`<br/>`queryString(name: String): String` or `Array` |
-| `responseWrite` | Writes the argument string directly to the HTTP response stream. | `responseWrite(text: String): void` |
-| `absoluteUrl` | Returns the absolute URL for the relative path argument. | `absoluteUrl(relativePath: String): String` |
-| `readBody` | Returns the raw HTTP request body. | `readBody(): String` |
-| `requestForm` | Returns the value(s) of the form field name passed in as an argument. | `requestForm(): String`<br/>`requestForm(name: String): String` or `Array` |
+| Function                 | Description                                                                                                                                                                                                 | Signature                                                                                                                           |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `httpContext`            | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request.                                                                                                | `httpContext(): HttpContext`                                                                                                        |
+| `queryString`            | Returns the entire query string (including the leading `?`) when invoked with no arguments, or the value(s) of the parameter name passed in as an argument.                                                 | `queryString(): String`<br/>`queryString(name: String): String` or `Array`                                                          |
+| `responseWrite`          | Writes the argument string directly to the HTTP response stream.                                                                                                                                            | `responseWrite(text: String): void`                                                                                                 |
+| `absoluteUrl`            | Returns the absolute URL for the relative path argument.                                                                                                                                                    | `absoluteUrl(relativePath: String): String`                                                                                         |
+| `readBody`               | Returns the raw HTTP request body.                                                                                                                                                                          | `readBody(): String`                                                                                                                |
+| `requestForm`            | Returns the value(s) of the form field name passed in as an argument.                                                                                                                                       | `requestForm(): String`<br/>`requestForm(name: String): String` or `Array`                                                          |
 | `deserializeRequestData` | Deserializes the request data automatically for requests that send JSON or form data. Returns the entire request data as a JSON object. Replaces deprecated queryStringAsJson and requestFormAsJson methods | `deserializeRequestData(): { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
 
 ### Liquid Expressions
 
 The following Liquid tags, properties and filters are available by default to any activity that supports Liquid expressions:
 
-| Expression | Type | Description | Example |
-| ---------- | ---- | ----------- | ------- |
-| `Workflow.CorrelationId` | Property | Returns the correlation value of the workflow instance. | `{{ Workflow.CorrelationId }}` |
-| `Workflow.Input` | Property | Returns the Input dictionary. | `{{ Workflow.Input["ContentItem"] }}` |
-| `Workflow.Output` | Property | Returns the Output dictionary. | `{{ Workflow.Output["SomeResult"] }}` |
-| `Workflow.Properties` | Property | Returns the Properties dictionary. | `{{ Workflow.Properties["Foo"] }}` |
-| `signal_url` | Filter | Returns the workflow trigger URL. You can use the `input("Signal")` JavaScript method to check which signal is triggered. | `{{ 'Approved' \| signal_url }}` |
+| Expression               | Type     | Description                                                                                                               | Example                               |
+|--------------------------|----------|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------|
+| `Workflow.CorrelationId` | Property | Returns the correlation value of the workflow instance.                                                                   | `{{ Workflow.CorrelationId }}`        |
+| `Workflow.Input`         | Property | Returns the Input dictionary.                                                                                             | `{{ Workflow.Input["ContentItem"] }}` |
+| `Workflow.Output`        | Property | Returns the Output dictionary.                                                                                            | `{{ Workflow.Output["SomeResult"] }}` |
+| `Workflow.Properties`    | Property | Returns the Properties dictionary.                                                                                        | `{{ Workflow.Properties["Foo"] }}`    |
+| `signal_url`             | Filter   | Returns the workflow trigger URL. You can use the `input("Signal")` JavaScript method to check which signal is triggered. | `{{ 'Approved' \| signal_url }}`      |
 
 Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you can also use dot notation, e.g.:
 
@@ -210,42 +211,42 @@ For more examples of supported content item filters, see the documentation on [L
 
 The following activities are available with any default Orchard installation:
 
-| Activity | Type | Description |
-| -------- | ---- | ----------- |
-| **Workflows** | * | * |
-| Correlate | Task | Correlate the current workflow instance with a value. |
-| For Each | Task | Iterate over a list. |
-| Fork | Task | Fork workflow execution into separate paths of execution. |
-| For Loop | Task | Iterates for N times. |
-| If / Else | Task | Evaluate a boolean condition and continues execution based on the outcome. |
-| Join | Task | Join a forked workflow execution back into a single path of execution. |
-| Log | Task | Write a log entry. |
-| Notify | Task | Display a notification. |
-| Script | Task | Execute script and continue execution based on the returned outcome. |
-| Set Output | Task | Evaluate a script expression and store the result into the workflow's output. |
-| Set Property | Task | Execute script and continue execution based on the returned outcome. |
-| While Loop | Task | Iterate while a condition is true. |
-| **HTTP Workflow Activities** | * | * | * |
-| HTTP Redirect | Task | Redirect the user agent to the specified URL (301/302). |
-| HTTP Request | Task | Perform a HTTP request to a given URL. |
-| Filter Incoming HTTP Request | Event | Executes when the specified HTTP request comes in. Similar to an MVC Action Filter. |
-| Signal | Event | Executes when a signal is triggered. |
-| **Email** | * | * | * |
-| Send Email | Task | Send an email. |
-| **Timer Workflow Activities** | * | * | * |
-| Timer | Event | Executes repeatedly according to a specified CRON expression. |
-| **Contents** | * | * | * |
-| Content Created | Event | Executes when content is created. |
-| Content Deleted | Event | Executes when content is deleted. |
-| Content Published | Event | Executes when content is published. |
-| Content Unpublished | Event | Executes when content is unpublished. |
-| Content Updated | Event | Executes when content is updated. |
-| Content Versioned| Event | Executes when content is versioned. |
-| Create Content | Task | Create a content item. |
-| Delete Content | Task | Delete a content item. |
-| Publish Content | Task | Publish a content item. |
-**User** | * | * | * |
-| ValidateUser | Task | Used to check if the user is logged in and has the specified role(s). |
+| Activity                      | Type  | Description                                                                         |
+|-------------------------------|-------|-------------------------------------------------------------------------------------|
+| **Workflows**                 | *     | *                                                                                   |
+| Correlate                     | Task  | Correlate the current workflow instance with a value.                               |
+| For Each                      | Task  | Iterate over a list.                                                                |
+| Fork                          | Task  | Fork workflow execution into separate paths of execution.                           |
+| For Loop                      | Task  | Iterates for N times.                                                               |
+| If / Else                     | Task  | Evaluate a boolean condition and continues execution based on the outcome.          |
+| Join                          | Task  | Join a forked workflow execution back into a single path of execution.              |
+| Log                           | Task  | Write a log entry.                                                                  |
+| Notify                        | Task  | Display a notification.                                                             |
+| Script                        | Task  | Execute script and continue execution based on the returned outcome.                |
+| Set Output                    | Task  | Evaluate a script expression and store the result into the workflow's output.       |
+| Set Property                  | Task  | Execute script and continue execution based on the returned outcome.                |
+| While Loop                    | Task  | Iterate while a condition is true.                                                  |
+| **HTTP Workflow Activities**  | *     | *                                                                                   | * |
+| HTTP Redirect                 | Task  | Redirect the user agent to the specified URL (301/302).                             |
+| HTTP Request                  | Task  | Perform a HTTP request to a given URL.                                              |
+| Filter Incoming HTTP Request  | Event | Executes when the specified HTTP request comes in. Similar to an MVC Action Filter. |
+| Signal                        | Event | Executes when a signal is triggered.                                                |
+| **Email**                     | *     | *                                                                                   | * |
+| Send Email                    | Task  | Send an email.                                                                      |
+| **Timer Workflow Activities** | *     | *                                                                                   | * |
+| Timer                         | Event | Executes repeatedly according to a specified CRON expression.                       |
+| **Contents**                  | *     | *                                                                                   | * |
+| Content Created               | Event | Executes when content is created.                                                   |
+| Content Deleted               | Event | Executes when content is deleted.                                                   |
+| Content Published             | Event | Executes when content is published.                                                 |
+| Content Unpublished           | Event | Executes when content is unpublished.                                               |
+| Content Updated               | Event | Executes when content is updated.                                                   |
+| Content Versioned             | Event | Executes when content is versioned.                                                 |
+| Create Content                | Task  | Create a content item.                                                              |
+| Delete Content                | Task  | Delete a content item.                                                              |
+| Publish Content               | Task  | Publish a content item.                                                             |
+| **User**                      | *     | *                                                                                   | * |
+| ValidateUser                  | Task  | Used to check if the user is logged in and has the specified role(s).               |
 
 ## Developing Custom Activities
 
@@ -402,31 +403,28 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
     private static string DesignShapeType = $"{typeof(TActivity).Name}_Fields_Design";
     private static string EditShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
 
-    public override IDisplayResult Display(TActivity activity)
+    public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
-        return Combine(
+        return CombineAsync(
             Shape(ThumbnailshapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
             Shape(DesignShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
         );
     }
 
-    public override IDisplayResult Edit(TActivity activity)
+    public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
     {
-        return Initialize<TEditViewModel>(EditShapeType, model =>
-        {
-            return EditActivityAsync(activity, model);
-        }).Location("Content");
+        return Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel)).Location("Content");
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
     {
         var viewModel = new TEditViewModel();
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             await UpdateActivityAsync(viewModel, activity);
         }
 
-        return Edit(activity);
+        return Edit(activity, context);
     }
 }
 ```
@@ -438,8 +436,33 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
 
+## Trimming
+
+Old workflow instances can be automatically deleted with the Trimming feature. This is enabled by default and you can configure it (including disabling it) in Configuration → Settings → Workflows Trimming. Without trimming, workflow instances remain in the database indefinitely.
+
+By default, the trimming background task runs once a day and removes at most 5000 workflow instances. You can change the frequency of the background task via [the `OrchardCore.BackgroundTasks` configuration](../BackgroundTasks/README.md), and the batch size via the `OrchardCore_Workflows` configuration from e.g. an `appsettings` file:
+
+```json
+{
+  "OrchardCore_Workflows": {
+    "Trimming": {
+      "BatchSize": 1000
+    }
+  }
+}
+```
+
+See [Configuration](../Configuration/README.md) for more information on such configuration.
+
+!!! tip
+    If you enable the trimming feature on a site that has tens or even hundreds of thousands of workflow instances already, the initial trimming operation may take weeks to complete. You can expedite this by lowering the background task's frequency, even to once a minute temporarily with the `* * * * *` cron expression.
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n-O4WO6dVJk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IcR-YpxKlGQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pi_WiSqp5x4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Sd-aYy5DblI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

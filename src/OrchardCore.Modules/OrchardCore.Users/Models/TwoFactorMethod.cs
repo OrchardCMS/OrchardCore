@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
 namespace OrchardCore.Users.Models;
 
 public class TwoFactorMethod

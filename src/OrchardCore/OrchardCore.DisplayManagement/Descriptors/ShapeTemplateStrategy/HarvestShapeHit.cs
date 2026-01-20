@@ -1,8 +1,7 @@
-namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
+namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+
+public class HarvestShapeHit
 {
-    public class HarvestShapeHit
-    {
-        public string ShapeType { get; set; }
-        public string DisplayType { get; set; }
-    }
+    public string ShapeType { get; set; }
+    public string DisplayType { get; set; }
 }

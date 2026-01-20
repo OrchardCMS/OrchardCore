@@ -83,7 +83,7 @@
                         <h4 class="subheading">{{ milestone.DisplayText }}</h4>
                     </div>
                     <div class="timeline-body">
-                        <p class="text-muted">{{ milestone.HtmlBodyPart.Html }}</p>
+                        <p class="text-muted">{{ milestone.HtmlBodyPart.Html | raw }}</p>
                     </div>
                 </div>
             </li>

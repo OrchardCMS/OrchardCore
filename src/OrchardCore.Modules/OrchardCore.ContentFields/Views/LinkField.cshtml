@@ -42,7 +42,9 @@
 
         href = href.ToUriComponents();
     }
+
+    var target = !string.IsNullOrWhiteSpace(Model.Target) ? Model.Target : "_self";
 }
 <div class="field field-type-linkfield field-name-@name">
-    <a href="@href">@text</a>
+    <a href="@href" target="@target">@text</a>
 </div>

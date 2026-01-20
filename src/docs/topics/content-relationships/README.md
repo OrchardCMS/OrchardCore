@@ -31,7 +31,7 @@ The editor of a product bundle item, with products selected:
 ![The editor of a product bundle item, with products selected.](images/product-bundle.jpg)
 
 !!! note
-    While it's not only about content item relationships, there's also the [User Picker Field](../../reference/modules/ContentFields/README.md#userpicker-field) that can be used to connect user accounts to content items.
+    While it's not only about content item relationships, there's also the [User Picker Field](../../reference/modules/ContentFields/README.md#userpickerfield) that can be used to connect user accounts to content items.
 
 ## Flow Part (`FlowPart`) for Building Structured, Responsive Layouts
 

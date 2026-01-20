@@ -1,10 +1,9 @@
-namespace OrchardCore.Workflows.Http.ViewModels
+namespace OrchardCore.Workflows.Http.ViewModels;
+
+public class HttpResponseTaskViewModel
 {
-    public class HttpResponseTaskViewModel
-    {
-        public int HttpStatusCode { get; set; }
-        public string Headers { get; set; }
-        public string Content { get; set; }
-        public string ContentType { get; set; }
-    }
+    public int HttpStatusCode { get; set; }
+    public string Headers { get; set; }
+    public string Content { get; set; }
+    public string ContentType { get; set; }
 }

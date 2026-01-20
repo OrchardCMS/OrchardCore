@@ -1,40 +1,33 @@
-using System;
-using System.IO;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Environment.Shell;
+
+/// <summary>
+/// Sets up default options for <see cref="ShellOptions"/>.
+/// </summary>
+public sealed class ShellOptionsSetup : IConfigureOptions<ShellOptions>
 {
-    /// <summary>
-    /// Sets up default options for <see cref="ShellOptions"/>.
-    /// </summary>
-    public class ShellOptionsSetup : IConfigureOptions<ShellOptions>
+    private readonly IHostEnvironment _hostingEnvironment;
+
+    public ShellOptionsSetup(IHostEnvironment hostingEnvironment)
     {
-        private const string OrchardAppData = "ORCHARD_APP_DATA";
-        private const string DefaultAppDataPath = "App_Data";
-        private const string DefaultSitesPath = "Sites";
+        _hostingEnvironment = hostingEnvironment;
+    }
 
-        private readonly IHostEnvironment _hostingEnvironment;
+    public void Configure(ShellOptions options)
+    {
+        var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
 
-        public ShellOptionsSetup(IHostEnvironment hostingEnvironment)
+        if (!string.IsNullOrEmpty(appData))
         {
-            _hostingEnvironment = hostingEnvironment;
+            options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, appData);
+        }
+        else
+        {
+            options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, ShellOptionConstants.DefaultAppDataPath);
         }
 
-        public void Configure(ShellOptions options)
-        {
-            var appData = System.Environment.GetEnvironmentVariable(OrchardAppData);
-
-            if (!string.IsNullOrEmpty(appData))
-            {
-                options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, appData);
-            }
-            else
-            {
-                options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, DefaultAppDataPath);
-            }
-
-            options.ShellsContainerName = DefaultSitesPath;
-        }
+        options.ShellsContainerName = ShellOptionConstants.DefaultSitesPath;
     }
 }

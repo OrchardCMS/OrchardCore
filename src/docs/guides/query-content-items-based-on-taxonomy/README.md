@@ -24,7 +24,7 @@ Be sure to rebuild the index by navigating to `Search > Indexing > Lucene Indice
 
 Then navigate to Content > Content Types > Taxonomy and click to edit Categories. Then click Add Category to add "Politics". Then publish the taxonomy.
 
-You will probably want to create a few more blog posts and assign various compbinations of Tags and Categories so you can try out your filter.
+You will probably want to create a few more blog posts and assign various combinations of Tags and Categories so you can try out your filter.
 
 Start by adding a new Lucene query. Name it `GetBlogsByFilter.` You can leave the schema blank, leave the Index set to the default (`search`) and check the box to `Return Content Items.`
 

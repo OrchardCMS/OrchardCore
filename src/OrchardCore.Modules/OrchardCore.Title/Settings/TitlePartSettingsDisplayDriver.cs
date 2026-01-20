@@ -1,59 +1,73 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
 
-namespace OrchardCore.Title.Settings
+namespace OrchardCore.Title.Settings;
+
+public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<TitlePart>
 {
-    public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<TitlePart>
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+
+    internal readonly IStringLocalizer S;
+
+    public TitlePartSettingsDisplayDriver(
+        ILiquidTemplateManager liquidTemplateManager,
+        IStringLocalizer<TitlePartSettingsDisplayDriver> localizer)
     {
-        private readonly ILiquidTemplateManager _templateManager;
-        protected readonly IStringLocalizer S;
+        _liquidTemplateManager = liquidTemplateManager;
+        S = localizer;
+    }
 
-        public TitlePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<TitlePartSettingsDisplayDriver> localizer)
+    public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+    {
+        return Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
         {
-            _templateManager = templateManager;
-            S = localizer;
-        }
+            var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+            model.Options = settings.Options;
+            model.Pattern = settings.Pattern;
+            model.RenderTitle = settings.RenderTitle;
+            model.TitlePartSettings = settings;
+            model.Placeholder = settings.Placeholder;
+        }).Location("Content");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+    {
+        var model = new TitlePartSettingsViewModel();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix,
+            m => m.Pattern,
+            m => m.Options,
+            m => m.RenderTitle,
+            m => m.Placeholder);
+
+        if (model.Options == TitlePartOptions.GeneratedHidden || model.Options == TitlePartOptions.GeneratedDisabled)
         {
-            return Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
+            if (string.IsNullOrWhiteSpace(model.Pattern))
             {
-                var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
-
-                model.Options = settings.Options;
-                model.Pattern = settings.Pattern;
-                model.RenderTitle = settings.RenderTitle;
-                model.TitlePartSettings = settings;
-            }).Location("Content");
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
-        {
-            var model = new TitlePartSettingsViewModel();
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix,
-                m => m.Pattern,
-                m => m.Options,
-                m => m.RenderTitle);
-
-            if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
-            {
-                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["A pattern is required when using the selected behavior option."]);
             }
-            else
+            else if (!_liquidTemplateManager.Validate(model.Pattern, out var errors))
             {
-                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, RenderTitle = model.RenderTitle });
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["The pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(' ', errors)]);
             }
-
-            return Edit(contentTypePartDefinition, context.Updater);
         }
+
+        context.Builder.WithSettings(new TitlePartSettings
+        {
+            Pattern = model.Pattern,
+            Options = model.Options,
+            RenderTitle = model.RenderTitle,
+            Placeholder = model.Placeholder,
+        });
+
+        return Edit(contentTypePartDefinition, context);
     }
 }

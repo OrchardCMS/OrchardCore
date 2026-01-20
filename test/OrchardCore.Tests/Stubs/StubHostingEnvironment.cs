@@ -1,37 +1,36 @@
-namespace OrchardCore.Tests.Stubs
+namespace OrchardCore.Tests.Stubs;
+
+public class StubHostingEnvironment : IHostEnvironment
 {
-    public class StubHostingEnvironment : IHostEnvironment
+    private string _rootPath;
+    private IFileProvider _contentRootFileProvider;
+
+    public StubHostingEnvironment()
     {
-        private string _rootPath;
-        private IFileProvider _contentRootFileProvider;
+        ApplicationName = GetType().Assembly.GetName().Name;
+    }
 
-        public StubHostingEnvironment()
+    public string EnvironmentName { get; set; } = "Stub";
+
+    public string ApplicationName { get; set; }
+
+    public string WebRootPath { get; set; }
+
+    public IFileProvider WebRootFileProvider { get; set; }
+
+    public string ContentRootPath
+    {
+        get { return _rootPath ?? Directory.GetCurrentDirectory(); }
+        set
         {
-            ApplicationName = GetType().Assembly.GetName().Name;
+            _contentRootFileProvider = new PhysicalFileProvider(value);
+            _rootPath = value;
         }
+    }
 
-        public string EnvironmentName { get; set; } = "Stub";
-
-        public string ApplicationName { get; set; }
-
-        public string WebRootPath { get; set; }
-
-        public IFileProvider WebRootFileProvider { get; set; }
-
-        public string ContentRootPath
-        {
-            get { return _rootPath ?? Directory.GetCurrentDirectory(); }
-            set
-            {
-                _contentRootFileProvider = new PhysicalFileProvider(value);
-                _rootPath = value;
-            }
-        }
-
-        public IFileProvider ContentRootFileProvider
-        {
-            get { return _contentRootFileProvider; }
-            set { _contentRootFileProvider = value; }
-        }
+    public IFileProvider ContentRootFileProvider
+    {
+        get { return _contentRootFileProvider; }
+        set { _contentRootFileProvider = value; }
     }
 }

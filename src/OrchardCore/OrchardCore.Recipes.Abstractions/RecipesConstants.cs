@@ -1,6 +1,6 @@
 namespace OrchardCore.Recipes;
 
-public class RecipesConstants
+public static class RecipesConstants
 {
     public const string RecipesFolderName = "Recipes";
 

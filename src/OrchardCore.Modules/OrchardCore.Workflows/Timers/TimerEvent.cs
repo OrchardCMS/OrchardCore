@@ -1,72 +1,106 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using NCrontab;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Timers
+namespace OrchardCore.Workflows.Timers;
+
+public class TimerEvent : EventActivity
 {
-    public class TimerEvent : EventActivity
+    public static string EventName => nameof(TimerEvent);
+
+    private readonly IClock _clock;
+    private readonly ISiteService _siteService;
+    private readonly ILogger _logger;
+    protected readonly IStringLocalizer S;
+
+    public TimerEvent(IClock clock, ISiteService siteService, ILogger<TimerEvent> logger, IStringLocalizer<TimerEvent> localizer)
     {
-        public static string EventName => nameof(TimerEvent);
-        private readonly IClock _clock;
-        protected readonly IStringLocalizer S;
+        _clock = clock;
+        _siteService = siteService;
+        _logger = logger;
+        S = localizer;
+    }
 
-        public TimerEvent(IClock clock, IStringLocalizer<TimerEvent> localizer)
+    public override string Name => EventName;
+
+    public override LocalizedString DisplayText => S["Timer Event"];
+
+    public override LocalizedString Category => S["Background"];
+
+    public string CronExpression
+    {
+        get => GetProperty(() => "*/5 * * * *");
+        set => SetProperty(value);
+    }
+
+    public bool UseLocalTime
+    {
+        get => GetProperty(() => false);
+        set => SetProperty(value);
+    }
+
+    private DateTime? StartedUtc
+    {
+        get => GetProperty<DateTime?>();
+        set => SetProperty(value);
+    }
+
+    public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        return StartedUtc == null || await IsExpiredAsync();
+    }
+
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        return Outcomes(S["Done"]);
+    }
+
+    public override async Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        if (await IsExpiredAsync())
         {
-            _clock = clock;
-            S = localizer;
+            workflowContext.LastResult = "TimerEvent";
+            return Outcomes("Done");
         }
 
-        public override string Name => EventName;
+        return Halt();
+    }
 
-        public override LocalizedString DisplayText => S["Timer Event"];
+    private async Task<bool> IsExpiredAsync()
+    {
+        StartedUtc ??= _clock.UtcNow;
+        var schedule = CrontabSchedule.Parse(CronExpression);
 
-        public override LocalizedString Category => S["Background"];
+        ITimeZone timeZone = null;
 
-        public string CronExpression
+        if (UseLocalTime && _siteService is not null)
         {
-            get => GetProperty(() => "*/5 * * * *");
-            set => SetProperty(value);
-        }
-
-        private DateTime? StartedUtc
-        {
-            get => GetProperty<DateTime?>();
-            set => SetProperty(value);
-        }
-
-        public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return StartedUtc == null || IsExpired();
-        }
-
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return Outcomes(S["Done"]);
-        }
-
-        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            if (IsExpired())
+            try
             {
-                workflowContext.LastResult = "TimerEvent";
-                return Outcomes("Done");
+                timeZone = _clock.GetTimeZone((await _siteService.GetSiteSettingsAsync()).TimeZoneId);
             }
-
-            return Halt();
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "Error while getting the time zone from the site settings.");
+            }
         }
 
-        private bool IsExpired()
+        var now = _clock.UtcNow;
+        var baseTime = StartedUtc.Value;
+
+        if (timeZone is not null)
         {
-            StartedUtc ??= _clock.UtcNow;
-            var schedule = CrontabSchedule.Parse(CronExpression);
-            var whenUtc = schedule.GetNextOccurrence(StartedUtc.Value);
-
-            return _clock.UtcNow >= whenUtc;
+            now = _clock.ConvertToTimeZone(now, timeZone).DateTime;
+            baseTime = _clock.ConvertToTimeZone(baseTime, timeZone).DateTime;
         }
+
+        var nextOccurrence = schedule.GetNextOccurrence(baseTime);
+
+        return now >= nextOccurrence;
     }
 }

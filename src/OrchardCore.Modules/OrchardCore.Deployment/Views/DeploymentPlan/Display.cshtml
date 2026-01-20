@@ -6,7 +6,7 @@
     var orderUrl = Url.Action("UpdateOrder", "Step");
 }
 
-<script asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.js" debug-src="~/OrchardCore.Deployment/Scripts/steporder.js" asp-name="step-order" at="Foot" depends-on="sortable, jQuery"></script>
+<script asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.js" debug-src="~/OrchardCore.Deployment/Scripts/steporder.js" asp-name="step-order" at="Foot" depends-on="Sortable, jQuery"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plan"])</h1></zone>
 
@@ -39,7 +39,7 @@
 
                 <li class="list-group-item">
                     <div class="d-flex">
-                        <div class="ui-sortable-handle cursor-pointer me-2"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div>
+                        <div class="ui-sortable-handle cursor-pointer me-2"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div>
                         @await DisplayAsync(item)
                     </div>
                 </li>

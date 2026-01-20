@@ -1,15 +1,14 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.OpenId.Deployment
+namespace OrchardCore.OpenId.Deployment;
+
+/// <summary>
+/// Adds Open ID settings to a <see cref="DeploymentPlanResult"/>.
+/// </summary>
+public class OpenIdValidationDeploymentStep : DeploymentStep
 {
-    /// <summary>
-    /// Adds Open ID settings to a <see cref="DeploymentPlanResult"/>.
-    /// </summary>
-    public class OpenIdValidationDeploymentStep : DeploymentStep
+    public OpenIdValidationDeploymentStep()
     {
-        public OpenIdValidationDeploymentStep()
-        {
-            Name = "OpenID Validation";
-        }
+        Name = "OpenID Validation";
     }
 }

@@ -1,44 +1,41 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Sitemaps.Builders;
 
-namespace OrchardCore.Sitemaps.Services
+namespace OrchardCore.Sitemaps.Services;
+
+public class DefaultRouteableContentTypeCoordinator : IRouteableContentTypeCoordinator
 {
-    public class DefaultRouteableContentTypeCoordinator : IRouteableContentTypeCoordinator
+    private readonly IEnumerable<IRouteableContentTypeProvider> _routeableContentTypeProviders;
+
+    public DefaultRouteableContentTypeCoordinator(IEnumerable<IRouteableContentTypeProvider> routeableContentTypeProviders)
     {
-        private readonly IEnumerable<IRouteableContentTypeProvider> _routeableContentTypeProviders;
+        _routeableContentTypeProviders = routeableContentTypeProviders;
+    }
 
-        public DefaultRouteableContentTypeCoordinator(IEnumerable<IRouteableContentTypeProvider> routeableContentTypeProviders)
+    public async Task<string> GetRouteAsync(SitemapBuilderContext context, ContentItem contentItem)
+    {
+        foreach (var rctp in _routeableContentTypeProviders)
         {
-            _routeableContentTypeProviders = routeableContentTypeProviders;
-        }
-
-        public async Task<string> GetRouteAsync(SitemapBuilderContext context, ContentItem contentItem)
-        {
-            foreach (var rctp in _routeableContentTypeProviders)
+            var result = await rctp.GetRouteAsync(context, contentItem);
+            if (result != null)
             {
-                var result = await rctp.GetRouteAsync(context, contentItem);
-                if (result != null)
-                {
-                    return result;
-                }
+                return result;
             }
-
-            return null;
         }
 
-        public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
+        return null;
+    }
+
+    public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
+    {
+        var results = new List<ContentTypeDefinition>();
+
+        foreach (var routeableContentTypeProvider in _routeableContentTypeProviders)
         {
-            var results = new List<ContentTypeDefinition>();
-
-            foreach (var routeableContentTypeProvider in _routeableContentTypeProviders)
-            {
-                results.AddRange(await routeableContentTypeProvider.ListRoutableTypeDefinitionsAsync());
-            }
-
-            return results;
+            results.AddRange(await routeableContentTypeProvider.ListRoutableTypeDefinitionsAsync());
         }
+
+        return results;
     }
 }

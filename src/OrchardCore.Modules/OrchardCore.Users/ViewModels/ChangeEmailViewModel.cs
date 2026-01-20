@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Users.ViewModels
+namespace OrchardCore.Users.ViewModels;
+
+public class ChangeEmailViewModel
 {
-    public class ChangeEmailViewModel
-    {
-        [Required(ErrorMessage = "Email is required.")]
-        [Email.EmailAddress(ErrorMessage = "Invalid Email.")]
-        public string Email { get; set; }
-    }
+    [Required(ErrorMessage = "Email is required.")]
+    [Email.EmailAddress(ErrorMessage = "Invalid Email.")]
+    public string Email { get; set; }
 }

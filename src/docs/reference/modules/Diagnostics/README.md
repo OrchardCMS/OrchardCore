@@ -4,12 +4,12 @@
 
 Enables you to present HTTP errors in a personalized style and offers a means to modify the response of particular HTML errors. By default, we utilizes the following templates.
 
-| Template | Description |
-| --------- | ----------- |
-| `HttpError__BadRequest` | Generates the `400` HTTP error page. You can adjust its appearance by modifying the `HttpError-BadRequest.cshtml` or `HttpError-BadRequest.liquid` views. |
-| `HttpError__Forbidden` | Generates the `403` HTTP error page. You can adjust its appearance by modifying the `HttpError-Forbidden.cshtml` or `HttpError-Forbidden.liquid` views. |
-| `HttpError__NotFound` | Generates the `404` HTTP error page. You can adjust its appearance by modifying the `HttpError-NotFound.cshtml` or `HttpError-NotFound.liquid` views. |
-| `HttpError__Unauthorized` | Generates the `401` HTTP error page. You can adjust its appearance by modifying the `HttpError-Unauthorized.cshtml` or `HttpError-Unauthorized.liquid` views. |
+| Template                    | Description                                                                                                                                                                                                                       |
+|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `HttpError__BadRequest`     | Generates the `400` HTTP error page. You can adjust its appearance by modifying the `HttpError-BadRequest.cshtml` or `HttpError-BadRequest.liquid` views.                                                                         |
+| `HttpError__Forbidden`      | Generates the `403` HTTP error page. You can adjust its appearance by modifying the `HttpError-Forbidden.cshtml` or `HttpError-Forbidden.liquid` views.                                                                           |
+| `HttpError__NotFound`       | Generates the `404` HTTP error page. You can adjust its appearance by modifying the `HttpError-NotFound.cshtml` or `HttpError-NotFound.liquid` views.                                                                             |
+| `HttpError__Unauthorized`   | Generates the `401` HTTP error page. You can adjust its appearance by modifying the `HttpError-Unauthorized.cshtml` or `HttpError-Unauthorized.liquid` views.                                                                     |
 | `HttpError__HttpStatusCode` | Fallback template which generates the HTTP error page when no explicit template defined (ex, `HttpError-MethodNotAllowed.cshtml`). You can adjust its appearance by modifying the `HttpError.cshtml` or `HttpError.liquid` views. |
 
 ### Example

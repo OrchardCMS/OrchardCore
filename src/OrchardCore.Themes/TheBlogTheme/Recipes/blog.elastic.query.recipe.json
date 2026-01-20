@@ -25,7 +25,7 @@
           "Source": "Elasticsearch",
           "Name": "RecentBlogPosts",
           "Index": "search",
-          "Template": "[file:text('Snippets/recentBlogPosts.ElasticSearch.json')]",
+          "Template": "[file:text('Snippets/recentBlogPosts.Elasticsearch.json')]",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }

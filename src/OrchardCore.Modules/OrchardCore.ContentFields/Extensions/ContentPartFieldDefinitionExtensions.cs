@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text.Json.Nodes;
 
 namespace OrchardCore.ContentManagement.Metadata.Models;
@@ -13,7 +12,7 @@ public static class ContentPartFieldDefinitionExtensions
         ContentItem contentItem)
         where TField : ContentField
     {
-        if (((JsonObject)contentItem.Content)[fieldDefinition.PartDefinition.Name] is not JsonObject jPart ||
+        if (((JsonObject)contentItem.Content)[fieldDefinition.ContentTypePartDefinition.Name] is not JsonObject jPart ||
             jPart[fieldDefinition.Name] is not JsonObject jField)
         {
             return null;

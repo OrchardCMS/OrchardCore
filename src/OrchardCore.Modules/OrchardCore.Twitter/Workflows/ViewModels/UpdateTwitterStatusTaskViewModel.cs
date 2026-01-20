@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Twitter.Workflows.ViewModels
+namespace OrchardCore.Twitter.Workflows.ViewModels;
+
+public class UpdateTwitterStatusTaskViewModel
 {
-    public class UpdateTwitterStatusTaskViewModel
-    {
-        [Required]
-        public string StatusTemplate { get; set; }
-    }
+    [Required]
+    public string StatusTemplate { get; set; }
 }

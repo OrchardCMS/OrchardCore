@@ -1,55 +1,52 @@
-using System;
-using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.AdminMenu.Recipes
+namespace OrchardCore.AdminMenu.Recipes;
+
+/// <summary>
+/// This recipe step creates a set of admin menus.
+/// </summary>
+public sealed class AdminMenuStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates a set of admin menus.
-    /// </summary>
-    public class AdminMenuStep : IRecipeStepHandler
+    private readonly IAdminMenuService _adminMenuService;
+    private readonly JsonSerializerOptions _serializationOptions;
+
+    public AdminMenuStep(
+        IAdminMenuService adminMenuService,
+        IOptions<DocumentJsonSerializerOptions> serializationOptions)
+        : base("AdminMenu")
     {
-        private readonly IAdminMenuService _adminMenuService;
+        _adminMenuService = adminMenuService;
 
-        public AdminMenuStep(IAdminMenuService adminMenuService)
-        {
-            _adminMenuService = adminMenuService;
-        }
-
-        public async Task ExecuteAsync(RecipeExecutionContext context)
-        {
-            if (!string.Equals(context.Name, "AdminMenu", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            var model = context.Step.ToObject<AdminMenuStepModel>();
-
-            // var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
-
-            foreach (var token in model.Data.Cast<JsonObject>())
-            {
-                var adminMenu = token.ToObject<Models.AdminMenu>(/*serializer*/);
-
-                // When the id is not supplied generate an id, otherwise replace the menu if it exists, or create a new menu.
-                if (string.IsNullOrEmpty(adminMenu.Id))
-                {
-                    adminMenu.Id = Guid.NewGuid().ToString("n");
-                }
-
-                await _adminMenuService.SaveAsync(adminMenu);
-            }
-
-            return;
-        }
+        // The recipe step contains polymorphic types (menu items) which need to be resolved.
+        _serializationOptions = serializationOptions.Value.SerializerOptions;
     }
 
-    public class AdminMenuStepModel
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        public JsonArray Data { get; set; }
+        var model = context.Step.ToObject<AdminMenuStepModel>(_serializationOptions);
+
+        foreach (var token in model.Data.Cast<JsonObject>())
+        {
+            var adminMenu = token.ToObject<Models.AdminMenu>(_serializationOptions);
+
+            // When the id is not supplied generate an id, otherwise replace the menu if it exists, or create a new menu.
+            if (string.IsNullOrEmpty(adminMenu.Id))
+            {
+                adminMenu.Id = IdGenerator.GenerateId();
+            }
+
+            await _adminMenuService.SaveAsync(adminMenu);
+        }
     }
+}
+
+public class AdminMenuStepModel
+{
+    public JsonArray Data { get; set; }
 }

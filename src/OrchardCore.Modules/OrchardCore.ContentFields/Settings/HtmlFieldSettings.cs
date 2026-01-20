@@ -1,12 +1,10 @@
 using System.ComponentModel;
+using OrchardCore.ContentManagement.Metadata.Settings;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public class HtmlFieldSettings : FieldSettings
 {
-    public class HtmlFieldSettings
-    {
-        public string Hint { get; set; }
-
-        [DefaultValue(true)]
-        public bool SanitizeHtml { get; set; } = true;
-    }
+    [DefaultValue(true)]
+    public bool SanitizeHtml { get; set; } = true;
 }

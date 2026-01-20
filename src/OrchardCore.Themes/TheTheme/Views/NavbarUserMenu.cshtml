@@ -5,4 +5,4 @@
 @inject IDisplayManager<UserMenu> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 
-@await DisplayAsync(await DisplayManager.BuildDisplayAsync<UserMenu>(UpdateModelAccessor.ModelUpdater, (string)Model.Metadata.DisplayType))
+@await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, (string)Model.Metadata.DisplayType))

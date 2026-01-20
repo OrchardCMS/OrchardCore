@@ -7,3 +7,11 @@
         <input asp-for="Name" class="form-control" autofocus />
     </div>
 </div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="CheckContentPermissions" type="checkbox" class="form-check-input">
+        <label class="form-check-label" asp-for="CheckContentPermissions">@T["Check content permissions"]</label>
+        <span class="hint dashed">@T["When enabled, we will verify the user's permission to view content items before displaying them in the menu. This process may negatively impact performance, so it is highly recommended to cache the menu when this option is activated."]</span>
+    </div>
+</div>

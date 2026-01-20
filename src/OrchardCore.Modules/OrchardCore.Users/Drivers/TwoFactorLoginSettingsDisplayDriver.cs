@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -12,11 +10,15 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, TwoFactorLoginSettings>
+public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoFactorLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    protected readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => LoginSettingsDisplayDriver.GroupId;
 
     public TwoFactorLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
@@ -28,33 +30,33 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(TwoFactorLoginSettings settings)
+    public override IDisplayResult Edit(ISite site, TwoFactorLoginSettings settings, BuildEditorContext c)
     {
         return Initialize<TwoFactorLoginSettings>("TwoFactorLoginSettings_Edit", model =>
         {
             model.NumberOfRecoveryCodesToGenerate = settings.NumberOfRecoveryCodesToGenerate;
             model.RequireTwoFactorAuthentication = settings.RequireTwoFactorAuthentication;
             model.AllowRememberClientTwoFactorAuthentication = settings.AllowRememberClientTwoFactorAuthentication;
+            model.UseSiteTheme = settings.UseSiteTheme;
         }).Location("Content:5#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
-        .OnGroup(LoginSettingsDisplayDriver.GroupId);
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(TwoFactorLoginSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, TwoFactorLoginSettings settings, UpdateEditorContext context)
     {
-        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
         {
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(section, Prefix);
+        await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
-        if (section.NumberOfRecoveryCodesToGenerate < 1)
+        if (settings.NumberOfRecoveryCodesToGenerate < 1)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(section.NumberOfRecoveryCodesToGenerate), S["Number of Recovery Codes to Generate should be grater than 0."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.NumberOfRecoveryCodesToGenerate), S["Number of Recovery Codes to Generate should be grater than 0."]);
         }
 
-        return Edit(section);
+        return Edit(site, settings, context);
     }
 }

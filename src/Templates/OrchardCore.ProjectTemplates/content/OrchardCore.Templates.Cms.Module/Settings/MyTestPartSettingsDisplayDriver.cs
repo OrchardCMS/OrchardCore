@@ -8,7 +8,7 @@ using OrchardCore.Templates.Cms.Module.Models;
 
 namespace OrchardCore.Templates.Cms.Module.Settings
 {
-    public class MyTestPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public sealed class MyTestPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -35,10 +35,9 @@ namespace OrchardCore.Templates.Cms.Module.Settings
 
             var model = new MyTestPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.MySetting))
-            {
-                context.Builder.WithSettings(new MyTestPartSettings { MySetting = model.MySetting });
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.MySetting);
+
+            context.Builder.WithSettings(new MyTestPartSettings { MySetting = model.MySetting });
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

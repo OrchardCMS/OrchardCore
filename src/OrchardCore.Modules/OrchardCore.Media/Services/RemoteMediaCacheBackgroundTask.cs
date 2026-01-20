@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,7 +10,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Media.Services;
 
 [BackgroundTask(Schedule = "30 0 * * *", Description = "Remote media cache cleanup.")]
-public class RemoteMediaCacheBackgroundTask : IBackgroundTask
+public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
 {
     private static readonly EnumerationOptions _enumerationOptions = new() { RecurseSubdirectories = true };
 

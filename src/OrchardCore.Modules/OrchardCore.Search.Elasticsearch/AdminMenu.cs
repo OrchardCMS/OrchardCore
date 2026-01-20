@@ -1,39 +1,46 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Navigation;
+using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch;
 
-public class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    protected readonly IStringLocalizer S = localizer;
+    private readonly ElasticsearchConnectionOptions _connectionOptions;
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(
+        IOptions<ElasticsearchConnectionOptions> connectionOptions,
+        IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
+        _connectionOptions = connectionOptions.Value;
+        S = stringLocalizer;
+    }
+
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        if (!_connectionOptions.ConfigurationExists())
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder
             .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                .AddClass("elasticsearch").Id("Elasticsearch")
-                .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
-                    .Add(S["Elasticsearch Indices"], S["Elasticsearch Indices"].PrefixPosition(), indexes => indexes
-                        .Action("Index", "Admin", "OrchardCore.Search.Elasticsearch")
-                        .Permission(Permissions.ManageElasticIndexes)
-                        .LocalNav()
-                    )
-                )
+                .AddClass("search")
+                .Id("search")
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
                     .Add(S["Run Elasticsearch Query"], S["Run Elasticsearch Query"].PrefixPosition(), queries => queries
                         .Action("Query", "Admin", "OrchardCore.Search.Elasticsearch")
-                        .Permission(Permissions.ManageElasticIndexes)
+                        .AddClass("elasticsearchquery")
+                        .Id("elasticsearchquery")
+                        .Permission(ElasticsearchPermissions.ManageElasticIndexes)
                         .LocalNav()
                     )
                 )
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

@@ -1,8 +1,8 @@
 @using OrchardCore.Facebook.Login.ViewModels
 @model FacebookLoginSettingsViewModel
 
-<p class="alert alert-warning">
-    @T["The current tenant will be reloaded when the settings are saved."]
+<p class="alert alert-warning" role="alert">
+    @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#facebook-login" target="_blank">@T["See documentation"]</a>
 </p>
 
@@ -24,5 +24,5 @@
 </div>
 
 <div class="mb-3">
-    <span class="hint">@T["<a href=\"{0}\">Meta Integration settings</a> must be configured in order to use the Login Feature",@Url.RouteUrl(new { area = "OrchardCore.Settings", controller = "Admin", groupId = OrchardCore.Facebook.FacebookConstants.Features.Core })]</span>
+    <span class="hint">@T["<a href=\"{0}\">Meta Integration settings</a> must be configured in order to use the Login Feature", @Url.RouteUrl(new { area = "OrchardCore.Settings", controller = "Admin", groupId = OrchardCore.Facebook.FacebookConstants.Features.Core })]</span>
 </div>

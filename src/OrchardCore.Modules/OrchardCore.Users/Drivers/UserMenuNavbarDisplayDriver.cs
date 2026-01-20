@@ -4,12 +4,12 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Users.Drivers;
 
-public class UserMenuNavbarDisplayDriver : DisplayDriver<Navbar>
+public sealed class UserMenuNavbarDisplayDriver : DisplayDriver<Navbar>
 {
-    public override IDisplayResult Display(Navbar model)
+    public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
     {
         return View("NavbarUserMenu", model)
-            .Location("Detail", "Content:after")
-            .Location("DetailAdmin", "Content:after");
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content:after")
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:after");
     }
 }

@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+using OrchardCore.Indexing.Models;
 
 namespace OrchardCore.Search.Abstractions;
 
 public class SearchContext
 {
-    public string Index { get; set; }
+    public IndexProfile Index { get; set; }
 
     public string Terms { get; set; }
 

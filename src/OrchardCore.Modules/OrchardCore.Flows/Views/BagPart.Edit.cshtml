@@ -1,3 +1,4 @@
+@using OrchardCore.ContentTypes.Shapes
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
 @using OrchardCore.Mvc.Utilities
@@ -7,6 +8,7 @@
 @{
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
+    var contentTypesStringified = string.Join(";", Model.ContainedContentTypeDefinitions);
     var parentContentType = Model.BagPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
     var totalItems = Model.ContainedContentTypeDefinitions.Count();
@@ -14,39 +16,40 @@
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <div>
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" data-content-types="@contentTypesStringified">
         @{
             var index = 0;
             foreach (var widget in Model.AccessibleWidgets)
             {
                 //Create a Card Shape
-                dynamic contentCard = await New.ContentCard(
-                // FOR Updater
-                CollectionShape: Model,
-                //Shape Specific
-                CollectionShapeType: nameof(BagPart),
-                ContentItem: widget.ContentItem,
-                BuildEditor: widget.Editable,
-                ParentContentType: parentContentType,
-                CollectionPartName: partName,
-                //Card Specific Properties
-                TargetId: widgetTemplatePlaceholderId,
-                Inline: false,
-                CanMove: widget.Editable,
-                CanDelete: widget.Deletable,
-                //Input hidden
-                //Prefixes
-                HtmlFieldPrefix: htmlFieldPrefix,
-                PrefixValue: htmlFieldPrefix + '-' + (index++).ToString(),
-                PrefixesId: Html.IdFor(x => x.Prefixes),
-                PrefixesName: Html.NameFor(x => x.Prefixes),
-                //Content Types
-                ContentTypesId: Html.IdFor(x => x.ContentTypes),
-                ContentTypesName: Html.NameFor(x => x.ContentTypes),
-                //Content Items
-                ContentItemsId: Html.IdFor(x => x.ContentItems),
-                ContentItemsName: Html.NameFor(x => x.ContentItems)
-                );
+                var contentCard = await Factory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+                {
+                    // FOR Updater
+                    shape.CollectionShape = Model;
+                    //Shape Specific
+                    shape.CollectionShapeType = nameof(BagPart);
+                    shape.ContentItem = widget.ContentItem;
+                    shape.BuildEditor = widget.Editable;
+                    shape.ParentContentType = parentContentType;
+                    shape.CollectionPartName = partName;
+                    //Card Specific Properties
+                    shape.TargetId = widgetTemplatePlaceholderId;
+                    shape.Inline = false;
+                    shape.CanMove = widget.Editable;
+                    shape.CanDelete = widget.Deletable;
+                    //Input hidden
+                    //Prefixes
+                    shape.HtmlFieldPrefix = htmlFieldPrefix;
+                    shape.PrefixValue = htmlFieldPrefix + '-' + (index++).ToString();
+                    shape.PrefixesId = Html.IdFor(x => x.Prefixes);
+                    shape.PrefixesName = Html.NameFor(x => x.Prefixes);
+                    //Content Types
+                    shape.ContentTypesId = Html.IdFor(x => x.ContentTypes);
+                    shape.ContentTypesName = Html.NameFor(x => x.ContentTypes);
+                    //Content Items
+                    shape.ContentItemsId = Html.IdFor(x => x.ContentItems);
+                    shape.ContentItemsName = Html.NameFor(x => x.ContentItems);
+                });
                 @await DisplayAsync(contentCard)
             }
         }
@@ -97,12 +100,8 @@
     @if (Context.Items["BagPart.Edit"] == null)
     {
         Context.Items["BagPart.Edit"] = new object();
-        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
-            debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="jQuery"></script>
-        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
-           debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
-        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"
-           debug-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
+        <script asp-name="flowpart-edit" at="Foot"></script>
+        <style asp-name="flowpart-edit" at="Head"></style>
     }
 
     @* Rendered only once per type to initialize the scripts its editor will need *@
@@ -114,7 +113,7 @@
 
             // Render a mock widget so that its resources are included in the page
             var contentItem = await ContentManager.NewAsync(type.Name);
-            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
+            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, string.Empty, $"z{Guid.NewGuid():n}"));
         }
     }
 
@@ -126,6 +125,9 @@
                 cursor: "move",
                 opacity: 0.7,
                 tolerance: "pointer",
+                scrollSensitivity: 150,
+                scrollSpeed: 100,
+                animation: 150,
                 placeholder: {
                     element: function (currentItem) {
                         return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
@@ -135,11 +137,16 @@
                     }
                 },
                 toleranceElement: '> div',
+                connectWith: '.widget-template-placeholder.widget-template-placeholder-bagpart',
                 start: function (event, ui) {
                     widgetDragItem = ui.item;
                     lastContainer = ui.item.parent();
                     lastContainer.toggleClass('widget-dropzone-hint');
-                    widgetDragItem.find('.card').first().toggleClass('border-primary');
+                    draggedWidget = widgetDragItem.find('.card').first()
+                    draggedWidget.toggleClass('border-primary')
+
+                    widgetItemSourceId = widgetDragItem.parent().attr('id');
+
                     var classList = widgetDragItem.attr('class').split(' ');
                     $.each(classList, function (id, item) {
                         if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
@@ -148,16 +155,64 @@
                 stop: function (event, ui) {
                     lastContainer.toggleClass('widget-dropzone-hint');
                     widgetDragItem.find('.card').first().toggleClass('border-primary');
+
+                    widgetItemDestId = widgetDragItem.parent().attr('id');
+                    if (widgetItemDestId !== widgetItemSourceId) {
+                        if (lastContainer[0] != this && this.dataset.contentTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
+                            var inputs = widgetDragItem.children("input[name*='@partName']");
+
+                            var destination = $('#' + widgetItemDestId);
+                            var source = $('#' + widgetItemSourceId);
+
+                            var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.lastIndexOf('_') + 1);
+                            sourceNameGuid = sourceGuid.replaceAll('_', '.');
+
+                            if (destination.length > 0) {
+
+                                var destGuid = widgetItemDestId.substring(0, widgetItemDestId.lastIndexOf('_') + 1);
+                                destNameGuid = destGuid.replaceAll('_', '.');
+
+                                if (source.length > 0) {
+                                    inputs.each(function (index, item) {
+                                        $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
+                                        $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
+                                    });
+
+                                } else {
+
+                                    inputs.each(function (index, item) {
+                                        $(this).attr('id', destGuid + $(this).attr('id'));
+                                        $(this).attr('name', destNameGuid + $(this).attr('name'));
+                                    });
+                                }
+                            }
+                            else if (source.length > 0) {
+                                inputs.each(function (index, item) {
+                                    $(this).attr('id', $(this).attr('id').replace(sourceGuid, ''));
+                                    $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
+                                });
+                            }
+                        }
+                        else {
+                            event.preventDefault();
+                        }
+                    }
+
+                    if (lastContainer[0] != this)
+                    {
+                        $(document).trigger('contentpreview:render');
+                    }
+
                     //clear the global variables
                     widgetDragItem = null;
+                    draggedWidget = null;
                     lastContainer = null;
                     widgetItemSourceId = null;
                     widgetItemDestId = null;
-                    $(document).trigger('contentpreview:render');
                 },
                 over: function (event, ui) {
                     var $self = $(this);
-                    if (lastContainer[0] != this) {
+                    if (lastContainer[0] != this && this.dataset.contentTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
                         lastContainer.toggleClass('widget-dropzone-hint');
                         lastContainer = $self;
                         $self.toggleClass('widget-dropzone-hint');

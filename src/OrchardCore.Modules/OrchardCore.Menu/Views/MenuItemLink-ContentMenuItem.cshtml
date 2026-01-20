@@ -1,15 +1,27 @@
+@using Microsoft.AspNetCore.Authorization
+@using OrchardCore.Contents
+
+@inject IContentManager ContentManager
+@inject IAuthorizationService AuthorizationService
 @inject IOptions<AutorouteOptions> AutorouteOptions
-@using OrchardCore.ContentManagement
 
 @{
     ContentItem contentItem = Model.ContentItem;
+
     var menuItemPart = contentItem.As<ContentMenuItemPart>();
+
+    string contentItemId = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
+
     var routeValues = new RouteValueDictionary(AutorouteOptions.Value.GlobalRouteValues);
-    routeValues[AutorouteOptions.Value.ContentItemIdKey] = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
+
+    routeValues[AutorouteOptions.Value.ContentItemIdKey] = contentItemId;
+
     var linkUrl = Url.RouteUrl(routeValues);
 
     TagBuilder tag = Tag(Model, "a");
+
     tag.Attributes["href"] = linkUrl;
+
     tag.InnerHtml.Append(contentItem.DisplayText);
 }
 

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -9,69 +8,69 @@ using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Microsoft.Authentication.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Microsoft.Authentication.Drivers
+namespace OrchardCore.Microsoft.Authentication.Drivers;
+
+public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
 {
-    public class AzureADSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureADSettings>
+    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public AzureADSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
+        IAuthorizationService authorizationService,
+        IHttpContextAccessor httpContextAccessor)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+        _shellReleaseManager = shellReleaseManager;
+        _authorizationService = authorizationService;
+        _httpContextAccessor = httpContextAccessor;
+    }
 
-        public AzureADSettingsDisplayDriver(
-            IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
+    protected override string SettingsGroupId
+        => MicrosoftAuthenticationConstants.Features.AAD;
+
+    public override async Task<IDisplayResult> EditAsync(ISite site, AzureADSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
         {
-            _authorizationService = authorizationService;
-            _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(AzureADSettings settings, BuildEditorContext context)
+        return Initialize<AzureADSettingsViewModel>("MicrosoftEntraIDSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+            model.DisplayName = settings.DisplayName;
+            model.AppId = settings.AppId;
+            model.TenantId = settings.TenantId;
+            model.SaveTokens = settings.SaveTokens;
+            if (settings.CallbackPath.HasValue)
             {
-                return null;
+                model.CallbackPath = settings.CallbackPath.Value;
             }
-            return Initialize<AzureADSettingsViewModel>("MicrosoftEntraIDSettings_Edit", model =>
-            {
-                model.DisplayName = settings.DisplayName;
-                model.AppId = settings.AppId;
-                model.TenantId = settings.TenantId;
-                model.SaveTokens = settings.SaveTokens;
-                if (settings.CallbackPath.HasValue)
-                {
-                    model.CallbackPath = settings.CallbackPath.Value;
-                }
-            }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
+        }).Location("Content:0")
+        .OnGroup(SettingsGroupId);
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureADSettings settings, UpdateEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AzureADSettings settings, BuildEditorContext context)
-        {
-            if (context.GroupId == MicrosoftAuthenticationConstants.Features.AAD)
-            {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
-                {
-                    return null;
-                }
-                var model = new AzureADSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-                if (context.Updater.ModelState.IsValid)
-                {
-                    settings.DisplayName = model.DisplayName;
-                    settings.AppId = model.AppId;
-                    settings.TenantId = model.TenantId;
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
-            }
-            return await EditAsync(settings, context);
-        }
+        var model = new AzureADSettingsViewModel();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        settings.DisplayName = model.DisplayName;
+        settings.AppId = model.AppId;
+        settings.TenantId = model.TenantId;
+        settings.CallbackPath = model.CallbackPath;
+        settings.SaveTokens = model.SaveTokens;
+
+        _shellReleaseManager.RequestRelease();
+
+        return await EditAsync(site, settings, context);
     }
 }

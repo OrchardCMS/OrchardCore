@@ -1,9 +1,6 @@
-using System.Threading.Tasks;
+namespace OrchardCore.Environment.Commands;
 
-namespace OrchardCore.Environment.Commands
+public interface ICommandHandler
 {
-    public interface ICommandHandler
-    {
-        Task ExecuteAsync(CommandContext context);
-    }
+    Task ExecuteAsync(CommandContext context);
 }

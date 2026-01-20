@@ -1,32 +1,28 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.Modules.FileProviders
+namespace OrchardCore.Modules.FileProviders;
+
+public static class FileInfoExtensions
 {
-    public static class FileInfoExtensions
+    public static IEnumerable<string> ReadAllLines(this IFileInfo fileInfo)
+        => ReadAllLinesAsync(fileInfo).GetAwaiter().GetResult();
+
+    public static async Task<IEnumerable<string>> ReadAllLinesAsync(this IFileInfo fileInfo)
     {
-        public static IEnumerable<string> ReadAllLines(this IFileInfo fileInfo)
-            => ReadAllLinesAsync(fileInfo).GetAwaiter().GetResult();
+        var lines = new List<string>();
 
-        public static async Task<IEnumerable<string>> ReadAllLinesAsync(this IFileInfo fileInfo)
+        if (fileInfo?.Exists ?? false)
         {
-            var lines = new List<string>();
+            await using var reader = fileInfo.CreateReadStream();
+            using var sr = new StreamReader(reader);
 
-            if (fileInfo?.Exists ?? false)
+            string line;
+            while ((line = await sr.ReadLineAsync()) != null)
             {
-                await using var reader = fileInfo.CreateReadStream();
-                using var sr = new StreamReader(reader);
-
-                string line;
-                while ((line = await sr.ReadLineAsync()) != null)
-                {
-                    lines.Add(line);
-                }
+                lines.Add(line);
             }
-
-            return lines;
         }
+
+        return lines;
     }
 }

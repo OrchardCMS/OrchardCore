@@ -25,5 +25,5 @@ public enum MergeArrayHandling
     /// <summary>
     /// Merge array items together, matched by index.
     /// </summary>
-    Merge = 3
+    Merge = 3,
 }

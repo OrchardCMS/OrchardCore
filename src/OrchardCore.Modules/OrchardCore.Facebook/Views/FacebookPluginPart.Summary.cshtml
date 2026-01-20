@@ -1,15 +1,17 @@
+@using System.Globalization
 @using OrchardCore.Entities
 @using OrchardCore.Settings
 @using OrchardCore.Facebook.Settings
 @model OrchardCore.Facebook.Widgets.ViewModels.FacebookPluginPartViewModel
-@inject ISiteService _site
+@inject ISiteService SiteService
 @{
-    var fbInit = (await _site.GetSiteSettingsAsync()).As<FacebookSettings>().FBInit;
+    var fbInit = (await SiteService.GetSettingsAsync<FacebookSettings>()).FBInit;
+    var culture = CultureInfo.CurrentUICulture.Name;
 }
 
 @Html.Raw(Model.Html)
 
 @if (!fbInit)
 {
-    <script asp-name="fb" at="Foot"></script>
+    <script asp-name="fb" culture="@culture" at="Foot"></script>
 }

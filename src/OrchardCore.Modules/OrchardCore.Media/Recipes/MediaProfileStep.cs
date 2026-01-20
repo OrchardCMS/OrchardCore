@@ -1,44 +1,36 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Media.Models;
 using OrchardCore.Media.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Media.Recipes
+namespace OrchardCore.Media.Recipes;
+
+/// <summary>
+/// This recipe step creates or updates a media profile.
+/// </summary>
+public sealed class MediaProfileStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates or updates a media profile.
-    /// </summary>
-    public class MediaProfileStep : IRecipeStepHandler
+    private readonly MediaProfilesManager _mediaProfilesManager;
+
+    public MediaProfileStep(MediaProfilesManager mediaProfilesManager)
+        : base("MediaProfiles")
     {
-        private readonly MediaProfilesManager _mediaProfilesManager;
-
-        public MediaProfileStep(MediaProfilesManager mediaProfilesManager)
-        {
-            _mediaProfilesManager = mediaProfilesManager;
-        }
-
-        public async Task ExecuteAsync(RecipeExecutionContext context)
-        {
-            if (!string.Equals(context.Name, "MediaProfiles", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            var model = context.Step.ToObject<MediaProfileStepModel>();
-
-            foreach (var mediaProfile in model.MediaProfiles)
-            {
-                await _mediaProfilesManager.UpdateMediaProfileAsync(mediaProfile.Key, mediaProfile.Value);
-            }
-        }
+        _mediaProfilesManager = mediaProfilesManager;
     }
 
-    public class MediaProfileStepModel
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        public Dictionary<string, MediaProfile> MediaProfiles { get; set; }
+        var model = context.Step.ToObject<MediaProfileStepModel>();
+
+        foreach (var mediaProfile in model.MediaProfiles)
+        {
+            await _mediaProfilesManager.UpdateMediaProfileAsync(mediaProfile.Key, mediaProfile.Value);
+        }
     }
+}
+
+public sealed class MediaProfileStepModel
+{
+    public Dictionary<string, MediaProfile> MediaProfiles { get; set; }
 }

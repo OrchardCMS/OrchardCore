@@ -12,9 +12,12 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="JsonPath.Net" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
     <PackageReference Include="ZString" />
   </ItemGroup>
 

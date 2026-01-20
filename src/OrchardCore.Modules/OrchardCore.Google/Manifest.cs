@@ -13,7 +13,11 @@ using OrchardCore.Modules.Manifest;
     Id = GoogleConstants.Features.GoogleAuthentication,
     Name = "Google Authentication",
     Category = "Google",
-    Description = "Authenticates users with their Google Account."
+    Description = "Authenticates users with their Google Account.",
+    Dependencies =
+    [
+        "OrchardCore.Users.ExternalAuthentication",
+    ]
 )]
 
 [assembly: Feature(

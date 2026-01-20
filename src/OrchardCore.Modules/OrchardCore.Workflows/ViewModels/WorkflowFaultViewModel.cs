@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Workflows.ViewModels
+namespace OrchardCore.Workflows.ViewModels;
+
+public class WorkflowFaultViewModel
 {
-    public class WorkflowFaultViewModel
-    {
-        [Required]
-        public string ErrorFilter { get; set; }
-    }
+    [Required]
+    public string ErrorFilter { get; set; }
 }

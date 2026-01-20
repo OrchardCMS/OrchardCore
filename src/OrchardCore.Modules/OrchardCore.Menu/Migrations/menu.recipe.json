@@ -79,6 +79,15 @@
                   "Position": "1"
                 }
               }
+            },
+            {
+              "PartName": "MenuItemPermissionPart",
+              "Name": "MenuItemPermissionPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                }
+              }
             }
           ]
         },
@@ -139,6 +148,15 @@
                   "Position": "1"
                 }
               }
+            },
+            {
+              "PartName": "MenuItemPermissionPart",
+              "Name": "MenuItemPermissionPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                }
+              }
             }
           ]
         }
@@ -193,6 +211,15 @@
               "Attachable": true,
               "DisplayName": "Html Menu Item",
               "Description": "Provides a menu link behavior with a field to display html for the link text."
+            }
+          }
+        },
+        {
+          "Name": "MenuItemPermissionPart",
+          "Settings": {
+            "ContentPartSettings": {
+              "Attachable": true,
+              "Description": "Provides a permission for the menu item."
             }
           }
         }

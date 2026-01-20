@@ -1,8 +1,8 @@
 [
     {
-        "inputs": [
-            "Assets/js/templatepreview.edit.js"
-        ],
-        "output": "wwwroot/Scripts/templatepreview.edit.js"
+      "action": "min",
+      "name": "templates",
+      "source": "Assets/js/templatepreview.edit.js",
+      "tags": ["admin", "dashboard", "js"]
     }
 ]

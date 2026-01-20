@@ -1,45 +1,42 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace OrchardCore.Contents.ViewComponents
+namespace OrchardCore.Contents.ViewComponents;
+
+public class DisplayContentItemViewComponent : ViewComponent
 {
-    public class DisplayContentItemViewComponent : ViewComponent
+    private readonly IContentManager _contentManager;
+    private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IUpdateModelAccessor _modelUpdaterAccessor;
+
+    public DisplayContentItemViewComponent(
+        IContentManager contentManager,
+        IContentItemDisplayManager contentItemDisplayManager,
+        IUpdateModelAccessor modelUpdaterAccessor)
     {
-        private readonly IContentManager _contentManager;
-        private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly IUpdateModelAccessor _modelUpdaterAccessor;
+        _contentItemDisplayManager = contentItemDisplayManager;
+        _contentManager = contentManager;
+        _modelUpdaterAccessor = modelUpdaterAccessor;
+    }
 
-        public DisplayContentItemViewComponent(
-            IContentManager contentManager,
-            IContentItemDisplayManager contentItemDisplayManager,
-            IUpdateModelAccessor modelUpdaterAccessor)
+    public async Task<IViewComponentResult> InvokeAsync(string contentItemId = null, string displayType = null)
+    {
+        ContentItem contentItem = null;
+
+        if (contentItemId != null)
         {
-            _contentItemDisplayManager = contentItemDisplayManager;
-            _contentManager = contentManager;
-            _modelUpdaterAccessor = modelUpdaterAccessor;
+            contentItem = await _contentManager.GetAsync(contentItemId);
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string contentItemId = null, string displayType = null)
+        if (contentItem == null)
         {
-            ContentItem contentItem = null;
-
-            if (contentItemId != null)
-            {
-                contentItem = await _contentManager.GetAsync(contentItemId);
-            }
-
-            if (contentItem == null)
-            {
-                throw new ArgumentException("Content item not found");
-            }
-
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _modelUpdaterAccessor.ModelUpdater, displayType);
-
-            return View(model);
+            throw new ArgumentException("Content item not found");
         }
+
+        var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _modelUpdaterAccessor.ModelUpdater, displayType);
+
+        return View(model);
     }
 }

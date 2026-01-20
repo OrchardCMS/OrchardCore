@@ -1,18 +1,17 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.ContentTypes.Deployment
+namespace OrchardCore.ContentTypes.Deployment;
+
+public class ReplaceContentDefinitionDeploymentStep : DeploymentStep
 {
-    public class ReplaceContentDefinitionDeploymentStep : DeploymentStep
+    public ReplaceContentDefinitionDeploymentStep()
     {
-        public ReplaceContentDefinitionDeploymentStep()
-        {
-            Name = "ReplaceContentDefinition";
-        }
-
-        public bool IncludeAll { get; set; }
-
-        public string[] ContentTypes { get; set; }
-
-        public string[] ContentParts { get; set; }
+        Name = "ReplaceContentDefinition";
     }
+
+    public bool IncludeAll { get; set; }
+
+    public string[] ContentTypes { get; set; }
+
+    public string[] ContentParts { get; set; }
 }

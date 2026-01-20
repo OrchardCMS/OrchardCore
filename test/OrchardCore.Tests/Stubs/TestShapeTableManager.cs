@@ -8,10 +8,10 @@ public class TestShapeTableManager(ShapeTable defaultShapeTable) : IShapeTableMa
 {
     private readonly ShapeTable _defaultShapeTable = defaultShapeTable;
 
-    public ShapeTable GetShapeTable(string themeId)
+    public ShapeTable GetShapeTable(string _)
         => _defaultShapeTable;
 
-    public Task<ShapeTable> GetShapeTableAsync(string themeId)
+    public Task<ShapeTable> GetShapeTableAsync(string _)
         => Task.FromResult(_defaultShapeTable);
 }
 

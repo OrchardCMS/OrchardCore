@@ -1,14 +1,13 @@
-using System;
+namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries
+public class IndexAlias
 {
-    public class IndexAlias
-    {
-        public string Alias { get; set; }
+    public string Alias { get; set; }
 
-        public string Index { get; set; }
+    public string Index { get; set; }
 
-        public Type IndexType { get; set; }
-    }
+    public Type IndexType { get; set; }
+
+    public bool IsPartial { get; set; }
 }
 

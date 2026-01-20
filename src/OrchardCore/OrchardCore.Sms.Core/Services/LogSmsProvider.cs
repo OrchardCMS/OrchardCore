@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -8,8 +7,9 @@ public class LogSmsProvider : ISmsProvider
 {
     public const string TechnicalName = "Log";
 
-    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
+
+    protected readonly IStringLocalizer S;
 
     public LocalizedString Name => S["Log - writes messages to the logs"];
 
@@ -23,7 +23,7 @@ public class LogSmsProvider : ISmsProvider
 
     public Task<SmsResult> SendAsync(SmsMessage message)
     {
-        _logger.LogWarning("A message with the body '{body}' was set to '{phoneNumber}'.", message.Body, message.To);
+        _logger.LogWarning("A message with the body '{Body}' was set to '{PhoneNumber}'.", message.Body, message.To);
 
         return Task.FromResult(SmsResult.Success);
     }

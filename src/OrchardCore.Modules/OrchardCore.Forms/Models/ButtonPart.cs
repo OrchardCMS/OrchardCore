@@ -1,10 +1,9 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Forms.Models
+namespace OrchardCore.Forms.Models;
+
+public class ButtonPart : ContentPart
 {
-    public class ButtonPart : ContentPart
-    {
-        public string Text { get; set; }
-        public string Type { get; set; }
-    }
+    public string Text { get; set; }
+    public string Type { get; set; }
 }

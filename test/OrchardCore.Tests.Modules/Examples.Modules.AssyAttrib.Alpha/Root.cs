@@ -1,9 +1,6 @@
-namespace Examples.Modules.AssyAttrib.Alpha
-{
-    /// <summary>
-    /// Hooks provided for purposes of identifying the class and assembly context.
-    /// </summary>
-    internal class Root
-    {
-    }
-}
+namespace Examples.Modules.AssyAttrib.Alpha;
+
+/// <summary>
+/// Hooks provided for purposes of identifying the class and assembly context.
+/// </summary>
+internal sealed class Root;

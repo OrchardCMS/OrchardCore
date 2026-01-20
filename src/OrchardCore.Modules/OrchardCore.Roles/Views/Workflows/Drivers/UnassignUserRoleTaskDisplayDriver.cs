@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Roles.Workflows.Drivers;
 
-public class UnassignUserRoleTaskDisplayDriver : ActivityDisplayDriver<UnassignUserRoleTask, UnassignUserRoleTaskViewModel>
+public sealed class UnassignUserRoleTaskDisplayDriver : ActivityDisplayDriver<UnassignUserRoleTask, UnassignUserRoleTaskViewModel>
 {
     protected override void EditActivity(UnassignUserRoleTask activity, UnassignUserRoleTaskViewModel model)
     {

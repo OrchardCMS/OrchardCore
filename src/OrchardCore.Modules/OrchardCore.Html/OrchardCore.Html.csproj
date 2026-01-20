@@ -6,12 +6,16 @@
     <Title>OrchardCore Html</Title>
     <Description>$(OCCMSDescription)
 
-    The Html module enables content items to have rich content using Html syntax."</Description>
+    The Html module enables content items to have rich content using Html syntax.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Jint" />
   </ItemGroup>
 
   <ItemGroup>

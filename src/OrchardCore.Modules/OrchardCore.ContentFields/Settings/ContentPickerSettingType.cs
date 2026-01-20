@@ -4,5 +4,5 @@ public enum ContentPickerSettingType
 {
     AllTypes,
     ContentTypes,
-    Stereotypes
+    Stereotypes,
 }

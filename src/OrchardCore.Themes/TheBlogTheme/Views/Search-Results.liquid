@@ -2,10 +2,23 @@
     <ul class="list-group">
         {% for item in Model.ContentItems %}
             <li class="list-group-item">
+            {% if Model.Highlights != null and Model.Highlights[item.ContentItemId] != null %}
+                {% assign highlights = Model.Highlights[item.ContentItemId] %}
+                {% for key in highlights %}
+                    {% assign content = key[1] %}
+                    {% if content != null %}
+                        <h2><a href="{{ item | display_url }}">{{ item | display_text }}</a></h2>
+                        {% for value in content %}
+                            {{ value | raw }}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
                 {{ item | shape_build_display: "Summary" | shape_render }}
+            {% endif %}
             </li>
         {% endfor %}
     </ul>
 {% else %}
-    <p class="alert alert-warning">{{"There are no such results." | t }}</p>
+    <p class="alert alert-warning">{{ "There are no such results." | t }}</p>
 {% endif %}

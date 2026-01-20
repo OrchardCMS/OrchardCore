@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
@@ -17,7 +16,6 @@ public class CoreNotificationEventsHandler : NotificationEventsHandler
 
         var bodyPart = context.Notification.As<NotificationBodyInfo>();
 
-        bodyPart.Summary = context.NotificationMessage.Summary;
         bodyPart.TextBody = context.NotificationMessage.TextBody;
         bodyPart.HtmlBody = context.NotificationMessage.HtmlBody;
 

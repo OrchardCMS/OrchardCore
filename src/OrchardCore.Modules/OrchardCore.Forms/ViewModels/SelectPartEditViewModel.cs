@@ -1,11 +1,10 @@
 using OrchardCore.Forms.Models;
 
-namespace OrchardCore.Forms.ViewModels
+namespace OrchardCore.Forms.ViewModels;
+
+public class SelectPartEditViewModel
 {
-    public class SelectPartEditViewModel
-    {
-        public string Options { get; set; }
-        public string DefaultValue { get; set; }
-        public SelectEditorOption Editor { get; set; }
-    }
+    public string Options { get; set; }
+    public string DefaultValue { get; set; }
+    public SelectEditorOption Editor { get; set; }
 }

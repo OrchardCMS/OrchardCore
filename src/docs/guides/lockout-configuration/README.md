@@ -22,7 +22,7 @@ public IConfiguration Configuration { get; }
 In order to initialize the `Configuration`, set the property in the constructor like this:
 
 ```csharp
-public Startup(IConfiguration configuration)
+public sealed Startup(IConfiguration configuration)
 {
     Configuration = configuration;
 }

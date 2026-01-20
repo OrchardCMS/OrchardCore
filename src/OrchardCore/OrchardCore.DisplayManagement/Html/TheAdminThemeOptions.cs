@@ -37,4 +37,9 @@ public class TheAdminThemeOptions
     /// CSS classes to add ad offset when needed for elements like checkboxes and radio buttons.
     /// </summary>
     public string OffsetClasses { get; set; }
+
+    /// <summary>
+    /// Space separated CSS classes to add to required input labels.
+    /// </summary>
+    public string LabelRequiredClasses { get; set; } = "input-required";
 }

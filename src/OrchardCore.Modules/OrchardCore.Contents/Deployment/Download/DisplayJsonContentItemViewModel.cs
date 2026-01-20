@@ -1,10 +1,9 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Contents.Deployment.Download
+namespace OrchardCore.Contents.Deployment.Download;
+
+public class DisplayJsonContentItemViewModel
 {
-    public class DisplayJsonContentItemViewModel
-    {
-        public ContentItem ContentItem { get; set; }
-        public string ContentItemJson { get; set; }
-    }
+    public ContentItem ContentItem { get; set; }
+    public string ContentItemJson { get; set; }
 }

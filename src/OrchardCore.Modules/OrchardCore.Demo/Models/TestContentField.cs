@@ -1,9 +1,8 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Demo.Models
+namespace OrchardCore.Demo.Models;
+
+public class TestContentField : ContentField
 {
-    public class TestContentField : ContentField
-    {
-        public string Text;
-    }
+    public string Text;
 }

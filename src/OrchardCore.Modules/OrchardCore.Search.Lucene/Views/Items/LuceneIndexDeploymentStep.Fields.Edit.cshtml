@@ -12,8 +12,7 @@
         <div class="col">
             <div class="form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IncludeAll"
-                           data-reverseToggle=".idxsel" />
+                    <input class="form-check-input" asp-for="IncludeAll" data-bs-toggle="collapse" role="button" data-bs-target=".idxsel" aria-expanded="false" aria-controls="idxsel" />
                     @T["Include all search indexes."]
                 </label>
             </div>
@@ -21,7 +20,7 @@
     </div>
 </div>
 
-<div class="idxsel mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+<div class="idxsel mb-3 mt-4 mb-5 collapse@(Model.IncludeAll ? string.Empty : " show")">
     <div class="row">
         <div class="col-small col-12 col-sm-9 col-md-6 col-lg-3 col-xl-3">
             <span class="hint">@T["The search indexes to add as part of the plan."]</span>
@@ -47,16 +46,3 @@
         </div>
     </div>
 </div>
-
-<script at="Foot">
-    $(function () {
-        $("[data-reversetoggle]").on("click", function () {
-            var state = this.checked;
-            if (state) {
-                $($(this).attr("data-reversetoggle")).collapse('hide');
-            } else {
-                $($(this).attr("data-reversetoggle")).collapse('show');
-            }
-        });
-    });
-</script>

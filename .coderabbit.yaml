@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/coderabbit-overrides.v2.json
+
+# Schema with docs on the properties: https://coderabbit.ai/integrations/coderabbit-overrides.v2.json. Docs:
+# https://docs.coderabbit.ai/guides/configure-coderabbit. This only includes overrides for defaults and mandatory
+# elements.
+
+early_access: true
+reviews:
+  # This would allow the bot to approve a PR. Since we always need a human to approve (and merge), we don't use this,
+  # so it doesn't add noise to the pull request filters like
+  # https://github.com/OrchardCMS/OrchardCore/pulls?q=is%3Apr+is%3Aopen+review%3Anone.
+  request_changes_workflow: false
+  # Very rarely contains useful info, mostly is just noise.
+  high_level_summary: false
+  # We really don't need a poem.
+  poem: false
+  # The review status comment is useful for debugging but not otherwise.
+  review_status: false
+  # The code walkthrough's text may take a lot of space, so collapsing it is nicer UX.
+  collapse_walkthrough: true
+  # On-demand reviews are available but PRs are not reviewed automatically.
+  auto_review:
+    enabled: false
+    drafts: false
+chat:
+  auto_reply: true

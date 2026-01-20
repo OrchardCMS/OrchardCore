@@ -10,7 +10,7 @@
 }
 
 <style asp-name="codemirror"></style>
-<style asp-name="mdecss" asp-src="~/OrchardCore.Markdown/Styles/mde.min.css" debug-src="~/OrchardCore.Markdown/Styles/mde.css"></style>
+<style asp-name="easymde"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Markdown)_FieldWrapper">
     @await DisplayAsync(await New.ShortcodeModal())
@@ -23,10 +23,13 @@
         }
     </div>
 </div>
-<script at="Foot">
+
+<script at="Foot" depends-on="jQuery, easymde-mediatoolbar">
     $(function () {
-        var markdownElement = document.getElementById("@Html.IdFor(m => m.Markdown)");
-        @* When field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
+        var markdownElement = document.getElementById('@Html.IdFor(m => m.Markdown)');
+        var isRtl = '@(culture.IsRightToLeft() ? "true" : "false")';
+
+        // When field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
         if (markdownElement) {
             var mde = new EasyMDE({
                 element: markdownElement,
@@ -41,11 +44,11 @@
                 $(document).trigger('contentpreview:render');
             });
 
-        @if (culture.IsRightToLeft())
-        {
-        <text>$('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
-        $('.CodeMirror').attr('style', 'text-align:right'); </text>
-        }
+            if (isRtl === 'true')
+            {
+                $('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
+                $('.CodeMirror').attr('style', 'text-align:right');
+            }
         }
     });
 </script>

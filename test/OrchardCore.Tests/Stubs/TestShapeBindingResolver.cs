@@ -1,33 +1,32 @@
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 
-namespace OrchardCore.Tests.Stubs
+namespace OrchardCore.Tests.Stubs;
+
+public class TestShapeBindingsDictionary : Dictionary<string, ShapeBinding>
 {
-    public class TestShapeBindingsDictionary : Dictionary<string, ShapeBinding>
+    public TestShapeBindingsDictionary()
+        : base(StringComparer.OrdinalIgnoreCase) { }
+}
+
+public class TestShapeBindingResolver : IShapeBindingResolver
+{
+    private readonly TestShapeBindingsDictionary _shapeBindings;
+
+    public TestShapeBindingResolver(TestShapeBindingsDictionary shapeBindings)
     {
-        public TestShapeBindingsDictionary()
-            : base(StringComparer.OrdinalIgnoreCase) { }
+        _shapeBindings = shapeBindings;
     }
 
-    public class TestShapeBindingResolver : IShapeBindingResolver
+    public Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
     {
-        private readonly TestShapeBindingsDictionary _shapeBindings;
-
-        public TestShapeBindingResolver(TestShapeBindingsDictionary shapeBindings)
+        if (_shapeBindings.TryGetValue(shapeType, out var binding))
         {
-            _shapeBindings = shapeBindings;
+            return Task.FromResult(binding);
         }
-
-        public Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
+        else
         {
-            if (_shapeBindings.TryGetValue(shapeType, out var binding))
-            {
-                return Task.FromResult(binding);
-            }
-            else
-            {
-                return Task.FromResult<ShapeBinding>(null);
-            }
+            return Task.FromResult<ShapeBinding>(null);
         }
     }
 }

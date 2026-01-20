@@ -18,28 +18,44 @@
             {
                 @T["Not Configured"]
             }
-            </code>
-        </div>
+        </code>
     </div>
+</div>
 
-    <div class="mb-3 row">
-        <label asp-for="ContainerName" class="col-sm-2 col-form-label">@T["Container Name"]</label>
-        <div class="col-sm-10">
-            <code><input type="text" class="form-control-plaintext" value="@Model.ContainerName" readonly /></code>
-        </div>
+<div class="mb-3 row">
+    <label asp-for="ContainerName" class="col-sm-2 col-form-label">@T["Container Name"]</label>
+    <div class="col-sm-10">
+        <code><input type="text" class="form-control-plaintext" value="@Model.ContainerName" readonly /></code>
     </div>
+</div>
 
-    <div class="mb-3 row">
-        <label asp-for="BasePath" class="col-sm-2 col-form-label">@T["Base Path"]</label>
-        <div class="col-sm-10">
-            <code><input type="text" class="form-control-plaintext" value="@Model.BasePath" readonly /></code>
-        </div>
+<div class="mb-3 row">
+    <label asp-for="BasePath" class="col-sm-2 col-form-label">@T["Base Path"]</label>
+    <div class="col-sm-10">
+        <code><input type="text" class="form-control-plaintext" value="@Model.BasePath" readonly /></code>
     </div>
+</div>
 
-    <div class="mb-3">
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="CreateContainer" checked="@Model.CreateContainer" disabled />
-            <label class="form-check-label" asp-for="CreateContainer">@T["Create Container"]</label>
-            <span class="hint">@T["Whether a blob container is created on startup if it does not exist."]</span>
-        </div>
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="CreateContainer" checked="@Model.CreateContainer" disabled />
+        <label class="form-check-label" asp-for="CreateContainer">@T["Create Container"]</label>
+        <span class="hint">@T["Whether a blob container is created on startup if it does not exist."]</span>
     </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="RemoveContainer" checked="@Model.RemoveContainer" disabled />
+        <label class="form-check-label" asp-for="RemoveContainer">@T["Remove Container"]</label>
+        <span class="hint">@T["Whether a blob container is removed on tenant deletion if it exists."]</span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="RemoveFilesFromBasePath" checked="@Model.RemoveFilesFromBasePath" disabled />
+        <label class="form-check-label" asp-for="RemoveFilesFromBasePath">@T["Remove Files From Base Path"]</label>
+        <span class="hint">@T["Whether only the media files under the base path are removed on tenant deletion."]</span>
+    </div>
+</div>

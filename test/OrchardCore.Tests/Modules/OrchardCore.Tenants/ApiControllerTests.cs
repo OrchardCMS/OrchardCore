@@ -17,7 +17,7 @@ public class ApiControllerTests
     private readonly Mock<IClock> _clockMock = new();
     private readonly Dictionary<string, FeatureProfile> _featureProfiles = new()
     {
-        { "Feature Profile", new FeatureProfile() }
+        { "Feature Profile", new FeatureProfile() },
     };
 
     private delegate void TryGetSettingsCallback(string name, out ShellSettings settings);
@@ -33,7 +33,7 @@ public class ApiControllerTests
             RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
             FeatureProfiles = ["Feature Profile"],
-            IsNewTenant = true
+            IsNewTenant = true,
         };
 
         // Act & Assert
@@ -74,7 +74,7 @@ public class ApiControllerTests
             RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
             FeatureProfiles = ["Feature Profile"],
-            IsNewTenant = true
+            IsNewTenant = true,
         };
 
         // Act & Assert
@@ -107,7 +107,7 @@ public class ApiControllerTests
         Assert.NotEqual(token1, token2);
     }
 
-    private ApiController CreateController()
+    private TenantApiController CreateController()
     {
         var defaultShellSettings = new ShellSettings()
             .AsDefaultShell()
@@ -159,7 +159,7 @@ public class ApiControllerTests
             Mock.Of<IDbConnectionValidator>(),
             stringLocalizerMock.Object);
 
-        return new ApiController(
+        return new TenantApiController(
             shellHostMock.Object,
             defaultShellSettings,
             Mock.Of<IShellRemovalManager>(),
@@ -173,23 +173,23 @@ public class ApiControllerTests
             Options.Create(new TenantsOptions()),
             [],
             tenantValidator,
-            Mock.Of<IStringLocalizer<ApiController>>(),
-            Mock.Of<ILogger<ApiController>>())
+            Mock.Of<IStringLocalizer<TenantApiController>>(),
+            Mock.Of<ILogger<TenantApiController>>())
         {
-            ControllerContext = new ControllerContext { HttpContext = CreateHttpContext() }
+            ControllerContext = new ControllerContext { HttpContext = CreateHttpContext() },
         };
     }
 
-    private static HttpContext CreateHttpContext()
+    private static DefaultHttpContext CreateHttpContext()
     {
         var httpContext = new DefaultHttpContext
         {
-            User = new ClaimsPrincipal()
+            User = new ClaimsPrincipal(),
         };
 
         httpContext.Features.Set(new ShellContextFeature
         {
-            OriginalPathBase = PathString.Empty
+            OriginalPathBase = PathString.Empty,
         });
 
         httpContext.User.AddIdentity(new ClaimsIdentity());
@@ -197,7 +197,7 @@ public class ApiControllerTests
         return httpContext;
     }
 
-    private class FakeDataProtector : IDataProtector
+    private sealed class FakeDataProtector : IDataProtector
     {
         public IDataProtector CreateProtector(string purpose) => this;
 

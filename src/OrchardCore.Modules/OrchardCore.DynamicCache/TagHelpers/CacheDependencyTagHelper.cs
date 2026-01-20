@@ -1,44 +1,42 @@
-using System;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.Environment.Cache;
 
-namespace OrchardCore.DynamicCache.TagHelpers
+namespace OrchardCore.DynamicCache.TagHelpers;
+
+[HtmlTargetElement("cache-dependency", Attributes = DependencyAttributeName)]
+public class CacheDependencyTagHelper : TagHelper
 {
-    [HtmlTargetElement("cache-dependency", Attributes = DependencyAttributeName)]
-    public class CacheDependencyTagHelper : TagHelper
+    private const string DependencyAttributeName = "dependency";
+
+    /// <summary>
+    /// Gets or sets a <see cref="string" /> with the dependency to invalidate the cache with.
+    /// </summary>
+    [HtmlAttributeName(DependencyAttributeName)]
+    public string Dependency { get; set; }
+
+    private readonly ICacheScopeManager _cacheScopeManager;
+
+    public CacheDependencyTagHelper(
+        ICacheScopeManager cacheScopeManager)
+
     {
-        private const string DependencyAttributeName = "dependency";
+        _cacheScopeManager = cacheScopeManager;
+    }
 
-        /// <summary>
-        /// Gets or sets a <see cref="string" /> with the dependency to invalidate the cache with.
-        /// </summary>
-        [HtmlAttributeName(DependencyAttributeName)]
-        public string Dependency { get; set; }
 
-        private readonly ICacheScopeManager _cacheScopeManager;
+    /// <inheritdoc />
+    public override void Process(TagHelperContext context, TagHelperOutput output)
+    {
+        ArgumentNullException.ThrowIfNull(context);
 
-        public CacheDependencyTagHelper(
-            ICacheScopeManager cacheScopeManager)
+        ArgumentNullException.ThrowIfNull(output);
 
+        if (!string.IsNullOrEmpty(Dependency))
         {
-            _cacheScopeManager = cacheScopeManager;
+            _cacheScopeManager.AddDependencies(Dependency);
         }
 
-
-        /// <inheritdoc />
-        public override void Process(TagHelperContext context, TagHelperOutput output)
-        {
-            ArgumentNullException.ThrowIfNull(context);
-
-            ArgumentNullException.ThrowIfNull(output);
-
-            if (!string.IsNullOrEmpty(Dependency))
-            {
-                _cacheScopeManager.AddDependencies(Dependency);
-            }
-
-            // Clear the contents of the "cache-dependency" element since we don't want to render it.
-            output.SuppressOutput();
-        }
+        // Clear the contents of the "cache-dependency" element since we don't want to render it.
+        output.SuppressOutput();
     }
 }
