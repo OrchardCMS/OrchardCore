@@ -5,11 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OfficeOpenXml;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -249,83 +250,166 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
     private DataTable GetDataTable(Stream stream, Action<string, string> error)
     {
-        using var package = new ExcelPackage(stream);
-        using var workbook = package.Workbook;
-        using var worksheets = workbook.Worksheets;
         var dataTable = new DataTable();
 
-        if (worksheets.Count == 0)
+        try
         {
-            error(string.Empty, S["More than one tab are found on the uploaded file. Please delete any additional tabs and re-upload the file."]);
+            using var spreadsheetDocument = SpreadsheetDocument.Open(stream, false);
+            var workbookPart = spreadsheetDocument.WorkbookPart;
 
-            return dataTable;
-        }
-
-        using var worksheet = worksheets[0];
-
-        // Check if the worksheet is completely empty.
-        if (worksheet.Dimension == null)
-        {
-            error(string.Empty, S["Unable to find a tab in the file that contains data."]);
-
-            return dataTable;
-        }
-
-        // Create a list to hold the column names.
-        var columnNames = new List<string>();
-
-        // Needed to keep track of empty column headers.
-        var currentColumn = 1;
-
-        foreach (var cell in worksheet.Cells[1, 1, 1, worksheet.Dimension.End.Column])
-        {
-            var columnName = cell.Text.Trim();
-
-            // Check if the previous header was empty, create a header name.
-            if (cell.Start.Column != currentColumn)
+            if (workbookPart == null)
             {
-                columnNames.Add("Col " + currentColumn);
-                dataTable.Columns.Add("Col " + currentColumn);
-                currentColumn++;
+                error(string.Empty, S["Unable to read the uploaded file."]);
+                return dataTable;
             }
 
-            // Add the column name to the list to count the duplicates.
-            columnNames.Add(columnName);
+            var sheets = workbookPart.Workbook.Descendants<Sheet>().ToList();
 
-            // Count the duplicate column names and make them unique to avoid the exception
-            // A column named 'Name' already belongs to this DataTable
-            var occurrences = columnNames.Count(x => x.Equals(columnName));
-            if (occurrences > 1)
+            if (sheets.Count == 0)
             {
-                columnName += " " + occurrences;
+                error(string.Empty, S["Unable to find a tab in the file that contains data."]);
+                return dataTable;
             }
 
-            var column = new DataColumn(columnName);
+            var sheet = sheets[0];
+            var worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
+            var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
 
-            // Add the column to the dataTable
-            dataTable.Columns.Add(column);
-
-            currentColumn++;
-        }
-
-        // Start adding the contents of the excel file to the dataTable
-        for (var i = 2; i <= worksheet.Dimension.End.Row; i++)
-        {
-            var row = worksheet.Cells[i, 1, i, worksheet.Dimension.End.Column];
-            var newRow = dataTable.NewRow();
-
-            foreach (var cell in row)
+            if (sheetData == null)
             {
-                try
+                error(string.Empty, S["Unable to find a tab in the file that contains data."]);
+                return dataTable;
+            }
+
+            var rows = sheetData.Descendants<Row>().ToList();
+
+            if (rows.Count == 0)
+            {
+                error(string.Empty, S["Unable to find a tab in the file that contains data."]);
+                return dataTable;
+            }
+
+            // Get shared string table for reading string values
+            var sharedStringTable = workbookPart.GetPartsOfType<SharedStringTablePart>()
+                .FirstOrDefault()?.SharedStringTable;
+
+            // Create a list to hold the column names.
+            var columnNames = new List<string>();
+            var columnMapping = new Dictionary<string, int>();
+
+            // Process header row
+            var headerRow = rows[0];
+            var headerCells = headerRow.Descendants<Cell>().ToList();
+
+            foreach (var cell in headerCells)
+            {
+                var columnName = GetCellValue(cell, sharedStringTable)?.Trim() ?? string.Empty;
+                var columnIndex = GetColumnIndexFromCellReference(cell.CellReference);
+
+                // Handle empty column names
+                if (string.IsNullOrEmpty(columnName))
                 {
-                    newRow[cell.Start.Column - 1] = cell.Text;
+                    columnName = "Col " + (columnIndex + 1);
                 }
-                catch { }
+
+                // Add the column name to the list to count the duplicates.
+                columnNames.Add(columnName);
+
+                // Count the duplicate column names and make them unique
+                var occurrences = columnNames.Count(x => x.Equals(columnName, StringComparison.OrdinalIgnoreCase));
+                if (occurrences > 1)
+                {
+                    columnName += " " + occurrences;
+                }
+
+                var column = new DataColumn(columnName);
+                dataTable.Columns.Add(column);
+                columnMapping[cell.CellReference.Value] = dataTable.Columns.Count - 1;
             }
 
-            dataTable.Rows.Add(newRow);
+            // Process data rows (skip header)
+            for (var i = 1; i < rows.Count; i++)
+            {
+                var row = rows[i];
+                var newRow = dataTable.NewRow();
+
+                foreach (var cell in row.Descendants<Cell>())
+                {
+                    var columnIndex = GetColumnIndexFromCellReference(cell.CellReference);
+
+                    if (columnIndex < dataTable.Columns.Count)
+                    {
+                        try
+                        {
+                            newRow[columnIndex] = GetCellValue(cell, sharedStringTable);
+                        }
+                        catch
+                        {
+                            // Ignore cell parsing errors
+                        }
+                    }
+                }
+
+                dataTable.Rows.Add(newRow);
+            }
+        }
+        catch (Exception ex)
+        {
+            error(string.Empty, S["Unable to read the uploaded file: {0}", ex.Message]);
         }
 
         return dataTable;
+    }
+
+    private static string GetCellValue(Cell cell, SharedStringTable sharedStringTable)
+    {
+        if (cell == null || cell.CellValue == null)
+        {
+            return string.Empty;
+        }
+
+        var value = cell.CellValue.Text;
+
+        if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+        {
+            if (sharedStringTable != null && int.TryParse(value, out var index))
+            {
+                return sharedStringTable.ElementAt(index).InnerText;
+            }
+        }
+
+        return value ?? string.Empty;
+    }
+
+    private static int GetColumnIndexFromCellReference(string cellReference)
+    {
+        if (string.IsNullOrEmpty(cellReference))
+        {
+            return 0;
+        }
+
+        var columnLetters = string.Empty;
+        foreach (var c in cellReference)
+        {
+            if (char.IsLetter(c))
+            {
+                columnLetters += c;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        var columnIndex = 0;
+        var multiplier = 1;
+
+        for (var i = columnLetters.Length - 1; i >= 0; i--)
+        {
+            columnIndex += (columnLetters[i] - 'A' + 1) * multiplier;
+            multiplier *= 26;
+        }
+
+        return columnIndex - 1; // Zero-based index
     }
 }

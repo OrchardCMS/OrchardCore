@@ -1,12 +1,11 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentsTransfer.Models;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentsTransfer.Drivers;
 
-public class ListContentTransferEntryOptionsDisplayDriver : DisplayDriver<ListContentTransferEntryOptions>
+public sealed class ListContentTransferEntryOptionsDisplayDriver : DisplayDriver<ListContentTransferEntryOptions>
 {
     // Maintain the Options prefix for compatibility with binding.
     protected override void BuildPrefix(ListContentTransferEntryOptions model, string htmlFieldPrefix)
@@ -14,9 +13,9 @@ public class ListContentTransferEntryOptionsDisplayDriver : DisplayDriver<ListCo
         Prefix = "Options";
     }
 
-    public override IDisplayResult Display(ListContentTransferEntryOptions model)
+    public override Task<IDisplayResult> DisplayAsync(ListContentTransferEntryOptions model, BuildDisplayContext context)
     {
-        return Combine(
+        return CombineAsync(
             Initialize<ListContentTransferEntryOptions>("ListContentTransferEntriesAdminListBulkActions", m => BuildOptionsViewModel(m, model))
                 .Location("BulkActions", "Content:10"),
             View("ListContentTransferEntriesAdminFilters_Thumbnail__Status", model)
@@ -26,11 +25,11 @@ public class ListContentTransferEntryOptionsDisplayDriver : DisplayDriver<ListCo
         );
     }
 
-    public override IDisplayResult Edit(ListContentTransferEntryOptions model)
+    public override Task<IDisplayResult> EditAsync(ListContentTransferEntryOptions model, BuildEditorContext context)
     {
         model.FilterResult.MapTo(model);
 
-        return Combine(
+        return CombineAsync(
             Initialize<ListContentTransferEntryOptions>("ListContentTransferEntriesAdminListBulkActions", m => BuildOptionsViewModel(m, model))
                 .Location("BulkActions", "Content:10"),
             Initialize<ListContentTransferEntryOptions>("ListContentTransferEntriesAdminListSearch", m => BuildOptionsViewModel(m, model))
@@ -48,12 +47,12 @@ public class ListContentTransferEntryOptionsDisplayDriver : DisplayDriver<ListCo
         );
     }
 
-    public override Task<IDisplayResult> UpdateAsync(ListContentTransferEntryOptions model, IUpdateModel updater)
+    public override Task<IDisplayResult> UpdateAsync(ListContentTransferEntryOptions model, UpdateEditorContext context)
     {
         // Map the incoming values from a form post to the filter result.
         model.FilterResult.MapFrom(model);
 
-        return Task.FromResult(Edit(model));
+        return EditAsync(model, context);
     }
 
     private static void BuildOptionsViewModel(ListContentTransferEntryOptions m, ListContentTransferEntryOptions model)

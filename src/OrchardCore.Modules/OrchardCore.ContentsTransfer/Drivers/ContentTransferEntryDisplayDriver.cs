@@ -1,22 +1,19 @@
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.ContentsTransfer.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentsTransfer.Drivers;
 
-public class ContentTransferEntryDisplayDriver : DisplayDriver<ContentTransferEntry>
+public sealed class ContentTransferEntryDisplayDriver : DisplayDriver<ContentTransferEntry>
 {
-    public override IDisplayResult Display(ContentTransferEntry entry)
+    public override Task<IDisplayResult> DisplayAsync(ContentTransferEntry entry, BuildDisplayContext context)
     {
-        var results = new List<IDisplayResult>()
-        {
-            Shape("ContentTransferEntriesMeta_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "Meta:20"),
-            Shape("ContentTransferEntriesActions_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "Actions:5"),
-            Shape("ContentTransferEntriesButtonActions_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "ActionsMenu:10"),
-            Shape("ContentTransferEntriesProgress_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "Progress:5"),
-        };
-
-        return Combine(results);
+        return CombineAsync(
+            View("ContentTransferEntriesMeta_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "Meta:20"),
+            View("ContentTransferEntriesActions_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "Actions:5"),
+            View("ContentTransferEntriesButtonActions_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "ActionsMenu:10"),
+            View("ContentTransferEntriesProgress_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "Progress:5")
+        );
     }
 }
