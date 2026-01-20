@@ -35,37 +35,51 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
 
     public async Task<IQuery<ContentItem>> QueryAsync(ContentOptionsViewModel model, IUpdateModel updater)
     {
-        var defaultTermNode = model.FilterResult?.OfType<DefaultTermNode>().FirstOrDefault();
-        var defaultTermName = defaultTermNode?.TermName;
-        var defaultOperator = defaultTermNode?.Operation;
+        ArgumentNullException.ThrowIfNull(model);
 
-        if (model.FilterResult is not null && defaultTermNode is not null)
+        DefaultTermNode defaultTermNode = null;
+        string defaultTermName = null;
+        OperatorNode defaultOperator = null;
+
+        var hasFilterResult = model.FilterResult is not null;
+
+        if (hasFilterResult)
         {
-            var value = defaultTermNode.ToString();
-            if (_contentsAdminListFilterOptions.UseExactMatch
-                && !_operators.Any(op => value.Contains(op, StringComparison.Ordinal)))
-            {
-                // Use an unary operator based on a full quoted string.
-                defaultOperator = new UnaryNode(value.Trim('"'), OperateNodeQuotes.Double);
-            }
+            defaultTermNode = model.FilterResult
+                .OfType<DefaultTermNode>()
+                .FirstOrDefault();
 
-            var selectedContentType = GetSelectedContentType(model);
-            if (selectedContentType is not null)
+            if (defaultTermNode is not null)
             {
-                defaultTermName = GetDefaultTermName(selectedContentType);
-            }
+                defaultTermName = defaultTermNode.TermName;
+                defaultOperator = defaultTermNode.Operation;
 
-            if (model.FilterResult is not null && (defaultTermName != defaultTermNode.TermName || defaultOperator != defaultTermNode.Operation))
-            {
-                model.FilterResult.TryRemove(defaultTermNode.TermName);
-                model.FilterResult.TryAddOrReplace(new DefaultTermNode(defaultTermName, defaultOperator));
+                var value = defaultTermNode.ToString();
+                if (_contentsAdminListFilterOptions.UseExactMatch
+                    && !_operators.Any(op => value.Contains(op, StringComparison.Ordinal)))
+                {
+                    // Use an unary operator based on a full quoted string.
+                    defaultOperator = new UnaryNode(value.Trim('"'), OperateNodeQuotes.Double);
+                }
+
+                var selectedContentType = GetSelectedContentType(model);
+                if (selectedContentType is not null)
+                {
+                    defaultTermName = GetDefaultTermName(selectedContentType);
+                }
+
+                if (defaultTermName != defaultTermNode.TermName || defaultOperator != defaultTermNode.Operation)
+                {
+                    model.FilterResult.TryRemove(defaultTermNode.TermName);
+                    model.FilterResult.TryAddOrReplace(new DefaultTermNode(defaultTermName, defaultOperator));
+                }
             }
         }
 
         // Because admin filters can add a different index to the query this must be added as a 'Query<ContentItem>()'.
         var query = _session.Query<ContentItem>();
 
-        if (model.FilterResult is not null)
+        if (hasFilterResult)
         {
             query = await model.FilterResult.ExecuteAsync(new ContentQueryContext(_serviceProvider, query));
         }
@@ -74,7 +88,7 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
         await _contentsAdminListFilters
             .InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger);
 
-        if (model.FilterResult is not null && defaultOperator != defaultTermNode?.Operation)
+        if (hasFilterResult && defaultOperator != defaultTermNode?.Operation)
         {
             // Restore the original 'defaultTermNode'.
             model.FilterResult.TryRemove(defaultTermName);
@@ -86,7 +100,7 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
 
     private static string GetSelectedContentType(ContentOptionsViewModel model)
     {
-        if (model.FilterResult is not null && string.IsNullOrEmpty(model.SelectedContentType))
+        if (string.IsNullOrEmpty(model.SelectedContentType))
         {
             var typeTermNode = model.FilterResult.OfType<ContentTypeFilterNode>().FirstOrDefault();
             if (typeTermNode is not null)
