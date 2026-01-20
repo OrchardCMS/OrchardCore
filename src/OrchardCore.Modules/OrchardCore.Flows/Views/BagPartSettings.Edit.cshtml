@@ -1,18 +1,19 @@
 @model OrchardCore.Flows.ViewModels.BagPartSettingsViewModel
 @using OrchardCore.Flows.Settings
 @using OrchardCore.Flows.Models
+
 <div class="mb-3">
     <label asp-for="Source" class="form-label">@T["Contained Content Types"]</label>
     <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
         <div class="form-check">
             <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@(BagPartSettingType.ContentTypes)" checked="@(Model.Source == BagPartSettingType.ContentTypes))">
-            <label for="SourceContentTypes">
+            <label for="SourceContentTypes" class="form-check-label">
                 @T["Content Types"]
             </label>
         </div>
         <div class="form-check">
             <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="@(BagPartSettingType.Stereotypes)" checked="@(Model.Source == BagPartSettingType.Stereotypes)">
-            <label for="SourceStereotype" class="form-label">
+            <label for="SourceStereotype" class="form-check-label">
                 @T["Stereotype"] <span class="hint">@T["All content types of these Stereotypes"]</span>
             </label>
         </div>
@@ -32,12 +33,19 @@
         <span class="hint">@T["The Stereotypes of the content types that this bag can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
     </div>
 </div>
+
 <div class="mb-3">
     <div class="w-sm-50">
         <label asp-for="DisplayType" class="form-label">@T["Display Type"]</label>
         <input asp-for="DisplayType" placeholder="Summary" class="form-control medium" />
     </div>
     <span class="hint">@T["The display type to use when rendering the content items. Default is Summary."]</span>
+</div>
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" asp-for="CollapseContainedItems">
+    <label class="form-check-label" asp-for="CollapseContainedItems">@T["Collapse Contained Items"]</label>
+    <span class="hint">@T["When checked, the contained items will be collapsed when the edit form is loaded."]</span>
 </div>
 
 <script at="Foot" asp-name="bagPartSettings">

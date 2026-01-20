@@ -7,3 +7,9 @@
     <span asp-validation-for="CronExpression"></span>
     <span class="hint">@T["The CRON expression."]</span>
 </div>
+<div class="mb-3 form-check" asp-validation-class-for="UseLocalTime">
+    <input type="checkbox" asp-for="UseLocalTime" class="form-check-input" />
+    <span asp-validation-for="UseLocalTime"></span>
+    <label asp-for="UseLocalTime" class="form-check-label">@T["Use site time zone"]</label>
+    <span class="hint dashed">@T["The CRON expression uses UTC by default. Check this box to use the site's time zone instead."]</span>
+</div>

@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using OrchardCore.Indexing.Models;
 
 namespace OrchardCore.Search.Abstractions;
 
@@ -6,5 +6,5 @@ public interface ISearchService
 {
     string Name { get; }
 
-    Task<SearchResult> SearchAsync(string indexName, string term, int start, int size);
+    Task<SearchResult> SearchAsync(IndexProfile index, string term, int start, int size);
 }

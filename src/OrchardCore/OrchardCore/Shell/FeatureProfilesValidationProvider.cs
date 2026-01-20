@@ -1,115 +1,111 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Models;
 
-namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Environment.Shell;
+
+public class FeatureProfilesValidationProvider : IFeatureValidationProvider
 {
-    public class FeatureProfilesValidationProvider : IFeatureValidationProvider
+    private readonly IExtensionManager _extensionManager;
+    private readonly FeatureProfilesRuleOptions _featureProfilesRuleOptions;
+    private readonly IShellHost _shellHost;
+    private readonly ShellSettings _shellSettings;
+
+    // Cached across requests as this is called a lot and can be calculated once.
+    private readonly Dictionary<string, bool> _allowed = new(StringComparer.OrdinalIgnoreCase);
+    private (bool NotFound, FeatureProfile FeatureProfile) _featureProfileLookup;
+
+    public FeatureProfilesValidationProvider(
+        IExtensionManager extensionManager,
+        IShellHost shellHost,
+        ShellSettings shellSettings,
+        IOptions<FeatureProfilesRuleOptions> featureOptions)
     {
-        private readonly IExtensionManager _extensionManager;
-        private readonly FeatureProfilesRuleOptions _featureProfilesRuleOptions;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+        _extensionManager = extensionManager;
+        _shellHost = shellHost;
+        _shellSettings = shellSettings;
+        _featureProfilesRuleOptions = featureOptions.Value;
+    }
 
-        // Cached across requests as this is called a lot and can be calculated once.
-        private readonly Dictionary<string, bool> _allowed = new(StringComparer.OrdinalIgnoreCase);
-        private (bool NotFound, FeatureProfile FeatureProfile) _featureProfileLookup;
+    public async ValueTask<bool> IsFeatureValidAsync(string id)
+    {
+        var profileNames = _shellSettings["FeatureProfile"];
 
-        public FeatureProfilesValidationProvider(
-            IExtensionManager extensionManager,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
-            IOptions<FeatureProfilesRuleOptions> featureOptions)
+        if (string.IsNullOrWhiteSpace(profileNames))
         {
-            _extensionManager = extensionManager;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
-            _featureProfilesRuleOptions = featureOptions.Value;
+            return true;
         }
 
-        public async ValueTask<bool> IsFeatureValidAsync(string id)
+        if (!_featureProfileLookup.NotFound)
         {
-            var profileNames = _shellSettings["FeatureProfile"];
+            var scope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
 
-            if (string.IsNullOrWhiteSpace(profileNames))
+            await scope.UsingAsync(async (scope) =>
             {
-                return true;
-            }
+                var featureProfilesService = scope.ServiceProvider.GetService<IFeatureProfilesService>();
 
-            if (!_featureProfileLookup.NotFound)
-            {
-                var scope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
+                var featureProfiles = await featureProfilesService.GetFeatureProfilesAsync();
 
-                await scope.UsingAsync(async (scope) =>
+                foreach (var profileName in profileNames.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
-                    var featureProfilesService = scope.ServiceProvider.GetService<IFeatureProfilesService>();
-
-                    var featureProfiles = await featureProfilesService.GetFeatureProfilesAsync();
-
-                    foreach (var profileName in profileNames.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                    if (featureProfiles.TryGetValue(profileName, out var featureProfile))
                     {
-                        if (featureProfiles.TryGetValue(profileName, out var featureProfile))
-                        {
-                            _featureProfileLookup = (false, featureProfile);
+                        _featureProfileLookup = (false, featureProfile);
 
-                            continue;
-                        }
-
-                        _featureProfileLookup = (true, null);
+                        continue;
                     }
-                });
-            }
 
-            // When the management feature is not enabled we need to pass feature validation.
-            if (_featureProfileLookup.NotFound || _featureProfileLookup.FeatureProfile is null)
-            {
-                return true;
-            }
+                    _featureProfileLookup = (true, null);
+                }
+            });
+        }
 
-            var isAllowed = IsAllowed(id);
+        // When the management feature is not enabled we need to pass feature validation.
+        if (_featureProfileLookup.NotFound || _featureProfileLookup.FeatureProfile is null)
+        {
+            return true;
+        }
+
+        var isAllowed = IsAllowed(id);
+        if (!isAllowed)
+        {
+            return false;
+        }
+
+        var dependencies = _extensionManager.GetFeatureDependencies(id);
+        foreach (var dependency in dependencies)
+        {
+            isAllowed = IsAllowed(dependency.Id);
             if (!isAllowed)
             {
                 return false;
             }
-
-            var dependencies = _extensionManager.GetFeatureDependencies(id);
-            foreach (var dependency in dependencies)
-            {
-                isAllowed = IsAllowed(dependency.Id);
-                if (!isAllowed)
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
-        private bool IsAllowed(string id)
+        return true;
+    }
+
+    private bool IsAllowed(string id)
+    {
+        if (!_allowed.TryGetValue(id, out var isAllowed))
         {
-            if (!_allowed.TryGetValue(id, out var isAllowed))
+            isAllowed = true;
+            foreach (var rule in _featureProfileLookup.FeatureProfile.FeatureRules)
             {
-                isAllowed = true;
-                foreach (var rule in _featureProfileLookup.FeatureProfile.FeatureRules)
+                if (_featureProfilesRuleOptions.Rules.TryGetValue(rule.Rule, out var ruleSet))
                 {
-                    if (_featureProfilesRuleOptions.Rules.TryGetValue(rule.Rule, out var ruleSet))
+                    // Does rule match?
+                    var result = ruleSet(rule.Expression, id);
+                    if (result.isMatch)
                     {
-                        // Does rule match?
-                        var result = ruleSet(rule.Expression, id);
-                        if (result.isMatch)
-                        {
-                            isAllowed = result.isAllowed;
-                        }
+                        isAllowed = result.isAllowed;
                     }
                 }
-                _allowed[id] = isAllowed;
             }
-
-            return isAllowed;
+            _allowed[id] = isAllowed;
         }
+
+        return isAllowed;
     }
 }

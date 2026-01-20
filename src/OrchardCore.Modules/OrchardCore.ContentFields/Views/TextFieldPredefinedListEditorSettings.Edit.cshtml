@@ -1,7 +1,7 @@
 @using OrchardCore.ContentFields.Settings
 @model OrchardCore.ContentFields.ViewModels.PredefinedListSettingsViewModel
 
-<script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs:2, vue-draggable:2"></script>
 <style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
 
 <script at="Foot">
@@ -33,10 +33,10 @@
                 </td>
                 <td class="text-center">
                     <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove element from list"]" class="btn">
-                        <i class="fa-solid fa-times" aria-hidden="true"></i>
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                     </a>
                 </td>
-                <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div></td>
+                <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div></td>
             </tr>
         </draggable>
         <tfoot>
@@ -93,7 +93,7 @@
     <div class="row">
         <div class="col-sm-6">
             <label asp-for="Options" class="form-label">@T["Options"]</label>
-            <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
+            <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i></a>
             <options-table :data="sharedState"></options-table>
             <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>
         </div>

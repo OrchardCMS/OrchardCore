@@ -1,3 +1,4 @@
+using System.Data;
 using YesSql;
 
 namespace OrchardCore.Data.YesSql;
@@ -15,4 +16,8 @@ public class YesSqlOptions
     public IAccessorFactory VersionAccessorFactory { get; set; }
 
     public IContentSerializer ContentSerializer { get; set; }
+
+    public bool EnableThreadSafetyChecks { get; set; }
+
+    public IsolationLevel IsolationLevel { get; set; } = IsolationLevel.ReadCommitted;
 }

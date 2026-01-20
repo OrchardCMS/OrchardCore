@@ -2,7 +2,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.Tests.Localization;
 
-public class PluralizationRule
+public static class PluralizationRule
 {
     public static readonly PluralizationRuleDelegate Czech = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
 

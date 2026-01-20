@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Workflows.ViewModels
+namespace OrchardCore.Workflows.ViewModels;
+
+public class SignalEventViewModel
 {
-    public class SignalEventViewModel
-    {
-        [Required]
-        public string SignalNameExpression { get; set; }
-    }
+    [Required]
+    public string SignalNameExpression { get; set; }
 }

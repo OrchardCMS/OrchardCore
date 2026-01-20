@@ -1,0 +1,13 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Themes.Models
+
+@model ShapeViewModel<ThemeEntry>
+
+@if (string.IsNullOrEmpty(Model.Value.Extension.Manifest.Description))
+{
+    return;
+}
+
+<p class="text-muted mb-2">
+    @Model.Value.Extension.Manifest.Description
+</p>

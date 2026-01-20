@@ -39,7 +39,7 @@
                 <li class="list-group-item">
                     <div class="d-flex">
                         <div class="me-auto">
-                            <span class="text-primary" title="@T["Settings"]"><i class="fa-solid fa-cog" aria-hidden="true"></i></span>
+                            <span class="text-primary" title="@T["Settings"]"><i class="fa-solid fa-gear" aria-hidden="true"></i></span>
                             <span class="text-primary"><a asp-action="Edit" asp-route-name="@task.Name">@task.Title</a></span>
                         </div>
                         <div>
@@ -81,7 +81,7 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="bootstrap-select" depends-on="bootstrap" at="Foot"></script>
+<script asp-name="bootstrap-select" at="Foot"></script>
 
 <script at="Foot">
     $(function () {

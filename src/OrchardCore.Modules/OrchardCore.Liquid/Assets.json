@@ -1,19 +1,9 @@
 [
-  {
-    "tsCompilerOptions": {
-      "removeComments":  true,
-      "target": "ES5",
-      "lib": [
-        "dom",
-        "ES2015",
-        "es2015.collection",
-        "es2015.iterable",
-        "es2015.promise"
-      ]
-    },
-    "inputs": [
-      "Assets/monaco/liquid-intellisense.ts"
-    ],
-    "output": "wwwroot/monaco/liquid-intellisense.js"
-  }
+    {
+        "action": "parcel",
+        "name": "liquid-intellisense2",
+        "source": "Assets/monaco/liquid-intellisense.ts",
+        "dest": "wwwroot/monaco/",
+        "tags": ["admin", "js"]
+    }
 ]

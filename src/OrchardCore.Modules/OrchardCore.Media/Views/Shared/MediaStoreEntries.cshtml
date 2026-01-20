@@ -5,7 +5,7 @@
     @foreach (var entry in Model.Entries)
     {
         var checkd = (Model.DirectoryPaths?.Contains(entry.Path) ?? false) || (Model.FilePaths?.Contains(entry.Path) ?? false);
-        var hasChildren = entry.Entries?.Count != 0;
+        var hasChildren = entry.Entries?.Count > 0;
 
         <li class="list-group-item">
             <div class="form-check">

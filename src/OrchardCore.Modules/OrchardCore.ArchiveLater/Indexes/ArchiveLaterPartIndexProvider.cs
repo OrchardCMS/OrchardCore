@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ArchiveLater.Models;
 using OrchardCore.ContentManagement;
@@ -69,7 +65,7 @@ public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
                     ContentItemId = part.ContentItem.ContentItemId,
                     ScheduledArchiveDateTimeUtc = part.ScheduledArchiveUtc,
                     Published = part.ContentItem.Published,
-                    Latest = part.ContentItem.Latest
+                    Latest = part.ContentItem.Latest,
                 };
             });
     }

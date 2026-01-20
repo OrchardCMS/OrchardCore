@@ -1,120 +1,115 @@
-using System;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Indexing.Core;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
-using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.AzureAI.Controllers;
+using OrchardCore.Recipes;
+using OrchardCore.Search.AzureAI.Core;
 using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
+using OrchardCore.Search.AzureAI.Flows;
 using OrchardCore.Search.AzureAI.Handlers;
+using OrchardCore.Search.AzureAI.Migrations;
+using OrchardCore.Search.AzureAI.Recipes;
 using OrchardCore.Search.AzureAI.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class Startup(ILogger<Startup> logger, IShellConfiguration shellConfiguration, IOptions<AdminOptions> adminOptions)
-    : StartupBase
+public sealed class Startup : StartupBase
 {
-    private readonly ILogger _logger = logger;
-    private readonly IShellConfiguration _shellConfiguration = shellConfiguration;
-    private readonly AdminOptions _adminOptions = adminOptions.Value;
+    internal readonly IStringLocalizer S;
+
+    public Startup(IStringLocalizer<Startup> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddAzureAISearchServices(_shellConfiguration, _logger);
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, AzureAISearchDefaultSettingsDisplayDriver>();
-    }
-
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-    {
-        var adminControllerName = typeof(AdminController).ControllerName();
-
-        routes.MapAreaControllerRoute(
-            name: "AzureAISearch.Index",
-            areaName: "OrchardCore.Search.AzureAI",
-            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Index",
-            defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "AzureAISearch.Create",
-            areaName: "OrchardCore.Search.AzureAI",
-            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Create",
-            defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "AzureAISearch.Edit",
-            areaName: "OrchardCore.Search.AzureAI",
-            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Edit/{indexName}",
-            defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "AzureAISearch.Delete",
-            areaName: "OrchardCore.Search.AzureAI",
-            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Delete/{indexName}",
-            defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "AzureAISearch.Reset",
-            areaName: "OrchardCore.Search.AzureAI",
-            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Reset/{indexName}",
-            defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "AzureAISearch.Rebuild",
-            areaName: "OrchardCore.Search.AzureAI",
-            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Rebuild/{indexName}",
-            defaults: new { controller = adminControllerName, action = nameof(AdminController.Rebuild) }
-        );
+        services.AddIndexProfileHandler<AzureAISearchIndexProfileHandler>();
+        services.AddIndexProfileHandler<AzureAISearchIndexHandler>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddAzureAISearchServices();
+        services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
+        services.AddDataMigration<AzureAISearchIndexSettingsMigrations>();
     }
 }
 
 [RequireFeatures("OrchardCore.Search")]
-public class SearchStartup : StartupBase
+public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<ISite>, AzureAISearchSettingsDisplayDriver>();
-        services.AddScoped<ISearchService, AzureAISearchService>();
-        services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
+        services.AddSearchService<AzureAISearchService>(AzureAISearchConstants.ProviderName);
     }
 }
 
 [RequireFeatures("OrchardCore.ContentTypes")]
-public class ContentTypesStartup : StartupBase
+public sealed class ContentTypesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-        services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Contents")]
+public sealed class ContentsStartup : StartupBase
+{
+    internal readonly IStringLocalizer S;
+
+    public ContentsStartup(IStringLocalizer<ContentsStartup> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<IndexProfile, AzureAISearchIndexProfileDisplayDriver>();
+
+        services
+            .AddIndexProfileHandler<AzureAISearchContentIndexProfileHandler>()
+            .AddAzureAISearchIndexingSource(IndexingConstants.ContentsIndexSource, o =>
+            {
+                o.DisplayName = S["Content in Azure AI Search"];
+                o.Description = S["Create an Azure AI Search index based on site contents."];
+            });
+    }
+}
+
+[RequireFeatures("OrchardCore.Recipes.Core")]
+public sealed class RecipeStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRecipeExecutionStep<AzureAISearchIndexRebuildStep>();
+        services.AddRecipeExecutionStep<AzureAISearchIndexResetStep>();
+        services.AddRecipeExecutionStep<AzureAISearchIndexSettingsStep>();
     }
 }
 
 [RequireFeatures("OrchardCore.Deployment")]
-public class DeploymentStartup : StartupBase
+public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AzureAISearchIndexDeploymentSource, AzureAISearchIndexDeploymentStep, AzureAISearchIndexDeploymentStepDriver>();
-        services.AddDeployment<AzureAISearchSettingsDeploymentSource, AzureAISearchSettingsDeploymentStep, AzureAISearchSettingsDeploymentStepDriver>();
         services.AddDeployment<AzureAISearchIndexRebuildDeploymentSource, AzureAISearchIndexRebuildDeploymentStep, AzureAISearchIndexRebuildDeploymentStepDriver>();
         services.AddDeployment<AzureAISearchIndexResetDeploymentSource, AzureAISearchIndexResetDeploymentStep, AzureAISearchIndexResetDeploymentStepDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Flows")]
+public sealed class FlowsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IAzureAISearchFieldIndexEvents, BagPartAzureAISearchFieldIndexEvents>();
     }
 }

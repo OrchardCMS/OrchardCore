@@ -5,11 +5,12 @@
 }
 <script asp-name="jQuery-ui-i18n" at="Foot"></script>
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.LocalDateTime)_FieldWrapper">
-    <label asp-for="LocalDateTime" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="LocalDateTime" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <div class="@Orchard.GetLimitedWidthWrapperClasses()">
             <div class="@Orchard.GetLimitedWidthClasses()">
-                <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" required="@settings.Required" />
+                <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" />
+                <span asp-validation-for="LocalDateTime"></span>
             </div>
         </div>
 

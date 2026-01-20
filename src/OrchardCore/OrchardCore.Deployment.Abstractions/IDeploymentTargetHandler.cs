@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.Deployment
+namespace OrchardCore.Deployment;
+
+public interface IDeploymentTargetHandler
 {
-    public interface IDeploymentTargetHandler
-    {
-        Task ImportFromFileAsync(IFileProvider fileProvider);
-    }
+    Task ImportFromFileAsync(IFileProvider fileProvider);
 }

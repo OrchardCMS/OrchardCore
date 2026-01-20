@@ -1,26 +1,24 @@
-using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace OrchardCore.Deployment.Core.Mvc
+namespace OrchardCore.Deployment.Core.Mvc;
+
+public class DeleteFileResultFilter : ResultFilterAttribute
 {
-    public class DeleteFileResultFilter : ResultFilterAttribute
+    public override void OnResultExecuted(ResultExecutedContext context)
     {
-        public override void OnResultExecuted(ResultExecutedContext context)
+        var result = context.Result as PhysicalFileResult;
+
+        if (result == null)
         {
-            var result = context.Result as PhysicalFileResult;
+            return;
+        }
 
-            if (result == null)
-            {
-                return;
-            }
+        var fileInfo = new FileInfo(result.FileName);
 
-            var fileInfo = new FileInfo(result.FileName);
-
-            if (fileInfo.Exists)
-            {
-                fileInfo.Delete();
-            }
+        if (fileInfo.Exists)
+        {
+            fileInfo.Delete();
         }
     }
 }

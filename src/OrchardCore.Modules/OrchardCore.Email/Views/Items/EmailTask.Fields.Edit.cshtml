@@ -1,3 +1,4 @@
+@using OrchardCore.Email.Workflows
 @using OrchardCore.Email.Workflows.ViewModels
 @model EmailTaskViewModel
 
@@ -51,17 +52,25 @@
 </div>
 
 <div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="IsHtmlBody" />
-        <label class="form-check-label" asp-for="IsHtmlBody">@T["Does the Body contain HTML?"]</label>
-        <span class="hint dashed">@T["If checked, indicates the body of the email message will be sent as HTML."]</span>
-    </div>
+    <label class="form-label">@T["Format"]</label>
+    <select class="form-select" asp-for="BodyFormat">
+        <option selected="@(Model.BodyFormat == MailMessageBodyFormat.All)" value="@MailMessageBodyFormat.All">@T["All"]</option>
+        <option selected="@(Model.BodyFormat == MailMessageBodyFormat.Text)" value="@MailMessageBodyFormat.Text">@T["Text"]</option>
+        <option selected="@(Model.BodyFormat == MailMessageBodyFormat.Html)" value="@MailMessageBodyFormat.Html">@T["Html"]</option>
+    </select>
+    <span class="hint">@T["The format of the email message."]</span>
 </div>
 
-<div class="mb-3" id="body">
-    <label asp-for="Body" class="form-label">@T["Body"]</label>
-    <textarea asp-for="Body" rows="5" class="form-control"></textarea>
-    <span class="hint">@T["The body of the email message. With Liquid support."]</span>
+<div class="mb-3" id="textBodyDiv">
+    <label asp-for="TextBody" class="form-label">@T["Text Body"]</label>
+    <textarea asp-for="TextBody" rows="5" class="form-control"></textarea>
+    <span class="hint">@T["The plain text body of the email message. With Liquid support."]</span>
+</div>
+
+<div class="mb-3" id="htmlBodyDiv">
+    <label asp-for="HtmlBody" class="form-label">@T["HTML Body"]</label>
+    <textarea asp-for="HtmlBody" rows="5" class="form-control"></textarea>
+    <span class="hint">@T["The HTML body of the email message. With Liquid support."]</span>
 </div>
 
 <style asp-name="codemirror"></style>
@@ -73,12 +82,41 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <script at="Foot">
-$(function () {
-    var bodyEditor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Body)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
+    $(function () {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.HtmlBody)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.TextBody)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        changeBodyFormat();
+
+        $('select').on('change', function () {
+            changeBodyFormat();
+        });
     });
-});
+
+    function changeBodyFormat() {
+        var selectedValue = $('select').val();
+        switch (selectedValue) {
+            case '@MailMessageBodyFormat.All':
+                $('#textBodyDiv').removeClass('d-none');
+                $('#htmlBodyDiv').removeClass('d-none');
+                break;
+            case '@MailMessageBodyFormat.Text':
+                $('#textBodyDiv').removeClass('d-none');
+                $('#htmlBodyDiv').addClass('d-none');
+                break;
+            case '@MailMessageBodyFormat.Html':
+                $('#textBodyDiv').addClass('d-none');
+                $('#htmlBodyDiv').removeClass('d-none');
+                break;
+        }
+    }
 </script>

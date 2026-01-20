@@ -7,4 +7,6 @@ public class TwoFactorLoginSettings
     public bool AllowRememberClientTwoFactorAuthentication { get; set; }
 
     public int NumberOfRecoveryCodesToGenerate { get; set; } = 5;
+
+    public bool UseSiteTheme { get; set; }
 }

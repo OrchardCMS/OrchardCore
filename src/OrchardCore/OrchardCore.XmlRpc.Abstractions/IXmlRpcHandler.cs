@@ -1,11 +1,9 @@
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace OrchardCore.XmlRpc
+namespace OrchardCore.XmlRpc;
+
+public interface IXmlRpcHandler
 {
-    public interface IXmlRpcHandler
-    {
-        void SetCapabilities(XElement element);
-        Task ProcessAsync(XmlRpcContext context);
-    }
+    void SetCapabilities(XElement element);
+    Task ProcessAsync(XmlRpcContext context);
 }

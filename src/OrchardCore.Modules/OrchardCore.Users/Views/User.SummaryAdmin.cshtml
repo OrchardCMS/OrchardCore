@@ -25,10 +25,22 @@
         }
     </div>
 
-    @if (Model.Actions != null)
-    {
-        <div>
+    <div>
+        @if (Model.Actions != null)
+        {
             @await DisplayAsync(Model.Actions)
-        </div>
-    }
+        }
+
+        @if (Model.ActionsMenu != null && Model.ActionsMenu.HasItems)
+        {
+            <div class="btn-group" title="@T["Actions"]">
+                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span>@T["Actions"]</span>
+                </button>
+                <ul class="actions-menu dropdown-menu dropdown-menu-end">
+                    @await DisplayAsync(Model.ActionsMenu)
+                </ul>
+            </div>
+        }
+    </div>
 </div>

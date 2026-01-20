@@ -7,14 +7,14 @@
       "name": {
         "text": "Add .liquid files in Views"
       },
-      "isVisible": "true"
+      "isVisible": true
     },
     {
       "id": "OrchardVersion",
       "name": {
         "text": "Orchard Version"
       },
-      "isVisible": "true"
+      "isVisible": true
     }
   ]
 }

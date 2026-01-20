@@ -23,38 +23,38 @@ The theme developer has full control over how and where navigation is displayed 
 This is a multi-purpose pagination component that renders links to specific page numbers.
 It can optionally render _First_ and _Last_ links.
 
-| Parameter | Type | Description |
-| --------- | ---- |------------ |
-| `Page` | `int` | Active page number. |
-| `PageSize` | `int` | Number of items per page. |
-| `TotalItemCount` | `double` | Total number of items (used to calculate the number of the last page). |
-| `Quantity` | `int?` | Number of pages to show, 7 if not specified. |
-| `FirstText` | `object` | Text of the "First" link, default: `S["<<"]` .|
-| `PreviousText` | `object` | Text of the "Previous" link, default: `S["<"]`. |
-| `NextText` | `object` | Text of the "Next" link, default: `S[">"]` .|
-| `LastText` | `object` | Text of the "Last" link, default: `S[">>"]`. |
-| `GapText` | `object` | Text of the "Gap" element, default: `S["..."]`. |
-| `PagerId` | `string` | An identifier for the pager. Used to create alternate like `Pager__[PagerId]`. |
-| `ShowNext` | `bool` | If true, the "Next" link is always displayed. |
+| Parameter        | Type     | Description                                                                    |
+|------------------|----------|--------------------------------------------------------------------------------|
+| `Page`           | `int`    | Active page number.                                                            |
+| `PageSize`       | `int`    | Number of items per page.                                                      |
+| `TotalItemCount` | `double` | Total number of items (used to calculate the number of the last page).         |
+| `Quantity`       | `int?`   | Number of pages to show, 7 if not specified.                                   |
+| `FirstText`      | `object` | Text of the "First" link, default: `S["<<"]` .                                 |
+| `PreviousText`   | `object` | Text of the "Previous" link, default: `S["<"]`.                                |
+| `NextText`       | `object` | Text of the "Next" link, default: `S[">"]` .                                   |
+| `LastText`       | `object` | Text of the "Last" link, default: `S[">>"]`.                                   |
+| `GapText`        | `object` | Text of the "Gap" element, default: `S["..."]`.                                |
+| `PagerId`        | `string` | An identifier for the pager. Used to create alternate like `Pager__[PagerId]`. |
+| `ShowNext`       | `bool`   | If true, the "Next" link is always displayed.                                  |
 
 Properties inherited from the `List` shape:
 
-| Parameter | Type | Description |
-| --------- | ---- |------------ |
-| `ItemTagName` | `string` | The HTML tag used for the pages, default: `li`. |
-| `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
-| `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
-| `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
-| `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
+| Parameter        | Type                         | Description                                               |
+|------------------|------------------------------|-----------------------------------------------------------|
+| `ItemTagName`    | `string`                     | The HTML tag used for the pages, default: `li`.           |
+| `ItemClasses`    | `List<string>`               | Classes that are assigned to the pages, default: _none_.  |
+| `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages.                |
+| `FirstClass`     | `string`                     | The HTML class used for the first page, default: `first`. |
+| `LastClass`      | `string`                     | The HTML tag used for last page, default: `last`.         |
 
 Properties inherited from the base Shape class:
 
-| Parameter | Type | Description |
-| --------- | ---- |------------ |
-| `Id` | `string` | The HTML id used for the pager, default: _none_. |
-| `TagName` | `string` | The HTML tag used for the pager, default: `ul`. |
+| Parameter    | Type                         | Description                                         |
+|--------------|------------------------------|-----------------------------------------------------|
+| `Id`         | `string`                     | The HTML id used for the pager, default: _none_.    |
+| `TagName`    | `string`                     | The HTML tag used for the pager, default: `ul`.     |
 | `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
-| `Classes` | `Dictionary<string, string>` | CSS classes to add to the main Tag element. |
+| `Classes`    | `Dictionary<string, string>` | CSS classes to add to the main Tag element.         |
 
 The `PagerId` property is used to create templates for specific instances. For instance, assigning
 the value `MainBlog` to `PagerId` and then rendering the pager will look for a template named
@@ -77,32 +77,32 @@ would in turn look for the template `Pager-MainBlog.Previous.cshtml`.
 
 This shape renders a pager that is comprised of two links: _Previous_ and _Next_.
 
-| Parameter | Type | Description |
-| --------- | ---- |------------ |
-| `PreviousClass` | `string` | The HTML class used for the _Previous_ link, default: _none_. |
-| `NextClass` | `string` | The HTML class used for the _Next_ link, default: _none_. |
-| `PreviousText` | `object` | Text of the "Previous" link, default: `S["<"]`. |
-| `NextText` | `object` | Text of the "Next" link, default: `S[">"]`. |
-| `UrlParams` | `Dictionary<string, string>` | QueryString params to pass to the pager. Parameter name and value in that order |
+| Parameter       | Type                         | Description                                                                     |
+|-----------------|------------------------------|---------------------------------------------------------------------------------|
+| `PreviousClass` | `string`                     | The HTML class used for the _Previous_ link, default: _none_.                   |
+| `NextClass`     | `string`                     | The HTML class used for the _Next_ link, default: _none_.                       |
+| `PreviousText`  | `object`                     | Text of the "Previous" link, default: `S["<"]`.                                 |
+| `NextText`      | `object`                     | Text of the "Next" link, default: `S[">"]`.                                     |
+| `UrlParams`     | `Dictionary<string, string>` | QueryString params to pass to the pager. Parameter name and value in that order |
 
 Properties inherited from the `List` shape:
 
-| Parameter | Type | Description |
-| --------- | ---- |------------ |
-| `ItemTagName` | `string` | The HTML tag used for the pages, default: `li`. |
-| `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
-| `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
-| `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
-| `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
+| Parameter        | Type                         | Description                                               |
+|------------------|------------------------------|-----------------------------------------------------------|
+| `ItemTagName`    | `string`                     | The HTML tag used for the pages, default: `li`.           |
+| `ItemClasses`    | `List<string>`               | Classes that are assigned to the pages, default: _none_.  |
+| `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages.                |
+| `FirstClass`     | `string`                     | The HTML class used for the first page, default: `first`. |
+| `LastClass`      | `string`                     | The HTML tag used for last page, default: `last`.         |
 
 Properties inherited from the base Shape class:
 
-| Parameter | Type | Description |
-| --------- | ---- |------------ |
-| `Id` | `string` | The HTML id used for the pager, default: _none_. |
-| `TagName` | `string` | The HTML tag used for the pager, default: `ul`. |
+| Parameter    | Type                         | Description                                         |
+|--------------|------------------------------|-----------------------------------------------------|
+| `Id`         | `string`                     | The HTML id used for the pager, default: _none_.    |
+| `TagName`    | `string`                     | The HTML tag used for the pager, default: `ul`.     |
 | `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
-| `Classes` | `Dictionary<string, string>` | CSS classes to add to the main Tag element. |
+| `Classes`    | `Dictionary<string, string>` | CSS classes to add to the main Tag element.         |
 
 A slim pager can be further customized by defining templates for the following shapes:
 
@@ -146,31 +146,44 @@ Navigation can be extended, through code, by implementing `INavigationProvider` 
 Below is a sample implementation of an `INavigationProvider` used to extend the "main" navigation section of the site.
 
 ```csharp
-public class MainMenu : INavigationProvider
+public sealed class MainMenu : INavigationProvider
+{
+    internal readonly IStringLocalizer S;
+
+    public MainMenu(IStringLocalizer<MainMenu> localizer)
     {
-        private readonly IStringLocalizer S;
-
-        public MainMenu(IStringLocalizer<MainMenu> localizer)
-        {
-            S = localizer;
-        }
-
-        public async Task BuildNavigation(string name, NavigationBuilder builder)
-        {
-            //Only interact with the "main" navigation menu here.
-            if (!String.Equals(name, "main", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            builder
-                .Add(S["Notifications"], S["Notifications"], layers => layers
-                    .Action("Index", "Template", new { area = "CRT.Client.OrchardModules.CommunicationTemplates", groupId = 1 })
-                    .LocalNav()
-                );
-        }
+        S = localizer;
     }
+
+    public ValueTask BuildNavigation(string name, NavigationBuilder builder)
+    {
+        //Only interact with the "main" navigation menu here.
+        if (!String.Equals(name, "main", StringComparison.OrdinalIgnoreCase))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        builder
+            .Add(S["Notifications"], S["Notifications"], notifications => notifications
+                .Action("Index", "Template", new { area = "CRT.Client.OrchardModules.CommunicationTemplates", groupId = "1" })
+                .LocalNav()
+            );
+
+        return ValueTask.CompletedTask;
+    }
+}
 ```  
+
+### Implementing `INavigationProvider` to Add Menu Items
+
+As mentioned about, you can implement the `INavigationProvider` interface to add menu items to any menu in your application. Below are specific implementations to guide you:
+
+| **Class Name**            | **Description**                                                                    |
+|---------------------------|------------------------------------------------------------------------------------|
+| `NamedNavigationProvider` | Inherit from this class to add menu items to a menu with a specific name.          |
+| `AdminNavigationProvider` | Inherit from this class to add menu items that will only appear in the admin menu. |
+
+
 
 This provider will be called as long as the site is using a theme that includes a line similar to the following, which causes the navigation menu to be rendered by your theme at the location specified:
 `@await DisplayAsync(await New.Navigation(MenuName: "main", RouteData: @ViewContext.RouteData))`
@@ -224,3 +237,7 @@ At this time, the Admin Menu is the only navigation with code dynamically adding
         return View(viewModel);
     }
     ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3w68lDwUzFQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

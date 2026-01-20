@@ -24,7 +24,8 @@ using OrchardCore.Modules.Manifest;
     Description = "Authenticates users from Meta.",
     Dependencies =
     [
-        FacebookConstants.Features.Core
+        FacebookConstants.Features.Core,
+        "OrchardCore.Users.ExternalAuthentication",
     ]
 )]
 

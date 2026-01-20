@@ -1,0 +1,169 @@
+@using OrchardCore.Users.Handlers
+@model OrchardCore.Users.Models.ExternalLoginSettings
+
+<h5 class="mb-3">@T["Configuring External Authentication for User Login with Third-Party Providers"]</h5>
+
+<div class="mb-3" asp-validation-class-for="UseExternalProviderIfOnlyOneDefined">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="UseExternalProviderIfOnlyOneDefined" />
+        <span asp-validation-for="UseExternalProviderIfOnlyOneDefined"></span>
+        <label class="form-check-label" asp-for="UseExternalProviderIfOnlyOneDefined">@T["Use external provider for login."]</label>
+        <span class="hint dashed">@T["If only one external provider is defined, auto challenge the provider to login. You should also configure registration options"]</span>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="UseScriptToSyncProperties">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="UseScriptToSyncProperties" />
+        <span asp-validation-for="UseScriptToSyncProperties"></span>
+        <label class="form-check-label" asp-for="UseScriptToSyncProperties">@T["Use a script to set user roles, user claims and user properties based on external provider claims"]</label>
+        <span class="hint dashed">
+            @T["If selected, none of the implemented {0}, if any, will be triggered.", nameof(IExternalLoginEventHandler)]
+        </span>
+    </div>
+    <div class="mb-3 form-control" id="doc_editor" asp-for="Text" style="min-height: 500px;max-width:750px"></div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SyncPropertiesScript" id="SyncRolesScript_wrapper">
+    <button type="button" class="btn btn-secondary mb-2" onclick="resetScript()">@T["Reset Script"]</button>
+    <div class="mb-3" asp-validation-class-for="SyncPropertiesScript" id="@Html.IdFor(x => x.SyncPropertiesScript)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
+    <textarea asp-for="SyncPropertiesScript" hidden>@Html.Raw(Model.SyncPropertiesScript)</textarea>
+</div>
+
+<script asp-name="monaco" at="Foot"></script>
+<script at="Foot" depends-on="monaco">
+
+    function resetScript() {
+        codeEditor.getModel().setValue(
+            '/* Uncomment to map AzureAd\n' + 'switch (context.loginProvider) {\n' +
+            '    case "AzureAd":\n' +
+            '        context.claimsToUpdate={"displayName":"UserDisplayName"}\n' +
+            '        context.propertiesToUpdate={"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}}\n' +
+            '        context.externalClaims.forEach(claim => {\n' +
+            '            if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
+            '                switch (claim.value) {\n' +
+            '                    case "Writer":\n' +
+            '                        context.rolesToAdd.push("Author");\n' +
+            '                        break;\n' +
+            '                    case "Admin":\n' +
+            '                        context.rolesToAdd.push("Administrator");\n' +
+            '                        break;\n' +
+            '                    default:\n' +
+            '                        log("Warning", "Role " + claim.value + " was not handled");\n' +
+            '                        break;\n' +
+            '                }\n' +
+            '            }\n' +
+            '        });\n' +
+            '        break;\n' +
+            '    default:\n' +
+            '        log("Warning", "Provider " + context.loginProvider + " was not handled");\n' +
+            '        break;\n' +
+            '}\n' +
+            '*/\n'
+        );
+    }
+
+// don't format here.
+const suggestion = `/**                                                                     
+* Use the loginProvider and externalClaims properties of the context variable to inspect
+* who authenticated the user and with what claims. Check currentRoles property and apply
+* your business logic to fill the rolesToAdd and rolesToRemove arrays in order to update
+*/
+const context = {} as Context;
+type Context = {
+    readonly user: {  
+        userName: string;
+        userRoles: string[];
+        userClaims: { claimType: string; claimValue: string; }[];
+        userProperties: { [key: string]: string };
+    },
+    readonly loginProvider: string,
+    rolesToAdd: string[];
+    rolesToRemove: string[];
+    claimsToUpdate: { claimType: string; claimValue: string; }[];
+    claimsToRemove: { claimType: string; claimValue: string; }[];
+    propertiesToUpdate: { [key: string]: string };
+    externalClaims: readonly [{
+        valueType: string;
+        type: string;
+        value: string;
+        subject: string;
+        issuer: string;
+        originalIssuer: string;
+        properties: { [key: string]: string };
+    }]
+}`
+    var codeEditor;
+    document.addEventListener('DOMContentLoaded', function () {
+        require(['vs/editor/editor.main'], function () {
+
+            const html = document.documentElement;
+            const mutationObserver = new MutationObserver(setTheme);
+            mutationObserver.observe(html, { attributes: true });
+
+            function setTheme() {
+                var theme = html.dataset.bsTheme;
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    monaco.editor.setTheme('vs-dark')
+                } else {
+                    monaco.editor.setTheme('vs')
+                }
+            }
+            setTheme();
+
+            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.SyncPropertiesScript)_editor'), {
+                automaticLayout: true,
+                language: "javascript"
+            });
+            codeEditor = editor;
+            monaco.languages.typescript.javascriptDefaults.addExtraLib(suggestion + "const context = {} as Context", 'suggestion.d.ts');
+
+            var docEditor = monaco.editor.create(document.getElementById('doc_editor'), {
+                value: suggestion,
+                automaticLayout: true,
+                language: "typescript",
+                readOnly: true, // make the editor read-only
+                lineNumbers: "off", // hide line numbers
+                glyphMargin: false, // hide the glyph margin (which includes the line numbers)
+                lineDecorationsWidth: 0, // set the line decorations width to 0 to hide the line numbers
+                minimap: { enabled: false }, // hide the minimap
+                scrollbar: { horizontal: "hidden", vertical: "hidden" }, // hide the scrollbar
+                overviewRuler: { visible: false }, // hide the overview ruler
+                scrollbar: {
+                    handleMouseWheel: false
+                }
+            });
+            var textArea = document.getElementById('@Html.IdFor(x => x.SyncPropertiesScript)');
+            if (!textArea.value) {
+                resetScript();
+            } else {
+                editor.getModel().setValue(textArea.value);
+            }
+
+            window.addEventListener("submit", function () {
+                textArea.value = editor.getValue();
+            });
+        });
+    });
+
+</script>
+
+<script at="Foot">
+    function toggleEditorState() {
+        var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncProperties)');
+
+        if (syncRolesCheckbox.checked) {
+            $("#SyncRolesScript_wrapper,#doc_editor").show()
+
+        } else {
+            $("#SyncRolesScript_wrapper,#doc_editor").hide()
+        }
+    }
+
+    $(function () {
+        var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncProperties)');
+
+        syncRolesCheckbox.addEventListener("change", toggleEditorState);
+        toggleEditorState();
+    });
+</script>

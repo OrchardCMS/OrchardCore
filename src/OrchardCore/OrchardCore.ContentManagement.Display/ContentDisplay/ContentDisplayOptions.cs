@@ -1,122 +1,118 @@
-using System;
 using System.Collections.Frozen;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace OrchardCore.ContentManagement.Display.ContentDisplay
+namespace OrchardCore.ContentManagement.Display.ContentDisplay;
+
+public class ContentDisplayOptions
 {
-    public class ContentDisplayOptions
+    private readonly List<ContentPartDisplayOption> _contentParts = [];
+    private readonly List<ContentFieldDisplayOption> _contentFields = [];
+
+    private FrozenDictionary<string, ContentPartDisplayOption> _contentPartOptions;
+    private FrozenDictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
+
+    public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions
+        => _contentPartOptions ??= _contentParts.ToFrozenDictionary(k => k.Type.Name);
+
+    public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions
+        => _contentFieldOptions ??= _contentFields.ToFrozenDictionary(k => k.Type.Name);
+
+    internal void ForContentPartDisplayMode(Type contentPartType, Type displayDriverType, Func<string, bool> predicate)
     {
-        private readonly List<ContentPartDisplayOption> _contentParts = [];
-        private readonly List<ContentFieldDisplayOption> _contentFields = [];
-
-        private FrozenDictionary<string, ContentPartDisplayOption> _contentPartOptions;
-        private FrozenDictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
-
-        public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions
-            => _contentPartOptions ??= _contentParts.ToFrozenDictionary(k => k.Type.Name);
-
-        public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions
-            => _contentFieldOptions ??= _contentFields.ToFrozenDictionary(k => k.Type.Name);
-
-        internal void ForContentPartDisplayMode(Type contentPartType, Type displayDriverType, Func<string, bool> predicate)
+        if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(displayDriverType))
         {
-            if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(displayDriverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
-            }
-
-            var option = GetOrAddContentPartDisplayOption(contentPartType);
-            option.ForDisplayMode(displayDriverType, predicate);
+            throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
         }
 
-        internal void ForContentPartEditor(Type contentPartType, Type editorDriverType, Func<string, bool> predicate)
-        {
-            if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(editorDriverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
-            }
+        var option = GetOrAddContentPartDisplayOption(contentPartType);
+        option.ForDisplayMode(displayDriverType, predicate);
+    }
 
-            var option = GetOrAddContentPartDisplayOption(contentPartType);
-            option.ForEditor(editorDriverType, predicate);
+    internal void ForContentPartEditor(Type contentPartType, Type editorDriverType, Func<string, bool> predicate)
+    {
+        if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(editorDriverType))
+        {
+            throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
         }
 
-        internal void RemoveContentPartDisplayDriver(Type contentPartType, Type driverType)
-        {
-            if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(driverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
-            }
+        var option = GetOrAddContentPartDisplayOption(contentPartType);
+        option.ForEditor(editorDriverType, predicate);
+    }
 
-            var option = GetOrAddContentPartDisplayOption(contentPartType);
-            option.RemoveDisplayDriver(driverType);
+    internal void RemoveContentPartDisplayDriver(Type contentPartType, Type driverType)
+    {
+        if (!typeof(IContentPartDisplayDriver).IsAssignableFrom(driverType))
+        {
+            throw new ArgumentException("The type must implement " + nameof(IContentPartDisplayDriver));
         }
 
-        private ContentPartDisplayOption GetOrAddContentPartDisplayOption(Type contentPartType)
+        var option = GetOrAddContentPartDisplayOption(contentPartType);
+        option.RemoveDisplayDriver(driverType);
+    }
+
+    private ContentPartDisplayOption GetOrAddContentPartDisplayOption(Type contentPartType)
+    {
+        if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
         {
-            if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
-            {
-                throw new ArgumentException("The type must inherit from " + nameof(ContentPart));
-            }
-
-            var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
-            if (option == null)
-            {
-                option = new ContentPartDisplayOption(contentPartType);
-                _contentParts.Add(option);
-            }
-
-            return option;
+            throw new ArgumentException("The type must inherit from " + nameof(ContentPart));
         }
 
-        internal void ForContentFieldDisplayMode(Type contentFieldType, Type displayModeDriverType, Func<string, bool> predicate)
+        var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
+        if (option == null)
         {
-            if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(displayModeDriverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
-            }
-
-            var option = GetOrAddContentFieldDisplayOption(contentFieldType);
-            option.ForDisplayMode(displayModeDriverType, predicate);
+            option = new ContentPartDisplayOption(contentPartType);
+            _contentParts.Add(option);
         }
 
-        internal void ForContentFieldEditor(Type contentFieldType, Type editorDriverType, Func<string, bool> predicate)
-        {
-            if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(editorDriverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
-            }
+        return option;
+    }
 
-            var option = GetOrAddContentFieldDisplayOption(contentFieldType);
-            option.ForEditor(editorDriverType, predicate);
+    internal void ForContentFieldDisplayMode(Type contentFieldType, Type displayModeDriverType, Func<string, bool> predicate)
+    {
+        if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(displayModeDriverType))
+        {
+            throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
         }
 
-        internal void RemoveContentFieldDisplayDriver(Type contentPartType, Type driverType)
-        {
-            if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(driverType))
-            {
-                throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
-            }
+        var option = GetOrAddContentFieldDisplayOption(contentFieldType);
+        option.ForDisplayMode(displayModeDriverType, predicate);
+    }
 
-            var option = GetOrAddContentFieldDisplayOption(contentPartType);
-            option.RemoveDisplayDriver(driverType);
+    internal void ForContentFieldEditor(Type contentFieldType, Type editorDriverType, Func<string, bool> predicate)
+    {
+        if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(editorDriverType))
+        {
+            throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
         }
 
-        private ContentFieldDisplayOption GetOrAddContentFieldDisplayOption(Type contentFieldType)
+        var option = GetOrAddContentFieldDisplayOption(contentFieldType);
+        option.ForEditor(editorDriverType, predicate);
+    }
+
+    internal void RemoveContentFieldDisplayDriver(Type contentPartType, Type driverType)
+    {
+        if (!typeof(IContentFieldDisplayDriver).IsAssignableFrom(driverType))
         {
-            if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
-            {
-                throw new ArgumentException("The type must inherit from " + nameof(ContentField));
-            }
-
-            var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
-            if (option == null)
-            {
-                option = new ContentFieldDisplayOption(contentFieldType);
-                _contentFields.Add(option);
-            }
-
-            return option;
+            throw new ArgumentException("The type must implement " + nameof(IContentFieldDisplayDriver));
         }
+
+        var option = GetOrAddContentFieldDisplayOption(contentPartType);
+        option.RemoveDisplayDriver(driverType);
+    }
+
+    private ContentFieldDisplayOption GetOrAddContentFieldDisplayOption(Type contentFieldType)
+    {
+        if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
+        {
+            throw new ArgumentException("The type must inherit from " + nameof(ContentField));
+        }
+
+        var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
+        if (option == null)
+        {
+            option = new ContentFieldDisplayOption(contentFieldType);
+            _contentFields.Add(option);
+        }
+
+        return option;
     }
 }

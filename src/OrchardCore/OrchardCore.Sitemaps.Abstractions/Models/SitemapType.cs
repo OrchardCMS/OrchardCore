@@ -1,49 +1,47 @@
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Sitemaps.Models
+namespace OrchardCore.Sitemaps.Models;
+
+/// <summary>
+/// Abstract to provide a type of sitemap.
+/// </summary>
+public abstract class SitemapType : Document
 {
+    private string _path;
+
     /// <summary>
-    /// Abstract to provide a type of sitemap.
+    /// Sitemap id.
     /// </summary>
-    public abstract class SitemapType : Document
+    public string SitemapId { get; set; }
+
+    /// <summary>
+    /// Name of sitemap.
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
+    /// When false sitemap will not be included in routing.
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// Sitemap path.
+    /// </summary>
+    public string Path
     {
-        private string _path;
-
-        /// <summary>
-        /// Sitemap id.
-        /// </summary>
-        public string SitemapId { get; set; }
-
-        /// <summary>
-        /// Name of sitemap.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// When false sitemap will not be included in routing.
-        /// </summary>
-        public bool Enabled { get; set; } = true;
-
-        /// <summary>
-        /// Sitemap path.
-        /// </summary>
-        public string Path
-        {
-            get => _path;
-            set => _path = value.TrimStart('/');
-        }
-
-        /// <summary>
-        /// Sitemap unique file name used for caching.
-        /// </summary>
-        [JsonIgnore]
-        public string CacheFileName => Name + "_" + Identifier + Sitemap.PathExtension;
-
-        /// <summary>
-        /// Sitemap sources contained by this sitemap.
-        /// </summary>
-        public List<SitemapSource> SitemapSources { get; set; } = [];
+        get => _path;
+        set => _path = value.TrimStart('/');
     }
+
+    /// <summary>
+    /// Sitemap unique file name used for caching.
+    /// </summary>
+    [JsonIgnore]
+    public string CacheFileName => Name + "_" + Identifier + Sitemap.PathExtension;
+
+    /// <summary>
+    /// Sitemap sources contained by this sitemap.
+    /// </summary>
+    public List<SitemapSource> SitemapSources { get; set; } = [];
 }

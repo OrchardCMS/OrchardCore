@@ -1,17 +1,19 @@
 @model ListsAdminNodeViewModel
 
-<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head"></style>
 
-<script asp-name="vuejs" at="Foot"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="jQuery"></script>
+<script asp-name="vuejs" at="Foot" version="2"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="bootstrap, jQuery, jQuery.nestedSortable, fontawesome-iconpicker"></script>
 
 <h5>@T["Lists"]</h5>
 
 <div class="row mb-4">
     <div class="col-xl-6">
         <div class="mb-3">
-            <label asp-for="ContentType" class="form-label"></label>
-            <select asp-for="ContentType" asp-items="Model.ContentTypes" class="form-select"></select>
+            <label asp-for="ContentType" class="form-label">@T["Content type"]</label>
+            <select asp-for="ContentType" asp-items="Model.ContentTypes" class="form-select">
+                <option value="">@T["Select a content type"]</option>
+            </select>
         </div>
 
         <div class="mb-3">

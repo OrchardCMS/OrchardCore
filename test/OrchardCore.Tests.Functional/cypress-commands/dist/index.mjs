@@ -1,9 +1,9 @@
 Cypress.Commands.add("login", function({ prefix = ""}={}) {
   const config = Cypress.config('orchard');
   cy.visit(`${prefix}/login`);
-  cy.get("#UserName").type(config.username);
-  cy.get("#Password").type(config.password);
-  cy.get("#UserName").closest('form').submit();
+  cy.get("#LoginForm_UserName").type(config.username);
+  cy.get("#LoginForm_Password").type(config.password);
+  cy.get("#LoginForm_UserName").closest('form').submit();
 });
 
 Cypress.Commands.add("visitTenantSetupPage", ({ name }) => {

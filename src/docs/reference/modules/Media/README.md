@@ -118,7 +118,7 @@ The quality used when compressing the image.
 
 #### `format` (or fifth argument)
 
-The image format to use when processing the ouput of an image.
+The image format to use when processing the output of an image.
 
 Supported formats include `bmp`, `gif`, `jpg`, `png`, `tga`.
 
@@ -151,13 +151,13 @@ The anchor of the new image.
 
 The background color of the new image when `mode` is `pad` or `boxpad`. Examples of valid values: `white`, `ffff00`, `ffff0080`, `128,64,32` and `128,64,32,16`.
 
-#### bgcolor Input
+#### `bgcolor` Input
 
 ```
 {{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'pad', bgcolor:'white' }}
 ```
 
-#### bgcolor Output
+#### `bgcolor` Output
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=pad&bgcolor=white" />`
 
@@ -195,11 +195,11 @@ To obtain the correct URL for a resized asset use `AssetUrl` with the optional w
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop)`
 
-To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height, resizeMode, quality and format parameters, e.g.:
+To obtain the correct URL for a resized asset use `AssetUrl` with the optional `width`, `height`, `resizeMode`, `quality` and `format` parameters, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, quality: 50, format: Format.Jpg)`
 
-To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height, resizeMode and bgcolor, e.g.:
+To obtain the correct URL for a resized asset use `AssetUrl` with the optional `width`, `height`, `resizeMode` and `bgcolor`, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Pad, bgcolor: "white")`
 
@@ -284,85 +284,98 @@ Keep these things in mind when working with the deployment step editor:
 The following configuration values are used by default and can be customized:
 
 ```json
-    "OrchardCore_Media": {
+{
+  "OrchardCore_Media": {
+    // The accepted sizes for custom width and height.
+    // When the 'UseTokenizedQueryString' is True (default) all sizes are valid.
+    "SupportedSizes": [
+      16,
+      32,
+      50,
+      100,
+      160,
+      240,
+      480,
+      600,
+      1024,
+      2048
+    ],
+    // The number of days to store images in the browser cache.
+    // NB: To control cache headers for module static assets, refer to the Orchard Core Modules Section.
+    "MaxBrowserCacheDays": 30,
+    // The number of days to store secure media files in the browser cache.
+    // Set to 0 (default) to disable caching secure files.
+    "MaxSecureFilesBrowserCacheDays": 0,
+    // The number of days a cached resized media item will be valid for, before being rebuilt on request.
+    "MaxCacheDays": 365,
+    // The maximum size of an uploaded file in bytes. 
+    // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
+    "MaxFileSize": 30000000,
+    // A CDN base url that will be prefixed to the request path when serving images.
+    "CdnBaseUrl": "https://your-cdn.com",
+    // The path used when serving media assets.
+    "AssetsRequestPath": "/media",
+    // The name of the folder used to store media assets inside the App_Data folder.
+    "AssetsPath": "Media",
+    // Whether to use a token in the query string to prevent disc filling.
+    "UseTokenizedQueryString": true,
+    // The list of allowed file extensions
+    "AllowedFileExtensions": [
+      // Images
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".gif",
+      ".ico",
+      ".svg",
+      // Documents
+      ".pdf",
+      // Portable Document Format; Adobe Acrobat
+      ".doc",
+      // Microsoft Word Document
+      ".docx",
+      ".ppt",
+      // Microsoft PowerPoint Presentation
+      ".pptx",
+      ".pps",
+      ".ppsx",
+      ".odt",
+      // OpenDocument Text Document
+      ".xls",
+      // Microsoft Excel Document
+      ".xlsx",
+      ".psd",
+      // Adobe Photoshop Document
 
-      // The accepted sizes for custom width and height.
-      // When the 'UseTokenizedQueryString' is True (default) all sizes are valid.
-      "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
-
-      // The number of days to store images in the browser cache.
-      // NB: To control cache headers for module static assets, refer to the Orchard Core Modules Section.
-      "MaxBrowserCacheDays": 30,
-
-      // The number of days a cached resized media item will be valid for, before being rebuilt on request.
-      "MaxCacheDays": 365,
-
-      // The maximum size of an uploaded file in bytes. 
-      // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
-      "MaxFileSize": 30000000,
-
-      // A CDN base url that will be prefixed to the request path when serving images.
-      "CdnBaseUrl": "https://your-cdn.com",
-
-      // The path used when serving media assets.
-      "AssetsRequestPath": "/media",
-
-      // The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
-      "AssetsPath": "Media",
-
-      // Whether to use a token in the query string to prevent disc filling.
-      "UseTokenizedQueryString": true,
-
-      // The list of allowed file extensions
-      "AllowedFileExtensions": [
-
-            // Images
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".ico",
-            ".svg",
-
-            // Documents
-            ".pdf", // Portable Document Format; Adobe Acrobat
-            ".doc", // Microsoft Word Document
-            ".docx",
-            ".ppt", // Microsoft PowerPoint Presentation
-            ".pptx",
-            ".pps",
-            ".ppsx",
-            ".odt", // OpenDocument Text Document
-            ".xls", // Microsoft Excel Document
-            ".xlsx",
-            ".psd", // Adobe Photoshop Document
-
-            // Audio
-            ".mp3",
-            ".m4a",
-            ".ogg",
-            ".wav",
-
-            // Video
-            ".mp4", // MPEG-4
-            ".m4v",
-            ".mov", // QuickTime
-            ".wmv", // Windows Media Video
-            ".avi",
-            ".mpg",
-            ".ogv", // Ogg
-            ".3gp", // 3GPP
-        ],
-
-      // The Content Security Policy to apply to assets served from the media library.
-      "ContentSecurityPolicy" : "default-src 'self'; style-src 'unsafe-inline'",
-
-      // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
-      "MaxUploadChunkSize": 104857600,
-
-      // The lifetime of temporary files created during upload. Defaults to 1 hour.
-      "TemporaryFileLifetime": "01:00:00"
-    }
+      // Audio
+      ".mp3",
+      ".m4a",
+      ".ogg",
+      ".wav",
+      // Video
+      ".mp4",
+      // MPEG-4
+      ".m4v",
+      ".mov",
+      // QuickTime
+      ".wmv",
+      // Windows Media Video
+      ".avi",
+      ".mpg",
+      ".ogv",
+      // Ogg
+      ".3gp",
+      // 3GPP
+      ".webm"
+    ],
+    // The Content Security Policy to apply to assets served from the media library.
+    "ContentSecurityPolicy": "default-src 'self'; style-src 'unsafe-inline'",
+    // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
+    "MaxUploadChunkSize": 104857600,
+    // The lifetime of temporary files created during upload. Defaults to 1 hour.
+    "TemporaryFileLifetime": "01:00:00"
+  }
+}
 ```
 
 To configure the `StaticFileOptions` in more detail, including event handlers, for the Media Library `StaticFileMiddleware` apply:
@@ -415,9 +428,6 @@ When specifying a media profile with either the liquid, razor helper, or tag hel
     <img asset-src="Model.Paths[0]" img-profile="medium" img-resize-mode="Crop"/>
     ```
 
-!!! note
-    Media Profiles are only available from the [Preview Feed](../../../getting-started/preview-package-source)
-
 ## Media Text
 
 Media text is an optional setting, on by default, on the `MediaField`.
@@ -457,9 +467,6 @@ The `Anchors[]` is a less well known property of a `MediaField` and can be acces
 
 The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `Anchor` value.
 
-!!! note
-    Anchors are only available from the [Preview Feed](../../../getting-started/preview-package-source)
-
 ## Query string tokens
 
 When resizing images, the query string command values are, by default, signed with an HMAC signature that is unique to the tenant.
@@ -478,8 +485,7 @@ When the query string is signed with a token any width, height value may be used
 `<img src="/media/kittens.jpg?width=101&height=241&token=0J3hyv6jIPEsSdlvTCrf30fIdygkpmrF6mphqgYQyas%3D">`
 
 !!! note
-    Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
-    Prior to this the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
+    Prior to tokens the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
 
 ## Media Content Search
 
@@ -501,7 +507,31 @@ To set up indexing for Media do the following:
 3. Configure the new field to be used for search. You can do this from the admin under Search, Settings, Search, and adding the name of the new field under "Default search fields" (arriving at something like "Content.ContentItem.FullText, BlogPost.File.MediaText, BlogPost.File.FileText").
 4. Try searching for content only available in the Media Text of selected media files, or referenced PDF files. You should see corresponding results.
 
+## Secure Media
+
+The Secure Media feature enhances security and control over media files within the Media module. 
+
+When enabled, administrators can set view permissions for the root media folder and each first-level folder within the media root. This allows for restricting access to media folders based on user roles, ensuring that only authorized users can view or manage media files within specific folders.
+
+New permissions to allow users to view their own media files, view media files uploaded by others, or both are created too. You can manage these among the other permissions with the [Roles module](../Roles/README.md).
+
+Media files attached to content items will also adhere to the `ViewContent` permission of the respective content item automatically.
+
+### Handling Unauthorized Access
+
+A middleware component returns a 404 NotFound response for unauthenticated access attempts to secured media files. This not only restricts access but also conceals the existence of the file, enhancing privacy and security.
+
+### Configurable Cache-Control for Secured Files
+
+The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. This can be changed with the `MaxSecureFilesBrowserCacheDays` configuration, [see above](#configuration).
+
 ## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/H0jBMH8tj3A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/monQap7FuiU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/LVsdTvurGEY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Media Indexing
 

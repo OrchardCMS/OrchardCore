@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -20,15 +15,14 @@ using OrchardCore.Settings;
 using OrchardCore.Sms;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
-[Authorize, Feature(UserConstants.Features.SmsAuthenticator)]
-public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
+[Authorize]
+[Feature(UserConstants.Features.SmsAuthenticator)]
+public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 {
-    private readonly IUserService _userService;
     private readonly ISmsService _smsService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
@@ -43,7 +37,6 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         IOptions<TwoFactorOptions> twoFactorOptions,
         INotifier notifier,
         IDistributedCache distributedCache,
-        IUserService userService,
         ISmsService smsService,
         ILiquidTemplateManager liquidTemplateManager,
         IPhoneFormatValidator phoneFormatValidator,
@@ -60,14 +53,12 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             stringLocalizer,
             twoFactorOptions)
     {
-        _userService = userService;
         _smsService = smsService;
         _liquidTemplateManager = liquidTemplateManager;
         _phoneFormatValidator = phoneFormatValidator;
         _htmlEncoder = htmlEncoder;
     }
 
-    [Admin]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -76,7 +67,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        var settings = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>();
+        var settings = await SiteService.GetSettingsAsync<LoginSettings>();
 
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
@@ -91,7 +82,8 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return View(model);
     }
 
-    [HttpPost, Admin, ActionName(nameof(Index))]
+    [HttpPost]
+    [ActionName(nameof(Index))]
     public async Task<IActionResult> IndexPost(RequestCodeSmsAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -100,13 +92,13 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        var settings = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>();
+        var settings = await SiteService.GetSettingsAsync<LoginSettings>();
 
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
-        var canSetNewPhone = settings.AllowChangingPhoneNumber
-            || string.IsNullOrEmpty(currentPhoneNumber)
-            || !_phoneFormatValidator.IsValid(currentPhoneNumber);
+        var canSetNewPhone = settings.AllowChangingPhoneNumber ||
+            string.IsNullOrEmpty(currentPhoneNumber) ||
+            !_phoneFormatValidator.IsValid(currentPhoneNumber);
 
         model.AllowChangingPhoneNumber = canSetNewPhone;
 
@@ -120,15 +112,9 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         var phoneNumber = canSetNewPhone ? model.PhoneNumber : currentPhoneNumber;
 
         var code = await UserManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
-        var smsSettings = (await SiteService.GetSiteSettingsAsync()).As<SmsAuthenticatorLoginSettings>();
+        var smsSettings = await SiteService.GetSettingsAsync<SmsAuthenticatorLoginSettings>();
 
-        var message = new SmsMessage()
-        {
-            To = phoneNumber,
-            Body = await GetBodyAsync(smsSettings, user, code),
-        };
-
-        var result = await _smsService.SendAsync(message);
+        var result = await _smsService.SendAsync(phoneNumber, await GetBodyAsync(smsSettings, user, code));
 
         if (!result.Succeeded)
         {
@@ -203,40 +189,6 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return View(model);
     }
 
-    [HttpPost, Produces("application/json"), AllowAnonymous]
-    public async Task<IActionResult> SendCode()
-    {
-        var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
-        var errorMessage = S["The SMS message could not be sent. Please attempt to request the code at a later time."];
-
-        if (user == null)
-        {
-            return BadRequest(new
-            {
-                success = false,
-                message = errorMessage.Value,
-            });
-        }
-
-        var settings = (await SiteService.GetSiteSettingsAsync()).As<SmsAuthenticatorLoginSettings>();
-        var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultPhoneProvider);
-
-        var message = new SmsMessage()
-        {
-            To = await UserManager.GetPhoneNumberAsync(user),
-            Body = await GetBodyAsync(settings, user, code),
-        };
-
-        var result = await _smsService.SendAsync(message);
-
-        return Ok(new
-        {
-            success = result.Succeeded,
-            message = result.Succeeded ? S["A verification code has been sent to your phone number. Please check your device for the code."].Value
-            : errorMessage.Value,
-        });
-    }
-
     private Task<string> GetBodyAsync(SmsAuthenticatorLoginSettings settings, IUser user, string code)
     {
         var message = string.IsNullOrWhiteSpace(settings.Body)
@@ -261,7 +213,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return writer.ToString();
     }
 
-    protected async Task SetPendingPhoneNumberAsync(string phoneNumber, string username)
+    private async Task SetPendingPhoneNumberAsync(string phoneNumber, string username)
     {
         var key = GetPhoneChangeCacheKey(username);
 
@@ -270,7 +222,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         await DistributedCache.SetAsync(key, data,
             new DistributedCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 10, 0)
+                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 10, 0),
             });
     }
 

@@ -1,7 +1,6 @@
-namespace OrchardCore.ContentLocalization.Models
+namespace OrchardCore.ContentLocalization.Models;
+
+public class ContentRequestCultureProviderSettings
 {
-    public class ContentRequestCultureProviderSettings
-    {
-        public bool SetCookie { get; set; }
-    }
+    public bool SetCookie { get; set; }
 }

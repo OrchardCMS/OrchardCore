@@ -1,8 +1,7 @@
-namespace OrchardCore.Html.ViewModels
+namespace OrchardCore.Html.ViewModels;
+
+public class TrumbowygSettingsViewModel
 {
-    public class TrumbowygSettingsViewModel
-    {
-        public string Options { get; set; }
-        public bool InsertMediaWithUrl { get; set; }
-    }
+    public string Options { get; set; }
+    public bool InsertMediaWithUrl { get; set; }
 }

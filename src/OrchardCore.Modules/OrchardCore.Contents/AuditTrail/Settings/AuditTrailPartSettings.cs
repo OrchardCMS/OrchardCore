@@ -1,10 +1,9 @@
 using System.ComponentModel;
 
-namespace OrchardCore.Contents.AuditTrail.Settings
+namespace OrchardCore.Contents.AuditTrail.Settings;
+
+public class AuditTrailPartSettings
 {
-    public class AuditTrailPartSettings
-    {
-        [DefaultValue(true)]
-        public bool ShowCommentInput { get; set; } = true;
-    }
+    [DefaultValue(true)]
+    public bool ShowCommentInput { get; set; } = true;
 }

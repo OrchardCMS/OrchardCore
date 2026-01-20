@@ -2,19 +2,25 @@
 
 In this article, we are going to see how easy it is to create a CMS Web application using the NuGet packages provided by Orchard Core.
 
+!!! tip
+    Do you just want to test drive Orchard Core, without creating a .NET application? Check out [this guide](test-drive-orchard-core.md).
+
 ## Create an Orchard Core CMS application
 
-In Visual Studio, create a new empty .NET Core web application. Ex: `Cms.Web`. Do not check "Place solution and project in the same directory", because later when you create modules and themes you will want them to live alongside the web application within the solution.
+!!! note
+    This guide follows a manual process so you can have a deeper understanding of what's happening. You can also use our [code generation templates](templates/README.md) for a quicker start if you create a brand-new application. Check out [this guide](../guides/create-cms-application/README.md).
+
+In Visual Studio (or [any other .NET IDE](../getting-started/development-tools.md)), create a new empty .NET web application, e.g. `Cms.Web`. Do not check "Place solution and project in the same directory", because later when you create modules and themes you will want them to live alongside the web application within the solution.
 
 !!! note
-    If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](preview-package-source.md)
+    If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](preview-package-source.md).
 
 To add a reference to the package, right-click on the project and click on `Manage NuGet packages...`, check `Include prerelease` if required. If you added the preview source above, select this from the `Package Source` selection in the top right.  In the `Browse` tab, search for `OrchardCore.Application.Cms.Targets` and `Install` the package.
 
-### Getting Started with `Program.cs` Only Using .NET 6 Framework?
+### Getting Started with `Program.cs` Only Using .NET 6 and later?
 
 !!! tip
-    When starting a new project using `.NET 6` framework, you'll notice that the created project does not have a `Startup` class as it did in previous versions of the .NET framework.
+    When starting a new project using .NET 6, you'll notice that the created project does not have a `Startup` class as it did in previous versions of .NET.
 
 Open `Program.cs` file. Remove the following line "if exists"
 

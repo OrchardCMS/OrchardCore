@@ -1,0 +1,22 @@
+@using Microsoft.Extensions.Options
+@using OrchardCore.Email.Core.Services
+@using OrchardCore.Email.ViewModels
+
+@model EmailSettingsViewModel
+
+@inject IOptions<EmailProviderOptions> EmailProviderOptions
+
+@if (Model.Providers.Count == 0)
+{
+    <div class="alert alert-warning" role="alert">
+        @T["No email providers are currently enabled."]
+    </div>
+
+    return;
+}
+
+<div class="mb-3" asp-validation-class-for="DefaultProvider">
+    <label asp-for="DefaultProvider" class="form-label">@T["Default provider"]</label>
+    <select asp-for="DefaultProvider" class="form-select" asp-items="Model.Providers"></select>
+    <span asp-validation-for="DefaultProvider"></span>
+</div>

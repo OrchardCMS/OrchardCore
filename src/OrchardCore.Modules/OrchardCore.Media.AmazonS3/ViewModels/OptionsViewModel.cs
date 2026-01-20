@@ -1,11 +1,10 @@
-namespace OrchardCore.Media.AmazonS3.ViewModels
+namespace OrchardCore.Media.AmazonS3.ViewModels;
+
+public class OptionsViewModel
 {
-    public class OptionsViewModel
-    {
-        public string BucketName { get; set; }
+    public string BucketName { get; set; }
 
-        public string BasePath { get; set; }
+    public string BasePath { get; set; }
 
-        public bool CreateBucket { get; set; }
-    }
+    public bool CreateBucket { get; set; }
 }

@@ -1,37 +1,20 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Users.Events;
 
-namespace OrchardCore.ReCaptcha.Users.Handlers
+namespace OrchardCore.ReCaptcha.Users.Handlers;
+
+public sealed class PasswordRecoveryFormEventEventHandler : PasswordRecoveryFormEvents
 {
-    public class PasswordRecoveryFormEventEventHandler : IPasswordRecoveryFormEvents
+    private readonly ReCaptchaService _reCaptchaService;
+
+    public PasswordRecoveryFormEventEventHandler(ReCaptchaService reCaptchaService)
     {
-        private readonly ReCaptchaService _recaptchaService;
-
-        public PasswordRecoveryFormEventEventHandler(ReCaptchaService recaptchaService)
-        {
-            _recaptchaService = recaptchaService;
-        }
-
-        public Task RecoveringPasswordAsync(Action<string, string> reportError)
-        {
-            return _recaptchaService.ValidateCaptchaAsync(reportError);
-        }
-
-        public Task PasswordResetAsync(PasswordRecoveryContext context)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task ResettingPasswordAsync(Action<string, string> reportError)
-        {
-            return _recaptchaService.ValidateCaptchaAsync(reportError);
-        }
-
-        public Task PasswordRecoveredAsync(PasswordRecoveryContext context)
-        {
-            return Task.CompletedTask;
-        }
+        _reCaptchaService = reCaptchaService;
     }
+
+    public override Task RecoveringPasswordAsync(Action<string, string> reportError)
+        => _reCaptchaService.ValidateCaptchaAsync(reportError);
+
+    public override Task ResettingPasswordAsync(Action<string, string> reportError)
+        => _reCaptchaService.ValidateCaptchaAsync(reportError);
 }

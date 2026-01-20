@@ -1,212 +1,149 @@
-using System;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using GraphQL;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Nest;
-using OrchardCore.Admin;
-using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Indexing.Core;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
-using OrchardCore.Search.Abstractions;
+using OrchardCore.Queries.Core;
+using OrchardCore.Queries.Sql.Migrations;
+using OrchardCore.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
+using OrchardCore.Search.Elasticsearch.Core.Handlers;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
+using OrchardCore.Search.Elasticsearch.Core.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
+using OrchardCore.Search.Elasticsearch.Migrations;
 using OrchardCore.Search.Elasticsearch.Services;
-using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
-namespace OrchardCore.Search.Elasticsearch
+namespace OrchardCore.Search.Elasticsearch;
+
+public sealed class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly IShellConfiguration _shellConfiguration;
+
+    public Startup(IShellConfiguration shellConfiguration)
     {
-        private readonly AdminOptions _adminOptions;
-        private readonly IShellConfiguration _shellConfiguration;
-        private readonly ILogger<Startup> _logger;
+        _shellConfiguration = shellConfiguration;
+    }
 
-        public Startup(IOptions<AdminOptions> adminOptions,
-            IShellConfiguration shellConfiguration,
-            ILogger<Startup> logger)
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IConfigureOptions<ElasticsearchConnectionOptions>, ElasticsearchConnectionOptionsConfigurations>();
+        services.AddTransient<IElasticsearchClientFactory, ElasticsearchClientFactory>();
+        services.AddSingleton((sp) =>
         {
-            _adminOptions = adminOptions.Value;
-            _shellConfiguration = shellConfiguration;
-            _logger = logger;
-        }
+            var factory = sp.GetRequiredService<IElasticsearchClientFactory>();
+            var options = sp.GetRequiredService<IOptions<ElasticsearchConnectionOptions>>().Value;
 
-        public override void ConfigureServices(IServiceCollection services)
+            return factory.Create(options);
+        });
+
+        services.Configure<ElasticsearchOptions>(options =>
         {
-            services.AddTransient<IConfigureOptions<ElasticConnectionOptions>, ElasticConnectionOptionsConfigurations>();
+            var configuration = _shellConfiguration.GetSection(ElasticsearchConnectionOptionsConfigurations.ConfigSectionName);
 
-            services.AddSingleton<IElasticClient>((sp) =>
+            options.AddIndexPrefix(configuration);
+            options.AddTokenFilters(configuration);
+            options.AddAnalyzers(configuration);
+        });
+
+        services.AddElasticsearchServices();
+        services.AddPermissionProvider<PermissionProvider>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddDisplayDriver<Query, ElasticsearchQueryDisplayDriver>();
+        services.AddDataMigration<ElasticsearchQueryMigrations>();
+        services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();
+
+        services.AddDisplayDriver<IndexProfile, ElasticsearchIndexProfileDisplayDriver>();
+
+        services.AddIndexProfileHandler<ElasticsearchIndexProfileHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Recipes.Core")]
+public sealed class RecipeStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRecipeExecutionStep<ElasticsearchIndexStep>();
+        services.AddRecipeExecutionStep<ElasticsearchIndexRebuildStep>();
+        services.AddRecipeExecutionStep<ElasticsearchIndexResetStep>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Contents")]
+public sealed class ContentsStartup : StartupBase
+{
+    internal readonly IStringLocalizer S;
+
+    public ContentsStartup(IStringLocalizer<ContentsStartup> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDataMigration<IndexingMigrations>();
+
+        services
+            .AddIndexProfileHandler<ElasticsearchContentIndexProfileHandler>()
+            .AddElasticsearchIndexingSource(IndexingConstants.ContentsIndexSource, o =>
             {
-                var options = sp.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
-
-                return new ElasticClient(options.GetConnectionSettings() ?? new ConnectionSettings());
+                o.DisplayName = S["Content in Elasticsearch"];
+                o.Description = S["Create an Elasticsearch index based on site contents."];
             });
-
-            services.Configure<ElasticsearchOptions>(o =>
-            {
-                var configuration = _shellConfiguration.GetSection(ElasticConnectionOptionsConfigurations.ConfigSectionName);
-
-                o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
-
-                var jsonNode = configuration.GetSection(nameof(o.Analyzers)).AsJsonNode();
-                var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);
-
-                var analyzersObject = JsonObject.Create(jsonElement, new JsonNodeOptions()
-                {
-                    PropertyNameCaseInsensitive = true,
-                });
-
-                if (analyzersObject != null)
-                {
-                    o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
-
-                    if (jsonNode is JsonObject jAnalyzers)
-                    {
-                        foreach (var analyzer in jAnalyzers)
-                        {
-                            if (analyzer.Value is not JsonObject jAnalyzer)
-                            {
-                                continue;
-                            }
-
-                            o.Analyzers.Add(analyzer.Key, jAnalyzer);
-                        }
-                    }
-                }
-
-                if (o.Analyzers.Count == 0)
-                {
-                    // When no analyzers are configured, we'll define a default analyzer.
-                    o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JsonObject
-                    {
-                        ["type"] = "standard",
-                    });
-                }
-            });
-
-            services.AddElasticServices();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.Index",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Index",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.Delete",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Delete/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.Query",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Query",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Query) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.Rebuild",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Rebuild/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Rebuild) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.Reset",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Reset/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.SyncSettings",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/SyncSettings",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.SyncSettings) }
-            );
-        }
     }
+}
 
-    [RequireFeatures("OrchardCore.Search")]
-    public class SearchStartup : StartupBase
+[RequireFeatures("OrchardCore.Search")]
+public sealed class SearchStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<ISearchService, ElasticsearchService>();
-            services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
-            services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
-        }
+        services.AddSearchService<ElasticsearchService>(ElasticsearchConstants.ProviderName);
     }
+}
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDeployment<ElasticIndexDeploymentSource, ElasticIndexDeploymentStep, ElasticIndexDeploymentStepDriver>();
-            services.AddDeployment<ElasticSettingsDeploymentSource, ElasticSettingsDeploymentStep, ElasticSettingsDeploymentStepDriver>();
-            services.AddDeployment<ElasticIndexRebuildDeploymentSource, ElasticIndexRebuildDeploymentStep, ElasticIndexRebuildDeploymentStepDriver>();
-            services.AddDeployment<ElasticIndexResetDeploymentSource, ElasticIndexResetDeploymentStep, ElasticIndexResetDeploymentStepDriver>();
-        }
+        services.AddDeployment<ElasticsearchIndexDeploymentSource, ElasticsearchIndexDeploymentStep, ElasticIndexDeploymentStepDriver>();
+        services.AddDeployment<ElasticsearchIndexRebuildDeploymentSource, ElasticsearchIndexRebuildDeploymentStep, ElasticIndexRebuildDeploymentStepDriver>();
+        services.AddDeployment<ElasticsearchIndexResetDeploymentSource, ElasticsearchIndexResetDeploymentStep, ElasticIndexResetDeploymentStepDriver>();
     }
+}
 
-    [Feature("OrchardCore.Search.Elasticsearch.Worker")]
-    public class ElasticWorkerStartup : StartupBase
+[Feature("OrchardCore.Search.Elasticsearch.ContentPicker")]
+public sealed class ElasticContentPickerStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
-        }
+        services.AddScoped<IContentPickerResultProvider, ElasticsearchContentPickerResultProvider>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
+        services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
     }
+}
 
-    [Feature("OrchardCore.Search.Elasticsearch.ContentPicker")]
-    public class ElasticContentPickerStartup : StartupBase
+[RequireFeatures("OrchardCore.ContentTypes")]
+public sealed class ContentTypesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
-            services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
-        }
-    }
-
-    [RequireFeatures("OrchardCore.ContentTypes")]
-    public class ContentTypesStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-        }
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
     }
 }

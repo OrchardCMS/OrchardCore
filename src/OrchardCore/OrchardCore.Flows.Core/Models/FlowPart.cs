@@ -1,0 +1,11 @@
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.ContentManagement;
+
+namespace OrchardCore.Flows.Models;
+
+public class FlowPart : ContentPart
+{
+    [BindNever]
+    public List<ContentItem> Widgets { get; set; } = [];
+}

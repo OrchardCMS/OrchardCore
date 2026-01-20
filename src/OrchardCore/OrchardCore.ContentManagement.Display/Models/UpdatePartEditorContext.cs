@@ -1,15 +1,14 @@
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 
-namespace OrchardCore.ContentManagement.Display.Models
+namespace OrchardCore.ContentManagement.Display.Models;
+
+public class UpdatePartEditorContext : BuildPartEditorContext
 {
-    public class UpdatePartEditorContext : BuildPartEditorContext
+
+    public UpdatePartEditorContext(ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
+        : base(typePartDefinition, context)
     {
-
-        public UpdatePartEditorContext(ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
-            : base(typePartDefinition, context)
-        {
-        }
-
     }
+
 }

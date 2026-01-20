@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Cysharp.Text;
 using Fluid;
 using Fluid.Values;
@@ -6,40 +5,39 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.DisplayManagement.Liquid.Filters
+namespace OrchardCore.DisplayManagement.Liquid.Filters;
+
+public class ShapeStringifyFilter : ILiquidFilter
 {
-    public class ShapeStringifyFilter : ILiquidFilter
+    private readonly IDisplayHelper _displayHelper;
+
+    public ShapeStringifyFilter(IDisplayHelper displayHelper)
     {
-        private readonly IDisplayHelper _displayHelper;
+        _displayHelper = displayHelper;
+    }
 
-        public ShapeStringifyFilter(IDisplayHelper displayHelper)
+    public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
         {
-            _displayHelper = displayHelper;
+            using var writer = new ZStringWriter();
+            (await task).WriteTo(writer, NullHtmlEncoder.Default);
+            return new StringValue(writer.ToString(), false);
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        if (input.ToObjectValue() is IShape shape)
         {
-            static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
+            var task = _displayHelper.ShapeExecuteAsync(shape);
+            if (!task.IsCompletedSuccessfully)
             {
-                using var writer = new ZStringWriter();
-                (await task).WriteTo(writer, NullHtmlEncoder.Default);
-                return new StringValue(writer.ToString(), false);
+                return Awaited(task);
             }
 
-            if (input.ToObjectValue() is IShape shape)
-            {
-                var task = _displayHelper.ShapeExecuteAsync(shape);
-                if (!task.IsCompletedSuccessfully)
-                {
-                    return Awaited(task);
-                }
-
-                using var writer = new ZStringWriter();
-                task.Result.WriteTo(writer, NullHtmlEncoder.Default);
-                return new ValueTask<FluidValue>(new StringValue(writer.ToString(), false));
-            }
-
-            return new ValueTask<FluidValue>(StringValue.Empty);
+            using var writer = new ZStringWriter();
+            task.Result.WriteTo(writer, NullHtmlEncoder.Default);
+            return ValueTask.FromResult<FluidValue>(new StringValue(writer.ToString(), false));
         }
+
+        return ValueTask.FromResult<FluidValue>(StringValue.Empty);
     }
 }

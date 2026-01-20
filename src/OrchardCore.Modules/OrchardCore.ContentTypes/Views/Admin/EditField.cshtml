@@ -56,8 +56,8 @@
                 <select asp-for="Editor" class="form-select" id="field-editor-select">
                     @foreach (var editorShape in editorShapes)
                     {
-                        dynamic shape = await Factory.CreateAsync(editorShape);
-                        shape.Editor = Model.Editor;
+                        var shape = await Factory.CreateAsync(editorShape);
+                        shape.Properties["Editor"] = Model.Editor;
                         @await DisplayAsync(shape)
                     }
                 </select>
@@ -75,8 +75,8 @@
                 <select asp-for="DisplayMode" class="form-select" id="field-display-select">
                     @foreach (var displayShape in displayShapes)
                     {
-                        dynamic shape = await Factory.CreateAsync(displayShape);
-                        shape.DisplayMode = Model.DisplayMode;
+                        var shape = await Factory.CreateAsync(displayShape);
+                        shape.Properties["DisplayMode"] = Model.DisplayMode;
                         @await DisplayAsync(shape)
                     }
                 </select>

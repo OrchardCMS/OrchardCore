@@ -42,7 +42,7 @@ The cookie can be set during recipes using the settings step. Here is a sample s
   "ContentRequestCultureProvider": {
       "SetCookie": true
   }
-},
+}
 ```
 
 ## Liquid filters
@@ -92,3 +92,7 @@ The following configuration is used by default and can be customized:
   }
 }
 ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

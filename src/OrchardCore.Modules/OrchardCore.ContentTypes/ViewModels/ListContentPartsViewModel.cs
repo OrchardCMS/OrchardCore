@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentTypes.ViewModels
+namespace OrchardCore.ContentTypes.ViewModels;
+
+public class ListContentPartsViewModel
 {
-    public class ListContentPartsViewModel
-    {
-        [BindNever]
-        public IEnumerable<EditPartViewModel> Parts { get; set; }
-    }
+    [BindNever]
+    public IEnumerable<EditPartViewModel> Parts { get; set; }
 }

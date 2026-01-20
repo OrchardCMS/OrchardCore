@@ -14,9 +14,9 @@
     <label asp-for="Type" class="@Orchard.GetLabelClasses()">@T["Type"]</label>
     <div class="@Orchard.GetEndClasses()">
         <select asp-for="Type" class="form-select content-preview-select">
-            <option value="submit">Submit</option>
-            <option value="button">Button</option>
-            <option value="reset">Reset</option>
+            <option value="submit">@T["Submit"]</option>
+            <option value="button">@T["Button"]</option>
+            <option value="reset">@T["Reset"]</option>
         </select>
         <span class="hint">@T["The button type."]</span>
     </div>

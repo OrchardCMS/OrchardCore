@@ -20,15 +20,17 @@
 </div>
 
 <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="LayerMetadata.Layer">
-    <label asp-for="LayerMetadata.Layer" class="@Orchard.GetLabelClasses()">@T["The layer the widget should be associated with."]</label>
+    <label asp-for="LayerMetadata.Layer" class="@Orchard.GetLabelClasses()">@T["The layer"]</label>
     <div class="@Orchard.GetEndClasses()">
         <select asp-for="LayerMetadata.Layer" class="form-select">
+            <option value="">@T["Select a layer"]</option>
             @foreach (var layer in Model.Layers)
             {
                 <option value="@layer.Name" selected="@(Model.LayerMetadata.Layer == layer.Name)">@layer.Name</option>
             }
         </select>
         <span asp-validation-for="LayerMetadata.Layer" class="text-danger"></span>
+        <span class="hint">@T["The layer controls the visibility of this widget."]</span>
     </div>
 </div>
 

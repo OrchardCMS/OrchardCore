@@ -2,6 +2,8 @@ namespace OrchardCore.Notifications.Models;
 
 public class NotificationMessage : INotificationMessage
 {
+    public string Subject { get; set; }
+
     public string Summary { get; set; }
 
     public string TextBody { get; set; }

@@ -1,15 +1,12 @@
-using System;
+namespace OrchardCore.Indexing;
 
-namespace OrchardCore.Indexing
+[AttributeUsage(AttributeTargets.Class)]
+public class StorableAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class StorableAttribute : Attribute
+    public StorableAttribute(Type valueType)
     {
-        public StorableAttribute(Type valueType)
-        {
-            ValueType = valueType;
-        }
-
-        public Type ValueType { get; private set; }
+        ValueType = valueType;
     }
+
+    public Type ValueType { get; private set; }
 }

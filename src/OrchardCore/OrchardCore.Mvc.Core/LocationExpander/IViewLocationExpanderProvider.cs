@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 
-namespace OrchardCore.Mvc.LocationExpander
+namespace OrchardCore.Mvc.LocationExpander;
+
+public interface IViewLocationExpanderProvider : IViewLocationExpander
 {
-    public interface IViewLocationExpanderProvider : IViewLocationExpander
-    {
-        int Priority { get; }
-    }
+    int Priority { get; }
 }

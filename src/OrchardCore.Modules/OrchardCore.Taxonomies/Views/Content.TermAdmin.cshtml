@@ -2,7 +2,6 @@
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
-
 @{
     ContentItem contentItem = Model.ContentItem;
     var termsArray = (JsonArray)contentItem.Content.Terms;
@@ -19,29 +18,29 @@
         }
         <div class="float-end">
             <a asp-action="Edit"
-                asp-controller="Admin"
-                asp-route-area="OrchardCore.Taxonomies"
-                asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-                asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
-                class="btn btn-success btn-sm">
+               asp-controller="Admin"
+               asp-route-area="OrchardCore.Taxonomies"
+               asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+               asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+               class="btn btn-success btn-sm">
                 @T["Edit"]
             </a>
             <a class="btn btn-primary btn-sm"
-                asp-route-action="Create"
-                asp-route-controller="Admin"
-                asp-route-id="@Model.TaxonomyPart.TermContentType"
-                asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-                asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
-                asp-route-area="OrchardCore.Taxonomies">
+               asp-route-action="Create"
+               asp-route-controller="Admin"
+               asp-route-id="@Model.TaxonomyPart.TermContentType"
+               asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+               asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+               asp-route-area="OrchardCore.Taxonomies">
                 @T["Add"]
             </a>
             <a asp-action="Delete"
-                asp-controller="Admin"
-                asp-route-area="OrchardCore.Taxonomies"
-                asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-                asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
-                data-url-af="RemoveUrl UnsafeUrl"
-                class="btn btn-danger btn-sm">
+               asp-controller="Admin"
+               asp-route-area="OrchardCore.Taxonomies"
+               asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+               asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+               data-url-af="RemoveUrl UnsafeUrl"
+               class="btn btn-danger btn-sm">
                 @T["Delete"]
             </a>
         </div>
@@ -55,12 +54,12 @@
             @foreach (JsonObject termObject in termsArray)
             {
                 var term = termObject.ToObject<ContentItem>();
-                dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(term, updater, "TermAdmin");
-                termShape.TaxonomyPart = Model.TaxonomyPart;
-                termShape.Index = Model.Index + "-" + index++;
+                var termShape = await ContentItemDisplayManager.BuildDisplayAsync(term, updater, "TermAdmin");
+                termShape.Properties["TaxonomyPart"] = Model.TaxonomyPart;
+                termShape.Properties["Index"] = Model.Index + "-" + index++;
                 @await DisplayAsync(termShape)
             }
         </ol>
     }
-    
+
 </li>

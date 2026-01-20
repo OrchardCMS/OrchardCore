@@ -1,21 +1,79 @@
 # Menu (`OrchardCore.Menu`)
 
+## Rendering Menus
+
+Menus can be rendered in your theme using either Razor tag helpers or Liquid. This section describes how to render a menu on the frontend of your site.
+
+### Razor Tag Helper
+
+In Razor views, you can use the `<menu>` tag helper to render a menu:
+
+```html
+<menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
+```
+
+#### Tag Helper Attributes
+
+| Attribute                | Description                                                                                      |
+|--------------------------|--------------------------------------------------------------------------------------------------|
+| `alias`                  | The alias of the menu to render (e.g., `alias:main-menu`).                                      |
+| `cache-id`               | Optional. A unique identifier for caching the menu output.                                       |
+| `cache-context`          | Optional. Cache contexts to vary the cached output (e.g., `user.roles`).                         |
+| `cache-tag`              | Optional. Tags to associate with the cached entry for invalidation purposes.                     |
+| `cache-fixed-duration`   | Optional. Fixed duration for caching (e.g., `00:05:00` for 5 minutes).                           |
+| `cache-sliding-duration` | Optional. Sliding expiration duration for caching.                                                |
+
+#### Example with Cache Context
+
+```html
+<menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" cache-context="user.roles" />
+```
+
+This example caches the menu for 5 minutes and varies the cache based on the user's roles, so authenticated users with different roles can see different menu items.
+
+### Liquid
+
+In Liquid templates, you can use the `shape` tag to render a menu:
+
+```liquid
+{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}
+```
+
+#### Liquid Parameters
+
+| Parameter                | Description                                                                                      |
+|--------------------------|--------------------------------------------------------------------------------------------------|
+| `alias`                  | The alias of the menu to render (e.g., `alias:main-menu`).                                      |
+| `cache_id`               | Optional. A unique identifier for caching the menu output.                                       |
+| `cache_context`          | Optional. Cache contexts to vary the cached output (e.g., `user.roles`).                         |
+| `cache_tag`              | Optional. Tags to associate with the cached entry for invalidation purposes.                     |
+| `cache_fixed_duration`   | Optional. Fixed duration for caching (e.g., `00:05:00` for 5 minutes).                           |
+| `cache_sliding_duration` | Optional. Sliding expiration duration for caching.                                                |
+
+#### Example with Cache Context
+
+```liquid
+{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu", cache_context: "user.roles" %}
+```
+
+This example caches the menu for 5 minutes and varies the cache based on the user's roles.
+
 ## Shapes
 
 ### `Menu`
 
 The `Menu` shape is used to render a Menu.
 
-| Property | Description |
-| --------- | ------------ |
-| `Model.ContentItemId` | If defined, contains the content item identifier of the menu to render. |
-| `Model.Items` | The list of menu items shapes for the menu. These are shapes of type `MenuItem`. |
+| Property               | Description                                                                           |
+|------------------------|---------------------------------------------------------------------------------------|
+| `Model.ContentItemId`  | If defined, contains the content item identifier of the menu to render.               |
+| `Model.Items`          | The list of menu items shapes for the menu. These are shapes of type `MenuItem`.      |
 | `Model.Differentiator` | If defined, contains the formatted name of the menu (title). For instance `MainMenu`. |
 
 #### Menu Alternates
 
-| Definition | Template | Filename|
-| ---------- | --------- | ------------ |
+| Definition               | Template         | Filename               |
+|--------------------------|------------------|------------------------|
 | `Menu__[Differentiator]` | `Menu__MainMenu` | `Menu-MainMenu.cshtml` |
 
 #### Menu Example
@@ -52,24 +110,24 @@ The `Menu` shape is used to render a Menu.
 
 The `MenuItem` shape is used to render a menu item.
 
-| Property | Description |
-| --------- | ------------ |
-| `Model.Menu` | The `Menu` shape owning this item. |
-| `Model.ContentItem` | The content item representing this menu item. |
-| `Model.Level` | The level of the menu item. `0` for top level menu items. |
-| `Model.Items` | The list of sub menu items shapes. These are shapes of type `MenuItem`. |
+| Property               | Description                                                                   |
+|------------------------|-------------------------------------------------------------------------------|
+| `Model.Menu`           | The `Menu` shape owning this item.                                            |
+| `Model.ContentItem`    | The content item representing this menu item.                                 |
+| `Model.Level`          | The level of the menu item. `0` for top level menu items.                     |
+| `Model.Items`          | The list of sub menu items shapes. These are shapes of type `MenuItem`.       |
 | `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
 
 #### MenuItem Alternates
 
-| Definition | Template | Filename|
-| ---------- | --------- | ------------ |
-| `MenuItem__level__[level]` | `MenuItem__level__2` | `MenuItem-level-2.cshtml` |
-| `MenuItem__[ContentType]` | `MenuItem__HtmlMenuItem` | `MenuItem-HtmlMenuItem.cshtml` |
-| `MenuItem__[ContentType]__level__[level]` | `MenuItem__HtmlMenuItem__level__2` | `MenuItem-HtmlMenuItem-level-2.cshtml` |
-| `MenuItem__[MenuName]` | `MenuItem__MainMenu` | `MenuItem-MainMenu.cshtml` |
-| `MenuItem__[MenuName]__level__[level]` | `MenuItem__MainMenu__level__2` | `MenuItem-MainMenu-level-2.cshtml` |
-| `MenuItem__[MenuName]__[ContentType]` | `MenuItem__MainMenu__HtmlMenuItem` | `MenuItem-MainMenu-HtmlMenuItem.cshtml` |
+| Definition                                            | Template                                     | Filename                                        |
+|-------------------------------------------------------|----------------------------------------------|-------------------------------------------------|
+| `MenuItem__level__[level]`                            | `MenuItem__level__2`                         | `MenuItem-level-2.cshtml`                       |
+| `MenuItem__[ContentType]`                             | `MenuItem__HtmlMenuItem`                     | `MenuItem-HtmlMenuItem.cshtml`                  |
+| `MenuItem__[ContentType]__level__[level]`             | `MenuItem__HtmlMenuItem__level__2`           | `MenuItem-HtmlMenuItem-level-2.cshtml`          |
+| `MenuItem__[MenuName]`                                | `MenuItem__MainMenu`                         | `MenuItem-MainMenu.cshtml`                      |
+| `MenuItem__[MenuName]__level__[level]`                | `MenuItem__MainMenu__level__2`               | `MenuItem-MainMenu-level-2.cshtml`              |
+| `MenuItem__[MenuName]__[ContentType]`                 | `MenuItem__MainMenu__HtmlMenuItem`           | `MenuItem-MainMenu-HtmlMenuItem.cshtml`         |
 | `MenuItem__[MenuName]__[ContentType]__level__[level]` | `MenuItem__MainMenu__HtmlMenuItem__level__2` | `MenuItem-MainMenu-HtmlMenuItem-level-2.cshtml` |
 
 #### MenuItem Example
@@ -132,24 +190,24 @@ The `MenuItemLink` shape is used to render a menu item link.
 This shape is created by morphing a `MenuItem` shape into a `MenuItemLink`. Hence all the properties
 available on the `MenuItem` shape are still available.
 
-| Property | Description |
-| --------- | ------------ |
-| `Model.Menu` | The `Menu` shape owning this item. |
-| `Model.ContentItem` | The content item representing this menu item. |
-| `Model.Level` | The level of the menu item. `0` for top level menu items. |
-| `Model.Items` | The list of sub menu items shapes. These are shapes of type `MenuItem`. |
+| Property               | Description                                                                   |
+|------------------------|-------------------------------------------------------------------------------|
+| `Model.Menu`           | The `Menu` shape owning this item.                                            |
+| `Model.ContentItem`    | The content item representing this menu item.                                 |
+| `Model.Level`          | The level of the menu item. `0` for top level menu items.                     |
+| `Model.Items`          | The list of sub menu items shapes. These are shapes of type `MenuItem`.       |
 | `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
 
 #### `MenuItemLink` Alternates
 
-| Definition | Template | Filename|
-| ---------- | --------- | ------------ |
-| `MenuItemLink__level__[level]` | `MenuItemLink__level__2` | `MenuItemLink-level-2.cshtml` |
-| `MenuItemLink__[ContentType]` | `MenuItemLink__HtmlMenuItem` | `MenuItemLink-HtmlMenuItem.cshtml` |
-| `MenuItemLink__[ContentType]__level__[level]` | `MenuItemLink__HtmlMenuItem__level__2` | `MenuItemLink-HtmlMenuItem-level-2.cshtml` |
-| `MenuItemLink__[MenuName]` | `MenuItemLink__MainMenu` | `MenuItemLink-MainMenu.cshtml` |
-| `MenuItemLink__[MenuName]__level__[level]` | `MenuItemLink__MainMenu__level__2` | `MenuItemLink-MainMenu-level-2.cshtml` |
-| `MenuItemLink__[MenuName]__[ContentType]` | `MenuItemLink__MainMenu__HtmlMenuItem` | `MenuItemLink-MainMenu-HtmlMenuItem.cshtml` |
+| Definition                                                | Template                                         | Filename                                            |
+|-----------------------------------------------------------|--------------------------------------------------|-----------------------------------------------------|
+| `MenuItemLink__level__[level]`                            | `MenuItemLink__level__2`                         | `MenuItemLink-level-2.cshtml`                       |
+| `MenuItemLink__[ContentType]`                             | `MenuItemLink__HtmlMenuItem`                     | `MenuItemLink-HtmlMenuItem.cshtml`                  |
+| `MenuItemLink__[ContentType]__level__[level]`             | `MenuItemLink__HtmlMenuItem__level__2`           | `MenuItemLink-HtmlMenuItem-level-2.cshtml`          |
+| `MenuItemLink__[MenuName]`                                | `MenuItemLink__MainMenu`                         | `MenuItemLink-MainMenu.cshtml`                      |
+| `MenuItemLink__[MenuName]__level__[level]`                | `MenuItemLink__MainMenu__level__2`               | `MenuItemLink-MainMenu-level-2.cshtml`              |
+| `MenuItemLink__[MenuName]__[ContentType]`                 | `MenuItemLink__MainMenu__HtmlMenuItem`           | `MenuItemLink-MainMenu-HtmlMenuItem.cshtml`         |
 | `MenuItemLink__[MenuName]__[ContentType]__level__[level]` | `MenuItemLink__MainMenu__HtmlMenuItem__level__2` | `MenuItemLink-MainMenu-HtmlMenuItem-level-2.cshtml` |
 
 #### `MenuItemLink` Example
@@ -195,10 +253,10 @@ Because menus are cached, this must be done from javascript. OrchardCore.Menu mo
 function activateLinks(options,cb)
 ```
 
-| Parameter | Description|
-| -------- | ----------- |
+| Parameter                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+|------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `options: {class:'active',selector:null,traverse:0}` | Use `class` to define what class you want to add to the parent of the anchor tag that has the current url as href. If you want to apply it to a child, set the `selector` property. Use the `traverse` to a positive number in order to seek a less specific url in the menu tree then the currently displayed on. ex. If you have a link to '/todo-items' in menu and you have navigated to '/todo-items/Create', it will try to find the item with traverse item less segments in the menu and activate it. |
-| `cb: function( items )` | If it finds an active item, the call back is hit for extra configuration. ex. Expand a menu item if the active one is nested.|
+| `cb: function( items )`                              | If it finds an active item, the call back is hit for extra configuration. ex. Expand a menu item if the active one is nested.                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### `activateLinks` usage in `Layout` file
 
@@ -247,6 +305,8 @@ function activateLinks(options,cb)
 <https://github.com/ilikenwf/nestedSortable>  
 License: MIT
 
-## Video
+## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/mOhbqHKd_CI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/R_Z6gPoAfHE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -1,45 +1,87 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Deployment;
+using OrchardCore.Entities;
+using OrchardCore.Indexing;
+using OrchardCore.Indexing.Core.Models;
+using OrchardCore.Indexing.Models;
+using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
-using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsService indexSettingsService) : IDeploymentSource
+public sealed class AzureAISearchIndexDeploymentSource
+    : DeploymentSourceBase<AzureAISearchIndexDeploymentStep>
 {
-    private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
+    private readonly IIndexProfileStore _indexStore;
+    private readonly IEnumerable<IIndexProfileHandler> _handlers;
+    private readonly ILogger _logger;
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public AzureAISearchIndexDeploymentSource(
+        IIndexProfileStore indexStore,
+        IEnumerable<IIndexProfileHandler> handlers,
+        ILogger<AzureAISearchIndexDeploymentSource> logger)
     {
-        if (step is not AzureAISearchIndexDeploymentStep settingsStep)
-        {
-            return;
-        }
+        _indexStore = indexStore;
+        _handlers = handlers;
+        _logger = logger;
+    }
 
-        var indexSettings = await _indexSettingsService.GetSettingsAsync();
+    protected override async Task ProcessAsync(AzureAISearchIndexDeploymentStep step, DeploymentPlanResult result)
+    {
+        var indexes = await _indexStore.GetByProviderAsync(AzureAISearchConstants.ProviderName);
 
         var data = new JsonArray();
-        var indicesToAdd = settingsStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : settingsStep.IndexNames;
 
-        foreach (var index in indexSettings)
+        var indicesToAdd = step.IncludeAll
+            ? indexes.Select(x => x.IndexName).ToArray()
+            : step.IndexNames;
+
+        foreach (var index in indexes)
         {
-            if (indicesToAdd.Contains(index.IndexName))
+            if (index.IndexName == null || !indicesToAdd.Contains(index.IndexName))
             {
-                var indexSettingsDict = new Dictionary<string, AzureAISearchIndexSettings>
-                {
-                    { index.IndexName, index },
-                };
-
-                data.Add(JObject.FromObject(indexSettingsDict));
+                continue;
             }
+
+            var metadata = index.As<ContentIndexMetadata>();
+
+            var contentTypes = new JsonArray();
+
+            if (metadata.IndexedContentTypes != null)
+            {
+                foreach (var contentType in metadata.IndexedContentTypes)
+                {
+                    contentTypes.Add(contentType);
+                }
+            }
+
+            var indexMetadata = index.As<AzureAISearchIndexMetadata>();
+
+            var indexInfo = new JsonObject()
+            {
+                { "ProviderName", AzureAISearchConstants.ProviderName },
+                { "Type", index.Type },
+                { "Name", index.Name },
+                { "AnalyzerName", indexMetadata.AnalyzerName },
+                { "QueryAnalyzerName", index.As<AzureAISearchDefaultQueryMetadata>().QueryAnalyzerName },
+                { "IndexMappings", JArray.FromObject(indexMetadata.IndexMappings ?? []) },
+                { "IndexedContentTypes", contentTypes },
+                { "Culture", metadata.Culture },
+                { "IndexLatest", metadata.IndexLatest },
+                { "Properties", index.Properties?.DeepClone() },
+            };
+
+            var exportingContext = new IndexProfileExportingContext(index, indexInfo);
+
+            await _handlers.InvokeAsync((handler, context) => handler.ExportingAsync(context), exportingContext, _logger);
+
+            data.Add(indexInfo);
         }
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = nameof(AzureAISearchIndexSettings),
+            ["name"] = step.Name,
             ["Indices"] = data,
         });
     }

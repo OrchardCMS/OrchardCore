@@ -5,12 +5,22 @@
 
 <div class="card text-bg-theme mb-3">
     <div class="card-body">
-        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add an application"]</a>
+        <div class="d-flex justify-content-end">
+            <a asp-route-action="Create" class="btn btn-secondary" role="button">@T["New application"]</a>
+        </div>
     </div>
 </div>
 
-@using (Html.BeginForm())
+@if (Model.Applications == null || Model.Applications.Count == 0)
 {
+    <div class="alert alert-info text-center" role="alert">
+        @T["There are no applications at the moment."]
+    </div>
+
+    return;
+}
+
+<form>
     <ul class="list-group">
         @foreach (var entry in Model.Applications)
         {
@@ -25,7 +35,7 @@
             </li>
         }
     </ul>
-}
+</form>
 
 <div id="footer-pager" class="fade-in-pager">
     @await DisplayAsync(Model.Pager)

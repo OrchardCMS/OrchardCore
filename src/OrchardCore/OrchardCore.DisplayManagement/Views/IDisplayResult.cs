@@ -1,11 +1,9 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 
-namespace OrchardCore.DisplayManagement.Views
+namespace OrchardCore.DisplayManagement.Views;
+
+public interface IDisplayResult
 {
-    public interface IDisplayResult
-    {
-        Task ApplyAsync(BuildDisplayContext context);
-        Task ApplyAsync(BuildEditorContext context);
-    }
+    Task ApplyAsync(BuildDisplayContext context);
+    Task ApplyAsync(BuildEditorContext context);
 }

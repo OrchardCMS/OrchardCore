@@ -1,22 +1,19 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="Dependencies.props" />
-
   <PropertyGroup>
-    <LangVersion>12.0</LangVersion>
-    <VersionPrefix>1.9.0</VersionPrefix>
+    <LangVersion>13.0</LangVersion>
+    <VersionPrefix>3.0.0</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <DebugType>portable</DebugType>
+    <ImplicitUsings>enable</ImplicitUsings>
     <NetStandardImplicitPackageVersion>2.0.0-*</NetStandardImplicitPackageVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-
     <!-- Common NuGet properties-->
     <OCFrameworkDescription>Orchard Core Framework is an application framework for building modular, multi-tenant applications on ASP.NET Core.</OCFrameworkDescription>
     <OCCMSDescription>Orchard Core CMS is a Web Content Management System (CMS) built on top of the Orchard Core Framework.</OCCMSDescription>
@@ -42,16 +39,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--This is used for Source Link -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
     <None Include="$(MSBuildThisFileDirectory)/nuget-icon.png">
       <Pack>True</Pack>
       <PackagePath>icon.png</PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

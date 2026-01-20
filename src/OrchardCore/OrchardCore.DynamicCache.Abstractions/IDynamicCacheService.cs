@@ -1,11 +1,9 @@
-using System.Threading.Tasks;
 using OrchardCore.Environment.Cache;
 
-namespace OrchardCore.DynamicCache
+namespace OrchardCore.DynamicCache;
+
+public interface IDynamicCacheService : ITagRemovedEventHandler
 {
-    public interface IDynamicCacheService : ITagRemovedEventHandler
-    {
-        Task<string> GetCachedValueAsync(CacheContext context);
-        Task SetCachedValueAsync(CacheContext context, string value);
-    }
+    Task<string> GetCachedValueAsync(CacheContext context);
+    Task SetCachedValueAsync(CacheContext context, string value);
 }

@@ -1,9 +1,8 @@
-namespace OrchardCore.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers;
+
+public class RestoreContentContext : ContentContextBase
 {
-    public class RestoreContentContext : ContentContextBase
+    public RestoreContentContext(ContentItem contentItem) : base(contentItem)
     {
-        public RestoreContentContext(ContentItem contentItem) : base(contentItem)
-        {
-        }
     }
 }

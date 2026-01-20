@@ -1,6 +1,3 @@
-namespace OrchardCore.Tenants.ViewModels
-{
-    public class CreateApiViewModel : TenantViewModel
-    {
-    }
-}
+namespace OrchardCore.Tenants.ViewModels;
+
+public class CreateApiViewModel : TenantViewModel;

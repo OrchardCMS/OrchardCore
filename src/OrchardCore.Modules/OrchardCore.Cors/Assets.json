@@ -1,8 +1,8 @@
 [
   {
-    "inputs": [
-      "Assets/Admin/cors-admin.js"
-    ],
-    "output": "wwwroot/Scripts/cors-admin.js"
+    "action": "min",
+    "name": "cors",
+    "source": "Assets/Admin/cors-admin.js",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

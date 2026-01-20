@@ -1,18 +1,16 @@
-using System;
 using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Security
+namespace OrchardCore.Security;
+
+public class PermissionRequirement : IAuthorizationRequirement
 {
-    public class PermissionRequirement : IAuthorizationRequirement
+    public PermissionRequirement(Permission permission)
     {
-        public PermissionRequirement(Permission permission)
-        {
-            ArgumentNullException.ThrowIfNull(permission);
+        ArgumentNullException.ThrowIfNull(permission);
 
-            Permission = permission;
-        }
-
-        public Permission Permission { get; set; }
+        Permission = permission;
     }
+
+    public Permission Permission { get; set; }
 }

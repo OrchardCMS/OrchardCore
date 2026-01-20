@@ -6,7 +6,6 @@
 //namespace OrchardCore.Modules.Manifest
 //{
 //    using Xunit;
-//    using Xunit.Abstractions;
 
 //    /// <inheritdoc/>
 //    public class ModuleMarkerAttributeTests : ModuleAttributeTests<ModuleMarkerAttribute>

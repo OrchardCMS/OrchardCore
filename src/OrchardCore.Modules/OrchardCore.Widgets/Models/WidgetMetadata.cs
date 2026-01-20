@@ -1,10 +1,9 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Widgets.Models
+namespace OrchardCore.Widgets.Models;
+
+public class WidgetMetadata : ContentPart
 {
-    public class WidgetMetadata : ContentPart
-    {
-        public bool RenderTitle { get; set; }
-        public string Position { get; set; }
-    }
+    public bool RenderTitle { get; set; }
+    public string Position { get; set; }
 }

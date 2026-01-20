@@ -2,6 +2,8 @@
 
 @if (!string.IsNullOrEmpty(Model.LocalizationSet) && Model.ContentItemCultures.Any())
 {
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+
     <div class="btn-group" title="@T["Localizations"]">
         <button type="button" class="btn btn-sm btn-info dropdown-toggle localizations" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span>@T["Localizations"]</span>
@@ -10,14 +12,14 @@
             @foreach (var culture in Model.ContentItemCultures)
             {
                 <li>
-                @if (!string.IsNullOrEmpty(culture.ContentItemId))
-                {
-                    <a class="dropdown-item btn-sm" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" data-url-af="UnsafeUrl" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa-solid fa-edit" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
-                }
-                else
-                {
-                    <a class="dropdown-item btn-sm" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa-solid fa-plus" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
-                }
+                    @if (!string.IsNullOrEmpty(culture.ContentItemId))
+                    {
+                        <a class="dropdown-item btn-sm" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" asp-route-returnUrl="@returnUrl" data-url-af="UnsafeUrl" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
+                    }
+                    else
+                    {
+                        <a class="dropdown-item btn-sm" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" asp-route-returnUrl="@returnUrl" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa-solid fa-plus" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
+                    }
                 </li>
             }
         </ul>

@@ -2,44 +2,58 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
 
-namespace OrchardCore.Tests.Apis.GraphQL
+namespace OrchardCore.Tests.Apis.GraphQL;
+
+public class RecentBlogPostsQueryTests
 {
-    public class RecentBlogPostsQueryTests
+    [Fact]
+    public async Task ShouldListBlogPostWhenCallingAQuery()
     {
-        [Fact]
-        public async Task ShouldListBlogPostWhenCallingAQuery()
-        {
-            using var context = new BlogContext();
-            await context.InitializeAsync();
+        using var context = new BlogContext();
+        await context.InitializeAsync();
 
-            var blogPostContentItemId = await context
-                .CreateContentItem("BlogPost", builder =>
-                {
-                    builder.Published = true;
-                    builder.Latest = true;
-                    builder.DisplayText = "Some sorta blogpost in a Query!";
+        var blogPostContentItemId = await context
+            .CreateContentItem("BlogPost", builder =>
+            {
+                builder.Published = true;
+                builder.Latest = true;
+                builder.DisplayText = "Some sort of blogpost in a Query!";
 
-                    builder
-                        .Weld(new ContainedPart
-                        {
-                            ListContentItemId = context.BlogContentItemId
-                        });
-                });
+                builder
+                    .Weld(new ContainedPart
+                    {
+                        ListContentItemId = context.BlogContentItemId,
+                    });
+            });
 
-            var result = await context
-                .GraphQLClient
-                .Content
-                .Query("RecentBlogPosts", builder =>
-                {
-                    builder
-                        .WithField("displayText");
-                });
+        // Indexing of the content item happens in the deferred-task and may not be immediate available,
+        // so we wait until the indexing is done before querying.
+        await context.WaitForOutstandingDeferredTasksAsync(TestContext.Current.CancellationToken);
 
-            var nodes = result["data"]["recentBlogPosts"];
+        var result = await context
+            .GraphQLClient
+            .Content
+            .Query("RecentBlogPosts", builder =>
+            {
+                builder
+                    .WithField("displayText")
+                    .WithField("contentItemId");
+            });
 
-            Assert.Equal(2, nodes.AsArray().Count());
-            Assert.Equal("Some sorta blogpost in a Query!", nodes[0]["displayText"].ToString());
-            Assert.Equal("Man must explore, and this is exploration at its greatest", nodes[1]["displayText"].ToString());
-        }
+        var jsonArray = result["data"]?["recentBlogPosts"]?.AsArray();
+
+        Assert.NotNull(jsonArray);
+        Assert.Equal(2, jsonArray.Count);
+
+        // The RecentBlogPosts query sorts the content items by CreatedUtc. If the
+        // test is executing too fast, both blog entries may have the same CreatedUtc
+        // value and ordering becomes random. Because of this, we do not assert the order
+        // of the result.
+        var displayTexts = jsonArray.Select(node => node["displayText"]?.ToString());
+
+        Assert.Contains("Some sort of blogpost in a Query!", displayTexts);
+
+        // This is the blog post created by the default blog recipe.
+        Assert.Contains("Man must explore, and this is exploration at its greatest", displayTexts);
     }
 }

@@ -86,11 +86,13 @@ also check the settings to disable asking user info on first registration
 
 ## Configure login settings
 
-[Navigate to Security/Settings/Login](https://localhost:5001/Admin/Settings/LoginSettings) and check Use a script to set user roles based on external provider claims and copy the following script
+[Navigate to Security/Settings/Login](https://localhost:5001/Admin/Settings/LoginSettings) and check Use a script to set user roles, user claims and user properties based on external provider claims and copy the following script
 
 ```javascript
 switch (context.loginProvider) {
     case "AzureAd":
+        context.propertiesToUpdate = {"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}};
+        context.claimsToUpdate = [{ claimType: "DisplayName", claimValue: "UserDisplayName"}];
         context.externalClaims.forEach(claim => {
             if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {
                 switch (claim.value) {

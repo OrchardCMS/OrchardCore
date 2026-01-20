@@ -1,9 +1,8 @@
 using OrchardCore.Search.Elasticsearch.Core.Models;
 
-namespace OrchardCore.Search.Elasticsearch.ViewModels
+namespace OrchardCore.Search.Elasticsearch.ViewModels;
+
+public class ElasticContentIndexSettingsViewModel
 {
-    public class ElasticContentIndexSettingsViewModel
-    {
-        public ElasticContentIndexSettings ElasticContentIndexSettings { get; set; }
-    }
+    public ElasticContentIndexSettings ElasticContentIndexSettings { get; set; }
 }

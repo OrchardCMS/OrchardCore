@@ -1,6 +1,13 @@
-<form action="{{ "~/search" | href }}" method="get">
+{% assign index = Model.Index | default: '' %}
+{% if index == '' %}
+{% assign path = '~/search' %}
+{% else %}
+{% assign path = '~/search/' | append: index %}
+{% endif %}
+
+<form action="{{ path | href }}" method="get">
     <div class="input-group mb-3 mt-5">
-        <input name="Terms" type="text" class="form-control form-control-lg" value="{{ Model.Terms }}" placeholder="{{ "Enter your search term(s)" | t }}" autofocus />
+        <input name="Terms" type="text" class="form-control form-control-lg" value="{{ Model.Terms }}" placeholder="{{ 'Enter your search term(s)' | t }}" autofocus="" />
         <button type="submit" class="btn btn-primary btn-sm">{{ "Search" | t }}</button>
     </div>
 </form>

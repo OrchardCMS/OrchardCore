@@ -1,52 +1,52 @@
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Indexing;
 using OrchardCore.Search.AzureAI.Deployment;
-using OrchardCore.Search.AzureAI.Services;
 using OrchardCore.Search.AzureAI.ViewModels;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public class AzureAISearchIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, AzureAISearchIndexDeploymentStep>
+public sealed class AzureAISearchIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, AzureAISearchIndexDeploymentStep>
 {
-    private readonly AzureAISearchIndexSettingsService _indexSettingsService;
+    private readonly IIndexProfileStore _store;
 
-    public AzureAISearchIndexDeploymentStepDriver(AzureAISearchIndexSettingsService indexSettingsService)
+    public AzureAISearchIndexDeploymentStepDriver(IIndexProfileStore store)
     {
-        _indexSettingsService = indexSettingsService;
+        _store = store;
     }
-
-    public override IDisplayResult Display(AzureAISearchIndexDeploymentStep step)
-        => Combine(
-            View("AzureAISearchIndexDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+    public override Task<IDisplayResult> DisplayAsync(AzureAISearchIndexDeploymentStep step, BuildDisplayContext context)
+    {
+        return CombineAsync(
+            View("AzureAISearchIndexDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
             View("AzureAISearchIndexDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
+    }
 
-
-    public override IDisplayResult Edit(AzureAISearchIndexDeploymentStep step)
-        => Initialize<AzureAISearchIndexDeploymentStepViewModel>("AzureAISearchIndexDeploymentStep_Fields_Edit", async model =>
+    public override IDisplayResult Edit(AzureAISearchIndexDeploymentStep step, BuildEditorContext context)
+    {
+        return Initialize<AzureAISearchIndexDeploymentStepViewModel>("AzureAISearchIndexDeploymentStep_Fields_Edit", async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
-            model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _store.GetByProviderAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
         }).Location("Content");
+    }
 
-
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexDeploymentStep step, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexDeploymentStep step, UpdateEditorContext context)
     {
         step.IndexNames = [];
 
-        await updater.TryUpdateModelAsync(step, Prefix, p => p.IncludeAll, p => p.IndexNames);
+        await context.Updater.TryUpdateModelAsync(step, Prefix,
+            p => p.IncludeAll,
+            p => p.IndexNames);
 
         if (step.IncludeAll)
         {
-            // clear index names if the user select include all.
+            // Clear index names if the user select include all.
             step.IndexNames = [];
         }
 
-        return Edit(step);
+        return Edit(step, context);
     }
 }

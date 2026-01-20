@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
+namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
+
+public class ContentItemDeploymentStepViewModel
 {
-    public class ContentItemDeploymentStepViewModel
-    {
-        [Required]
-        public string ContentItemId { get; set; }
-    }
+    [Required]
+    public string ContentItemId { get; set; }
 }

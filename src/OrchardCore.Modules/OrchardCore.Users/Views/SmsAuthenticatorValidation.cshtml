@@ -1,18 +1,11 @@
 @using Microsoft.AspNetCore.Antiforgery
-@inject IAntiforgery AntiforgeryService
-@{
-    var tokenSet = AntiforgeryService.GetAndStoreTokens(ViewContext.HttpContext);
-}
+@using OrchardCore.Users.Endpoints.SmsAuthenticator
+
 <h5 class="text-center mb-3">@T["Please <a href=\"#\" id=\"RequestCode\">click here</a> to receive a one-time verification code via SMS."]</h5>
 
-<div class="text-center alert d-none"
-     id="RequestCodeFeedback"
-     data-token-field-name="@tokenSet.FormFieldName"
-     data-token-endpoint="@Url.ActionLink("SendCode", "SmsAuthenticator")"
-     data-antiforgery-token="@tokenSet.RequestToken">
-</div>
+<div class="text-center alert d-none" id="RequestCodeFeedback"></div>
 
-<form id="RequestCodeForm" method="post" asp-action="SendCode" asp-controller="SmsAuthenticator" class="d-none">
+<form id="RequestCodeForm" method="post" asp-area="@UserConstants.Features.Users" asp-route="@SendCode.RouteName" class="d-none">
 </form>
 
 <script at="Head" asp-name="RequestVerificationCodeViaSms">

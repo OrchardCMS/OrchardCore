@@ -1,0 +1,8 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Themes.Models
+
+@model ShapeViewModel<ThemeEntry>
+
+<form asp-route-action="SetCurrentTheme" asp-route-id="@Model.Value.Extension.Id" method="post" class="no-multisubmit">
+    <button type="submit" class="btn btn-sm btn-primary">@T["Make Current"]</button>
+</form>

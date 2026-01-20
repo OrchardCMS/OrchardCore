@@ -1,8 +1,8 @@
 @using OrchardCore.Microsoft.Authentication.ViewModels
 @model AzureADSettingsViewModel
 
-<p class="alert alert-warning">
-    @T["The current tenant will be reloaded when the settings are saved."]
+<p class="alert alert-warning" role="alert">
+    @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Microsoft.Authentication/#azure-active-directory" target="_blank">@T["See documentation"]</a>
 </p>
 
@@ -26,7 +26,7 @@
     <label asp-for="TenantId" class="form-label">@T["TenantId"]</label>
     <input asp-for="TenantId" class="form-control" />
     <span asp-validation-for="TenantId"></span>
-    <span class="hint">@T["The Tenant (Directory) ID found on the Microsoft Entra ID App registration parameters."]</span>
+    <span class="hint">@T["The Tenant (Directory) ID found on the Microsoft Entra ID App registration parameters. For multi-tenant App registrations, use 'common' or 'organizations'."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="CallbackPath">

@@ -19,4 +19,8 @@
     <ProjectReference Include="..\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Setup.Abstractions\OrchardCore.Setup.Abstractions.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YesSql" />
+  </ItemGroup>
 </Project>

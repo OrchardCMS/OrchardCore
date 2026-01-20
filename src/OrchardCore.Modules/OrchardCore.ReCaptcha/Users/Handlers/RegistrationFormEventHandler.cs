@@ -1,28 +1,32 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Users;
 using OrchardCore.Users.Events;
 
-namespace OrchardCore.ReCaptcha.Users.Handlers
+namespace OrchardCore.ReCaptcha.Users.Handlers;
+
+public sealed class RegistrationFormEventHandler : RegistrationFormEventsBase
 {
-    public class RegistrationFormEventHandler : IRegistrationFormEvents
+    private readonly ReCaptchaService _reCaptchaService;
+    private readonly SignInManager<IUser> _signInManager;
+
+    public RegistrationFormEventHandler(
+        ReCaptchaService reCaptchaService,
+        SignInManager<IUser> signInManager)
     {
-        private readonly ReCaptchaService _reCaptchaService;
+        _reCaptchaService = reCaptchaService;
+        _signInManager = signInManager;
+    }
 
-        public RegistrationFormEventHandler(ReCaptchaService recaptchaService)
+    public override async Task RegistrationValidationAsync(Action<string, string> reportError)
+    {
+        // When logging in via an external provider, authentication security is already handled by the provider.
+        // Therefore, using a CAPTCHA is unnecessary and impractical, as users wouldn't be able to complete it anyway.
+        if (await _signInManager.GetExternalLoginInfoAsync() != null)
         {
-            _reCaptchaService = recaptchaService;
+            return;
         }
 
-        public Task RegisteredAsync(IUser user)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task RegistrationValidationAsync(Action<string, string> reportError)
-        {
-            return _reCaptchaService.ValidateCaptchaAsync(reportError);
-        }
+        await _reCaptchaService.ValidateCaptchaAsync(reportError);
     }
 }

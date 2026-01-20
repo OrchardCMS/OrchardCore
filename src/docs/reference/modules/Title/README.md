@@ -23,7 +23,7 @@ The Pattern has access to the current ContentItem and is executed on ContentItem
 The following shapes are rendered when the **Title Part** is attached to a content type.
 
 | Name        | Display Type | Default Location | Model Type           |
-| ----------- | ------------ | ---------------- | -------------------- |
+|-------------|--------------|------------------|----------------------|
 | `TitlePart` | `Detail`     | `Header:5`       | `TitlePartViewModel` |
 | `TitlePart` | `Summary`    | `Header:10`      | `TitlePartViewModel` |
 
@@ -32,6 +32,6 @@ The following shapes are rendered when the **Title Part** is attached to a conte
 The following properties are available in the `TitlePartViewModel` class.
 
 | Name        | Type        | Description                     |
-| ----------- | ----------- | ------------------------------- |
+|-------------|-------------|---------------------------------|
 | `Title`     | `string`    | The title property of the part. |
 | `TitlePart` | `TitlePart` | The `TitlePart` instance.       |

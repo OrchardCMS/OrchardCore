@@ -1,0 +1,37 @@
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using OrchardCore.Lists.ViewModels
+@using OrchardCore.Localization
+
+@model OrchardCore.Lists.ViewModels.ListPartViewModel
+
+@{
+    var dropdownClassList = CultureInfo.CurrentUICulture.IsRightToLeft() 
+       ? "dropdown-menu dropdown-menu-start" 
+       : "dropdown-menu";
+}
+
+<form>
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-3">
+                <div class="col">
+                    <div class="input-group has-filter">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa-solid fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
+                        </button>
+                        <div class="@dropdownClassList" aria-labelledby="filter-dropdown">
+                            @* Latest not surfaced here to be consistent with the main content items list filter. *@
+                            <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
+                            <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
+                            <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>
+                        </div>
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input name="@nameof(ListPartFilterViewModel.Status)" value="@Model.ListPartFilterViewModel.Status" class="form-control" type="hidden" />
+                        <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel.DisplayText" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

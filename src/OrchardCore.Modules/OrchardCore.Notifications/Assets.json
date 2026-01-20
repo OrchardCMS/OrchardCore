@@ -1,8 +1,8 @@
 [
   {
-    "inputs": [
-      "Assets/js/notification-manager.js"
-    ],
-    "output": "wwwroot/Scripts/notification-manager.js"
+    "action": "min",
+    "name": "notification-manager",
+    "source": "Assets/js/notification-manager.js",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

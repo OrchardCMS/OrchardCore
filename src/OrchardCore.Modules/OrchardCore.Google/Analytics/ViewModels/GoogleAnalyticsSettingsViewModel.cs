@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Google.Analytics.ViewModels
+namespace OrchardCore.Google.Analytics.ViewModels;
+
+public class GoogleAnalyticsSettingsViewModel
 {
-    public class GoogleAnalyticsSettingsViewModel
-    {
-        [Required(AllowEmptyStrings = false)]
-        public string TrackingID { get; set; }
-    }
+    [Required(AllowEmptyStrings = false)]
+    public string TrackingID { get; set; }
 }

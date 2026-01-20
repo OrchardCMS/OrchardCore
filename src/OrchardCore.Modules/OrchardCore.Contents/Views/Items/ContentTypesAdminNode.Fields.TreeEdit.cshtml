@@ -1,10 +1,10 @@
 @model ContentTypesAdminNodeViewModel
 
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
-<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head"></style>
 
-<script asp-name="vuejs" at="Foot"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="jQuery"></script>
+<script asp-name="vuejs" at="Foot" version="2"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="bootstrap, jQuery, jQuery.nestedSortable, fontawesome-iconpicker"></script>
 
 <h5>@T["Content Types"]</h5>
 

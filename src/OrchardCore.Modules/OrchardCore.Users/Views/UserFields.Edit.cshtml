@@ -4,25 +4,8 @@
 @using OrchardCore.Users.Models
 @using Microsoft.Extensions.Options
 @using Microsoft.AspNetCore.Identity
+
 @inject IOptions<IdentityOptions> IdentityOptions
-
-@if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
-{
-    <div class="mb-3">
-        <div class="form-check">
-            <input asp-for="EmailConfirmed" type="checkbox" class="form-check-input" asp-is-disabled="@Model.IsEditingDisabled">
-            <label class="form-check-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
-        </div>
-    </div>
-}
-
-<div class="mb-3">
-    <div class="form-check form-switch">
-        <input asp-for="IsEnabled" type="checkbox" class="form-check-input" checked="@Model.IsEnabled" asp-is-disabled="@Model.IsEditingDisabled" />
-        <label asp-for="IsEnabled" class="form-check-label cursor-pointer">@T["Is enabled?"]</label>
-        <span class="hint dashed">@T["Uncheck to disable this user account."]</span>
-    </div>
-</div>
 
 @if (Model.IsNewRequest)
 {
@@ -30,17 +13,17 @@
         <div class="mb-1">
             <label asp-for="Password" class="form-label">@T["Password"]</label>
             <div class="input-group col-md-4">
-                <span class="input-group-text password-toggle-button"><span class="toggle-icon fas fa-eye prefix"></span></span>
-                <input asp-for="Password" type="password" class="form-control password-input-field" placeholder="@T["Password"]" />
+                <span class="input-group-text password-toggle-button"><span class="toggle-icon fa-solid fa-eye prefix"></span></span>
+                <input asp-for="Password" type="password" class="form-control password-input-field" placeholder="@T["Password"]" autocomplete="new-password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
         </div>
 
         <div class="mb-3">
-            <label asp-for="PasswordConfirmation" class="sr-only">@T["Password Confirmation"]</label>
+            <label asp-for="PasswordConfirmation" class="visually-hidden">@T["Password Confirmation"]</label>
             <div class="input-group col-md-4">
-                <span class="input-group-text password-confirmation-toggle-button"><span class="toggle-icon fas fa-eye prefix"></span></span>
-                <input asp-for="PasswordConfirmation" type="password" class="form-control password-confirmation-input-field" placeholder="@T["Password confirmation"]" />
+                <span class="input-group-text password-confirmation-toggle-button"><span class="toggle-icon fa-solid fa-eye prefix"></span></span>
+                <input asp-for="PasswordConfirmation" type="password" class="form-control password-confirmation-input-field" autocomplete="new-password" placeholder="@T["Password confirmation"]" />
                 <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
             </div>
 

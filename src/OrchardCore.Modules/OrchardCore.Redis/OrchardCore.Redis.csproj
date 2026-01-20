@@ -19,4 +19,8 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Redis.Abstractions\OrchardCore.Redis.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+  </ItemGroup>
+
 </Project>

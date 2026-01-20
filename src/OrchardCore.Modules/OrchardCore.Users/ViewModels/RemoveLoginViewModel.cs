@@ -1,8 +1,7 @@
-namespace OrchardCore.Users.ViewModels
+namespace OrchardCore.Users.ViewModels;
+
+public class RemoveLoginViewModel
 {
-    public class RemoveLoginViewModel
-    {
-        public string LoginProvider { get; set; }
-        public string ProviderKey { get; set; }
-    }
+    public string LoginProvider { get; set; }
+    public string ProviderKey { get; set; }
 }

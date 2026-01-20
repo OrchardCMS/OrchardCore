@@ -1,13 +1,14 @@
 {
-  "name": "",
-  "displayName": "",
-  "description": "",
-  "author": "",
-  "website": "",
-  "version": "1",
+  "name": "OrchardCore.Facebook.Widgets.Migrations",
+  "displayName": "Meta Social Plugins Widgets Migration",
+  "description": "Recipe migration for the OrchardCore.Facebook.Widgets feature.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
   "issetuprecipe": false,
-  "categories": "",
+  "categories": [],
   "tags": [],
+
   "steps": [
     {
       "name": "ContentDefinition",

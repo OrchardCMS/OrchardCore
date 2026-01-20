@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Workflows.Http.ViewModels
-{
-    public class HttpRedirectTaskViewModel
-    {
-        [Required]
-        public string Location { get; set; }
+namespace OrchardCore.Workflows.Http.ViewModels;
 
-        public bool Permanent { get; set; }
-    }
+public class HttpRedirectTaskViewModel
+{
+    [Required]
+    public string Location { get; set; }
+
+    public bool Permanent { get; set; }
 }

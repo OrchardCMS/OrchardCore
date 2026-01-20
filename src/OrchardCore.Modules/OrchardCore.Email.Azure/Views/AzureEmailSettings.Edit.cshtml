@@ -1,0 +1,28 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.Email.Azure.ViewModels
+
+@model AzureEmailSettingsViewModel
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="IsEnabled" checked="@Model.IsEnabled" role="button" data-bs-toggle="collapse" data-bs-target="#Azure_Provider_Settings" aria-expanded="@Model.IsEnabled.ToString().ToLowerInvariant()" aria-controls="Azure_Provider_Settings" />
+        <label class="form-check-label" asp-for="IsEnabled">@T["Enable Azure Provider"]</label>
+    </div>
+</div>
+
+<div id="Azure_Provider_Settings" class="collapse @(Model.IsEnabled ? " show" : string.Empty)">
+
+    <div class="mb-3" asp-validation-class-for="DefaultSender">
+        <label asp-for="DefaultSender" class="form-label">@T["Sender email address"]</label>
+        <input asp-for="DefaultSender" class="form-control" type="text" />
+        <span asp-validation-for="DefaultSender"></span>
+        <span class="hint">@T["The default email address to use as a sender, unless the email sender is set."]</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="ConnectionString">
+        <label asp-for="ConnectionString" class="form-label">@T["Connection String"]</label>
+        <input type="text" asp-for="ConnectionString" class="form-control" placeholder="@(Model.HasConnectionString ? T["Connection string is securely stored. Leave blank for current connection string or enter a new one"] : T["Azure connection string"])" />
+        <span asp-validation-for="ConnectionString"></span>
+    </div>
+
+</div>

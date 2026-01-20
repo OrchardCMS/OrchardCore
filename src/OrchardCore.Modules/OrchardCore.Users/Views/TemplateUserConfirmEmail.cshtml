@@ -1,13 +1,20 @@
+@using Microsoft.Extensions.Options
+@using OrchardCore.Users.Models
+@inject IOptions<EmailConfirmationTokenProviderOptions> TokenOptions
+
 @model ConfirmEmailViewModel
 
 @{
-    Layout = "";
+    Layout = string.Empty;
+    var totalMinutes = Convert.ToInt32(TokenOptions.Value.TokenLifespan.TotalMinutes);
 }
 
 <p>
-@T["Dear {0},", Model.User.UserName]
+    @T["Dear {0},", Model.User.UserName]
 </p>
 
-<p>@T["Please <a href=\"{0}\">click here</a> to confirm your account.", Model.ConfirmEmailUrl]</p>
+<p>@T["Please <a href=\"{0}\">click here</a> to confirm your account.", Html.Raw(Model.ConfirmEmailUrl)]</p>
+
+<p>@T.Plural(totalMinutes, "Please be aware that this link will expire in {0} minute.", "Please be aware that this link will expire in {0} minutes.", totalMinutes)</p>
 
 <p>@T["Thank you"]</p>

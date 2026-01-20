@@ -1,36 +1,34 @@
-using System.Linq;
 using GraphQL.Conversion;
 using GraphQL.Types;
 
-namespace OrchardCore.Apis.GraphQL
+namespace OrchardCore.Apis.GraphQL;
+
+public class OrchardFieldNameConverter : INameConverter
 {
-    public class OrchardFieldNameConverter : INameConverter
+    private readonly CamelCaseNameConverter _defaultConverter = new();
+
+    // todo: custom argument name?
+    public string NameForArgument(string argumentName, IComplexGraphType parentGraphType, FieldType field)
     {
-        private readonly CamelCaseNameConverter _defaultConverter = new();
+        return _defaultConverter.NameForArgument(argumentName, parentGraphType, field);
+    }
 
-        // todo: custom argument name?
-        public string NameForArgument(string argumentName, IComplexGraphType parentGraphType, FieldType field)
+    // TODO: check functionality.
+    public string NameForField(string fieldName, IComplexGraphType parentGraphType)
+    {
+        var attributes = parentGraphType?.GetType().GetCustomAttributes(typeof(GraphQLFieldNameAttribute), true);
+
+        if (attributes != null)
         {
-            return _defaultConverter.NameForArgument(argumentName, parentGraphType, field);
-        }
-
-        // TODO: check functionality.
-        public string NameForField(string fieldName, IComplexGraphType parentGraphType)
-        {
-            var attributes = parentGraphType?.GetType().GetCustomAttributes(typeof(GraphQLFieldNameAttribute), true);
-
-            if (attributes != null)
+            foreach (var attribute in attributes.Cast<GraphQLFieldNameAttribute>())
             {
-                foreach (var attribute in attributes.Cast<GraphQLFieldNameAttribute>())
+                if (attribute.Field == fieldName)
                 {
-                    if (attribute.Field == fieldName)
-                    {
-                        return attribute.Mapped;
-                    }
+                    return attribute.Mapped;
                 }
             }
-
-            return _defaultConverter.NameForField(fieldName, parentGraphType);
         }
+
+        return _defaultConverter.NameForField(fieldName, parentGraphType);
     }
 }

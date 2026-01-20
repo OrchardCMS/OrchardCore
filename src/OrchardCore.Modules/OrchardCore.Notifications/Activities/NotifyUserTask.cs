@@ -1,41 +1,65 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Users;
+using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
+using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Notifications.Activities;
 
 public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
 {
+    private readonly ISession _session;
+
     public NotifyUserTask(
        INotificationService notificationCoordinator,
        IWorkflowExpressionEvaluator expressionEvaluator,
        HtmlEncoder htmlEncoder,
        ILogger<NotifyUserTask> logger,
-       IStringLocalizer<NotifyUserTask> localizer
+       IStringLocalizer<NotifyUserTask> stringLocalizer,
+       ISession session
    ) : base(notificationCoordinator,
        expressionEvaluator,
        htmlEncoder,
        logger,
-       localizer)
+       stringLocalizer)
     {
+        _session = session;
     }
 
-    public override LocalizedString DisplayText => S["Notify User Task"];
+    public override LocalizedString DisplayText => S["Notify Specific Users Task"];
 
-    protected override Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    public WorkflowExpression<string> UserNames
     {
-        if (workflowContext.Input.TryGetValue("User", out var userObject) && userObject is User user && user.IsEnabled)
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
+
+    protected override async Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        if (!string.IsNullOrEmpty(UserNames.Expression))
         {
-            return Task.FromResult<IEnumerable<IUser>>(new[] { user });
+            var expression = await _expressionEvaluator.EvaluateAsync(UserNames, workflowContext, null);
+
+            var userNames = expression.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+            if (userNames.Length > 0)
+            {
+                var users = new List<User>();
+
+                foreach (var page in userNames.PagesOf(1000))
+                {
+                    users.AddRange(await _session.Query<User, UserIndex>(user => user.NormalizedUserName.IsIn(page)).ListAsync());
+                }
+
+                return users;
+            }
         }
 
-        return Task.FromResult(Enumerable.Empty<IUser>());
+        return [];
     }
 }

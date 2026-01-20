@@ -1,22 +1,18 @@
-using System;
-using System.Collections.Generic;
+namespace OrchardCore.Workflows.Options;
 
-namespace OrchardCore.Workflows.Options
+public class ActivityRegistration
 {
-    public class ActivityRegistration
+    public ActivityRegistration(Type activityType)
     {
-        public ActivityRegistration(Type activityType)
-        {
-            ActivityType = activityType;
-            DriverTypes = [];
-        }
-
-        public ActivityRegistration(Type activityType, Type driverType) : this(activityType)
-        {
-            DriverTypes.Add(driverType);
-        }
-
-        public Type ActivityType { get; }
-        public HashSet<Type> DriverTypes { get; }
+        ActivityType = activityType;
+        DriverTypes = [];
     }
+
+    public ActivityRegistration(Type activityType, Type driverType) : this(activityType)
+    {
+        DriverTypes.Add(driverType);
+    }
+
+    public Type ActivityType { get; }
+    public HashSet<Type> DriverTypes { get; }
 }

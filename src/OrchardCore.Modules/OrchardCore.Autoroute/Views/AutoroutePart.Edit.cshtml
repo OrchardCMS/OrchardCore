@@ -28,7 +28,7 @@
 
 <div class="autoroute-disabled" style="@(Model.Disabled ? "display: none" : string.Empty)">
     <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Path">
-        <label asp-for="Path" class="@Orchard.GetLabelClasses()">@T["Permalink"]</label>
+        <label asp-for="Path" class="@Orchard.GetLabelClasses(inputRequired: true)">@T["Permalink"]</label>
         <div class="@Orchard.GetEndClasses()">
             <div class="input-group">
                 @if (!string.IsNullOrWhiteSpace(site.BaseUrl))
@@ -53,7 +53,7 @@
         </div>
     </div>
     @{
-        var authorized = await AuthorizationService.AuthorizeAsync(User, Permissions.SetHomepage);
+        var authorized = await AuthorizationService.AuthorizeAsync(User, AutoroutePermissions.SetHomepage);
         var showHomepageOption = Model.Settings.ShowHomepageOption && authorized;
 
         if (Model.IsHomepage)

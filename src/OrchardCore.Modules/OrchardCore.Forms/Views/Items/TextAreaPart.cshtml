@@ -18,4 +18,4 @@
         }
     }
 }
-<textarea id="@fieldId" name="@fieldName" class="@fieldClass" placeholder="@Model.Value.Placeholder">@fieldValue</textarea>
+<textarea id="@fieldId" name="@fieldName" class="@fieldClass" placeholder="@Model.Value.Placeholder" rows="@(Model.Value.Rows.HasValue ? Model.Value.Rows : null)">@fieldValue</textarea>

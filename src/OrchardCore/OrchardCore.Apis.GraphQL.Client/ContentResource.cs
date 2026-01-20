@@ -1,73 +1,69 @@
-using System;
-using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 
-namespace OrchardCore.Apis.GraphQL.Client
+namespace OrchardCore.Apis.GraphQL.Client;
+
+public class ContentResource
 {
-    public class ContentResource
+    private readonly HttpClient _client;
+
+    public ContentResource(HttpClient client)
     {
-        private readonly HttpClient _client;
+        _client = client;
+    }
 
-        public ContentResource(HttpClient client)
+    public async Task<JsonObject> Query(string contentType, Action<ContentTypeQueryResourceBuilder> builder)
+    {
+        var contentTypeBuilder = new ContentTypeQueryResourceBuilder(contentType);
+        builder(contentTypeBuilder);
+
+        var requestJson = new JsonObject
         {
-            _client = client;
+            ["query"] = @"query { " + contentTypeBuilder.Build() + " }",
+        };
+
+        var response = await _client
+            .PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
+
+        if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
+        {
+            throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<JsonObject> Query(string contentType, Action<ContentTypeQueryResourceBuilder> builder)
+        return JObject.Parse(await response.Content.ReadAsStringAsync());
+    }
+
+    public async Task<JsonObject> Query(string body)
+    {
+        var requestJson = new JsonObject
         {
-            var contentTypeBuilder = new ContentTypeQueryResourceBuilder(contentType);
-            builder(contentTypeBuilder);
+            ["query"] = @"query { " + body + " }",
+        };
 
-            var requestJson = new JsonObject
-            {
-                ["query"] = @"query { " + contentTypeBuilder.Build() + " }",
-            };
+        var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
 
-            var response = await _client
-                .PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
-
-            if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
-            {
-                throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
-            }
-
-            return JObject.Parse(await response.Content.ReadAsStringAsync());
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<JsonObject> Query(string body)
+        return JObject.Parse(await response.Content.ReadAsStringAsync());
+    }
+
+    public async Task<JsonObject> NamedQueryExecute(string name)
+    {
+        var requestJson = new JsonObject
         {
-            var requestJson = new JsonObject
-            {
-                ["query"] = @"query { " + body + " }",
-            };
+            ["namedquery"] = name,
+        };
 
-            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
+        var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
-            }
-
-            return JObject.Parse(await response.Content.ReadAsStringAsync());
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<JsonObject> NamedQueryExecute(string name)
-        {
-            var requestJson = new JsonObject
-            {
-                ["namedquery"] = name,
-            };
-
-            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception(response.StatusCode.ToString() + " " + await response.Content.ReadAsStringAsync());
-            }
-
-            return JObject.Parse(await response.Content.ReadAsStringAsync());
-        }
+        return JObject.Parse(await response.Content.ReadAsStringAsync());
     }
 }

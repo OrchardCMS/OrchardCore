@@ -3,7 +3,16 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var listSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
+}
 
+@if (settings.Type == FieldBehaviorType.GeneratedHidden || settings.Type == FieldBehaviorType.GeneratedDisabled)
+{
+    <input type="hidden" asp-for="Text" />
+
+    return;
+}
+
+@{
     var options = new List<SelectListItem>();
     var selectedValue = string.IsNullOrEmpty(Model.Text) ? listSettings.DefaultValue : Model.Text;
 
@@ -17,7 +26,7 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Text" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         @if (listSettings.Editor == EditorOption.Radio)
         {
@@ -35,7 +44,7 @@
         {
             <select class="form-select content-preview-select" asp-for="Text" asp-items="options"></select>
         }
-
+        <span asp-validation-for="Text"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>

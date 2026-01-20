@@ -1,6 +1,3 @@
-namespace OrchardCore.Media.Events
-{
-    public class MediaCreatingContext : MediaContextBase
-    {
-    }
-}
+namespace OrchardCore.Media.Events;
+
+public class MediaCreatingContext : MediaContextBase;

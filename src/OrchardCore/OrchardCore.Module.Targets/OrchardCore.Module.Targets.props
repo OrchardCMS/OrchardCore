@@ -6,7 +6,7 @@
   -->
 
   <PropertyGroup>
-    <ModuleAssetExcludes>Assets.*;Assets\**;**\*.props;**\*.targets</ModuleAssetExcludes>
+    <ModuleAssetExcludes>Assets.*;GulpAssets.*;Assets\**;**\*.props;**\*.targets</ModuleAssetExcludes>
     <ModuleDefaultAssetExcludes>$(ModuleAssetExcludes);**\node_modules\**;node_modules\**</ModuleDefaultAssetExcludes>
     <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\jspm_packages\**;jspm_packages\**</ModuleDefaultAssetExcludes>
     <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\bower_components\**;bower_components\**</ModuleDefaultAssetExcludes>

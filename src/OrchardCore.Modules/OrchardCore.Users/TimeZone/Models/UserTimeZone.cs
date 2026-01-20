@@ -1,7 +1,6 @@
-namespace OrchardCore.Users.TimeZone.Models
+namespace OrchardCore.Users.TimeZone.Models;
+
+public class UserTimeZone
 {
-    public class UserTimeZone
-    {
-        public string TimeZoneId { get; set; }
-    }
+    public string TimeZoneId { get; set; }
 }

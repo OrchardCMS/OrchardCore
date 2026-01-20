@@ -1,13 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users;
 
-public class CustomUserSettingsPermissions : IPermissionProvider
+public sealed class CustomUserSettingsPermissions : IPermissionProvider
 {
     // This permission is never checked it is only used as a template.
     private static readonly Permission _manageOwnCustomUserSettings = new("ManageOwnCustomUserSettings_{0}", "Manage Own Custom User Settings - {0}", new[] { Permissions.ManageUsers });

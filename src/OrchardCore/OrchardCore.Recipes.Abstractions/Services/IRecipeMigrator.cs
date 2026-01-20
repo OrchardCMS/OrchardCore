@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Recipes.Services
+namespace OrchardCore.Recipes.Services;
+
+public interface IRecipeMigrator
 {
-    public interface IRecipeMigrator
-    {
-        Task<string> ExecuteAsync(string recipeFileName, IDataMigration migration);
-    }
+    Task<string> ExecuteAsync(string recipeFileName, IDataMigration migration);
 }

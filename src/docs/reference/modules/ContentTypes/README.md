@@ -10,11 +10,11 @@ The editor returns the selection as a `string[]` on the model.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `selectedContentTypes` | `string[]` | The list of content types that should be marked as selected when rendering the editor. |
-| `htmlName` | `string` | The name of the model property to bind the result to.
-| `stereotype` (optional) | `string` | A stereotype name to filter the list of content types available to select. |
+| Parameter               | Type       | Description                                                                            |
+|-------------------------|------------|----------------------------------------------------------------------------------------|
+| `selectedContentTypes`  | `string[]` | The list of content types that should be marked as selected when rendering the editor. |
+| `htmlName`              | `string`   | The name of the model property to bind the result to.                                  |
+| `stereotype` (optional) | `string`   | A stereotype name to filter the list of content types available to select.             |
 
 #### Sample
 
@@ -31,7 +31,7 @@ Migration classes can be used to alter the content type definitions, like by add
 This service provides a way to modify the content type definitions. From a migrations class, we can inject an instance of this interface.
 
 ```csharp
-public class Migrations : DataMigration
+public sealed class Migrations : DataMigration
 {
     IContentDefinitionManager _contentDefinitionManager;
 
@@ -40,7 +40,7 @@ public class Migrations : DataMigration
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public int Create()
+    public Task<int> CreateAsync()
     {
         // This code will be run when the feature is enabled
 
@@ -54,7 +54,7 @@ public class Migrations : DataMigration
 The following example creates a new Content Type named `Product`.
 
 ```csharp
-_contentDefinitionManager.AlterTypeDefinition("Product");
+await _contentDefinitionManager.AlterTypeDefinitionAsync("Product");
 ```
 
 ### Changing the metadata of a Content Type
@@ -62,7 +62,7 @@ _contentDefinitionManager.AlterTypeDefinition("Product");
 To change specific properties of the content type, an argument can be used to configure it:
 
 ```csharp
-_contentDefinitionManager.AlterTypeDefinition("Product", type => type
+await _contentDefinitionManager.AlterTypeDefinitionAsync("Product", type => type
     // content items of this type can have drafts
     .Draftable()
     // content items versions of this type have saved
@@ -79,7 +79,7 @@ _contentDefinitionManager.AlterTypeDefinition("Product", type => type
 The following example adds the `TitlePart` content part to the `Product` type.
 
 ```csharp
-_contentDefinitionManager.AlterTypeDefinition("Product", type => type
+await _contentDefinitionManager.AlterTypeDefinitionAsync("Product", type => type
     .WithPart("TitlePart")
 );
 ```
@@ -87,7 +87,7 @@ _contentDefinitionManager.AlterTypeDefinition("Product", type => type
 Each part can also be configured in the context of a type. For instance the `AutoroutePart` requires a __Liquid__ template as its pattern to generate custom routes. It's defined in a custom setting for this part.
 
 ```csharp
-_contentDefinitionManager.AlterTypeDefinition("Product", type => type
+await _contentDefinitionManager.AlterTypeDefinitionAsync("Product", type => type
     .WithPart("AutoroutePart", part => part
         // sets the position among other parts
         .WithPosition("2")
@@ -104,11 +104,11 @@ For a list of all the settings each type can use, please refer to their respecti
 Fields can not be attached directly to a Content Type. To add fields to a content type, create a part with the same name as the type, and add fields to this part.
 
 ```csharp
-_contentDefinitionManager.AlterTypeDefinition("Product", type => type
+await _contentDefinitionManager.AlterTypeDefinitionAsync("Product", type => type
     .WithPart("Product")
 );
 
-_contentDefinitionManager.AlterPartDefinition("Product", part => part
+await _contentDefinitionManager.AlterPartDefinitionAsync("Product", part => part
     .WithField("Image", field => field
         .OfType("MediaField")
         .WithDisplayName("Main image")
@@ -146,7 +146,7 @@ using OrchardCore.ContentManagement;
 
 ...
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -158,7 +158,7 @@ public class Startup : StartupBase
 Finally, here is an example of consuming your Content Item as your Content Part in a Controller.
 
 ```csharp
-public class ProductController : Controller
+public sealed class ProductController : Controller
 {
     private readonly IOrchardHelper _orchardHelper;
     private readonly IContentManager _contentManager;
@@ -212,3 +212,9 @@ public class ProductController : Controller
     }
 }
 ```
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NDUjn5_KdEM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bayT58i7DVY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>

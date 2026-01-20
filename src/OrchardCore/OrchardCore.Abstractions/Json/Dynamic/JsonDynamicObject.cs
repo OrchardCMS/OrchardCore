@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Text.Json.Settings;
 
 #nullable enable
@@ -10,37 +10,35 @@ using System.Text.Json.Settings;
 namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicObject[{Count}]")]
-public class JsonDynamicObject : DynamicObject
+[JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicObject>))]
+public sealed class JsonDynamicObject : JsonDynamicBase
 {
     private readonly JsonObject _jsonObject;
+    private readonly Dictionary<string, object?> _dictionary = [];
 
-    private readonly Dictionary<string, object?> _dictionary = new();
+    public JsonDynamicObject()
+    {
+        _jsonObject = [];
+    }
 
-    public JsonDynamicObject() => _jsonObject = new JsonObject();
-
-    public JsonDynamicObject(JsonObject jsonObject) => _jsonObject = jsonObject;
+    public JsonDynamicObject(JsonObject jsonObject)
+    {
+        _jsonObject = jsonObject;
+    }
 
     public int Count => _jsonObject.Count;
 
-    public void Merge(JsonNode? content, JsonMergeSettings? settings = null) =>
-        _jsonObject.Merge(content, settings);
+    public override JsonNode Node => _jsonObject;
 
     public object? this[string key]
     {
-        get
-        {
-            var value = GetValue(key);
-            if (value is JsonDynamicValue jsonDynamicValue)
-            {
-                return jsonDynamicValue.JsonValue;
-            }
+        get => GetValue(key);
+        set => SetValue(key, value);
+    }
 
-            return value;
-        }
-        set
-        {
-            SetValue(key, value);
-        }
+    public void Merge(JsonNode? content, JsonMergeSettings? settings = null)
+    {
+        _jsonObject.Merge(content, settings);
     }
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
@@ -57,14 +55,7 @@ public class JsonDynamicObject : DynamicObject
             return true;
         }
 
-        var value = GetValue(binder.Name);
-        if (value is JsonDynamicValue jsonDynamicValue)
-        {
-            result = jsonDynamicValue.Value;
-            return true;
-        }
-
-        result = value;
+        result = GetValue(binder.Name);
         return true;
     }
 
@@ -79,6 +70,15 @@ public class JsonDynamicObject : DynamicObject
         result = typeof(JsonObject).InvokeMember(binder.Name, BindingFlags.InvokeMethod, null, _jsonObject, args);
         return true;
     }
+
+    public bool Remove(string key)
+    {
+        _dictionary.Remove(key);
+
+        return _jsonObject.Remove(key);
+    }
+
+    public JsonNode? SelectNode(string path) => _jsonObject.SelectNode(path);
 
     public object? GetValue(string key)
     {
@@ -115,7 +115,7 @@ public class JsonDynamicObject : DynamicObject
         return null;
     }
 
-    public void SetValue(string key, object? value, object? nodeValue = null)
+    public void SetValue(string key, object? value)
     {
         if (value is null)
         {
@@ -126,8 +126,7 @@ public class JsonDynamicObject : DynamicObject
 
         if (value is not JsonNode)
         {
-            var jsonNode = JNode.FromObject(value);
-            SetValue(key, jsonNode, value);
+            value = JNode.FromObject(value);
         }
 
         if (value is JsonObject jsonObject)
@@ -147,7 +146,7 @@ public class JsonDynamicObject : DynamicObject
         if (value is JsonValue jsonValue)
         {
             _jsonObject[key] = jsonValue;
-            _dictionary[key] = new JsonDynamicValue(jsonValue, nodeValue);
+            _dictionary[key] = new JsonDynamicValue(jsonValue);
             return;
         }
     }

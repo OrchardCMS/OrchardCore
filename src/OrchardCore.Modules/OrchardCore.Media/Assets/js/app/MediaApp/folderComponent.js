@@ -10,8 +10,8 @@ Vue.component('folder', {
                   <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i v-if="open" class="fa-solid fa-chevron-${document.dir == "ltr" ? "right" : "left"}"></i></span> 
                   <div class="folder-name ms-2">{{model.name}}</div>
                     <div class="btn-group folder-actions" >
-                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-if="isSelected || isRoot"><i class="fa-solid fa-plus" aria-hidden="true"></i></a>
-                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-if="isSelected && !isRoot"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-if="canCreateFolder && (isSelected || isRoot)"><i class="fa-solid fa-plus" aria-hidden="true"></i></a>
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-if="canDeleteFolder && isSelected && !isRoot"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
                     </div>
                 </a>
             </div>
@@ -48,6 +48,12 @@ Vue.component('folder', {
         },
         isRoot: function () {
             return this.model.path === '';
+        },
+        canCreateFolder: function () {
+            return this.model.canCreateFolder !== undefined ? this.model.canCreateFolder : true;
+        },
+        canDeleteFolder: function () {
+            return this.model.canDeleteFolder !== undefined ? this.model.canDeleteFolder : true;
         }
     },
     mounted: function () {

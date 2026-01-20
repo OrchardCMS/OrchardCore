@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Google;
 
-public partial class Permissions
+public static class Permissions
 {
     public static readonly Permission ManageGoogleAuthentication
         = new("ManageGoogleAuthentication", "Manage Google Authentication settings");
