@@ -1,11 +1,12 @@
 using BenchmarkDotNet.Running;
 
-namespace OrchardCore.Benchmarks;
-
-public static class Program
+namespace OrchardCore.Benchmark
 {
-    public static void Main(string[] args)
+    public static class Program
     {
-        BenchmarkSwitcher.FromAssembly(typeof(ShapeFactoryBenchmark).Assembly).Run(args);
+        public static void Main(string[] args)
+        {
+            BenchmarkSwitcher.FromAssembly(typeof(ShapeFactoryBenchmark).Assembly).Run(args);
+        }
     }
 }

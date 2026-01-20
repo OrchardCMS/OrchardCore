@@ -1,39 +1,42 @@
+using System.Threading.Tasks;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
-
-public sealed class ExportContentToDeploymentTargetContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    private readonly IDeploymentPlanService _deploymentPlanService;
-    private readonly ISiteService _siteService;
-
-    public ExportContentToDeploymentTargetContentsAdminListDisplayDriver(
-        IDeploymentPlanService deploymentPlanService,
-        ISiteService siteService)
+    public class ExportContentToDeploymentTargetContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
-        _deploymentPlanService = deploymentPlanService;
-        _siteService = siteService;
-    }
+        private readonly IDeploymentPlanService _deploymentPlanService;
+        private readonly ISiteService _siteService;
 
-    public override async Task<IDisplayResult> DisplayAsync(ContentOptionsViewModel model, BuildDisplayContext context)
-    {
-        if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
+        public ExportContentToDeploymentTargetContentsAdminListDisplayDriver(
+            IDeploymentPlanService deploymentPlanService,
+            ISiteService siteService)
         {
-            var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
-
-            if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
-            {
-                return Combine(
-                    Dynamic("ExportContentToDeploymentTarget__Button__ContentsBulkActions").Location("BulkActions", "Content:30"),
-                    Dynamic("ExportContentToDeploymentTarget_Modal__ContentsBulkActionsDeploymentTarget").Location("BulkActions", "Content:30")
-                );
-            }
+            _deploymentPlanService = deploymentPlanService;
+            _siteService = siteService;
         }
 
-        return null;
+        public override async Task<IDisplayResult> DisplayAsync(ContentOptionsViewModel model, BuildDisplayContext context)
+        {
+            if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
+            {
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
+                var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
+                if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
+                {
+                    return Combine(
+                        Dynamic("ExportContentToDeploymentTarget__Button__ContentsBulkActions").Location("BulkActions", "Content:30"),
+                        Dynamic("ExportContentToDeploymentTarget_Modal__ContentsBulkActionsDeploymentTarget").Location("BulkActions", "Content:30")
+                    );
+                }
+            }
+
+            return null;
+        }
     }
 }

@@ -1,83 +1,86 @@
+using System;
+using System.Collections.Generic;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.AdminMenu.Models;
-
-public class AdminNode : MenuItem
+namespace OrchardCore.AdminMenu.Models
 {
-    public string UniqueId { get; set; } = Guid.NewGuid().ToString("n");
-    public bool Enabled { get; set; } = true;
-
-    public AdminNode GetMenuItemById(string id)
+    public class AdminNode : MenuItem
     {
-        var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
+        public string UniqueId { get; set; } = Guid.NewGuid().ToString("n");
+        public bool Enabled { get; set; } = true;
 
-        while (tempStack.Count > 0)
+        public AdminNode GetMenuItemById(string id)
         {
-            // Evaluate first node.
-            var item = tempStack.Pop();
-            if (item.UniqueId.Equals(id, StringComparison.OrdinalIgnoreCase))
+            var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
+
+            while (tempStack.Count > 0)
             {
-                return item;
+                // Evaluate first node.
+                var item = tempStack.Pop();
+                if (item.UniqueId.Equals(id, StringComparison.OrdinalIgnoreCase))
+                {
+                    return item;
+                }
+
+                // Not that one, continue with the rest.
+                foreach (var i in item.Items)
+                {
+                    tempStack.Push((AdminNode)i);
+                }
             }
 
-            // Not that one, continue with the rest.
-            foreach (var i in item.Items)
-            {
-                tempStack.Push((AdminNode)i);
-            }
+            // Not found.
+            return null;
         }
 
-        // Not found.
-        return null;
-    }
-
-    // Return boolean so that caller can check for success.
-    public bool RemoveMenuItem(AdminNode nodeToRemove)
-    {
-        var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
-
-        while (tempStack.Count > 0)
+        // Return boolean so that caller can check for success.
+        public bool RemoveMenuItem(AdminNode nodeToRemove)
         {
-            // Evaluate first.
-            var item = tempStack.Pop();
-            if (item.Items.Contains(nodeToRemove))
+            var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
+
+            while (tempStack.Count > 0)
             {
-                item.Items.Remove(nodeToRemove);
-                return true; // Success.
+                // Evaluate first.
+                var item = tempStack.Pop();
+                if (item.Items.Contains(nodeToRemove))
+                {
+                    item.Items.Remove(nodeToRemove);
+                    return true; // Success.
+                }
+
+                // Not that one, continue.
+                foreach (var i in item.Items)
+                {
+                    tempStack.Push((AdminNode)i);
+                }
             }
 
-            // Not that one, continue.
-            foreach (var i in item.Items)
-            {
-                tempStack.Push((AdminNode)i);
-            }
+            // Failure.
+            return false;
         }
 
-        // Failure.
-        return false;
-    }
-
-    public bool InsertMenuItem(AdminNode nodeToInsert, MenuItem destinationNode, int position)
-    {
-        var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
-        while (tempStack.Count > 0)
+        public bool InsertMenuItem(AdminNode nodeToInsert, MenuItem destinationNode, int position)
         {
-            // Evaluate first.
-            var node = tempStack.Pop();
-            if (node.Equals(destinationNode))
+            var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
+            while (tempStack.Count > 0)
             {
-                node.Items.Insert(position, nodeToInsert);
-                return true; // Success.
+                // Evaluate first.
+                var node = tempStack.Pop();
+                if (node.Equals(destinationNode))
+                {
+                    node.Items.Insert(position, nodeToInsert);
+                    return true; // Success.
+                }
+
+                // Not that one, continue.
+                foreach (var n in node.Items)
+                {
+                    tempStack.Push((AdminNode)n);
+                }
             }
 
-            // Not that one, continue.
-            foreach (var n in node.Items)
-            {
-                tempStack.Push((AdminNode)n);
-            }
+            // Failure.
+            return false;
         }
-
-        // Failure.
-        return false;
     }
 }

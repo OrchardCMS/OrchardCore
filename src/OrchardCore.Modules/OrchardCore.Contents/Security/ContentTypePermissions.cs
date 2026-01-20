@@ -1,10 +1,13 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents.Security;
 
-public sealed class ContentTypePermissions : IPermissionProvider
+public class ContentTypePermissions : IPermissionProvider
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 

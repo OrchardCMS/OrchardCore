@@ -1,19 +1,22 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using OrchardCore.Environment.Cache;
 
-namespace OrchardCore.DynamicCache;
-
-public static class CacheContextEntryExtensions
+namespace OrchardCore.DynamicCache
 {
-    public static string GetContextHash(this IEnumerable<CacheContextEntry> entries)
+    public static class CacheContextEntryExtensions
     {
-        var sb = new StringBuilder();
-        foreach (var entry in entries.OrderBy(x => x.Key).ThenBy(x => x.Value))
+        public static string GetContextHash(this IEnumerable<CacheContextEntry> entries)
         {
-            var part = entry.Key + entry.Value;
-            sb.Append(part);
-        }
+            var sb = new StringBuilder();
+            foreach (var entry in entries.OrderBy(x => x.Key).ThenBy(x => x.Value))
+            {
+                var part = entry.Key + entry.Value;
+                sb.Append(part);
+            }
 
-        return sb.ToString();
+            return sb.ToString();
+        }
     }
 }

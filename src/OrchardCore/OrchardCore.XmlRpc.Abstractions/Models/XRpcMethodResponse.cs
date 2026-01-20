@@ -1,18 +1,21 @@
-namespace OrchardCore.XmlRpc.Models;
+using System.Collections.Generic;
 
-public class XRpcMethodResponse
+namespace OrchardCore.XmlRpc.Models
 {
-    public XRpcMethodResponse()
+    public class XRpcMethodResponse
     {
-        Params = [];
-    }
+        public XRpcMethodResponse()
+        {
+            Params = [];
+        }
 
-    public IList<XRpcData> Params { get; set; }
-    public XRpcFault Fault { get; set; }
+        public IList<XRpcData> Params { get; set; }
+        public XRpcFault Fault { get; set; }
 
-    public XRpcMethodResponse Add<T>(T value)
-    {
-        Params.Add(XRpcData.For(value));
-        return this;
+        public XRpcMethodResponse Add<T>(T value)
+        {
+            Params.Add(XRpcData.For(value));
+            return this;
+        }
     }
 }

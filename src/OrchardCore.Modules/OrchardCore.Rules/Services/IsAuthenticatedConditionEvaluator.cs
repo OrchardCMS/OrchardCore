@@ -1,17 +1,19 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Rules.Models;
 
-namespace OrchardCore.Rules.Services;
-
-public class IsAuthenticatedConditionEvaluator : ConditionEvaluator<IsAuthenticatedCondition>
+namespace OrchardCore.Rules.Services
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public IsAuthenticatedConditionEvaluator(IHttpContextAccessor httpContextAccessor)
+    public class IsAuthenticatedConditionEvaluator : ConditionEvaluator<IsAuthenticatedCondition>
     {
-        _httpContextAccessor = httpContextAccessor;
-    }
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public override ValueTask<bool> EvaluateAsync(IsAuthenticatedCondition condition)
-        => _httpContextAccessor.HttpContext.User?.Identity.IsAuthenticated == true ? True : False;
+        public IsAuthenticatedConditionEvaluator(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public override ValueTask<bool> EvaluateAsync(IsAuthenticatedCondition condition)
+            => _httpContextAccessor.HttpContext.User?.Identity.IsAuthenticated == true ? True : False;
+    }
 }

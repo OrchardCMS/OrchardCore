@@ -1,7 +1,8 @@
-namespace OrchardCore.Users.Models;
-
-public class ResetPasswordSettings
+namespace OrchardCore.Users.Models
 {
-    public bool AllowResetPassword { get; set; }
-    public bool UseSiteTheme { get; set; }
+    public class ResetPasswordSettings
+    {
+        public bool AllowResetPassword { get; set; }
+        public bool UseSiteTheme { get; set; }
+    }
 }

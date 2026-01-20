@@ -1,15 +1,16 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.CustomSettings.Deployment;
-
-public class CustomSettingsDeploymentStep : DeploymentStep
+namespace OrchardCore.CustomSettings.Deployment
 {
-    public CustomSettingsDeploymentStep()
+    public class CustomSettingsDeploymentStep : DeploymentStep
     {
-        Name = "CustomSettings";
+        public CustomSettingsDeploymentStep()
+        {
+            Name = "CustomSettings";
+        }
+
+        public bool IncludeAll { get; set; } = true;
+
+        public string[] SettingsTypeNames { get; set; }
     }
-
-    public bool IncludeAll { get; set; } = true;
-
-    public string[] SettingsTypeNames { get; set; }
 }

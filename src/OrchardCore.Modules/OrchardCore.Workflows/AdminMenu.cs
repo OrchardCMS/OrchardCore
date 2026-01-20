@@ -1,44 +1,35 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Workflows;
-
-public sealed class AdminMenu : AdminNavigationProvider
+namespace OrchardCore.Workflows
 {
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public class AdminMenu : INavigationProvider
     {
-        S = stringLocalizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        if (NavigationHelper.UseLegacyFormat())
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
+            S = localizer;
+        }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
+
             builder
                 .Add(S["Workflows"], NavigationConstants.AdminMenuWorkflowsPosition, workflow => workflow
                     .AddClass("workflows")
                     .Id("workflows")
                     .Action("Index", "WorkflowType", "OrchardCore.Workflows")
-                    .Permission(WorkflowsPermissions.ManageWorkflows)
+                    .Permission(Permissions.ManageWorkflows)
                     .LocalNav()
                 );
 
-            return ValueTask.CompletedTask;
+            return Task.CompletedTask;
         }
-
-        builder
-            .Add(S["Tools"], tools => tools
-                .Add(S["Workflows"], S["Workflows"].PrefixPosition(), workflow => workflow
-                    .AddClass("workflows")
-                    .Id("workflows")
-                    .Action("Index", "WorkflowType", "OrchardCore.Workflows")
-                    .Permission(WorkflowsPermissions.ManageWorkflows)
-                    .LocalNav()
-                )
-            );
-
-        return ValueTask.CompletedTask;
     }
 }

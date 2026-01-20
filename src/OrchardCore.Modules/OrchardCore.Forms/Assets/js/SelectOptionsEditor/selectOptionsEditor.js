@@ -279,8 +279,7 @@ selectOptionsEditor = function () {
         for (let i = 0; i < selectMenus.length; i++) {
             var selectMenu = selectMenus[i];
             selectMenu.addEventListener('change', function (e) {
-                var widgetWrapper = e.target.closest('.widget-editor-body');
-                var visibleForInputContainers = widgetWrapper.getElementsByClassName('show-for-input');	
+                var visibleForInputContainers = wrapper.getElementsByClassName('show-for-input');
 
                 for (let i = 0; i < visibleForInputContainers.length; i++) {
                     var container = visibleForInputContainers[i];

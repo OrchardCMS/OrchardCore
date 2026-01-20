@@ -1,36 +1,33 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Controllers;
-using OrchardCore.AuditTrail.Settings;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.AuditTrail.Navigation;
-
-public sealed class AuditTrailAdminMenu : AdminNavigationProvider
+namespace OrchardCore.AuditTrail.Navigation
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    public class AuditTrailAdminMenu : INavigationProvider
     {
-        { "area", "OrchardCore.AuditTrail" },
-        { "correlationId", string.Empty },
-    };
-
-    private static readonly RouteValueDictionary _settingsRouteValues = new()
-    {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", AuditTrailSettingsGroup.Id },
-    };
-
-    internal readonly IStringLocalizer S;
-
-    public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
-    {
-        S = stringLocalizer;
-    }
-
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        if (NavigationHelper.UseLegacyFormat())
+        private static readonly RouteValueDictionary _routeValues = new()
         {
+            { "area", "OrchardCore.AuditTrail" },
+            { "correlationId", string.Empty },
+        };
+
+        protected readonly IStringLocalizer S;
+
+        public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
+        {
+            S = stringLocalizer;
+        }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
+
             builder
                 .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
                     .AddClass("audittrail")
@@ -38,42 +35,9 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
                     .Action(nameof(AdminController.Index), "Admin", _routeValues)
                     .Permission(AuditTrailPermissions.ViewAuditTrail)
                     .LocalNav()
-                , priority: 1)
-                .Add(S["Configuration"], configuration => configuration
-                     .Add(S["Settings"], settings => settings
-                        .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
-                            .AddClass("audittrail")
-                            .Id("audittrailSettings")
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
-                            .LocalNav()
-                        )
-                    )
                 );
 
-            return ValueTask.CompletedTask;
+            return Task.CompletedTask;
         }
-
-        builder
-            .Add(S["Tools"], tools => tools
-                .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), configuration => configuration
-                    .AddClass("audittrail")
-                    .Id("audittrail")
-                    .Action(nameof(AdminController.Index), "Admin", _routeValues)
-                    .Permission(AuditTrailPermissions.ViewAuditTrail)
-                    .LocalNav()
-                )
-            )
-            .Add(S["Settings"], settings => settings
-                .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
-                    .AddClass("audittrail")
-                    .Id("audittrailSettings")
-                    .Action("Index", "Admin", _settingsRouteValues)
-                    .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
-                    .LocalNav()
-                )
-            );
-
-        return ValueTask.CompletedTask;
     }
 }

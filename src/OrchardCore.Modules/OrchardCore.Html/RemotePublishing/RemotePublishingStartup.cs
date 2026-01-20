@@ -2,13 +2,14 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.MetaWeblog;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Html.RemotePublishing;
-
-[RequireFeatures("OrchardCore.RemotePublishing")]
-public sealed class RemotePublishingStartup : StartupBase
+namespace OrchardCore.Html.RemotePublishing
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.RemotePublishing")]
+    public class RemotePublishingStartup : StartupBase
     {
-        services.AddScoped<IMetaWeblogDriver, HtmlBodyMetaWeblogDriver>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IMetaWeblogDriver, HtmlBodyMetaWeblogDriver>();
+        }
     }
 }

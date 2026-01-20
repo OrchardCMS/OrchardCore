@@ -1,15 +1,16 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Templates.Deployment;
-
-/// <summary>
-/// Adds templates to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class AllAdminTemplatesDeploymentStep : DeploymentStep
+namespace OrchardCore.Templates.Deployment
 {
-    public AllAdminTemplatesDeploymentStep()
+    /// <summary>
+    /// Adds templates to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class AllAdminTemplatesDeploymentStep : DeploymentStep
     {
-        Name = "AllAdminTemplates";
+        public AllAdminTemplatesDeploymentStep()
+        {
+            Name = "AllAdminTemplates";
+        }
+        public bool ExportAsFiles { get; set; }
     }
-    public bool ExportAsFiles { get; set; }
 }

@@ -1,6 +1,9 @@
-namespace OrchardCore.Workflows.UserTasks.ViewModels;
+using System.Collections.Generic;
 
-public class UserTaskEventContentViewModel
+namespace OrchardCore.Workflows.UserTasks.ViewModels
 {
-    public IList<string> Actions { get; set; }
+    public class UserTaskEventContentViewModel
+    {
+        public IList<string> Actions { get; set; }
+    }
 }

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -62,7 +66,7 @@ public class FeatureService
                 EnabledByDependencyOnly = moduleFeatureInfo.EnabledByDependencyOnly,
                 IsAlwaysEnabled = alwaysEnabledFeatures.Contains(moduleFeatureInfo),
                 EnabledDependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id && enabledFeatures.Contains(x)).ToList(),
-                FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList(),
+                FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList()
             };
 
             moduleFeatures.Add(moduleFeature);

@@ -1,15 +1,16 @@
-namespace OrchardCore.Lists.Models;
-
-public enum ContentsStatus
+namespace OrchardCore.Lists.Models
 {
-    Published,
-    Latest,
-    Draft,
-    Owner,
-}
+    public enum ContentsStatus
+    {
+        Published,
+        Latest,
+        Draft,
+        Owner
+    }
 
-public class ContainedItemOptions
-{
-    public string DisplayText { get; set; }
-    public ContentsStatus Status { get; set; } = ContentsStatus.Published;
+    public class ContainedItemOptions
+    {
+        public string DisplayText { get; set; }
+        public ContentsStatus Status { get; set; } = ContentsStatus.Published;
+    }
 }

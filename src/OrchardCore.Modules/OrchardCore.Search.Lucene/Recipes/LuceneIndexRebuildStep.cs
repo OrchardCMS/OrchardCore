@@ -1,74 +1,54 @@
+using System;
+using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Indexing;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Search.Lucene.Recipes;
-
-/// <summary>
-/// This recipe step rebuilds a Lucene index.
-/// </summary>
-public sealed class LuceneIndexRebuildStep : NamedRecipeStepHandler
+namespace OrchardCore.Search.Lucene.Recipes
 {
-    private readonly IIndexProfileManager _indexProfileManager;
-    private readonly IServiceProvider _serviceProvider;
-
-    public LuceneIndexRebuildStep(
-        IIndexProfileManager indexProfileManager,
-        IServiceProvider serviceProvider)
-        : base("lucene-index-rebuild")
+    /// <summary>
+    /// This recipe step rebuilds a lucene index.
+    /// </summary>
+    public class LuceneIndexRebuildStep : IRecipeStepHandler
     {
-        _indexProfileManager = indexProfileManager;
-        _serviceProvider = serviceProvider;
-    }
-
-    protected override async Task HandleAsync(RecipeExecutionContext context)
-    {
-        var model = context.Step.ToObject<LuceneIndexRebuildStepModel>();
-
-        if (model.IncludeAll || model.Indices.Length > 0)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            var indexes = model.IncludeAll
-            ? (await _indexProfileManager.GetByProviderAsync(LuceneConstants.ProviderName))
-            : (await _indexProfileManager.GetByProviderAsync(LuceneConstants.ProviderName)).Where(x => model.Indices.Contains(x.IndexName));
-
-            var indexManagers = new Dictionary<string, IIndexManager>();
-
-            foreach (var index in indexes)
+            if (!string.Equals(context.Name, "lucene-index-rebuild", StringComparison.OrdinalIgnoreCase))
             {
-                if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
-                {
-                    indexManager = _serviceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
-                    indexManagers[index.ProviderName] = indexManager;
-                }
+                return;
+            }
 
-                if (indexManager is null)
-                {
-                    continue;
-                }
+            var model = context.Step.ToObject<LuceneIndexRebuildStepModel>();
 
-                await _indexProfileManager.ResetAsync(index);
-                await _indexProfileManager.UpdateAsync(index);
-
-                if (!await indexManager.ExistsAsync(index.IndexFullName))
+            if (model.IncludeAll || model.Indices.Length > 0)
+            {
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-rebuild", async (scope) =>
                 {
-                    await indexManager.CreateAsync(index);
-                }
-                else
-                {
-                    await indexManager.RebuildAsync(index);
-                }
+                    var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
+                    var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
 
-                await _indexProfileManager.SynchronizeAsync(index);
+                    var indices = model.IncludeAll ? (await luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
+
+                    foreach (var indexName in indices)
+                    {
+                        var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
+                        if (luceneIndexSettings != null)
+                        {
+                            await luceneIndexingService.RebuildIndexAsync(indexName);
+                            await luceneIndexingService.ProcessContentItemsAsync(indexName);
+                        }
+                    }
+                });
             }
         }
-    }
 
-    private sealed class LuceneIndexRebuildStepModel
-    {
-        public bool IncludeAll { get; set; }
-
-        public string[] Indices { get; set; } = [];
+        private class LuceneIndexRebuildStepModel
+        {
+            public bool IncludeAll { get; set; } = false;
+            public string[] Indices { get; set; } = [];
+        }
     }
 }

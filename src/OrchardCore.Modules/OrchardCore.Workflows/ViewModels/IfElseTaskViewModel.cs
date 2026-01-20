@@ -1,6 +1,7 @@
-namespace OrchardCore.Workflows.ViewModels;
-
-public class IfElseTaskViewModel
+namespace OrchardCore.Workflows.ViewModels
 {
-    public string ConditionExpression { get; set; }
+    public class IfElseTaskViewModel
+    {
+        public string ConditionExpression { get; set; }
+    }
 }

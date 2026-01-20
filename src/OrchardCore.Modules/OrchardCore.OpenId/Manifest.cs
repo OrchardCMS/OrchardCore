@@ -2,7 +2,7 @@ using OrchardCore.Modules.Manifest;
 using OrchardCore.OpenId;
 
 [assembly: Module(
-    Name = "OpenID Connect",
+    Name = "OpenID",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion
@@ -10,29 +10,28 @@ using OrchardCore.OpenId;
 
 [assembly: Feature(
     Id = OpenIdConstants.Features.Core,
-    Name = "OpenID Connect Core Services",
-    Description = "Provides the foundational services for all OpenID Connect features.",
+    Name = "OpenID Core Components",
     Category = "OpenID Connect",
+    Description = "Registers the core components used by the OpenID module.",
     EnabledByDependencyOnly = true
 )]
 
 [assembly: Feature(
     Id = OpenIdConstants.Features.Client,
-    Name = "OpenID Connect Client Integration",
-    Description = "Allows authentication of users through an external OpenID Connect authorization server (also known as an identity provider).",
+    Name = "OpenID Client",
     Category = "OpenID Connect",
+    Description = "Authenticates users from an external OpenID Connect identity provider.",
     Dependencies =
     [
         OpenIdConstants.Features.Core,
-        "OrchardCore.Users.ExternalAuthentication",
     ]
 )]
 
 [assembly: Feature(
     Id = OpenIdConstants.Features.Management,
-    Name = "OpenID Connect Management UI",
-    Description = "Adds a user interface for managing OpenID Connect applications, scopes and permissions.",
+    Name = "OpenID Management Interface",
     Category = "OpenID Connect",
+    Description = "Allows adding, editing and removing the registered applications.",
     Dependencies =
     [
         OpenIdConstants.Features.Core,
@@ -41,9 +40,9 @@ using OrchardCore.OpenId;
 
 [assembly: Feature(
     Id = OpenIdConstants.Features.Server,
-    Name = "OpenID Connect Authorization Server",
-    Description = "Enables Orchard Core to function as an OpenID Connect authorization server/identity provider, supporting authentication and token issuance using OpenID Connect and OAuth 2.0 standards. To enable token validation, activate the 'OpenID Connect Token Validation' feature.",
+    Name = "OpenID Authorization Server",
     Category = "OpenID Connect",
+    Description = "Enables authentication of external applications using the OpenID Connect/OAuth 2.0 standards.",
     Dependencies =
     [
         OpenIdConstants.Features.Core,
@@ -53,9 +52,9 @@ using OrchardCore.OpenId;
 
 [assembly: Feature(
     Id = OpenIdConstants.Features.Validation,
-    Name = "OpenID Connect Token Validation",
-    Description = "Validates tokens issued by the local OpenID Connect authorization server or other trusted servers supporting JWT and OpenID Connect discovery.",
+    Name = "OpenID Token Validation",
     Category = "OpenID Connect",
+    Description = "Validates tokens issued by the Orchard OpenID server or by a remote server supporting JWT and OpenID Connect discovery.",
     Dependencies =
     [
         OpenIdConstants.Features.Core,

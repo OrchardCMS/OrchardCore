@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Builders;
@@ -28,7 +31,9 @@ public class DefaultSmsProviderResolver : ISmsProviderResolver
     {
         if (string.IsNullOrEmpty(name))
         {
-            var settings = await _siteService.GetSettingsAsync<SmsSettings>();
+            var site = await _siteService.GetSiteSettingsAsync();
+
+            var settings = site.As<SmsSettings>();
 
             name = settings.DefaultProviderName;
         }
@@ -45,7 +50,7 @@ public class DefaultSmsProviderResolver : ISmsProviderResolver
 
         if (_logger.IsEnabled(LogLevel.Error))
         {
-            _logger.LogError("No SMS provider registered to match the given name {Name}.", name);
+            _logger.LogError("No SMS provider registered to match the given name {name}.", name);
         }
 
         return null;

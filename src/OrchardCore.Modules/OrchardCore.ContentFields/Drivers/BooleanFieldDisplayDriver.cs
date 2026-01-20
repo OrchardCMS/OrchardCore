@@ -1,43 +1,46 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Drivers;
-
-public sealed class BooleanFieldDisplayDriver : ContentFieldDisplayDriver<BooleanField>
+namespace OrchardCore.ContentFields.Drivers
 {
-    public override IDisplayResult Display(BooleanField field, BuildFieldDisplayContext context)
+    public class BooleanFieldDisplayDriver : ContentFieldDisplayDriver<BooleanField>
     {
-        return Initialize<DisplayBooleanFieldViewModel>(GetDisplayShapeType(context), model =>
+        public override IDisplayResult Display(BooleanField field, BuildFieldDisplayContext context)
         {
-            model.Field = field;
-            model.Part = context.ContentPart;
-            model.PartFieldDefinition = context.PartFieldDefinition;
-        })
-        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
-        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
-    }
+            return Initialize<DisplayBooleanFieldViewModel>(GetDisplayShapeType(context), model =>
+            {
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            })
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
+        }
 
-    public override IDisplayResult Edit(BooleanField field, BuildFieldEditorContext context)
-    {
-        return Initialize<EditBooleanFieldViewModel>(GetEditorShapeType(context), model =>
+        public override IDisplayResult Edit(BooleanField field, BuildFieldEditorContext context)
         {
-            model.Value = (context.IsNew == false) ?
-                field.Value : context.PartFieldDefinition.GetSettings<BooleanFieldSettings>().DefaultValue;
+            return Initialize<EditBooleanFieldViewModel>(GetEditorShapeType(context), model =>
+            {
+                model.Value = (context.IsNew == false) ?
+                    field.Value : context.PartFieldDefinition.GetSettings<BooleanFieldSettings>().DefaultValue;
 
-            model.Field = field;
-            model.Part = context.ContentPart;
-            model.PartFieldDefinition = context.PartFieldDefinition;
-        });
-    }
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            });
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(BooleanField field, UpdateFieldEditorContext context)
-    {
-        await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
+        public override async Task<IDisplayResult> UpdateAsync(BooleanField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        {
+            await updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
 
-        return Edit(field, context);
+            return Edit(field, context);
+        }
     }
 }

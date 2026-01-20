@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.Demo.Components;
-
-public class FakeViewComponent : ViewComponent
+namespace OrchardCore.Demo.Components
 {
-    public IViewComponentResult Invoke(string value)
+    public class FakeViewComponent : ViewComponent
     {
-        return View("Default", value);
+        public IViewComponentResult Invoke(string value)
+        {
+            return View("Default", value);
+        }
     }
 }

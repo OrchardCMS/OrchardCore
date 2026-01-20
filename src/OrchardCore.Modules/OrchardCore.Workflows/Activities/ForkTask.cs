@@ -1,35 +1,38 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Activities;
-
-public class ForkTask : TaskActivity<ForkTask>
+namespace OrchardCore.Workflows.Activities
 {
-    protected readonly IStringLocalizer S;
-
-    public ForkTask(IStringLocalizer<ForkTask> localizer)
+    public class ForkTask : TaskActivity<ForkTask>
     {
-        S = localizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    public override LocalizedString DisplayText => S["Fork Task"];
+        public ForkTask(IStringLocalizer<ForkTask> localizer)
+        {
+            S = localizer;
+        }
 
-    public override LocalizedString Category => S["Control Flow"];
+        public override LocalizedString DisplayText => S["Fork Task"];
 
-    public IList<string> Forks
-    {
-        get => GetProperty(() => new List<string>());
-        set => SetProperty(value);
-    }
+        public override LocalizedString Category => S["Control Flow"];
 
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Forks.Select(x => Outcome(S[x]));
-    }
+        public IList<string> Forks
+        {
+            get => GetProperty(() => new List<string>());
+            set => SetProperty(value);
+        }
 
-    public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(Forks);
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Forks.Select(x => Outcome(S[x]));
+        }
+
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Outcomes(Forks);
+        }
     }
 }

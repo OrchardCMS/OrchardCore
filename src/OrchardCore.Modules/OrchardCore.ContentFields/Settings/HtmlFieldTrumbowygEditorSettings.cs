@@ -1,7 +1,8 @@
-namespace OrchardCore.ContentFields.Settings;
-
-public class HtmlFieldTrumbowygEditorSettings
+namespace OrchardCore.ContentFields.Settings
 {
-    public string Options { get; set; }
-    public bool InsertMediaWithUrl { get; set; }
+    public class HtmlFieldTrumbowygEditorSettings
+    {
+        public string Options { get; set; }
+        public bool InsertMediaWithUrl { get; set; }
+    }
 }

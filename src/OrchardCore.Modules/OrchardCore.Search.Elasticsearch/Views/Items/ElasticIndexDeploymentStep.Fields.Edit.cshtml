@@ -12,7 +12,7 @@
         <div class="col">
             <div class="form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IncludeAll" data-bs-toggle="collapse" role="button" data-bs-target=".idxsel" aria-expanded="false" aria-controls="idxsel" />
+                    <input class="form-check-input" asp-for="IncludeAll" data-reverseToggle=".idxsel" />
                     @T["Include all search indexes."]
                 </label>
             </div>
@@ -20,7 +20,7 @@
     </div>
 </div>
 
-<div class="idxsel mb-3 mt-4 mb-5 collapse@(Model.IncludeAll ? string.Empty : " show")">
+<div class="idxsel mb-3 mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
     <div class="row">
         <div class="col-small col-12 col-sm-9 col-md-6 col-lg-3 col-xl-3">
             <span class="hint">@T["The search indexes to add as part of the plan."]</span>
@@ -31,12 +31,12 @@
             <ul class="list-group">
                 @foreach (var indexName in allIndexNames)
                 {
-                    var isChecked = indexNames?.Contains(indexName);
+                    var checkd = indexNames?.Contains(indexName);
 
                     <li class="list-group-item">
                         <div class="form-check">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.IndexNames)" value="@indexName" checked="@isChecked">
+                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.IndexNames)" value="@indexName" checked="@checkd">
                                 @indexName
                             </label>
                         </div>
@@ -46,3 +46,16 @@
         </div>
     </div>
 </div>
+
+<script at="Foot">
+    $(function () {
+        $("[data-reversetoggle]").on("click", function () {
+            var state = this.checked;
+            if (state) {
+                $($(this).attr("data-reversetoggle")).collapse('hide');
+            } else {
+                $($(this).attr("data-reversetoggle")).collapse('show');
+            }
+        });
+    });
+</script>

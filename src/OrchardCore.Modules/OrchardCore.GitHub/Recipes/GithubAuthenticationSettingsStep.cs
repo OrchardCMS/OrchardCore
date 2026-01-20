@@ -1,46 +1,46 @@
+using System;
 using System.Text.Json.Nodes;
-using OrchardCore.Entities;
+using System.Threading.Tasks;
+using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Settings;
 
-namespace OrchardCore.GitHub.Recipes;
-
-/// <summary>
-/// This recipe step sets GitHub Account settings.
-/// </summary>
-public sealed class GitHubAuthenticationSettingsStep : NamedRecipeStepHandler
+namespace OrchardCore.GitHub.Recipes
 {
-    private readonly ISiteService _siteService;
-
-    public GitHubAuthenticationSettingsStep(ISiteService siteService)
-        : base(nameof(GitHubAuthenticationSettings))
+    /// <summary>
+    /// This recipe step sets GitHub Account settings.
+    /// </summary>
+    public class GitHubAuthenticationSettingsStep : IRecipeStepHandler
     {
-        _siteService = siteService;
-    }
+        private readonly IGitHubAuthenticationService _githubAuthenticationService;
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
-    {
-        var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
-        var site = await _siteService.LoadSiteSettingsAsync();
-
-        site.Alter<GitHubAuthenticationSettings>(settings =>
+        public GitHubAuthenticationSettingsStep(IGitHubAuthenticationService githubLoginService)
         {
+            _githubAuthenticationService = githubLoginService;
+        }
+
+        public async Task ExecuteAsync(RecipeExecutionContext context)
+        {
+            if (!string.Equals(context.Name, nameof(GitHubAuthenticationSettings), StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+            var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
+            var settings = await _githubAuthenticationService.LoadSettingsAsync();
+
             settings.ClientID = model.ConsumerKey;
             settings.ClientSecret = model.ConsumerSecret;
             settings.CallbackPath = model.CallbackPath;
-        });
 
-        await _siteService.UpdateSiteSettingsAsync(site);
+            await _githubAuthenticationService.UpdateSettingsAsync(settings);
+        }
     }
-}
 
-public sealed class GitHubLoginSettingsStepModel
-{
-    public string ConsumerKey { get; set; }
-
-    public string ConsumerSecret { get; set; }
-
-    public string CallbackPath { get; set; }
+    public class GitHubLoginSettingsStepModel
+    {
+        public string ConsumerKey { get; set; }
+        public string ConsumerSecret { get; set; }
+        public string CallbackPath { get; set; }
+    }
 }

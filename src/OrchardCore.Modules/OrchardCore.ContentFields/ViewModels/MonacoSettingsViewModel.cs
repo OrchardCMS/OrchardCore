@@ -1,7 +1,8 @@
-namespace OrchardCore.ContentFields.ViewModels;
-
-public class MonacoSettingsViewModel
+namespace OrchardCore.ContentFields.ViewModels
 {
-    public string Options { get; set; }
-    public bool InsertMediaWithUrl { get; set; }
+    public class MonacoSettingsViewModel
+    {
+        public string Options { get; set; }
+        public bool InsertMediaWithUrl { get; set; }
+    }
 }

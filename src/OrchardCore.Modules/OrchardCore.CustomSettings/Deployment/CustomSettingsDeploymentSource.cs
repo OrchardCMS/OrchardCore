@@ -1,45 +1,54 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.CustomSettings.Deployment;
-
-public sealed class CustomSettingsDeploymentSource
-    : DeploymentSourceBase<CustomSettingsDeploymentStep>
+namespace OrchardCore.CustomSettings.Deployment
 {
-    private readonly CustomSettingsService _customSettingsService;
-
-    public CustomSettingsDeploymentSource(CustomSettingsService customSettingsService)
+    public class CustomSettingsDeploymentSource : IDeploymentSource
     {
-        _customSettingsService = customSettingsService;
-    }
+        private readonly CustomSettingsService _customSettingsService;
 
-    protected override async Task ProcessAsync(CustomSettingsDeploymentStep step, DeploymentPlanResult result)
-    {
-        var settingsList = new List<KeyValuePair<string, JsonNode>>
+        public CustomSettingsDeploymentSource(CustomSettingsService customSettingsService)
         {
-            new("name", "custom-settings"),
-        };
+            _customSettingsService = customSettingsService;
+        }
 
-        var settingsTypes = step.IncludeAll
-            ? (await _customSettingsService.GetAllSettingsTypesAsync()).ToArray()
-            : (await _customSettingsService.GetSettingsTypesAsync(step.SettingsTypeNames)).ToArray();
-
-        foreach (var settingsType in settingsTypes)
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!await _customSettingsService.CanUserCreateSettingsAsync(settingsType))
+            var customSettingsStep = step as CustomSettingsDeploymentStep;
+            if (customSettingsStep == null)
             {
                 return;
             }
-        }
 
-        foreach (var settingsType in settingsTypes)
-        {
-            var settings = await _customSettingsService.GetSettingsAsync(settingsType);
-            settingsList.Add(new(settings.ContentType, JObject.FromObject(settings)));
-        }
+            var settingsList = new List<KeyValuePair<string, JsonNode>>
+            {
+                new("name", "custom-settings"),
+            };
 
-        // Adding custom settings
-        result.Steps.Add(new JsonObject(settingsList.ToArray()));
+            var settingsTypes = customSettingsStep.IncludeAll
+                ? (await _customSettingsService.GetAllSettingsTypesAsync()).ToArray()
+                : (await _customSettingsService.GetSettingsTypesAsync(customSettingsStep.SettingsTypeNames)).ToArray();
+
+            foreach (var settingsType in settingsTypes)
+            {
+                if (!await _customSettingsService.CanUserCreateSettingsAsync(settingsType))
+                {
+                    return;
+                }
+            }
+
+            foreach (var settingsType in settingsTypes)
+            {
+                var settings = await _customSettingsService.GetSettingsAsync(settingsType);
+                settingsList.Add(new(settings.ContentType, JObject.FromObject(settings)));
+            }
+
+            // Adding custom settings
+            result.Steps.Add(new JsonObject(settingsList.ToArray()));
+        }
     }
 }

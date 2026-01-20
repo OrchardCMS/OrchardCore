@@ -1,7 +1,8 @@
-namespace OrchardCore.Environment.Shell.Distributed;
-
-internal sealed class ShellIdentifier
+namespace OrchardCore.Environment.Shell.Distributed
 {
-    public string ReleaseId { get; set; }
-    public string ReloadId { get; set; }
+    internal class ShellIdentifier
+    {
+        public string ReleaseId { get; set; }
+        public string ReloadId { get; set; }
+    }
 }

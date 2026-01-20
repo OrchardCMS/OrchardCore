@@ -1,9 +1,12 @@
-namespace OrchardCore.Environment.Shell;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Provides validation for whether features are allowed to be disabled on a per tenant basis.
-/// </summary>
-public interface IFeatureValidationProvider
+namespace OrchardCore.Environment.Shell
 {
-    ValueTask<bool> IsFeatureValidAsync(string id);
+    /// <summary>
+    /// Provides validation for whether features are allowed to be disabled on a per tenant basis.
+    /// </summary>
+    public interface IFeatureValidationProvider
+    {
+        ValueTask<bool> IsFeatureValidAsync(string id);
+    }
 }

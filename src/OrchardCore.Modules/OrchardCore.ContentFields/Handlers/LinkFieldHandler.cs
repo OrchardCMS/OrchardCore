@@ -1,12 +1,13 @@
+using System;
 using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Infrastructure.Html;
 
 namespace OrchardCore.ContentFields.Handlers;
@@ -14,26 +15,26 @@ namespace OrchardCore.ContentFields.Handlers;
 public class LinkFieldHandler : ContentFieldHandler<LinkField>
 {
     private readonly IUrlHelperFactory _urlHelperFactory;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IActionContextAccessor _actionContextAccessor;
     protected readonly IStringLocalizer S;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly HtmlEncoder _htmlencoder;
 
     public LinkFieldHandler(
         IUrlHelperFactory urlHelperFactory,
-        IHttpContextAccessor httpContextAccessor,
+        IActionContextAccessor actionContextAccessor,
         IStringLocalizer<LinkFieldHandler> localizer,
         IHtmlSanitizerService htmlSanitizerService,
         HtmlEncoder htmlencoder)
     {
         _urlHelperFactory = urlHelperFactory;
-        _httpContextAccessor = httpContextAccessor;
+        _actionContextAccessor = actionContextAccessor;
         S = localizer;
         _htmlSanitizerService = htmlSanitizerService;
         _htmlencoder = htmlencoder;
     }
 
-    public override async Task ValidatingAsync(ValidateContentFieldContext context, LinkField field)
+    public override Task ValidatingAsync(ValidateContentFieldContext context, LinkField field)
     {
         var settings = context.ContentPartFieldDefinition.GetSettings<LinkFieldSettings>();
 
@@ -48,10 +49,7 @@ public class LinkFieldHandler : ContentFieldHandler<LinkField>
 
             if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
             {
-                // In .NET 10, create ActionContext directly instead of using obsolete IActionContextAccessor
-                var httpContext = _httpContextAccessor.HttpContext;
-                var actionContext = await httpContext.GetActionContextAsync();
-                var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
+                var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
                 urlToValidate = urlHelper.Content(urlToValidate);
             }
 
@@ -88,5 +86,7 @@ public class LinkFieldHandler : ContentFieldHandler<LinkField>
         {
             context.Fail(S["The text default value is required for {0}.", context.ContentPartFieldDefinition.DisplayName()], nameof(field.Text));
         }
+
+        return Task.CompletedTask;
     }
 }

@@ -1,52 +1,53 @@
 using OrchardCore.ContentManagement.Metadata.Settings;
 
-namespace OrchardCore.ContentManagement.Metadata.Models;
-
-public static class ContentTypePartExtensions
+namespace OrchardCore.ContentManagement.Metadata.Models
 {
-    public static string DisplayName(this ContentTypePartDefinition typePart)
+    public static class ContentTypePartExtensions
     {
-        var displayName = typePart.GetSettings<ContentTypePartSettings>().DisplayName;
-
-        if (string.IsNullOrEmpty(displayName))
+        public static string DisplayName(this ContentTypePartDefinition typePart)
         {
-            // ContentType creates a same named ContentPart. As DisplayName is not stored in ContentPart,
-            // fetching it from the parent ContentType
-            if (typePart.PartDefinition.Name == typePart.ContentTypeDefinition.Name)
+            var displayName = typePart.GetSettings<ContentTypePartSettings>().DisplayName;
+
+            if (string.IsNullOrEmpty(displayName))
             {
-                displayName = typePart.ContentTypeDefinition.DisplayName;
+                // ContentType creates a same named ContentPart. As DisplayName is not stored in ContentPart,
+                // fetching it from the parent ContentType
+                if (typePart.PartDefinition.Name == typePart.ContentTypeDefinition.Name)
+                {
+                    displayName = typePart.ContentTypeDefinition.DisplayName;
+                }
+                else
+                {
+                    displayName = typePart.PartDefinition.DisplayName();
+                }
             }
-            else
-            {
-                displayName = typePart.PartDefinition.DisplayName();
-            }
+
+            return displayName;
         }
 
-        return displayName;
-    }
-
-    public static string Description(this ContentTypePartDefinition typePart)
-    {
-        var description = typePart.GetSettings<ContentTypePartSettings>().Description;
-
-        if (string.IsNullOrEmpty(description))
+        public static string Description(this ContentTypePartDefinition typePart)
         {
-            description = typePart.PartDefinition.Description();
+            var description = typePart.GetSettings<ContentTypePartSettings>().Description;
+
+            if (string.IsNullOrEmpty(description))
+            {
+                description = typePart.PartDefinition.Description();
+            }
+
+            return description;
         }
 
-        return description;
-    }
+        public static string Editor(this ContentTypePartDefinition typePart)
+        {
+            return typePart.GetSettings<ContentTypePartSettings>().Editor;
+        }
 
-    public static string Editor(this ContentTypePartDefinition typePart)
-    {
-        return typePart.GetSettings<ContentTypePartSettings>().Editor;
-    }
+        public static string DisplayMode(this ContentTypePartDefinition typePart)
+        {
+            return typePart.GetSettings<ContentTypePartSettings>().DisplayMode;
+        }
 
-    public static string DisplayMode(this ContentTypePartDefinition typePart)
-    {
-        return typePart.GetSettings<ContentTypePartSettings>().DisplayMode;
+        public static bool IsNamedPart(this ContentTypePartDefinition typePart)
+            => typePart.PartDefinition.IsReusable() && typePart.Name != typePart.PartDefinition.Name;
     }
-
-    public static bool IsNamedPart(this ContentTypePartDefinition typePart)
-        => typePart.PartDefinition.IsReusable() && typePart.Name != typePart.PartDefinition.Name;
 }

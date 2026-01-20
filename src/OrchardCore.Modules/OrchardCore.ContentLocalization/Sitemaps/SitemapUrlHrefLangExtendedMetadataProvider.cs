@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
@@ -5,63 +7,62 @@ using OrchardCore.Sitemaps.Aspects;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Services;
 
-namespace OrchardCore.ContentLocalization.Sitemaps;
-
-public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExtendedMetadataProvider
+namespace OrchardCore.ContentLocalization.Sitemaps
 {
-    private static readonly XNamespace _extendedNamespace = "http://www.w3.org/1999/xhtml";
-    private static readonly XAttribute _extendedAttribute = new(XNamespace.Xmlns + "xhtml", _extendedNamespace);
-
-    private readonly IContentManager _contentManager;
-    private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
-
-    public SitemapUrlHrefLangExtendedMetadataProvider(
-        IContentManager contentManager,
-        IRouteableContentTypeCoordinator routeableContentTypeCoordinator
-        )
+    public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExtendedMetadataProvider
     {
-        _contentManager = contentManager;
-        _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
-    }
+        private static readonly XNamespace _extendedNamespace = "http://www.w3.org/1999/xhtml";
+        private static readonly XAttribute _extendedAttribute = new(XNamespace.Xmlns + "xhtml", _extendedNamespace);
 
-    public XAttribute GetExtendedAttribute => _extendedAttribute;
+        private readonly IContentManager _contentManager;
+        private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
 
-    public async Task<bool> ApplyExtendedMetadataAsync(
-        SitemapBuilderContext context,
-        ContentItemsQueryContext queryContext,
-        ContentItem contentItem,
-        XElement url)
-    {
-        var part = contentItem.As<LocalizationPart>();
-        if (part == null ||
-            queryContext.ReferenceContentItems == null ||
-            !queryContext.ReferenceContentItems.Any())
+        public SitemapUrlHrefLangExtendedMetadataProvider(
+            IContentManager contentManager,
+            IRouteableContentTypeCoordinator routeableContentTypeCoordinator
+            )
         {
-            return true;
+            _contentManager = contentManager;
+            _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         }
 
-        var localizedContentParts = queryContext.ReferenceContentItems
-            .Select(ci => ci.As<LocalizationPart>())
-            .Where(cp => cp.LocalizationSet == part.LocalizationSet);
+        public XAttribute GetExtendedAttribute => _extendedAttribute;
 
-        foreach (var localizedPart in localizedContentParts)
+        public async Task<bool> ApplyExtendedMetadataAsync(
+            SitemapBuilderContext context,
+            ContentItemsQueryContext queryContext,
+            ContentItem contentItem,
+            XElement url)
         {
-            var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(localizedPart.ContentItem);
-            if (sitemapMetadataAspect.Exclude)
+            var part = contentItem.As<LocalizationPart>();
+            if (part == null)
             {
-                continue;
+                return true;
             }
 
-            var hrefValue = await _routeableContentTypeCoordinator.GetRouteAsync(context, localizedPart.ContentItem);
+            var localizedContentParts = queryContext.ReferenceContentItems
+                .Select(ci => ci.As<LocalizationPart>())
+                .Where(cp => cp.LocalizationSet == part.LocalizationSet);
 
-            var linkNode = new XElement(_extendedNamespace + "link",
-                new XAttribute("rel", "alternate"),
-                new XAttribute("hreflang", localizedPart.Culture),
-                new XAttribute("href", hrefValue));
+            foreach (var localizedPart in localizedContentParts)
+            {
+                var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(localizedPart.ContentItem);
+                if (sitemapMetadataAspect.Exclude)
+                {
+                    continue;
+                }
 
-            url.Add(linkNode);
+                var hrefValue = await _routeableContentTypeCoordinator.GetRouteAsync(context, localizedPart.ContentItem);
+
+                var linkNode = new XElement(_extendedNamespace + "link",
+                    new XAttribute("rel", "alternate"),
+                    new XAttribute("hreflang", localizedPart.Culture),
+                    new XAttribute("href", hrefValue));
+
+                url.Add(linkNode);
+            }
+
+            return true;
         }
-
-        return true;
     }
 }

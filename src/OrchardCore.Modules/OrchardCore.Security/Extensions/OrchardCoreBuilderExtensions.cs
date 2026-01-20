@@ -2,27 +2,28 @@ using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Security.Settings;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-public static class OrchardCoreBuilderExtensions
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static OrchardCoreBuilder ConfigureSecuritySettings(this OrchardCoreBuilder builder)
+    public static class OrchardCoreBuilderExtensions
     {
-        builder.ConfigureServices((tenantServices, serviceProvider) =>
+        public static OrchardCoreBuilder ConfigureSecuritySettings(this OrchardCoreBuilder builder)
         {
-            var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Security");
-
-            tenantServices.PostConfigure<SecuritySettings>(settings =>
+            builder.ConfigureServices((tenantServices, serviceProvider) =>
             {
-                settings.ContentSecurityPolicy.Clear();
-                settings.PermissionsPolicy.Clear();
+                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Security");
 
-                configurationSection.Bind(settings);
+                tenantServices.PostConfigure<SecuritySettings>(settings =>
+                {
+                    settings.ContentSecurityPolicy.Clear();
+                    settings.PermissionsPolicy.Clear();
 
-                settings.FromConfiguration = true;
+                    configurationSection.Bind(settings);
+
+                    settings.FromConfiguration = true;
+                });
             });
-        });
 
-        return builder;
+            return builder;
+        }
     }
 }

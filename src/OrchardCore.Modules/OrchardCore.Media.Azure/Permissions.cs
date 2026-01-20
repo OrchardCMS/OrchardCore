@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media.Azure;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
     public static readonly Permission ViewAzureMediaOptions = new("ViewAzureMediaOptions", "View Azure Media Options");
 
@@ -18,7 +20,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

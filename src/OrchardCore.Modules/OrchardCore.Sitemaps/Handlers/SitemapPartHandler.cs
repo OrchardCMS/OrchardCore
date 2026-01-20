@@ -1,23 +1,25 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Sitemaps.Aspects;
 using OrchardCore.Sitemaps.Models;
 
-namespace OrchardCore.Sitemaps.Handlers;
-
-public class SitemapPartHandler : ContentPartHandler<SitemapPart>
+namespace OrchardCore.Sitemaps.Handlers
 {
-    public override Task GetContentItemAspectAsync(ContentItemAspectContext context, SitemapPart part)
+    public class SitemapPartHandler : ContentPartHandler<SitemapPart>
     {
-        return context.ForAsync<SitemapMetadataAspect>(aspect =>
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, SitemapPart part)
         {
-            if (part.OverrideSitemapConfig)
+            return context.ForAsync<SitemapMetadataAspect>(aspect =>
             {
-                aspect.ChangeFrequency = part.ChangeFrequency.ToString();
-                aspect.Priority = part.Priority;
-                aspect.Exclude = part.Exclude;
-            }
+                if (part.OverrideSitemapConfig)
+                {
+                    aspect.ChangeFrequency = part.ChangeFrequency.ToString();
+                    aspect.Priority = part.Priority;
+                    aspect.Exclude = part.Exclude;
+                }
 
-            return Task.CompletedTask;
-        });
+                return Task.CompletedTask;
+            });
+        }
     }
 }

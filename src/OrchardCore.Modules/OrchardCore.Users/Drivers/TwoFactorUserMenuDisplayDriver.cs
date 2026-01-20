@@ -4,13 +4,13 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class TwoFactorUserMenuDisplayDriver : DisplayDriver<UserMenu>
+public class TwoFactorUserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
-    public override IDisplayResult Display(UserMenu model, BuildDisplayContext context)
+    public override IDisplayResult Display(UserMenu model)
     {
         return View("UserMenuItems__TwoFactor", model)
-            .Location(OrchardCoreConstants.DisplayType.Detail, "Content:15")
-            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:15")
+            .Location("Detail", "Content:15")
+            .Location("DetailAdmin", "Content:15")
             .Differentiator("TwoFactor");
     }
 }

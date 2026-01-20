@@ -1,26 +1,31 @@
-namespace OrchardCore.Shortcodes.Services;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-public class ShortcodeTemplatesDescriptorProvider : IShortcodeDescriptorProvider
+namespace OrchardCore.Shortcodes.Services
 {
-    private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
-
-    public ShortcodeTemplatesDescriptorProvider(ShortcodeTemplatesManager shortcodeTemplatesManager)
+    public class ShortcodeTemplatesDescriptorProvider : IShortcodeDescriptorProvider
     {
-        _shortcodeTemplatesManager = shortcodeTemplatesManager;
-    }
+        private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
 
-    public async Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync()
-    {
-        var document = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
+        public ShortcodeTemplatesDescriptorProvider(ShortcodeTemplatesManager shortcodeTemplatesManager)
+        {
+            _shortcodeTemplatesManager = shortcodeTemplatesManager;
+        }
 
-        return document.ShortcodeTemplates.Select(kvp =>
-            new ShortcodeDescriptor
-            {
-                Name = kvp.Key,
-                Hint = kvp.Value.Hint,
-                DefaultValue = kvp.Value.DefaultValue,
-                Usage = kvp.Value.Usage,
-                Categories = kvp.Value.Categories,
-            });
+        public async Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync()
+        {
+            var document = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
+
+            return document.ShortcodeTemplates.Select(kvp =>
+                new ShortcodeDescriptor
+                {
+                    Name = kvp.Key,
+                    Hint = kvp.Value.Hint,
+                    DefaultValue = kvp.Value.DefaultValue,
+                    Usage = kvp.Value.Usage,
+                    Categories = kvp.Value.Categories
+                });
+        }
     }
 }

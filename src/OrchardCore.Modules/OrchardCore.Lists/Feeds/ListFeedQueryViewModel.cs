@@ -1,6 +1,7 @@
-namespace OrchardCore.Lists.Feeds;
-
-public class ListFeedQueryViewModel
+namespace OrchardCore.Lists.Feeds
 {
-    public string ContentItemId { get; set; }
+    public class ListFeedQueryViewModel
+    {
+        public string ContentItemId { get; set; }
+    }
 }

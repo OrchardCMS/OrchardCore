@@ -1,31 +1,34 @@
-namespace OrchardCore.XmlRpc.Models;
+using System.Collections.Generic;
 
-public class XRpcStruct
+namespace OrchardCore.XmlRpc.Models
 {
-    public XRpcStruct()
+    public class XRpcStruct
     {
-        Members = new Dictionary<string, XRpcData>();
-    }
-    public IDictionary<string, XRpcData> Members { get; set; }
-
-    public object this[string index]
-    {
-        get { return Members[index].Value; }
-    }
-
-    public XRpcStruct Set<T>(string name, T value)
-    {
-        Members[name] = XRpcData.For(value);
-        return this;
-    }
-
-    public T Optional<T>(string name)
-    {
-        if (Members.TryGetValue(name, out var data))
+        public XRpcStruct()
         {
-            return (T)data.Value;
+            Members = new Dictionary<string, XRpcData>();
+        }
+        public IDictionary<string, XRpcData> Members { get; set; }
+
+        public object this[string index]
+        {
+            get { return Members[index].Value; }
         }
 
-        return default;
+        public XRpcStruct Set<T>(string name, T value)
+        {
+            Members[name] = XRpcData.For(value);
+            return this;
+        }
+
+        public T Optional<T>(string name)
+        {
+            if (Members.TryGetValue(name, out var data))
+            {
+                return (T)data.Value;
+            }
+
+            return default;
+        }
     }
 }

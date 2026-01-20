@@ -1,6 +1,9 @@
-namespace OrchardCore.Apis.GraphQL.Queries;
+using System.Collections.Generic;
 
-public interface INamedQueryProvider
+namespace OrchardCore.Apis.GraphQL.Queries
 {
-    IDictionary<string, string> Resolve();
+    public interface INamedQueryProvider
+    {
+        IDictionary<string, string> Resolve();
+    }
 }

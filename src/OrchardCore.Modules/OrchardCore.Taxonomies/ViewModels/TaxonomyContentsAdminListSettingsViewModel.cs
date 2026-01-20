@@ -1,13 +1,14 @@
-namespace OrchardCore.Taxonomies.ViewModels;
-
-public class TaxonomyContentsAdminListSettingsViewModel
+namespace OrchardCore.Taxonomies.ViewModels
 {
-    public TaxonomyEntry[] TaxonomyEntries { get; set; }
-}
+    public class TaxonomyContentsAdminListSettingsViewModel
+    {
+        public TaxonomyEntry[] TaxonomyEntries { get; set; }
+    }
 
-public class TaxonomyEntry
-{
-    public string DisplayText { get; set; }
-    public string ContentItemId { get; set; }
-    public bool IsChecked { get; set; }
+    public class TaxonomyEntry
+    {
+        public string DisplayText { get; set; }
+        public string ContentItemId { get; set; }
+        public bool IsChecked { get; set; }
+    }
 }

@@ -42,7 +42,7 @@ public IConfiguration Configuration { get; }
 In order to initialize the `Configuration`, set the property in the constructor like this:
 
 ```csharp
-public sealed Startup(IConfiguration configuration)
+public Startup(IConfiguration configuration)
 {
     Configuration = configuration;
 }
@@ -76,4 +76,8 @@ Finally, create a file called `appsettings.json` with this configuration in json
 
 ## Summary
 
-You just learned how to configure the password settings from an `appsettings.json` file.
+You just learnt how to configure the password settings from an `appsettings.json` file.
+
+# Original blog post
+
+<http://www.ideliverable.com/blog/how-to-change-the-password-requirements-for-orchard-core-sites>

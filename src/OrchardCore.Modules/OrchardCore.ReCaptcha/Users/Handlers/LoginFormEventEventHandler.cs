@@ -1,32 +1,46 @@
-using Microsoft.AspNetCore.Identity;
+using System;
+using System.Threading.Tasks;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Users;
 using OrchardCore.Users.Events;
 
-namespace OrchardCore.ReCaptcha.Users.Handlers;
-
-public sealed class LoginFormEventEventHandler : LoginFormEventBase
+namespace OrchardCore.ReCaptcha.Users.Handlers
 {
-    private readonly ReCaptchaService _reCaptchaService;
-    private readonly SignInManager<IUser> _signInManager;
-
-    public LoginFormEventEventHandler(
-        ReCaptchaService reCaptchaService,
-        SignInManager<IUser> signInManager)
+    public class LoginFormEventEventHandler : ILoginFormEvent
     {
-        _reCaptchaService = reCaptchaService;
-        _signInManager = signInManager;
-    }
+        private readonly ReCaptchaService _reCaptchaService;
 
-    public override async Task LoggingInAsync(string userName, Action<string, string> reportError)
-    {
-        // When logging in via an external provider, authentication security is already handled by the provider.
-        // Therefore, using a CAPTCHA is unnecessary and impractical, as users wouldn't be able to complete it anyway.
-        if (await _signInManager.GetExternalLoginInfoAsync() != null)
+        public LoginFormEventEventHandler(ReCaptchaService reCaptchaService)
         {
-            return;
+            _reCaptchaService = reCaptchaService;
         }
 
-        await _reCaptchaService.ValidateCaptchaAsync(reportError);
+        public Task IsLockedOutAsync(IUser user) => Task.CompletedTask;
+
+        public Task LoggedInAsync(IUser user)
+        {
+            _reCaptchaService.ThisIsAHuman();
+            return Task.CompletedTask;
+        }
+
+        public async Task LoggingInAsync(string userName, Action<string, string> reportError)
+        {
+            if (_reCaptchaService.IsThisARobot())
+            {
+                await _reCaptchaService.ValidateCaptchaAsync(reportError);
+            }
+        }
+
+        public Task LoggingInFailedAsync(string userName)
+        {
+            _reCaptchaService.MaybeThisIsARobot();
+            return Task.CompletedTask;
+        }
+
+        public Task LoggingInFailedAsync(IUser user)
+        {
+            _reCaptchaService.MaybeThisIsARobot();
+            return Task.CompletedTask;
+        }
     }
 }

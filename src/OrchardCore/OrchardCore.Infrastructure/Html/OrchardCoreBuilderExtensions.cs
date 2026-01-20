@@ -1,28 +1,29 @@
 using OrchardCore.Infrastructure.Html;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-public static partial class OrchardCoreBuilderExtensions
+namespace Microsoft.Extensions.DependencyInjection
 {
-    /// <summary>
-    /// Adds html script sanitization services.
-    /// </summary>
-    /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
-    public static OrchardCoreBuilder AddHtmlSanitizer(this OrchardCoreBuilder builder)
+    public static partial class OrchardCoreBuilderExtensions
     {
-        builder.ConfigureServices(services =>
+        /// <summary>
+        /// Adds html script sanitization services.
+        /// </summary>
+        /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
+        public static OrchardCoreBuilder AddHtmlSanitizer(this OrchardCoreBuilder builder)
         {
-            services.AddOptions<HtmlSanitizerOptions>();
-
-            services.ConfigureHtmlSanitizer((sanitizer) =>
+            builder.ConfigureServices(services =>
             {
-                sanitizer.AllowedAttributes.Add("class");
-                sanitizer.AllowedTags.Remove("form");
+                services.AddOptions<HtmlSanitizerOptions>();
+
+                services.ConfigureHtmlSanitizer((sanitizer) =>
+                {
+                    sanitizer.AllowedAttributes.Add("class");
+                    sanitizer.AllowedTags.Remove("form");
+                });
+
+                services.AddSingleton<IHtmlSanitizerService, HtmlSanitizerService>();
             });
 
-            services.AddSingleton<IHtmlSanitizerService, HtmlSanitizerService>();
-        });
-
-        return builder;
+            return builder;
+        }
     }
 }

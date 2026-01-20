@@ -1,3 +1,4 @@
-namespace OrchardCore.ContentTypes.Events;
-
-public class ContentTypeCreatedContext : ContentTypeContext { }
+namespace OrchardCore.ContentTypes.Events
+{
+    public class ContentTypeCreatedContext : ContentTypeContext { }
+}

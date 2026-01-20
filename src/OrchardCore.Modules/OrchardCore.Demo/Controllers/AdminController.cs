@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.Demo.Controllers;
-
-public sealed class AdminController : Controller
+namespace OrchardCore.Demo.Controllers
 {
-    public IActionResult Index()
+    public class AdminController : Controller
     {
-        return View();
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -10,17 +12,13 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Seo.Drivers;
 
-public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettings>
+public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
     private readonly INotifier _notifier;
-
-    internal readonly IHtmlLocalizer H;
-
-    protected override string SettingsGroupId
-        => SeoConstants.RobotsSettingsGroupId;
+    protected readonly IHtmlLocalizer H;
 
     public RobotsSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
@@ -37,7 +35,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
         H = htmlLocalizer;
     }
 
-    public override async Task<IDisplayResult> EditAsync(ISite site, RobotsSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(RobotsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -59,10 +57,10 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
             model.DisallowAdmin = settings.DisallowAdmin;
             model.AdditionalRules = settings.AdditionalRules;
         }).Location("Content:5")
-        .OnGroup(SettingsGroupId);
+        .OnGroup(SeoConstants.RobotsSettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, RobotsSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(RobotsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -74,6 +72,6 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
 
         await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(settings, context);
     }
 }

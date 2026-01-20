@@ -1,7 +1,10 @@
-namespace OrchardCore.AdminMenu.ViewModels;
+using System.Collections.Generic;
 
-public class AdminNodeListViewModel
+namespace OrchardCore.AdminMenu.ViewModels
 {
-    public Models.AdminMenu AdminMenu { get; set; }
-    public IDictionary<string, dynamic> Thumbnails { get; set; }
+    public class AdminNodeListViewModel
+    {
+        public Models.AdminMenu AdminMenu { get; set; }
+        public IDictionary<string, dynamic> Thumbnails { get; set; }
+    }
 }

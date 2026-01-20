@@ -3,15 +3,13 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Options;
 
-namespace OrchardCore.Workflows.Helpers;
-
-public static class ServiceCollectionExtensions
+namespace OrchardCore.Workflows.Helpers
 {
-    public static IServiceCollection AddActivity<TActivity, TDriver>(this IServiceCollection services)
-        where TActivity : class, IActivity where TDriver : class, IDisplayDriver<IActivity>
+    public static class ServiceCollectionExtensions
     {
-        services.Configure<WorkflowOptions>(options => options.RegisterActivity<TActivity, TDriver>());
-
-        return services;
+        public static void AddActivity<TActivity, TDriver>(this IServiceCollection services) where TActivity : class, IActivity where TDriver : class, IDisplayDriver<IActivity>
+        {
+            services.Configure<WorkflowOptions>(options => options.RegisterActivity<TActivity, TDriver>());
+        }
     }
 }

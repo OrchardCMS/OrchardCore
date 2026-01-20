@@ -1,8 +1,9 @@
-namespace OrchardCore.Demo.ViewModels;
-
-public class EditUserProfileViewModel
+namespace OrchardCore.Demo.ViewModels
 {
-    public int Age { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+    public class EditUserProfileViewModel
+    {
+        public int Age { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+    }
 }

@@ -1,6 +1,10 @@
-namespace OrchardCore.Shortcodes.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public interface IShortcodeDescriptorManager
+namespace OrchardCore.Shortcodes.Services
 {
-    Task<IEnumerable<ShortcodeDescriptor>> GetShortcodeDescriptors();
+    public interface IShortcodeDescriptorManager
+    {
+        Task<IEnumerable<ShortcodeDescriptor>> GetShortcodeDescriptors();
+    }
 }

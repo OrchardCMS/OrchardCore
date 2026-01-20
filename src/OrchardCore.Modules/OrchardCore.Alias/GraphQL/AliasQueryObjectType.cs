@@ -2,15 +2,16 @@ using GraphQL.Types;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Alias.Models;
 
-namespace OrchardCore.Alias.GraphQL;
-
-public class AliasQueryObjectType : ObjectGraphType<AliasPart>
+namespace OrchardCore.Alias.GraphQL
 {
-    public AliasQueryObjectType(IStringLocalizer<AliasQueryObjectType> S)
+    public class AliasQueryObjectType : ObjectGraphType<AliasPart>
     {
-        Name = "AliasPart";
-        Description = S["Alternative path for the content item"];
+        public AliasQueryObjectType(IStringLocalizer<AliasQueryObjectType> S)
+        {
+            Name = "AliasPart";
+            Description = S["Alternative path for the content item"];
 
-        Field("alias", x => x.Alias, true);
+            Field("alias", x => x.Alias, true);
+        }
     }
 }

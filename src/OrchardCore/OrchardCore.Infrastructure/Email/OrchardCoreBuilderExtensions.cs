@@ -1,23 +1,24 @@
 using OrchardCore.Email;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-/// <summary>
-/// Provides an extension method for <see cref="OrchardCoreBuilder"/>.
-/// </summary>
-public static partial class OrchardCoreBuilderExtensions
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// Adds e-mail address validator service.
+    /// Provides an extension method for <see cref="OrchardCoreBuilder"/>.
     /// </summary>
-    /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
-    public static OrchardCoreBuilder AddEmailAddressValidator(this OrchardCoreBuilder builder)
+    public static partial class OrchardCoreBuilderExtensions
     {
-        builder.ConfigureServices(services =>
+        /// <summary>
+        /// Adds e-mail address validator service.
+        /// </summary>
+        /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
+        public static OrchardCoreBuilder AddEmailAddressValidator(this OrchardCoreBuilder builder)
         {
-            services.AddTransient<IEmailAddressValidator, EmailAddressValidator>();
-        });
+            builder.ConfigureServices(services =>
+            {
+                services.AddTransient<IEmailAddressValidator, EmailAddressValidator>();
+            });
 
-        return builder;
+            return builder;
+        }
     }
 }

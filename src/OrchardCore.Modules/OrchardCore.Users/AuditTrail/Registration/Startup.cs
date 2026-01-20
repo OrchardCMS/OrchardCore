@@ -4,14 +4,15 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Modules;
 using OrchardCore.Users.Events;
 
-namespace OrchardCore.Users.AuditTrail.Registration;
-
-[RequireFeatures("OrchardCore.Users.AuditTrail", UserConstants.Features.UserRegistration)]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Users.AuditTrail.Registration
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Users.AuditTrail", "OrchardCore.Users.Registration")]
+    public class Startup : StartupBase
     {
-        services.AddScoped<IRegistrationFormEvents, UserRegistrationEventHandler>();
-        services.AddTransient<IConfigureOptions<AuditTrailOptions>, UserRegistrationAuditTrailEventConfiguration>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IRegistrationFormEvents, UserRegistrationEventHandler>();
+            services.AddTransient<IConfigureOptions<AuditTrailOptions>, UserRegistrationAuditTrailEventConfiguration>();
+        }
     }
 }

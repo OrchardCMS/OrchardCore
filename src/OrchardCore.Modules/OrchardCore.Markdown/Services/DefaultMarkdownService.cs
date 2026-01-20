@@ -1,24 +1,25 @@
 using Markdig;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Markdown.Services;
-
-public class DefaultMarkdownService : IMarkdownService
+namespace OrchardCore.Markdown.Services
 {
-    private readonly MarkdownPipeline _markdownPipeline;
-
-    public DefaultMarkdownService(IOptions<MarkdownPipelineOptions> options)
+    public class DefaultMarkdownService : IMarkdownService
     {
-        var builder = new MarkdownPipelineBuilder();
-        foreach (var action in options.Value.Configure)
+        private readonly MarkdownPipeline _markdownPipeline;
+
+        public DefaultMarkdownService(IOptions<MarkdownPipelineOptions> options)
         {
-            action?.Invoke(builder);
+            var builder = new MarkdownPipelineBuilder();
+            foreach (var action in options.Value.Configure)
+            {
+                action?.Invoke(builder);
+            }
+            _markdownPipeline = builder.Build();
         }
-        _markdownPipeline = builder.Build();
-    }
 
-    public string ToHtml(string markdown)
-    {
-        return Markdig.Markdown.ToHtml(markdown, _markdownPipeline);
+        public string ToHtml(string markdown)
+        {
+            return Markdig.Markdown.ToHtml(markdown, _markdownPipeline);
+        }
     }
 }

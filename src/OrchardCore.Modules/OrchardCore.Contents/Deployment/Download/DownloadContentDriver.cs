@@ -3,31 +3,39 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
-using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.Deployment.Download;
-
-public sealed class DownloadContentDriver : ContentDisplayDriver
+namespace OrchardCore.Contents.Deployment.Download
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
-
-    public DownloadContentDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+    public class DownloadContentDriver : ContentDisplayDriver
     {
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
-    }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-    public override IDisplayResult Display(ContentItem contentItem, BuildDisplayContext context)
-    {
-        var user = _httpContextAccessor.HttpContext.User;
+        public DownloadContentDriver(
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
+        }
 
-        return Shape("Download_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem))
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:20")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(user, DeploymentPermissions.Export, contentItem));
+        public override IDisplayResult Display(ContentItem contentItem)
+        {
+            var context = _httpContextAccessor.HttpContext;
+
+            return Shape("Download_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:20")
+                    .RenderWhen(async () =>
+                    {
+                        var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Deployment.CommonPermissions.Export, contentItem);
+
+                        if (hasEditPermission)
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    });
+        }
     }
 }

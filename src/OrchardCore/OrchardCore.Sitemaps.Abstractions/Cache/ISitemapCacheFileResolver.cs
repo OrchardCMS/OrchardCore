@@ -1,9 +1,13 @@
-namespace OrchardCore.Sitemaps.Cache;
+using System.IO;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Resolves a sitemap cache file.
-/// </summary>
-public interface ISitemapCacheFileResolver
+namespace OrchardCore.Sitemaps.Cache
 {
-    Task<Stream> OpenReadStreamAsync();
+    /// <summary>
+    /// Resolves a sitemap cache file.
+    /// </summary>
+    public interface ISitemapCacheFileResolver
+    {
+        Task<Stream> OpenReadStreamAsync();
+    }
 }

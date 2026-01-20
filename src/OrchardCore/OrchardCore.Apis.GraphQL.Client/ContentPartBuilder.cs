@@ -1,55 +1,58 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace OrchardCore.Apis.GraphQL.Client;
-
-public class ContentPartBuilder
+namespace OrchardCore.Apis.GraphQL.Client
 {
-    private readonly string _contentPartName;
-    private readonly Dictionary<string, string> _keysWithValues = [];
-    private readonly List<string> _keys = [];
-
-    public ContentPartBuilder(string contentPartName)
+    public class ContentPartBuilder
     {
-        _contentPartName = contentPartName;
-    }
+        private readonly string _contentPartName;
+        private readonly Dictionary<string, string> _keysWithValues = [];
+        private readonly List<string> _keys = [];
 
-    public ContentPartBuilder AddField(string name, string value)
-    {
-        _keysWithValues.Add(name.ToGraphQLStringFormat(), value);
-
-        return this;
-    }
-
-    public ContentPartBuilder AddField(string name)
-    {
-        _keys.Add(name);
-
-        return this;
-    }
-
-    internal string Build()
-    {
-        var sb = new StringBuilder();
-        sb.Append(_contentPartName).Append(": {{ ");
-
-        for (var i = 0; i < _keysWithValues.Count; i++)
+        public ContentPartBuilder(string contentPartName)
         {
-            var item = _keysWithValues.ElementAt(i);
-            sb.Append(item.Key).Append(": \"").Append(item.Value).Append('"');
+            _contentPartName = contentPartName;
+        }
 
-            if (i < (_keysWithValues.Count - 1))
+        public ContentPartBuilder AddField(string name, string value)
+        {
+            _keysWithValues.Add(name.ToGraphQLStringFormat(), value);
+
+            return this;
+        }
+
+        public ContentPartBuilder AddField(string name)
+        {
+            _keys.Add(name);
+
+            return this;
+        }
+
+        internal string Build()
+        {
+            var sb = new StringBuilder();
+            sb.Append(_contentPartName).Append(": {{ ");
+
+            for (var i = 0; i < _keysWithValues.Count; i++)
             {
-                sb.Append(' ');
+                var item = _keysWithValues.ElementAt(i);
+                sb.Append(item.Key).Append(": \"").Append(item.Value).Append('"');
+
+                if (i < (_keysWithValues.Count - 1))
+                {
+                    sb.Append(' ');
+                }
             }
+
+            foreach (var item in _keys)
+            {
+                sb.Append(item).Append(' ');
+            }
+
+            sb.Append(" }");
+
+            return sb.ToString();
         }
-
-        foreach (var item in _keys)
-        {
-            sb.Append(item).Append(' ');
-        }
-
-        sb.Append(" }");
-
-        return sb.ToString();
     }
 }

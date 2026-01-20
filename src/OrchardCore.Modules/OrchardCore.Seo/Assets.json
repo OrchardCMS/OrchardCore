@@ -1,14 +1,15 @@
 [
   {
-    "action": "sass",
-    "name": "seo",
-    "source": "Assets/scss/customMetaTagsEditor.scss",
-    "tags": ["admin", "dashboard", "css"]
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/customMetaTagsEditor.scss"
+    ],
+    "output": "wwwroot/Styles/customMetaTagsEditor.css"
   },
   {
-    "action": "min",
-    "name": "seo",
-    "source": "Assets/js/customMetaTagsEditor.js",
-    "tags": ["admin", "dashboard", "js"]
+    "inputs": [
+      "Assets/js/customMetaTagsEditor.js"
+    ],
+    "output": "wwwroot/Scripts/customMetaTagsEditor.js"
   }
 ]

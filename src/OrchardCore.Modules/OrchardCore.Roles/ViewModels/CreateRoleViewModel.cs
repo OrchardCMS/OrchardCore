@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Roles.ViewModels;
-
-public class CreateRoleViewModel
+namespace OrchardCore.Roles.ViewModels
 {
-    [Required(AllowEmptyStrings = false)]
-    public string RoleName { get; set; }
+    public class CreateRoleViewModel
+    {
+        [Required]
+        public string RoleName { get; set; }
 
-    public string RoleDescription { get; set; }
+        public string RoleDescription { get; set; }
+    }
 }

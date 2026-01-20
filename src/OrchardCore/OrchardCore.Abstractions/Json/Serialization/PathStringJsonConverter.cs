@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
@@ -21,5 +22,5 @@ public class PathStringJsonConverter : JsonConverter<PathString>
     }
 
     public override void Write(Utf8JsonWriter writer, PathString value, JsonSerializerOptions options)
-        => JsonSerializer.Serialize(writer, value.ToString(), options);
+        => JsonSerializer.Serialize(writer, value.ToString(), typeof(string), options);
 }

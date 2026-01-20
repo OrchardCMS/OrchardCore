@@ -1,15 +1,17 @@
-namespace OrchardCore.Apis.GraphQL;
+using System;
 
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class GraphQLFieldNameAttribute : Attribute
+namespace OrchardCore.Apis.GraphQL
 {
-    public GraphQLFieldNameAttribute(string field, string mapped)
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    public class GraphQLFieldNameAttribute : Attribute
     {
-        Field = field;
-        Mapped = mapped;
+        public GraphQLFieldNameAttribute(string field, string mapped)
+        {
+            Field = field;
+            Mapped = mapped;
+        }
+
+        public string Field { get; }
+        public string Mapped { get; }
     }
-
-    public string Field { get; }
-
-    public string Mapped { get; }
 }

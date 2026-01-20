@@ -1,8 +1,9 @@
-namespace OrchardCore.Workflows.Models;
-
-public class WorkflowCreatedContext : WorkflowContext
+namespace OrchardCore.Workflows.Models
 {
-    public WorkflowCreatedContext(Workflow workflow) : base(workflow)
+    public class WorkflowCreatedContext : WorkflowContext
     {
+        public WorkflowCreatedContext(Workflow workflow) : base(workflow)
+        {
+        }
     }
 }

@@ -1,12 +1,13 @@
 using System.ComponentModel;
 
-namespace OrchardCore.Menu.Settings;
-
-public class HtmlMenuItemPartSettings
+namespace OrchardCore.Menu.Settings
 {
-    /// <summary>
-    /// Whether to sanitize the html input.
-    /// </summary>
-    [DefaultValue(true)]
-    public bool SanitizeHtml { get; set; } = true;
+    public class HtmlMenuItemPartSettings
+    {
+        /// <summary>
+        /// Whether to sanitize the html input.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool SanitizeHtml { get; set; } = true;
+    }
 }

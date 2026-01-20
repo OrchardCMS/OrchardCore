@@ -3,17 +3,18 @@ using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Contents.Workflows.Drivers;
-
-public sealed class DeleteContentTaskDisplayDriver : ContentTaskDisplayDriver<DeleteContentTask, DeleteContentTaskViewModel>
+namespace OrchardCore.Contents.Workflows.Drivers
 {
-    protected override void EditActivity(DeleteContentTask activity, DeleteContentTaskViewModel model)
+    public class DeleteContentTaskDisplayDriver : ContentTaskDisplayDriver<DeleteContentTask, DeleteContentTaskViewModel>
     {
-        model.Expression = activity.Content.Expression;
-    }
+        protected override void EditActivity(DeleteContentTask activity, DeleteContentTaskViewModel model)
+        {
+            model.Expression = activity.Content.Expression;
+        }
 
-    protected override void UpdateActivity(DeleteContentTaskViewModel model, DeleteContentTask activity)
-    {
-        activity.Content = new WorkflowExpression<IContent>(model.Expression);
+        protected override void UpdateActivity(DeleteContentTaskViewModel model, DeleteContentTask activity)
+        {
+            activity.Content = new WorkflowExpression<IContent>(model.Expression);
+        }
     }
 }

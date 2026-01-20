@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Google;
 
-public sealed class GoogleTagManagerPermissionProvider : IPermissionProvider
+public class GoogleTagManagerPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageGoogleTagManager = Permissions.ManageGoogleTagManager;
 
@@ -18,7 +20,7 @@ public sealed class GoogleTagManagerPermissionProvider : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

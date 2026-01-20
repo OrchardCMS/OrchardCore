@@ -1,9 +1,10 @@
 using OrchardCore.Users.Models;
 using YesSql.Filters.Query;
 
-namespace OrchardCore.Users.Services;
-
-public interface IUsersAdminListFilterProvider
+namespace OrchardCore.Users.Services
 {
-    void Build(QueryEngineBuilder<User> builder);
+    public interface IUsersAdminListFilterProvider
+    {
+        void Build(QueryEngineBuilder<User> builder);
+    }
 }

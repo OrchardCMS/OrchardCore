@@ -1,31 +1,34 @@
-namespace OrchardCore.FileStorage.AzureBlob;
+using System;
 
-public class BlobDirectory : IFileStoreEntry
+namespace OrchardCore.FileStorage.AzureBlob
 {
-    private readonly string _path;
-    private readonly DateTime _lastModifiedUtc;
-    private readonly string _name;
-    private readonly string _directoryPath;
-
-    public BlobDirectory(string path, DateTime lastModifiedUtc)
+    public class BlobDirectory : IFileStoreEntry
     {
-        _path = path;
-        _lastModifiedUtc = lastModifiedUtc;
+        private readonly string _path;
+        private readonly DateTime _lastModifiedUtc;
+        private readonly string _name;
+        private readonly string _directoryPath;
 
-        // Use GetFileName rather than GetDirectoryName as GetDirectoryName requires a delimiter.
-        _name = System.IO.Path.GetFileName(path);
-        _directoryPath = _path.Length > _name.Length ? _path[..^(_name.Length + 1)] : "";
+        public BlobDirectory(string path, DateTime lastModifiedUtc)
+        {
+            _path = path;
+            _lastModifiedUtc = lastModifiedUtc;
+
+            // Use GetFileName rather than GetDirectoryName as GetDirectoryName requires a delimiter.
+            _name = System.IO.Path.GetFileName(path);
+            _directoryPath = _path.Length > _name.Length ? _path[..^(_name.Length + 1)] : "";
+        }
+
+        public string Path => _path;
+
+        public string Name => _name;
+
+        public string DirectoryPath => _directoryPath;
+
+        public long Length => 0;
+
+        public DateTime LastModifiedUtc => _lastModifiedUtc;
+
+        public bool IsDirectory => true;
     }
-
-    public string Path => _path;
-
-    public string Name => _name;
-
-    public string DirectoryPath => _directoryPath;
-
-    public long Length => 0;
-
-    public DateTime LastModifiedUtc => _lastModifiedUtc;
-
-    public bool IsDirectory => true;
 }

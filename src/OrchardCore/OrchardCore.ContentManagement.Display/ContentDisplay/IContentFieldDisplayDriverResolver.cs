@@ -1,7 +1,10 @@
-namespace OrchardCore.ContentManagement.Display.ContentDisplay;
+using System.Collections.Generic;
 
-public interface IContentFieldDisplayDriverResolver
+namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
-    IList<IContentFieldDisplayDriver> GetDisplayModeDrivers(string fieldName, string displayMode);
-    IList<IContentFieldDisplayDriver> GetEditorDrivers(string fieldName, string editor);
+    public interface IContentFieldDisplayDriverResolver
+    {
+        IList<IContentFieldDisplayDriver> GetDisplayModeDrivers(string fieldName, string displayMode);
+        IList<IContentFieldDisplayDriver> GetEditorDrivers(string fieldName, string editor);
+    }
 }

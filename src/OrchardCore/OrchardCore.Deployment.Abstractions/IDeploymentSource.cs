@@ -1,9 +1,12 @@
-namespace OrchardCore.Deployment;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Interprets steps from a deployment plan to build the result package.
-/// </summary>
-public interface IDeploymentSource
+namespace OrchardCore.Deployment
 {
-    Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result);
+    /// <summary>
+    /// Interprets steps from a deployment plan to build the result package.
+    /// </summary>
+    public interface IDeploymentSource
+    {
+        Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result);
+    }
 }

@@ -1,12 +1,14 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Twitter;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageTwitter = new("ManageTwitter", "Manage X (Twitter) settings");
+    public static readonly Permission ManageTwitter = new("ManageTwitter", "Manage Twitter settings");
 
-    public static readonly Permission ManageTwitterSignin = new("ManageTwitterSignin", "Manage Sign in with X (Twitter) settings");
+    public static readonly Permission ManageTwitterSignin = new("ManageTwitterSignin", "Manage Sign in with Twitter settings");
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
@@ -21,7 +23,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

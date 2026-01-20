@@ -1,20 +1,21 @@
-namespace OrchardCore.Workflows.Models;
-
-public class WorkflowExpression<T>
+namespace OrchardCore.Workflows.Models
 {
-    public WorkflowExpression()
+    public class WorkflowExpression<T>
     {
-    }
+        public WorkflowExpression()
+        {
+        }
 
-    public WorkflowExpression(string expression)
-    {
-        Expression = expression;
-    }
+        public WorkflowExpression(string expression)
+        {
+            Expression = expression;
+        }
 
-    public string Expression { get; set; }
+        public string Expression { get; set; }
 
-    public override string ToString()
-    {
-        return Expression;
+        public override string ToString()
+        {
+            return Expression;
+        }
     }
 }

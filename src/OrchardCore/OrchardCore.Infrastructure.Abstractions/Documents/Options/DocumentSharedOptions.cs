@@ -1,6 +1,9 @@
-namespace OrchardCore.Documents.Options;
+using System;
 
-public class DocumentSharedOptions : DocumentOptionsBase, IDocumentSharedOptions
+namespace OrchardCore.Documents.Options
 {
-    public TimeSpan? FailoverRetryLatency { get; set; }
+    public class DocumentSharedOptions : DocumentOptionsBase, IDocumentSharedOptions
+    {
+        public TimeSpan? FailoverRetryLatency { get; set; }
+    }
 }

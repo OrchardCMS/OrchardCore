@@ -1,18 +1,19 @@
 using OrchardCore.Entities;
 
-namespace OrchardCore.Rules.Services;
-
-public class ConditionIdGenerator : IConditionIdGenerator
+namespace OrchardCore.Rules.Services
 {
-    private readonly IIdGenerator _idGenerator;
-
-    public ConditionIdGenerator(IIdGenerator idGenerator)
+    public class ConditionIdGenerator : IConditionIdGenerator
     {
-        _idGenerator = idGenerator;
-    }
+        private readonly IIdGenerator _idGenerator;
 
-    public void GenerateUniqueId(Condition condition)
-    {
-        condition.ConditionId = _idGenerator.GenerateUniqueId();
+        public ConditionIdGenerator(IIdGenerator idGenerator)
+        {
+            _idGenerator = idGenerator;
+        }
+
+        public void GenerateUniqueId(Condition condition)
+        {
+            condition.ConditionId = _idGenerator.GenerateUniqueId();
+        }
     }
 }

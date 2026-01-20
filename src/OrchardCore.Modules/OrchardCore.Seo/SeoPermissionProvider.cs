@@ -1,16 +1,17 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Seo;
 
-public sealed class SeoPermissionProvider : IPermissionProvider
+public class SeoPermissionProvider : IPermissionProvider
 {
+    public static readonly Permission ManageSeoSettings = SeoConstants.ManageSeoSettings;
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        SeoPermissions.ManageSeoSettings,
+        ManageSeoSettings,
     ];
-
-    [Obsolete("This will be removed in a future release. Instead use 'SeoPermissions.ManageSeoSettings'.")]
-    public static readonly Permission ManageSeoSettings = SeoPermissions.ManageSeoSettings;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
@@ -19,7 +20,7 @@ public sealed class SeoPermissionProvider : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

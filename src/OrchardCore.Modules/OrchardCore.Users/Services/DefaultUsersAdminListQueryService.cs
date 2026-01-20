@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -9,9 +13,9 @@ using YesSql.Filters.Abstractions.Nodes;
 
 namespace OrchardCore.Users.Services;
 
-public sealed class DefaultUsersAdminListQueryService : IUsersAdminListQueryService
+public class DefaultUsersAdminListQueryService : IUsersAdminListQueryService
 {
-    private static readonly string[] _operators = ["OR", "AND", "||", "&&"];
+    private readonly static string[] _operators = ["OR", "AND", "||", "&&"];
 
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;

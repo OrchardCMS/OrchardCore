@@ -6,16 +6,17 @@ using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Alias.GraphQL;
-
-[RequireFeatures("OrchardCore.Apis.GraphQL")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Alias.GraphQL
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    public class Startup : StartupBase
     {
-        services.AddObjectGraphType<AliasPart, AliasQueryObjectType>();
-        services.AddInputObjectGraphType<AliasPart, AliasInputObjectType>();
-        services.AddTransient<IIndexAliasProvider, AliasPartIndexAliasProvider>();
-        services.AddWhereInputIndexPropertyProvider<AliasPartIndex>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddObjectGraphType<AliasPart, AliasQueryObjectType>();
+            services.AddInputObjectGraphType<AliasPart, AliasInputObjectType>();
+            services.AddTransient<IIndexAliasProvider, AliasPartIndexAliasProvider>();
+            services.AddWhereInputIndexPropertyProvider<AliasPartIndex>();
+        }
     }
 }

@@ -1,7 +1,8 @@
-namespace OrchardCore.ContentFields.ViewModels;
-
-public class HtmlSettingsViewModel
+namespace OrchardCore.ContentFields.ViewModels
 {
-    public bool SanitizeHtml { get; set; }
-    public string Hint { get; set; }
+    public class HtmlSettingsViewModel
+    {
+        public bool SanitizeHtml { get; set; }
+        public string Hint { get; set; }
+    }
 }

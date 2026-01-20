@@ -1,10 +1,11 @@
-namespace OrchardCore.Placements.ViewModels;
-
-public class EditShapePlacementViewModel
+namespace OrchardCore.Placements.ViewModels
 {
-    public bool Creating { get; set; }
+    public class EditShapePlacementViewModel
+    {
+        public bool Creating { get; set; } = false;
 
-    public string ShapeType { get; set; }
+        public string ShapeType { get; set; }
 
-    public string Nodes { get; set; }
+        public string Nodes { get; set; }
+    }
 }

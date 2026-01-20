@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,7 +12,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Razor;
 
 #pragma warning disable CA1050 // Declare types in namespaces
-public static class ContentOrchardRazorHelperExtensions
+public static class OrchardRazorHelperExtensions
 #pragma warning restore CA1050 // Declare types in namespaces
 {
     public static async Task<IHtmlContent> DisplayAsync(this IOrchardDisplayHelper orchardDisplayHelper, ContentItem content, string displayType = "", string groupId = "", IUpdateModel updater = null)
@@ -83,18 +84,6 @@ public static class ContentOrchardRazorHelperExtensions
             [nameof(ContentItem.Owner)] = contentItem.Owner,
             [nameof(ContentItem.Author)] = contentItem.Author,
             [nameof(ContentItem.Content)] = contentItem.Content,
-        };
-
-        return o;
-    }
-
-    internal static JsonObject ConvertContentPart(ContentPart contentPart)
-    {
-        var o = new JsonObject
-        {
-            // Write all well-known properties.
-            [nameof(ContentPart.ContentItem)] = ConvertContentItem(contentPart.ContentItem),
-            [nameof(ContentPart.Content)] = JObject.FromObject(contentPart.Content),
         };
 
         return o;

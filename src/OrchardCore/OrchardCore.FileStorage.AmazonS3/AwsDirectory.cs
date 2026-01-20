@@ -1,3 +1,5 @@
+using System;
+
 namespace OrchardCore.FileStorage.AmazonS3;
 
 public class AwsDirectory : IFileStoreEntry

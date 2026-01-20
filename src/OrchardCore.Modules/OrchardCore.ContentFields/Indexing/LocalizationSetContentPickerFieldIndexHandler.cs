@@ -1,35 +1,37 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ContentFields.Indexing;
-
-[RequireFeatures("OrchardCore.ContentLocalization")]
-public class LocalizationSetContentPickerFieldIndexHandler : ContentFieldIndexHandler<LocalizationSetContentPickerField>
+namespace OrchardCore.ContentFields.Indexing
 {
-    public override Task BuildIndexAsync(LocalizationSetContentPickerField field, BuildFieldIndexContext context)
+    [RequireFeatures("OrchardCore.ContentLocalization")]
+    public class LocalizationSetContentPickerFieldIndexHandler : ContentFieldIndexHandler<LocalizationSetContentPickerField>
     {
-        var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
-
-        if (field.LocalizationSets.Length > 0)
+        public override Task BuildIndexAsync(LocalizationSetContentPickerField field, BuildFieldIndexContext context)
         {
-            foreach (var localizationSet in field.LocalizationSets)
+            var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
+
+            if (field.LocalizationSets.Length > 0)
+            {
+                foreach (var localizationSet in field.LocalizationSets)
+                {
+                    foreach (var key in context.Keys)
+                    {
+                        context.DocumentIndex.Set(key, localizationSet, options);
+                    }
+                }
+            }
+            else
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key, localizationSet, options);
+                    context.DocumentIndex.Set(key, IndexingConstants.NullValue, options);
                 }
             }
-        }
-        else
-        {
-            foreach (var key in context.Keys)
-            {
-                context.DocumentIndex.Set(key, ContentIndexingConstants.NullValue, options);
-            }
-        }
 
-        return Task.CompletedTask;
+            return Task.CompletedTask;
+        }
     }
 }

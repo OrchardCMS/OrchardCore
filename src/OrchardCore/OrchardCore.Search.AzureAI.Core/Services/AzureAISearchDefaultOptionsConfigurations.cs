@@ -8,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<AzureAISearchDefaultOptions>
+public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<AzureAISearchDefaultOptions>
 {
     public const string ProtectorName = "AzureAISearch";
 
@@ -26,16 +26,15 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
         _siteService = siteService;
     }
 
-    public void Configure(AzureAISearchDefaultOptions options)
+    public async void Configure(AzureAISearchDefaultOptions options)
     {
-        var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch")
-            .Get<AzureAISearchDefaultOptions>()
+        var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch").Get<AzureAISearchDefaultOptions>()
             ?? new AzureAISearchDefaultOptions();
 
-        // This should be called first determine whether the file configs are set or not.
+        // This should be called first to set whether or not the file configs are set or not.
         options.SetFileConfigurationExists(HasConnectionInfo(fileOptions));
 
-        // The 'DisableUIConfiguration' should always be set from the file-options.
+        // The DisableUIConfiguration should always be set using the file options only.
         options.DisableUIConfiguration = fileOptions.DisableUIConfiguration;
 
         options.Analyzers = fileOptions.Analyzers == null || fileOptions.Analyzers.Length == 0
@@ -49,7 +48,8 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
         else
         {
             // At this point, we can allow the user to update the settings from UI.
-            var settings = _siteService.GetSettings<AzureAISearchDefaultSettings>();
+            var site = await _siteService.GetSiteSettingsAsync();
+            var settings = site.As<AzureAISearchDefaultSettings>();
 
             if (settings.UseCustomConfiguration)
             {
@@ -104,7 +104,6 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
             return false;
         }
 
-        return options.AuthenticationType != AzureAIAuthenticationType.ApiKey ||
-            !string.IsNullOrEmpty(options.Credential?.Key);
+        return options.AuthenticationType != AzureAIAuthenticationType.ApiKey || !string.IsNullOrEmpty(options.Credential?.Key);
     }
 }

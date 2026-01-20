@@ -1,12 +1,18 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 
-namespace OrchardCore.Themes.Services;
-
-public interface ISiteThemeService
+namespace OrchardCore.Themes.Services
 {
-    Task<IExtensionInfo> GetSiteThemeAsync();
+    public interface ISiteThemeService
+    {
+        Task<IExtensionInfo> GetSiteThemeAsync();
 
-    Task SetSiteThemeAsync(string themeName);
+        Task SetSiteThemeAsync(string themeName);
 
-    Task<string> GetSiteThemeNameAsync();
+        [Obsolete("This method has been deprecated, please use GetSiteThemeNameAsync() instead.", error: false)]
+        async Task<string> GetCurrentThemeNameAsync() => await GetSiteThemeNameAsync();
+
+        Task<string> GetSiteThemeNameAsync();
+    }
 }

@@ -1,10 +1,11 @@
-namespace OrchardCore.ReverseProxy.ViewModels;
-
-public class ReverseProxySettingsViewModel
+namespace OrchardCore.ReverseProxy.ViewModels
 {
-    public bool EnableXForwardedFor { get; set; }
+    public class ReverseProxySettingsViewModel
+    {
+        public bool EnableXForwardedFor { get; set; }
 
-    public bool EnableXForwardedProto { get; set; }
+        public bool EnableXForwardedProto { get; set; }
 
-    public bool EnableXForwardedHost { get; set; }
+        public bool EnableXForwardedHost { get; set; }
+    }
 }

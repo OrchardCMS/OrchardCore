@@ -1,14 +1,20 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 
-namespace OrchardCore.Deployment.Steps;
-
-public sealed class JsonRecipeDeploymentSource
-    : DeploymentSourceBase<JsonRecipeDeploymentStep>
+namespace OrchardCore.Deployment.Steps
 {
-    protected override Task ProcessAsync(JsonRecipeDeploymentStep step, DeploymentPlanResult result)
+    public class JsonRecipeDeploymentSource : IDeploymentSource
     {
-        result.Steps.Add(JObject.Parse(step.Json));
+        public Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
+        {
+            if (deploymentStep is not JsonRecipeDeploymentStep jsonRecipeStep)
+            {
+                return Task.CompletedTask;
+            }
 
-        return Task.CompletedTask;
+            result.Steps.Add(JObject.Parse(jsonRecipeStep.Json));
+
+            return Task.CompletedTask;
+        }
     }
 }

@@ -1,10 +1,12 @@
+using System;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ContentFields.Fields;
-
-[RequireFeatures("OrchardCore.ContentLocalization")]
-public class LocalizationSetContentPickerField : ContentField
+namespace OrchardCore.ContentFields.Fields
 {
-    public string[] LocalizationSets { get; set; } = [];
+    [RequireFeatures("OrchardCore.ContentLocalization")]
+    public class LocalizationSetContentPickerField : ContentField
+    {
+        public string[] LocalizationSets { get; set; } = [];
+    }
 }

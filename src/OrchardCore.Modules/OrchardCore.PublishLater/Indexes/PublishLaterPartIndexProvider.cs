@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -19,15 +23,9 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
         _serviceProvider = serviceProvider;
     }
 
-    public override Task CreatedAsync(CreateContentContext context)
-        => UpdatePublishLaterPartAsync(context.ContentItem);
-
-    public override Task UpdatedAsync(UpdateContentContext context)
-        => UpdatePublishLaterPartAsync(context.ContentItem);
-
-    private async Task UpdatePublishLaterPartAsync(ContentItem contentItem)
+    public override async Task UpdatedAsync(UpdateContentContext context)
     {
-        var part = contentItem.As<PublishLaterPart>();
+        var part = context.ContentItem.As<PublishLaterPart>();
 
         // Validate that the content definition contains this part, this prevents indexing parts
         // that have been removed from the type definition, but are still present in the elements.            
@@ -37,11 +35,11 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             // Search for this part.
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (!contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(PublishLaterPart)))
             {
-                contentItem.Remove<PublishLaterPart>();
-                _partRemoved.Add(contentItem.ContentItemId);
+                context.ContentItem.Remove<PublishLaterPart>();
+                _partRemoved.Add(context.ContentItem.ContentItemId);
             }
         }
     }
@@ -73,7 +71,7 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
                     ContentItemId = part.ContentItem.ContentItemId,
                     ScheduledPublishDateTimeUtc = part.ScheduledPublishUtc,
                     Published = part.ContentItem.Published,
-                    Latest = part.ContentItem.Latest,
+                    Latest = part.ContentItem.Latest
                 };
             });
     }

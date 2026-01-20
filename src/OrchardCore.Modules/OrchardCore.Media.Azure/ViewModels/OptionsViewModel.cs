@@ -1,11 +1,10 @@
-namespace OrchardCore.Media.Azure.ViewModels;
-
-public class OptionsViewModel
+namespace OrchardCore.Media.Azure.ViewModels
 {
-    public string ConnectionString { get; set; }
-    public string ContainerName { get; set; }
-    public string BasePath { get; set; }
-    public bool CreateContainer { get; set; }
-    public bool RemoveContainer { get; set; }
-    public bool RemoveFilesFromBasePath { get; set; }
+    public class OptionsViewModel
+    {
+        public string ConnectionString { get; set; }
+        public string ContainerName { get; set; }
+        public string BasePath { get; set; }
+        public bool CreateContainer { get; set; }
+    }
 }

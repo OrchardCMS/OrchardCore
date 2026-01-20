@@ -1,102 +1,104 @@
 using System.Collections;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 
-namespace OrchardCore.Environment.Shell.Builders;
-
-/// <summary>
-/// A service collection that keeps track of the <see cref="IFeatureInfo"/> for each added service.
-/// </summary>
-public class FeatureAwareServiceCollection : IServiceCollection
+namespace OrchardCore.Environment.Shell.Builders
 {
-    private readonly IServiceCollection _innerServiceCollection;
-
-    private readonly Dictionary<IFeatureInfo, ServiceCollection> _featureServiceCollections = [];
-    private ServiceCollection _currentFeatureServiceCollection;
-
-    public FeatureAwareServiceCollection(IServiceCollection innerServiceCollection)
-    {
-        _innerServiceCollection = innerServiceCollection;
-    }
-
     /// <summary>
-    /// A collection of services grouped by their feature information.
+    /// A service collection that keeps track of the <see cref="IFeatureInfo"/> for each added service.
     /// </summary>
-    public IDictionary<IFeatureInfo, ServiceCollection> FeatureCollections => _featureServiceCollections;
-
-    /// <summary>
-    /// Sets the current feature that services will be assigned when added to this collection.
-    /// </summary>
-    /// <param name="feature">The feature for services to be assigned.</param>
-    public void SetCurrentFeature(IFeatureInfo feature)
+    public class FeatureAwareServiceCollection : IServiceCollection
     {
-        if (!_featureServiceCollections.TryGetValue(feature, out _currentFeatureServiceCollection))
+        private readonly IServiceCollection _innerServiceCollection;
+
+        private readonly Dictionary<IFeatureInfo, ServiceCollection> _featureServiceCollections = [];
+        private ServiceCollection _currentFeatureServiceCollection;
+
+        public FeatureAwareServiceCollection(IServiceCollection innerServiceCollection)
         {
-            _featureServiceCollections.Add(feature, _currentFeatureServiceCollection = []);
+            _innerServiceCollection = innerServiceCollection;
         }
-    }
 
-    public IEnumerator<ServiceDescriptor> GetEnumerator()
-    {
-        return _innerServiceCollection.GetEnumerator();
-    }
+        /// <summary>
+        /// A collection of services grouped by their feature information.
+        /// </summary>
+        public IDictionary<IFeatureInfo, ServiceCollection> FeatureCollections => _featureServiceCollections;
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+        /// <summary>
+        /// Sets the current feature that services will be assigned when added to this collection.
+        /// </summary>
+        /// <param name="feature">The feature for services to be assigned.</param>
+        public void SetCurrentFeature(IFeatureInfo feature)
+        {
+            if (!_featureServiceCollections.TryGetValue(feature, out _currentFeatureServiceCollection))
+            {
+                _featureServiceCollections.Add(feature, _currentFeatureServiceCollection = []);
+            }
+        }
 
-    void ICollection<ServiceDescriptor>.Add(ServiceDescriptor item)
-    {
-        _innerServiceCollection.Add(item);
-        _currentFeatureServiceCollection?.Add(item);
-    }
+        public IEnumerator<ServiceDescriptor> GetEnumerator()
+        {
+            return _innerServiceCollection.GetEnumerator();
+        }
 
-    public void Clear()
-    {
-        _innerServiceCollection.Clear();
-        _featureServiceCollections.Clear();
-    }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-    public bool Contains(ServiceDescriptor item)
-    {
-        return _innerServiceCollection.Contains(item);
-    }
+        void ICollection<ServiceDescriptor>.Add(ServiceDescriptor item)
+        {
+            _innerServiceCollection.Add(item);
+            _currentFeatureServiceCollection?.Add(item);
+        }
 
-    public void CopyTo(ServiceDescriptor[] array, int arrayIndex)
-    {
-        _innerServiceCollection.CopyTo(array, arrayIndex);
-    }
+        public void Clear()
+        {
+            _innerServiceCollection.Clear();
+            _featureServiceCollections.Clear();
+        }
 
-    public bool Remove(ServiceDescriptor item)
-    {
-        return _innerServiceCollection.Remove(item);
-    }
+        public bool Contains(ServiceDescriptor item)
+        {
+            return _innerServiceCollection.Contains(item);
+        }
 
-    public int Count => _innerServiceCollection.Count;
+        public void CopyTo(ServiceDescriptor[] array, int arrayIndex)
+        {
+            _innerServiceCollection.CopyTo(array, arrayIndex);
+        }
 
-    public bool IsReadOnly => _innerServiceCollection.IsReadOnly;
+        public bool Remove(ServiceDescriptor item)
+        {
+            return _innerServiceCollection.Remove(item);
+        }
 
-    public int IndexOf(ServiceDescriptor item)
-    {
-        return _innerServiceCollection.IndexOf(item);
-    }
+        public int Count => _innerServiceCollection.Count;
 
-    public void Insert(int index, ServiceDescriptor item)
-    {
-        _innerServiceCollection.Insert(index, item);
-        _currentFeatureServiceCollection?.Add(item);
-    }
+        public bool IsReadOnly => _innerServiceCollection.IsReadOnly;
 
-    public void RemoveAt(int index)
-    {
-        _innerServiceCollection.RemoveAt(index);
-    }
+        public int IndexOf(ServiceDescriptor item)
+        {
+            return _innerServiceCollection.IndexOf(item);
+        }
 
-    public ServiceDescriptor this[int index]
-    {
-        get => _innerServiceCollection[index];
-        set => _innerServiceCollection[index] = value;
+        public void Insert(int index, ServiceDescriptor item)
+        {
+            _innerServiceCollection.Insert(index, item);
+            _currentFeatureServiceCollection?.Add(item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _innerServiceCollection.RemoveAt(index);
+        }
+
+        public ServiceDescriptor this[int index]
+        {
+            get => _innerServiceCollection[index];
+            set => _innerServiceCollection[index] = value;
+        }
     }
 }

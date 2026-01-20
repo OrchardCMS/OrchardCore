@@ -1,7 +1,8 @@
-function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors, allowedExtensions) {
+function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors) {
     //BagPart create a script section without other DOM elements
-    if (el === null) return;
-
+    if(el === null)
+        return;
+    
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
 
@@ -12,7 +13,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
     //when hide modal detach media app to avoid issue on BagPart
     modalBodyElement.addEventListener('hidden.bs.modal', function (event) {
         $("#mediaApp").appendTo('body');
-        document.getElementById("mediaApp").classList.add("d-none");
+        $("#mediaApp").hide();
     });
 
     mediaFieldApps.push(mediaFieldApp = new Vue({
@@ -26,7 +27,6 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             allowMediaText: allowMediaText,
             backupMediaText: '',
             allowAnchors: allowAnchors,
-            allowedExtensions: allowedExtensions,
             backupAnchor: null,
             mediaTextModal: null,
             anchoringModal: null
@@ -73,13 +73,6 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                                             self.mediaItems.push(y);
                                         });
                                         self.initialized = true;
-
-                                        // Preselect first thumbnail if only single image is allowed
-                                        if (!allowMultiple && self.mediaItems.length === 1) {
-                                            self.$nextTick(function () {
-                                                self.selectedMedia = self.mediaItems[0];
-                                            });
-                                        }
                                     }
                                 },
                                 error: function (error) {
@@ -96,7 +89,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                         });
                     });
 
-
+                    
                     signal.resolve();
                 }
             },
@@ -147,19 +140,11 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             showModal: function (event) {
                 var self = this;
                 if (self.canAddMedia) {
-                    $('#allowedExtensions').val(this.allowedExtensions);
-                    $('#fileupload').attr('accept', this.allowedExtensions);
                     $("#mediaApp").appendTo($(modalBodyElement).find('.modal-body'));
-
-                    // Reload current folder in case the allowed extensions have changed.
-                    mediaApp.refresh();
+                    $("#mediaApp").show();
 
                     var modal = new bootstrap.Modal(modalBodyElement);
                     modal.show();
-
-                    setTimeout(function () {
-                        document.getElementById("mediaApp").classList.remove("d-none");
-                    }, 100)
 
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
                         self.addMediaFiles(mediaApp.selectedMedias);
@@ -240,19 +225,9 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                     alert($('#onlyOneItemMessage').val());
                     mediaFieldApp.mediaItems.push(files[0]);
                     mediaFieldApp.initialized = true;
-                    // Preselect the newly added media item
-                    mediaFieldApp.$nextTick(function() {
-                        mediaFieldApp.selectedMedia = mediaFieldApp.mediaItems[0];
-                    });
                 } else {
                     mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
                     mediaFieldApp.initialized = true;
-                    // Preselect first thumbnail if only single image is allowed
-                    if (!allowMultiple && mediaFieldApp.mediaItems.length === 1) {
-                        mediaFieldApp.$nextTick(function() {
-                            mediaFieldApp.selectedMedia = mediaFieldApp.mediaItems[0];
-                        });
-                    }
                 }
             },
             removeSelected: function (event) {

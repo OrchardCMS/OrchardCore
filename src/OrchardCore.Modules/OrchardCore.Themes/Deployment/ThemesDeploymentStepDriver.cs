@@ -2,20 +2,22 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Themes.Deployment;
-
-public sealed class ThemesDeploymentStepDriver : DisplayDriver<DeploymentStep, ThemesDeploymentStep>
+namespace OrchardCore.Themes.Deployment
 {
-    public override Task<IDisplayResult> DisplayAsync(ThemesDeploymentStep step, BuildDisplayContext context)
+    public class ThemesDeploymentStepDriver : DisplayDriver<DeploymentStep, ThemesDeploymentStep>
     {
-        return CombineAsync(
-                View("ThemesDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-                View("ThemesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
+        public override IDisplayResult Display(ThemesDeploymentStep step)
+        {
+            return
+                Combine(
+                    View("ThemesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                    View("ThemesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+                );
+        }
 
-    public override IDisplayResult Edit(ThemesDeploymentStep step, BuildEditorContext context)
-    {
-        return View("ThemesDeploymentStep_Edit", step).Location("Content");
+        public override IDisplayResult Edit(ThemesDeploymentStep step)
+        {
+            return View("ThemesDeploymentStep_Edit", step).Location("Content");
+        }
     }
 }

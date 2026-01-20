@@ -1,14 +1,15 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Queries.Deployment;
-
-/// <summary>
-/// Adds all queries to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class AllQueriesDeploymentStep : DeploymentStep
+namespace OrchardCore.Queries.Deployment
 {
-    public AllQueriesDeploymentStep()
+    /// <summary>
+    /// Adds all queries to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class AllQueriesDeploymentStep : DeploymentStep
     {
-        Name = "AllQueries";
+        public AllQueriesDeploymentStep()
+        {
+            Name = "AllQueries";
+        }
     }
 }

@@ -1,34 +1,41 @@
+using System;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
 
-namespace OrchardCore.Templates.Recipes;
-
-/// <summary>
-/// This recipe step creates a set of templates.
-/// </summary>
-public sealed class AdminTemplateStep : NamedRecipeStepHandler
+namespace OrchardCore.Templates.Recipes
 {
-    private readonly AdminTemplatesManager _adminTemplatesManager;
-
-    public AdminTemplateStep(AdminTemplatesManager templatesManager)
-        : base("AdminTemplates")
+    /// <summary>
+    /// This recipe step creates a set of templates.
+    /// </summary>
+    public class AdminTemplateStep : IRecipeStepHandler
     {
-        _adminTemplatesManager = templatesManager;
-    }
+        private readonly AdminTemplatesManager _adminTemplatesManager;
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
-    {
-        if (context.Step.TryGetPropertyValue("AdminTemplates", out var jsonNode) && jsonNode is JsonObject templates)
+        public AdminTemplateStep(AdminTemplatesManager templatesManager)
         {
-            foreach (var property in templates)
-            {
-                var name = property.Key;
-                var value = property.Value.ToObject<Template>();
+            _adminTemplatesManager = templatesManager;
+        }
 
-                await _adminTemplatesManager.UpdateTemplateAsync(name, value);
+        public async Task ExecuteAsync(RecipeExecutionContext context)
+        {
+            if (!string.Equals(context.Name, "AdminTemplates", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (context.Step.TryGetPropertyValue("AdminTemplates", out var jsonNode) && jsonNode is JsonObject templates)
+            {
+                foreach (var property in templates)
+                {
+                    var name = property.Key;
+                    var value = property.Value.ToObject<Template>();
+
+                    await _adminTemplatesManager.UpdateTemplateAsync(name, value);
+                }
             }
         }
     }

@@ -1,7 +1,8 @@
-namespace OrchardCore.Environment.Cache;
-
-public class CacheOptions
+namespace OrchardCore.Environment.Cache
 {
-    public bool Enabled { get; set; } = true;
-    public bool DebugMode { get; set; }
+    public class CacheOptions
+    {
+        public bool Enabled { get; set; } = true;
+        public bool DebugMode { get; set; }
+    }
 }

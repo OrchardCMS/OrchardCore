@@ -1,11 +1,12 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Contents.AuditTrail.Models;
-
-public class AuditTrailContentEvent
+namespace OrchardCore.Contents.AuditTrail.Models
 {
-    public string Name { get; set; } = "Content";
-    public ContentItem ContentItem { get; set; }
-    public int VersionNumber { get; set; }
-    public string Comment { get; set; }
+    public class AuditTrailContentEvent
+    {
+        public string Name { get; set; } = "Content";
+        public ContentItem ContentItem { get; set; }
+        public int VersionNumber { get; set; }
+        public string Comment { get; set; }
+    }
 }

@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
@@ -6,119 +10,133 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Settings;
 
-namespace OrchardCore.CustomSettings.Services;
-
-public class CustomSettingsService
+namespace OrchardCore.CustomSettings.Services
 {
-    private readonly ISiteService _siteService;
-    private readonly IContentManager _contentManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly Lazy<Task<IDictionary<string, ContentTypeDefinition>>> _settingsTypes;
-
-    public CustomSettingsService(
-        ISiteService siteService,
-        IContentManager contentManager,
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService,
-        IContentDefinitionManager contentDefinitionManager)
+    public class CustomSettingsService
     {
-        _siteService = siteService;
-        _contentManager = contentManager;
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
-        _contentDefinitionManager = contentDefinitionManager;
-        _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(GetContentTypeAsync);
-    }
+        private readonly ISiteService _siteService;
+        private readonly IContentManager _contentManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly Lazy<Task<IDictionary<string, ContentTypeDefinition>>> _settingsTypes;
 
-    public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync()
-        => (await _settingsTypes.Value).Keys;
-
-    public async Task<IEnumerable<ContentTypeDefinition>> GetAllSettingsTypesAsync()
-        => (await _settingsTypes.Value).Values;
-
-    public async Task<IEnumerable<ContentTypeDefinition>> GetSettingsTypesAsync(params string[] settingsTypeNames)
-    {
-        var types = await _settingsTypes.Value;
-        var definitions = new List<ContentTypeDefinition>();
-
-        foreach (var settingsTypeName in settingsTypeNames)
+        public CustomSettingsService(
+            ISiteService siteService,
+            IContentManager contentManager,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService,
+            IContentDefinitionManager contentDefinitionManager)
         {
-            ContentTypeDefinition settingsType;
-            if (types.TryGetValue(settingsTypeName, out settingsType))
+            _siteService = siteService;
+            _contentManager = contentManager;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
+            _contentDefinitionManager = contentDefinitionManager;
+            _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(async () => await GetContentTypeAsync());
+        }
+
+        [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypeNamesAsync)} method. This current method is slated for removal in upcoming releases.")]
+        public IEnumerable<string> GetAllSettingsTypeNames()
+            => GetAllSettingsTypeNamesAsync().GetAwaiter().GetResult();
+
+        public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync()
+            => (await _settingsTypes.Value).Keys;
+
+
+        [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
+        public IEnumerable<ContentTypeDefinition> GetAllSettingsTypes()
+            => GetAllSettingsTypesAsync().GetAwaiter().GetResult();
+
+        public async Task<IEnumerable<ContentTypeDefinition>> GetAllSettingsTypesAsync()
+            => (await _settingsTypes.Value).Values;
+
+        [Obsolete($"Instead, utilize the {nameof(GetSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
+        public IEnumerable<ContentTypeDefinition> GetSettingsTypes(params string[] settingsTypeNames)
+            => GetSettingsTypesAsync(settingsTypeNames).GetAwaiter().GetResult();
+
+        public async Task<IEnumerable<ContentTypeDefinition>> GetSettingsTypesAsync(params string[] settingsTypeNames)
+        {
+            var types = await _settingsTypes.Value;
+            var definitions = new List<ContentTypeDefinition>();
+
+            foreach (var settingsTypeName in settingsTypeNames)
             {
-                definitions.Add(settingsType);
+                ContentTypeDefinition settingsType;
+                if (types.TryGetValue(settingsTypeName, out settingsType))
+                {
+                    definitions.Add(settingsType);
+                }
             }
+
+            return definitions;
         }
 
-        return definitions;
-    }
+        public ContentTypeDefinition GetSettingsType(string settingsTypeName)
+            => GetSettingsTypeAsync(settingsTypeName).Result;
 
-    public ContentTypeDefinition GetSettingsType(string settingsTypeName)
-        => GetSettingsTypeAsync(settingsTypeName).Result;
-
-    public async Task<ContentTypeDefinition> GetSettingsTypeAsync(string settingsTypeName)
-    {
-        (await _settingsTypes.Value).TryGetValue(settingsTypeName, out var settingsType);
-
-        return settingsType;
-    }
-
-    public Task<bool> CanUserCreateSettingsAsync(ContentTypeDefinition settingsType)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        return _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(settingsType));
-    }
-
-    public Task<ContentItem> GetSettingsAsync(string settingsTypeName, Action isNew = null)
-    {
-        var settingsType = GetSettingsType(settingsTypeName);
-        if (settingsType == null)
+        public async Task<ContentTypeDefinition> GetSettingsTypeAsync(string settingsTypeName)
         {
-            return Task.FromResult<ContentItem>(null);
+            (await _settingsTypes.Value).TryGetValue(settingsTypeName, out var settingsType);
+
+            return settingsType;
         }
 
-        return GetSettingsAsync(settingsType, isNew);
-    }
-
-    public async Task<ContentItem> GetSettingsAsync(ContentTypeDefinition settingsType, Action isNew = null)
-    {
-        var site = await _siteService.GetSiteSettingsAsync();
-
-        return await GetSettingsAsync(site, settingsType, isNew);
-    }
-
-    public async Task<ContentItem> GetSettingsAsync(ISite site, ContentTypeDefinition settingsType, Action isNew = null)
-    {
-        JsonNode property;
-        ContentItem contentItem;
-
-        if (site.Properties.TryGetPropertyValue(settingsType.Name, out property))
+        public Task<bool> CanUserCreateSettingsAsync(ContentTypeDefinition settingsType)
         {
-            var existing = property.ToObject<ContentItem>();
+            var user = _httpContextAccessor.HttpContext?.User;
 
-            // Create a new item to take into account the current type definition.
-            contentItem = await _contentManager.NewAsync(existing.ContentType);
-            contentItem.Merge(existing);
+            return _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(settingsType));
         }
-        else
+
+        public Task<ContentItem> GetSettingsAsync(string settingsTypeName, Action isNew = null)
         {
-            contentItem = await _contentManager.NewAsync(settingsType.Name);
-            isNew?.Invoke();
+            var settingsType = GetSettingsType(settingsTypeName);
+            if (settingsType == null)
+            {
+                return Task.FromResult<ContentItem>(null);
+            }
+
+            return GetSettingsAsync(settingsType, isNew);
         }
 
-        return contentItem;
-    }
+        public async Task<ContentItem> GetSettingsAsync(ContentTypeDefinition settingsType, Action isNew = null)
+        {
+            var site = await _siteService.GetSiteSettingsAsync();
 
-    private async Task<IDictionary<string, ContentTypeDefinition>> GetContentTypeAsync()
-    {
-        var contentTypes = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+            return await GetSettingsAsync(site, settingsType, isNew);
+        }
 
-        var result = contentTypes.Where(x => x.StereotypeEquals(CustomSettingsConstants.Stereotype))
-        .ToDictionary(x => x.Name);
+        public async Task<ContentItem> GetSettingsAsync(ISite site, ContentTypeDefinition settingsType, Action isNew = null)
+        {
+            JsonNode property;
+            ContentItem contentItem;
 
-        return result;
+            if (site.Properties.TryGetPropertyValue(settingsType.Name, out property))
+            {
+                var existing = property.ToObject<ContentItem>();
+
+                // Create a new item to take into account the current type definition.
+                contentItem = await _contentManager.NewAsync(existing.ContentType);
+                contentItem.Merge(existing);
+            }
+            else
+            {
+                contentItem = await _contentManager.NewAsync(settingsType.Name);
+                isNew?.Invoke();
+            }
+
+            return contentItem;
+        }
+
+        private async Task<IDictionary<string, ContentTypeDefinition>> GetContentTypeAsync()
+        {
+            var contentTypes = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+
+            var result = contentTypes.Where(x => x.StereotypeEquals("CustomSettings"))
+            .ToDictionary(x => x.Name);
+
+            return result;
+        }
     }
 }

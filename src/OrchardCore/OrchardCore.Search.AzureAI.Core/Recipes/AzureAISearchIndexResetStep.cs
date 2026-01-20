@@ -1,22 +1,25 @@
+using System;
+using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
-using OrchardCore.Indexing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.AzureAI.Deployment;
+using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public sealed class AzureAISearchIndexResetStep : NamedRecipeStepHandler
+public class AzureAISearchIndexResetStep : IRecipeStepHandler
 {
-    public AzureAISearchIndexResetStep()
-        : base(AzureAISearchIndexResetDeploymentSource.Name)
+    public async Task ExecuteAsync(RecipeExecutionContext context)
     {
-    }
+        if (!string.Equals(context.Name, AzureAISearchIndexResetDeploymentSource.Name, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
-    {
         var model = context.Step.ToObject<AzureAISearchIndexResetDeploymentStep>();
 
         if (model == null)
@@ -31,19 +34,31 @@ public sealed class AzureAISearchIndexResetStep : NamedRecipeStepHandler
 
         await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
         {
-            var indexProfileManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
+            var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
+            var indexSettingsService = scope.ServiceProvider.GetService<AzureAISearchIndexSettingsService>();
+            var indexManager = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexManager>();
+            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<AzureAIIndexDocumentManager>();
 
-            var indexes = model.IncludeAll
-            ? await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName)
-            : (await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName))
-                .Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
+            var indexSettings = model.IncludeAll
+            ? await indexSettingsService.GetSettingsAsync()
+            : (await indexSettingsService.GetSettingsAsync()).Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
 
-            foreach (var index in indexes)
+            foreach (var settings in indexSettings)
             {
-                await indexProfileManager.ResetAsync(index);
-                await indexProfileManager.UpdateAsync(index);
-                await indexProfileManager.SynchronizeAsync(index);
+                settings.SetLastTaskId(0);
+                settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
+
+                if (!await indexManager.ExistsAsync(settings.IndexName))
+                {
+                    settings.IndexFullName = indexManager.GetFullIndexName(settings.IndexName);
+
+                    await indexManager.CreateAsync(settings);
+                }
+
+                await indexSettingsService.UpdateAsync(settings);
             }
+
+            await searchIndexingService.ProcessContentItemsAsync(indexSettings.Select(settings => settings.IndexName).ToArray());
         });
     }
 }

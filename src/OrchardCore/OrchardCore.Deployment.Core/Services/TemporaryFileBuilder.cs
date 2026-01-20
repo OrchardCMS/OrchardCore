@@ -1,50 +1,55 @@
-namespace OrchardCore.Deployment.Core.Services;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
-public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
+namespace OrchardCore.Deployment.Core.Services
 {
-    private readonly bool _deleteOnDispose;
-
-    public TemporaryFileBuilder(bool deleteOnDispose = true)
+    public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
     {
-        Folder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        _deleteOnDispose = deleteOnDispose;
-    }
+        private readonly bool _deleteOnDispose;
 
-    public string Folder { get; }
-
-    public void Dispose()
-    {
-        if (_deleteOnDispose)
+        public TemporaryFileBuilder(bool deleteOnDispose = true)
         {
-            if (Directory.Exists(Folder))
+            Folder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            _deleteOnDispose = deleteOnDispose;
+        }
+
+        public string Folder { get; }
+
+        public void Dispose()
+        {
+            if (_deleteOnDispose)
             {
-                Directory.Delete(Folder, true);
+                if (Directory.Exists(Folder))
+                {
+                    Directory.Delete(Folder, true);
+                }
             }
         }
-    }
 
-    public async Task SetFileAsync(string subpath, Stream stream)
-    {
-        if (subpath.StartsWith('/'))
+        public async Task SetFileAsync(string subpath, Stream stream)
         {
-            throw new InvalidOperationException("A virtual path is required");
+            if (subpath.StartsWith('/'))
+            {
+                throw new InvalidOperationException("A virtual path is required");
+            }
+
+            var fullname = PathExtensions.Combine(Folder, subpath);
+
+            var directory = new FileInfo(fullname).Directory;
+
+            if (!directory.Exists)
+            {
+                directory.Create();
+            }
+
+            using var fs = File.Create(fullname, 4 * 1024, FileOptions.None);
+            await stream.CopyToAsync(fs);
         }
 
-        var fullname = PathExtensions.Combine(Folder, subpath);
-
-        var directory = new FileInfo(fullname).Directory;
-
-        if (!directory.Exists)
+        public override string ToString()
         {
-            directory.Create();
+            return Folder;
         }
-
-        using var fs = File.Create(fullname, 4 * 1024, FileOptions.None);
-        await stream.CopyToAsync(fs);
-    }
-
-    public override string ToString()
-    {
-        return Folder;
     }
 }

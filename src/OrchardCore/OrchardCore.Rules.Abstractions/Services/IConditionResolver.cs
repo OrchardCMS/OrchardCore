@@ -1,6 +1,7 @@
-namespace OrchardCore.Rules.Services;
-
-public interface IConditionResolver
+namespace OrchardCore.Rules.Services
 {
-    IConditionEvaluator GetConditionEvaluator(Condition condition);
+    public interface IConditionResolver
+    {
+        IConditionEvaluator GetConditionEvaluator(Condition condition);
+    }
 }

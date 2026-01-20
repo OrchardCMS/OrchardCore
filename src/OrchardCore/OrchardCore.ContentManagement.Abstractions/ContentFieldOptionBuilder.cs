@@ -1,15 +1,17 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace OrchardCore.ContentManagement;
-
-public class ContentFieldOptionBuilder
+namespace OrchardCore.ContentManagement
 {
-    public ContentFieldOptionBuilder(IServiceCollection services, Type contentFieldType)
+    public class ContentFieldOptionBuilder
     {
-        Services = services;
-        ContentFieldType = contentFieldType;
-    }
+        public ContentFieldOptionBuilder(IServiceCollection services, Type contentFieldType)
+        {
+            Services = services;
+            ContentFieldType = contentFieldType;
+        }
 
-    public IServiceCollection Services { get; }
-    public Type ContentFieldType { get; }
+        public IServiceCollection Services { get; }
+        public Type ContentFieldType { get; }
+    }
 }

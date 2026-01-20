@@ -1,72 +1,96 @@
+using System;
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Localization;
-using OrchardCore.Indexing;
-using OrchardCore.Indexing.Core;
-using OrchardCore.Indexing.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Search.AzureAI.Deployment;
+using OrchardCore.Search.AzureAI.Models;
+using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
+public class AzureAISearchIndexSettingsStep(
+    AzureAISearchIndexManager indexManager,
+    AzureAIIndexDocumentManager azureAIIndexDocumentManager,
+    AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
+    ILogger<AzureAISearchIndexSettingsStep> logger
+        ) : IRecipeStepHandler
 {
     public const string Name = "azureai-index-create";
 
-    private readonly IIndexProfileManager _indexProfileManager;
+    private readonly AzureAISearchIndexManager _indexManager = indexManager;
+    private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
+    private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
+    private readonly ILogger _logger = logger;
 
-    internal readonly IStringLocalizer S;
-
-    public AzureAISearchIndexSettingsStep(
-        IIndexProfileManager indexProfileManager,
-        IStringLocalizer<AzureAISearchIndexSettingsStep> stringLocalizer)
-        : base(Name)
+    public async Task ExecuteAsync(RecipeExecutionContext context)
     {
-        _indexProfileManager = indexProfileManager;
-        S = stringLocalizer;
-    }
-
-    protected override async Task HandleAsync(RecipeExecutionContext context)
-    {
-        if (context.Step["Indices"] is not JsonArray tokens)
+        if (!string.Equals(context.Name, Name, StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
 
-        foreach (var token in tokens)
+        if (context.Step["Indices"] is not JsonArray indexes)
         {
-            IndexProfile index = null;
+            return;
+        }
 
-            var id = token[nameof(index.Id)]?.GetValue<string>();
+        var indexNames = new List<string>();
 
-            if (!string.IsNullOrEmpty(id))
+        foreach (var index in indexes)
+        {
+            var indexSettings = index.ToObject<AzureAISearchIndexSettings>();
+
+            if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexSettings.IndexName, out var indexName))
             {
-                index = await _indexProfileManager.FindByIdAsync(id);
-            }
-
-            if (index is not null)
-            {
-                await _indexProfileManager.UpdateAsync(index, token);
-            }
-            else
-            {
-                var type = token[nameof(index.Type)]?.GetValue<string>() ?? IndexingConstants.ContentsIndexSource;
-
-                index = await _indexProfileManager.NewAsync(AzureAISearchConstants.ProviderName, type, token);
-            }
-
-            var validationResult = await _indexProfileManager.ValidateAsync(index);
-
-            if (!validationResult.Succeeded)
-            {
-                foreach (var error in validationResult.Errors)
-                {
-                    context.Errors.Add(error.ErrorMessage);
-                }
+                _logger.LogError("Invalid index name was provided in the recipe step. IndexName: {indexName}.", indexSettings.IndexName);
 
                 continue;
             }
 
-            await _indexProfileManager.CreateAsync(index);
+            indexSettings.IndexName = indexName;
+
+            if (!await _indexManager.ExistsAsync(indexSettings.IndexName))
+            {
+                if (string.IsNullOrWhiteSpace(indexSettings.AnalyzerName))
+                {
+                    indexSettings.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
+                }
+
+                if (string.IsNullOrEmpty(indexSettings.QueryAnalyzerName))
+                {
+                    indexSettings.QueryAnalyzerName = indexSettings.AnalyzerName;
+                }
+
+                if (indexSettings.IndexedContentTypes == null || indexSettings.IndexedContentTypes.Length == 0)
+                {
+                    _logger.LogError("No {fieldName} were provided in the recipe step. IndexName: {indexName}.", nameof(indexSettings.IndexedContentTypes), indexSettings.IndexName);
+
+                    continue;
+                }
+
+                indexSettings.SetLastTaskId(0);
+                indexSettings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(indexSettings.IndexedContentTypes);
+                indexSettings.IndexFullName = _indexManager.GetFullIndexName(indexSettings.IndexName);
+
+                if (await _indexManager.CreateAsync(indexSettings))
+                {
+                    await _azureAISearchIndexSettingsService.UpdateAsync(indexSettings);
+
+                    indexNames.Add(indexSettings.IndexName);
+                }
+            }
         }
+
+        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
+        {
+            var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
+
+            await searchIndexingService.ProcessContentItemsAsync(indexNames.ToArray());
+        });
     }
 }

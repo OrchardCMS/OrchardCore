@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Admin;
 
-namespace OrchardCore.Apis.GraphQL.Controllers;
-
-public sealed class AdminController : Controller
+namespace OrchardCore.Apis.GraphQL.Controllers
 {
-    [HttpGet]
-    [Admin("GraphQL", "GraphQL")]
-    public IActionResult Index()
+    public class AdminController : Controller
     {
-        return View();
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

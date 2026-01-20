@@ -1,31 +1,35 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Net.Mime;
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.DisplayManagement.FileProviders;
-
-public class DirectoryContents : IDirectoryContents
+namespace OrchardCore.DisplayManagement.FileProviders
 {
-    private readonly IEnumerable<IFileInfo> _entries;
-
-    public DirectoryContents(IEnumerable<IFileInfo> entries)
+    public class DirectoryContents : IDirectoryContents
     {
-        ArgumentNullException.ThrowIfNull(entries);
+        private readonly IEnumerable<IFileInfo> _entries;
 
-        _entries = entries;
-    }
+        public DirectoryContents(IEnumerable<IFileInfo> entries)
+        {
+            ArgumentNullException.ThrowIfNull(entries);
 
-    public bool Exists
-    {
-        get { return true; }
-    }
+            _entries = entries;
+        }
 
-    public IEnumerator<IFileInfo> GetEnumerator()
-    {
-        return _entries.GetEnumerator();
-    }
+        public bool Exists
+        {
+            get { return true; }
+        }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return _entries.GetEnumerator();
+        public IEnumerator<IFileInfo> GetEnumerator()
+        {
+            return _entries.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _entries.GetEnumerator();
+        }
     }
 }

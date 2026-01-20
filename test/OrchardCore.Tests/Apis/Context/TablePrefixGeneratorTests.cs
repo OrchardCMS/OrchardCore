@@ -1,18 +1,19 @@
-namespace OrchardCore.Tests.Apis.Context;
-
-public class TablePrefixGeneratorTests
+namespace OrchardCore.Tests.Apis.Context
 {
-    [Fact]
-    public async Task TenantPrefixShouldBeUnique()
+    public class TablePrefixGeneratorTests
     {
-        var tablePrefixGenerator = new TablePrefixGenerator();
-        var prefixes = new HashSet<string>();
-
-        for (var i = 0; i < 200; i++)
+        [Fact]
+        public async Task TenantPrefixShouldBeUnique()
         {
-            var prefix = await tablePrefixGenerator.GeneratePrefixAsync();
-            Assert.DoesNotContain(prefix, prefixes);
-            prefixes.Add(prefix);
+            var tablePrefixGenerator = new TablePrefixGenerator();
+            var prefixes = new HashSet<string>();
+
+            for (var i = 0; i < 200; i++)
+            {
+                var prefix = await tablePrefixGenerator.GeneratePrefixAsync();
+                Assert.DoesNotContain(prefix, prefixes);
+                prefixes.Add(prefix);
+            }
         }
     }
 }

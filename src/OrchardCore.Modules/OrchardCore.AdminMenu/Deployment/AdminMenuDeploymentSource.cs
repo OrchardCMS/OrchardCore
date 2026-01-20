@@ -1,38 +1,42 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
-using OrchardCore.Json;
 
-namespace OrchardCore.AdminMenu.Deployment;
-
-public sealed class AdminMenuDeploymentSource
-    : DeploymentSourceBase<AdminMenuDeploymentStep>
+namespace OrchardCore.AdminMenu.Deployment
 {
-    private readonly IAdminMenuService _adminMenuService;
-    private readonly JsonSerializerOptions _serializationOptions;
-
-    public AdminMenuDeploymentSource(IAdminMenuService adminMenuService,
-        IOptions<DocumentJsonSerializerOptions> serializationOptions)
+    public class AdminMenuDeploymentSource : IDeploymentSource
     {
-        _adminMenuService = adminMenuService;
-        _serializationOptions = serializationOptions.Value.SerializerOptions;
-    }
+        private readonly IAdminMenuService _adminMenuService;
 
-    protected override async Task ProcessAsync(AdminMenuDeploymentStep step, DeploymentPlanResult result)
-    {
-        var data = new JsonArray();
-        result.Steps.Add(new JsonObject
+        public AdminMenuDeploymentSource(IAdminMenuService adminMenuService)
         {
-            ["name"] = "AdminMenu",
-            ["data"] = data,
-        });
+            _adminMenuService = adminMenuService;
+        }
 
-        foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var objectData = JObject.FromObject(adminMenu, _serializationOptions);
-            data.Add(objectData);
+            var adminMenuStep = step as AdminMenuDeploymentStep;
+
+            if (adminMenuStep == null)
+            {
+                return;
+            }
+
+            var data = new JsonArray();
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "AdminMenu",
+                ["data"] = data,
+            });
+
+            foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
+            {
+                var objectData = JObject.FromObject(adminMenu);
+                data.Add(objectData);
+            }
+
+            return;
         }
     }
 }

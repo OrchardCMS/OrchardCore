@@ -1,45 +1,43 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.AuditTrail.ViewModels;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.AuditTrail.Drivers;
-
-public sealed class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+namespace OrchardCore.Contents.AuditTrail.Drivers
 {
-    public override IDisplayResult Edit(ContentTypePartDefinition model, BuildEditorContext context)
+    public class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
-        if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
+        public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
         {
-            return null;
+            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name)) return null;
+
+            return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
+            {
+                var settings = model.GetSettings<AuditTrailPartSettings>();
+                viewModel.ShowCommentInput = settings.ShowCommentInput;
+            }).Location("Content");
         }
 
-        return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
+        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
         {
-            var settings = model.GetSettings<AuditTrailPartSettings>();
-            viewModel.ShowCommentInput = settings.ShowCommentInput;
-        }).Location("Content");
-    }
+            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name)) return null;
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
-    {
-        if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
-        {
-            return null;
+            var viewModel = new AuditTrailPartSettingsViewModel();
+
+            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput))
+            {
+                context.Builder.WithSettings(new AuditTrailPartSettings
+                {
+                    ShowCommentInput = viewModel.ShowCommentInput
+                });
+            }
+
+            return Edit(model, context.Updater);
         }
-
-        var viewModel = new AuditTrailPartSettingsViewModel();
-
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput);
-
-        context.Builder.WithSettings(new AuditTrailPartSettings
-        {
-            ShowCommentInput = viewModel.ShowCommentInput,
-        });
-
-        return Edit(model, context);
     }
 }

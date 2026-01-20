@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -5,6 +8,7 @@ using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Users.Indexes;
@@ -12,86 +16,88 @@ using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.ContentFields.Drivers;
-
-public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
+namespace OrchardCore.ContentFields.Drivers
 {
-    private readonly ISession _session;
-
-    internal readonly IStringLocalizer S;
-
-    public UserPickerFieldDisplayDriver(
-        ISession session,
-        IStringLocalizer<UserPickerFieldDisplayDriver> stringLocalizer)
+    public class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
     {
-        _session = session;
-        S = stringLocalizer;
-    }
+        private readonly ISession _session;
+        protected readonly IStringLocalizer S;
 
-    public override IDisplayResult Display(UserPickerField field, BuildFieldDisplayContext context)
-    {
-        return Initialize<DisplayUserPickerFieldViewModel>(GetDisplayShapeType(context), model =>
+        public UserPickerFieldDisplayDriver(
+            ISession session,
+            IStringLocalizer<UserPickerFieldDisplayDriver> stringLocalizer)
         {
-            model.Field = field;
-            model.Part = context.ContentPart;
-            model.PartFieldDefinition = context.PartFieldDefinition;
-        })
-        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
-        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
-    }
+            _session = session;
+            S = stringLocalizer;
+        }
 
-    public override IDisplayResult Edit(UserPickerField field, BuildFieldEditorContext context)
-    {
-        return Initialize<EditUserPickerFieldViewModel>(GetEditorShapeType(context), async model =>
+        public override IDisplayResult Display(UserPickerField field, BuildFieldDisplayContext context)
         {
-            model.UserIds = string.Join(",", field.UserIds);
-
-            model.Field = field;
-            model.Part = context.ContentPart;
-            model.PartFieldDefinition = context.PartFieldDefinition;
-            model.TypePartDefinition = context.TypePartDefinition;
-
-            if (field.UserIds.Length > 0)
+            return Initialize<DisplayUserPickerFieldViewModel>(GetDisplayShapeType(context), model =>
             {
-                var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync())
-                    .OrderBy(o => Array.FindIndex(field.UserIds, x => string.Equals(o.UserId, x, StringComparison.OrdinalIgnoreCase)));
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            })
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
+        }
 
-                foreach (var user in users)
+        public override IDisplayResult Edit(UserPickerField field, BuildFieldEditorContext context)
+        {
+            return Initialize<EditUserPickerFieldViewModel>(GetEditorShapeType(context), async model =>
+            {
+                model.UserIds = string.Join(",", field.UserIds);
+
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+                model.TypePartDefinition = context.TypePartDefinition;
+
+                if (field.UserIds.Length > 0)
                 {
-                    model.SelectedUsers.Add(new VueMultiselectUserViewModel
+                    var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync())
+                        .OrderBy(o => Array.FindIndex(field.UserIds, x => string.Equals(o.UserId, x, StringComparison.OrdinalIgnoreCase)));
+
+                    foreach (var user in users)
                     {
-                        Id = user.UserId,
-                        DisplayText = user.UserName,
-                        IsEnabled = user.IsEnabled,
-                    });
+                        model.SelectedUsers.Add(new VueMultiselectUserViewModel
+                        {
+                            Id = user.UserId,
+                            DisplayText = user.UserName,
+                            IsEnabled = user.IsEnabled
+                        });
+                    }
                 }
+            });
+        }
+
+        public override async Task<IDisplayResult> UpdateAsync(UserPickerField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        {
+            var viewModel = new EditUserPickerFieldViewModel();
+
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.UserIds))
+            {
+                field.UserIds = viewModel.UserIds == null
+                    ? [] : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+                var settings = context.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();
+
+                if (settings.Required && field.UserIds.Length == 0)
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                }
+
+                if (!settings.Multiple && field.UserIds.Length > 1)
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+                }
+
+                var users = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync();
+                field.SetUserNames(users.Select(t => t.UserName).ToArray());
             }
-        });
-    }
 
-    public override async Task<IDisplayResult> UpdateAsync(UserPickerField field, UpdateFieldEditorContext context)
-    {
-        var viewModel = new EditUserPickerFieldViewModel();
-
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.UserIds);
-        field.UserIds = viewModel.UserIds == null
-            ? [] : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
-        var settings = context.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();
-
-        if (settings.Required && field.UserIds.Length == 0)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+            return Edit(field, context);
         }
-
-        if (!settings.Multiple && field.UserIds.Length > 1)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
-        }
-
-        var users = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync();
-        field.SetUserNames(users.Select(t => t.UserName).ToArray());
-
-        return Edit(field, context);
     }
 }

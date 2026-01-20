@@ -2,25 +2,26 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Commands;
 
-namespace OrchardCore.Demo.Commands;
-
-public class DemoCommands : DefaultCommandHandler
+namespace OrchardCore.Demo.Commands
 {
-    private readonly ILogger _logger;
-
-    public DemoCommands(ILogger<DemoCommands> logger,
-        IStringLocalizer<DemoCommands> localizer) : base(localizer)
+    public class DemoCommands : DefaultCommandHandler
     {
-        _logger = logger;
-    }
+        private readonly ILogger _logger;
 
-    [CommandName("demo helloworld")]
-    [CommandHelp("demo helloworld says hi!")]
-    public void HelloWorld()
-    {
-        if (_logger.IsEnabled(LogLevel.Information))
+        public DemoCommands(ILogger<DemoCommands> logger,
+            IStringLocalizer<DemoCommands> localizer) : base(localizer)
         {
-            _logger.LogInformation("Hi there from Hello World!");
+            _logger = logger;
+        }
+
+        [CommandName("demo helloworld")]
+        [CommandHelp("demo helloworld says hi!")]
+        public void HelloWorld()
+        {
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Hi there from Hello World!");
+            }
         }
     }
 }

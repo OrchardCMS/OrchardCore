@@ -1,20 +1,20 @@
-using OrchardCore.Indexing.Core;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
+    public static readonly Permission QuerySearchIndex = new("QuerySearchIndex", "Query any index");
+
+    public static readonly Permission ManageSearchSettings = new("ManageSearchSettings", "Manage Search Settings");
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        SearchPermissions.ManageSearchSettings,
+        QuerySearchIndex,
+        ManageSearchSettings,
     ];
-
-    [Obsolete("This will be removed in a future release. Instead use 'IndexingPermissions.QuerySearchIndex'.")]
-    public static readonly Permission QuerySearchIndex = IndexingPermissions.QuerySearchIndex;
-
-    [Obsolete("This will be removed in a future release. Instead use 'SearchPermissions.ManageSearchSettings'.")]
-    public static readonly Permission ManageSearchSettings = SearchPermissions.ManageSearchSettings;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
@@ -23,7 +23,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

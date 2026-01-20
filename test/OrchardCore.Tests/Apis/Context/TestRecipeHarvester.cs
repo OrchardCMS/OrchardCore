@@ -1,50 +1,44 @@
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Tests.Apis.Context;
-
-public class TestRecipeHarvester : IRecipeHarvester
+namespace OrchardCore.Tests.Apis.Context
 {
-    private readonly IRecipeReader _recipeReader;
-
-    public TestRecipeHarvester(IRecipeReader recipeReader)
+    public class TestRecipeHarvester : IRecipeHarvester
     {
-        _recipeReader = recipeReader;
-    }
+        private readonly IRecipeReader _recipeReader;
 
-    public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
-        => HarvestRecipesAsync(
-        [
-            "Apis/Lucene/Recipes/luceneQueryTest.json",
-            "Apis/GraphQL/ContentManagement/Recipes/DynamicContentTypeQueryTest.json"
-        ]);
-
-    private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string[] paths)
-    {
-        var recipeDescriptors = new List<RecipeDescriptor>();
-        var testAssemblyFileProvider = new EmbeddedFileProvider(GetType().GetTypeInfo().Assembly);
-        var fileInfos = new List<IFileInfo>();
-
-        foreach (var path in paths)
+        public TestRecipeHarvester(IRecipeReader recipeReader)
         {
-            // EmbeddedFileProvider doesn't list directory contents.
-            var fileInfo = testAssemblyFileProvider.GetFileInfo(path);
-            Assert.True(fileInfo.Exists);
-            fileInfos.Add(fileInfo);
+            _recipeReader = recipeReader;
         }
 
-        foreach (var fileInfo in fileInfos)
-        {
-            var descriptor = await _recipeReader.GetRecipeDescriptorAsync(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider);
+        public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
+            => HarvestRecipesAsync(
+            [
+                "Apis/Lucene/Recipes/luceneQueryTest.json"
+            ]);
 
-            if (descriptor == null)
+        private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string[] paths)
+        {
+            var recipeDescriptors = new List<RecipeDescriptor>();
+            var testAssemblyFileProvider = new EmbeddedFileProvider(GetType().GetTypeInfo().Assembly);
+            var fileInfos = new List<IFileInfo>();
+
+            foreach (var path in paths)
             {
-                continue;
+                // EmbeddedFileProvider doesn't list directory contents.
+                var fileInfo = testAssemblyFileProvider.GetFileInfo(path);
+                Assert.True(fileInfo.Exists);
+                fileInfos.Add(fileInfo);
             }
 
-            recipeDescriptors.Add(descriptor);
-        }
+            foreach (var fileInfo in fileInfos)
+            {
+                var descriptor = await _recipeReader.GetRecipeDescriptorAsync(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider);
+                recipeDescriptors.Add(descriptor);
+            }
 
-        return recipeDescriptors;
+            return recipeDescriptors;
+        }
     }
 }

@@ -1,8 +1,9 @@
 using OrchardCore.Search.Lucene.Model;
 
-namespace OrchardCore.Search.Lucene.ViewModels;
-
-public class LuceneContentIndexSettingsViewModel
+namespace OrchardCore.Search.Lucene.ViewModels
 {
-    public LuceneContentIndexSettings LuceneContentIndexSettings { get; set; }
+    public class LuceneContentIndexSettingsViewModel
+    {
+        public LuceneContentIndexSettings LuceneContentIndexSettings { get; set; }
+    }
 }

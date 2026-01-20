@@ -1,14 +1,15 @@
-namespace OrchardCore.Mvc.ModelBinding;
-
-public class ModelError
+namespace OrchardCore.Mvc.ModelBinding
 {
-    public ModelError(string key, string message)
+    public class ModelError
     {
-        Key = key;
-        Message = message;
+        public ModelError(string key, string message)
+        {
+            Key = key;
+            Message = message;
+        }
+
+        public string Key { get; }
+
+        public string Message { get; }
     }
-
-    public string Key { get; }
-
-    public string Message { get; }
 }

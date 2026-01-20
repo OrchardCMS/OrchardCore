@@ -14,7 +14,7 @@
                         fn: function () {
                             trumbowyg.saveRange();
                             $("#mediaApp").detach().appendTo('#mediaModalBody .modal-body');
-                            document.getElementById("mediaApp").classList.remove("d-none");
+                            $("#mediaApp").show();
                             mediaApp.selectedMedias = [];
                             var modal = new bootstrap.Modal($("#mediaModalBody"));
                             modal.show();
@@ -27,7 +27,7 @@
                                 
                                 $(window).trigger('scroll');
 
-                                for (let i = 0; i < mediaApp.selectedMedias.length; i++) {
+                                for (i = 0; i < mediaApp.selectedMedias.length; i++) {
                                     var img = document.createElement("img");
                                     img.src = mediaApp.selectedMedias[i].url;
                                     img.alt = mediaApp.selectedMedias[i].name;

@@ -1,10 +1,10 @@
 # Lucene (`OrchardCore.Search.Lucene`)
 
-The Lucene module allows you to manage Lucene indexes.
+The Lucene module allows you to manage Lucene indices.
 
 ## Recipe step
 
-Lucene indexes can be created during recipe execution using the `lucene-index` step.  
+Lucene indices can be created during recipe execution using the `lucene-index` step.  
 Here is a sample step:
 
 ```json
@@ -12,12 +12,12 @@ Here is a sample step:
   "steps":[
     {
       "name":"lucene-index",
-      "Indices": [
+      "Indices":[
         {
-          "Search": {
-            "AnalyzerName": "standard",
-            "IndexLatest": false,
-            "IndexedContentTypes": [
+          "Search":{
+            "AnalyzerName":"standardanalyzer",
+            "IndexLatest":false,
+            "IndexedContentTypes":[
               "Article",
               "BlogPost"
             ]
@@ -28,9 +28,6 @@ Here is a sample step:
   ]
 }
 ```
-
-!!! note
-    It's recommended to use the `CreateOrUpdateIndexProfile` recipe step instead as the `lucene-index` step is obsolete. 
 
 ### Queries recipe step
 
@@ -58,11 +55,11 @@ Executes a query with the specified name and returns the corresponding content i
 
 Verbs: `POST` and `GET`
 
-| Parameter    | Example                                        | Description                                             |
-|--------------|------------------------------------------------|---------------------------------------------------------|
-| `indexName`  | `search`                                       | The name of the index to query.                         |
-| `query`      | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query.                   |
-| `parameters` | `{ size: 3}`                                   | A JSON object representing the parameters of the query. |
+| Parameter | Example | Description |
+| --------- | ---- |------------ |
+| `indexName` | `search` | The name of the index to query. |
+| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
+| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
 ### `api/lucene/documents`
 
@@ -71,11 +68,11 @@ Only the stored fields are returned.
 
 Verbs: `POST` and `GET`
 
-| Parameter    | Example                                        | Description                                             |
-|--------------|------------------------------------------------|---------------------------------------------------------|
-| `indexName`  | `search`                                       | The name of the index to query.                         |
-| `query`      | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query.                   |
-| `parameters` | `{ size: 3}`                                   | A JSON object representing the parameters of the query. |
+| Parameter | Example | Description |
+| --------- | ---- |------------ |
+| `indexName` | `search` | The name of the index to query. |
+| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
+| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
 ## Lucene Worker (`OrchardCore.Search.Lucene.Worker`)
 
@@ -87,26 +84,12 @@ If you are running on Azure App Services or if you are using Elasticsearch, then
 
 ## Lucene Queries
 
-The Lucene module provides a management UI and APIs for querying Lucene data using Elasticsearch Queries.
+The Lucene module provides a management UI and APIs for querying Lucene data using ElasticSearch Queries.
 See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
-
-## Indexing custom data
-
-The indexing module supports multiple sources for indexing. This allows you to create indexes based on different data sources, such as content items or custom data.
-
-To register a new source, you can add the following code to your `Startup.cs` file:
-
-```csharp
-services.AddLuceneIndexingSource("CustomSource", o =>
-{
-    o.DisplayName = S["Custom Source in Provider"];
-    o.Description = S["Create a Provider index based on custom source."];
-});
-```
 
 ## Recipe step
 
-Lucene indices can be created during recipe execution using the `LuceneIndexSettings` step.  
+Lucene indices can be created during recipe execution using the `ElasticIndexSettings` step.  
 Here is a sample step:
 
 ```json
@@ -133,35 +116,23 @@ Here is a sample step:
 }
 ```
 
-!!! note
-    It's recommended to use the `CreateOrUpdateIndexProfile` recipe step instead as the `LuceneIndexSettings` step is obsolete. 
+## Lucene settings recipe step
 
-Here is an example of how to create `Lucene` index profile using the `IndexProfile` for Content items.
+Here is an example for setting default search settings:
 
 ```json
 {
   "steps":[
     {
-      "name":"CreateOrUpdateIndexProfile",
-      "indexes": [
-	    {
-		    "Name": "BlogPostsLucene",
-            "IndexName": "blogposts",
-		    "ProviderName": "Lucene",
-		    "Type": "Content",
-		    "Properties": {
-			    "ContentIndexMetadata": {
-				    "IndexLatest": false,
-				    "IndexedContentTypes": ["BlogPosts"],
-				    "Culture": "any"
-			    },
-                "LuceneIndexMetadata": {
-                    "AnalyzerName": "standard",
-                    "StoreSourceData": true,
-                }
-		    }
-	    }
-      ]
+      // Create the search settings.
+      "name":"Settings",
+      "LuceneSettings":{
+        "SearchIndex":"search",
+        "DefaultSearchFields":[
+          "Content.ContentItem.FullText"
+        ],
+        "AllowLuceneQueriesInSearch":false
+      }
     }
   ]
 }
@@ -200,9 +171,6 @@ To reset all indices:
 }
 ```
 
-!!! note
-    It's recommended to use the `ResetIndex` recipe step instead as the `lucene-index-reset` step is obsolete. 
-
 ### Rebuild Lucene Index Step
 
 This Rebuild Index Step rebuilds an Lucene index.
@@ -234,9 +202,6 @@ To rebuild all indices:
   ]
 }
 ```
-
-!!! note
-    It's recommended to use the `RebuildIndex` recipe step instead as the `lucene-index-rebuild` step is obsolete. 
 
 ### Query Filters
 
@@ -353,7 +318,7 @@ So you can use:
 - `terms`
 - `wildcard`
 
-See Elasticsearch documentation for more details:
+See ElasticSearch documentation for more details:
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html>
 
 ## Automatic mapping
@@ -363,5 +328,3 @@ Starting from OC version 1.5 the Lucene module will automatically map text field
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9EgZ_J1npw4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6jJH9ntqi_A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

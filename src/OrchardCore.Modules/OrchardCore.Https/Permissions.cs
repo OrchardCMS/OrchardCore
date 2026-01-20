@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Https;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageHttps = new("ManageHttps", "Manage HTTPS");
 
@@ -18,7 +20,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

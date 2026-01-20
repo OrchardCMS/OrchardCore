@@ -1,22 +1,23 @@
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Demo.Services;
-
-public interface ITestDependency
+namespace OrchardCore.Demo.Services
 {
-    string SayHi(string line);
-}
-
-public class ClassFoo : ITestDependency
-{
-    private readonly ShellSettings _shellSettings;
-    public ClassFoo(ShellSettings shellSettings)
+    public interface ITestDependency
     {
-        _shellSettings = shellSettings;
+        string SayHi(string line);
     }
 
-    public string SayHi(string line)
+    public class ClassFoo : ITestDependency
     {
-        return string.Format("Hi from tenant {0} - {1}", _shellSettings.Name, line);
+        private readonly ShellSettings _shellSettings;
+        public ClassFoo(ShellSettings shellSettings)
+        {
+            _shellSettings = shellSettings;
+        }
+
+        public string SayHi(string line)
+        {
+            return string.Format("Hi from tenant {0} - {1}", _shellSettings.Name, line);
+        }
     }
 }

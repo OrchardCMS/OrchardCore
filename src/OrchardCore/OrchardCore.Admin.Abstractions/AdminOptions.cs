@@ -1,12 +1,13 @@
-namespace OrchardCore.Admin;
-
-public class AdminOptions
+namespace OrchardCore.Admin
 {
-    private string _adminUrlPrefix = "Admin";
-
-    public string AdminUrlPrefix
+    public class AdminOptions
     {
-        get => _adminUrlPrefix;
-        set => _adminUrlPrefix = value.Trim(' ', '/');
+        private string _adminUrlPrefix = "Admin";
+
+        public string AdminUrlPrefix
+        {
+            get => _adminUrlPrefix;
+            set => _adminUrlPrefix = value.Trim(' ', '/');
+        }
     }
 }

@@ -1,18 +1,19 @@
 using OrchardCore.Indexing;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Models;
-
-/// <summary>
-/// Represents the indexing settings for a content part or a field.
-/// </summary>
-public class ElasticContentIndexSettings : IContentIndexSettings
+namespace OrchardCore.Search.Elasticsearch.Core.Models
 {
-    public bool Included { get; set; }
-
-    public DocumentIndexOptions ToOptions()
+    /// <summary>
+    /// Represents the indexing settings for a content part or a field.
+    /// </summary>
+    public class ElasticContentIndexSettings : IContentIndexSettings
     {
-        var options = DocumentIndexOptions.None;
+        public bool Included { get; set; }
 
-        return options;
+        public DocumentIndexOptions ToOptions()
+        {
+            var options = DocumentIndexOptions.None;
+
+            return options;
+        }
     }
 }

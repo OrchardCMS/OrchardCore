@@ -15,7 +15,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ArchiveLater;
 
-public sealed class Startup : StartupBase
+public class Startup : StartupBase
 {
 
     public override void ConfigureServices(IServiceCollection services)

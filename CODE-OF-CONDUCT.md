@@ -1,3 +1,4 @@
 # Code of Conduct
 
-See [Contributing to Orchard Core](https://docs.orchardcore.net/en/latest/contributing/) on the documentation site.
+This project has adopted the code of conduct defined by the [Contributor Covenant](http://contributor-covenant.org/) to clarify expected behavior in our community.
+For more information see the [.NET Foundation Code of Conduct](http://www.dotnetfoundation.org/code-of-conduct).

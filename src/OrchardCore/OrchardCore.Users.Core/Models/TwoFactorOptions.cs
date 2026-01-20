@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace OrchardCore.Users.Models;
 
 public class TwoFactorOptions

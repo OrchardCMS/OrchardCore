@@ -1,33 +1,36 @@
+using System.Threading.Tasks;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.Deployment;
-
-public sealed class AllContentDeploymentStepDriver : DisplayDriver<DeploymentStep, AllContentDeploymentStep>
+namespace OrchardCore.Contents.Deployment
 {
-    public override Task<IDisplayResult> DisplayAsync(AllContentDeploymentStep step, BuildDisplayContext context)
+    public class AllContentDeploymentStepDriver : DisplayDriver<DeploymentStep, AllContentDeploymentStep>
     {
-        return
-            CombineAsync(
-                View("AllContentDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-                View("AllContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(AllContentDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<AllContentDeploymentStepViewModel>("AllContentDeploymentStep_Fields_Edit", model =>
+        public override IDisplayResult Display(AllContentDeploymentStep step)
         {
-            model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-        }).Location("Content");
-    }
+            return
+                Combine(
+                    View("AllContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    View("AllContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                );
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(AllContentDeploymentStep step, UpdateEditorContext context)
-    {
-        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsSetupRecipe);
+        public override IDisplayResult Edit(AllContentDeploymentStep step)
+        {
+            return Initialize<AllContentDeploymentStepViewModel>("AllContentDeploymentStep_Fields_Edit", model =>
+            {
+                model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
+            }).Location("Content");
+        }
 
-        return Edit(step, context);
+        public override async Task<IDisplayResult> UpdateAsync(AllContentDeploymentStep step, IUpdateModel updater)
+        {
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsSetupRecipe);
+
+            return Edit(step);
+        }
     }
 }

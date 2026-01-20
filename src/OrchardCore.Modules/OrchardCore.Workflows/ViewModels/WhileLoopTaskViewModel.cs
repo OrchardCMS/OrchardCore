@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Workflows.ViewModels;
-
-public class WhileLoopTaskViewModel
+namespace OrchardCore.Workflows.ViewModels
 {
-    [Required]
-    public string ConditionExpression { get; set; }
+    public class WhileLoopTaskViewModel
+    {
+        [Required]
+        public string ConditionExpression { get; set; }
+    }
 }

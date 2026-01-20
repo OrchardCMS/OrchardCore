@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Cysharp.Text;
 using Fluid;
 using Fluid.Values;
@@ -10,69 +13,70 @@ using OrchardCore.ContentManagement.Models;
 using OrchardCore.Contents.Models;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Contents.Handlers;
-
-/// <summary>
-/// Provides the content for FullTextAspect based on FullTextAspectSettings.
-/// </summary>
-public class FullTextAspectContentHandler : ContentHandlerBase
+namespace OrchardCore.Contents.Handlers
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly ILiquidTemplateManager _liquidTemplateManager;
-    private readonly IServiceProvider _serviceProvider;
-
-    public FullTextAspectContentHandler(
-        IContentDefinitionManager contentDefinitionManager,
-        ILiquidTemplateManager liquidTemplateManager,
-        IServiceProvider serviceProvider
-        )
+    /// <summary>
+    /// Provides the content for FullTextAspect based on FullTextAspectSettings.
+    /// </summary>
+    public class FullTextAspectContentHandler : ContentHandlerBase
     {
-        _contentDefinitionManager = contentDefinitionManager;
-        _liquidTemplateManager = liquidTemplateManager;
-        _serviceProvider = serviceProvider;
-    }
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IServiceProvider _serviceProvider;
 
-    public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
-    {
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-
-        if (contentTypeDefinition == null)
+        public FullTextAspectContentHandler(
+            IContentDefinitionManager contentDefinitionManager,
+            ILiquidTemplateManager liquidTemplateManager,
+            IServiceProvider serviceProvider
+            )
         {
-            return;
+            _contentDefinitionManager = contentDefinitionManager;
+            _liquidTemplateManager = liquidTemplateManager;
+            _serviceProvider = serviceProvider;
         }
 
-        await context.ForAsync<FullTextAspect>(async fullTextAspect =>
+        public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-            var settings = contentTypeDefinition.GetSettings<FullTextAspectSettings>();
 
-            if (settings.IncludeDisplayText)
+            if (contentTypeDefinition == null)
             {
-                fullTextAspect.Segments.Add(context.ContentItem.DisplayText);
+                return;
             }
 
-            if (settings.IncludeBodyAspect)
+            await context.ForAsync<FullTextAspect>(async fullTextAspect =>
             {
-                // Lazy resolution to prevent cyclic dependency of content handlers
-                var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
-                var bodyAspect = await contentManager.PopulateAspectAsync<BodyAspect>(context.ContentItem);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+                var settings = contentTypeDefinition.GetSettings<FullTextAspectSettings>();
 
-                if (bodyAspect != null && bodyAspect.Body != null)
+                if (settings.IncludeDisplayText)
                 {
-                    using var sw = new ZStringWriter();
-                    // Don't encode the body
-                    bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
-                    fullTextAspect.Segments.Add(sw.ToString());
+                    fullTextAspect.Segments.Add(context.ContentItem.DisplayText);
                 }
-            }
 
-            if (settings.IncludeFullTextTemplate && !string.IsNullOrEmpty(settings.FullTextTemplate))
-            {
-                var result = await _liquidTemplateManager.RenderStringAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) });
+                if (settings.IncludeBodyAspect)
+                {
+                    // Lazy resolution to prevent cyclic dependency of content handlers
+                    var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
+                    var bodyAspect = await contentManager.PopulateAspectAsync<BodyAspect>(context.ContentItem);
 
-                fullTextAspect.Segments.Add(result);
-            }
-        });
+                    if (bodyAspect != null && bodyAspect.Body != null)
+                    {
+                        using var sw = new ZStringWriter();
+                        // Don't encode the body
+                        bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
+                        fullTextAspect.Segments.Add(sw.ToString());
+                    }
+                }
+
+                if (settings.IncludeFullTextTemplate && !string.IsNullOrEmpty(settings.FullTextTemplate))
+                {
+                    var result = await _liquidTemplateManager.RenderStringAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) });
+
+                    fullTextAspect.Segments.Add(result);
+                }
+            });
+        }
     }
 }

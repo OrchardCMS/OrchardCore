@@ -1,40 +1,44 @@
-namespace OrchardCore.Media.Indexing;
+using System;
+using System.Collections.Generic;
 
-public class MediaFileIndexingOptions
+namespace OrchardCore.Media.Indexing
 {
-    private readonly Dictionary<string, Type> _mediaFileTextProviderRegistrations = new(StringComparer.OrdinalIgnoreCase);
-
-    public MediaFileIndexingOptions RegisterMediaFileTextProvider<TMediaFileTextProvider>(string fileExtension)
-        where TMediaFileTextProvider : class, IMediaFileTextProvider
+    public class MediaFileIndexingOptions
     {
-        return RegisterMediaFileTextProvider(fileExtension, typeof(TMediaFileTextProvider));
-    }
+        private readonly Dictionary<string, Type> _mediaFileTextProviderRegistrations = new(StringComparer.OrdinalIgnoreCase);
 
-    public MediaFileIndexingOptions RegisterMediaFileTextProvider(string fileExtension, Type providerType)
-    {
-        // Deliberate overwrite behavior so you can override registrations.
-        _mediaFileTextProviderRegistrations[ValidateFileExtension(fileExtension)] = providerType;
-
-        return this;
-    }
-
-    public Type GetRegisteredMediaFileTextProvider(string fileExtension)
-    {
-        if (_mediaFileTextProviderRegistrations.TryGetValue(ValidateFileExtension(fileExtension), out var providerType))
+        public MediaFileIndexingOptions RegisterMediaFileTextProvider<TMediaFileTextProvider>(string fileExtension)
+            where TMediaFileTextProvider : class, IMediaFileTextProvider
         {
-            return providerType;
+            return RegisterMediaFileTextProvider(fileExtension, typeof(TMediaFileTextProvider));
         }
 
-        return null;
-    }
-
-    private static string ValidateFileExtension(string fileExtension)
-    {
-        if (!fileExtension.StartsWith('.'))
+        public MediaFileIndexingOptions RegisterMediaFileTextProvider(string fileExtension, Type providerType)
         {
-            throw new ArgumentException("The file extension should start with a dot.");
+            // Deliberate overwrite behavior so you can override registrations.
+            _mediaFileTextProviderRegistrations[ValidateFileExtension(fileExtension)] = providerType;
+
+            return this;
         }
 
-        return fileExtension;
+        public Type GetRegisteredMediaFileTextProvider(string fileExtension)
+        {
+            if (_mediaFileTextProviderRegistrations.TryGetValue(ValidateFileExtension(fileExtension), out var providerType))
+            {
+                return providerType;
+            }
+
+            return null;
+        }
+
+        private static string ValidateFileExtension(string fileExtension)
+        {
+            if (!fileExtension.StartsWith('.'))
+            {
+                throw new ArgumentException("The file extension should start with a dot.");
+            }
+
+            return fileExtension;
+        }
     }
 }

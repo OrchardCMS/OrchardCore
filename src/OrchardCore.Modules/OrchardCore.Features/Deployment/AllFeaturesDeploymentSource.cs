@@ -1,33 +1,42 @@
+using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Features.Services;
 
-namespace OrchardCore.Features.Deployment;
-
-public sealed class AllFeaturesDeploymentSource
-    : DeploymentSourceBase<AllFeaturesDeploymentStep>
+namespace OrchardCore.Features.Deployment
 {
-    private readonly IModuleService _moduleService;
-
-    public AllFeaturesDeploymentSource(IModuleService moduleService)
+    public class AllFeaturesDeploymentSource : IDeploymentSource
     {
-        _moduleService = moduleService;
-    }
+        private readonly IModuleService _moduleService;
 
-    protected override async Task ProcessAsync(AllFeaturesDeploymentStep step, DeploymentPlanResult result)
-    {
-        var features = await _moduleService.GetAvailableFeaturesAsync();
-        var featureStep = new JsonObject
+        public AllFeaturesDeploymentSource(IModuleService moduleService)
         {
-            ["name"] = "Feature",
-            ["enable"] = JNode.FromObject(features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()),
-        };
-
-        if (!step.IgnoreDisabledFeatures)
-        {
-            featureStep.Add("disable", JNode.FromObject(features.Where(f => !f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()));
+            _moduleService = moduleService;
         }
 
-        result.Steps.Add(featureStep);
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        {
+            var allFeaturesStep = step as AllFeaturesDeploymentStep;
+
+            if (allFeaturesStep == null)
+            {
+                return;
+            }
+
+            var features = await _moduleService.GetAvailableFeaturesAsync();
+            var featureStep = new JsonObject
+            {
+                ["name"] = "Feature",
+                ["enable"] = JNode.FromObject(features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()),
+            };
+
+            if (!allFeaturesStep.IgnoreDisabledFeatures)
+            {
+                featureStep.Add("disable", JNode.FromObject(features.Where(f => !f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()));
+            }
+
+            result.Steps.Add(featureStep);
+        }
     }
 }

@@ -1,14 +1,12 @@
-namespace OrchardCore.ContentManagement.Handlers;
-
-public class UpdateContentContext : ContentContextBase
+namespace OrchardCore.ContentManagement.Handlers
 {
-    public UpdateContentContext(ContentItem contentItem) : base(contentItem)
+    public class UpdateContentContext : ContentContextBase
     {
-#pragma warning disable CS0618 // Type or member is obsolete
-        UpdatingItem = contentItem;
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
+        public UpdateContentContext(ContentItem contentItem) : base(contentItem)
+        {
+            UpdatingItem = contentItem;
+        }
 
-    [Obsolete("The property is deprecated and will be removed in a future release. Please use ContentItem instead.")]
-    public ContentItem UpdatingItem { get; set; }
+        public ContentItem UpdatingItem { get; set; }
+    }
 }

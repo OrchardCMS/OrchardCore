@@ -4,6 +4,7 @@
   flex-direction: row;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
+  width: 100%;
 }
 .edit-container > .edit-body {
   width: 100%;
@@ -13,9 +14,6 @@
 }
 .edit-container:not(.sidebar) > .edit-sidebar {
   visibility: hidden;
-}
-.edit-container {
-  width: 100%;
 }
 
 .edit-body {

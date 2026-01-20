@@ -1,8 +1,11 @@
-namespace OrchardCore.ContentManagement.Routing;
+using System.Threading.Tasks;
 
-public interface IAutorouteEntries
+namespace OrchardCore.ContentManagement.Routing
 {
-    Task<(bool, AutorouteEntry)> TryGetEntryByPathAsync(string path);
-    Task<(bool, AutorouteEntry)> TryGetEntryByContentItemIdAsync(string contentItemId);
-    Task UpdateEntriesAsync();
+    public interface IAutorouteEntries
+    {
+        Task<(bool, AutorouteEntry)> TryGetEntryByPathAsync(string path);
+        Task<(bool, AutorouteEntry)> TryGetEntryByContentItemIdAsync(string contentItemId);
+        Task UpdateEntriesAsync();
+    }
 }

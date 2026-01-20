@@ -1,13 +1,16 @@
-namespace OrchardCore.Users.ViewModels;
+using System;
 
-public class EditUserRoleViewModel
+namespace OrchardCore.Users.ViewModels
 {
-    public RoleEntry[] Roles { get; set; } = [];
-}
+    public class EditUserRoleViewModel
+    {
+        public RoleEntry[] Roles { get; set; } = [];
+    }
 
-public class RoleEntry
-{
-    public string Role { get; set; }
+    public class RoleEntry
+    {
+        public string Role { get; set; }
 
-    public bool IsSelected { get; set; }
+        public bool IsSelected { get; set; }
+    }
 }

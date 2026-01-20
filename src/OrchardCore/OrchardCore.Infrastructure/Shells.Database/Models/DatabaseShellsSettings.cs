@@ -1,8 +1,9 @@
 using System.Text.Json.Nodes;
 
-namespace OrchardCore.Shells.Database.Models;
-
-public class DatabaseShellsSettings
+namespace OrchardCore.Shells.Database.Models
 {
-    public JsonObject ShellsSettings { get; set; }
+    public class DatabaseShellsSettings
+    {
+        public JsonObject ShellsSettings { get; set; }
+    }
 }

@@ -13,9 +13,8 @@ using OrchardCore.Modules.Manifest;
     Description = "Creates Elasticsearch indexes to support search scenarios, introduces a preconfigured container-enabled content type.",
     Dependencies =
     [
-        "OrchardCore.Queries.Core",
         "OrchardCore.Indexing",
-        "OrchardCore.ContentTypes",
+        "OrchardCore.ContentTypes"
     ],
     Category = "Search"
 )]

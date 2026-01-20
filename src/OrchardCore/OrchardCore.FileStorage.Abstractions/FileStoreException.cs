@@ -1,12 +1,15 @@
-namespace OrchardCore.FileStorage;
+using System;
 
-public class FileStoreException : Exception
+namespace OrchardCore.FileStorage
 {
-    public FileStoreException(string message) : base(message)
+    public class FileStoreException : Exception
     {
-    }
+        public FileStoreException(string message) : base(message)
+        {
+        }
 
-    public FileStoreException(string message, Exception innerException) : base(message, innerException)
-    {
+        public FileStoreException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 }

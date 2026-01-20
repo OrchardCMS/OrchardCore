@@ -2,19 +2,20 @@ using OrchardCore.Forms.Workflows.Activities;
 using OrchardCore.Forms.Workflows.ViewModels;
 using OrchardCore.Workflows.Display;
 
-namespace OrchardCore.Forms.Workflows.Drivers;
-
-public sealed class AddModelValidationErrorTaskDisplayDriver : ActivityDisplayDriver<AddModelValidationErrorTask, AddModelValidationErrorTaskViewModel>
+namespace OrchardCore.Forms.Workflows.Drivers
 {
-    protected override void EditActivity(AddModelValidationErrorTask activity, AddModelValidationErrorTaskViewModel model)
+    public class AddModelValidationErrorTaskDisplayDriver : ActivityDisplayDriver<AddModelValidationErrorTask, AddModelValidationErrorTaskViewModel>
     {
-        model.Key = activity.Key;
-        model.ErrorMessage = activity.ErrorMessage;
-    }
+        protected override void EditActivity(AddModelValidationErrorTask activity, AddModelValidationErrorTaskViewModel model)
+        {
+            model.Key = activity.Key;
+            model.ErrorMessage = activity.ErrorMessage;
+        }
 
-    protected override void UpdateActivity(AddModelValidationErrorTaskViewModel model, AddModelValidationErrorTask activity)
-    {
-        activity.Key = model.Key?.Trim();
-        activity.ErrorMessage = model.ErrorMessage?.Trim();
+        protected override void UpdateActivity(AddModelValidationErrorTaskViewModel model, AddModelValidationErrorTask activity)
+        {
+            activity.Key = model.Key?.Trim();
+            activity.ErrorMessage = model.ErrorMessage?.Trim();
+        }
     }
 }

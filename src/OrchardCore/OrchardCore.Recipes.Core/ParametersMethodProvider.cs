@@ -1,28 +1,31 @@
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Recipes;
-
-public sealed class ParametersMethodProvider : IGlobalMethodProvider
+namespace OrchardCore.Recipes
 {
-    private readonly GlobalMethod _globalMethod;
-
-    public ParametersMethodProvider(object environment)
+    public class ParametersMethodProvider : IGlobalMethodProvider
     {
-        var environmentObject = JObject.FromObject(environment);
+        private readonly GlobalMethod _globalMethod;
 
-        _globalMethod = new GlobalMethod
+        public ParametersMethodProvider(object environment)
         {
-            Name = "parameters",
-            Method = serviceprovider => (Func<string, object>)(name =>
-           {
-               return environmentObject.SelectNode(name)?.Value<string>();
-           }),
-        };
-    }
+            var environmentObject = JObject.FromObject(environment);
 
-    public IEnumerable<GlobalMethod> GetMethods()
-    {
-        yield return _globalMethod;
+            _globalMethod = new GlobalMethod
+            {
+                Name = "parameters",
+                Method = serviceprovider => (Func<string, object>)(name =>
+               {
+                   return environmentObject.SelectNode(name)?.Value<string>();
+               }),
+            };
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return _globalMethod;
+        }
     }
 }

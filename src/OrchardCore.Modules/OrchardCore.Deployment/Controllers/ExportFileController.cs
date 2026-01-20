@@ -1,4 +1,7 @@
+using System;
 using System.IO.Compression;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
@@ -10,69 +13,70 @@ using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using YesSql;
 
-namespace OrchardCore.Deployment.Controllers;
-
-[Admin("DeploymentPlan/ExportFile/{action}/{id?}", "DeploymentPlanExportFile{action}")]
-public sealed class ExportFileController : Controller
+namespace OrchardCore.Deployment.Controllers
 {
-    private readonly IDeploymentManager _deploymentManager;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly ISession _session;
-
-    public ExportFileController(
-        IAuthorizationService authorizationService,
-        ISession session,
-        IDeploymentManager deploymentManager)
+    [Admin]
+    public class ExportFileController : Controller
     {
-        _authorizationService = authorizationService;
-        _deploymentManager = deploymentManager;
-        _session = session;
-    }
+        private readonly IDeploymentManager _deploymentManager;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly ISession _session;
 
-    [HttpPost]
-    [DeleteFileResultFilter]
-    public async Task<IActionResult> Execute(long id)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
+        public ExportFileController(
+            IAuthorizationService authorizationService,
+            ISession session,
+            IDeploymentManager deploymentManager)
         {
-            return Forbid();
+            _authorizationService = authorizationService;
+            _deploymentManager = deploymentManager;
+            _session = session;
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
-
-        if (deploymentPlan == null)
+        [HttpPost]
+        [DeleteFileResultFilter]
+        public async Task<IActionResult> Execute(long id)
         {
-            return NotFound();
-        }
-
-        string archiveFileName;
-        var filename = deploymentPlan.Name.ToSafeName() + ".zip";
-
-        using (var fileBuilder = new TemporaryFileBuilder())
-        {
-            archiveFileName = fileBuilder.Folder + ".zip";
-
-            var recipeDescriptor = new RecipeDescriptor();
-            var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
-
-            if (recipeFileDeploymentStep != null)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
-                recipeDescriptor.Name = recipeFileDeploymentStep.RecipeName;
-                recipeDescriptor.DisplayName = recipeFileDeploymentStep.DisplayName;
-                recipeDescriptor.Description = recipeFileDeploymentStep.Description;
-                recipeDescriptor.Author = recipeFileDeploymentStep.Author;
-                recipeDescriptor.WebSite = recipeFileDeploymentStep.WebSite;
-                recipeDescriptor.Version = recipeFileDeploymentStep.Version;
-                recipeDescriptor.IsSetupRecipe = recipeFileDeploymentStep.IsSetupRecipe;
-                recipeDescriptor.Categories = (recipeFileDeploymentStep.Categories ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
-                recipeDescriptor.Tags = (recipeFileDeploymentStep.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+                return Forbid();
             }
 
-            var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
-            await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
-            ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
-        }
+            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
-        return new PhysicalFileResult(archiveFileName, "application/zip") { FileDownloadName = filename };
+            if (deploymentPlan == null)
+            {
+                return NotFound();
+            }
+
+            string archiveFileName;
+            var filename = deploymentPlan.Name.ToSafeName() + ".zip";
+
+            using (var fileBuilder = new TemporaryFileBuilder())
+            {
+                archiveFileName = fileBuilder.Folder + ".zip";
+
+                var recipeDescriptor = new RecipeDescriptor();
+                var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
+
+                if (recipeFileDeploymentStep != null)
+                {
+                    recipeDescriptor.Name = recipeFileDeploymentStep.RecipeName;
+                    recipeDescriptor.DisplayName = recipeFileDeploymentStep.DisplayName;
+                    recipeDescriptor.Description = recipeFileDeploymentStep.Description;
+                    recipeDescriptor.Author = recipeFileDeploymentStep.Author;
+                    recipeDescriptor.WebSite = recipeFileDeploymentStep.WebSite;
+                    recipeDescriptor.Version = recipeFileDeploymentStep.Version;
+                    recipeDescriptor.IsSetupRecipe = recipeFileDeploymentStep.IsSetupRecipe;
+                    recipeDescriptor.Categories = (recipeFileDeploymentStep.Categories ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    recipeDescriptor.Tags = (recipeFileDeploymentStep.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+                }
+
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
+                await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
+                ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
+            }
+
+            return new PhysicalFileResult(archiveFileName, "application/zip") { FileDownloadName = filename };
+        }
     }
 }

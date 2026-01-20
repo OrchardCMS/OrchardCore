@@ -1,4 +1,9 @@
-namespace OrchardCore.Environment.Commands;
+using System;
 
-[AttributeUsage(AttributeTargets.Property)]
-public class OrchardSwitchAttribute : Attribute;
+namespace OrchardCore.Environment.Commands
+{
+    [AttributeUsage(AttributeTargets.Property)]
+    public class OrchardSwitchAttribute : Attribute
+    {
+    }
+}

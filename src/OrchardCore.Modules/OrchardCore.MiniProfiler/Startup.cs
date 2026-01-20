@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -7,34 +8,35 @@ using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using YesSql;
 
-namespace OrchardCore.MiniProfiler;
-
-public sealed class Startup : StartupBase
+namespace OrchardCore.MiniProfiler
 {
-    // Early in the pipeline to wrap all other middleware
-    public override int Order => -500;
-
-    public override void ConfigureServices(IServiceCollection services)
+    public class Startup : StartupBase
     {
-        services.Configure<MvcOptions>((options) =>
+        // Early in the pipeline to wrap all other middleware
+        public override int Order => -500;
+
+        public override void ConfigureServices(IServiceCollection services)
         {
-            options.Filters.Add<MiniProfilerFilter>();
-        });
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(MiniProfilerFilter));
+            });
 
-        services.AddScoped<IShapeDisplayEvents, ShapeStep>();
+            services.AddScoped<IShapeDisplayEvents, ShapeStep>();
 
-        services.AddMiniProfiler();
+            services.AddMiniProfiler();
 
-        services.AddPermissionProvider<Permissions>();
-    }
+            services.AddScoped<IPermissionProvider, Permissions>();
+        }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-    {
-        app.UseMiniProfiler();
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            app.UseMiniProfiler();
 
-        var store = serviceProvider.GetService<IStore>();
+            var store = serviceProvider.GetService<IStore>();
 
-        // Wrap the current factory with MiniProfilerConnectionFactory.
-        store.Configuration.ConnectionFactory = new MiniProfilerConnectionFactory(store.Configuration.ConnectionFactory);
+            // Wrap the current factory with MiniProfilerConnectionFactory.
+            store.Configuration.ConnectionFactory = new MiniProfilerConnectionFactory(store.Configuration.ConnectionFactory);
+        }
     }
 }

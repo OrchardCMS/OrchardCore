@@ -1,8 +1,9 @@
-namespace OrchardCore.ContentManagement.Workflows;
-
-public static class ContentEventConstants
+namespace OrchardCore.ContentManagement.Workflows
 {
-    public const string ContentItemInputKey = "ContentItem";
-    public const string ContentEventInputKey = "ContentEvent";
-    public const string UserActionInputKey = "UserAction";
+    public static class ContentEventConstants
+    {
+        public const string ContentItemInputKey = "ContentItem";
+        public const string ContentEventInputKey = "ContentEvent";
+        public const string UserActionInputKey = "UserAction";
+    }
 }

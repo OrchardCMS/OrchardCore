@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -8,7 +10,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Drivers;
 
-public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<FacebookPixelSettings>
+public class FacebookPixelSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookPixelSettings>
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -22,10 +24,7 @@ public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<Faceb
         _httpContextAccessor = httpContextAccessor;
     }
 
-    protected override string SettingsGroupId
-        => FacebookConstants.PixelSettingsGroupId;
-
-    public override async Task<IDisplayResult> EditAsync(ISite site, FacebookPixelSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(FacebookPixelSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
@@ -37,12 +36,13 @@ public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<Faceb
         {
             model.PixelId = settings.PixelId;
         }).Location("Content:0")
-        .OnGroup(SettingsGroupId);
+        .OnGroup(FacebookConstants.PixelSettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookPixelSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(FacebookPixelSettings settings, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageFacebookApp))
+        if (!string.Equals(FacebookConstants.PixelSettingsGroupId, context.GroupId, StringComparison.OrdinalIgnoreCase)
+            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageFacebookApp))
         {
             return null;
         }
@@ -51,6 +51,6 @@ public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<Faceb
 
         settings.PixelId = settings.PixelId?.Trim();
 
-        return await EditAsync(site, settings, context);
+        return await EditAsync(settings, context);
     }
 }

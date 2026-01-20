@@ -1,25 +1,27 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Lists.Models;
 
-namespace OrchardCore.Lists.Drivers;
-
-public class ListPartHandler : ContentPartHandler<ListPart>
+namespace OrchardCore.Lists.Drivers
 {
-    public override Task GetContentItemAspectAsync(ContentItemAspectContext context, ListPart part)
+    public class ListPartHandler : ContentPartHandler<ListPart>
     {
-        return context.ForAsync<ContentItemMetadata>(contentItemMetadata =>
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, ListPart part)
         {
-            contentItemMetadata.AdminRouteValues = new RouteValueDictionary
+            return context.ForAsync<ContentItemMetadata>(contentItemMetadata =>
             {
-                {"Area", "OrchardCore.Contents"},
-                {"Controller", "Admin"},
-                {"Action", "Display"},
-                {"ContentItemId", context.ContentItem.ContentItemId},
-            };
+                contentItemMetadata.AdminRouteValues = new RouteValueDictionary
+                {
+                    {"Area", "OrchardCore.Contents"},
+                    {"Controller", "Admin"},
+                    {"Action", "Display"},
+                    {"ContentItemId", context.ContentItem.ContentItemId}
+                };
 
-            return Task.CompletedTask;
-        });
+                return Task.CompletedTask;
+            });
+        }
     }
 }

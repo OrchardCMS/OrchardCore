@@ -1,22 +1,26 @@
-namespace OrchardCore.Rules;
+using System;
+using System.Collections.Generic;
 
-public class ConditionOptions
+namespace OrchardCore.Rules
 {
-    private readonly Dictionary<Type, Type> _evaluators = [];
-    public IReadOnlyDictionary<Type, Type> Evaluators => _evaluators;
-
-    internal void AddCondition(Type condition, Type conditionEvaluator)
+    public class ConditionOptions
     {
-        if (!typeof(Condition).IsAssignableFrom(condition))
-        {
-            throw new ArgumentException("The type must implement " + nameof(Condition));
-        }
+        private readonly Dictionary<Type, Type> _evaluators = [];
+        public IReadOnlyDictionary<Type, Type> Evaluators => _evaluators;
 
-        if (!typeof(IConditionEvaluator).IsAssignableFrom(conditionEvaluator))
+        internal void AddCondition(Type condition, Type conditionEvaluator)
         {
-            throw new ArgumentException("The type must implement " + nameof(conditionEvaluator));
-        }
+            if (!typeof(Condition).IsAssignableFrom(condition))
+            {
+                throw new ArgumentException("The type must implement " + nameof(Condition));
+            }
 
-        _evaluators[condition] = conditionEvaluator;
+            if (!typeof(IConditionEvaluator).IsAssignableFrom(conditionEvaluator))
+            {
+                throw new ArgumentException("The type must implement " + nameof(conditionEvaluator));
+            }
+
+            _evaluators[condition] = conditionEvaluator;
+        }
     }
 }

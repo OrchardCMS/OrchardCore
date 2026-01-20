@@ -1,6 +1,7 @@
-namespace OrchardCore.Sitemaps.Handlers;
-
-public class SitemapUpdateContext
+namespace OrchardCore.Sitemaps.Handlers
 {
-    public object UpdateObject { get; set; }
+    public class SitemapUpdateContext
+    {
+        public object UpdateObject { get; set; }
+    }
 }

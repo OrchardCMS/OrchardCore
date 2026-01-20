@@ -1,30 +1,32 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Settings;
 
-namespace OrchardCore.HomeRoute.Routing;
-
-public class HomeRouteTransformer : DynamicRouteValueTransformer
+namespace OrchardCore.HomeRoute.Routing
 {
-    private readonly ISiteService _siteService;
-
-    public HomeRouteTransformer(ISiteService siteService)
+    public class HomeRouteTransformer : DynamicRouteValueTransformer
     {
-        _siteService = siteService;
-    }
+        private readonly ISiteService _siteService;
 
-    public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
-    {
-        var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
-
-        if (homeRoute.Count > 0)
+        public HomeRouteTransformer(ISiteService siteService)
         {
-            return new RouteValueDictionary(homeRoute);
+            _siteService = siteService;
         }
-        else
+
+        public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
-            return null;
+            var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
+
+            if (homeRoute.Count > 0)
+            {
+                return new RouteValueDictionary(homeRoute);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

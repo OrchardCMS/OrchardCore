@@ -1,82 +1,83 @@
+using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Queries.ViewModels;
 
-namespace OrchardCore.Queries.Deployment;
-
-public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
+namespace OrchardCore.Queries.Deployment
 {
-    private readonly IQueryManager _queryManager;
-
-    internal readonly IStringLocalizer S;
-
-    public QueryBasedContentDeploymentStepDriver(
-        IQueryManager queryManager,
-        IStringLocalizer<QueryBasedContentDeploymentStepDriver> stringLocalizer)
+    public class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
     {
-        _queryManager = queryManager;
-        S = stringLocalizer;
-    }
+        private readonly IQueryManager _queryManager;
+        protected readonly IStringLocalizer S;
 
-    public override Task<IDisplayResult> DisplayAsync(QueryBasedContentDeploymentStep step, BuildDisplayContext context)
-    {
-        return
-            CombineAsync(
-                View("QueryBasedContentDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-                View("QueryBasedContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(QueryBasedContentDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", async model =>
+        public QueryBasedContentDeploymentStepDriver(
+            IQueryManager queryManager,
+            IStringLocalizer<QueryBasedContentDeploymentStepDriver> stringLocalizer)
         {
-            model.QueryName = step.QueryName;
-            model.QueryParameters = step.QueryParameters;
-            model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-            model.Queries = await _queryManager.ListQueriesAsync(true);
-        }).Location("Content");
-    }
-
-    public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, UpdateEditorContext context)
-    {
-        var queryBasedContentViewModel = new QueryBasedContentDeploymentStepViewModel();
-        await context.Updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix,
-            viewModel => viewModel.QueryName,
-            viewModel => viewModel.QueryParameters,
-            viewModel => viewModel.ExportAsSetupRecipe);
-
-        var query = await _queryManager.GetQueryAsync(queryBasedContentViewModel.QueryName);
-
-        if (!query.ReturnContentItems)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
+            _queryManager = queryManager;
+            S = stringLocalizer;
         }
 
-        if (queryBasedContentViewModel.QueryParameters != null)
+        public override IDisplayResult Display(QueryBasedContentDeploymentStep step)
         {
-            try
+            return
+                Combine(
+                    View("QueryBasedContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    View("QueryBasedContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                );
+        }
+
+        public override IDisplayResult Edit(QueryBasedContentDeploymentStep step)
+        {
+            return Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", model =>
             {
-                var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
-                if (parameters == null)
+                model.QueryName = step.QueryName;
+                model.QueryParameters = step.QueryParameters;
+                model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
+            }).Location("Content");
+        }
+
+        public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, IUpdateModel updater)
+        {
+            var queryBasedContentViewModel = new QueryBasedContentDeploymentStepViewModel();
+
+            if (await updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix, viewModel => viewModel.QueryName, viewModel => viewModel.QueryParameters, viewModel => viewModel.ExportAsSetupRecipe))
+            {
+                var query = await _queryManager.LoadQueryAsync(queryBasedContentViewModel.QueryName);
+                if (!query.ResultsOfType<ContentItem>())
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);
+                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
                 }
+
+                if (queryBasedContentViewModel.QueryParameters != null)
+                {
+                    try
+                    {
+                        var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
+                        if (parameters == null)
+                        {
+                            updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);
+                        }
+                    }
+                    catch (JsonException)
+                    {
+                        updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Something is wrong with your JSON."]);
+                    }
+                }
+
+                step.QueryName = queryBasedContentViewModel.QueryName;
+                step.ExportAsSetupRecipe = queryBasedContentViewModel.ExportAsSetupRecipe;
+                step.QueryParameters = queryBasedContentViewModel.QueryParameters;
             }
-            catch (JsonException)
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Something is wrong with your JSON."]);
-            }
+
+            return Edit(step);
         }
-
-        step.QueryName = queryBasedContentViewModel.QueryName;
-        step.ExportAsSetupRecipe = queryBasedContentViewModel.ExportAsSetupRecipe;
-        step.QueryParameters = queryBasedContentViewModel.QueryParameters;
-
-        return Edit(step, context);
     }
 }

@@ -1,15 +1,16 @@
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.Scripting.Files;
-
-public class FilesScriptScope : IScriptingScope
+namespace OrchardCore.Scripting.Files
 {
-    public FilesScriptScope(IFileProvider fileProvider, string basePath)
+    public class FilesScriptScope : IScriptingScope
     {
-        FileProvider = fileProvider;
-        BasePath = basePath;
-    }
+        public FilesScriptScope(IFileProvider fileProvider, string basePath)
+        {
+            FileProvider = fileProvider;
+            BasePath = basePath;
+        }
 
-    public IFileProvider FileProvider { get; }
-    public string BasePath { get; }
+        public IFileProvider FileProvider { get; }
+        public string BasePath { get; }
+    }
 }

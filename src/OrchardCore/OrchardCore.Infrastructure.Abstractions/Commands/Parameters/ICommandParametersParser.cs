@@ -1,6 +1,9 @@
-namespace OrchardCore.Environment.Commands.Parameters;
+using System.Collections.Generic;
 
-public interface ICommandParametersParser
+namespace OrchardCore.Environment.Commands.Parameters
 {
-    CommandParameters Parse(IEnumerable<string> args);
+    public interface ICommandParametersParser
+    {
+        CommandParameters Parse(IEnumerable<string> args);
+    }
 }

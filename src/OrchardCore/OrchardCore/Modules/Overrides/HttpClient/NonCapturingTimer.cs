@@ -1,35 +1,39 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace Microsoft.Extensions.Internal;
+using System;
+using System.Threading;
 
-// A convenience API for interacting with System.Threading.Timer in a way
-// that doesn't capture the ExecutionContext. We should be using this (or equivalent)
-// everywhere we use timers to avoid rooting any values stored in async locals.
-internal static class NonCapturingTimer
+namespace Microsoft.Extensions.Internal
 {
-    public static Timer Create(TimerCallback callback, object state, TimeSpan dueTime, TimeSpan period)
+    // A convenience API for interacting with System.Threading.Timer in a way
+    // that doesn't capture the ExecutionContext. We should be using this (or equivalent)
+    // everywhere we use timers to avoid rooting any values stored in async locals.
+    internal static class NonCapturingTimer
     {
-        ArgumentNullException.ThrowIfNull(callback);
-
-        // Don't capture the current ExecutionContext and its AsyncLocals onto the timer.
-        var restoreFlow = false;
-        try
+        public static Timer Create(TimerCallback callback, object state, TimeSpan dueTime, TimeSpan period)
         {
-            if (!ExecutionContext.IsFlowSuppressed())
+            ArgumentNullException.ThrowIfNull(callback);
+
+            // Don't capture the current ExecutionContext and its AsyncLocals onto the timer.
+            var restoreFlow = false;
+            try
             {
-                ExecutionContext.SuppressFlow();
-                restoreFlow = true;
+                if (!ExecutionContext.IsFlowSuppressed())
+                {
+                    ExecutionContext.SuppressFlow();
+                    restoreFlow = true;
+                }
+
+                return new Timer(callback, state, dueTime, period);
             }
-
-            return new Timer(callback, state, dueTime, period);
-        }
-        finally
-        {
-            // Restore the current ExecutionContext.
-            if (restoreFlow)
+            finally
             {
-                ExecutionContext.RestoreFlow();
+                // Restore the current ExecutionContext.
+                if (restoreFlow)
+                {
+                    ExecutionContext.RestoreFlow();
+                }
             }
         }
     }

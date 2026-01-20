@@ -1,34 +1,38 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
-namespace OrchardCore.Forms.Drivers;
-
-public sealed class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
+namespace OrchardCore.Forms.Drivers
 {
-    public override IDisplayResult Display(LabelPart part, BuildPartDisplayContext context)
+    public class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
     {
-        return View("LabelPart", part).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
-    }
-
-    public override IDisplayResult Edit(LabelPart part, BuildPartEditorContext context)
-    {
-        return Initialize<LabelPartEditViewModel>("LabelPart_Fields_Edit", m =>
+        public override IDisplayResult Display(LabelPart part)
         {
-            m.For = part.For;
-        });
-    }
+            return View("LabelPart", part).Location("Detail", "Content");
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(LabelPart part, UpdatePartEditorContext context)
-    {
-        var viewModel = new LabelPartEditViewModel();
+        public override IDisplayResult Edit(LabelPart part, BuildPartEditorContext context)
+        {
+            return Initialize<LabelPartEditViewModel>("LabelPart_Fields_Edit", m =>
+            {
+                m.For = part.For;
+            });
+        }
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        public override async Task<IDisplayResult> UpdateAsync(LabelPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        {
+            var viewModel = new LabelPartEditViewModel();
 
-        part.For = viewModel.For?.Trim();
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            {
+                part.For = viewModel.For?.Trim();
+            }
 
-        return Edit(part, context);
+            return Edit(part, context);
+        }
     }
 }

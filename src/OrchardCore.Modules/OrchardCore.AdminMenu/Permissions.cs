@@ -1,28 +1,23 @@
-using OrchardCore.Admin;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
-    private static readonly Permission _viewAdminMenu = new("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] {
-        AdminMenuPermissions.ManageAdminMenu,
-        AdminMenuPermissions.ViewAdminMenuAll,
-    });
+    public static readonly Permission ManageAdminMenu = new("ManageAdminMenu", "Manage the admin menu");
+    public static readonly Permission ViewAdminMenuAll = new("ViewAdminMenuAll", "View Admin Menu - View All", new[] { ManageAdminMenu });
+
+    private static readonly Permission _viewAdminMenu = new("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] { ManageAdminMenu, ViewAdminMenuAll });
 
     private readonly IEnumerable<Permission> _generalPermissions =
     [
-        AdminMenuPermissions.ManageAdminMenu,
+        ManageAdminMenu,
     ];
 
     private readonly IAdminMenuService _adminMenuService;
-
-    [Obsolete("This will be removed in a future release. Instead use 'AdminMenuPermissions.ViewAdminMenuAll'.")]
-    public static readonly Permission ManageAdminMenu = AdminMenuPermissions.ViewAdminMenuAll;
-
-    [Obsolete("This will be removed in a future release. Instead use 'AdminMenuPermissions.ManageAdminMenu'.")]
-    public static readonly Permission ViewAdminMenuAll = AdminMenuPermissions.ManageAdminMenu;
 
     public Permissions(IAdminMenuService adminMenuService)
     {
@@ -35,8 +30,8 @@ public sealed class Permissions : IPermissionProvider
 
         var permissions = new List<Permission>(adminMenuItems.Count + 2)
         {
-            AdminMenuPermissions.ViewAdminMenuAll,
-            AdminMenuPermissions.ManageAdminMenu,
+            ViewAdminMenuAll,
+            ManageAdminMenu,
         };
 
         foreach (var adminMenu in adminMenuItems)
@@ -51,12 +46,12 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Editor,
+            Name = "Editor",
             Permissions = _generalPermissions,
         },
     ];

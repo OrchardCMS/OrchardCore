@@ -1,13 +1,14 @@
 using Fluid;
 
-namespace OrchardCore.Workflows.Models;
-
-public class WorkflowExecutionExpressionContext : WorkflowExecutionHandlerContextBase
+namespace OrchardCore.Workflows.Models
 {
-    public WorkflowExecutionExpressionContext(TemplateContext templateContext, WorkflowExecutionContext workflowExecutionContext) : base(workflowExecutionContext)
+    public class WorkflowExecutionExpressionContext : WorkflowExecutionHandlerContextBase
     {
-        TemplateContext = templateContext;
-    }
+        public WorkflowExecutionExpressionContext(TemplateContext templateContext, WorkflowExecutionContext workflowExecutionContext) : base(workflowExecutionContext)
+        {
+            TemplateContext = templateContext;
+        }
 
-    public TemplateContext TemplateContext { get; }
+        public TemplateContext TemplateContext { get; }
+    }
 }

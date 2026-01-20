@@ -1,38 +1,40 @@
+using System;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 
-namespace OrchardCore.ContentTypes.Editors;
-
-public abstract class ContentTypePartDefinitionDisplayDriver : DisplayDriver<ContentTypePartDefinition, BuildDisplayContext, BuildEditorContext, UpdateTypePartEditorContext>, IContentTypePartDefinitionDisplayDriver
+namespace OrchardCore.ContentTypes.Editors
 {
-    protected override void BuildPrefix(ContentTypePartDefinition model, string htmlFielPrefix)
+    public abstract class ContentTypePartDefinitionDisplayDriver : DisplayDriver<ContentTypePartDefinition, BuildDisplayContext, BuildEditorContext, UpdateTypePartEditorContext>, IContentTypePartDefinitionDisplayDriver
     {
-        Prefix = $"{model.ContentTypeDefinition.Name}.{model.PartDefinition.Name}";
-
-        if (!string.IsNullOrEmpty(htmlFielPrefix))
+        protected override void BuildPrefix(ContentTypePartDefinition model, string htmlFielPrefix)
         {
-            Prefix = htmlFielPrefix + "." + Prefix;
+            Prefix = $"{model.ContentTypeDefinition.Name}.{model.PartDefinition.Name}";
+
+            if (!string.IsNullOrEmpty(htmlFielPrefix))
+            {
+                Prefix = htmlFielPrefix + "." + Prefix;
+            }
+
+            // Prefix any driver with a unique name
+            Prefix += "." + GetType().Name;
         }
 
-        // Prefix any driver with a unique name
-        Prefix += "." + GetType().Name;
+        public override bool CanHandleModel(ContentTypePartDefinition model)
+        {
+            return true;
+        }
     }
 
-    public override bool CanHandleModel(ContentTypePartDefinition model)
+    /// <summary>
+    /// A concrete implementation of <see cref="ContentTypePartDefinitionDisplayDriver{TPart}"/> provides a driver for part definitions
+    /// of the type <c>TPart</c>.
+    /// </summary>
+    public abstract class ContentTypePartDefinitionDisplayDriver<TPart> : ContentTypePartDefinitionDisplayDriver where TPart : ContentPart
     {
-        return true;
-    }
-}
-
-/// <summary>
-/// A concrete implementation of <see cref="ContentTypePartDefinitionDisplayDriver{TPart}"/> provides a driver for part definitions
-/// of the type <c>TPart</c>.
-/// </summary>
-public abstract class ContentTypePartDefinitionDisplayDriver<TPart> : ContentTypePartDefinitionDisplayDriver where TPart : ContentPart
-{
-    public override bool CanHandleModel(ContentTypePartDefinition model)
-    {
-        return string.Equals(typeof(TPart).Name, model.PartDefinition.Name, StringComparison.Ordinal);
+        public override bool CanHandleModel(ContentTypePartDefinition model)
+        {
+            return string.Equals(typeof(TPart).Name, model.PartDefinition.Name);
+        }
     }
 }

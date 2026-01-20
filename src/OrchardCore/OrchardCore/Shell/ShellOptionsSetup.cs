@@ -1,33 +1,40 @@
+using System;
+using System.IO;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Environment.Shell;
-
-/// <summary>
-/// Sets up default options for <see cref="ShellOptions"/>.
-/// </summary>
-public sealed class ShellOptionsSetup : IConfigureOptions<ShellOptions>
+namespace OrchardCore.Environment.Shell
 {
-    private readonly IHostEnvironment _hostingEnvironment;
-
-    public ShellOptionsSetup(IHostEnvironment hostingEnvironment)
+    /// <summary>
+    /// Sets up default options for <see cref="ShellOptions"/>.
+    /// </summary>
+    public class ShellOptionsSetup : IConfigureOptions<ShellOptions>
     {
-        _hostingEnvironment = hostingEnvironment;
-    }
+        private const string OrchardAppData = "ORCHARD_APP_DATA";
+        private const string DefaultAppDataPath = "App_Data";
+        private const string DefaultSitesPath = "Sites";
 
-    public void Configure(ShellOptions options)
-    {
-        var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
+        private readonly IHostEnvironment _hostingEnvironment;
 
-        if (!string.IsNullOrEmpty(appData))
+        public ShellOptionsSetup(IHostEnvironment hostingEnvironment)
         {
-            options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, appData);
-        }
-        else
-        {
-            options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, ShellOptionConstants.DefaultAppDataPath);
+            _hostingEnvironment = hostingEnvironment;
         }
 
-        options.ShellsContainerName = ShellOptionConstants.DefaultSitesPath;
+        public void Configure(ShellOptions options)
+        {
+            var appData = System.Environment.GetEnvironmentVariable(OrchardAppData);
+
+            if (!string.IsNullOrEmpty(appData))
+            {
+                options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, appData);
+            }
+            else
+            {
+                options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, DefaultAppDataPath);
+            }
+
+            options.ShellsContainerName = DefaultSitesPath;
+        }
     }
 }

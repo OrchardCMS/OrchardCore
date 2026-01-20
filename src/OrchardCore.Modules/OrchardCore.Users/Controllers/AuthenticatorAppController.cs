@@ -1,6 +1,8 @@
+using System;
 using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +10,9 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -18,13 +22,11 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
-[Authorize]
-[Feature(UserConstants.Features.AuthenticatorApp)]
-public sealed class AuthenticatorAppController : TwoFactorAuthenticationBaseController
+[Authorize, Admin, Feature(UserConstants.Features.AuthenticatorApp)]
+public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 {
-    private const string _authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
+    private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
 
-    private readonly IdentityOptions _identityOptions;
     private readonly UrlEncoder _urlEncoder;
     private readonly ShellSettings _shellSettings;
 
@@ -35,7 +37,6 @@ public sealed class AuthenticatorAppController : TwoFactorAuthenticationBaseCont
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IOptions<TwoFactorOptions> twoFactorOptions,
-        IOptions<IdentityOptions> identityOptions,
         INotifier notifier,
         IDistributedCache distributedCache,
         UrlEncoder urlEncoder,
@@ -52,7 +53,6 @@ public sealed class AuthenticatorAppController : TwoFactorAuthenticationBaseCont
             stringLocalizer,
             twoFactorOptions)
     {
-        _identityOptions = identityOptions.Value;
         _urlEncoder = urlEncoder;
         _shellSettings = shellSettings;
     }
@@ -65,7 +65,7 @@ public sealed class AuthenticatorAppController : TwoFactorAuthenticationBaseCont
             return UserNotFound();
         }
 
-        var loginSettings = await SiteService.GetSettingsAsync<AuthenticatorAppLoginSettings>();
+        var loginSettings = (await SiteService.GetSiteSettingsAsync()).As<AuthenticatorAppLoginSettings>();
 
         var model = await LoadSharedKeyAndQrCodeUriAsync(user, loginSettings);
 
@@ -88,13 +88,13 @@ public sealed class AuthenticatorAppController : TwoFactorAuthenticationBaseCont
             return View(model);
         }
 
-        var isValid = await UserManager.VerifyTwoFactorTokenAsync(user, _identityOptions.Tokens.AuthenticatorTokenProvider, StripToken(model.Code));
+        var isValid = await UserManager.VerifyTwoFactorTokenAsync(user, TokenOptions.DefaultAuthenticatorProvider, StripToken(model.Code));
 
         if (!isValid)
         {
             ModelState.AddModelError(model.Code, S["Verification code is invalid."]);
 
-            var loginSettings = await SiteService.GetSettingsAsync<AuthenticatorAppLoginSettings>();
+            var loginSettings = (await SiteService.GetSiteSettingsAsync()).As<AuthenticatorAppLoginSettings>();
 
             return View(await LoadSharedKeyAndQrCodeUriAsync(user, loginSettings));
         }
@@ -118,15 +118,14 @@ public sealed class AuthenticatorAppController : TwoFactorAuthenticationBaseCont
 
         var model = new ResetAuthenticatorViewModel()
         {
-            CanRemove = providers.Count > 1 || !await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(user),
+            CanRemove = providers.Count > 1 || !await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(),
             WillDisableTwoFactor = providers.Count == 1,
         };
 
         return View(model);
     }
 
-    [HttpPost]
-    [ActionName(nameof(Reset))]
+    [HttpPost, ActionName(nameof(Reset))]
     public async Task<IActionResult> ResetPost()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -135,7 +134,7 @@ public sealed class AuthenticatorAppController : TwoFactorAuthenticationBaseCont
             return UserNotFound();
         }
 
-        return await RemoveTwoFactorProviderAsync(user, async () =>
+        return await RemoveTwoFactorProviderAync(user, async () =>
         {
             await UserManager.ResetAuthenticatorKeyAsync(user);
 
@@ -191,9 +190,7 @@ public sealed class AuthenticatorAppController : TwoFactorAuthenticationBaseCont
 
         return string.Format(
             CultureInfo.InvariantCulture,
-#pragma warning disable CA1863 // Cache a 'CompositeFormat' for repeated use in this formatting operation
-            _authenticatorUriFormat,
-#pragma warning restore CA1863
+            AuthenticatorUriFormat,
             _urlEncoder.Encode(issuer),
             _urlEncoder.Encode(displayName),
             unformattedKey,

@@ -1,6 +1,7 @@
-namespace OrchardCore.Rules;
-
-public interface IOperatorComparer
+namespace OrchardCore.Rules
 {
-    bool Compare(ConditionOperator ruleOperation, object a, object b);
+    public interface IOperatorComparer
+    {
+        bool Compare(ConditionOperator ruleOperation, object a, object b);
+    }
 }

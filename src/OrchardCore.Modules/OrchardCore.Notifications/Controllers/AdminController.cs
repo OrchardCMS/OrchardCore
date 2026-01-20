@@ -1,16 +1,19 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Navigation.Core;
@@ -25,11 +28,10 @@ using YesSql.Services;
 
 namespace OrchardCore.Notifications.Controllers;
 
-public sealed class AdminController : Controller, IUpdateModel
+public class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
-    private readonly ITagCache _tagCache;
     private readonly IDisplayManager<Notification> _notificationDisplayManager;
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
@@ -38,13 +40,13 @@ public sealed class AdminController : Controller, IUpdateModel
     private readonly PagerOptions _pagerOptions;
     private readonly IClock _clock;
 
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    protected readonly IStringLocalizer S;
+    protected readonly IHtmlLocalizer H;
 
     public AdminController(
         IAuthorizationService authorizationService,
         ISession session,
-        ITagCache tagCache,
+
         IOptions<PagerOptions> pagerOptions,
         IDisplayManager<Notification> notificationDisplayManager,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
@@ -57,7 +59,6 @@ public sealed class AdminController : Controller, IUpdateModel
     {
         _authorizationService = authorizationService;
         _session = session;
-        _tagCache = tagCache;
         _notificationDisplayManager = notificationDisplayManager;
         _notificationsAdminListQueryService = notificationsAdminListQueryService;
         _notificationOptionsDisplayManager = notificationOptionsDisplayManager;
@@ -70,7 +71,6 @@ public sealed class AdminController : Controller, IUpdateModel
         H = htmlLocalizer;
     }
 
-    [Admin("notifications", "ListNotifications")]
     public async Task<IActionResult> List(
         [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,
@@ -111,23 +111,23 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var queryResult = await _notificationsAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options, this);
 
-        var pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, options.RouteValues);
+        dynamic pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, options.RouteValues);
 
-        var notificationShapes = new List<IShape>();
+        var notificationSummaries = new List<dynamic>();
 
         foreach (var notification in queryResult.Notifications)
         {
-            var shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, OrchardCoreConstants.DisplayType.SummaryAdmin);
-            shape.Properties[nameof(Notification)] = notification;
+            dynamic shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, "SummaryAdmin");
+            shape.Notification = notification;
 
-            notificationShapes.Add(shape);
+            notificationSummaries.Add(shape);
         }
 
-        var startIndex = (pager.Page - 1) * pager.PageSize + 1;
+        var startIndex = (pagerShape.Page - 1) * pagerShape.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + notificationShapes.Count - 1;
-        options.NotificationsCount = notificationShapes.Count;
-        options.TotalItemCount = queryResult.TotalCount;
+        options.EndIndex = startIndex + notificationSummaries.Count - 1;
+        options.NotificationsCount = notificationSummaries.Count;
+        options.TotalItemCount = pagerShape.TotalItemCount;
 
         var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
@@ -135,15 +135,14 @@ public sealed class AdminController : Controller, IUpdateModel
         {
             viewModel.Options = options;
             viewModel.Header = header;
-            viewModel.Notifications = notificationShapes;
+            viewModel.Notifications = notificationSummaries;
             viewModel.Pager = pagerShape;
         });
 
         return View(shapeViewModel);
     }
 
-    [HttpPost]
-    [ActionName(nameof(List))]
+    [HttpPost, ActionName(nameof(List))]
     [FormValueRequired("submit.Filter")]
     public async Task<ActionResult> ListFilterPOST(ListNotificationOptions options)
     {
@@ -162,8 +161,7 @@ public sealed class AdminController : Controller, IUpdateModel
         return RedirectToAction(nameof(List), options.RouteValues);
     }
 
-    [HttpPost]
-    [ActionName(nameof(List))]
+    [HttpPost, ActionName(nameof(List))]
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> ListPOST(ListNotificationOptions options, IEnumerable<string> itemIds)
     {
@@ -197,7 +195,6 @@ public sealed class AdminController : Controller, IUpdateModel
                     }
                     if (counter > 0)
                     {
-                        await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
                         await _notifier.SuccessAsync(H["{0} {1} unread successfully.", counter, H.Plural(counter, "notification", "notifications")]);
                     }
                     break;
@@ -219,7 +216,6 @@ public sealed class AdminController : Controller, IUpdateModel
                     }
                     if (counter > 0)
                     {
-                        await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
                         await _notifier.SuccessAsync(H["{0} {1} read successfully.", counter, H.Plural(counter, "notification", "notifications")]);
                     }
                     break;
@@ -231,7 +227,6 @@ public sealed class AdminController : Controller, IUpdateModel
                     }
                     if (counter > 0)
                     {
-                        await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
                         await _notifier.SuccessAsync(H["{0} {1} removed successfully.", counter, H.Plural(counter, "notification", "notifications")]);
                     }
                     break;
@@ -268,7 +263,6 @@ public sealed class AdminController : Controller, IUpdateModel
 
         if (counter > 0)
         {
-            await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
             await _notifier.SuccessAsync(H["{0} {1} read successfully.", counter, H.Plural(counter, "notification", "notifications")]);
         }
 
@@ -304,7 +298,6 @@ public sealed class AdminController : Controller, IUpdateModel
                 notification.Put(readPart);
 
                 await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
-                await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
             }
         }
 
@@ -325,7 +318,6 @@ public sealed class AdminController : Controller, IUpdateModel
             if (notification != null)
             {
                 _session.Delete(notification, collection: NotificationConstants.NotificationCollection);
-                await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
             }
         }
 

@@ -1,11 +1,13 @@
+using System;
 using OrchardCore.MetaWeblog;
 
-namespace OrchardCore.Media.RemotePublishing;
-
-public sealed class MediaMetaWeblogDriver : MetaWeblogDriver
+namespace OrchardCore.Media.RemotePublishing
 {
-    public override void SetCapabilities(Action<string, string> setCapability)
+    public class MediaMetaWeblogDriver : MetaWeblogDriver
     {
-        setCapability("supportsFileUpload", "Yes");
+        public override void SetCapabilities(Action<string, string> setCapability)
+        {
+            setCapability("supportsFileUpload", "Yes");
+        }
     }
 }

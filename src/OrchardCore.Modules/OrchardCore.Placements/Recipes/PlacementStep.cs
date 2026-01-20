@@ -1,34 +1,41 @@
+using System;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.Placements.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Placements.Recipes;
-
-/// <summary>
-/// This recipe step creates a set of placements.
-/// </summary>
-public sealed class PlacementStep : NamedRecipeStepHandler
+namespace OrchardCore.Placements.Recipes
 {
-    private readonly PlacementsManager _placementsManager;
-
-    public PlacementStep(PlacementsManager placementsManager)
-        : base("Placements")
+    /// <summary>
+    /// This recipe step creates a set of placements.
+    /// </summary>
+    public class PlacementStep : IRecipeStepHandler
     {
-        _placementsManager = placementsManager;
-    }
+        private readonly PlacementsManager _placementsManager;
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
-    {
-        if (context.Step.TryGetPropertyValue("Placements", out var jsonNode) && jsonNode is JsonObject templates)
+        public PlacementStep(PlacementsManager placementsManager)
         {
-            foreach (var property in templates)
-            {
-                var name = property.Key;
-                var value = property.Value.ToObject<PlacementNode[]>();
+            _placementsManager = placementsManager;
+        }
 
-                await _placementsManager.UpdateShapePlacementsAsync(name, value);
+        public async Task ExecuteAsync(RecipeExecutionContext context)
+        {
+            if (!string.Equals(context.Name, "Placements", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (context.Step.TryGetPropertyValue("Placements", out var jsonNode) && jsonNode is JsonObject templates)
+            {
+                foreach (var property in templates)
+                {
+                    var name = property.Key;
+                    var value = property.Value.ToObject<PlacementNode[]>();
+
+                    await _placementsManager.UpdateShapePlacementsAsync(name, value);
+                }
             }
         }
     }

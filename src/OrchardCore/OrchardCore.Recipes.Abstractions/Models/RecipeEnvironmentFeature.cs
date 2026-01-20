@@ -1,6 +1,9 @@
-namespace OrchardCore.Recipes.Models;
+using System.Collections.Generic;
 
-public class RecipeEnvironmentFeature
+namespace OrchardCore.Recipes.Models
 {
-    public Dictionary<string, object> Properties { get; init; } = [];
+    public class RecipeEnvironmentFeature
+    {
+        public Dictionary<string, object> Properties { get; init; } = [];
+    }
 }

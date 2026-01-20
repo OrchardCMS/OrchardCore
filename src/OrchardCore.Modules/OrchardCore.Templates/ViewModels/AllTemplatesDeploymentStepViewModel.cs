@@ -1,6 +1,7 @@
-namespace OrchardCore.Templates.ViewModels;
-
-public class AllTemplatesDeploymentStepViewModel
+namespace OrchardCore.Templates.ViewModels
 {
-    public bool ExportAsFiles { get; set; }
+    public class AllTemplatesDeploymentStepViewModel
+    {
+        public bool ExportAsFiles { get; set; }
+    }
 }

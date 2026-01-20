@@ -1,22 +1,23 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace OrchardCore.DisplayManagement.TagHelpers;
-
-[HtmlTargetElement("input", Attributes = ForAttributeName + "," + IsDisabledAttributeName)]
-public class InputIsDisabledTagHelper : TagHelper
+namespace OrchardCore.DisplayManagement.TagHelpers
 {
-    private const string ForAttributeName = "asp-for";
-    private const string IsDisabledAttributeName = "asp-is-disabled";
-
-    [HtmlAttributeName("asp-is-disabled")]
-    public bool IsDisabled { set; get; }
-
-    public override void Process(TagHelperContext context, TagHelperOutput output)
+    [HtmlTargetElement("input", Attributes = ForAttributeName + "," + IsDisabledAttributeName)]
+    public class InputIsDisabledTagHelper : TagHelper
     {
-        if (IsDisabled)
+        private const string ForAttributeName = "asp-for";
+        private const string IsDisabledAttributeName = "asp-is-disabled";
+
+        [HtmlAttributeName("asp-is-disabled")]
+        public bool IsDisabled { set; get; }
+
+        public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var d = new TagHelperAttribute("disabled", "disabled");
-            output.Attributes.Add(d);
+            if (IsDisabled)
+            {
+                var d = new TagHelperAttribute("disabled", "disabled");
+                output.Attributes.Add(d);
+            }
         }
     }
 }

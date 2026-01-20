@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,25 +8,26 @@ using OrchardCore.Lists.Models;
 using OrchardCore.Modules;
 using OrchardCore.XmlRpc;
 
-namespace OrchardCore.Lists.RemotePublishing;
-
-[RequireFeatures("OrchardCore.RemotePublishing")]
-public sealed class RemotePublishingStartup : StartupBase
+namespace OrchardCore.Lists.RemotePublishing
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.RemotePublishing")]
+    public class RemotePublishingStartup : StartupBase
     {
-        services.AddScoped<IXmlRpcHandler, MetaWeblogHandler>();
-        services.AddContentPart<ListPart>()
-            .UseDisplayDriver<ListMetaWeblogDriver>();
-    }
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IXmlRpcHandler, MetaWeblogHandler>();
+            services.AddContentPart<ListPart>()
+                .UseDisplayDriver<ListMetaWeblogDriver>();
+        }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-    {
-        routes.MapAreaControllerRoute(
-            name: "RSD",
-            areaName: "OrchardCore.Lists",
-            pattern: "xmlrpc/metaweblog/{contentItemId}/rsd",
-            defaults: new { controller = "RemotePublishing", action = "Rsd" }
-        );
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "RSD",
+                areaName: "OrchardCore.Lists",
+                pattern: "xmlrpc/metaweblog/{contentItemId}/rsd",
+                defaults: new { controller = "RemotePublishing", action = "Rsd" }
+            );
+        }
     }
 }

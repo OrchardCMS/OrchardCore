@@ -1,6 +1,7 @@
-namespace OrchardCore.Rules.Models;
-
-public class JavascriptCondition : Condition
+namespace OrchardCore.Rules.Models
 {
-    public string Script { get; set; }
+    public class JavascriptCondition : Condition
+    {
+        public string Script { get; set; }
+    }
 }

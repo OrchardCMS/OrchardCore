@@ -3,14 +3,15 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.GraphQL.Drivers;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ContentTypes.GraphQL;
-
-[RequireFeatures("OrchardCore.Apis.GraphQL")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.ContentTypes.GraphQL
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    public class Startup : StartupBase
     {
-        services.AddScoped<IContentTypeDefinitionDisplayDriver, GraphQLContentTypeSettingsDisplayDriver>();
-        services.AddScoped<IContentTypePartDefinitionDisplayDriver, GraphQLContentTypePartSettingsDriver>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentTypeDefinitionDisplayDriver, GraphQLContentTypeSettingsDisplayDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, GraphQLContentTypePartSettingsDriver>();
+        }
     }
 }

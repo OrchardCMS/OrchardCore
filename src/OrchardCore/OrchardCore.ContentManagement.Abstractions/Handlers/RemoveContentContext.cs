@@ -1,11 +1,12 @@
-namespace OrchardCore.ContentManagement.Handlers;
-
-public class RemoveContentContext : ContentContextBase
+namespace OrchardCore.ContentManagement.Handlers
 {
-    public RemoveContentContext(ContentItem contentItem, bool noActiveVersionLeft = false) : base(contentItem)
+    public class RemoveContentContext : ContentContextBase
     {
-        NoActiveVersionLeft = noActiveVersionLeft;
-    }
+        public RemoveContentContext(ContentItem contentItem, bool noActiveVersionLeft = false) : base(contentItem)
+        {
+            NoActiveVersionLeft = noActiveVersionLeft;
+        }
 
-    public bool NoActiveVersionLeft { get; }
+        public bool NoActiveVersionLeft { get; }
+    }
 }

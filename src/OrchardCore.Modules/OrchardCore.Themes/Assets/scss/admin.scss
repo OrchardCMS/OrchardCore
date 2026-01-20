@@ -1,0 +1,14 @@
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+
+.theme-card {
+    margin-bottom: 15px;
+
+    .card-theme-thumbnail {
+        height: 200px;
+        background-color: $gray-100;
+        background-size: cover;
+        border-top: 1px solid $gray-100;
+        border-bottom: 1px solid $gray-100;
+    }
+}

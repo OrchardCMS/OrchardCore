@@ -1,8 +1,11 @@
-namespace OrchardCore.Themes.Models;
+using System.Collections.Generic;
 
-public class SelectThemesViewModel
+namespace OrchardCore.Themes.Models
 {
-    public ThemeEntry CurrentSiteTheme { get; set; }
-    public ThemeEntry CurrentAdminTheme { get; set; }
-    public IEnumerable<ThemeEntry> Themes { get; set; }
+    public class SelectThemesViewModel
+    {
+        public ThemeEntry CurrentSiteTheme { get; set; }
+        public ThemeEntry CurrentAdminTheme { get; set; }
+        public IEnumerable<ThemeEntry> Themes { get; set; }
+    }
 }

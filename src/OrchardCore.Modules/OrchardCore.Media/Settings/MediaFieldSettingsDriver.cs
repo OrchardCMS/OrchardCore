@@ -1,106 +1,113 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Media.Settings;
-
-public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MediaField>
+namespace OrchardCore.Media.Settings
 {
-    private readonly IContentTypeProvider _contentTypeProvider;
-    private readonly MediaOptions _mediaOptions;
-
-    internal readonly IStringLocalizer S;
-
-    public MediaFieldSettingsDriver(
-        IContentTypeProvider contentTypeProvider,
-        IOptions<MediaOptions> mediaOptions,
-        IStringLocalizer<MediaFieldSettingsDriver> stringLocalizer)
+    public class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MediaField>
     {
-        _contentTypeProvider = contentTypeProvider;
-        _mediaOptions = mediaOptions.Value;
-        S = stringLocalizer;
-    }
+        private readonly IContentTypeProvider _contentTypeProvider;
+        private readonly MediaOptions _mediaOptions;
+        protected readonly IStringLocalizer S;
 
-    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
-    {
-        return Initialize<MediaFieldSettingsViewModel>("MediaFieldSettings_Edit", model =>
+        public MediaFieldSettingsDriver(
+            IContentTypeProvider contentTypeProvider,
+            IOptions<MediaOptions> mediaOptions,
+            IStringLocalizer<MediaFieldSettingsDriver> stringLocalizer)
         {
-            var settings = partFieldDefinition.GetSettings<MediaFieldSettings>();
+            _contentTypeProvider = contentTypeProvider;
+            _mediaOptions = mediaOptions.Value;
+            S = stringLocalizer;
+        }
 
-            model.Hint = settings.Hint;
-            model.Required = settings.Required;
-            model.Multiple = settings.Multiple;
-            model.AllowMediaText = settings.AllowMediaText;
-            model.AllowAnchors = settings.AllowAnchors;
-            model.AllowAllDefaultMediaTypes = settings.AllowedExtensions == null || settings.AllowedExtensions.Length == 0;
-
-            var items = new List<MediaTypeViewModel>();
-            foreach (var extension in _mediaOptions.AllowedFileExtensions)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        {
+            return Initialize<MediaFieldSettingsViewModel>("MediaFieldSettings_Edit", model =>
             {
-                if (_contentTypeProvider.TryGetContentType(extension, out var contentType))
+                var settings = partFieldDefinition.GetSettings<MediaFieldSettings>();
+
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+                model.Multiple = settings.Multiple;
+                model.AllowMediaText = settings.AllowMediaText;
+                model.AllowAnchors = settings.AllowAnchors;
+                model.AllowAllDefaultMediaTypes = settings.AllowedExtensions?.Length == 0;
+
+                var items = new List<MediaTypeViewModel>();
+                foreach (var extension in _mediaOptions.AllowedFileExtensions)
                 {
-                    var item = new MediaTypeViewModel()
+                    if (_contentTypeProvider.TryGetContentType(extension, out var contentType))
                     {
-                        Extension = extension,
-                        ContentType = contentType,
-                        IsSelected = settings.AllowedExtensions != null && settings.AllowedExtensions.Contains(extension),
-                    };
+                        var item = new MediaTypeViewModel()
+                        {
+                            Extension = extension,
+                            ContentType = contentType,
+                            IsSelected = settings.AllowedExtensions != null && settings.AllowedExtensions.Contains(extension)
+                        };
 
-                    var index = contentType.IndexOf('/');
+                        var index = contentType.IndexOf('/');
 
-                    if (index > -1)
-                    {
-                        item.Type = contentType[..index];
+                        if (index > -1)
+                        {
+                            item.Type = contentType[..index];
+                        }
+
+                        items.Add(item);
                     }
-
-                    items.Add(item);
                 }
-            }
-            model.MediaTypes = items
-            .OrderBy(vm => vm.ContentType)
-            .ToArray();
-        }).Location("Content");
-    }
-
-    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-    {
-        var model = new MediaFieldSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-        var settings = new MediaFieldSettings()
-        {
-            Hint = model.Hint,
-            Required = model.Required,
-            Multiple = model.Multiple,
-            AllowMediaText = model.AllowMediaText,
-            AllowAnchors = model.AllowAnchors,
-        };
-
-        if (!model.AllowAllDefaultMediaTypes)
-        {
-            var selectedExtensions = model.MediaTypes.Where(vm => vm.IsSelected && _mediaOptions.AllowedFileExtensions.Contains(vm.Extension))
-                .Select(x => x.Extension)
+                model.MediaTypes = items
+                .OrderBy(vm => vm.ContentType)
                 .ToArray();
 
-            if (selectedExtensions.Length == 0)
+            }).Location("Content");
+        }
+
+        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+        {
+            var model = new MediaFieldSettingsViewModel();
+
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                context.Updater.ModelState.AddModelError(Prefix, string.Empty, S["Please select at least one extension."]);
+                var settings = new MediaFieldSettings()
+                {
+                    Hint = model.Hint,
+                    Required = model.Required,
+                    Multiple = model.Multiple,
+                    AllowMediaText = model.AllowMediaText,
+                    AllowAnchors = model.AllowAnchors,
+                };
+
+                if (!model.AllowAllDefaultMediaTypes)
+                {
+                    var selectedExtensions = model.MediaTypes.Where(vm => vm.IsSelected && _mediaOptions.AllowedFileExtensions.Contains(vm.Extension))
+                        .Select(x => x.Extension)
+                        .ToArray();
+
+                    if (selectedExtensions.Length == 0)
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, string.Empty, S["Please select at least one extension."]);
+                    }
+
+                    settings.AllowedExtensions = selectedExtensions;
+                }
+
+                if (context.Updater.ModelState.IsValid)
+                {
+                    context.Builder.WithSettings(settings);
+                }
             }
 
-            settings.AllowedExtensions = selectedExtensions;
+            return Edit(partFieldDefinition);
         }
-
-        if (context.Updater.ModelState.IsValid)
-        {
-            context.Builder.WithSettings(settings);
-        }
-
-        return Edit(partFieldDefinition, context);
     }
 }

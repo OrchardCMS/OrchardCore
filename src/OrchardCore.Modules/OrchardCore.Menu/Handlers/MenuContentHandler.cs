@@ -1,20 +1,22 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Menu.Models;
 
-namespace OrchardCore.Menu.Handlers;
-
-public class MenuContentHandler : ContentHandlerBase
+namespace OrchardCore.Menu.Handlers
 {
-    public override Task ActivatedAsync(ActivatedContentContext context)
+    public class MenuContentHandler : ContentHandlerBase
     {
-        // When a Menu is created, we add a MenuPart to it
-        if (context.ContentItem.ContentType == "Menu")
+        public override Task ActivatedAsync(ActivatedContentContext context)
         {
-            context.ContentItem.Weld<MenuPart>(new { Position = "3" });
-            context.ContentItem.Weld<MenuItemsListPart>(new { Position = "4" });
-        }
+            // When a Menu is created, we add a MenuPart to it
+            if (context.ContentItem.ContentType == "Menu")
+            {
+                context.ContentItem.Weld<MenuPart>(new { Position = "3" });
+                context.ContentItem.Weld<MenuItemsListPart>(new { Position = "4" });
+            }
 
-        return Task.CompletedTask;
+            return Task.CompletedTask;
+        }
     }
 }

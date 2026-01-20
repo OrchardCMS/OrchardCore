@@ -1,10 +1,11 @@
-namespace OrchardCore.Microsoft.Authentication;
-
-public static class MicrosoftAuthenticationConstants
+namespace OrchardCore.Microsoft.Authentication
 {
-    public static class Features
+    public static class MicrosoftAuthenticationConstants
     {
-        public const string MicrosoftAccount = "OrchardCore.Microsoft.Authentication.MicrosoftAccount";
-        public const string AAD = "OrchardCore.Microsoft.Authentication.AzureAD";
+        public static class Features
+        {
+            public const string MicrosoftAccount = "OrchardCore.Microsoft.Authentication.MicrosoftAccount";
+            public const string AAD = "OrchardCore.Microsoft.Authentication.AzureAD";
+        }
     }
 }

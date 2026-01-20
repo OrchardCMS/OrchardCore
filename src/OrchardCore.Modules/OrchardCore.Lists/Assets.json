@@ -1,8 +1,9 @@
 [
   {
-    "action": "min",
-    "name": "ci-list-ordering",
-    "source": "Assets/Scripts/ci-list-ordering.js",
-    "tags": ["admin", "dashboard", "js"]
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/Scripts/ci-list-ordering.js"
+    ],
+    "output": "wwwroot/Scripts/ci-list-ordering.js"
   }
 ]

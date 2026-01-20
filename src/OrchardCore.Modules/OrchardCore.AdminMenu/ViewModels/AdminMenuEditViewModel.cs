@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.AdminMenu.ViewModels;
-
-public class AdminMenuEditViewModel
+namespace OrchardCore.AdminMenu.ViewModels
 {
-    public string Id { get; set; }
+    public class AdminMenuEditViewModel
+    {
+        public string Id { get; set; }
 
-    [Required]
-    public string Name { get; set; }
+        [Required]
+        public string Name { get; set; }
+    }
 }

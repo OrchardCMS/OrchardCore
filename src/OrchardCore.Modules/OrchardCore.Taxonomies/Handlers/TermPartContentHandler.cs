@@ -1,25 +1,27 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 
-namespace OrchardCore.Taxonomies.Handlers;
-
-public class TermPartContentHandler : ContentHandlerBase
+namespace OrchardCore.Taxonomies.Handlers
 {
-    public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
+    public class TermPartContentHandler : ContentHandlerBase
     {
-        return context.ForAsync<ContainedContentItemsAspect>(aspect =>
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
-            // Check this content item contains Terms.
-            if (((JsonNode)context.ContentItem.Content)["Terms"] is JsonArray)
+            return context.ForAsync<ContainedContentItemsAspect>(aspect =>
             {
-                aspect.Accessors.Add((jsonObject) =>
+                // Check this content item contains Terms.
+                if (((JsonNode)context.ContentItem.Content)["Terms"] is JsonArray)
                 {
-                    return jsonObject["Terms"] as JsonArray;
-                });
-            }
+                    aspect.Accessors.Add((jsonObject) =>
+                    {
+                        return jsonObject["Terms"] as JsonArray;
+                    });
+                }
 
-            return Task.CompletedTask;
-        });
+                return Task.CompletedTask;
+            });
+        }
     }
 }

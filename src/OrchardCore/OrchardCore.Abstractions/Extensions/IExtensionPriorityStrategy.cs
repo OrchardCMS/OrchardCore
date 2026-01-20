@@ -1,8 +1,9 @@
 using OrchardCore.Environment.Extensions.Features;
 
-namespace OrchardCore.Environment.Extensions;
-
-public interface IExtensionPriorityStrategy
+namespace OrchardCore.Environment.Extensions
 {
-    int GetPriority(IFeatureInfo feature);
+    public interface IExtensionPriorityStrategy
+    {
+        int GetPriority(IFeatureInfo feature);
+    }
 }

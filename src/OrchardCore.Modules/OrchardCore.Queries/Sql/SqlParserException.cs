@@ -1,8 +1,11 @@
-namespace OrchardCore.Queries.Sql;
+using System;
 
-public class SqlParserException : Exception
+namespace OrchardCore.Queries.Sql
 {
-    public SqlParserException(string message) : base(message)
+    public class SqlParserException : Exception
     {
+        public SqlParserException(string message) : base(message)
+        {
+        }
     }
 }

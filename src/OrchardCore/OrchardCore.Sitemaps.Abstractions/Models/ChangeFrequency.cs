@@ -1,12 +1,13 @@
-namespace OrchardCore.Sitemaps.Models;
-
-public enum ChangeFrequency
+namespace OrchardCore.Sitemaps.Models
 {
-    Daily,
-    Hourly,
-    Weekly,
-    Monthly,
-    Yearly,
-    Always,
-    Never,
+    public enum ChangeFrequency
+    {
+        Daily,
+        Hourly,
+        Weekly,
+        Monthly,
+        Yearly,
+        Always,
+        Never,
+    }
 }

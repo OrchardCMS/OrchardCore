@@ -1,19 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Deployment.Steps;
-
-/// <summary>
-/// Adds a custom file to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class CustomFileDeploymentStep : DeploymentStep
+namespace OrchardCore.Deployment.Steps
 {
-    public CustomFileDeploymentStep()
+    /// <summary>
+    /// Adds a custom file to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class CustomFileDeploymentStep : DeploymentStep
     {
-        Name = nameof(CustomFileDeploymentStep);
+        public CustomFileDeploymentStep()
+        {
+            Name = nameof(CustomFileDeploymentStep);
+        }
+
+        [Required]
+        public string FileName { get; set; }
+
+        public string FileContent { get; set; }
     }
-
-    [Required]
-    public string FileName { get; set; }
-
-    public string FileContent { get; set; }
 }

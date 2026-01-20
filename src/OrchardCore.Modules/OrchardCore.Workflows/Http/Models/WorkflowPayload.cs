@@ -1,13 +1,14 @@
-namespace OrchardCore.Workflows.Http.Models;
-
-public class WorkflowPayload
+namespace OrchardCore.Workflows.Http.Models
 {
-    public WorkflowPayload(string workflowId, string activityId)
+    public class WorkflowPayload
     {
-        WorkflowId = workflowId;
-        ActivityId = activityId;
-    }
+        public WorkflowPayload(string workflowId, string activityId)
+        {
+            WorkflowId = workflowId;
+            ActivityId = activityId;
+        }
 
-    public string WorkflowId { get; private set; }
-    public string ActivityId { get; private set; }
+        public string WorkflowId { get; private set; }
+        public string ActivityId { get; private set; }
+    }
 }

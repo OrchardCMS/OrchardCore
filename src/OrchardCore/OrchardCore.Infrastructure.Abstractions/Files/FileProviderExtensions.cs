@@ -1,12 +1,15 @@
-namespace Microsoft.Extensions.FileProviders;
+using System.IO;
 
-public static class FileProviderExtensions
+namespace Microsoft.Extensions.FileProviders
 {
-    /// <summary>
-    /// Locate a file at the give relative paths.
-    /// </summary>
-    public static IFileInfo GetRelativeFileInfo(this IFileProvider provider, string path, string other = null)
+    public static class FileProviderExtensions
     {
-        return provider.GetFileInfo(PathExtensions.ResolvePath(PathExtensions.Combine(path, other)));
+        /// <summary>
+        /// Locate a file at the give relative paths.
+        /// </summary>
+        public static IFileInfo GetRelativeFileInfo(this IFileProvider provider, string path, string other = null)
+        {
+            return provider.GetFileInfo(PathExtensions.ResolvePath(PathExtensions.Combine(path, other)));
+        }
     }
 }

@@ -1,24 +1,26 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Demo;
-
-public sealed class Migrations : DataMigration
+namespace OrchardCore.Demo
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-
-    public Migrations(IContentDefinitionManager contentDefinitionManager)
+    public class Migrations : DataMigration
     {
-        _contentDefinitionManager = contentDefinitionManager;
-    }
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public async Task<int> CreateAsync()
-    {
-        await _contentDefinitionManager.AlterTypeDefinitionAsync("Foo", builder => builder
-            .WithPart("TestContentPartA")
-            .WithPart("TestContentPartB")
-        );
+        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        {
+            _contentDefinitionManager = contentDefinitionManager;
+        }
 
-        return 1;
+        public async Task<int> CreateAsync()
+        {
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Foo", builder => builder
+                .WithPart("TestContentPartA")
+                .WithPart("TestContentPartB")
+            );
+
+            return 1;
+        }
     }
 }

@@ -1,11 +1,12 @@
-namespace OrchardCore.Data;
-
-public class DatabaseProvider
+namespace OrchardCore.Data
 {
-    public string Name { get; set; }
-    public string Value { get; set; }
-    public bool HasConnectionString { get; set; }
-    public bool HasTablePrefix { get; set; }
-    public bool IsDefault { get; set; }
-    public string SampleConnectionString { get; set; }
+    public class DatabaseProvider
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public bool HasConnectionString { get; set; }
+        public bool HasTablePrefix { get; set; }
+        public bool IsDefault { get; set; }
+        public string SampleConnectionString { get; set; }
+    }
 }

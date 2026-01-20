@@ -3,41 +3,42 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Settings;
 
-namespace OrchardCore.DynamicCache;
-
-public sealed class CacheOptionsConfiguration : IConfigureOptions<CacheOptions>
+namespace OrchardCore.DynamicCache
 {
-    private readonly ISiteService _siteService;
-    private readonly IHostEnvironment _env;
-
-    public CacheOptionsConfiguration(ISiteService siteService, IHostEnvironment env)
+    public class CacheOptionsConfiguration : IConfigureOptions<CacheOptions>
     {
-        _siteService = siteService;
-        _env = env;
-    }
+        private readonly ISiteService _siteService;
+        private readonly IHostEnvironment _env;
 
-    public void Configure(CacheOptions options)
-    {
-        var settings = _siteService.GetSiteSettings();
-
-        switch (settings.CacheMode)
+        public CacheOptionsConfiguration(ISiteService siteService, IHostEnvironment env)
         {
-            case CacheMode.Enabled:
-                options.Enabled = true;
-                break;
+            _siteService = siteService;
+            _env = env;
+        }
 
-            case CacheMode.DebugEnabled:
-                options.Enabled = true;
-                options.DebugMode = true;
-                break;
+        public void Configure(CacheOptions options)
+        {
+            var settings = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
 
-            case CacheMode.Disabled:
-                options.Enabled = false;
-                break;
+            switch (settings.CacheMode)
+            {
+                case CacheMode.Enabled:
+                    options.Enabled = true;
+                    break;
 
-            case CacheMode.FromConfiguration:
-                options.Enabled = _env.IsProduction();
-                break;
+                case CacheMode.DebugEnabled:
+                    options.Enabled = true;
+                    options.DebugMode = true;
+                    break;
+
+                case CacheMode.Disabled:
+                    options.Enabled = false;
+                    break;
+
+                case CacheMode.FromConfiguration:
+                    options.Enabled = _env.IsProduction();
+                    break;
+            }
         }
     }
 }

@@ -1,16 +1,18 @@
+using System.Collections.Generic;
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.ContentManagement.Metadata.Records;
-
-[FileDocumentStore(FileName = "ContentDefinition")]
-public class ContentDefinitionRecord : Document
+namespace OrchardCore.ContentManagement.Metadata.Records
 {
-    public ContentDefinitionRecord()
+    [FileDocumentStore(FileName = "ContentDefinition")]
+    public class ContentDefinitionRecord : Document
     {
-        ContentTypeDefinitionRecords = [];
-        ContentPartDefinitionRecords = [];
-    }
+        public ContentDefinitionRecord()
+        {
+            ContentTypeDefinitionRecords = [];
+            ContentPartDefinitionRecords = [];
+        }
 
-    public IList<ContentTypeDefinitionRecord> ContentTypeDefinitionRecords { get; set; }
-    public IList<ContentPartDefinitionRecord> ContentPartDefinitionRecords { get; set; }
+        public IList<ContentTypeDefinitionRecord> ContentTypeDefinitionRecords { get; set; }
+        public IList<ContentPartDefinitionRecord> ContentPartDefinitionRecords { get; set; }
+    }
 }

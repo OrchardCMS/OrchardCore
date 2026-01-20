@@ -1,15 +1,16 @@
-namespace OrchardCore.Localization;
-
-/// <summary>
-/// Represents an enum for calendar names.
-/// </summary>
-public enum CalendarName
+namespace OrchardCore.Localization
 {
-    Hebrew,
-    Hijri,
-    Gregorian,
-    Julian,
-    Persian,
-    UmAlQura,
-    Unknown,
+    /// <summary>
+    /// Represents an enum for calendar names.
+    /// </summary>
+    public enum CalendarName
+    {
+        Hebrew,
+        Hijri,
+        Gregorian,
+        Julian,
+        Persian,
+        UmAlQura,
+        Unknown
+    }
 }

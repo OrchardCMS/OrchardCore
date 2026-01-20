@@ -1,6 +1,9 @@
-namespace OrchardCore.ContentManagement.Handlers;
+using System.Collections.Generic;
 
-public interface IContentFieldHandlerResolver
+namespace OrchardCore.ContentManagement.Handlers
 {
-    IList<IContentFieldHandler> GetHandlers(string fieldName);
+    public interface IContentFieldHandlerResolver
+    {
+        IList<IContentFieldHandler> GetHandlers(string fieldName);
+    }
 }

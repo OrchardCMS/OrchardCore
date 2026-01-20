@@ -2,19 +2,20 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Activities;
 
-namespace OrchardCore.Workflows.ViewModels;
-
-public class ActivityViewModel<TActivity> : ShapeViewModel where TActivity : IActivity
+namespace OrchardCore.Workflows.ViewModels
 {
-    public ActivityViewModel()
+    public class ActivityViewModel<TActivity> : ShapeViewModel where TActivity : IActivity
     {
-    }
+        public ActivityViewModel()
+        {
+        }
 
-    public ActivityViewModel(TActivity activity)
-    {
-        Activity = activity;
-    }
+        public ActivityViewModel(TActivity activity)
+        {
+            Activity = activity;
+        }
 
-    [BindNever]
-    public TActivity Activity { get; set; }
+        [BindNever]
+        public TActivity Activity { get; set; }
+    }
 }

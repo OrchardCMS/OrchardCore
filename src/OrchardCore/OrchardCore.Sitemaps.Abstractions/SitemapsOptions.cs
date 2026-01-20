@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Routing;
 
-namespace OrchardCore.Sitemaps;
-
-public class SitemapsOptions
+namespace OrchardCore.Sitemaps
 {
-    public RouteValueDictionary GlobalRouteValues { get; set; } = [];
-    public string SitemapIdKey { get; set; } = "";
+    public class SitemapsOptions
+    {
+        public RouteValueDictionary GlobalRouteValues { get; set; } = [];
+        public string SitemapIdKey { get; set; } = "";
+    }
 }

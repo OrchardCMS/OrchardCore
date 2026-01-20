@@ -1,15 +1,16 @@
 using OrchardCore.Users.Workflows.Activities;
 
-namespace OrchardCore.Users.Workflows.ViewModels;
-
-public class UserEnabledEventViewModel : UserEventViewModel<UserEnabledEvent>
+namespace OrchardCore.Users.Workflows.ViewModels
 {
-    public UserEnabledEventViewModel()
+    public class UserEnabledEventViewModel : UserEventViewModel<UserEnabledEvent>
     {
-    }
+        public UserEnabledEventViewModel()
+        {
+        }
 
-    public UserEnabledEventViewModel(UserEnabledEvent activity)
-    {
-        Activity = activity;
+        public UserEnabledEventViewModel(UserEnabledEvent activity)
+        {
+            Activity = activity;
+        }
     }
 }

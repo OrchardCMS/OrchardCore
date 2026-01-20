@@ -3,22 +3,23 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Zones;
 
-namespace OrchardCore.ContentTypes.Editors;
-
-public class UpdateContentDefinitionEditorContext<TBuilder> : UpdateEditorContext
+namespace OrchardCore.ContentTypes.Editors
 {
-    public UpdateContentDefinitionEditorContext(
-        TBuilder builder,
-        IShape model,
-        string groupId,
-        bool isNew,
-        IShapeFactory shapeFactory,
-        IZoneHolding layout,
-        IUpdateModel updater)
-        : base(model, groupId, isNew, "", shapeFactory, layout, updater)
+    public class UpdateContentDefinitionEditorContext<TBuilder> : UpdateEditorContext
     {
-        Builder = builder;
-    }
+        public UpdateContentDefinitionEditorContext(
+            TBuilder builder,
+            IShape model,
+            string groupId,
+            bool isNew,
+            IShapeFactory shapeFactory,
+            IZoneHolding layout,
+            IUpdateModel updater)
+            : base(model, groupId, isNew, "", shapeFactory, layout, updater)
+        {
+            Builder = builder;
+        }
 
-    public TBuilder Builder { get; private set; }
+        public TBuilder Builder { get; private set; }
+    }
 }

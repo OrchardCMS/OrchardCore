@@ -2,19 +2,20 @@ using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.ReverseProxy.Settings;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-public static class OrchardCoreBuilderExtensions
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static OrchardCoreBuilder ConfigureReverseProxySettings(this OrchardCoreBuilder builder)
+    public static class OrchardCoreBuilderExtensions
     {
-        builder.ConfigureServices((tenantServices, serviceProvider) =>
+        public static OrchardCoreBuilder ConfigureReverseProxySettings(this OrchardCoreBuilder builder)
         {
-            var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_ReverseProxy");
+            builder.ConfigureServices((tenantServices, serviceProvider) =>
+            {
+                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_ReverseProxy");
 
-            tenantServices.PostConfigure<ReverseProxySettings>(settings => configurationSection.Bind(settings));
-        });
+                tenantServices.PostConfigure<ReverseProxySettings>(settings => configurationSection.Bind(settings));
+            });
 
-        return builder;
+            return builder;
+        }
     }
 }

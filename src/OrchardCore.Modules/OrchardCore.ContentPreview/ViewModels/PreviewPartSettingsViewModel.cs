@@ -1,9 +1,10 @@
 using OrchardCore.ContentPreview.Models;
 
-namespace OrchardCore.ContentPreview.ViewModels;
-
-public class PreviewPartSettingsViewModel
+namespace OrchardCore.ContentPreview.ViewModels
 {
-    public string Pattern { get; set; }
-    public PreviewPartSettings PreviewPartSettings { get; set; }
+    public class PreviewPartSettingsViewModel
+    {
+        public string Pattern { get; set; }
+        public PreviewPartSettings PreviewPartSettings { get; set; }
+    }
 }

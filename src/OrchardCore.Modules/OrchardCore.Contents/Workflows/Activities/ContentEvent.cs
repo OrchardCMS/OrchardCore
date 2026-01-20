@@ -1,49 +1,49 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Contents.Workflows.Activities;
-
-public abstract class ContentEvent : ContentActivity, IEvent
+namespace OrchardCore.Contents.Workflows.Activities
 {
-    protected ContentEvent(
-        IContentManager contentManager,
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IStringLocalizer localizer)
-        : base(contentManager, scriptEvaluator, localizer)
+    public abstract class ContentEvent : ContentActivity, IEvent
     {
-    }
-
-    public IList<string> ContentTypeFilter
-    {
-        get => GetProperty<IList<string>>(defaultValue: () => []);
-        set => SetProperty(value);
-    }
-
-    public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        var content = await GetContentAsync(workflowContext);
-
-        if (content == null)
+        protected ContentEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer) : base(contentManager, scriptEvaluator, localizer)
         {
-            return false;
         }
 
-        var contentTypes = ContentTypeFilter.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+        public IList<string> ContentTypeFilter
+        {
+            get => GetProperty<IList<string>>(defaultValue: () => []);
+            set => SetProperty(value);
+        }
 
-        // "" means 'any'.
-        return contentTypes.Count == 0 || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
-    }
+        public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            var content = await GetContentAsync(workflowContext);
 
-    public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Halt();
-    }
+            if (content == null)
+            {
+                return false;
+            }
 
-    public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes("Done");
+            var contentTypes = ContentTypeFilter.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+
+            // "" means 'any'.
+            return !contentTypes.Any() || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
+        }
+
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Halt();
+        }
+
+        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Outcomes("Done");
+        }
     }
 }

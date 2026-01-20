@@ -1,9 +1,13 @@
-namespace OrchardCore.Environment.Shell.Models;
+using System;
+using System.Collections.Generic;
 
-/// <summary>
-/// Provides options for validating features through profiles.
-/// </summary>
-public class FeatureProfilesRuleOptions
+namespace OrchardCore.Environment.Shell.Models
 {
-    public Dictionary<string, Func<string, string, (bool isMatch, bool isAllowed)>> Rules = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>
+    /// Provides options for validating features through profiles.
+    /// </summary>
+    public class FeatureProfilesRuleOptions
+    {
+        public Dictionary<string, Func<string, string, (bool isMatch, bool isAllowed)>> Rules = new(StringComparer.OrdinalIgnoreCase);
+    }
 }

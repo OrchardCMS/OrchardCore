@@ -1,11 +1,12 @@
-namespace OrchardCore.Workflows.Models;
-
-public class WorkflowContext
+namespace OrchardCore.Workflows.Models
 {
-    public WorkflowContext(Workflow workflow)
+    public class WorkflowContext
     {
-        Workflow = workflow;
-    }
+        public WorkflowContext(Workflow workflow)
+        {
+            Workflow = workflow;
+        }
 
-    public Workflow Workflow { get; }
+        public Workflow Workflow { get; }
+    }
 }

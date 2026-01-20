@@ -1,30 +1,32 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace OrchardCore.Mvc.RazorPages;
-
-public class ModularPageViewEnginePathFilter : IAsyncPageFilter
+namespace OrchardCore.Mvc.RazorPages
 {
-    private readonly bool _found;
-
-    public ModularPageViewEnginePathFilter(bool found)
+    public class ModularPageViewEnginePathFilter : IAsyncPageFilter
     {
-        _found = found;
-    }
+        private readonly bool _found;
 
-    public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
-    {
-        if (!_found)
+        public ModularPageViewEnginePathFilter(bool found)
         {
-            context.Result = new NotFoundResult();
-            return;
+            _found = found;
         }
 
-        await next();
-    }
+        public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+        {
+            if (!_found)
+            {
+                context.Result = new NotFoundResult();
+                return;
+            }
 
-    public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
-    {
-        return Task.CompletedTask;
+            await next();
+        }
+
+        public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

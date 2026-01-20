@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace OrchardCore.Sms;
 
 public interface ISmsService

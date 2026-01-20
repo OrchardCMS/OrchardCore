@@ -1,16 +1,17 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Sitemaps;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
+    public static readonly Permission ManageSitemaps = new("ManageSitemaps", "Manage sitemaps");
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        SitemapsPermissions.ManageSitemaps,
+        ManageSitemaps,
     ];
-
-    [Obsolete("This will be removed in a future release. Instead use 'SitemapsPermissions.ManageSitemaps'.")]
-    public static readonly Permission ManageSitemaps = SitemapsPermissions.ManageSitemaps;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
@@ -19,7 +20,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

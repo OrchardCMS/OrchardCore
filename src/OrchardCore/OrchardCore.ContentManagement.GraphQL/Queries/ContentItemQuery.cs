@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -7,51 +8,50 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries;
-
-public sealed class ContentItemQuery : ISchemaBuilder
+namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    internal readonly IStringLocalizer S;
-
-    public ContentItemQuery(IHttpContextAccessor httpContextAccessor,
-        IStringLocalizer<ContentItemQuery> localizer)
+    public class ContentItemQuery : ISchemaBuilder
     {
-        _httpContextAccessor = httpContextAccessor;
-        S = localizer;
-    }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        protected readonly IStringLocalizer S;
 
-    public Task<string> GetIdentifierAsync()
-        => Task.FromResult(string.Empty);
-
-    public Task BuildAsync(ISchema schema)
-    {
-        var field = new FieldType
+        public ContentItemQuery(IHttpContextAccessor httpContextAccessor,
+            IStringLocalizer<ContentItemQuery> localizer)
         {
-            Name = "ContentItem",
-            Description = S["Content items are instances of content types, just like objects are instances of classes."],
-            Type = typeof(ContentItemInterface),
-            Arguments = new QueryArguments(
-                new QueryArgument<NonNullGraphType<StringGraphType>>
-                {
-                    Name = "contentItemId",
-                    Description = S["Content item id"],
-                }
-            ),
-            Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync),
-        };
+            _httpContextAccessor = httpContextAccessor;
 
-        schema.Query.AddField(field);
+            S = localizer;
+        }
 
-        return Task.CompletedTask;
-    }
+        public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
 
-    private async ValueTask<ContentItem> ResolveAsync(IResolveFieldContext context)
-    {
-        var contentItemId = context.GetArgument<string>("contentItemId");
-        var contentManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentManager>();
+        public Task BuildAsync(ISchema schema)
+        {
+            var field = new FieldType
+            {
+                Name = "ContentItem",
+                Description = S["Content items are instances of content types, just like objects are instances of classes."],
+                Type = typeof(ContentItemInterface),
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>>
+                    {
+                        Name = "contentItemId",
+                        Description = S["Content item id"]
+                    }
+                ),
+                Resolver = new AsyncFieldResolver<ContentItem>(ResolveAsync)
+            };
 
-        return await contentManager.GetAsync(contentItemId);
+            schema.Query.AddField(field);
+
+            return Task.CompletedTask;
+        }
+
+        private Task<ContentItem> ResolveAsync(IResolveFieldContext context)
+        {
+            var contentItemId = context.GetArgument<string>("contentItemId");
+            var contentManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentManager>();
+            return contentManager.GetAsync(contentItemId);
+        }
     }
 }

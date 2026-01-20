@@ -1,6 +1,9 @@
-namespace OrchardCore.Contents.ViewModels;
+using System;
 
-public class DateEditorViewModel
+namespace OrchardCore.Contents.ViewModels
 {
-    public DateTime? LocalDateTime { get; set; }
+    public class DateEditorViewModel
+    {
+        public DateTime? LocalDateTime { get; set; }
+    }
 }

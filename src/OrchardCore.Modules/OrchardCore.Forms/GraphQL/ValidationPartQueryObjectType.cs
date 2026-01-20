@@ -1,14 +1,15 @@
 using GraphQL.Types;
 using OrchardCore.Forms.Models;
 
-namespace OrchardCore.Forms.GraphQL;
-
-public class ValidationPartQueryObjectType : ObjectGraphType<ValidationPart>
+namespace OrchardCore.Forms.GraphQL
 {
-    public ValidationPartQueryObjectType()
+    public class ValidationPartQueryObjectType : ObjectGraphType<ValidationPart>
     {
-        Name = "ValidationPart";
+        public ValidationPartQueryObjectType()
+        {
+            Name = "ValidationPart";
 
-        Field(x => x.For, nullable: true);
+            Field(x => x.For, nullable: true);
+        }
     }
 }

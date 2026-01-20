@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -5,32 +7,33 @@ using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Contents.Workflows.Drivers;
-
-public sealed class UpdateContentTaskDisplayDriver : ContentTaskDisplayDriver<UpdateContentTask, UpdateContentTaskViewModel>
+namespace OrchardCore.Contents.Workflows.Drivers
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-
-    public UpdateContentTaskDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+    public class UpdateContentTaskDisplayDriver : ContentTaskDisplayDriver<UpdateContentTask, UpdateContentTaskViewModel>
     {
-        _contentDefinitionManager = contentDefinitionManager;
-    }
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    protected override async ValueTask EditActivityAsync(UpdateContentTask activity, UpdateContentTaskViewModel model)
-    {
-        model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-            .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
-            .ToList();
+        public UpdateContentTaskDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+        {
+            _contentDefinitionManager = contentDefinitionManager;
+        }
 
-        model.ContentItemIdExpression = activity.Content.Expression;
-        model.ContentProperties = activity.ContentProperties.Expression;
-        model.Publish = activity.Publish;
-    }
+        protected override async ValueTask EditActivityAsync(UpdateContentTask activity, UpdateContentTaskViewModel model)
+        {
+            model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
+                .ToList();
 
-    protected override void UpdateActivity(UpdateContentTaskViewModel model, UpdateContentTask activity)
-    {
-        activity.Content = new WorkflowExpression<IContent>(model.ContentItemIdExpression);
-        activity.ContentProperties = new WorkflowExpression<string>(model.ContentProperties);
-        activity.Publish = model.Publish;
+            model.ContentItemIdExpression = activity.Content.Expression;
+            model.ContentProperties = activity.ContentProperties.Expression;
+            model.Publish = activity.Publish;
+        }
+
+        protected override void UpdateActivity(UpdateContentTaskViewModel model, UpdateContentTask activity)
+        {
+            activity.Content = new WorkflowExpression<IContent>(model.ContentItemIdExpression);
+            activity.ContentProperties = new WorkflowExpression<string>(model.ContentProperties);
+            activity.Publish = model.Publish;
+        }
     }
 }

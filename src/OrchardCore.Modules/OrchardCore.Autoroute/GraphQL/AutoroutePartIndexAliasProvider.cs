@@ -1,22 +1,24 @@
+using System.Collections.Generic;
 using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 
-namespace OrchardCore.Autoroute.GraphQL;
-
-public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
+namespace OrchardCore.Autoroute.GraphQL
 {
-    private static readonly IndexAlias[] _aliases =
-    [
-        new IndexAlias
-        {
-            Alias = "autoroutePart",
-            Index = nameof(AutoroutePartIndex),
-            IndexType = typeof(AutoroutePartIndex),
-        }
-    ];
-
-    public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
+    public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
     {
-        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+        private static readonly IndexAlias[] _aliases =
+        [
+            new IndexAlias
+            {
+                Alias = "autoroutePart",
+                Index = nameof(AutoroutePartIndex),
+                IndexType = typeof(AutoroutePartIndex)
+            }
+        ];
+
+        public IEnumerable<IndexAlias> GetAliases()
+        {
+            return _aliases;
+        }
     }
 }

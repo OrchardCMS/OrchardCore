@@ -1,63 +1,63 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Placements.ViewModels;
 
-namespace OrchardCore.Placements.Settings;
-
-public sealed class PlacementContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
+namespace OrchardCore.Placements.Settings
 {
-    internal readonly IStringLocalizer S;
-
-    public PlacementContentTypePartDefinitionDriver(IStringLocalizer<PlacementContentTypePartDefinitionDriver> localizer)
+    public class PlacementContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
     {
-        S = localizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
-    {
-        return Initialize<ContentSettingsViewModel>("PlacementSettings", model =>
+        public PlacementContentTypePartDefinitionDriver(IStringLocalizer<PlacementContentTypePartDefinitionDriver> localizer)
         {
-            var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
-            var partName = contentTypePartDefinition.Name;
-            var displayName = contentTypePartDefinition.ContentTypeDefinition.DisplayName;
+            S = localizer;
+        }
 
-            model.ContentSettingsEntries.Add(
-                new ContentSettingsEntry
-                {
-                    ShapeType = partName,
-                    ContentType = contentType,
-                    Description = S["Placement for the {0} part in a {1} type", partName, displayName],
-                });
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition)
+        {
+            return Initialize<ContentSettingsViewModel>("PlacementSettings", model =>
+            {
+                var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
+                var partName = contentTypePartDefinition.Name;
+                var displayName = contentTypePartDefinition.ContentTypeDefinition.DisplayName;
 
-            model.ContentSettingsEntries.Add(
-                new ContentSettingsEntry
-                {
-                    ShapeType = partName,
-                    ContentType = contentType,
-                    DisplayType = "Detail",
-                    Description = S["Placement for the {0} part in a {1} type in detail views", partName, displayName],
-                });
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = partName,
+                        ContentType = contentType,
+                        Description = S["Placement for the {0} part in a {1} type", partName, displayName]
+                    });
 
-            model.ContentSettingsEntries.Add(
-                new ContentSettingsEntry
-                {
-                    ShapeType = partName,
-                    ContentType = contentType,
-                    DisplayType = "Summary",
-                    Description = S["Placement for the {0} part in a {1} type in summary views", partName, displayName],
-                });
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = partName,
+                        ContentType = contentType,
+                        DisplayType = "Detail",
+                        Description = S["Placement for the {0} part in a {1} type in detail views", partName, displayName]
+                    });
 
-            model.ContentSettingsEntries.Add(
-                new ContentSettingsEntry
-                {
-                    ShapeType = $"{partName}_Edit",
-                    ContentType = contentType,
-                    Description = S["Placement in admin editor for the {0} part in a {1} type", partName, displayName],
-                });
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = partName,
+                        ContentType = contentType,
+                        DisplayType = "Summary",
+                        Description = S["Placement for the {0} part in a {1} type in summary views", partName, displayName]
+                    });
 
-        }).Location("Shortcuts");
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = $"{partName}_Edit",
+                        ContentType = contentType,
+                        Description = S["Placement in admin editor for the {0} part in a {1} type", partName, displayName]
+                    });
+
+            }).Location("Shortcuts");
+        }
     }
 }

@@ -1,48 +1,52 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Flows.Models;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.Flows.Indexing;
-
-public class BagPartIndexHandler : ContentPartIndexHandler<BagPart>
+namespace OrchardCore.Flows.Indexing
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public BagPartIndexHandler(IServiceProvider serviceProvider)
+    public class BagPartIndexHandler : ContentPartIndexHandler<BagPart>
     {
-        _serviceProvider = serviceProvider;
-    }
+        private readonly IServiceProvider _serviceProvider;
 
-    public override async Task BuildIndexAsync(BagPart bagPart, BuildPartIndexContext context)
-    {
-        var options = context.Settings.ToOptions();
-        if (options == DocumentIndexOptions.None)
+        public BagPartIndexHandler(IServiceProvider serviceProvider)
         {
-            return;
+            _serviceProvider = serviceProvider;
         }
 
-        if (bagPart.ContentItems.Count != 0)
+        public override async Task BuildIndexAsync(BagPart bagPart, BuildPartIndexContext context)
         {
-            // Lazy resolution to prevent cyclic dependency.
-            var contentItemIndexHandlers = _serviceProvider.GetServices<IDocumentIndexHandler>();
-
-            foreach (var contentItemIndexHandler in contentItemIndexHandlers)
+            var options = context.Settings.ToOptions();
+            if (options == DocumentIndexOptions.None)
             {
-                foreach (var contentItem in bagPart.ContentItems)
+                return;
+            }
+
+            if (bagPart.ContentItems.Count != 0)
+            {
+                // Lazy resolution to prevent cyclic dependency.
+                var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
+
+                foreach (var contentItemIndexHandler in contentItemIndexHandlers)
                 {
-                    var keys = new List<string>
+                    foreach (var contentItem in bagPart.ContentItems)
                     {
-                        contentItem.ContentType,
-                    };
+                        var keys = new List<string>
+                        {
+                            contentItem.ContentType,
+                        };
 
-                    foreach (var key in context.Keys)
-                    {
-                        keys.Add($"{key}.{contentItem.ContentType}");
+                        foreach (var key in context.Keys)
+                        {
+                            keys.Add($"{key}.{contentItem.ContentType}");
+                        }
+
+                        var buildIndexContext = new BuildIndexContext(context.DocumentIndex, contentItem, keys, context.Settings);
+
+                        await contentItemIndexHandler.BuildIndexAsync(buildIndexContext);
                     }
-
-                    var buildIndexContext = new BuildDocumentIndexContext(context.DocumentIndex, contentItem, keys, context.Settings);
-
-                    await contentItemIndexHandler.BuildIndexAsync(buildIndexContext);
                 }
             }
         }

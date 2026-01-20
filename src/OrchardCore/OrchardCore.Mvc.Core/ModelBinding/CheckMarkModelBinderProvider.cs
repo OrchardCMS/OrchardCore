@@ -1,22 +1,24 @@
+using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Mvc.ModelBinding;
-
-/// <summary>
-/// An <see cref="IModelBinderProvider"/> for <see cref="CheckMarkModelBinder"/>.
-/// </summary>
-public class CheckMarkModelBinderProvider : IModelBinderProvider
+namespace OrchardCore.Mvc.ModelBinding
 {
-    /// <inheritdoc />
-    public IModelBinder GetBinder(ModelBinderProviderContext context)
+    /// <summary>
+    /// An <see cref="IModelBinderProvider"/> for <see cref="CheckMarkModelBinder"/>.
+    /// </summary>
+    public class CheckMarkModelBinderProvider : IModelBinderProvider
     {
-        ArgumentNullException.ThrowIfNull(context);
-
-        if (context.Metadata.ModelType == typeof(CheckMarkModelBinder))
+        /// <inheritdoc />
+        public IModelBinder GetBinder(ModelBinderProviderContext context)
         {
-            return new CheckMarkModelBinder();
-        }
+            ArgumentNullException.ThrowIfNull(context);
 
-        return null;
+            if (context.Metadata.ModelType == typeof(CheckMarkModelBinder))
+            {
+                return new CheckMarkModelBinder();
+            }
+
+            return null;
+        }
     }
 }

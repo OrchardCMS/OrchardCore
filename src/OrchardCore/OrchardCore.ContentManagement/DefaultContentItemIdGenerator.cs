@@ -1,18 +1,19 @@
 using OrchardCore.Entities;
 
-namespace OrchardCore.ContentManagement;
-
-public class DefaultContentItemIdGenerator : IContentItemIdGenerator
+namespace OrchardCore.ContentManagement
 {
-    private readonly IIdGenerator _generator;
-
-    public DefaultContentItemIdGenerator(IIdGenerator generator)
+    public class DefaultContentItemIdGenerator : IContentItemIdGenerator
     {
-        _generator = generator;
-    }
+        private readonly IIdGenerator _generator;
 
-    public string GenerateUniqueId(ContentItem contentItem)
-    {
-        return _generator.GenerateUniqueId();
+        public DefaultContentItemIdGenerator(IIdGenerator generator)
+        {
+            _generator = generator;
+        }
+
+        public string GenerateUniqueId(ContentItem contentItem)
+        {
+            return _generator.GenerateUniqueId();
+        }
     }
 }

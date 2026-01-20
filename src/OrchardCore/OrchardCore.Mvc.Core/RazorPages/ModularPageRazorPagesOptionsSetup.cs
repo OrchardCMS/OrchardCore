@@ -4,34 +4,35 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Mvc.RazorPages;
-
-public sealed class ModularPageRazorPagesOptionsSetup : IConfigureOptions<RazorPagesOptions>
+namespace OrchardCore.Mvc.RazorPages
 {
-    private readonly IApplicationContext _applicationContext;
-    private readonly ShellSettings _shellSettings;
-
-    public ModularPageRazorPagesOptionsSetup(IApplicationContext applicationContext, ShellSettings shellSettings)
+    public class ModularPageRazorPagesOptionsSetup : IConfigureOptions<RazorPagesOptions>
     {
-        _applicationContext = applicationContext;
-        _shellSettings = shellSettings;
-    }
+        private readonly IApplicationContext _applicationContext;
+        private readonly ShellSettings _shellSettings;
 
-    public void Configure(RazorPagesOptions options)
-    {
-        // Only serve pages under the "Areas" folder and whose routes have an area name.
-        options.Conventions.AddFolderRouteModelConvention("/", model => model.Selectors.Clear());
-
-        if (!_shellSettings.IsRunning())
+        public ModularPageRazorPagesOptionsSetup(IApplicationContext applicationContext, ShellSettings shellSettings)
         {
-            // Don't serve any page of the application'module which is enabled during a setup.
-            options.Conventions.AddAreaFolderRouteModelConvention(_applicationContext.Application.Name, "/",
-                model => model.Selectors.Clear());
+            _applicationContext = applicationContext;
+            _shellSettings = shellSettings;
         }
-        else
+
+        public void Configure(RazorPagesOptions options)
         {
-            // Add a custom folder route to serve the application's module pages from the root.
-            options.Conventions.AddAreaFolderRoute(_applicationContext.Application.Name, "/", "");
+            // Only serve pages under the "Areas" folder and whose routes have an area name.
+            options.Conventions.AddFolderRouteModelConvention("/", model => model.Selectors.Clear());
+
+            if (!_shellSettings.IsRunning())
+            {
+                // Don't serve any page of the application'module which is enabled during a setup.
+                options.Conventions.AddAreaFolderRouteModelConvention(_applicationContext.Application.Name, "/",
+                    model => model.Selectors.Clear());
+            }
+            else
+            {
+                // Add a custom folder route to serve the application's module pages from the root.
+                options.Conventions.AddAreaFolderRoute(_applicationContext.Application.Name, "/", "");
+            }
         }
     }
 }

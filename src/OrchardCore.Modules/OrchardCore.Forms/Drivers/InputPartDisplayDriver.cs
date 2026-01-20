@@ -1,38 +1,41 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
-namespace OrchardCore.Forms.Drivers;
-
-public sealed class InputPartDisplayDriver : ContentPartDisplayDriver<InputPart>
+namespace OrchardCore.Forms.Drivers
 {
-    public override IDisplayResult Display(InputPart part, BuildPartDisplayContext context)
+    public class InputPartDisplayDriver : ContentPartDisplayDriver<InputPart>
     {
-        return View("InputPart", part).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
-    }
-
-    public override IDisplayResult Edit(InputPart part, BuildPartEditorContext context)
-    {
-        return Initialize<InputPartEditViewModel>("InputPart_Fields_Edit", m =>
+        public override IDisplayResult Display(InputPart part)
         {
-            m.Placeholder = part.Placeholder;
-            m.DefaultValue = part.DefaultValue;
-            m.Type = part.Type;
-        });
-    }
+            return View("InputPart", part).Location("Detail", "Content");
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(InputPart part, UpdatePartEditorContext context)
-    {
-        var viewModel = new InputPartEditViewModel();
+        public override IDisplayResult Edit(InputPart part)
+        {
+            return Initialize<InputPartEditViewModel>("InputPart_Fields_Edit", m =>
+            {
+                m.Placeholder = part.Placeholder;
+                m.DefaultValue = part.DefaultValue;
+                m.Type = part.Type;
+            });
+        }
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        public async override Task<IDisplayResult> UpdateAsync(InputPart part, IUpdateModel updater)
+        {
+            var viewModel = new InputPartEditViewModel();
 
-        part.Placeholder = viewModel.Placeholder?.Trim();
-        part.DefaultValue = viewModel.DefaultValue?.Trim();
-        part.Type = viewModel.Type?.Trim();
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            {
+                part.Placeholder = viewModel.Placeholder?.Trim();
+                part.DefaultValue = viewModel.DefaultValue?.Trim();
+                part.Type = viewModel.Type?.Trim();
+            }
 
-        return Edit(part, context);
+            return Edit(part);
+        }
     }
 }

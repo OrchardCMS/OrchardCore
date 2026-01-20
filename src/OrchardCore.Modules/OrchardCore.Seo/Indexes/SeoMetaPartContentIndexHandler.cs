@@ -1,23 +1,19 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Indexing;
 using OrchardCore.Seo.Models;
 
 namespace OrchardCore.Seo.Indexes;
 
-public class SeoMetaPartContentIndexHandler : IDocumentIndexHandler
+public class SeoMetaPartContentIndexHandler : IContentItemIndexHandler
 {
     public const string PageTitleKey = "Content.ContentItem.SeoMetaPart.PageTitle";
     public const string MetaDescriptionKey = "Content.ContentItem.SeoMetaPart.MetaDescription";
     public const string MetaKeywordsKey = "Content.ContentItem.SeoMetaPart.MetaKeywords";
 
-    public Task BuildIndexAsync(BuildDocumentIndexContext context)
+    public Task BuildIndexAsync(BuildIndexContext context)
     {
-        if (context.Record is not ContentItem contentItem)
-        {
-            return Task.CompletedTask;
-        }
-
-        var parent = contentItem.As<SeoMetaPart>();
+        var parent = context.ContentItem.As<SeoMetaPart>();
 
         if (parent == null)
         {

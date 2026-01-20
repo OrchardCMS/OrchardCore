@@ -1,14 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Feeds.Rss;
 
-namespace OrchardCore.Feeds;
-
-public static class ServiceCollectionExtensions
+namespace OrchardCore.Feeds
 {
-    public static IServiceCollection AddFeeds(this IServiceCollection services)
+    public static class ServiceCollectionExtensions
     {
-        services.AddSingleton<IFeedBuilderProvider, RssFeedBuilderProvider>();
+        public static IServiceCollection AddFeeds(this IServiceCollection services)
+        {
+            services.AddSingleton<IFeedBuilderProvider, RssFeedBuilderProvider>();
 
-        return services;
+            return services;
+        }
     }
 }

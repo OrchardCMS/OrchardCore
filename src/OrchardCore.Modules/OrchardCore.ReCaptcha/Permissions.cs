@@ -1,16 +1,18 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ReCaptcha;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
+    public static readonly Permission ManageReCaptchaSettings = new("ManageReCaptchaSettings", "Manage ReCaptcha Settings");
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ReCaptchaPermissions.ManageReCaptchaSettings,
+        ManageReCaptchaSettings,
     ];
 
-    [Obsolete("This will be removed in a future release. Instead use 'ReCaptchaPermissions.ManageReCaptchaSettings'.")]
-    public static readonly Permission ManageReCaptchaSettings = ReCaptchaPermissions.ManageReCaptchaSettings;
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
 
@@ -18,7 +20,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

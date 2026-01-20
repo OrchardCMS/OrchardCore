@@ -1,17 +1,24 @@
+using System.Threading.Tasks;
+using OrchardCore.Entities;
 using OrchardCore.Security.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Security.Services;
-
-public class SecurityService : ISecurityService
+namespace OrchardCore.Security.Services
 {
-    private readonly ISiteService _siteService;
-
-    public SecurityService(ISiteService siteService)
+    public class SecurityService : ISecurityService
     {
-        _siteService = siteService;
-    }
+        private readonly ISiteService _siteService;
 
-    public Task<SecuritySettings> GetSettingsAsync()
-        => _siteService.GetSettingsAsync<SecuritySettings>();
+        public SecurityService(ISiteService siteService)
+        {
+            _siteService = siteService;
+        }
+
+        public async Task<SecuritySettings> GetSettingsAsync()
+        {
+            var securityHeadersSettings = await _siteService.GetSiteSettingsAsync();
+
+            return securityHeadersSettings.As<SecuritySettings>();
+        }
+    }
 }

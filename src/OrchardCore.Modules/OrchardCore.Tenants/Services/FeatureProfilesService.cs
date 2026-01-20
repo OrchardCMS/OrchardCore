@@ -1,21 +1,24 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 
-namespace OrchardCore.Tenants.Services;
-
-public class FeatureProfilesService : IFeatureProfilesService
+namespace OrchardCore.Tenants.Services
 {
-    private readonly FeatureProfilesManager _featureProfilesManager;
-
-    public FeatureProfilesService(FeatureProfilesManager featureProfilesManager)
+    public class FeatureProfilesService : IFeatureProfilesService
     {
-        _featureProfilesManager = featureProfilesManager;
-    }
+        private readonly FeatureProfilesManager _featureProfilesManager;
 
-    public async Task<IDictionary<string, FeatureProfile>> GetFeatureProfilesAsync()
-    {
-        var document = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
+        public FeatureProfilesService(FeatureProfilesManager featureProfilesManager)
+        {
+            _featureProfilesManager = featureProfilesManager;
+        }
 
-        return document.FeatureProfiles;
+        public async Task<IDictionary<string, FeatureProfile>> GetFeatureProfilesAsync()
+        {
+            var document = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
+
+            return document.FeatureProfiles;
+        }
     }
 }

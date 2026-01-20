@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.AdminMenu.ViewModels;
-
-public class AdminMenuCreateViewModel
+namespace OrchardCore.AdminMenu.ViewModels
 {
-    [Required]
-    public string Name { get; set; }
+    public class AdminMenuCreateViewModel
+    {
+        [Required]
+        public string Name { get; set; }
+    }
 }

@@ -2,24 +2,25 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace OrchardCore.Application.Pages;
-
-public sealed class Startup
+namespace OrchardCore.Application.Pages
 {
-    public void ConfigureServices(IServiceCollection services)
+    public class Startup
     {
-        services.AddOrchardCms();
-    }
-
-    public void Configure(IApplicationBuilder app, IHostEnvironment env)
-    {
-        if (env.IsDevelopment())
+        public void ConfigureServices(IServiceCollection services)
         {
-            app.UseDeveloperExceptionPage();
+            services.AddOrchardCms();
         }
 
-        app.UseStaticFiles();
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
-        app.UseOrchardCore();
+            app.UseStaticFiles();
+
+            app.UseOrchardCore();
+        }
     }
 }

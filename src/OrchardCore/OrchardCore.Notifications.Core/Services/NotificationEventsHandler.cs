@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace OrchardCore.Notifications.Services;
 
 public class NotificationEventsHandler : INotificationEvents

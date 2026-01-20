@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.Users.Services;
@@ -6,7 +8,7 @@ public class DefaultTwoFactorAuthenticationHandlerCoordinator : ITwoFactorAuthen
 {
     private readonly IEnumerable<ITwoFactorAuthenticationHandler> _twoFactorAuthenticationHandlers;
 
-    private bool? _isRequired;
+    private bool? _isRequired = null;
 
     public DefaultTwoFactorAuthenticationHandlerCoordinator(
         IEnumerable<ITwoFactorAuthenticationHandler> twoFactorAuthenticationHandlers)
@@ -14,13 +16,13 @@ public class DefaultTwoFactorAuthenticationHandlerCoordinator : ITwoFactorAuthen
         _twoFactorAuthenticationHandlers = twoFactorAuthenticationHandlers;
     }
 
-    public async Task<bool> IsRequiredAsync(IUser user)
+    public async Task<bool> IsRequiredAsync()
     {
         if (_isRequired is null)
         {
             foreach (var handler in _twoFactorAuthenticationHandlers)
             {
-                if (await handler.IsRequiredAsync(user))
+                if (await handler.IsRequiredAsync())
                 {
                     _isRequired = true;
 

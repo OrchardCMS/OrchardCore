@@ -1,7 +1,8 @@
-namespace OrchardCore.Media;
-
-public interface IMediaNameNormalizerService
+namespace OrchardCore.Media
 {
-    string NormalizeFolderName(string folderName);
-    string NormalizeFileName(string fileName);
+    public interface IMediaNameNormalizerService
+    {
+        public string NormalizeFolderName(string folderName);
+        public string NormalizeFileName(string fileName);
+    }
 }

@@ -1,70 +1,71 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 
-namespace OrchardCore.Demo.Controllers;
-
-[Route("api/demo")]
-[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-[ApiController]
-public sealed class ContentApiController : ControllerBase
+namespace OrchardCore.Demo.Controllers
 {
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IContentManager _contentManager;
-
-    public ContentApiController(
-        IAuthorizationService authorizationService,
-        IContentManager contentManager)
+    [Route("api/demo")]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+    [ApiController]
+    public class ContentApiController : Controller
     {
-        _authorizationService = authorizationService;
-        _contentManager = contentManager;
-    }
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IContentManager _contentManager;
 
-    public async Task<IActionResult> GetById(string id)
-    {
-        var contentItem = await _contentManager.GetAsync(id);
-
-        if (contentItem == null)
+        public ContentApiController(IAuthorizationService authorizationService, IContentManager contentManager)
         {
-            return NotFound();
+            _authorizationService = authorizationService;
+            _contentManager = contentManager;
         }
 
-        return new ObjectResult(contentItem);
-    }
-
-    public async Task<IActionResult> GetAuthorizedById(string id)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
+        public async Task<IActionResult> GetById(string id)
         {
-            return this.ChallengeOrForbid("Api");
+            var contentItem = await _contentManager.GetAsync(id);
+
+            if (contentItem == null)
+            {
+                return NotFound();
+            }
+
+            return new ObjectResult(contentItem);
         }
 
-        var contentItem = await _contentManager.GetAsync(id);
-
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
+        public async Task<IActionResult> GetAuthorizedById(string id)
         {
-            return this.ChallengeOrForbid("Api");
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            var contentItem = await _contentManager.GetAsync(id);
+
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            if (contentItem == null)
+            {
+                return NotFound();
+            }
+
+            return new ObjectResult(contentItem);
         }
 
-        if (contentItem == null)
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddContent(ContentItem contentItem)
         {
-            return NotFound();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            await _contentManager.CreateAsync(contentItem);
+
+            return new ObjectResult(contentItem);
         }
-
-        return new ObjectResult(contentItem);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddContent(ContentItem contentItem)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
-        {
-            return this.ChallengeOrForbid("Api");
-        }
-
-        await _contentManager.CreateAsync(contentItem);
-
-        return new ObjectResult(contentItem);
     }
 }

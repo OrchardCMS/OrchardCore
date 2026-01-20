@@ -1,6 +1,7 @@
-namespace OrchardCore.Users.Models;
-
-public class ChangeEmailSettings
+namespace OrchardCore.Users.Models
 {
-    public bool AllowChangeEmail { get; set; }
+    public class ChangeEmailSettings
+    {
+        public bool AllowChangeEmail { get; set; }
+    }
 }

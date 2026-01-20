@@ -1,24 +1,26 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentLocalization.Handlers;
-
-public abstract class ContentLocalizationPartHandlerBase<TPart> : IContentLocalizationPartHandler where TPart : ContentPart, new()
+namespace OrchardCore.ContentLocalization.Handlers
 {
-    async Task IContentLocalizationPartHandler.LocalizingAsync(LocalizationContentContext context, ContentPart part)
+    public abstract class ContentLocalizationPartHandlerBase<TPart> : IContentLocalizationPartHandler where TPart : ContentPart, new()
     {
-        if (part is TPart tpart)
+        async Task IContentLocalizationPartHandler.LocalizingAsync(LocalizationContentContext context, ContentPart part)
         {
-            await LocalizingAsync(context, tpart);
+            if (part is TPart tpart)
+            {
+                await LocalizingAsync(context, tpart);
+            }
         }
-    }
 
-    async Task IContentLocalizationPartHandler.LocalizedAsync(LocalizationContentContext context, ContentPart part)
-    {
-        if (part is TPart tpart)
+        async Task IContentLocalizationPartHandler.LocalizedAsync(LocalizationContentContext context, ContentPart part)
         {
-            await LocalizedAsync(context, tpart);
+            if (part is TPart tpart)
+            {
+                await LocalizedAsync(context, tpart);
+            }
         }
+        public virtual Task LocalizingAsync(LocalizationContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task LocalizedAsync(LocalizationContentContext context, TPart part) => Task.CompletedTask;
     }
-    public virtual Task LocalizingAsync(LocalizationContentContext context, TPart part) => Task.CompletedTask;
-    public virtual Task LocalizedAsync(LocalizationContentContext context, TPart part) => Task.CompletedTask;
 }

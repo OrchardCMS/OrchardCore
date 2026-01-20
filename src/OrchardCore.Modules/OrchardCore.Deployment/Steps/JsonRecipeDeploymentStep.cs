@@ -1,14 +1,15 @@
-namespace OrchardCore.Deployment.Steps;
-
-/// <summary>
-/// Adds a JSON recipe to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class JsonRecipeDeploymentStep : DeploymentStep
+namespace OrchardCore.Deployment.Steps
 {
-    public JsonRecipeDeploymentStep()
+    /// <summary>
+    /// Adds a JSON recipe to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class JsonRecipeDeploymentStep : DeploymentStep
     {
-        Name = "JsonRecipe";
-    }
+        public JsonRecipeDeploymentStep()
+        {
+            Name = "JsonRecipe";
+        }
 
-    public string Json { get; set; }
+        public string Json { get; set; }
+    }
 }

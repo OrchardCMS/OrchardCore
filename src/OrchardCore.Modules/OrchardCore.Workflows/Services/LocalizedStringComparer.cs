@@ -1,16 +1,18 @@
+using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Workflows.Services;
-
-public class LocalizedStringComparer : IEqualityComparer<LocalizedString>
+namespace OrchardCore.Workflows.Services
 {
-    public bool Equals(LocalizedString x, LocalizedString y)
+    public class LocalizedStringComparer : IEqualityComparer<LocalizedString>
     {
-        return x.Name.Equals(y.Name, StringComparison.Ordinal);
-    }
+        public bool Equals(LocalizedString x, LocalizedString y)
+        {
+            return x.Name.Equals(y.Name);
+        }
 
-    public int GetHashCode(LocalizedString obj)
-    {
-        return obj.Name.GetHashCode();
+        public int GetHashCode(LocalizedString obj)
+        {
+            return obj.Name.GetHashCode();
+        }
     }
 }

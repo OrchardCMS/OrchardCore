@@ -1,38 +1,42 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Implementation;
 using StackExchange.Profiling;
 
-namespace OrchardCore.MiniProfiler;
-
-public class ShapeStep : IShapeDisplayEvents
+namespace OrchardCore.MiniProfiler
 {
-    private readonly Dictionary<object, IDisposable> _timings = [];
-
-    public Task DisplayedAsync(ShapeDisplayContext context)
+    public class ShapeStep : IShapeDisplayEvents
     {
-        if (_timings.TryGetValue(context, out var timing))
+        private readonly Dictionary<object, IDisposable> _timings = [];
+
+        public Task DisplayedAsync(ShapeDisplayContext context)
         {
-            _timings.Remove(context);
-            timing.Dispose();
+            if (_timings.TryGetValue(context, out var timing))
+            {
+                _timings.Remove(context);
+                timing.Dispose();
+            }
+
+            return Task.CompletedTask;
         }
 
-        return Task.CompletedTask;
-    }
-
-    public Task DisplayingAsync(ShapeDisplayContext context)
-    {
-        var timing = StackExchange.Profiling.MiniProfiler.Current.Step($"Shape: {context.Shape.Metadata.Type}");
-        _timings.Add(context, timing);
-        return Task.CompletedTask;
-    }
-
-    public Task DisplayingFinalizedAsync(ShapeDisplayContext context)
-    {
-        if (_timings.TryGetValue(context, out var timing))
+        public Task DisplayingAsync(ShapeDisplayContext context)
         {
-            _timings.Remove(context);
-            timing.Dispose();
+            var timing = StackExchange.Profiling.MiniProfiler.Current.Step($"Shape: {context.Shape.Metadata.Type}");
+            _timings.Add(context, timing);
+            return Task.CompletedTask;
         }
 
-        return Task.CompletedTask;
+        public Task DisplayingFinalizedAsync(ShapeDisplayContext context)
+        {
+            if (_timings.TryGetValue(context, out var timing))
+            {
+                _timings.Remove(context);
+                timing.Dispose();
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

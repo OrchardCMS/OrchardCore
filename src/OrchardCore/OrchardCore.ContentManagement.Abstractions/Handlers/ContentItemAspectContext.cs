@@ -1,22 +1,26 @@
-namespace OrchardCore.ContentManagement.Handlers;
+using System;
+using System.Threading.Tasks;
 
-public class ContentItemAspectContext
+namespace OrchardCore.ContentManagement.Handlers
 {
-    public ContentItem ContentItem { get; set; }
-    public object Aspect { get; set; }
-
-    /// <summary>
-    /// Provides a value for a specific aspect type.
-    /// </summary>
-    public async Task<ContentItemAspectContext> ForAsync<TAspect>(Func<TAspect, Task> action) where TAspect : class
+    public class ContentItemAspectContext
     {
-        var aspect = Aspect as TAspect;
+        public ContentItem ContentItem { get; set; }
+        public object Aspect { get; set; }
 
-        if (aspect != null)
+        /// <summary>
+        /// Provides a value for a specific aspect type.
+        /// </summary>
+        public async Task<ContentItemAspectContext> ForAsync<TAspect>(Func<TAspect, Task> action) where TAspect : class
         {
-            await action(aspect);
-        }
+            var aspect = Aspect as TAspect;
 
-        return this;
+            if (aspect != null)
+            {
+                await action(aspect);
+            }
+
+            return this;
+        }
     }
 }

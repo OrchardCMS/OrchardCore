@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Modules;
-
-public class DefaultOrchardHelper : IOrchardHelper
+namespace OrchardCore.Modules
 {
-    public DefaultOrchardHelper(IHttpContextAccessor httpContextAccessor)
+    public class DefaultOrchardHelper : IOrchardHelper
     {
-        HttpContext = httpContextAccessor.HttpContext;
-    }
+        public DefaultOrchardHelper(IHttpContextAccessor httpContextAccessor)
+        {
+            HttpContext = httpContextAccessor.HttpContext;
+        }
 
-    public HttpContext HttpContext { get; set; }
+        public HttpContext HttpContext { get; set; }
+    }
 }

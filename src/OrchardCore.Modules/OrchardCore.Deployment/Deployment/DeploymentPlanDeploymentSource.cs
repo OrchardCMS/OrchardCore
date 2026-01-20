@@ -1,71 +1,75 @@
-using System.Text.Json;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Options;
-using OrchardCore.Json;
+using System.Threading.Tasks;
 
-namespace OrchardCore.Deployment.Deployment;
-
-public sealed class DeploymentPlanDeploymentSource
-    : DeploymentSourceBase<DeploymentPlanDeploymentStep>
+namespace OrchardCore.Deployment.Deployment
 {
-    private readonly IDeploymentPlanService _deploymentPlanService;
-    private readonly IEnumerable<IDeploymentStepFactory> _deploymentStepFactories;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
-
-    public DeploymentPlanDeploymentSource(
-        IDeploymentPlanService deploymentPlanService,
-        IEnumerable<IDeploymentStepFactory> deploymentStepFactories,
-        IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
+    public class DeploymentPlanDeploymentSource : IDeploymentSource
     {
-        _deploymentPlanService = deploymentPlanService;
-        _deploymentStepFactories = deploymentStepFactories;
-        _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
-    }
+        private readonly IDeploymentPlanService _deploymentPlanService;
+        private readonly IEnumerable<IDeploymentStepFactory> _deploymentStepFactories;
 
-    protected override async Task ProcessAsync(DeploymentPlanDeploymentStep step, DeploymentPlanResult result)
-    {
-        if (!await _deploymentPlanService.DoesUserHavePermissionsAsync())
+        public DeploymentPlanDeploymentSource(
+            IDeploymentPlanService deploymentPlanService,
+            IEnumerable<IDeploymentStepFactory> deploymentStepFactories)
         {
-            return;
+            _deploymentPlanService = deploymentPlanService;
+            _deploymentStepFactories = deploymentStepFactories;
         }
 
-        var deploymentStepFactories = _deploymentStepFactories.ToDictionary(f => f.Name);
-
-        var deploymentPlans = step.IncludeAll
-            ? (await _deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()
-            : (await _deploymentPlanService.GetDeploymentPlansAsync(step.DeploymentPlanNames)).ToArray();
-
-        var plans = (from plan in deploymentPlans
-                     select new
-                     {
-                         plan.Name,
-                         Steps = (from step in plan.DeploymentSteps
-                                  select new
-                                  {
-                                      Type = GetStepType(deploymentStepFactories, step),
-                                      Step = step,
-                                  }).ToArray(),
-                     }).ToArray();
-
-        // Adding deployment plans.
-        result.Steps.Add(new JsonObject
+        public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
         {
-            ["name"] = "deployment",
-            ["Plans"] = JArray.FromObject(plans, _jsonSerializerOptions),
-        });
-    }
+            if (deploymentStep is not DeploymentPlanDeploymentStep deploymentPlanStep)
+            {
+                return;
+            }
 
-    /// <summary>
-    /// A Site Settings Step is generic and the name is mapped to the <see cref="IDeploymentStepFactory.Name"/> so its 'Type' should be determined though a lookup.
-    /// A normal steps name is not mapped to the <see cref="IDeploymentStepFactory.Name"/> and should use its type.
-    /// </summary>
-    private static string GetStepType(Dictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
-    {
-        if (deploymentStepFactories.TryGetValue(step.Name, out var deploymentStepFactory))
-        {
-            return deploymentStepFactory.Name;
+            if (!await _deploymentPlanService.DoesUserHavePermissionsAsync())
+            {
+                return;
+            }
+
+            var deploymentStepFactories = _deploymentStepFactories.ToDictionary(f => f.Name);
+
+            var deploymentPlans = deploymentPlanStep.IncludeAll
+                ? (await _deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()
+                : (await _deploymentPlanService.GetDeploymentPlansAsync(deploymentPlanStep.DeploymentPlanNames)).ToArray();
+
+            var plans = (from plan in deploymentPlans
+                         select new
+                         {
+                             plan.Name,
+                             Steps = (from step in plan.DeploymentSteps
+                                      select new
+                                      {
+                                          Type = GetStepType(deploymentStepFactories, step),
+                                          Step = step
+                                      }).ToArray(),
+                         }).ToArray();
+
+            // Adding deployment plans.
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "deployment",
+                ["Plans"] = JArray.FromObject(plans),
+            });
         }
 
-        return step.GetType().Name;
+        /// <summary>
+        /// A Site Settings Step is generic and the name is mapped to the <see cref="IDeploymentStepFactory.Name"/> so its 'Type' should be determined though a lookup.
+        /// A normal steps name is not mapped to the <see cref="IDeploymentStepFactory.Name"/> and should use its type.
+        /// </summary>
+        private static string GetStepType(IDictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
+        {
+            if (deploymentStepFactories.TryGetValue(step.Name, out var deploymentStepFactory))
+            {
+                return deploymentStepFactory.Name;
+            }
+            else
+            {
+                return step.GetType().Name;
+            }
+        }
     }
 }

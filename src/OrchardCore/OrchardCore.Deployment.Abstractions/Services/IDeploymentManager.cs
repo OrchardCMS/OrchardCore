@@ -1,10 +1,13 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.Deployment.Services;
-
-public interface IDeploymentManager
+namespace OrchardCore.Deployment.Services
 {
-    Task ExecuteDeploymentPlanAsync(DeploymentPlan deploymentPlan, DeploymentPlanResult result);
-    Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync();
-    Task ImportDeploymentPackageAsync(IFileProvider deploymentPackage);
+    public interface IDeploymentManager
+    {
+        Task ExecuteDeploymentPlanAsync(DeploymentPlan deploymentPlan, DeploymentPlanResult result);
+        Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync();
+        Task ImportDeploymentPackageAsync(IFileProvider deploymentPackage);
+    }
 }

@@ -1,224 +1,200 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using GraphQL;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
-using OrchardCore.Entities;
 using OrchardCore.Search.Lucene;
-using OrchardCore.Search.Lucene.Models;
 
-namespace OrchardCore.Queries.Lucene.GraphQL.Queries;
-
-public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
+namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger _logger;
-
-    internal readonly IStringLocalizer S;
-
-    public LuceneQueryFieldTypeProvider(
-        IHttpContextAccessor httpContextAccessor,
-        IStringLocalizer<LuceneQueryFieldTypeProvider> stringLocalizer,
-        ILogger<LuceneQueryFieldTypeProvider> logger)
+    public class LuceneQueryFieldTypeProvider : ISchemaBuilder
     {
-        _httpContextAccessor = httpContextAccessor;
-        S = stringLocalizer;
-        _logger = logger;
-    }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
 
-    public Task<string> GetIdentifierAsync()
-    {
-        var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
-
-        return queryManager.GetIdentifierAsync();
-    }
-
-    public async Task BuildAsync(ISchema schema)
-    {
-        var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
-
-        var queries = await queryManager.ListQueriesBySourceAsync(LuceneQuerySource.SourceName);
-
-        foreach (var query in queries)
+        public LuceneQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<LuceneQueryFieldTypeProvider> logger)
         {
-            if (string.IsNullOrWhiteSpace(query.Schema))
-            {
-                continue;
-            }
+            _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
+        }
 
-            try
-            {
-                var querySchema = JObject.Parse(query.Schema);
-                if (!querySchema.ContainsKey("type"))
-                {
-                    _logger.LogError("The Query '{Name}' schema is invalid, the 'type' property was not found.", query.Name);
+        public Task<string> GetIdentifierAsync()
+        {
+            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+            return queryManager.GetIdentifierAsync();
+        }
 
+        public async Task BuildAsync(ISchema schema)
+        {
+            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+
+            var queries = await queryManager.ListQueriesAsync();
+
+            foreach (var query in queries.OfType<LuceneQuery>())
+            {
+                if (string.IsNullOrWhiteSpace(query.Schema))
                     continue;
-                }
 
-                var type = querySchema["type"].ToString();
-                FieldType fieldType;
+                var name = query.Name;
 
-                var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
-                var metadata = query.As<LuceneQueryMetadata>();
-
-                if (query.ReturnContentItems &&
-                    type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                try
                 {
-                    var contentType = type.Remove(0, 12);
-                    fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
-                }
-                else
-                {
-                    fieldType = BuildSchemaBasedFieldType(query, querySchema, fieldTypeName);
-                }
-
-                if (fieldType != null)
-                {
-                    schema.Query.AddField(fieldType);
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "The Query '{Name}' has an invalid schema.", query.Name);
-            }
-        }
-    }
-
-    private FieldType BuildSchemaBasedFieldType(Query query, JsonNode querySchema, string fieldTypeName)
-    {
-        var properties = querySchema["properties"]?.AsObject();
-        if (properties == null)
-        {
-            return null;
-        }
-
-        var typeType = new ObjectGraphType<JsonObject>
-        {
-            Name = fieldTypeName,
-        };
-
-        foreach (var child in properties)
-        {
-            var name = child.Key;
-            var nameLower = name.Replace('.', '_');
-            var type = child.Value["type"].ToString();
-            var description = child.Value["description"]?.ToString();
-
-            if (type == "string")
-            {
-                var field = new FieldType()
-                {
-                    Name = nameLower,
-                    Description = description,
-                    Type = typeof(StringGraphType),
-                    ResolvedType = new StringGraphType(),
-                    Resolver = new FuncFieldResolver<JsonObject, string>(context =>
+                    var querySchema = JObject.Parse(query.Schema);
+                    if (!querySchema.ContainsKey("type"))
                     {
-                        var source = context.Source;
-                        return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
-                    }),
-                };
-                field.Metadata.Add("Name", name);
-                typeType.AddField(field);
-            }
-            else if (type == "integer")
-            {
-                var field = new FieldType()
-                {
-                    Name = nameLower,
-                    Description = description,
-                    Type = typeof(IntGraphType),
-                    ResolvedType = new IntGraphType(),
-                    Resolver = new FuncFieldResolver<JsonObject, int?>(context =>
+                        _logger.LogError("The Query '{Name}' schema is invalid, the 'type' property was not found.", name);
+                        continue;
+                    }
+                    var type = querySchema["type"].ToString();
+                    FieldType fieldType;
+
+                    var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
+
+                    if (query.ReturnContentItems &&
+                        type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
-                        var source = context.Source;
-                        return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
-                    }),
-                };
+                        var contentType = type.Remove(0, 12);
+                        fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
+                    }
+                    else
+                    {
+                        fieldType = BuildSchemaBasedFieldType(query, querySchema, fieldTypeName);
+                    }
 
-                field.Metadata.Add("Name", name);
-                typeType.AddField(field);
+                    if (fieldType != null)
+                    {
+                        schema.Query.AddField(fieldType);
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "The Query '{Name}' has an invalid schema.", name);
+                }
             }
         }
 
-        var fieldType = new FieldType
+        private static FieldType BuildSchemaBasedFieldType(LuceneQuery query, JsonNode querySchema, string fieldTypeName)
         {
-            Arguments = new QueryArguments(
-                new QueryArgument<StringGraphType> { Name = "parameters" }
-            ),
-            Name = fieldTypeName,
-            Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
-            ResolvedType = new ListGraphType(typeType),
-            Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
-            Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>),
-        };
+            var properties = querySchema["properties"].AsObject(); ;
+            if (properties == null)
+            {
+                return null;
+            }
 
-        async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
-        {
-            var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
+            var typetype = new ObjectGraphType<JsonObject>
+            {
+                Name = fieldTypeName
+            };
 
-            var iQuery = await queryManager.GetQueryAsync(query.Name);
+            foreach (var child in properties)
+            {
+                var name = child.Key;
+                var nameLower = name.Replace('.', '_');
+                var type = child.Value["type"].ToString();
+                var description = child.Value["description"]?.ToString();
 
-            var parameters = context.GetArgument<string>("parameters");
+                if (type == "string")
+                {
+                    var field = typetype.Field(
+                        typeof(StringGraphType),
+                        nameLower,
+                        description: description,
+                        resolve: context =>
+                        {
+                            var source = context.Source;
+                            return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
+                        });
+                    field.Metadata.Add("Name", name);
+                }
+                else if (type == "integer")
+                {
+                    var field = typetype.Field(
+                        typeof(IntGraphType),
+                        nameLower,
+                        description: description,
+                        resolve: context =>
+                        {
+                            var source = context.Source;
+                            return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
+                        });
+                    field.Metadata.Add("Name", name);
+                }
+            }
 
-            var queryParameters = parameters != null
-                ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                : [];
+            var fieldType = new FieldType
+            {
+                Arguments = new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "parameters" }
+                ),
 
-            var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
+                Name = fieldTypeName,
+                Description = "Represents the " + query.Source + " Query : " + query.Name,
+                ResolvedType = new ListGraphType(typetype),
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
+                {
+                    var queryManager = context.RequestServices.GetService<IQueryManager>();
+                    var iquery = await queryManager.GetQueryAsync(query.Name);
 
-            return result.Items;
+                    var parameters = context.GetArgument<string>("parameters");
+
+                    var queryParameters = parameters != null ?
+                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        : [];
+
+                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return result.Items;
+                }),
+                Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
+            };
+
+            return fieldType;
         }
 
-        return fieldType;
-    }
-
-    private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, Query query, string fieldTypeName)
-    {
-        var typeType = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
-
-        if (typeType == null)
+        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query, string fieldTypeName)
         {
-            return null;
+            var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
+
+            if (typetype == null)
+            {
+                return null;
+            }
+
+            var fieldType = new FieldType
+            {
+                Arguments = new QueryArguments(
+                        new QueryArgument<StringGraphType> { Name = "parameters" }
+                    ),
+
+                Name = fieldTypeName,
+                Description = "Represents the " + query.Source + " Query : " + query.Name,
+                ResolvedType = typetype.ResolvedType,
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
+                {
+                    var queryManager = context.RequestServices.GetService<IQueryManager>();
+                    var iquery = await queryManager.GetQueryAsync(query.Name);
+
+                    var parameters = context.GetArgument<string>("parameters");
+
+                    var queryParameters = parameters != null ?
+                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        : [];
+
+                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return result.Items;
+                }),
+                Type = typetype.Type
+            };
+
+            return fieldType;
         }
-
-        var fieldType = new FieldType
-        {
-            Arguments = new QueryArguments(
-                new QueryArgument<StringGraphType> { Name = "parameters" }
-            ),
-            Name = fieldTypeName,
-            Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
-            ResolvedType = typeType.ResolvedType,
-            Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
-            Type = typeType.Type,
-        };
-
-        async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
-        {
-            var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
-
-            var iQuery = await queryManager.GetQueryAsync(query.Name);
-
-            var parameters = context.GetArgument<string>("parameters");
-
-            var queryParameters = parameters != null
-                ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                : [];
-
-            var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
-
-            return result.Items;
-        }
-
-        return fieldType;
     }
 }

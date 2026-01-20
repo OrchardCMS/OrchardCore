@@ -1,11 +1,14 @@
-namespace OrchardCore.Deployment;
+using System.Collections.Generic;
 
-/// <summary>
-/// The state of a deployment plan built by sources.
-/// </summary>
-public class DeploymentPlan
+namespace OrchardCore.Deployment
 {
-    public long Id { get; set; }
-    public string Name { get; set; }
-    public List<DeploymentStep> DeploymentSteps { get; init; } = [];
+    /// <summary>
+    /// The state of a deployment plan built by sources.
+    /// </summary>
+    public class DeploymentPlan
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public List<DeploymentStep> DeploymentSteps { get; init; } = [];
+    }
 }

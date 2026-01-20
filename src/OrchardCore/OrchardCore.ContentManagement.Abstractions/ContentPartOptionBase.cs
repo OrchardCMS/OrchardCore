@@ -1,13 +1,16 @@
-namespace OrchardCore.ContentManagement;
+using System;
 
-public abstract class ContentPartOptionBase
+namespace OrchardCore.ContentManagement
 {
-    public ContentPartOptionBase(Type contentPartType)
+    public abstract class ContentPartOptionBase
     {
-        ArgumentNullException.ThrowIfNull(contentPartType);
+        public ContentPartOptionBase(Type contentPartType)
+        {
+            ArgumentNullException.ThrowIfNull(contentPartType);
 
-        Type = contentPartType;
+            Type = contentPartType;
+        }
+
+        public Type Type { get; }
     }
-
-    public Type Type { get; }
 }

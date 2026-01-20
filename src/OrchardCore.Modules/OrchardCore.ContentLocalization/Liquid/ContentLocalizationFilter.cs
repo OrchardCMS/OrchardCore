@@ -1,40 +1,43 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.ContentLocalization.Liquid;
-
-public class ContentLocalizationFilter : ILiquidFilter
+namespace OrchardCore.ContentLocalization.Liquid
 {
-    private readonly IContentLocalizationManager _contentLocalizationManager;
-
-    public ContentLocalizationFilter(IContentLocalizationManager contentLocalizationManager)
+    public class ContentLocalizationFilter : ILiquidFilter
     {
-        _contentLocalizationManager = contentLocalizationManager;
-    }
+        private readonly IContentLocalizationManager _contentLocalizationManager;
 
-    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
-    {
-        var locale = arguments.At(0).ToStringValue();
-
-        if (arguments.At(0).IsNil())
+        public ContentLocalizationFilter(IContentLocalizationManager contentLocalizationManager)
         {
-            locale = ctx.CultureInfo.Name;
+            _contentLocalizationManager = contentLocalizationManager;
         }
 
-        if (input.Type == FluidValues.Array)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
-            // List of content item ids
+            var locale = arguments.At(0).ToStringValue();
 
-            var localizationSets = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
+            if (arguments.At(0).IsNil())
+            {
+                locale = ctx.CultureInfo.Name;
+            }
 
-            return FluidValue.Create(await _contentLocalizationManager.GetItemsForSetsAsync(localizationSets, locale), ctx.Options);
-        }
-        else
-        {
-            var localizationSet = input.ToStringValue();
+            if (input.Type == FluidValues.Array)
+            {
+                // List of content item ids
 
-            return FluidValue.Create(await _contentLocalizationManager.GetContentItemAsync(localizationSet, locale), ctx.Options);
+                var localizationSets = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
+
+                return FluidValue.Create(await _contentLocalizationManager.GetItemsForSetsAsync(localizationSets, locale), ctx.Options);
+            }
+            else
+            {
+                var localizationSet = input.ToStringValue();
+
+                return FluidValue.Create(await _contentLocalizationManager.GetContentItemAsync(localizationSet, locale), ctx.Options);
+            }
         }
     }
 }

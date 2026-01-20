@@ -1,12 +1,14 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
 
 namespace OrchardCore.Demo;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
     public static readonly Permission DemoAPIAccess = new("DemoAPIAccess", "Access to Demo API ");
-    public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", "Manage own user profile", new Permission[] { UsersPermissions.ManageUsers });
+    public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", "Manage own user profile", new Permission[] { CommonPermissions.ManageUsers });
 
     private static readonly IEnumerable<Permission> _allPermissions =
     [
@@ -26,7 +28,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Authenticated,
+            Name = "Authenticated",
             Permissions =
             [
                 DemoAPIAccess,
@@ -34,22 +36,22 @@ public sealed class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Editor,
+            Name = "Editor",
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Moderator,
+            Name = "Moderator",
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Contributor,
+            Name = "Contributor",
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Author,
+            Name = "Author",
             Permissions = _generalPermissions,
         },
     ];

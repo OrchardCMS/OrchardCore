@@ -1,12 +1,14 @@
+using System;
 using GraphQL;
 using OrchardCore.ContentManagement.Utilities;
 
-namespace System;
-
-public static class StringExtensions
+namespace OrchardCore.ContentManagement.GraphQL
 {
-    public static string ToFieldName(this string name)
+    public static class StringExtensions
     {
-        return name.TrimEndString("Part").ToCamelCase();
+        public static string ToFieldName(this string name)
+        {
+            return name.TrimEnd("Part").ToCamelCase();
+        }
     }
 }

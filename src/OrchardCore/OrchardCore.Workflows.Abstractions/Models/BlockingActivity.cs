@@ -1,18 +1,19 @@
-namespace OrchardCore.Workflows.Models;
-
-public class BlockingActivity
+namespace OrchardCore.Workflows.Models
 {
-    public static BlockingActivity FromActivity(ActivityRecord activity)
+    public class BlockingActivity
     {
-        return new BlockingActivity
+        public static BlockingActivity FromActivity(ActivityRecord activity)
         {
-            ActivityId = activity.ActivityId,
-            IsStart = activity.IsStart,
-            Name = activity.Name,
-        };
-    }
+            return new BlockingActivity
+            {
+                ActivityId = activity.ActivityId,
+                IsStart = activity.IsStart,
+                Name = activity.Name
+            };
+        }
 
-    public string ActivityId { get; set; }
-    public bool IsStart { get; set; }
-    public string Name { get; set; }
+        public string ActivityId { get; set; }
+        public bool IsStart { get; set; }
+        public string Name { get; set; }
+    }
 }

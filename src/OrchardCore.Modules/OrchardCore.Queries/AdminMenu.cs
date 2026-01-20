@@ -1,34 +1,38 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Queries;
-
-public sealed class AdminMenu : AdminNavigationProvider
+namespace OrchardCore.Queries
 {
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public class AdminMenu : INavigationProvider
     {
-        S = stringLocalizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        builder
-            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                .AddClass("search")
-                .Id("search")
-                .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
-                    .Add(S["All Queries"], "1", allQueries => allQueries
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+        {
+            S = localizer;
+        }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+                    .AddClass("search").Id("search")
+                    .Add(S["Queries"], S["Queries"].PrefixPosition(), contentItems => contentItems
+                        .Add(S["All queries"], "1", queries => queries
                         .Action("Index", "Admin", "OrchardCore.Queries")
-                        .AddClass("searchallqueries")
-                        .Id("searchallqueries")
                         .Permission(Permissions.ManageQueries)
                         .LocalNav()
                     )
                 )
             );
 
-        return ValueTask.CompletedTask;
+            return Task.CompletedTask;
+        }
     }
 }

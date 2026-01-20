@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -12,35 +13,42 @@ using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook;
-
-[Feature(FacebookConstants.Features.Login)]
-public sealed class StartupLogin : StartupBase
+namespace OrchardCore.Facebook
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [Feature(FacebookConstants.Features.Login)]
+    public class StartupLogin : StartupBase
     {
-        services.AddNavigationProvider<AdminMenuLogin>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, AdminMenuLogin>();
 
-        services.AddSingleton<IFacebookLoginService, FacebookLoginService>();
-        services.AddSiteDisplayDriver<FacebookLoginSettingsDisplayDriver>();
-        services.AddRecipeExecutionStep<FacebookLoginSettingsStep>();
+            services.AddSingleton<IFacebookLoginService, FacebookLoginService>();
+            services.AddScoped<IDisplayDriver<ISite>, FacebookLoginSettingsDisplayDriver>();
+            services.AddRecipeExecutionStep<FacebookLoginSettingsStep>();
 
-        // Register the options initializers required by the Facebook handler.
-        // Orchard-specific initializers:
-        services.AddTransient<IConfigureOptions<AuthenticationOptions>, FacebookLoginConfiguration>();
-        services.AddTransient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>();
+            // Register the options initializers required by the Facebook handler.
+            services.TryAddEnumerable(new[]
+            {
+                // Orchard-specific initializers:
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, FacebookLoginConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>(),
 
-        // Built-in initializers:
-        services.AddTransient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>();
+                // Deployment
+
+                // Built-in initializers:
+                ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>()
+            });
+        }
     }
-}
 
-[RequireFeatures("OrchardCore.Deployment")]
-public class DeploymentStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
     {
-        services.AddDeployment<FacebookLoginDeploymentSource, FacebookLoginDeploymentStep, FacebookLoginDeploymentStepDriver>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDeployment<FacebookLoginDeploymentSource, FacebookLoginDeploymentStep, FacebookLoginDeploymentStepDriver>();
+        }
     }
 }

@@ -5,8 +5,7 @@ formElementLabelManager = function () {
         for (let i = 0; i < selectMenus.length; i++) {
             var selectMenu = selectMenus[i];
             selectMenu.addEventListener('change', function (e) {
-                var widgetWrapper = e.target.closest('.widget-editor-body');
-                var labelTextContainer = widgetWrapper.querySelector('.label-text-container');
+                var labelTextContainer = wrapper.querySelector('.label-text-container');
 
                 if (e.target.value == 'None') {
                     labelTextContainer.classList.add('d-none');

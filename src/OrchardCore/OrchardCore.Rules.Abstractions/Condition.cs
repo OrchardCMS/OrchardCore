@@ -1,7 +1,8 @@
-namespace OrchardCore.Rules;
-
-public class Condition
+namespace OrchardCore.Rules
 {
-    public string Name { get; set; }
-    public string ConditionId { get; set; }
+    public class Condition
+    {
+        public string Name { get; set; }
+        public string ConditionId { get; set; }
+    }
 }

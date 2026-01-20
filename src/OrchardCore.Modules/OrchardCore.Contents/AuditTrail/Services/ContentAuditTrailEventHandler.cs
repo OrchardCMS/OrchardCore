@@ -1,31 +1,33 @@
+using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Entities;
 
-namespace OrchardCore.Contents.AuditTrail.Services;
-
-public class ContentAuditTrailEventHandler : AuditTrailEventHandlerBase
+namespace OrchardCore.Contents.AuditTrail.Services
 {
-    public override Task CreateAsync(AuditTrailCreateContext context)
+    public class ContentAuditTrailEventHandler : AuditTrailEventHandlerBase
     {
-        if (context.Category != "Content")
+        public override Task CreateAsync(AuditTrailCreateContext context)
         {
-            return Task.CompletedTask;
-        }
-
-        if (context is AuditTrailCreateContext<AuditTrailContentEvent> contentEvent)
-        {
-            var auditTrailPart = contentEvent.AuditTrailEventItem.ContentItem.As<AuditTrailPart>();
-            if (auditTrailPart == null)
+            if (context.Category != "Content")
             {
                 return Task.CompletedTask;
             }
 
-            contentEvent.AuditTrailEventItem.Comment = auditTrailPart.Comment;
-        }
+            if (context is AuditTrailCreateContext<AuditTrailContentEvent> contentEvent)
+            {
+                var auditTrailPart = contentEvent.AuditTrailEventItem.ContentItem.As<AuditTrailPart>();
+                if (auditTrailPart == null)
+                {
+                    return Task.CompletedTask;
+                }
 
-        return Task.CompletedTask;
+                contentEvent.AuditTrailEventItem.Comment = auditTrailPart.Comment;
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

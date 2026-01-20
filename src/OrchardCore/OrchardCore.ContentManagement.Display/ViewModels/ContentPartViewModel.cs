@@ -1,17 +1,18 @@
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentManagement.Display.ViewModels;
-
-public class ContentPartViewModel : ShapeViewModel
+namespace OrchardCore.ContentManagement.Display.ViewModels
 {
-    public ContentPartViewModel()
+    public class ContentPartViewModel : ShapeViewModel
     {
-    }
+        public ContentPartViewModel()
+        {
+        }
 
-    public ContentPartViewModel(ContentPart contentPart)
-    {
-        ContentPart = contentPart;
-    }
+        public ContentPartViewModel(ContentPart contentPart)
+        {
+            ContentPart = contentPart;
+        }
 
-    public ContentPart ContentPart { get; set; }
+        public ContentPart ContentPart { get; set; }
+    }
 }

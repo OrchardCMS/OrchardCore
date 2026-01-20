@@ -1,36 +1,37 @@
+using System;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Services;
 using YesSql.Filters.Query;
 
-namespace OrchardCore.ContentLocalization.Services;
-
-public sealed class LocalizationPartContentsAdminListFilterProvider : IContentsAdminListFilterProvider
+namespace OrchardCore.ContentLocalization.Services
 {
-    public void Build(QueryEngineBuilder<ContentItem> builder)
+    public class LocalizationPartContentsAdminListFilterProvider : IContentsAdminListFilterProvider
     {
-        builder
-            .WithNamedTerm("culture", builder => builder
-                .OneCondition<ContentItem>((val, query) =>
-                {
-                    if (!string.IsNullOrEmpty(val))
+        public void Build(QueryEngineBuilder<ContentItem> builder)
+        {
+            builder
+                .WithNamedTerm("culture", builder => builder
+                    .OneCondition<ContentItem>((val, query) =>
                     {
-                        var normalized = val.ToLowerInvariant();
-                        query.With<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.Culture == normalized);
-                    }
+                        if (!string.IsNullOrEmpty(val))
+                        {
+                            query.With<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.Culture == val);
+                        }
 
-                    return query;
-                })
-                .MapTo<LocalizationContentsAdminFilterViewModel>((val, model) => model.SelectedCulture = val)
-                .MapFrom<LocalizationContentsAdminFilterViewModel>((model) =>
-                {
-                    if (!string.IsNullOrEmpty(model.SelectedCulture))
+                        return query;
+                    })
+                    .MapTo<LocalizationContentsAdminFilterViewModel>((val, model) => model.SelectedCulture = val)
+                    .MapFrom<LocalizationContentsAdminFilterViewModel>((model) =>
                     {
-                        return (true, model.SelectedCulture);
-                    }
-                    return (false, string.Empty);
-                })
-            );
+                        if (!string.IsNullOrEmpty(model.SelectedCulture))
+                        {
+                            return (true, model.SelectedCulture);
+                        }
+                        return (false, string.Empty);
+                    })
+                );
+        }
     }
 }

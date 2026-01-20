@@ -1,14 +1,15 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Roles.Deployment;
-
-/// <summary>
-/// Adds roles to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class AllRolesDeploymentStep : DeploymentStep
+namespace OrchardCore.Roles.Deployment
 {
-    public AllRolesDeploymentStep()
+    /// <summary>
+    /// Adds roles to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class AllRolesDeploymentStep : DeploymentStep
     {
-        Name = "AllRoles";
+        public AllRolesDeploymentStep()
+        {
+            Name = "AllRoles";
+        }
     }
 }

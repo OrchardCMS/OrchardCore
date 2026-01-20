@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
 using OrchardCore.Google.TagManager.Settings;
 
-namespace OrchardCore.Google.TagManager.Services;
-
-public interface IGoogleTagManagerService
+namespace OrchardCore.Google.TagManager.Services
 {
-    Task<GoogleTagManagerSettings> GetSettingsAsync();
+    public interface IGoogleTagManagerService
+    {
+        Task<GoogleTagManagerSettings> GetSettingsAsync();
+    }
 }

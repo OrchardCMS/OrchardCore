@@ -1,21 +1,23 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ResponseCompression;
-
-public sealed class Startup : StartupBase
+namespace OrchardCore.ResponseCompression
 {
-    public override int Order => -5;
-
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    public class Startup : StartupBase
     {
-        app.UseResponseCompression();
-    }
+        public override int Order => -5;
 
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddResponseCompression(options => options.EnableForHttps = true);
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            app.UseResponseCompression();
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddResponseCompression(options => options.EnableForHttps = true);
+        }
     }
 }

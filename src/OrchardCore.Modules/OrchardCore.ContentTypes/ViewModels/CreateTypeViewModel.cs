@@ -1,7 +1,8 @@
-namespace OrchardCore.ContentTypes.ViewModels;
-
-public class CreateTypeViewModel
+namespace OrchardCore.ContentTypes.ViewModels
 {
-    public string DisplayName { get; set; }
-    public string Name { get; set; }
+    public class CreateTypeViewModel
+    {
+        public string DisplayName { get; set; }
+        public string Name { get; set; }
+    }
 }

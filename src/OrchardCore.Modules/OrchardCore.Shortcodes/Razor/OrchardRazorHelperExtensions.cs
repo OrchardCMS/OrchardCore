@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
@@ -7,7 +9,7 @@ using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 #pragma warning disable CA1050 // Declare types in namespaces
-public static class ShortcodesOrchardRazorHelperExtensions
+public static class OrchardRazorHelperExtensions
 #pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
@@ -36,4 +38,8 @@ public static class ShortcodesOrchardRazorHelperExtensions
 
         return new HtmlString(html);
     }
+
+    [Obsolete("Replaced by ShortcodesToHtmlAsync")]
+    public static Task<IHtmlContent> HtmlToShortcodesAsync(this IOrchardHelper orchardHelper, string html, object model = null)
+        => orchardHelper.ShortcodesToHtmlAsync(html, model);
 }

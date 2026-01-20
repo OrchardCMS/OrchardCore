@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.CustomSettings.ViewModels;
@@ -6,69 +7,70 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.CustomSettings.Drivers;
-
-/// <summary>
-/// This driver generates an editor for site settings. The GroupId represents the type of
-/// the settings to use.
-/// </summary>
-public sealed class CustomSettingsDisplayDriver : DisplayDriver<ISite>
+namespace OrchardCore.CustomSettings.Drivers
 {
-    private readonly CustomSettingsService _customSettingsService;
-    private readonly IContentItemDisplayManager _contentItemDisplayManager;
-
-    public CustomSettingsDisplayDriver(
-        CustomSettingsService customSettingsService,
-        IContentItemDisplayManager contentItemDisplayManager)
+    /// <summary>
+    /// This driver generates an editor for site settings. The GroupId represents the type of
+    /// the settings to use.
+    /// </summary>
+    public class CustomSettingsDisplayDriver : DisplayDriver<ISite>
     {
-        _customSettingsService = customSettingsService;
-        _contentItemDisplayManager = contentItemDisplayManager;
-    }
+        private readonly CustomSettingsService _customSettingsService;
+        private readonly IContentItemDisplayManager _contentItemDisplayManager;
 
-    public override async Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
-    {
-        var contentTypeDefinition = _customSettingsService.GetSettingsType(context.GroupId);
-        if (contentTypeDefinition == null)
+        public CustomSettingsDisplayDriver(
+            CustomSettingsService customSettingsService,
+            IContentItemDisplayManager contentItemDisplayManager)
         {
-            return null;
+            _customSettingsService = customSettingsService;
+            _contentItemDisplayManager = contentItemDisplayManager;
         }
 
-        if (!await _customSettingsService.CanUserCreateSettingsAsync(contentTypeDefinition))
+        public override async Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
-            return null;
+            var contentTypeDefinition = _customSettingsService.GetSettingsType(context.GroupId);
+            if (contentTypeDefinition == null)
+            {
+                return null;
+            }
+
+            if (!await _customSettingsService.CanUserCreateSettingsAsync(contentTypeDefinition))
+            {
+                return null;
+            }
+
+            var isNew = false;
+            var contentItem = await _customSettingsService.GetSettingsAsync(site, contentTypeDefinition, () => isNew = true);
+
+            var shape = Initialize<CustomSettingsEditViewModel>("CustomSettings", async ctx =>
+            {
+                ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
+            }).Location("Content:3").OnGroup(contentTypeDefinition.Name);
+
+            return shape;
         }
 
-        var isNew = false;
-        var contentItem = await _customSettingsService.GetSettingsAsync(site, contentTypeDefinition, () => isNew = true);
-
-        var shape = Initialize<CustomSettingsEditViewModel>(CustomSettingsConstants.Stereotype, async ctx =>
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
         {
-            ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
-        }).Location("Content:3").OnGroup(contentTypeDefinition.Name);
+            var contentTypeDefinition = _customSettingsService.GetSettingsType(context.GroupId);
+            if (contentTypeDefinition == null)
+            {
+                return null;
+            }
 
-        return shape;
-    }
+            if (!await _customSettingsService.CanUserCreateSettingsAsync(contentTypeDefinition))
+            {
+                return null;
+            }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
-    {
-        var contentTypeDefinition = _customSettingsService.GetSettingsType(context.GroupId);
-        if (contentTypeDefinition == null)
-        {
-            return null;
+            var isNew = false;
+            var contentItem = await _customSettingsService.GetSettingsAsync(site, contentTypeDefinition, () => isNew = true);
+
+            await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew);
+
+            site.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
+
+            return await EditAsync(site, context);
         }
-
-        if (!await _customSettingsService.CanUserCreateSettingsAsync(contentTypeDefinition))
-        {
-            return null;
-        }
-
-        var isNew = false;
-        var contentItem = await _customSettingsService.GetSettingsAsync(site, contentTypeDefinition, () => isNew = true);
-
-        await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew);
-
-        site.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
-
-        return await EditAsync(site, context);
     }
 }

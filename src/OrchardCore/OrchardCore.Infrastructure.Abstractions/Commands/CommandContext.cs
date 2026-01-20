@@ -1,13 +1,17 @@
-namespace OrchardCore.Environment.Commands;
+using System.Collections.Generic;
+using System.IO;
 
-public class CommandContext
+namespace OrchardCore.Environment.Commands
 {
-    public TextReader Input { get; set; }
-    public TextWriter Output { get; set; }
+    public class CommandContext
+    {
+        public TextReader Input { get; set; }
+        public TextWriter Output { get; set; }
 
-    public string Command { get; set; }
-    public IEnumerable<string> Arguments { get; set; }
-    public IDictionary<string, string> Switches { get; set; }
+        public string Command { get; set; }
+        public IEnumerable<string> Arguments { get; set; }
+        public IDictionary<string, string> Switches { get; set; }
 
-    public CommandDescriptor CommandDescriptor { get; set; }
+        public CommandDescriptor CommandDescriptor { get; set; }
+    }
 }

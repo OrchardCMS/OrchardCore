@@ -2,31 +2,32 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Layers.Models;
 using YesSql.Indexes;
 
-namespace OrchardCore.Layers.Indexes;
-
-public class LayerMetadataIndex : MapIndex
+namespace OrchardCore.Layers.Indexes
 {
-    public string Zone { get; set; }
-}
-
-public class LayerMetadataIndexProvider : IndexProvider<ContentItem>
-{
-    public override void Describe(DescribeContext<ContentItem> context)
+    public class LayerMetadataIndex : MapIndex
     {
-        context.For<LayerMetadataIndex>()
-            .When(contentItem => contentItem.Has<LayerMetadata>())
-            .Map(contentItem =>
-            {
-                var layerMetadata = contentItem.As<LayerMetadata>();
-                if (layerMetadata == null)
-                {
-                    return null;
-                }
+        public string Zone { get; set; }
+    }
 
-                return new LayerMetadataIndex
+    public class LayerMetadataIndexProvider : IndexProvider<ContentItem>
+    {
+        public override void Describe(DescribeContext<ContentItem> context)
+        {
+            context.For<LayerMetadataIndex>()
+                .When(contentItem => contentItem.Has<LayerMetadata>())
+                .Map(contentItem =>
                 {
-                    Zone = layerMetadata.Zone,
-                };
-            });
+                    var layerMetadata = contentItem.As<LayerMetadata>();
+                    if (layerMetadata == null)
+                    {
+                        return null;
+                    }
+
+                    return new LayerMetadataIndex
+                    {
+                        Zone = layerMetadata.Zone,
+                    };
+                });
+        }
     }
 }

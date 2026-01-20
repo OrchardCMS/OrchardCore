@@ -62,14 +62,3 @@ using OrchardCore.Modules.Manifest;
     ],
     Category = "Content Management"
 )]
-
-[assembly: Feature(
-    Id = "OrchardCore.Media.Security",
-    Name = "Secure Media",
-    Description = "Adds permissions to restrict access to media folders.",
-    Dependencies =
-    [
-        "OrchardCore.Media"
-    ],
-    Category = "Content Management"
-)]

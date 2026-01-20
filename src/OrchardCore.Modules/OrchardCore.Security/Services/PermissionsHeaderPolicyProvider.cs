@@ -1,24 +1,26 @@
+using System;
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Security.Services;
-
-public class PermissionsHeaderPolicyProvider : HeaderPolicyProvider
+namespace OrchardCore.Security.Services
 {
-    private string _policy;
-
-    public override void InitializePolicy()
+    public class PermissionsHeaderPolicyProvider : HeaderPolicyProvider
     {
-        if (Options.PermissionsPolicy.Length > 0)
+        private string _policy;
+
+        public override void InitializePolicy()
         {
-            _policy = string.Join(SecurityHeaderDefaults.PoliciesSeparator, Options.PermissionsPolicy);
+            if (Options.PermissionsPolicy.Length > 0)
+            {
+                _policy = string.Join(SecurityHeaderDefaults.PoliciesSeparator, Options.PermissionsPolicy);
+            }
         }
-    }
 
-    public override void ApplyPolicy(HttpContext httpContext)
-    {
-        if (_policy != null)
+        public override void ApplyPolicy(HttpContext httpContext)
         {
-            httpContext.Response.Headers[SecurityHeaderNames.PermissionsPolicy] = _policy;
+            if (_policy != null)
+            {
+                httpContext.Response.Headers[SecurityHeaderNames.PermissionsPolicy] = _policy;
+            }
         }
     }
 }

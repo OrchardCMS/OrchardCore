@@ -1,60 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Localization;
+using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Recipes.RecipeSteps;
-
-/// <summary>
-/// This recipe step executes a set of external recipes.
-/// </summary>
-public sealed class RecipesStep : NamedRecipeStepHandler
+namespace OrchardCore.Recipes.RecipeSteps
 {
-    private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
-
-    internal readonly IStringLocalizer S;
-
-    public RecipesStep(
-        IEnumerable<IRecipeHarvester> recipeHarvesters,
-        IStringLocalizer<RecipesStep> stringLocalizer)
-        : base("Recipes")
+    /// <summary>
+    /// This recipe step executes a set of external recipes.
+    /// </summary>
+    public class RecipesStep : IRecipeStepHandler
     {
-        _recipeHarvesters = recipeHarvesters;
-        S = stringLocalizer;
-    }
+        private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
-    {
-        var step = context.Step.ToObject<InternalStep>();
-
-        var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(harvester => harvester.HarvestRecipesAsync()));
-        var recipes = recipeCollections.SelectMany(recipe => recipe).ToDictionary(recipe => recipe.Name);
-
-        var innerRecipes = new List<RecipeDescriptor>();
-        foreach (var recipe in step.Values)
+        public RecipesStep(IEnumerable<IRecipeHarvester> recipeHarvesters)
         {
-            if (!recipes.TryGetValue(recipe.Name, out var value))
-            {
-                context.Errors.Add(S["No recipe named '{0}' was found.", recipe.Name]);
-
-                continue;
-            }
-
-            innerRecipes.Add(value);
+            _recipeHarvesters = recipeHarvesters;
         }
 
-        context.InnerRecipes = innerRecipes;
-    }
+        public async Task ExecuteAsync(RecipeExecutionContext context)
+        {
+            if (!string.Equals(context.Name, "Recipes", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
 
-    private sealed class InternalStep
-    {
-        public InternalStepValue[] Values { get; set; }
-    }
+            var step = context.Step.ToObject<InternalStep>();
 
-    private sealed class InternalStepValue
-    {
-        public string ExecutionId { get; set; }
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(harvester => harvester.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(recipe => recipe).ToDictionary(recipe => recipe.Name);
 
-        public string Name { get; set; }
+            var innerRecipes = new List<RecipeDescriptor>();
+            foreach (var recipe in step.Values)
+            {
+                if (!recipes.TryGetValue(recipe.Name, out var value))
+                {
+                    throw new ArgumentException($"No recipe named '{recipe.Name}' was found.");
+                }
+
+                innerRecipes.Add(value);
+            }
+
+            context.InnerRecipes = innerRecipes;
+        }
+
+        private class InternalStep
+        {
+            public InternalStepValue[] Values { get; set; }
+        }
+
+        private class InternalStepValue
+        {
+            public string ExecutionId { get; set; }
+            public string Name { get; set; }
+        }
     }
 }

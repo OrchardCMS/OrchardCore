@@ -7,7 +7,7 @@ using OrchardCore.Seo.Models;
 namespace OrchardCore.Seo.GraphQL;
 
 [RequireFeatures("OrchardCore.Apis.GraphQL")]
-public sealed class Startup : StartupBase
+public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

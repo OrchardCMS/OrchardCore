@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -8,7 +10,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriver<AuthenticatorAppLoginSettings>
+public class AuthenticatorAppLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, AuthenticatorAppLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -20,24 +22,21 @@ public sealed class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriv
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
-
-    protected override string SettingsGroupId
-        => LoginSettingsDisplayDriver.GroupId;
-
-    public override IDisplayResult Edit(ISite site, AuthenticatorAppLoginSettings settings, BuildEditorContext context)
+    public override IDisplayResult Edit(AuthenticatorAppLoginSettings settings)
     {
         return Initialize<AuthenticatorAppLoginSettings>("AuthenticatorAppLoginSettings_Edit", model =>
         {
             model.UseEmailAsAuthenticatorDisplayName = settings.UseEmailAsAuthenticatorDisplayName;
             model.TokenLength = settings.TokenLength;
         }).Location("Content:12#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
-        .OnGroup(SettingsGroupId);
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        .OnGroup(LoginSettingsDisplayDriver.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, AuthenticatorAppLoginSettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(AuthenticatorAppLoginSettings section, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
+        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
+            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         {
             return null;
         }
@@ -54,6 +53,6 @@ public sealed class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriv
         }
         */
 
-        return Edit(site, section, context);
+        return Edit(section);
     }
 }

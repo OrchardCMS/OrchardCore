@@ -1,15 +1,17 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace OrchardCore.ContentManagement;
-
-public class ContentPartOptionBuilder
+namespace OrchardCore.ContentManagement
 {
-    public ContentPartOptionBuilder(IServiceCollection services, Type contentPartType)
+    public class ContentPartOptionBuilder
     {
-        Services = services;
-        ContentPartType = contentPartType;
-    }
+        public ContentPartOptionBuilder(IServiceCollection services, Type contentPartType)
+        {
+            Services = services;
+            ContentPartType = contentPartType;
+        }
 
-    public IServiceCollection Services { get; }
-    public Type ContentPartType { get; }
+        public IServiceCollection Services { get; }
+        public Type ContentPartType { get; }
+    }
 }

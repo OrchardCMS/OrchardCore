@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 
-namespace OrchardCore.DisplayManagement.Theming;
-
-public interface IThemeManager
+namespace OrchardCore.DisplayManagement.Theming
 {
-    Task<IExtensionInfo> GetThemeAsync();
+    public interface IThemeManager
+    {
+        Task<IExtensionInfo> GetThemeAsync();
+    }
 }

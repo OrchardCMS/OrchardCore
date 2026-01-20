@@ -1,21 +1,23 @@
+using System.Threading.Tasks;
 using OrchardCore.Sitemaps.Models;
 
-namespace OrchardCore.Sitemaps.Builders;
-
-/// <summary>
-/// Inherit to provide a sitemap source item builder.
-/// </summary>
-public abstract class SitemapSourceBuilderBase<TSitemapSource> : ISitemapSourceBuilder where TSitemapSource : SitemapSource
+namespace OrchardCore.Sitemaps.Builders
 {
-    async Task ISitemapSourceBuilder.BuildAsync(SitemapSource source, SitemapBuilderContext context)
+    /// <summary>
+    /// Inherit to provide a sitemap source item builder.
+    /// </summary>
+    public abstract class SitemapSourceBuilderBase<TSitemapSource> : ISitemapSourceBuilder where TSitemapSource : SitemapSource
     {
-        var tSource = source as TSitemapSource;
-        if (tSource != null)
+        async Task ISitemapSourceBuilder.BuildAsync(SitemapSource source, SitemapBuilderContext context)
         {
-            await BuildSourceAsync(tSource, context);
+            var tSource = source as TSitemapSource;
+            if (tSource != null)
+            {
+                await BuildSourceAsync(tSource, context);
+            }
+
         }
 
+        public abstract Task BuildSourceAsync(TSitemapSource source, SitemapBuilderContext context);
     }
-
-    public abstract Task BuildSourceAsync(TSitemapSource source, SitemapBuilderContext context);
 }

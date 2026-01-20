@@ -49,9 +49,9 @@ function initializeTemplatePreview(nameElement, editorElement) {
         .on('input', function () { sendFormData(nameElement); })
         .on('propertychange', function () { sendFormData(nameElement); })
         .on('change', function () { sendFormData(nameElement); })
-        .on('keyup', function (e) {
+        .on('keyup', function (event) {
             // handle backspace
-            if (e.key === "Backspace" || e.ctrlKey) {
+            if (event.keyCode == 46 || event.ctrlKey) {
                 sendFormData(nameElement);
             }
         });

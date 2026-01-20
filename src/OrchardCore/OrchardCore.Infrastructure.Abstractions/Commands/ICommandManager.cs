@@ -1,7 +1,11 @@
-namespace OrchardCore.Environment.Commands;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public interface ICommandManager
+namespace OrchardCore.Environment.Commands
 {
-    Task ExecuteAsync(CommandParameters parameters);
-    IEnumerable<CommandDescriptor> GetCommandDescriptors();
+    public interface ICommandManager
+    {
+        Task ExecuteAsync(CommandParameters parameters);
+        IEnumerable<CommandDescriptor> GetCommandDescriptors();
+    }
 }

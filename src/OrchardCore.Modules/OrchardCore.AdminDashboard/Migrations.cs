@@ -1,66 +1,65 @@
+using System.Threading.Tasks;
 using OrchardCore.AdminDashboard.Indexes;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using YesSql.Sql;
 
-namespace OrchardCore.AdminDashboard;
-
-public sealed class Migrations : DataMigration
+namespace OrchardCore.AdminDashboard
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IRecipeMigrator _recipeMigrator;
-
-    public Migrations(
-        IContentDefinitionManager contentDefinitionManager,
-        IRecipeMigrator recipeMigrator)
+    public class Migrations : DataMigration
     {
-        _contentDefinitionManager = contentDefinitionManager;
-        _recipeMigrator = recipeMigrator;
-    }
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IRecipeMigrator _recipeMigrator;
 
-    public async Task<int> CreateAsync()
-    {
-        await SchemaBuilder.CreateMapIndexTableAsync<DashboardPartIndex>(table => table
-           .Column<double>("Position")
-        );
+        public Migrations(IContentDefinitionManager contentDefinitionManager, IRecipeMigrator recipeMigrator)
+        {
+            _contentDefinitionManager = contentDefinitionManager;
+            _recipeMigrator = recipeMigrator;
+        }
 
-        await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
-            .CreateIndex("IDX_DashboardPart_DocumentId",
-                "DocumentId",
-                "Position")
-        );
+        public async Task<int> CreateAsync()
+        {
+            await SchemaBuilder.CreateMapIndexTableAsync<DashboardPartIndex>(table => table
+               .Column<double>("Position")
+            );
 
-        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
+            await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
+                .CreateIndex("IDX_DashboardPart_DocumentId",
+                    "DocumentId",
+                    "Position")
+            );
 
-        // Shortcut other migration steps on new content definition schemas.
-        return 4;
-    }
+            await _contentDefinitionManager.AlterPartDefinitionAsync("DashboardPart", builder => builder
+                .Attachable()
+                .WithDescription("Provides a way to add widgets to a dashboard.")
+                );
 
-    public async Task<int> UpdateFrom1Async()
-    {
-        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
+            await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
 
-        return 2;
-    }
+            // Shortcut other migration steps on new content definition schemas.
+            return 3;
+        }
 
-    // This code can be removed in a later version.
-    public async Task<int> UpdateFrom2Async()
-    {
-        await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
-            .CreateIndex("IDX_DashboardPart_DocumentId",
-                "DocumentId",
-                "Position")
-        );
+        public async Task<int> UpdateFrom1Async()
+        {
+            await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
 
-        return 3;
-    }
+            return 2;
+        }
 
-    public async Task<int> UpdateFrom3Async()
-    {
-        await _contentDefinitionManager.DeletePartDefinitionAsync("DashboardPart");
+        // This code can be removed in a later version.
+        public async Task<int> UpdateFrom2Async()
+        {
+            await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
+                .CreateIndex("IDX_DashboardPart_DocumentId",
+                    "DocumentId",
+                    "Position")
+            );
 
-        return 4;
+            return 3;
+        }
     }
 }

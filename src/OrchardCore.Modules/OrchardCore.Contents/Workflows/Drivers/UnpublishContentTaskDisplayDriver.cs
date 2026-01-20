@@ -3,17 +3,18 @@ using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Contents.Workflows.Drivers;
-
-public sealed class UnpublishContentTaskDisplayDriver : ContentTaskDisplayDriver<UnpublishContentTask, UnpublishContentTaskViewModel>
+namespace OrchardCore.Contents.Workflows.Drivers
 {
-    protected override void EditActivity(UnpublishContentTask activity, UnpublishContentTaskViewModel model)
+    public class UnpublishContentTaskDisplayDriver : ContentTaskDisplayDriver<UnpublishContentTask, UnpublishContentTaskViewModel>
     {
-        model.Expression = activity.Content.Expression;
-    }
+        protected override void EditActivity(UnpublishContentTask activity, UnpublishContentTaskViewModel model)
+        {
+            model.Expression = activity.Content.Expression;
+        }
 
-    protected override void UpdateActivity(UnpublishContentTaskViewModel model, UnpublishContentTask activity)
-    {
-        activity.Content = new WorkflowExpression<IContent>(model.Expression);
+        protected override void UpdateActivity(UnpublishContentTaskViewModel model, UnpublishContentTask activity)
+        {
+            activity.Content = new WorkflowExpression<IContent>(model.Expression);
+        }
     }
 }

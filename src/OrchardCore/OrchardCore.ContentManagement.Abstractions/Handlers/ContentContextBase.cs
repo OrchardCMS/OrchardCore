@@ -1,11 +1,12 @@
-namespace OrchardCore.ContentManagement.Handlers;
-
-public class ContentContextBase
+namespace OrchardCore.ContentManagement.Handlers
 {
-    protected ContentContextBase(ContentItem contentItem)
+    public class ContentContextBase
     {
-        ContentItem = contentItem;
-    }
+        protected ContentContextBase(ContentItem contentItem)
+        {
+            ContentItem = contentItem;
+        }
 
-    public ContentItem ContentItem { get; private set; }
+        public ContentItem ContentItem { get; private set; }
+    }
 }

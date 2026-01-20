@@ -2,14 +2,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.TagHelpers;
 
-namespace OrchardCore.Contents.TagHelpers;
-
-[HtmlTargetElement("contentitem")]
-public class ContentItemTagHelper : BaseShapeTagHelper
+namespace OrchardCore.Contents.TagHelpers
 {
-    public ContentItemTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
-        : base(shapeFactory, displayHelper)
+    [HtmlTargetElement("contentitem")]
+    public class ContentItemTagHelper : BaseShapeTagHelper
     {
-        Type = "ContentItem";
+        public ContentItemTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
+            : base(shapeFactory, displayHelper)
+        {
+            Type = "ContentItem";
+        }
     }
 }

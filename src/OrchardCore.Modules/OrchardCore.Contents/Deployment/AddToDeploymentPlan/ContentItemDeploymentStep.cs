@@ -1,16 +1,17 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
-
-/// <summary>
-/// Adds a content item to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class ContentItemDeploymentStep : DeploymentStep
+namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
-    public ContentItemDeploymentStep()
+    /// <summary>
+    /// Adds a content item to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class ContentItemDeploymentStep : DeploymentStep
     {
-        Name = nameof(ContentItemDeploymentStep);
-    }
+        public ContentItemDeploymentStep()
+        {
+            Name = nameof(ContentItemDeploymentStep);
+        }
 
-    public string ContentItemId { get; set; }
+        public string ContentItemId { get; set; }
+    }
 }

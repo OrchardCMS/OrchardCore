@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentLocalization.Models;
@@ -6,53 +8,52 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.ContentLocalization.Drivers;
-
-public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDriver<ContentRequestCultureProviderSettings>
+namespace OrchardCore.ContentLocalization.Drivers
 {
-    public const string GroupId = "ContentRequestCultureProvider";
-
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
-
-    public ContentRequestCultureProviderSettingsDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+    public class ContentRequestCultureProviderSettingsDriver : SectionDisplayDriver<ISite, ContentRequestCultureProviderSettings>
     {
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
-    }
+        public const string GroupId = "ContentRequestCultureProvider";
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-    protected override string SettingsGroupId
-        => GroupId;
-
-    public override async Task<IDisplayResult> EditAsync(ISite site, ContentRequestCultureProviderSettings settings, BuildEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, ContentLocalizationPermissions.ManageContentCulturePicker))
+        public ContentRequestCultureProviderSettingsDriver(
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
-            return null;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
-        return Initialize<ContentRequestCultureProviderSettings>("ContentRequestCultureProviderSettings_Edit", model =>
+        public override async Task<IDisplayResult> EditAsync(ContentRequestCultureProviderSettings settings, BuildEditorContext context)
         {
-            model.SetCookie = settings.SetCookie;
-        }).Location("Content:5")
-        .OnGroup(SettingsGroupId);
-    }
+            var user = _httpContextAccessor.HttpContext?.User;
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, ContentRequestCultureProviderSettings settings, UpdateEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageContentCulturePicker))
+            {
+                return null;
+            }
 
-        if (!await _authorizationService.AuthorizeAsync(user, ContentLocalizationPermissions.ManageContentCulturePicker))
-        {
-            return null;
+            return Initialize<ContentRequestCultureProviderSettings>("ContentRequestCultureProviderSettings_Edit", model =>
+            {
+                model.SetCookie = settings.SetCookie;
+            }).Location("Content:5").OnGroup(GroupId);
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        public override async Task<IDisplayResult> UpdateAsync(ContentRequestCultureProviderSettings section, BuildEditorContext context)
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
 
-        return await EditAsync(site, settings, context);
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageContentCulturePicker))
+            {
+                return null;
+            }
+
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            {
+                await context.Updater.TryUpdateModelAsync(section, Prefix);
+            }
+
+            return await EditAsync(section, context);
+        }
     }
 }

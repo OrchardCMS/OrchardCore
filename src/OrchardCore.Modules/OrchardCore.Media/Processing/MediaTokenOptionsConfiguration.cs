@@ -1,19 +1,23 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Media.Processing;
-
-public sealed class MediaTokenOptionsConfiguration : IConfigureOptions<MediaTokenOptions>
+namespace OrchardCore.Media.Processing
 {
-    private readonly ISiteService _siteService;
-
-    public MediaTokenOptionsConfiguration(ISiteService siteService)
+    public class MediaTokenOptionsConfiguration : IConfigureOptions<MediaTokenOptions>
     {
-        _siteService = siteService;
-    }
+        private readonly ISiteService _siteService;
 
-    public void Configure(MediaTokenOptions options)
-    {
-        options.HashKey = _siteService.GetSettings<MediaTokenSettings>().HashKey;
+        public MediaTokenOptionsConfiguration(ISiteService siteService)
+        {
+            _siteService = siteService;
+        }
+
+        public void Configure(MediaTokenOptions options)
+        {
+            options.HashKey = _siteService.GetSiteSettingsAsync()
+                .GetAwaiter().GetResult()
+                .As<MediaTokenSettings>()
+                .HashKey;
+        }
     }
 }

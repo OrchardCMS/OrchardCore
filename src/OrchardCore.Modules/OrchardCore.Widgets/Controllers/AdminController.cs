@@ -1,83 +1,86 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentTypes.Shapes;
+using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.ViewModels;
 
-namespace OrchardCore.Widgets.Controllers;
-
-[Admin("Widgets/{action}/{id?}", "Widgets.{action}")]
-public sealed class AdminController : Controller
+namespace OrchardCore.Widgets.Controllers
 {
-    private readonly IContentManager _contentManager;
-    private readonly IShapeFactory _shapeFactory;
-    private readonly IUpdateModelAccessor _updateModelAccessor;
-
-    public AdminController(
-        IContentManager contentManager,
-        IShapeFactory shapeFactory,
-        IUpdateModelAccessor updateModelAccessor)
+    public class AdminController : Controller
     {
-        _contentManager = contentManager;
-        _shapeFactory = shapeFactory;
-        _updateModelAccessor = updateModelAccessor;
-    }
+        private readonly IContentManager _contentManager;
+        private readonly IContentItemDisplayManager _contentItemDisplayManager;
+        private readonly IShapeFactory _shapeFactory;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
-    public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string zonesName, string zone, string targetId, string parentContentType, string partName)
-    {
-        if (string.IsNullOrWhiteSpace(id))
+        public AdminController(
+            IContentManager contentManager,
+            IContentItemDisplayManager contentItemDisplayManager,
+            IShapeFactory shapeFactory,
+            IUpdateModelAccessor updateModelAccessor)
         {
-            return NotFound();
+            _contentItemDisplayManager = contentItemDisplayManager;
+            _contentManager = contentManager;
+            _shapeFactory = shapeFactory;
+            _updateModelAccessor = updateModelAccessor;
         }
 
-        var contentItem = await _contentManager.NewAsync(id);
-
-        contentItem.Weld(new WidgetMetadata());
-
-        var cardCollectionType = nameof(WidgetsListPart);
-
-        // Create a Card Shape
-        var contentCard = await _shapeFactory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string zonesName, string zone, string targetId, string parentContentType, string partName)
         {
-            // Updater is the controller for AJAX Requests
-            shape.Updater = _updateModelAccessor.ModelUpdater;
-            // Shape Specific
-            shape.CollectionShapeType = cardCollectionType;
-            shape.ContentItem = contentItem;
-            shape.BuildEditor = true;
-            shape.ParentContentType = parentContentType;
-            shape.CollectionPartName = partName;
-            // WidgetListPart Specific
-            shape.ZoneValue = zone;
-            // Card Specific Properties
-            shape.TargetId = targetId;
-            shape.Inline = true;
-            shape.CanMove = true;
-            shape.CanDelete = true;
-            // Input hidden
-            // Prefixes
-            shape.PrefixValue = prefix;
-            shape.PrefixesId = prefixesName.Replace('.', '_');
-            shape.PrefixesName = prefixesName;
-            // ContentTypes
-            shape.ContentTypesId = contentTypesName.Replace('.', '_');
-            shape.ContentTypesName = contentTypesName;
-            // ContentItems
-            shape.ContentItemsId = contentItemsName.Replace('.', '_');
-            shape.ContentItemsName = contentItemsName;
-            // Zones
-            shape.ZonesId = zonesName.Replace('.', '_');
-            shape.ZonesName = zonesName;
-        });
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return NotFound();
+            }
 
-        var model = new BuildEditorViewModel
-        {
-            EditorShape = contentCard,
-        };
+            var contentItem = await _contentManager.NewAsync(id);
 
-        return View("Display", model);
+            contentItem.Weld(new WidgetMetadata());
+
+            var cardCollectionType = nameof(WidgetsListPart);
+
+            // Create a Card Shape
+            dynamic contentCard = await _shapeFactory.New.ContentCard(
+                // Updater is the controller for AJAX Requests
+                Updater: _updateModelAccessor.ModelUpdater,
+                // Shape Specific
+                CollectionShapeType: cardCollectionType,
+                ContentItem: contentItem,
+                BuildEditor: true,
+                ParentContentType: parentContentType,
+                CollectionPartName: partName,
+                // WidgetListPart Specific
+                ZoneValue: zone,
+                // Card Specific Properties
+                TargetId: targetId,
+                Inline: true,
+                CanMove: true,
+                CanDelete: true,
+                // Input hidden
+                // Prefixes
+                PrefixValue: prefix,
+                PrefixesId: prefixesName.Replace('.', '_'),
+                PrefixesName: prefixesName,
+                // ContentTypes
+                ContentTypesId: contentTypesName.Replace('.', '_'),
+                ContentTypesName: contentTypesName,
+                // ContentItems
+                ContentItemsId: contentItemsName.Replace('.', '_'),
+                ContentItemsName: contentItemsName,
+                // Zones
+                ZonesId: zonesName.Replace('.', '_'),
+                ZonesName: zonesName
+            );
+
+            var model = new BuildEditorViewModel
+            {
+                EditorShape = contentCard
+            };
+
+            return View("Display", model);
+        }
     }
 }

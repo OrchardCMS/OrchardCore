@@ -1,11 +1,12 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Sitemaps.Deployment;
-
-public sealed class AllSitemapsDeploymentStep : DeploymentStep
+namespace OrchardCore.Sitemaps.Deployment
 {
-    public AllSitemapsDeploymentStep()
+    public class AllSitemapsDeploymentStep : DeploymentStep
     {
-        Name = "AllSitemaps";
+        public AllSitemapsDeploymentStep()
+        {
+            Name = "AllSitemaps";
+        }
     }
 }

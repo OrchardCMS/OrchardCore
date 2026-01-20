@@ -1,25 +1,34 @@
-const insertAtCaret = (element, myValue) => {
-    if (document.selection) {
-        //For browsers like Internet Explorer
-        element.focus();
-        const sel = document.selection.createRange();
-        sel.text = myValue;
-        element.focus();
-    } else if (element.selectionStart || element.selectionStart === "0") {
-        //For browsers like Firefox and Webkit based
-        const startPos = element.selectionStart;
-        const endPos = element.selectionEnd;
-        const scrollTop = element.scrollTop;
-        element.value = element.value.substring(0, startPos) + myValue + element.value.substring(endPos, element.value.length);
-        element.focus();
-        element.selectionStart = startPos + myValue.length;
-        element.selectionEnd = startPos + myValue.length;
-        element.scrollTop = scrollTop;
-    } else {
-        element.value += myValue;
-        element.focus();
+/// jQuery helper to append text to a textarea or input.
+jQuery.fn.extend({
+    insertAtCaret: function (myValue) {
+        return this.each(function (i) {
+            if (document.selection) {
+                //For browsers like Internet Explorer
+                this.focus();
+                sel = document.selection.createRange();
+                sel.text = myValue;
+                this.focus();
+            } else if (this.selectionStart || this.selectionStart === "0") {
+                //For browsers like Firefox and Webkit based
+                var startPos = this.selectionStart;
+                var endPos = this.selectionEnd;
+                var scrollTop = this.scrollTop;
+                this.value = this.value.substring(0, startPos) + myValue + this.value.substring(endPos, this.value.length);
+                this.focus();
+                this.selectionStart = startPos + myValue.length;
+                this.selectionEnd = startPos + myValue.length;
+                this.scrollTop = scrollTop;
+            } else {
+                this.value += myValue;
+                this.focus();
+            }
+        });
     }
-};
+});
+
+const shortcodeWrapperTemplate = `
+<div class="shortcode-modal-wrapper"></div>
+`;
 
 const shortcodeBtnTemplate = `
 <button type="button" class="shortcode-modal-btn btn btn-sm">
@@ -28,26 +37,18 @@ const shortcodeBtnTemplate = `
 `;
 
 // Wraps each .shortcode-modal-input class with a wrapper, and attaches detaches the shortcode app as required.
-document.addEventListener('DOMContentLoaded', () => {
-    const inputs = document.querySelectorAll('.shortcode-modal-input');
-    inputs.forEach(input => {
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('shortcode-modal-wrapper');
-        input.parentElement.insertBefore(wrapper, input);
-        wrapper.appendChild(input);
-
-        input.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);        
+$(function () {
+    $('.shortcode-modal-input').each(function () {
+        $(this).wrap(shortcodeWrapperTemplate);
+        $(this).parent().append(shortcodeBtnTemplate);
     });
 
-    const buttons = document.querySelectorAll('.shortcode-modal-btn');
-    buttons.forEach(button => {
-        button.addEventListener('click', event => {
-            const input = event.target.closest('.shortcode-modal-wrapper').querySelector('.shortcode-modal-input');
+    $('.shortcode-modal-btn').on('click', function() {
+        var input = $(this).siblings('.shortcode-modal-input');
 
-            shortcodesApp.init(defaultValue => {
-                insertAtCaret(input, defaultValue);
-            });
-        });
+        shortcodesApp.init(function (defaultValue) {
+            input.insertAtCaret(defaultValue);
+        });    
     });
 })
 
@@ -95,7 +96,7 @@ function initializeShortcodesApp(element) {
                     this.modal = new bootstrap.Modal(this.$el);
                     this.modal.show();
                     var self = this;
-                    this.$el.addEventListener('shown.bs.modal', function (e) {
+                    $(this.$el).on('shown.bs.modal', function (e) {
                         self.$refs.filter.focus();
                     });
                 },
@@ -132,15 +133,11 @@ function initializeShortcodesApp(element) {
 function initializeCodeMirrorShortcodeWrapper(editor) {
     const codemirrorWrapper = editor.display.wrapper;
 
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('shortcode-modal-wrapper');
-    codemirrorWrapper.parentElement.insertBefore(wrapper, codemirrorWrapper);
-    wrapper.appendChild(codemirrorWrapper);
-
-    codemirrorWrapper.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);
-    codemirrorWrapper.parentElement.querySelector('.shortcode-modal-btn').addEventListener('click', () => {
-        shortcodesApp.init(defaultValue => {
+    $(codemirrorWrapper).wrap(shortcodeWrapperTemplate);
+    $(codemirrorWrapper).parent().append(shortcodeBtnTemplate);
+    $(codemirrorWrapper).siblings('.shortcode-modal-btn').on('click', function () {
+        shortcodesApp.init(function (defaultValue) {
             editor.replaceSelection(defaultValue);   
         });   
-    });
+    });  
 }

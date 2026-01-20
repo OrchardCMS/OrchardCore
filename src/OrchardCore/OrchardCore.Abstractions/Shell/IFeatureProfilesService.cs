@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Models;
 
-namespace OrchardCore.Environment.Shell;
-
-public interface IFeatureProfilesService
+namespace OrchardCore.Environment.Shell
 {
-    Task<IDictionary<string, FeatureProfile>> GetFeatureProfilesAsync();
+    public interface IFeatureProfilesService
+    {
+        Task<IDictionary<string, FeatureProfile>> GetFeatureProfilesAsync();
+    }
 }

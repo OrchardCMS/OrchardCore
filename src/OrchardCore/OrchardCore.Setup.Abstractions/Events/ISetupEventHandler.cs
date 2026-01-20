@@ -1,29 +1,33 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Setup.Services;
 
 namespace OrchardCore.Setup.Events;
 
-/// <summary>
-/// Defines methods for handling setup events.
-/// </summary>
 public interface ISetupEventHandler
 {
-    /// <summary>
-    /// Occurs during the setup operation.
-    /// </summary>
-    /// <param name="context">An object that provides configuration and state information required for the setup process. Cannot be null.</param>
-    /// <returns>A task that represents the asynchronous setup operation.</returns>
-    Task SetupAsync(SetupContext context) => Task.CompletedTask;
+    [Obsolete($"This method is obsolete and will be removed in future releases. Please use '{nameof(SetupAsync)}' instead.", false)]
+    Task Setup(IDictionary<string, object> properties, Action<string, string> reportError) => Task.CompletedTask;
 
     /// <summary>
-    /// Occurs when the setup operation failed.
+    /// Called during the process of setting up a new tenant.
     /// </summary>
-    /// <param name="context">The setup context in which the failure is recorded. Cannot be null.</param>
-    /// <returns>A completed task that represents the asynchronous operation.</returns>
+    /// <param name="context"></param>
+    /// <returns></returns>
+#pragma warning disable CS0618 // Type or member is obsolete
+    Task SetupAsync(SetupContext context) => Setup(context.Properties, (key, message) => context.Errors[key] = message);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+    /// <summary>
+    /// Called when a tenant fails to setup.
+    /// </summary>
+    /// <returns></returns>
     Task FailedAsync(SetupContext context) => Task.CompletedTask;
 
     /// <summary>
-    /// Occurs when the setup operation succeeded.
+    /// Called when a new tenant is successfully setup.
     /// </summary>
-    /// <returns>A <see cref="Task"/> that has already completed successfully.</returns>
+    /// <returns></returns>
     Task SucceededAsync() => Task.CompletedTask;
 }

@@ -1,36 +1,39 @@
+using System;
+using System.Collections.Generic;
 using Shortcodes;
 
-namespace OrchardCore.Shortcodes;
-
-/// <summary>
-/// Provides a way to register shortcodes for discovery.
-/// </summary>
-public class ShortcodeOptions
+namespace OrchardCore.Shortcodes
 {
-    private readonly Dictionary<string, ShortcodeOption> _shortcodes = [];
-
-    public IReadOnlyDictionary<string, ShortcodeOption> Shortcodes => _shortcodes;
-
-    private readonly Dictionary<string, ShortcodeDelegate> _shortcodeDelegates = [];
-
-    public IReadOnlyDictionary<string, ShortcodeDelegate> ShortcodeDelegates => _shortcodeDelegates;
-
-    internal ShortcodeOptions AddShortcode(string name, Action<ShortcodeOption> describe)
+    /// <summary>
+    /// Provides a way to register shortcodes for discovery.
+    /// </summary>
+    public class ShortcodeOptions
     {
-        var option = new ShortcodeOption { Name = name };
-        describe?.Invoke(option);
-        _shortcodes[name] = option;
+        private readonly Dictionary<string, ShortcodeOption> _shortcodes = [];
 
-        return this;
-    }
+        public IReadOnlyDictionary<string, ShortcodeOption> Shortcodes => _shortcodes;
 
-    internal ShortcodeOptions AddShortcodeDelegate(string name, ShortcodeDelegate shortcode, Action<ShortcodeOption> describe)
-    {
-        var option = new ShortcodeOption { Name = name };
-        describe?.Invoke(option);
-        _shortcodes[name] = option;
-        _shortcodeDelegates[name] = shortcode;
+        private readonly Dictionary<string, ShortcodeDelegate> _shortcodeDelegates = [];
 
-        return this;
+        public IReadOnlyDictionary<string, ShortcodeDelegate> ShortcodeDelegates => _shortcodeDelegates;
+
+        internal ShortcodeOptions AddShortcode(string name, Action<ShortcodeOption> describe)
+        {
+            var option = new ShortcodeOption { Name = name };
+            describe?.Invoke(option);
+            _shortcodes[name] = option;
+
+            return this;
+        }
+
+        internal ShortcodeOptions AddShortcodeDelegate(string name, ShortcodeDelegate shortcode, Action<ShortcodeOption> describe)
+        {
+            var option = new ShortcodeOption { Name = name };
+            describe?.Invoke(option);
+            _shortcodes[name] = option;
+            _shortcodeDelegates[name] = shortcode;
+
+            return this;
+        }
     }
 }

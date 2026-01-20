@@ -1,6 +1,7 @@
-namespace OrchardCore.Google.Analytics.Settings;
-
-public class GoogleAnalyticsSettings
+namespace OrchardCore.Google.Analytics.Settings
 {
-    public string TrackingID { get; set; }
+    public class GoogleAnalyticsSettings
+    {
+        public string TrackingID { get; set; }
+    }
 }

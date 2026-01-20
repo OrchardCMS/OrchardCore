@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
@@ -8,48 +10,49 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Contents.Liquid;
-
-public class DisplayUrlFilter : ILiquidFilter
+namespace OrchardCore.Contents.Liquid
 {
-    private readonly AutorouteOptions _autorouteOptions;
-    private readonly IContentManager _contentManager;
-    private readonly IUrlHelperFactory _urlHelperFactory;
-
-    public DisplayUrlFilter(IOptions<AutorouteOptions> autorouteOptions, IContentManager contentManager, IUrlHelperFactory urlHelperFactory)
+    public class DisplayUrlFilter : ILiquidFilter
     {
-        _autorouteOptions = autorouteOptions.Value;
-        _contentManager = contentManager;
-        _urlHelperFactory = urlHelperFactory;
-    }
+        private readonly AutorouteOptions _autorouteOptions;
+        private readonly IContentManager _contentManager;
+        private readonly IUrlHelperFactory _urlHelperFactory;
 
-    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
-    {
-        var contentItem = input.ToObjectValue() as ContentItem;
-        RouteValueDictionary routeValues;
-
-        if (contentItem == null)
+        public DisplayUrlFilter(IOptions<AutorouteOptions> autorouteOptions, IContentManager contentManager, IUrlHelperFactory urlHelperFactory)
         {
-            if (string.IsNullOrEmpty(input.ToStringValue()))
+            _autorouteOptions = autorouteOptions.Value;
+            _contentManager = contentManager;
+            _urlHelperFactory = urlHelperFactory;
+        }
+
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
+        {
+            var contentItem = input.ToObjectValue() as ContentItem;
+            RouteValueDictionary routeValues;
+
+            if (contentItem == null)
             {
-                return StringValue.Empty;
+                if (string.IsNullOrEmpty(input.ToStringValue()))
+                {
+                    return StringValue.Empty;
+                }
+
+                routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues)
+                {
+                    [_autorouteOptions.ContentItemIdKey] = input.ToStringValue(),
+                };
+            }
+            else
+            {
+                var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+                routeValues = contentItemMetadata.DisplayRouteValues;
             }
 
-            routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues)
-            {
-                [_autorouteOptions.ContentItemIdKey] = input.ToStringValue(),
-            };
+            var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
+
+            var linkUrl = urlHelper.RouteUrl(routeValues);
+
+            return new StringValue(linkUrl);
         }
-        else
-        {
-            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-            routeValues = contentItemMetadata.DisplayRouteValues;
-        }
-
-        var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
-
-        var linkUrl = urlHelper.RouteUrl(routeValues);
-
-        return new StringValue(linkUrl);
     }
 }

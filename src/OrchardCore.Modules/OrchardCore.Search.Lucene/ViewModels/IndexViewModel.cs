@@ -1,8 +1,11 @@
-namespace OrchardCore.Search.Lucene.ViewModels;
+using System;
 
-public class IndexViewModel
+namespace OrchardCore.Search.Lucene.ViewModels
 {
-    public string Name { get; set; }
-    public string AnalyzerName { get; set; }
-    public DateTime LastUpdateUtc { get; set; }
+    public class IndexViewModel
+    {
+        public string Name { get; set; }
+        public string AnalyzerName { get; set; }
+        public DateTime LastUpdateUtc { get; set; }
+    }
 }

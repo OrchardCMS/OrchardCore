@@ -1,18 +1,20 @@
+using System;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.ContentTypes.Deployment;
-
-/// <summary>
-/// Deletes selected content definitions to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class DeleteContentDefinitionDeploymentStep : DeploymentStep
+namespace OrchardCore.ContentTypes.Deployment
 {
-    public DeleteContentDefinitionDeploymentStep()
+    /// <summary>
+    /// Deletes selected content definitions to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class DeleteContentDefinitionDeploymentStep : DeploymentStep
     {
-        Name = "DeleteContentDefinition";
+        public DeleteContentDefinitionDeploymentStep()
+        {
+            Name = "DeleteContentDefinition";
+        }
+
+        public string[] ContentTypes { get; set; } = [];
+
+        public string[] ContentParts { get; set; } = [];
     }
-
-    public string[] ContentTypes { get; set; } = [];
-
-    public string[] ContentParts { get; set; } = [];
 }

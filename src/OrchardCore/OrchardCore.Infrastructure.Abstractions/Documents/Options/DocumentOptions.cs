@@ -1,11 +1,14 @@
-namespace OrchardCore.Documents.Options;
+using System;
 
-public class DocumentOptions : DocumentOptionsBase, IDocumentNamedOptions, IDocumentSharedOptions
+namespace OrchardCore.Documents.Options
 {
-    // Only from the named config or default.
-    public string CacheKey { get; set; }
-    public string CacheIdKey { get; set; }
+    public class DocumentOptions : DocumentOptionsBase, IDocumentNamedOptions, IDocumentSharedOptions
+    {
+        // Only from the named config or default.
+        public string CacheKey { get; set; }
+        public string CacheIdKey { get; set; }
 
-    // Only from the shared config or default.
-    public TimeSpan? FailoverRetryLatency { get; set; }
+        // Only from the shared config or default.
+        public TimeSpan? FailoverRetryLatency { get; set; }
+    }
 }

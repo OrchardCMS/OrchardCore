@@ -4,13 +4,14 @@ using OrchardCore.Twitter.Workflows.Activities;
 using OrchardCore.Twitter.Workflows.Drivers;
 using OrchardCore.Workflows.Helpers;
 
-namespace OrchardCore.Twitter.Workflows;
-
-[RequireFeatures("OrchardCore.Workflows")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Twitter.Workflows
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Workflows")]
+    public class Startup : StartupBase
     {
-        services.AddActivity<UpdateTwitterStatusTask, UpdateTwitterStatusTaskDisplayDriver>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<UpdateTwitterStatusTask, UpdateTwitterStatusTaskDisplayDriver>();
+        }
     }
 }

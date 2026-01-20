@@ -1,15 +1,16 @@
 using OrchardCore.Entities;
 
-namespace OrchardCore.AuditTrail.Services;
-
-public class AuditTrailIdGenerator : IAuditTrailIdGenerator
+namespace OrchardCore.AuditTrail.Services
 {
-    private readonly IIdGenerator _generator;
-
-    public AuditTrailIdGenerator(IIdGenerator generator)
+    public class AuditTrailIdGenerator : IAuditTrailIdGenerator
     {
-        _generator = generator;
-    }
+        private readonly IIdGenerator _generator;
 
-    public string GenerateUniqueId() => _generator.GenerateUniqueId();
+        public AuditTrailIdGenerator(IIdGenerator generator)
+        {
+            _generator = generator;
+        }
+
+        public string GenerateUniqueId() => _generator.GenerateUniqueId();
+    }
 }

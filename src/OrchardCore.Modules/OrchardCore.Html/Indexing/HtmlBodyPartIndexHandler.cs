@@ -1,19 +1,21 @@
+using System.Threading.Tasks;
 using OrchardCore.Html.Models;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.Html.Indexing;
-
-public class HtmlBodyPartIndexHandler : ContentPartIndexHandler<HtmlBodyPart>
+namespace OrchardCore.Html.Indexing
 {
-    public override Task BuildIndexAsync(HtmlBodyPart part, BuildPartIndexContext context)
+    public class HtmlBodyPartIndexHandler : ContentPartIndexHandler<HtmlBodyPart>
     {
-        var options = context.Settings.ToOptions() | DocumentIndexOptions.Sanitize;
-
-        foreach (var key in context.Keys)
+        public override Task BuildIndexAsync(HtmlBodyPart part, BuildPartIndexContext context)
         {
-            context.DocumentIndex.Set(key, part.Html, options);
-        }
+            var options = context.Settings.ToOptions() | DocumentIndexOptions.Sanitize;
 
-        return Task.CompletedTask;
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Html, options);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

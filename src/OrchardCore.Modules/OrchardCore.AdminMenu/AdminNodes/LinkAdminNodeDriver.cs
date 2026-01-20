@@ -1,78 +1,76 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
-using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.AdminMenu.AdminNodes;
-
-public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
+namespace OrchardCore.AdminMenu.AdminNodes
 {
-    private readonly IPermissionService _permissionService;
-
-    public LinkAdminNodeDriver(IPermissionService permissionService)
+    public class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
     {
-        _permissionService = permissionService;
-    }
+        private readonly IAdminMenuPermissionService _adminMenuPermissionService;
 
-    public override Task<IDisplayResult> DisplayAsync(LinkAdminNode treeNode, BuildDisplayContext context)
-    {
-        return CombineAsync(
-            View("LinkAdminNode_Fields_TreeSummary", treeNode).Location("TreeSummary", "Content"),
-            View("LinkAdminNode_Fields_TreeThumbnail", treeNode).Location("TreeThumbnail", "Content")
-        );
-    }
-
-    public override IDisplayResult Edit(LinkAdminNode treeNode, BuildEditorContext context)
-    {
-        return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", async model =>
+        public LinkAdminNodeDriver(IAdminMenuPermissionService adminMenuPermissionService)
         {
-            model.LinkText = treeNode.LinkText;
-            model.LinkUrl = treeNode.LinkUrl;
-            model.IconClass = treeNode.IconClass;
-            model.Target = treeNode.Target;
+            _adminMenuPermissionService = adminMenuPermissionService;
+        }
 
-            var selectedPermissions = await _permissionService.FindByNamesAsync(treeNode.PermissionNames);
+        public override IDisplayResult Display(LinkAdminNode treeNode)
+        {
+            return Combine(
+                View("LinkAdminNode_Fields_TreeSummary", treeNode).Location("TreeSummary", "Content"),
+                View("LinkAdminNode_Fields_TreeThumbnail", treeNode).Location("TreeThumbnail", "Content")
+            );
+        }
 
-            model.SelectedItems = selectedPermissions
-                .Select(p => new PermissionViewModel
-                {
-                    Name = p.Name,
-                    DisplayText = p.Description,
-                }).ToArray();
+        public override IDisplayResult Edit(LinkAdminNode treeNode)
+        {
+            return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", async model =>
+            {
+                model.LinkText = treeNode.LinkText;
+                model.LinkUrl = treeNode.LinkUrl;
+                model.IconClass = treeNode.IconClass;
 
-            var permissions = await _permissionService.GetPermissionsAsync();
+                var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
 
-            model.AllItems = permissions
-                .Select(p => new PermissionViewModel
-                {
-                    Name = p.Name,
-                    DisplayText = p.Description,
-                }).ToArray();
-        }).Location("Content");
-    }
+                var selectedPermissions = permissions.Where(p => treeNode.PermissionNames.Contains(p.Name));
 
-    public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, UpdateEditorContext context)
-    {
-        var model = new LinkAdminNodeViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix,
-            x => x.LinkUrl,
-            x => x.LinkText,
-            x => x.Target,
-            x => x.IconClass,
-            x => x.SelectedPermissionNames);
+                model.SelectedItems = selectedPermissions
+                    .Select(p => new PermissionViewModel
+                    {
+                        Name = p.Name,
+                        DisplayText = p.Description
+                    }).ToList();
+                model.AllItems = permissions
+                    .Select(p => new PermissionViewModel
+                    {
+                        Name = p.Name,
+                        DisplayText = p.Description
+                    }).ToList();
+            }).Location("Content");
+        }
 
-        treeNode.LinkText = model.LinkText;
-        treeNode.LinkUrl = model.LinkUrl;
-        treeNode.Target = model.Target;
-        treeNode.IconClass = model.IconClass;
+        public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, IUpdateModel updater)
+        {
+            var model = new LinkAdminNodeViewModel();
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkUrl, x => x.LinkText, x => x.IconClass, x => x.SelectedPermissionNames))
+            {
+                treeNode.LinkText = model.LinkText;
+                treeNode.LinkUrl = model.LinkUrl;
+                treeNode.IconClass = model.IconClass;
 
-        var selectedPermissions = model.SelectedPermissionNames == null
-            ? []
-            : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                var selectedPermissions = (model.SelectedPermissionNames == null ? [] : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
-        var permissions = await _permissionService.FindByNamesAsync(selectedPermissions);
-        treeNode.PermissionNames = permissions.Select(p => p.Name).ToArray();
+                var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+                treeNode.PermissionNames = permissions
+                    .Where(p => selectedPermissions.Contains(p.Name))
+                    .Select(p => p.Name).ToArray();
+            }
 
-        return Edit(treeNode, context);
+            return Edit(treeNode);
+        }
     }
 }

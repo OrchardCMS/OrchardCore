@@ -1,22 +1,24 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Taxonomies.Models;
 
-namespace OrchardCore.Taxonomies.Handlers;
-
-public class TaxonomyPartHandler : ContentPartHandler<TaxonomyPart>
+namespace OrchardCore.Taxonomies.Handlers
 {
-    public override Task GetContentItemAspectAsync(ContentItemAspectContext context, TaxonomyPart part)
+    public class TaxonomyPartHandler : ContentPartHandler<TaxonomyPart>
     {
-        return context.ForAsync<ContainedContentItemsAspect>(aspect =>
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, TaxonomyPart part)
         {
-            aspect.Accessors.Add((jsonObject) =>
+            return context.ForAsync<ContainedContentItemsAspect>(aspect =>
             {
-                return jsonObject["TaxonomyPart"]["Terms"] as JsonArray;
-            });
+                aspect.Accessors.Add((jsonObject) =>
+                {
+                    return jsonObject["TaxonomyPart"]["Terms"] as JsonArray;
+                });
 
-            return Task.CompletedTask;
-        });
+                return Task.CompletedTask;
+            });
+        }
     }
 }

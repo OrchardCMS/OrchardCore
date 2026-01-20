@@ -1,176 +1,162 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
+using OrchardCore.Users.ViewModels;
 
-namespace OrchardCore.Users.Controllers;
-
-[Feature(UserConstants.Features.ResetPassword)]
-public sealed class ResetPasswordController : Controller
+namespace OrchardCore.Users.Controllers
 {
-    private readonly IUserService _userService;
-    private readonly UserManager<IUser> _userManager;
-    private readonly ISiteService _siteService;
-    private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
-    private readonly RegistrationOptions _registrationOptions;
-    private readonly ILogger _logger;
-    private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IDisplayManager<ForgotPasswordForm> _forgotPasswordDisplayManager;
-    private readonly UserEmailService _userEmailService;
-    private readonly IDisplayManager<ResetPasswordForm> _resetPasswordDisplayManager;
-
-    internal readonly IStringLocalizer S;
-
-    public ResetPasswordController(
-        IUserService userService,
-        UserManager<IUser> userManager,
-        ISiteService siteService,
-        ILogger<ResetPasswordController> logger,
-        IUpdateModelAccessor updateModelAccessor,
-        IDisplayManager<ForgotPasswordForm> forgotPasswordDisplayManager,
-        UserEmailService userEmailService,
-        IDisplayManager<ResetPasswordForm> resetPasswordDisplayManager,
-        IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
-        IOptions<RegistrationOptions> registrationOptions,
-        IStringLocalizer<ResetPasswordController> stringLocalizer)
+    [Feature("OrchardCore.Users.ResetPassword")]
+    public class ResetPasswordController : Controller
     {
-        _userService = userService;
-        _userManager = userManager;
-        _siteService = siteService;
-        _logger = logger;
-        _updateModelAccessor = updateModelAccessor;
-        _forgotPasswordDisplayManager = forgotPasswordDisplayManager;
-        _userEmailService = userEmailService;
-        _resetPasswordDisplayManager = resetPasswordDisplayManager;
-        _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
-        _registrationOptions = registrationOptions.Value;
-        S = stringLocalizer;
-    }
+        private readonly IUserService _userService;
+        private readonly UserManager<IUser> _userManager;
+        private readonly ISiteService _siteService;
+        private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
+        private readonly ILogger _logger;
+        protected readonly IStringLocalizer S;
 
-    [AllowAnonymous]
-    public async Task<IActionResult> ForgotPassword()
-    {
-        if (!(await _siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword)
+        public ResetPasswordController(
+            IUserService userService,
+            UserManager<IUser> userManager,
+            ISiteService siteService,
+            IStringLocalizer<ResetPasswordController> stringLocalizer,
+            ILogger<ResetPasswordController> logger,
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents)
         {
-            return NotFound();
+            _userService = userService;
+            _userManager = userManager;
+            _siteService = siteService;
+
+            S = stringLocalizer;
+            _logger = logger;
+            _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
         }
 
-        var formShape = await _forgotPasswordDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
-
-        return View(formShape);
-    }
-
-    [HttpPost]
-    [AllowAnonymous]
-    [ActionName(nameof(ForgotPassword))]
-    public async Task<IActionResult> ForgotPasswordPOST()
-    {
-        var site = await _siteService.GetSiteSettingsAsync();
-
-        if (!site.As<ResetPasswordSettings>().AllowResetPassword)
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword()
         {
-            return NotFound();
+            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
+            {
+                return NotFound();
+            }
+
+            return View();
         }
 
-        var model = new ForgotPasswordForm();
-
-        var formShape = await _forgotPasswordDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
-
-        await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
-
-        if (ModelState.IsValid)
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            if (await _userService.GetForgotPasswordUserAsync(model.UsernameOrEmail) is not User user)
+            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
             {
-                // Redirect to the confirmation page to ensure scrapers cannot determine if a username or email is already registered.
-                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+                return NotFound();
             }
 
-            if (_registrationOptions.UsersMustValidateEmail && !await _userManager.IsEmailConfirmedAsync(user))
+            await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
+
+            if (TryValidateModel(model) && ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, S["Before you can reset your password, you need to verify your email address."]);
-            }
-            else
-            {
-                await _userEmailService.SendPasswordResetAsync(user);
+                var user = await _userService.GetForgotPasswordUserAsync(model.Email) as User;
+                if (user == null || (
+                        (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail
+                        && !await _userManager.IsEmailConfirmedAsync(user))
+                    )
+                {
+                    // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
+                    return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
+                }
+
+                user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
+                var resetPasswordUrl = Url.Action("ResetPassword", "ResetPassword", new { code = user.ResetToken }, HttpContext.Request.Scheme);
+                // send email with callback link
+                await this.SendEmailAsync(user.Email, S["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
 
                 var context = new PasswordRecoveryContext(user);
 
                 await _passwordRecoveryFormEvents.InvokeAsync((handler, context) => handler.PasswordRecoveredAsync(context), context, _logger);
+
+                return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
             }
 
-            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+            // If we got this far, something failed, redisplay form
+            return View(model);
         }
 
-        // If we got this far, something failed, redisplay form
-        return View(formShape);
-    }
-
-    [AllowAnonymous]
-    public IActionResult ForgotPasswordConfirmation()
-    {
-        return View();
-    }
-
-    [AllowAnonymous]
-    public async Task<IActionResult> ResetPassword(string code = null)
-    {
-        if (!(await _siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword)
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation()
         {
-            return NotFound();
+            return View();
         }
 
-        if (string.IsNullOrWhiteSpace(code))
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(string code = null)
         {
-            return RedirectToAction(nameof(ForgotPassword));
-        }
-
-        var model = new ResetPasswordForm { ResetToken = code };
-        var shape = await _resetPasswordDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
-
-        return View(shape);
-    }
-
-    [HttpPost]
-    [AllowAnonymous]
-    [ActionName(nameof(ResetPassword))]
-    public async Task<IActionResult> ResetPasswordPOST()
-    {
-        if (!(await _siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword)
-        {
-            return NotFound();
-        }
-
-        var model = new ResetPasswordForm();
-        var shape = await _resetPasswordDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
-
-        await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
-
-        if (ModelState.IsValid)
-        {
-            var token = Base64.FromUTF8Base64String(model.ResetToken);
-
-            if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
+            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
             {
-                return RedirectToAction(nameof(ResetPasswordConfirmation));
+                return NotFound();
             }
+            if (code == null)
+            {
+                // "A code must be supplied for password reset.";
+            }
+            return View(new ResetPasswordViewModel { ResetToken = code });
         }
 
-        return View(shape);
-    }
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
+            {
+                return NotFound();
+            }
 
-    [AllowAnonymous]
-    public IActionResult ResetPasswordConfirmation()
-    {
-        return View();
+            await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
+
+            if (TryValidateModel(model) && ModelState.IsValid)
+            {
+                if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key == "Password" ? nameof(ResetPasswordViewModel.NewPassword) : key, message)))
+                {
+                    return RedirectToLocal(Url.Action("ResetPasswordConfirmation", "ResetPassword"));
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return Redirect("~/");
+            }
+        }
     }
 }

@@ -1,10 +1,12 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace OrchardCore.DynamicCache;
-
-public interface IDynamicCache
+namespace OrchardCore.DynamicCache
 {
-    Task<byte[]> GetAsync(string key);
-    Task RemoveAsync(string key);
-    Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options);
+    public interface IDynamicCache
+    {
+        Task<byte[]> GetAsync(string key);
+        Task RemoveAsync(string key);
+        Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options);
+    }
 }

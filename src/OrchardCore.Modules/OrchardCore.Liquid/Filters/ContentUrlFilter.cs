@@ -1,25 +1,24 @@
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Routing;
 
-namespace OrchardCore.Liquid.Filters;
-
-public class ContentUrlFilter : ILiquidFilter
+namespace OrchardCore.Liquid.Filters
 {
-    private readonly IUrlHelperFactory _urlHelperFactory;
-
-    public ContentUrlFilter(IUrlHelperFactory urlHelperFactory)
+    public class ContentUrlFilter : ILiquidFilter
     {
-        _urlHelperFactory = urlHelperFactory;
-    }
+        private readonly IUrlHelperFactory _urlHelperFactory;
 
-    public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
-    {
-        var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
+        public ContentUrlFilter(IUrlHelperFactory urlHelperFactory)
+        {
+            _urlHelperFactory = urlHelperFactory;
+        }
 
-        var trimmedInputString = input.ToStringValue().Trim();
-        var absolutePath = urlHelper.Content(trimmedInputString);
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
+        {
+            var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-        return new StringValue(absolutePath);
+            return new ValueTask<FluidValue>(new StringValue((urlHelper).Content(input.ToStringValue())));
+        }
     }
 }

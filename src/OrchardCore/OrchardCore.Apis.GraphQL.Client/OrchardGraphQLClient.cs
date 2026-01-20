@@ -1,10 +1,13 @@
-namespace OrchardCore.Apis.GraphQL.Client;
+using System.Net.Http;
 
-public class OrchardGraphQLClient
+namespace OrchardCore.Apis.GraphQL.Client
 {
-    public OrchardGraphQLClient(HttpClient client) => Client = client;
+    public class OrchardGraphQLClient
+    {
+        public OrchardGraphQLClient(HttpClient client) => Client = client;
 
-    public ContentResource Content => new(Client);
+        public ContentResource Content => new(Client);
 
-    public HttpClient Client { get; }
+        public HttpClient Client { get; }
+    }
 }

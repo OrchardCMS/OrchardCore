@@ -1,5 +1,4 @@
 using OrchardCore.Modules.Manifest;
-using OrchardCore.Users;
 
 [assembly: Module(
     Name = "ReCaptcha",
@@ -18,8 +17,4 @@ using OrchardCore.Users;
     Name = "ReCaptcha Users",
     Description = "Provides ReCaptcha functionality to harness login, register, forgot password and forms against robots.",
     Category = "Security",
-    Dependencies =
-    [
-        "OrchardCore.ReCaptcha",
-        UserConstants.Features.Users,
-    ])]
+    Dependencies = ["OrchardCore.ReCaptcha", "OrchardCore.Users"])]

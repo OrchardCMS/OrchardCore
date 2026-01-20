@@ -1,6 +1,7 @@
-namespace OrchardCore.Demo.Models;
-
-public class FakeShape
+namespace OrchardCore.Demo.Models
 {
-    public string Value { get; set; }
+    public class FakeShape
+    {
+        public string Value { get; set; }
+    }
 }

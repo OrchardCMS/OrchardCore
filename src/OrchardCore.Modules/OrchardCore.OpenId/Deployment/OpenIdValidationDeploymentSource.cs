@@ -1,28 +1,38 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 
-namespace OrchardCore.OpenId.Deployment;
-
-public sealed class OpenIdValidationDeploymentSource
-    : DeploymentSourceBase<OpenIdValidationDeploymentStep>
+namespace OrchardCore.OpenId.Deployment
 {
-    private readonly IOpenIdValidationService _openIdValidationService;
-
-    public OpenIdValidationDeploymentSource(IOpenIdValidationService openIdValidationService)
+    public class OpenIdValidationDeploymentSource : IDeploymentSource
     {
-        _openIdValidationService = openIdValidationService;
-    }
+        private readonly IOpenIdValidationService _openIdValidationService;
 
-    protected override async Task ProcessAsync(OpenIdValidationDeploymentStep step, DeploymentPlanResult result)
-    {
-        var validationSettings = await _openIdValidationService.GetSettingsAsync();
-
-        result.Steps.Add(new JsonObject
+        public OpenIdValidationDeploymentSource(IOpenIdValidationService openIdValidationService)
         {
-            ["name"] = nameof(OpenIdValidationSettings),
-            ["OpenIdValidationSettings"] = JObject.FromObject(validationSettings),
-        });
+            _openIdValidationService = openIdValidationService;
+        }
+
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        {
+            var openIdValidationStep = step as OpenIdValidationDeploymentStep;
+
+            if (openIdValidationStep == null)
+            {
+                return;
+            }
+
+            var validationSettings = await _openIdValidationService.GetSettingsAsync();
+
+            // The 'name' property should match the related recipe step name.
+            var jObject = new JsonObject { ["name"] = nameof(OpenIdValidationSettings) };
+
+            // Merge settings as the recipe step doesn't use a child property.
+            jObject.Merge(JObject.FromObject(validationSettings));
+
+            result.Steps.Add(jObject);
+        }
     }
 }

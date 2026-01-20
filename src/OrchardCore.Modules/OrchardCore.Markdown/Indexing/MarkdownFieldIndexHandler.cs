@@ -1,19 +1,21 @@
+using System.Threading.Tasks;
 using OrchardCore.Indexing;
 using OrchardCore.Markdown.Fields;
 
-namespace OrchardCore.Markdown.Indexing;
-
-public class MarkdownFieldIndexHandler : ContentFieldIndexHandler<MarkdownField>
+namespace OrchardCore.Markdown.Indexing
 {
-    public override Task BuildIndexAsync(MarkdownField field, BuildFieldIndexContext context)
+    public class MarkdownFieldIndexHandler : ContentFieldIndexHandler<MarkdownField>
     {
-        var options = context.Settings.ToOptions();
-
-        foreach (var key in context.Keys)
+        public override Task BuildIndexAsync(MarkdownField field, BuildFieldIndexContext context)
         {
-            context.DocumentIndex.Set(key, field.Markdown, options);
-        }
+            var options = context.Settings.ToOptions();
 
-        return Task.CompletedTask;
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, field.Markdown, options);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

@@ -1,7 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace OrchardCore.Json;
-
 public class JsonDerivedTypesOptions
 {
     internal Dictionary<Type, List<IJsonDerivedTypeInfo>> DerivedTypes { get; } = [];

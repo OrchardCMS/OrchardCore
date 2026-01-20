@@ -2,14 +2,15 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Contents.Scripting;
-
-[RequireFeatures("OrchardCore.Scripting")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Contents.Scripting
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Scripting")]
+    public class Startup : StartupBase
     {
-        services.AddSingleton<IGlobalMethodProvider, ContentMethodsProvider>();
-        services.AddSingleton<IGlobalMethodProvider, UrlMethodsProvider>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IGlobalMethodProvider, ContentMethodsProvider>();
+            services.AddSingleton<IGlobalMethodProvider, UrlMethodsProvider>();
+        }
     }
 }

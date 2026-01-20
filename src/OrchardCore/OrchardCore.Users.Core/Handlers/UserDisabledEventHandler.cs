@@ -1,20 +1,23 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace OrchardCore.Users.Handlers;
-
-public class UserDisabledEventHandler : UserEventHandlerBase
+namespace OrchardCore.Users.Handlers
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    private UserManager<IUser> _userManager;
-
-    public UserDisabledEventHandler(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
-
-    public override async Task DisabledAsync(UserContext context)
+    public class UserDisabledEventHandler : UserEventHandlerBase
     {
-        _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
+        private readonly IServiceProvider _serviceProvider;
 
-        await _userManager.UpdateSecurityStampAsync(context.User);
+        private UserManager<IUser> _userManager;
+
+        public UserDisabledEventHandler(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
+
+        public override async Task DisabledAsync(UserContext context)
+        {
+            _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
+
+            await _userManager.UpdateSecurityStampAsync(context.User);
+        }
     }
 }

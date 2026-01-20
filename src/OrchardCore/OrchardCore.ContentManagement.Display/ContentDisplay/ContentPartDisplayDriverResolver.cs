@@ -1,54 +1,57 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.ContentManagement.Display.ContentDisplay;
-
-public class ContentPartDisplayDriverResolver : IContentPartDisplayDriverResolver
+namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ContentDisplayOptions _contentDisplayOptions;
-    public ContentPartDisplayDriverResolver(
-        IServiceProvider serviceProvider,
-        IOptions<ContentDisplayOptions> contentDisplayOptions
-        )
+    public class ContentPartDisplayDriverResolver : IContentPartDisplayDriverResolver
     {
-        _serviceProvider = serviceProvider;
-        _contentDisplayOptions = contentDisplayOptions.Value;
-    }
-
-    public IList<IContentPartDisplayDriver> GetDisplayModeDrivers(string partName, string displayMode)
-    {
-        var services = new List<IContentPartDisplayDriver>();
-
-        if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ContentDisplayOptions _contentDisplayOptions;
+        public ContentPartDisplayDriverResolver(
+            IServiceProvider serviceProvider,
+            IOptions<ContentDisplayOptions> contentDisplayOptions
+            )
         {
-            foreach (var displayDriverOption in contentPartDisplayOption.DisplayDrivers)
-            {
-                if (displayDriverOption.DisplayMode.Invoke(displayMode))
-                {
-                    services.Add((IContentPartDisplayDriver)_serviceProvider.GetRequiredService(displayDriverOption.DisplayDriverType));
-                }
-            }
+            _serviceProvider = serviceProvider;
+            _contentDisplayOptions = contentDisplayOptions.Value;
         }
 
-        return services;
-    }
-
-    public IList<IContentPartDisplayDriver> GetEditorDrivers(string partName, string editor)
-    {
-        var services = new List<IContentPartDisplayDriver>();
-
-        if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
+        public IList<IContentPartDisplayDriver> GetDisplayModeDrivers(string partName, string displayMode)
         {
-            foreach (var editorDriverOption in contentPartDisplayOption.EditorDrivers)
+            var services = new List<IContentPartDisplayDriver>();
+
+            if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
             {
-                if (editorDriverOption.Editor.Invoke(editor))
+                foreach (var displayDriverOption in contentPartDisplayOption.DisplayDrivers)
                 {
-                    services.Add((IContentPartDisplayDriver)_serviceProvider.GetRequiredService(editorDriverOption.DisplayDriverType));
+                    if (displayDriverOption.DisplayMode.Invoke(displayMode))
+                    {
+                        services.Add((IContentPartDisplayDriver)_serviceProvider.GetRequiredService(displayDriverOption.DisplayDriverType));
+                    }
                 }
             }
+
+            return services;
         }
 
-        return services;
+        public IList<IContentPartDisplayDriver> GetEditorDrivers(string partName, string editor)
+        {
+            var services = new List<IContentPartDisplayDriver>();
+
+            if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
+            {
+                foreach (var editorDriverOption in contentPartDisplayOption.EditorDrivers)
+                {
+                    if (editorDriverOption.Editor.Invoke(editor))
+                    {
+                        services.Add((IContentPartDisplayDriver)_serviceProvider.GetRequiredService(editorDriverOption.DisplayDriverType));
+                    }
+                }
+            }
+
+            return services;
+        }
     }
 }

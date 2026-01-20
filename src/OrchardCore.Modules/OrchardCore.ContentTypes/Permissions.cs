@@ -1,21 +1,19 @@
-using OrchardCore.Contents;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentTypes;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
+    public static readonly Permission ViewContentTypes = new("ViewContentTypes", "View content types.");
+    public static readonly Permission EditContentTypes = new("EditContentTypes", "Edit content types.", isSecurityCritical: true);
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ContentTypesPermissions.ViewContentTypes,
-        ContentTypesPermissions.EditContentTypes,
+        ViewContentTypes,
+        EditContentTypes,
     ];
-
-    [Obsolete("This will be removed in a future release. Instead use 'ContentTypesPermissions.ViewContentTypes'.")]
-    public static readonly Permission ViewContentTypes = ContentTypesPermissions.ViewContentTypes;
-
-    [Obsolete("This will be removed in a future release. Instead use 'ContentTypesPermissions.EditContentTypes'.")]
-    public static readonly Permission EditContentTypes = ContentTypesPermissions.EditContentTypes;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
@@ -24,7 +22,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

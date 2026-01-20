@@ -1,41 +1,43 @@
+using System.IO;
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.Localization.PortableObject;
-
-/// <summary>
-/// Represents a provider that provides a translations for .po files.
-/// </summary>
-public class PoFilesTranslationsProvider : ITranslationProvider
+namespace OrchardCore.Localization.PortableObject
 {
-    private readonly ILocalizationFileLocationProvider _poFilesLocationProvider;
-    private readonly PoParser _parser;
-
     /// <summary>
-    /// Creates a new instance of <see cref="PoFilesTranslationsProvider"/>.
+    /// Represents a provider that provides a translations for .po files.
     /// </summary>
-    /// <param name="poFileLocationProvider">The <see cref="ILocalizationFileLocationProvider"/>.</param>
-    public PoFilesTranslationsProvider(ILocalizationFileLocationProvider poFileLocationProvider)
+    public class PoFilesTranslationsProvider : ITranslationProvider
     {
-        _poFilesLocationProvider = poFileLocationProvider;
-        _parser = new PoParser();
-    }
+        private readonly ILocalizationFileLocationProvider _poFilesLocationProvider;
+        private readonly PoParser _parser;
 
-    /// <inheritdocs />
-    public void LoadTranslations(string cultureName, CultureDictionary dictionary)
-    {
-        foreach (var fileInfo in _poFilesLocationProvider.GetLocations(cultureName))
+        /// <summary>
+        /// Creates a new instance of <see cref="PoFilesTranslationsProvider"/>.
+        /// </summary>
+        /// <param name="poFileLocationProvider">The <see cref="ILocalizationFileLocationProvider"/>.</param>
+        public PoFilesTranslationsProvider(ILocalizationFileLocationProvider poFileLocationProvider)
         {
-            LoadFileToDictionary(fileInfo, dictionary);
+            _poFilesLocationProvider = poFileLocationProvider;
+            _parser = new PoParser();
         }
-    }
 
-    private void LoadFileToDictionary(IFileInfo fileInfo, CultureDictionary dictionary)
-    {
-        if (fileInfo.Exists && !fileInfo.IsDirectory)
+        /// <inheritdocs />
+        public void LoadTranslations(string cultureName, CultureDictionary dictionary)
         {
-            using var stream = fileInfo.CreateReadStream();
-            using var reader = new StreamReader(stream);
-            dictionary.MergeTranslations(_parser.Parse(reader));
+            foreach (var fileInfo in _poFilesLocationProvider.GetLocations(cultureName))
+            {
+                LoadFileToDictionary(fileInfo, dictionary);
+            }
+        }
+
+        private void LoadFileToDictionary(IFileInfo fileInfo, CultureDictionary dictionary)
+        {
+            if (fileInfo.Exists && !fileInfo.IsDirectory)
+            {
+                using var stream = fileInfo.CreateReadStream();
+                using var reader = new StreamReader(stream);
+                dictionary.MergeTranslations(_parser.Parse(reader));
+            }
         }
     }
 }

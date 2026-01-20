@@ -1,21 +1,23 @@
+using System.Threading.Tasks;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Services;
-
-public abstract class WorkflowHandlerBase : IWorkflowHandler
+namespace OrchardCore.Workflows.Services
 {
-    public virtual Task CreatedAsync(WorkflowCreatedContext context)
+    public abstract class WorkflowHandlerBase : IWorkflowHandler
     {
-        return Task.CompletedTask;
-    }
+        public virtual Task CreatedAsync(WorkflowCreatedContext context)
+        {
+            return Task.CompletedTask;
+        }
 
-    public virtual Task UpdatedAsync(WorkflowUpdatedContext context)
-    {
-        return Task.CompletedTask;
-    }
+        public virtual Task UpdatedAsync(WorkflowUpdatedContext context)
+        {
+            return Task.CompletedTask;
+        }
 
-    public virtual Task DeletedAsync(WorkflowDeletedContext context)
-    {
-        return Task.CompletedTask;
+        public virtual Task DeletedAsync(WorkflowDeletedContext context)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

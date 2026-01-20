@@ -1,36 +1,40 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings.ViewModels;
 
-namespace OrchardCore.Settings.Deployment;
-
-public sealed class SiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SiteSettingsDeploymentStep>
+namespace OrchardCore.Settings.Deployment
 {
-    public override Task<IDisplayResult> DisplayAsync(SiteSettingsDeploymentStep step, BuildDisplayContext context)
+    public class SiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SiteSettingsDeploymentStep>
     {
-        return
-            CombineAsync(
-                View("SiteSettingsDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-                View("SiteSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(SiteSettingsDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
+        public override IDisplayResult Display(SiteSettingsDeploymentStep step)
         {
-            model.Settings = step.Settings;
-        }).Location("Content");
-    }
+            return
+                Combine(
+                    View("SiteSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    View("SiteSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                );
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(SiteSettingsDeploymentStep step, UpdateEditorContext context)
-    {
-        // Initializes the value to empty otherwise the model is not updated if no type is selected.
-        step.Settings = [];
+        public override IDisplayResult Edit(SiteSettingsDeploymentStep step)
+        {
+            return Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
+            {
+                model.Settings = step.Settings;
+            }).Location("Content");
+        }
 
-        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.Settings);
+        public override async Task<IDisplayResult> UpdateAsync(SiteSettingsDeploymentStep step, IUpdateModel updater)
+        {
+            // Initializes the value to empty otherwise the model is not updated if no type is selected.
+            step.Settings = [];
 
-        return Edit(step, context);
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.Settings);
+
+            return Edit(step);
+        }
     }
 }

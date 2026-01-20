@@ -1,56 +1,59 @@
+using System.Collections.Generic;
+using System.Linq;
 using OrchardCore.Security.Options;
 
-namespace OrchardCore.Security.Settings;
-
-public class SecuritySettings
+namespace OrchardCore.Security.Settings
 {
-    private Dictionary<string, string> _contentSecurityPolicy = [];
-    private Dictionary<string, string> _permissionsPolicy = [];
-
-    public Dictionary<string, string> ContentSecurityPolicy
+    public class SecuritySettings
     {
-        get => _contentSecurityPolicy;
-        set
+        private Dictionary<string, string> _contentSecurityPolicy = [];
+        private Dictionary<string, string> _permissionsPolicy = [];
+
+        public Dictionary<string, string> ContentSecurityPolicy
         {
-            if (value == null)
+            get => _contentSecurityPolicy;
+            set
             {
-                return;
-            }
+                if (value == null)
+                {
+                    return;
+                }
 
-            // Exclude null values and clone the dictionary to not be shared by site settings and options instances.
-            _contentSecurityPolicy = value
-                .Where(kvp => kvp.Value != null ||
-                    kvp.Key == ContentSecurityPolicyValue.Sandbox ||
-                    kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                // Exclude null values and clone the dictionary to not be shared by site settings and options instances.
+                _contentSecurityPolicy = value
+                    .Where(kvp => kvp.Value != null ||
+                        kvp.Key == ContentSecurityPolicyValue.Sandbox ||
+                        kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-            if (_contentSecurityPolicy.TryGetValue(ContentSecurityPolicyValue.UpgradeInsecureRequests, out _))
-            {
-                _contentSecurityPolicy[ContentSecurityPolicyValue.UpgradeInsecureRequests] = null;
+                if (_contentSecurityPolicy.TryGetValue(ContentSecurityPolicyValue.UpgradeInsecureRequests, out _))
+                {
+                    _contentSecurityPolicy[ContentSecurityPolicyValue.UpgradeInsecureRequests] = null;
+                }
             }
         }
-    }
 
-    public string ContentTypeOptions { get; set; } = SecurityHeaderDefaults.ContentTypeOptions;
+        public string ContentTypeOptions { get; set; } = SecurityHeaderDefaults.ContentTypeOptions;
 
-    public Dictionary<string, string> PermissionsPolicy
-    {
-        get => _permissionsPolicy;
-        set
+        public Dictionary<string, string> PermissionsPolicy
         {
-            if (value == null)
+            get => _permissionsPolicy;
+            set
             {
-                return;
+                if (value == null)
+                {
+                    return;
+                }
+
+                // Exlude 'None' values and clone the dictionary to not be shared by site settings and options instances.
+                _permissionsPolicy = value
+                    .Where(kvp => kvp.Value != PermissionsPolicyOriginValue.None)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
-
-            // Exlude 'None' values and clone the dictionary to not be shared by site settings and options instances.
-            _permissionsPolicy = value
-                .Where(kvp => kvp.Value != PermissionsPolicyOriginValue.None)
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
+
+        public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
+
+        public bool FromConfiguration { get; set; }
     }
-
-    public string ReferrerPolicy { get; set; } = SecurityHeaderDefaults.ReferrerPolicy;
-
-    public bool FromConfiguration { get; set; }
 }

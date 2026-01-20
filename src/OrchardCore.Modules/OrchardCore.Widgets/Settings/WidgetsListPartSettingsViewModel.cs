@@ -1,7 +1,8 @@
-namespace OrchardCore.Widgets.Settings;
-
-public class WidgetsListPartSettingsViewModel
+namespace OrchardCore.Widgets.Settings
 {
-    public string Zones { get; set; }
-    public WidgetsListPartSettings WidgetsListPartSettings { get; set; }
+    public class WidgetsListPartSettingsViewModel
+    {
+        public string Zones { get; set; }
+        public WidgetsListPartSettings WidgetsListPartSettings { get; set; }
+    }
 }

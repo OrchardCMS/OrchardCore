@@ -1,11 +1,12 @@
-namespace OrchardCore.Workflows.Models;
-
-public class WorkflowExecutionHandlerContextBase
+namespace OrchardCore.Workflows.Models
 {
-    protected WorkflowExecutionHandlerContextBase(WorkflowExecutionContext workflowContext)
+    public class WorkflowExecutionHandlerContextBase
     {
-        WorkflowContext = workflowContext;
-    }
+        protected WorkflowExecutionHandlerContextBase(WorkflowExecutionContext workflowContext)
+        {
+            WorkflowContext = workflowContext;
+        }
 
-    public WorkflowExecutionContext WorkflowContext { get; }
+        public WorkflowExecutionContext WorkflowContext { get; }
+    }
 }

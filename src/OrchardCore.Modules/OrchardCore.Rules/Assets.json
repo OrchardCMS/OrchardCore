@@ -1,14 +1,15 @@
 [
   {
-    "action": "sass",
-    "name": "rules",
-    "source": "Assets/scss/rules.scss",
-    "tags": ["admin", "dashboard", "css"]
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/rules.scss"
+    ],
+    "output": "wwwroot/Styles/rules.css"
   },
   {
-    "action": "min",
-    "name": "rules",
-    "source": "Assets/js/rules.js",
-    "tags": ["admin", "dashboard", "js"]
+    "inputs": [
+      "Assets/js/rules.js"
+    ],
+    "output": "wwwroot/Scripts/rules.js"
   }
 ]

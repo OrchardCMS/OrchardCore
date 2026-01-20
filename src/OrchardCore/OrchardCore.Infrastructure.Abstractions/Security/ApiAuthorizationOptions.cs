@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Authentication;
 
-namespace OrchardCore.Security;
-
-public class ApiAuthorizationOptions : AuthenticationSchemeOptions
+namespace OrchardCore.Security
 {
-    public string ApiAuthenticationScheme { get; set; } = "Bearer";
+    public class ApiAuthorizationOptions : AuthenticationSchemeOptions
+    {
+        public string ApiAuthenticationScheme { get; set; } = "Bearer";
+    }
 }

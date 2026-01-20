@@ -1,7 +1,10 @@
-namespace OrchardCore.DisplayManagement;
+using System.Collections.Generic;
 
-public interface INamedEnumerable<T> : IEnumerable<T>
+namespace OrchardCore.DisplayManagement
 {
-    IList<T> Positional { get; }
-    IDictionary<string, T> Named { get; }
+    public interface INamedEnumerable<T> : IEnumerable<T>
+    {
+        IList<T> Positional { get; }
+        IDictionary<string, T> Named { get; }
+    }
 }

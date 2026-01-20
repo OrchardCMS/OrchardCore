@@ -1,38 +1,41 @@
+using System;
+using System.IO;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.DisplayManagement.FileProviders;
-
-public class ContentFileInfo : IFileInfo
+namespace OrchardCore.DisplayManagement.FileProviders
 {
-    private readonly byte[] _content;
-
-    public ContentFileInfo(string name, string content)
+    public class ContentFileInfo : IFileInfo
     {
-        Name = name;
-        _content = Encoding.UTF8.GetBytes(content);
-    }
+        private readonly byte[] _content;
 
-    public bool Exists => true;
+        public ContentFileInfo(string name, string content)
+        {
+            Name = name;
+            _content = Encoding.UTF8.GetBytes(content);
+        }
 
-    public long Length
-    {
-        get { return _content.Length; }
-    }
+        public bool Exists => true;
 
-    public string PhysicalPath => null;
+        public long Length
+        {
+            get { return _content.Length; }
+        }
 
-    public string Name { get; }
+        public string PhysicalPath => null;
 
-    public DateTimeOffset LastModified
-    {
-        get { return DateTimeOffset.MinValue; }
-    }
+        public string Name { get; }
 
-    public bool IsDirectory => false;
+        public DateTimeOffset LastModified
+        {
+            get { return DateTimeOffset.MinValue; }
+        }
 
-    public Stream CreateReadStream()
-    {
-        return new MemoryStream(_content);
+        public bool IsDirectory => false;
+
+        public Stream CreateReadStream()
+        {
+            return new MemoryStream(_content);
+        }
     }
 }

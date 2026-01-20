@@ -1,37 +1,39 @@
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.DisplayManagement.Liquid.Filters;
-
-public class ShapeRenderFilter : ILiquidFilter
+namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
-    private readonly IDisplayHelper _displayHelper;
-
-    public ShapeRenderFilter(IDisplayHelper displayHelper)
+    public class ShapeRenderFilter : ILiquidFilter
     {
-        _displayHelper = displayHelper;
-    }
+        private readonly IDisplayHelper _displayHelper;
 
-    public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
-    {
-        static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
+        public ShapeRenderFilter(IDisplayHelper displayHelper)
         {
-            return new HtmlContentValue(await task);
+            _displayHelper = displayHelper;
         }
 
-        if (input.ToObjectValue() is IShape shape)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
-            var task = _displayHelper.ShapeExecuteAsync(shape);
-            if (!task.IsCompletedSuccessfully)
+            static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {
-                return Awaited(task);
+                return new HtmlContentValue(await task);
             }
 
-            return ValueTask.FromResult<FluidValue>(new HtmlContentValue(task.Result));
-        }
+            if (input.ToObjectValue() is IShape shape)
+            {
+                var task = _displayHelper.ShapeExecuteAsync(shape);
+                if (!task.IsCompletedSuccessfully)
+                {
+                    return Awaited(task);
+                }
 
-        return ValueTask.FromResult<FluidValue>(new HtmlContentValue(HtmlString.Empty));
+                return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
+            }
+
+            return new ValueTask<FluidValue>(new HtmlContentValue(HtmlString.Empty));
+        }
     }
 }

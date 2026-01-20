@@ -1,9 +1,12 @@
-namespace OrchardCore.Environment.Shell.Builders;
+using System.Threading.Tasks;
 
-public interface IShellPipeline
+namespace OrchardCore.Environment.Shell.Builders
 {
-    /// <summary>
-    /// Executes this shell pipeline.
-    /// </summary>
-    Task Invoke(object context);
+    public interface IShellPipeline
+    {
+        /// <summary>
+        /// Executes this shell pipeline.
+        /// </summary>
+        Task Invoke(object context);
+    }
 }

@@ -1,28 +1,30 @@
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.DisplayManagement.Liquid.Filters;
-
-public class AppendVersionFilter : ILiquidFilter
+namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
-    private readonly IFileVersionProvider _fileVersionProvider;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public AppendVersionFilter(IFileVersionProvider fileVersionProvider, IHttpContextAccessor httpContextAccessor)
+    public class AppendVersionFilter : ILiquidFilter
     {
-        _fileVersionProvider = fileVersionProvider;
-        _httpContextAccessor = httpContextAccessor;
-    }
+        private readonly IFileVersionProvider _fileVersionProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
-    {
-        var url = input.ToStringValue();
+        public AppendVersionFilter(IFileVersionProvider fileVersionProvider, IHttpContextAccessor httpContextAccessor)
+        {
+            _fileVersionProvider = fileVersionProvider;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
-        var imageUrl = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, url);
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        {
+            var url = input.ToStringValue();
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(imageUrl ?? url));
+            var imageUrl = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, url);
+
+            return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
+        }
     }
 }

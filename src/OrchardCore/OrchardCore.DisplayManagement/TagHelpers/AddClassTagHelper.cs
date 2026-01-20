@@ -1,18 +1,21 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace OrchardCore.DisplayManagement.TagHelpers;
-
-[HtmlTargetElement("add-class", Attributes = "name", TagStructure = TagStructure.WithoutEndTag)]
-public class AddClassTagHelper : TagHelper
+namespace OrchardCore.DisplayManagement.TagHelpers
 {
-    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    [HtmlTargetElement("add-class", Attributes = "name", TagStructure = TagStructure.WithoutEndTag)]
+    public class AddClassTagHelper : TagHelper
     {
-        var shape = (IShape)context.Items[typeof(IShape)];
+        public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        {
+            var shape = (IShape)context.Items[typeof(IShape)];
 
-        shape?.Classes.Add(Convert.ToString(output.Attributes["name"].Value));
+            shape?.Classes.Add(Convert.ToString(output.Attributes["name"].Value));
 
-        output.SuppressOutput();
+            output.SuppressOutput();
 
-        return Task.CompletedTask;
+            return Task.CompletedTask;
+        }
     }
 }

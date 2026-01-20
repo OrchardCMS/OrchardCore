@@ -1,55 +1,58 @@
-namespace OrchardCore.ContentManagement;
+using System.Collections.Generic;
 
-public class DefaultContentManagerSession : IContentManagerSession
+namespace OrchardCore.ContentManagement
 {
-    private readonly Dictionary<long, ContentItem> _itemByVersionId = [];
-    private readonly Dictionary<string, ContentItem> _publishedItemsById = [];
-
-    private bool _hasItems;
-
-    public void Store(ContentItem item)
+    public class DefaultContentManagerSession : IContentManagerSession
     {
-        _hasItems = true;
+        private readonly Dictionary<long, ContentItem> _itemByVersionId = [];
+        private readonly Dictionary<string, ContentItem> _publishedItemsById = [];
 
-        // Don't fail to re-add an item if it is the same instance.
-        if (!_itemByVersionId.TryGetValue(item.Id, out var existing) || existing != item)
+        private bool _hasItems;
+
+        public void Store(ContentItem item)
         {
-            _itemByVersionId.Add(item.Id, item);
+            _hasItems = true;
+
+            // Don't fail to re-add an item if it is the same instance.
+            if (!_itemByVersionId.TryGetValue(item.Id, out var existing) || existing != item)
+            {
+                _itemByVersionId.Add(item.Id, item);
+            }
+
+            // Is it the Published version?
+            if (item.Published)
+            {
+                _publishedItemsById[item.ContentItemId] = item;
+            }
         }
 
-        // Is it the Published version?
-        if (item.Published)
+        public bool RecallVersionId(long id, out ContentItem item)
         {
-            _publishedItemsById[item.ContentItemId] = item;
-        }
-    }
+            if (!_hasItems)
+            {
+                item = null;
+                return false;
+            }
 
-    public bool RecallVersionId(long id, out ContentItem item)
-    {
-        if (!_hasItems)
-        {
-            item = null;
-            return false;
+            return _itemByVersionId.TryGetValue(id, out item);
         }
 
-        return _itemByVersionId.TryGetValue(id, out item);
-    }
-
-    public bool RecallPublishedItemId(string id, out ContentItem item)
-    {
-        if (!_hasItems)
+        public bool RecallPublishedItemId(string id, out ContentItem item)
         {
-            item = null;
-            return false;
+            if (!_hasItems)
+            {
+                item = null;
+                return false;
+            }
+
+            return _publishedItemsById.TryGetValue(id, out item);
         }
 
-        return _publishedItemsById.TryGetValue(id, out item);
-    }
-
-    public void Clear()
-    {
-        _itemByVersionId.Clear();
-        _publishedItemsById.Clear();
-        _hasItems = false;
+        public void Clear()
+        {
+            _itemByVersionId.Clear();
+            _publishedItemsById.Clear();
+            _hasItems = false;
+        }
     }
 }

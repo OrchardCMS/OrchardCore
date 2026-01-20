@@ -3,14 +3,15 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
 
-namespace OrchardCore.Workflows.Timers;
-
-[Feature("OrchardCore.Workflows.Timers")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Workflows.Timers
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [Feature("OrchardCore.Workflows.Timers")]
+    public class Startup : StartupBase
     {
-        services.AddActivity<TimerEvent, TimerEventDisplayDriver>();
-        services.AddSingleton<IBackgroundTask, TimerBackgroundTask>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<TimerEvent, TimerEventDisplayDriver>();
+            services.AddSingleton<IBackgroundTask, TimerBackgroundTask>();
+        }
     }
 }

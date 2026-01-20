@@ -1,11 +1,13 @@
+using System.Linq;
 using OrchardCore.Environment.Extensions.Features;
 
-namespace OrchardCore.Environment.Extensions;
-
-public class ExtensionDependencyStrategy : IExtensionDependencyStrategy
+namespace OrchardCore.Environment.Extensions
 {
-    public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject)
+    public class ExtensionDependencyStrategy : IExtensionDependencyStrategy
     {
-        return observer.Dependencies.Contains(subject.Id);
+        public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject)
+        {
+            return observer.Dependencies.Contains(subject.Id);
+        }
     }
 }

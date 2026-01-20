@@ -1,20 +1,24 @@
-namespace OrchardCore.Sitemaps;
+using System;
+using System.Collections.Generic;
 
-public class SitemapsRazorPagesOptions
+namespace OrchardCore.Sitemaps
 {
-
-    private readonly List<SitemapsRazorPagesContentTypeOption> _contentTypeOptions = [];
-
-    public SitemapsRazorPagesOptions ConfigureContentType(string contentType, Action<SitemapsRazorPagesContentTypeOption> action)
+    public class SitemapsRazorPagesOptions
     {
-        var option = new SitemapsRazorPagesContentTypeOption(contentType);
 
-        action(option);
+        private readonly List<SitemapsRazorPagesContentTypeOption> _contentTypeOptions = [];
 
-        _contentTypeOptions.Add(option);
+        public SitemapsRazorPagesOptions ConfigureContentType(string contentType, Action<SitemapsRazorPagesContentTypeOption> action)
+        {
+            var option = new SitemapsRazorPagesContentTypeOption(contentType);
 
-        return this;
+            action(option);
+
+            _contentTypeOptions.Add(option);
+
+            return this;
+        }
+
+        public IReadOnlyList<SitemapsRazorPagesContentTypeOption> ContentTypeOptions => _contentTypeOptions;
     }
-
-    public IReadOnlyList<SitemapsRazorPagesContentTypeOption> ContentTypeOptions => _contentTypeOptions;
 }

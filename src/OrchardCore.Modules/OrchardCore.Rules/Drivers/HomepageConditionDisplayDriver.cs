@@ -1,34 +1,37 @@
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.ViewModels;
 
-namespace OrchardCore.Rules.Drivers;
-
-public sealed class HomepageConditionDisplayDriver : DisplayDriver<Condition, HomepageCondition>
+namespace OrchardCore.Rules.Drivers
 {
-    public override Task<IDisplayResult> DisplayAsync(HomepageCondition condition, BuildDisplayContext context)
+    public class HomepageConditionDisplayDriver : DisplayDriver<Condition, HomepageCondition>
     {
-        return
-            CombineAsync(
-                View("HomepageCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-                View("HomepageCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(HomepageCondition condition, BuildEditorContext context)
-    {
-        return Initialize<HomepageConditionViewModel>("HomepageCondition_Fields_Edit", m =>
+        public override IDisplayResult Display(HomepageCondition condition)
         {
-            m.Value = condition.Value;
-            m.Condition = condition;
-        }).Location("Content");
-    }
+            return
+                Combine(
+                    View("HomepageCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                    View("HomepageCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
+                );
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(HomepageCondition condition, UpdateEditorContext context)
-    {
-        await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.Value);
+        public override IDisplayResult Edit(HomepageCondition condition)
+        {
+            return Initialize<HomepageConditionViewModel>("HomepageCondition_Fields_Edit", m =>
+            {
+                m.Value = condition.Value;
+                m.Condition = condition;
+            }).Location("Content");
+        }
 
-        return Edit(condition, context);
+        public override async Task<IDisplayResult> UpdateAsync(HomepageCondition condition, IUpdateModel updater)
+        {
+            await updater.TryUpdateModelAsync(condition, Prefix, x => x.Value);
+
+            return Edit(condition);
+        }
     }
 }

@@ -1,22 +1,16 @@
 using GraphQL.Types;
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 
-namespace OrchardCore.ContentFields.GraphQL.Types;
-
-public class LinkFieldQueryObjectType : ObjectGraphType<LinkField>
+namespace OrchardCore.ContentFields.GraphQL.Types
 {
-    public LinkFieldQueryObjectType(IStringLocalizer<LinkFieldQueryObjectType> S)
+    public class LinkFieldQueryObjectType : ObjectGraphType<LinkField>
     {
-        Name = nameof(LinkField);
+        public LinkFieldQueryObjectType()
+        {
+            Name = nameof(LinkField);
 
-        Field(x => x.Url, nullable: true)
-            .Description(S["the url of the link"]);
-
-        Field(x => x.Text, nullable: true)
-            .Description(S["the text of the link"]);
-
-        Field(x => x.Target, nullable: true)
-            .Description(S["the target of the link"]);
+            Field(x => x.Url, nullable: true).Description("the url of the link");
+            Field(x => x.Text, nullable: true).Description("the text of the link");
+        }
     }
 }

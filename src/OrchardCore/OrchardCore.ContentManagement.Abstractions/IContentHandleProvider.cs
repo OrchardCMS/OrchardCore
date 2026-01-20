@@ -1,7 +1,10 @@
-namespace OrchardCore.ContentManagement;
+using System.Threading.Tasks;
 
-public interface IContentHandleProvider
+namespace OrchardCore.ContentManagement
 {
-    int Order { get; }
-    Task<string> GetContentItemIdAsync(string handle);
+    public interface IContentHandleProvider
+    {
+        int Order { get; }
+        Task<string> GetContentItemIdAsync(string handle);
+    }
 }

@@ -1,40 +1,41 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
-using OrchardCore.Json;
 using OrchardCore.Placements.Services;
 
-namespace OrchardCore.Placements.Deployment;
-
-public sealed class PlacementsDeploymentSource
-    : DeploymentSourceBase<PlacementsDeploymentStep>
+namespace OrchardCore.Placements.Deployment
 {
-    private readonly PlacementsManager _placementsManager;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
-
-    public PlacementsDeploymentSource(
-        PlacementsManager placementsManager,
-        IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
+    public class PlacementsDeploymentSource : IDeploymentSource
     {
-        _placementsManager = placementsManager;
-        _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
-    }
+        private readonly PlacementsManager _placementsManager;
 
-    protected override async Task ProcessAsync(PlacementsDeploymentStep step, DeploymentPlanResult result)
-    {
-        var placementObjects = new JsonObject();
-        var placements = await _placementsManager.ListShapePlacementsAsync();
-
-        foreach (var placement in placements)
+        public PlacementsDeploymentSource(PlacementsManager placementsManager)
         {
-            placementObjects[placement.Key] = JArray.FromObject(placement.Value, _jsonSerializerOptions);
+            _placementsManager = placementsManager;
         }
 
-        result.Steps.Add(new JsonObject
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            ["name"] = "Placements",
-            ["Placements"] = placementObjects,
-        });
+            var placementsStep = step as PlacementsDeploymentStep;
+
+            if (placementsStep == null)
+            {
+                return;
+            }
+
+            var placementObjects = new JsonObject();
+            var placements = await _placementsManager.ListShapePlacementsAsync();
+
+            foreach (var placement in placements)
+            {
+                placementObjects[placement.Key] = JArray.FromObject(placement.Value);
+            }
+
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Placements",
+                ["Placements"] = placementObjects,
+            });
+        }
     }
 }

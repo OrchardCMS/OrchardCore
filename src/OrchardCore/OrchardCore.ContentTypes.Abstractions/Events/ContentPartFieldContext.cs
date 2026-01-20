@@ -1,7 +1,8 @@
-namespace OrchardCore.ContentTypes.Events;
-
-public class ContentPartFieldContext
+namespace OrchardCore.ContentTypes.Events
 {
-    public string ContentPartName { get; set; }
-    public string ContentFieldName { get; set; }
+    public class ContentPartFieldContext
+    {
+        public string ContentPartName { get; set; }
+        public string ContentFieldName { get; set; }
+    }
 }

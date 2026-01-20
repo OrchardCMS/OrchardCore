@@ -1,14 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Markdown.Media;
-
-[RequireFeatures("OrchardCore.Media")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Markdown.Media
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Media")]
+    public class Startup : StartupBase
     {
-        services.AddShapeTableProvider<MediaShapes>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IShapeTableProvider, MediaShapes>();
+        }
     }
 }

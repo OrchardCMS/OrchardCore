@@ -1,13 +1,20 @@
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.Drivers;
-
-public sealed class UserButtonsDisplayDriver : DisplayDriver<User>
+namespace OrchardCore.Users.Drivers
 {
-    public override IDisplayResult Edit(User model, BuildEditorContext context)
+    public class UserButtonsDisplayDriver : DisplayDriver<User>
     {
-        return Dynamic("UserSaveButtons_Edit").Location("Actions");
+        public override IDisplayResult Edit(User user)
+        {
+            return Dynamic("UserSaveButtons_Edit").Location("Actions");
+        }
+
+        public override Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
+        {
+            return Task.FromResult(Edit(user));
+        }
     }
 }

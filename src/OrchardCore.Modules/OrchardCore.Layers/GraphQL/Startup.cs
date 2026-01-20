@@ -2,15 +2,16 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Layers.GraphQL;
-
-[RequireFeatures("OrchardCore.Apis.GraphQL")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Layers.GraphQL
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    public class Startup : StartupBase
     {
-        services.AddSingleton<ISchemaBuilder, SiteLayersQuery>();
-        services.AddTransient<LayerQueryObjectType>();
-        services.AddTransient<LayerWidgetQueryObjectType>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<ISchemaBuilder, SiteLayersQuery>();
+            services.AddTransient<LayerQueryObjectType>();
+            services.AddTransient<LayerWidgetQueryObjectType>();
+        }
     }
 }

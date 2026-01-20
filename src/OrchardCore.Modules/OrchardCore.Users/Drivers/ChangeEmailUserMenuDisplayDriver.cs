@@ -1,11 +1,12 @@
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class ChangeEmailUserMenuDisplayDriver : DisplayDriver<UserMenu>
+public class ChangeEmailUserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
     private readonly ISiteService _siteService;
 
@@ -14,12 +15,12 @@ public sealed class ChangeEmailUserMenuDisplayDriver : DisplayDriver<UserMenu>
         _siteService = siteService;
     }
 
-    public override IDisplayResult Display(UserMenu model, BuildDisplayContext context)
+    public override IDisplayResult Display(UserMenu model)
     {
         return View("UserMenuItems__ChangeEmail", model)
-            .RenderWhen(async () => (await _siteService.GetSettingsAsync<ChangeEmailSettings>()).AllowChangeEmail)
-            .Location(OrchardCoreConstants.DisplayType.Detail, "Content:20")
-            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:20")
+            .RenderWhen(async () => (await _siteService.GetSiteSettingsAsync()).As<ChangeEmailSettings>().AllowChangeEmail)
+            .Location("Detail", "Content:20")
+            .Location("DetailAdmin", "Content:20")
             .Differentiator("ChangeEmail");
     }
 }

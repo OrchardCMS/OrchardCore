@@ -1,9 +1,12 @@
-namespace OrchardCore.Modules;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Provides the timezone for the current request.
-/// </summary>
-public interface ITimeZoneSelector
+namespace OrchardCore.Modules
 {
-    Task<TimeZoneSelectorResult> GetTimeZoneAsync();
+    /// <summary>
+    /// Provides the timezone for the current request.
+    /// </summary>
+    public interface ITimeZoneSelector
+    {
+        Task<TimeZoneSelectorResult> GetTimeZoneAsync();
+    }
 }

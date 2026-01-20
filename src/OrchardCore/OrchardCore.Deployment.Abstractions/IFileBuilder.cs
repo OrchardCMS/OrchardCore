@@ -1,15 +1,19 @@
-namespace OrchardCore.Deployment;
+using System.IO;
+using System.Threading.Tasks;
 
-public interface IFileBuilder
+namespace OrchardCore.Deployment
 {
-    Task SetFileAsync(string subpath, Stream stream);
-}
-
-public static class IFileBuilderExtensions
-{
-    public static async Task SetFileAsync(this IFileBuilder fileBuilder, string subpath, byte[] content)
+    public interface IFileBuilder
     {
-        using var stream = new MemoryStream(content);
-        await fileBuilder.SetFileAsync(subpath, stream);
+        Task SetFileAsync(string subpath, Stream stream);
+    }
+
+    public static class IFileBuilderExtensions
+    {
+        public static async Task SetFileAsync(this IFileBuilder fileBuilder, string subpath, byte[] content)
+        {
+            using var stream = new MemoryStream(content);
+            await fileBuilder.SetFileAsync(subpath, stream);
+        }
     }
 }

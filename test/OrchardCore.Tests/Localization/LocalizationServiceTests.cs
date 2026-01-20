@@ -1,19 +1,14 @@
 using OrchardCore.Localization;
-using OrchardCore.Localization.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Tests.Localization;
 
-public class LocalizationServiceTest
+public class LocalizationService
 {
     [Fact]
     public void GetAllCulturesAndAliases_ShouldContainsChineseCultures()
     {
-        // Arrange
-        var localizationService = new LocalizationService(Mock.Of<ISiteService>());
-
         // Act
-        var cultures = localizationService.GetAllCulturesAndAliases();
+        var cultures = ILocalizationService.GetAllCulturesAndAliases();
 
         // Assert
         Assert.Single(cultures, c => c.Name == "zh-CN");

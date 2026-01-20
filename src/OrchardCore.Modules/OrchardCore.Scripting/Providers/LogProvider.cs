@@ -1,57 +1,60 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace OrchardCore.Scripting.Providers;
-
-public sealed class LogProvider : IGlobalMethodProvider
+namespace OrchardCore.Scripting.Providers
 {
-    private readonly GlobalMethod _log;
-
-    public LogProvider(ILogger<LogProvider> logger)
+    public class LogProvider : IGlobalMethodProvider
     {
-        _log = new GlobalMethod
+        private readonly GlobalMethod _log;
+
+        public LogProvider(ILogger<LogProvider> logger)
         {
-            Name = "log",
-            Method = serviceProvider => (Action<string, string, object>)((level, text, param) =>
+            _log = new GlobalMethod
             {
-                try
+                Name = "log",
+                Method = serviceProvider => (Action<string, string, object>)((level, text, param) =>
                 {
-                    if (!Enum.TryParse<LogLevel>(level, true, out var logLevel))
+                    try
                     {
-                        logLevel = LogLevel.Information;
-                    }
-                    if (param == null)
-                    {
-#pragma warning disable CA2254 // Template should be a static expression
-                        logger.Log(logLevel, text);
-#pragma warning restore CA2254 // Template should be a static expression
-                    }
-                    else
-                    {
-                        object[] args;
-                        if (param is not Array)
+                        if (!Enum.TryParse<LogLevel>(level, true, out var logLevel))
                         {
-                            args = [param];
+                            logLevel = LogLevel.Information;
+                        }
+                        if (param == null)
+                        {
+#pragma warning disable CA2254 // Template should be a static expression
+                            logger.Log(logLevel, text);
+#pragma warning restore CA2254 // Template should be a static expression
                         }
                         else
                         {
-                            args = (object[])param;
-                        }
+                            object[] args;
+                            if (param is not Array)
+                            {
+                                args = [param];
+                            }
+                            else
+                            {
+                                args = (object[])param;
+                            }
 
 #pragma warning disable CA2254 // Template should be a static expression
-                        logger.Log(logLevel, text, args);
+                            logger.Log(logLevel, text, args);
 #pragma warning restore CA2254 // Template should be a static expression
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    logger.Log(LogLevel.Error, ex, "Error logging text template {Text} with param {Param} from Scripting Engine.", text, param);
-                }
-            }),
-        };
-    }
+                    catch (Exception ex)
+                    {
+                        logger.Log(LogLevel.Error, ex, "Error logging text template {text} with param {param} from Scripting Engine.", text, param);
+                    }
+                }),
+            };
+        }
 
-    public IEnumerable<GlobalMethod> GetMethods()
-    {
-        return new[] { _log };
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            return new[] { _log };
+        }
     }
 }

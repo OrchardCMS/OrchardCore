@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.ArchiveLater.Indexes;
 using OrchardCore.ArchiveLater.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -7,7 +9,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.ArchiveLater;
 
-public sealed class Migrations : DataMigration
+public class Migrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 

@@ -1,24 +1,27 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace OrchardCore.Diagnostics;
-
-public sealed class Startup : Modules.StartupBase
+namespace OrchardCore.Diagnostics
 {
-    public override void ConfigureServices(IServiceCollection services)
+    public class Startup : Modules.StartupBase
     {
-        services.AddSingleton<IStartupFilter, DiagnosticsStartupFilter>();
-    }
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, DiagnosticsStartupFilter>());
+        }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-    {
-        routes.MapAreaControllerRoute(
-            name: "Diagnostics.Error",
-            areaName: "OrchardCore.Diagnostics",
-            pattern: "Error/{status?}",
-            defaults: new { controller = "Diagnostics", action = "Error" }
-        );
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "Diagnostics.Error",
+                areaName: "OrchardCore.Diagnostics",
+                pattern: "Error/{status?}",
+                defaults: new { controller = "Diagnostics", action = "Error" }
+            );
+        }
     }
 }

@@ -3,22 +3,23 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.FileProviders;
 
-namespace OrchardCore.Benchmarks.Support;
-
-internal sealed class FakeFileProvider : IFileProvider
+namespace OrchardCore.Benchmark.Support
 {
-    public IDirectoryContents GetDirectoryContents(string subpath)
+    internal class FakeFileProvider : IFileProvider
     {
-        return new NotFoundDirectoryContents();
-    }
+        public IDirectoryContents GetDirectoryContents(string subpath)
+        {
+            return new NotFoundDirectoryContents();
+        }
 
-    public IFileInfo GetFileInfo(string subpath)
-    {
-        return new ContentFileInfo("name", "content");
-    }
+        public IFileInfo GetFileInfo(string subpath)
+        {
+            return new ContentFileInfo("name", "content");
+        }
 
-    public IChangeToken Watch(string filter)
-    {
-        return new CancellationChangeToken(CancellationToken.None);
+        public IChangeToken Watch(string filter)
+        {
+            return new CancellationChangeToken(CancellationToken.None);
+        }
     }
 }

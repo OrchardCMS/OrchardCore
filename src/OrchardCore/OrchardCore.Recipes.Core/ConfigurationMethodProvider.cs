@@ -1,24 +1,27 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Recipes;
-
-public sealed class ConfigurationMethodProvider : IGlobalMethodProvider
+namespace OrchardCore.Recipes
 {
-    private readonly GlobalMethod _globalMethod;
-
-    public ConfigurationMethodProvider(IShellConfiguration configuration)
+    public class ConfigurationMethodProvider : IGlobalMethodProvider
     {
-        _globalMethod = new GlobalMethod
+        private readonly GlobalMethod _globalMethod;
+
+        public ConfigurationMethodProvider(IShellConfiguration configuration)
         {
-            Name = "configuration",
-            Method = serviceprovider => (Func<string, object, object>)((key, defaultValue) => configuration.GetValue<object>(key, defaultValue)),
-        };
-    }
+            _globalMethod = new GlobalMethod
+            {
+                Name = "configuration",
+                Method = serviceprovider => (Func<string, object, object>)((key, defaultValue) => configuration.GetValue<object>(key, defaultValue)),
+            };
+        }
 
-    public IEnumerable<GlobalMethod> GetMethods()
-    {
-        yield return _globalMethod;
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return _globalMethod;
+        }
     }
 }

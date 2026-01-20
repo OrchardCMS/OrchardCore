@@ -2,25 +2,20 @@ using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Twitter.Settings;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-public static class OrchardCoreBuilderExtensions
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static OrchardCoreBuilder ConfigureTwitterSettings(this OrchardCoreBuilder builder)
+    public static class OrchardCoreBuilderExtensions
     {
-        builder.ConfigureServices((tenantServices, serviceProvider) =>
+        public static OrchardCoreBuilder ConfigureTwitterSettings(this OrchardCoreBuilder builder)
         {
-            var configuration = serviceProvider.GetRequiredService<IShellConfiguration>();
-            var configurationSection = configuration.GetSection("OrchardCore_X");
-
-            if (configurationSection.Value is null)
+            builder.ConfigureServices((tenantServices, serviceProvider) =>
             {
-                configurationSection = configuration.GetSection("OrchardCore_Twitter");
-            }
+                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Twitter");
 
-            tenantServices.PostConfigure<TwitterSettings>(settings => configurationSection.Bind(settings));
-        });
+                tenantServices.PostConfigure<TwitterSettings>(settings => configurationSection.Bind(settings));
+            });
 
-        return builder;
+            return builder;
+        }
     }
 }

@@ -1,5 +1,4 @@
 {
-  "name": "@orchardcore/tests-functional",
   "devDependencies": {
     "cypress": "^9.6.1",
     "cypress-orchardcore": "file:cypress-commands",

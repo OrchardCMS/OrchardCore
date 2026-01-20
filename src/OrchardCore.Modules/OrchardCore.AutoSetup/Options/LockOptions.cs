@@ -1,17 +1,18 @@
-namespace OrchardCore.AutoSetup.Options;
-
-/// <summary>
-/// The auto setup lock options.
-/// </summary>
-public class LockOptions
+namespace OrchardCore.AutoSetup.Options
 {
     /// <summary>
-    /// The timeout in milliseconds to acquire a distributed setup lock.
+    /// The auto setup lock options.
     /// </summary>
-    public int LockTimeout { get; set; }
+    public class LockOptions
+    {
+        /// <summary>
+        /// The timeout in milliseconds to acquire a distributed setup lock.
+        /// </summary>
+        public int LockTimeout { get; set; }
 
-    /// <summary>
-    /// The expiration in milliseconds of the distributed setup lock.
-    /// </summary>
-    public int LockExpiration { get; set; }
+        /// <summary>
+        /// The expiration in milliseconds of the distributed setup lock.
+        /// </summary>
+        public int LockExpiration { get; set; }
+    }
 }

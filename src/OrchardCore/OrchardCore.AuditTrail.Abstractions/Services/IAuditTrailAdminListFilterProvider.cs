@@ -1,9 +1,10 @@
 using OrchardCore.AuditTrail.Models;
 using YesSql.Filters.Query;
 
-namespace OrchardCore.AuditTrail.Services;
-
-public interface IAuditTrailAdminListFilterProvider
+namespace OrchardCore.AuditTrail.Services
 {
-    void Build(QueryEngineBuilder<AuditTrailEvent> builder);
+    public interface IAuditTrailAdminListFilterProvider
+    {
+        void Build(QueryEngineBuilder<AuditTrailEvent> builder);
+    }
 }

@@ -1,14 +1,14 @@
 [
   {
-    "action": "sass",
-    "name": "widgets",
-    "source": "Assets/scss/widgetslist.edit.scss",
-    "tags": ["admin", "dashboard", "css"]
+    "inputs": [
+      "Assets/js/widgetslist.edit.js"
+    ],
+    "output": "wwwroot/Scripts/widgetslist.edit.js"
   },
   {
-    "action": "min",
-    "name": "widgets",
-    "source": "Assets/js/widgetslist.edit.js",
-    "tags": ["admin", "dashboard", "js"]
+    "inputs": [
+      "Assets/scss/widgetslist.edit.scss"
+    ],
+    "output": "wwwroot/Styles/widgetslist.edit.css"
   }
 ]

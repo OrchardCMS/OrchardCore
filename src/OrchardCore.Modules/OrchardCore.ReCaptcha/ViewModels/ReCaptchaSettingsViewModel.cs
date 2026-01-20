@@ -1,8 +1,9 @@
-namespace OrchardCore.ReCaptcha.ViewModels;
-
-public class ReCaptchaSettingsViewModel
+namespace OrchardCore.ReCaptcha.ViewModels
 {
-    public string SiteKey { get; set; }
+    public class ReCaptchaSettingsViewModel
+    {
+        public string SiteKey { get; set; }
 
-    public string SecretKey { get; set; }
+        public string SecretKey { get; set; }
+    }
 }

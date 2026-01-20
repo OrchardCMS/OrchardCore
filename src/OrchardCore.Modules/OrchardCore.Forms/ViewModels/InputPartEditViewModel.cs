@@ -1,8 +1,9 @@
-namespace OrchardCore.Forms.ViewModels;
-
-public class InputPartEditViewModel
+namespace OrchardCore.Forms.ViewModels
 {
-    public string Type { get; set; }
-    public string DefaultValue { get; set; }
-    public string Placeholder { get; set; }
+    public class InputPartEditViewModel
+    {
+        public string Type { get; set; }
+        public string DefaultValue { get; set; }
+        public string Placeholder { get; set; }
+    }
 }

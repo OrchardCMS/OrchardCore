@@ -1,16 +1,17 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Features;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
+    public static readonly Permission ManageFeatures = new("ManageFeatures", "Manage Features");
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        FeaturesPermissions.ManageFeatures,
+        ManageFeatures,
     ];
-
-    [Obsolete("This will be removed in a future release. Instead use 'FeaturesPermissions.ManageFeatures'.")]
-    public static readonly Permission ManageFeatures = FeaturesPermissions.ManageFeatures;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
@@ -19,7 +20,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

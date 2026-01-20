@@ -1,15 +1,16 @@
 using System.Text.Json;
 
-namespace OrchardCore.Tests.Apis.Context;
-
-internal static class HttpContentExtensions
+namespace OrchardCore.Tests.Apis.Context
 {
-    public static async Task<T> ReadAsAsync<T>(this HttpContent content)
+    internal static class HttpContentExtensions
     {
-        using var data = await content.ReadAsStreamAsync();
-        return await data.ReadAsAsync<T>();
-    }
+        public static async Task<T> ReadAsAsync<T>(this HttpContent content)
+        {
+            using var data = await content.ReadAsStreamAsync();
+            return await data.ReadAsAsync<T>();
+        }
 
-    public static ValueTask<T> ReadAsAsync<T>(this Stream stream) =>
-        JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
+        public static ValueTask<T> ReadAsAsync<T>(this Stream stream) =>
+            JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
+    }
 }

@@ -1,14 +1,15 @@
 [ 
   {
-    "action": "sass",
-    "name": "parametersEditor",
-    "source": "Assets/scss/parametersEditor/parametersEditor.scss",
-    "tags": ["admin", "dashboard", "css"]
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/parametersEditor/parametersEditor.scss"
+    ],
+    "output": "wwwroot/Styles/parametersEditor.css"
   },
   {
-    "action": "min",
-    "name": "parametersEditor",
-    "source": "Assets/js/parametersEditor/parametersEditor.js",
-    "tags": ["admin", "dashboard", "js"]
+    "inputs": [
+      "Assets/js/parametersEditor/*.js"
+    ],
+    "output": "wwwroot/Scripts/parametersEditor.js"
   }
 ]

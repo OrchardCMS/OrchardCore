@@ -13,20 +13,12 @@ using OrchardCore.Modules.Manifest;
     Id = MicrosoftAuthenticationConstants.Features.MicrosoftAccount,
     Name = "Microsoft Account Authentication",
     Category = "Microsoft Authentication",
-    Description = "Authenticates users with their Microsoft Account.",
-    Dependencies =
-    [
-        "OrchardCore.Users.ExternalAuthentication",
-    ]
+    Description = "Authenticates users with their Microsoft Account."
 )]
 
 [assembly: Feature(
     Id = MicrosoftAuthenticationConstants.Features.AAD,
     Name = "Microsoft Entra ID (Azure Active Directory) Authentication",
     Category = "Microsoft Authentication",
-    Description = "Authenticates users with their Microsoft Entra ID Account.",
-    Dependencies =
-    [
-        "OrchardCore.Users.ExternalAuthentication",
-    ]
+    Description = "Authenticates users with their Microsoft Entra ID Account."
 )]

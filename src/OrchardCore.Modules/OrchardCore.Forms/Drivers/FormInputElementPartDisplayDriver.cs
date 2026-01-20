@@ -1,54 +1,48 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Utilities;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Forms.Drivers;
-
-public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
+namespace OrchardCore.Forms.Drivers
 {
-    internal readonly IStringLocalizer S;
-
-    public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
+    public class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
     {
-        S = stringLocalizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    public override IDisplayResult Edit(FormInputElementPart part, BuildPartEditorContext context)
-    {
-        return Initialize<FormInputElementPartEditViewModel>("FormInputElementPart_Fields_Edit", m =>
+        public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
         {
-            m.Name = part.Name;
-        });
-    }
-
-    public override async Task<IDisplayResult> UpdateAsync(FormInputElementPart part, UpdatePartEditorContext context)
-    {
-        var viewModel = new FormInputElementPartEditViewModel();
-
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
-
-        if (string.IsNullOrWhiteSpace(viewModel.Name))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A value is required for Name."]);
+            S = stringLocalizer;
         }
-        else
-        {
-            var safeName = viewModel.Name.GetSafeHTMLInputName();
 
-            if (viewModel.Name != safeName)
+        public override IDisplayResult Edit(FormInputElementPart part)
+        {
+            return Initialize<FormInputElementPartEditViewModel>("FormInputElementPart_Fields_Edit", m =>
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A Name contains invalid characters."]);
-            }
+                m.Name = part.Name;
+            });
         }
 
-        part.Name = viewModel.Name;
-        part.ContentItem.DisplayText = part.Name;
+        public async override Task<IDisplayResult> UpdateAsync(FormInputElementPart part, IUpdateModel updater)
+        {
+            var viewModel = new FormInputElementPartEditViewModel();
 
-        return Edit(part, context);
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            {
+                if (string.IsNullOrWhiteSpace(viewModel.Name))
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A value is required for Name."]);
+                }
+
+                part.Name = viewModel.Name?.Trim();
+                part.ContentItem.DisplayText = part.Name;
+            }
+
+            return Edit(part);
+        }
     }
 }

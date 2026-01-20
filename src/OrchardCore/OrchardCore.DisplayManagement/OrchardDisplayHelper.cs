@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.DisplayManagement.Razor;
-
-internal sealed class OrchardDisplayHelper : IOrchardDisplayHelper
+namespace OrchardCore.DisplayManagement.Razor
 {
-    public OrchardDisplayHelper(HttpContext context, IDisplayHelper displayHelper)
+    internal class OrchardDisplayHelper : IOrchardDisplayHelper
     {
-        HttpContext = context;
-        DisplayHelper = displayHelper;
-    }
+        public OrchardDisplayHelper(HttpContext context, IDisplayHelper displayHelper)
+        {
+            HttpContext = context;
+            DisplayHelper = displayHelper;
+        }
 
-    public HttpContext HttpContext { get; set; }
-    public IDisplayHelper DisplayHelper { get; set; }
+        public HttpContext HttpContext { get; set; }
+        public IDisplayHelper DisplayHelper { get; set; }
+    }
 }

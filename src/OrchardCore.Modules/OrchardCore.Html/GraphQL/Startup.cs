@@ -3,13 +3,14 @@ using OrchardCore.Apis;
 using OrchardCore.Html.Models;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Html.GraphQL;
-
-[RequireFeatures("OrchardCore.Apis.GraphQL")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Html.GraphQL
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    public class Startup : StartupBase
     {
-        services.AddObjectGraphType<HtmlBodyPart, HtmlBodyQueryObjectType>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddObjectGraphType<HtmlBodyPart, HtmlBodyQueryObjectType>();
+        }
     }
 }

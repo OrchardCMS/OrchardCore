@@ -1,50 +1,52 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.ContentPreview;
-
-public sealed class PreviewStartupFilter : IStartupFilter
+namespace OrchardCore.ContentPreview
 {
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    public class PreviewStartupFilter : IStartupFilter
     {
-        return app =>
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
-            app.Use(async (context, next) =>
+            return app =>
             {
-                await next();
-
-                if (!context.Items.TryGetValue("PreviewPath", out var previewPathObject) || previewPathObject == null)
+                app.Use(async (context, next) =>
                 {
-                    return;
-                }
+                    await next();
 
-                var previewPath = previewPathObject.ToString();
-
-                if (!string.IsNullOrWhiteSpace(previewPath) && previewPath.StartsWith('/'))
-                {
-                    var originalPath = context.Request.Path;
-                    var originalQueryString = context.Request.QueryString;
-
-                    context.Request.Path = previewPath;
-                    context.Items.Remove("PreviewPath");
-
-                    context.SetEndpoint(endpoint: null);
-                    context.Request.RouteValues.Clear();
-
-                    try
+                    if (!context.Items.TryGetValue("PreviewPath", out var previewPathObject) || previewPathObject == null)
                     {
-                        await next();
+                        return;
                     }
-                    finally
-                    {
-                        context.Request.QueryString = originalQueryString;
-                        context.Request.Path = originalPath;
-                    }
-                }
-            });
 
-            next(app);
-        };
+                    var previewPath = previewPathObject.ToString();
+
+                    if (!string.IsNullOrWhiteSpace(previewPath) && previewPath.StartsWith('/'))
+                    {
+                        var originalPath = context.Request.Path;
+                        var originalQueryString = context.Request.QueryString;
+
+                        context.Request.Path = previewPath;
+                        context.Items.Remove("PreviewPath");
+
+                        context.SetEndpoint(endpoint: null);
+                        context.Request.RouteValues.Clear();
+
+                        try
+                        {
+                            await next();
+                        }
+                        finally
+                        {
+                            context.Request.QueryString = originalQueryString;
+                            context.Request.Path = originalPath;
+                        }
+                    }
+                });
+
+                next(app);
+            };
+        }
     }
 }

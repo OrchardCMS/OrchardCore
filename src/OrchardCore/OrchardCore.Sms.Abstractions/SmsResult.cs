@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Sms;
@@ -7,9 +8,9 @@ public class SmsResult
     /// <summary>
     /// Returns an <see cref="SmsResult"/> indicating a successful SMS operation.
     /// </summary>
-    public static readonly SmsResult Success = new()
+    public readonly static SmsResult Success = new()
     {
-        Succeeded = true,
+        Succeeded = true
     };
 
     /// <summary>

@@ -1,35 +1,37 @@
+using System.Threading.Tasks;
 using OrchardCore.Documents;
 using OrchardCore.Templates.Models;
 
-namespace OrchardCore.Templates.Services;
-
-public class TemplatesManager
+namespace OrchardCore.Templates.Services
 {
-    private readonly IDocumentManager<TemplatesDocument> _documentManager;
-
-    public TemplatesManager(IDocumentManager<TemplatesDocument> documentManager) => _documentManager = documentManager;
-
-    /// <summary>
-    /// Loads the templates document from the store for updating and that should not be cached.
-    /// </summary>
-    public Task<TemplatesDocument> LoadTemplatesDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
-
-    /// <summary>
-    /// Gets the templates document from the cache for sharing and that should not be updated.
-    /// </summary>
-    public Task<TemplatesDocument> GetTemplatesDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
-
-    public async Task RemoveTemplateAsync(string name)
+    public class TemplatesManager
     {
-        var document = await LoadTemplatesDocumentAsync();
-        document.Templates.Remove(name);
-        await _documentManager.UpdateAsync(document);
-    }
+        private readonly IDocumentManager<TemplatesDocument> _documentManager;
 
-    public async Task UpdateTemplateAsync(string name, Template template)
-    {
-        var document = await LoadTemplatesDocumentAsync();
-        document.Templates[name] = template;
-        await _documentManager.UpdateAsync(document);
+        public TemplatesManager(IDocumentManager<TemplatesDocument> documentManager) => _documentManager = documentManager;
+
+        /// <summary>
+        /// Loads the templates document from the store for updating and that should not be cached.
+        /// </summary>
+        public Task<TemplatesDocument> LoadTemplatesDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
+
+        /// <summary>
+        /// Gets the templates document from the cache for sharing and that should not be updated.
+        /// </summary>
+        public Task<TemplatesDocument> GetTemplatesDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
+
+        public async Task RemoveTemplateAsync(string name)
+        {
+            var document = await LoadTemplatesDocumentAsync();
+            document.Templates.Remove(name);
+            await _documentManager.UpdateAsync(document);
+        }
+
+        public async Task UpdateTemplateAsync(string name, Template template)
+        {
+            var document = await LoadTemplatesDocumentAsync();
+            document.Templates[name] = template;
+            await _documentManager.UpdateAsync(document);
+        }
     }
 }

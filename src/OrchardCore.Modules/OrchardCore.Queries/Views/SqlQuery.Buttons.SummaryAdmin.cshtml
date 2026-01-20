@@ -1,12 +1,7 @@
-@using OrchardCore.Queries
-@using OrchardCore.Queries.Sql.Models
-@using OrchardCore.Entities
 @model dynamic
 
 @{
-    var query = Model.Query as Query;
-    var metadata = query.As<SqlQueryMetadata>();
-    var base64Query = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(metadata.Template ?? string.Empty));
+    var base64Query = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes((string)Model.Query.Template ?? ""));
 }
 
 <a asp-action="Query"

@@ -1,29 +1,33 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Mvc.ModelBinding;
-
-public static class ModelStateDictionaryExtensions
+namespace OrchardCore.Mvc.ModelBinding
 {
-    public static void AddModelError(this ModelStateDictionary modelState, ModelError error)
+    public static class ModelStateDictionaryExtensions
     {
-        ArgumentNullException.ThrowIfNull(modelState);
-
-        ArgumentNullException.ThrowIfNull(error);
-
-        modelState.AddModelError(error.Key, error.Message);
-    }
-
-    public static void AddModelErrors(this ModelStateDictionary modelState, IEnumerable<ModelError> errors)
-    {
-        ArgumentNullException.ThrowIfNull(modelState);
-
-        ArgumentNullException.ThrowIfNull(errors);
-
-        if (errors.Any())
+        public static void AddModelError(this ModelStateDictionary modelState, ModelError error)
         {
-            foreach (var error in errors)
+            ArgumentNullException.ThrowIfNull(modelState);
+
+            ArgumentNullException.ThrowIfNull(error);
+
+            modelState.AddModelError(error.Key, error.Message);
+        }
+
+        public static void AddModelErrors(this ModelStateDictionary modelState, IEnumerable<ModelError> errors)
+        {
+            ArgumentNullException.ThrowIfNull(modelState);
+
+            ArgumentNullException.ThrowIfNull(errors);
+
+            if (errors.Any())
             {
-                modelState.AddModelError(error);
+                foreach (var error in errors)
+                {
+                    modelState.AddModelError(error);
+                }
             }
         }
     }

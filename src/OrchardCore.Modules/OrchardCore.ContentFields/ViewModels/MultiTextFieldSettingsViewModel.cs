@@ -1,8 +1,9 @@
-namespace OrchardCore.ContentFields.ViewModels;
-
-public class MultiTextFieldSettingsViewModel
+namespace OrchardCore.ContentFields.ViewModels
 {
-    public string Hint { get; set; }
-    public bool Required { get; set; }
-    public string Options { get; set; }
+    public class MultiTextFieldSettingsViewModel
+    {
+        public string Hint { get; set; }
+        public bool Required { get; set; }
+        public string Options { get; set; }
+    }
 }

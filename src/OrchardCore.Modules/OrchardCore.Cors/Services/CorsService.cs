@@ -1,27 +1,31 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Cors.Settings;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Cors.Services;
-
-public class CorsService
+namespace OrchardCore.Cors.Services
 {
-    private readonly ISiteService _siteService;
-
-    public CorsService(ISiteService siteService)
+    public class CorsService
     {
-        _siteService = siteService;
-    }
+        private readonly ISiteService _siteService;
 
-    public async Task<CorsSettings> GetSettingsAsync()
-    {
-        return await _siteService.GetSettingsAsync<CorsSettings>();
-    }
+        public CorsService(ISiteService siteService)
+        {
+            _siteService = siteService;
+        }
 
-    internal async Task UpdateSettingsAsync(CorsSettings corsSettings)
-    {
-        var siteSettings = await _siteService.LoadSiteSettingsAsync();
-        siteSettings.Properties[nameof(CorsSettings)] = JObject.FromObject(corsSettings);
-        await _siteService.UpdateSiteSettingsAsync(siteSettings);
+        public async Task<CorsSettings> GetSettingsAsync()
+        {
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            return siteSettings.As<CorsSettings>();
+        }
+
+        internal async Task UpdateSettingsAsync(CorsSettings corsSettings)
+        {
+            var siteSettings = await _siteService.LoadSiteSettingsAsync();
+            siteSettings.Properties[nameof(CorsSettings)] = JObject.FromObject(corsSettings);
+            await _siteService.UpdateSiteSettingsAsync(siteSettings);
+        }
     }
 }

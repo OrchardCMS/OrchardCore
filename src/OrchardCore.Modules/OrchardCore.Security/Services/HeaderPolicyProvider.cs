@@ -1,16 +1,17 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Security.Options;
 
-namespace OrchardCore.Security.Services;
-
-public abstract class HeaderPolicyProvider : IHeaderPolicyProvider
+namespace OrchardCore.Security.Services
 {
-    public SecurityHeadersOptions Options { get; set; }
-
-    public virtual void InitializePolicy()
+    public abstract class HeaderPolicyProvider : IHeaderPolicyProvider
     {
-        // This is intentionally empty, only header policy provider(s) that need an initialization should override this
-    }
+        public SecurityHeadersOptions Options { get; set; }
 
-    public abstract void ApplyPolicy(HttpContext httpContext);
+        public virtual void InitializePolicy()
+        {
+            // This is intentionally empty, only header policy provider(s) that need an initialization should override this
+        }
+
+        public abstract void ApplyPolicy(HttpContext httpContext);
+    }
 }

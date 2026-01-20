@@ -1,9 +1,12 @@
-namespace OrchardCore.Sitemaps.Handlers;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Handles sitemaps updates by using all <see cref="ISitemapTypeUpdateHandler"/>.
-/// </summary>
-public interface ISitemapUpdateHandler
+namespace OrchardCore.Sitemaps.Handlers
 {
-    Task UpdateSitemapAsync(SitemapUpdateContext context);
+    /// <summary>
+    /// Handles sitemaps updates by using all <see cref="ISitemapTypeUpdateHandler"/>.
+    /// </summary>
+    public interface ISitemapUpdateHandler
+    {
+        Task UpdateSitemapAsync(SitemapUpdateContext context);
+    }
 }

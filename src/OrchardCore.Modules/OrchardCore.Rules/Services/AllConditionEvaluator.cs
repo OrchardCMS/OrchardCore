@@ -1,33 +1,36 @@
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Rules.Models;
 
-namespace OrchardCore.Rules.Services;
-
-public class AllConditionEvaluator : ConditionEvaluator<AllConditionGroup>
+namespace OrchardCore.Rules.Services
 {
-    private readonly IConditionResolver _conditionResolver;
-
-    public AllConditionEvaluator(IConditionResolver conditionResolver)
+    public class AllConditionEvaluator : ConditionEvaluator<AllConditionGroup>
     {
-        _conditionResolver = conditionResolver;
-    }
+        private readonly IConditionResolver _conditionResolver;
 
-    public override async ValueTask<bool> EvaluateAsync(AllConditionGroup condition)
-    {
-        foreach (var childCondition in condition.Conditions)
+        public AllConditionEvaluator(IConditionResolver conditionResolver)
         {
-            var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
-            if (evaluator is null || !await evaluator.EvaluateAsync(childCondition))
+            _conditionResolver = conditionResolver;
+        }
+
+        public async override ValueTask<bool> EvaluateAsync(AllConditionGroup condition)
+        {
+            foreach (var childCondition in condition.Conditions)
             {
-                return false;
+                var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
+                if (evaluator is null || !await evaluator.EvaluateAsync(childCondition))
+                {
+                    return false;
+                }
             }
-        }
 
-        if (condition.Conditions.Count > 0)
-        {
-            return true;
-        }
+            if (condition.Conditions.Count > 0)
+            {
+                return true;
+            }
 
-        // This rule requires all conditions to be evaluated as true.
-        return false;
+            // This rule requires all conditions to be evaluated as true.
+            return false;
+        }
     }
 }

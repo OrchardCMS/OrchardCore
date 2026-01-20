@@ -1,25 +1,26 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.DisplayManagement.ModelBinding;
-
-public class LocalModelBinderAccessor : IUpdateModelAccessor
+namespace OrchardCore.DisplayManagement.ModelBinding
 {
-    private static readonly object _key = typeof(LocalModelBinderAccessor);
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public LocalModelBinderAccessor(IHttpContextAccessor httpContextAccessor)
+    public class LocalModelBinderAccessor : IUpdateModelAccessor
     {
-        _httpContextAccessor = httpContextAccessor;
-    }
+        private static readonly object _key = typeof(LocalModelBinderAccessor);
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public IUpdateModel ModelUpdater
-    {
-        get
+        public LocalModelBinderAccessor(IHttpContextAccessor httpContextAccessor)
         {
-            var updateModel = _httpContextAccessor.HttpContext.Items[_key] as IUpdateModel;
-            return updateModel ?? new NullModelUpdater();
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        set { _httpContextAccessor.HttpContext.Items[_key] = value; }
+        public IUpdateModel ModelUpdater
+        {
+            get
+            {
+                var updateModel = _httpContextAccessor.HttpContext.Items[_key] as IUpdateModel;
+                return updateModel ?? new NullModelUpdater();
+            }
+
+            set { _httpContextAccessor.HttpContext.Items[_key] = value; }
+        }
     }
 }

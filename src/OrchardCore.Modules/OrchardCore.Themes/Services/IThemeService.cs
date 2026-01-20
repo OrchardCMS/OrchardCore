@@ -1,7 +1,10 @@
-namespace OrchardCore.Themes.Services;
+using System.Threading.Tasks;
 
-public interface IThemeService
+namespace OrchardCore.Themes.Services
 {
-    Task DisableThemeFeaturesAsync(string themeName);
-    Task EnableThemeFeaturesAsync(string themeName);
+    public interface IThemeService
+    {
+        Task DisableThemeFeaturesAsync(string themeName);
+        Task EnableThemeFeaturesAsync(string themeName);
+    }
 }

@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Zones;
 
-namespace OrchardCore.DisplayManagement.Layout;
-
-public interface ILayoutAccessor
+namespace OrchardCore.DisplayManagement.Layout
 {
-    Task<IZoneHolding> GetLayoutAsync();
+    public interface ILayoutAccessor
+    {
+        Task<IZoneHolding> GetLayoutAsync();
+    }
 }

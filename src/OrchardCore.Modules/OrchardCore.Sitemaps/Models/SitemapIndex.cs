@@ -1,3 +1,6 @@
-namespace OrchardCore.Sitemaps.Models;
-
-public class SitemapIndex : SitemapType;
+namespace OrchardCore.Sitemaps.Models
+{
+    public class SitemapIndex : SitemapType
+    {
+    }
+}

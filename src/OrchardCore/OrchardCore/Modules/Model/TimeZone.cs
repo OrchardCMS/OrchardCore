@@ -1,27 +1,28 @@
 using NodaTime;
 
-namespace OrchardCore.Modules;
-
-public class TimeZone : ITimeZone
+namespace OrchardCore.Modules
 {
-    public string TimeZoneId { get; set; }
-
-    public Offset StandardOffset { get; set; }
-
-    public Offset WallOffset { get; set; }
-
-    public DateTimeZone DateTimeZone { get; set; }
-
-    public TimeZone(string timeZoneId, Offset standardOffset, Offset wallOffset, DateTimeZone dateTimeZone)
+    public class TimeZone : ITimeZone
     {
-        TimeZoneId = timeZoneId;
-        StandardOffset = standardOffset;
-        WallOffset = wallOffset;
-        DateTimeZone = dateTimeZone;
-    }
+        public string TimeZoneId { get; set; }
 
-    public override string ToString()
-    {
-        return $"(GMT{StandardOffset}) {TimeZoneId} ({WallOffset:+HH:mm})";
+        public Offset StandardOffset { get; set; }
+
+        public Offset WallOffset { get; set; }
+
+        public DateTimeZone DateTimeZone { get; set; }
+
+        public TimeZone(string timeZoneId, Offset standardOffset, Offset wallOffset, DateTimeZone dateTimeZone)
+        {
+            TimeZoneId = timeZoneId;
+            StandardOffset = standardOffset;
+            WallOffset = wallOffset;
+            DateTimeZone = dateTimeZone;
+        }
+
+        public override string ToString()
+        {
+            return $"(GMT{StandardOffset}) {TimeZoneId} ({WallOffset:+HH:mm})";
+        }
     }
 }

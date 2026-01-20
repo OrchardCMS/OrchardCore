@@ -1,12 +1,15 @@
-namespace OrchardCore.Queries;
+using System.Collections.Generic;
 
-/// <summary>
-/// Contracts for query results.
-/// </summary>
-public interface IQueryResults
+namespace OrchardCore.Queries
 {
     /// <summary>
-    /// Gets or sets the query items.
+    /// Contracts for query results.
     /// </summary>
-    IEnumerable<object> Items { get; set; }
+    public interface IQueryResults
+    {
+        /// <summary>
+        /// Gets or sets the query items.
+        /// </summary>
+        public IEnumerable<object> Items { get; set; }
+    }
 }

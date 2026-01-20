@@ -2,12 +2,12 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 
-namespace OrchardCore.Contents.Workflows.Drivers;
-
-public sealed class ContentUpdatedEventDisplayDriver : ContentEventDisplayDriver<ContentUpdatedEvent, ContentUpdatedEventViewModel>
+namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public ContentUpdatedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
-        : base(contentDefinitionManager)
+    public class ContentUpdatedEventDisplayDriver : ContentEventDisplayDriver<ContentUpdatedEvent, ContentUpdatedEventViewModel>
     {
+        public ContentUpdatedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager) : base(contentDefinitionManager)
+        {
+        }
     }
 }

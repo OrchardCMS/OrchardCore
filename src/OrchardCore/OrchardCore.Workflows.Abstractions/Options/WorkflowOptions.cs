@@ -1,74 +1,77 @@
-namespace OrchardCore.Workflows.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-public class WorkflowOptions
+namespace OrchardCore.Workflows.Options
 {
-    public WorkflowOptions()
+    public class WorkflowOptions
     {
-        ActivityDictionary = [];
-    }
-
-    /// <summary>
-    /// The set of activities available to workflows.
-    /// Modules can register and unregister activities.
-    /// </summary>
-    private Dictionary<Type, ActivityRegistration> ActivityDictionary { get; }
-
-    public IEnumerable<Type> ActivityTypes => ActivityDictionary.Values.Select(x => x.ActivityType).ToList().AsReadOnly();
-    public IEnumerable<Type> ActivityDisplayDriverTypes => ActivityDictionary.Values.SelectMany(x => x.DriverTypes).ToList().AsReadOnly();
-
-    public WorkflowOptions RegisterActivity(Type activityType, Type driverType = null)
-    {
-        if (ActivityDictionary.TryGetValue(activityType, out var value))
+        public WorkflowOptions()
         {
-            if (driverType != null)
+            ActivityDictionary = [];
+        }
+
+        /// <summary>
+        /// The set of activities available to workflows.
+        /// Modules can register and unregister activities.
+        /// </summary>
+        private Dictionary<Type, ActivityRegistration> ActivityDictionary { get; }
+
+        public IEnumerable<Type> ActivityTypes => ActivityDictionary.Values.Select(x => x.ActivityType).ToList().AsReadOnly();
+        public IEnumerable<Type> ActivityDisplayDriverTypes => ActivityDictionary.Values.SelectMany(x => x.DriverTypes).ToList().AsReadOnly();
+
+        public WorkflowOptions RegisterActivity(Type activityType, Type driverType = null)
+        {
+            if (ActivityDictionary.TryGetValue(activityType, out var value))
             {
-                value.DriverTypes.Add(driverType);
+                if (driverType != null)
+                {
+                    value.DriverTypes.Add(driverType);
+                }
             }
+            else
+            {
+                ActivityDictionary.Add(activityType, new ActivityRegistration(activityType, driverType));
+            }
+
+            return this;
         }
-        else
+
+        public WorkflowOptions UnregisterActivityType(Type activityType)
         {
-            ActivityDictionary.Add(activityType, new ActivityRegistration(activityType, driverType));
+            if (!ActivityDictionary.ContainsKey(activityType))
+                throw new InvalidOperationException("The specified activity type is not registered.");
+
+            ActivityDictionary.Remove(activityType);
+            return this;
         }
 
-        return this;
-    }
-
-    public WorkflowOptions UnregisterActivityType(Type activityType)
-    {
-        if (!ActivityDictionary.ContainsKey(activityType))
+        public bool IsActivityRegistered(Type activityType)
         {
-            throw new InvalidOperationException("The specified activity type is not registered.");
+            return ActivityDictionary.ContainsKey(activityType);
+        }
+    }
+
+    public static class WorkflowOptionsExtensions
+    {
+        public static WorkflowOptions RegisterActivityType<T>(this WorkflowOptions options)
+        {
+            return options.RegisterActivity(typeof(T));
         }
 
-        ActivityDictionary.Remove(activityType);
-        return this;
-    }
+        public static WorkflowOptions RegisterActivity<T, TDriver>(this WorkflowOptions options)
+        {
+            return options.RegisterActivity(typeof(T), typeof(TDriver));
+        }
 
-    public bool IsActivityRegistered(Type activityType)
-    {
-        return ActivityDictionary.ContainsKey(activityType);
-    }
-}
+        public static WorkflowOptions UnregisterActivityType<T>(this WorkflowOptions options)
+        {
+            return options.UnregisterActivityType(typeof(T));
+        }
 
-public static class WorkflowOptionsExtensions
-{
-    public static WorkflowOptions RegisterActivityType<T>(this WorkflowOptions options)
-    {
-        return options.RegisterActivity(typeof(T));
-    }
-
-    public static WorkflowOptions RegisterActivity<T, TDriver>(this WorkflowOptions options)
-    {
-        return options.RegisterActivity(typeof(T), typeof(TDriver));
-    }
-
-    public static WorkflowOptions UnregisterActivityType<T>(this WorkflowOptions options)
-    {
-        return options.UnregisterActivityType(typeof(T));
-    }
-
-    public static bool IsActivityRegistered<T>(this WorkflowOptions options)
-    {
-        return options.IsActivityRegistered(typeof(T));
+        public static bool IsActivityRegistered<T>(this WorkflowOptions options)
+        {
+            return options.IsActivityRegistered(typeof(T));
+        }
     }
 }

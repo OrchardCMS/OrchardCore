@@ -1,38 +1,75 @@
+using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Layers.Indexes;
+using OrchardCore.Layers.Services;
+using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 using YesSql.Sql;
 
-namespace OrchardCore.Layers;
-
-public sealed class Migrations : DataMigration
+namespace OrchardCore.Layers
 {
-    public async Task<int> CreateAsync()
+    public class Migrations : DataMigration
     {
-        await SchemaBuilder.CreateMapIndexTableAsync<LayerMetadataIndex>(table => table
-           .Column<string>("Zone", c => c.WithLength(64))
-        );
+        private readonly ILayerService _layerService;
+        private readonly IConditionIdGenerator _conditionIdGenerator;
+        private readonly IRuleMigrator _ruleMigrator;
 
-        await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table
-            .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
-            "DocumentId",
-            "Zone")
-        );
+        public Migrations(
+            ILayerService layerService,
+            IConditionIdGenerator conditionIdGenerator,
+            IRuleMigrator ruleMigrator)
+        {
+            _layerService = layerService;
+            _conditionIdGenerator = conditionIdGenerator;
+            _ruleMigrator = ruleMigrator;
+        }
 
-        // Shortcut other migration steps on new content definition schemas.
-        return 3;
-    }
+        public async Task<int> CreateAsync()
+        {
+            await SchemaBuilder.CreateMapIndexTableAsync<LayerMetadataIndex>(table => table
+               .Column<string>("Zone", c => c.WithLength(64))
+            );
 
-    // This code can be removed in a later version.
-    public async Task<int> UpdateFrom1Async()
-    {
-        await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table
-            .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
-            "DocumentId",
-            "Zone")
-        );
+            await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table
+                .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
+                "DocumentId",
+                "Zone")
+            );
 
-        // Migration was cleaned up in version 2.0.
-        // Jump to step 3 during create.
-        return 3;
+            // Shortcut other migration steps on new content definition schemas.
+            return 3;
+        }
+
+        // This code can be removed in a later version.
+        public async Task<int> UpdateFrom1Async()
+        {
+            await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table
+                .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
+                "DocumentId",
+                "Zone")
+            );
+
+            return 2;
+        }
+
+        public async Task<int> UpdateFrom2Async()
+        {
+            var layers = await _layerService.LoadLayersAsync();
+            foreach (var layer in layers.Layers)
+            {
+                layer.LayerRule = new Rule();
+                _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
+
+#pragma warning disable 0618
+                _ruleMigrator.Migrate(layer.Rule, layer.LayerRule);
+
+                layer.Rule = string.Empty;
+#pragma warning restore 0618
+            }
+
+            await _layerService.UpdateAsync(layers);
+
+            return 3;
+        }
     }
 }

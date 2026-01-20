@@ -1,8 +1,9 @@
-namespace OrchardCore.Deployment.ViewModels;
-
-public class DeploymentPlanDeploymentStepViewModel
+namespace OrchardCore.Deployment.ViewModels
 {
-    public bool IncludeAll { get; set; } = true;
-    public string[] DeploymentPlanNames { get; set; }
-    public string[] AllDeploymentPlanNames { get; set; }
+    public class DeploymentPlanDeploymentStepViewModel
+    {
+        public bool IncludeAll { get; set; } = true;
+        public string[] DeploymentPlanNames { get; set; }
+        public string[] AllDeploymentPlanNames { get; set; }
+    }
 }

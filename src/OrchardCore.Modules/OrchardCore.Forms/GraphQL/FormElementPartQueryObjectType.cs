@@ -1,14 +1,15 @@
 using GraphQL.Types;
 using OrchardCore.Forms.Models;
 
-namespace OrchardCore.Forms.GraphQL;
-
-public class FormElementPartQueryObjectType : ObjectGraphType<FormElementPart>
+namespace OrchardCore.Forms.GraphQL
 {
-    public FormElementPartQueryObjectType()
+    public class FormElementPartQueryObjectType : ObjectGraphType<FormElementPart>
     {
-        Name = "FormElementPart";
+        public FormElementPartQueryObjectType()
+        {
+            Name = "FormElementPart";
 
-        Field(x => x.Id, nullable: true);
+            Field(x => x.Id, nullable: true);
+        }
     }
 }

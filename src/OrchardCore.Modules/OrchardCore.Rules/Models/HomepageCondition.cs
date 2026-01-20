@@ -1,6 +1,7 @@
-namespace OrchardCore.Rules.Models;
-
-public class HomepageCondition : Condition
+namespace OrchardCore.Rules.Models
 {
-    public bool Value { get; set; } = true;
+    public class HomepageCondition : Condition
+    {
+        public bool Value { get; set; } = true;
+    }
 }

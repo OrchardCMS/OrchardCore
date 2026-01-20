@@ -1,0 +1,75 @@
+@using Microsoft.Extensions.Options
+@using OrchardCore.Contents.Indexing
+@using OrchardCore.Search.Elasticsearch.Core.Models
+
+@model ElasticSettingsViewModel
+@inject IOptions<ElasticConnectionOptions> ElasticConnectionOptions
+
+@if (!ElasticConnectionOptions.Value.FileConfigurationExists())
+{
+    <div class="alert alert-danger" role="alert">
+        @T["Elasticsearch is not configured. Update the appsettings file with Azure Search AI service information."]
+    </div>
+
+    return;
+}
+
+@if (!Model.SearchIndexes.Any())
+{
+    <div class="alert alert-warning">@T["No indices exist! Please create at least one index to configure Elasticsearch service."]</div>
+
+    return;
+}
+
+<div class="mb-3" asp-validation-class-for="SearchIndex">
+    <label asp-for="SearchIndex" class="form-label">@T["Default search index"]</label>
+    <select asp-for="SearchIndex" class="form-select">
+        @foreach (var index in Model.SearchIndexes)
+        {
+            <option value="@index" selected="@(Model.SearchIndex == index)">@index</option>
+        }
+    </select>
+    <span asp-validation-for="SearchIndex"></span>
+    <span class="hint">@T["The default index to use for the search page."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SearchType">
+    <label asp-for="SearchType" class="form-label">@T["Default search type"]</label>
+    <select asp-for="SearchType" class="form-select" asp-items="Model.SearchTypes" data-raw-type="@ElasticSettings.CustomSearchType"></select>
+    <span asp-validation-for="SearchType"></span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="DefaultQuery" id="DefaultQueryContainer">
+    <label asp-for="DefaultQuery" class="form-label">@T["Default query"]</label>
+    <textarea asp-for="DefaultQuery" class="form-control" rows="10"></textarea>
+    <span asp-validation-for="DefaultQuery"></span>
+    <span class="hint">@T["Create a custom Elasticsearch query to be utilized for each search request. Liquid is supported, so use <code>{0}</code> template as a substitute for the user-provided search term.", "{{ term }}"]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SearchFields" id="DefaultQueryFields">
+    <label asp-for="SearchFields" class="form-label">@T["Default searched fields"]</label>
+    <input asp-for="SearchFields" class="form-control" />
+    <span asp-validation-for="SearchFields"></span>
+    <span class="hint">@T["A comma separated list of fields to use for search pages. The default value is <code>{0}</code>.", IndexingConstants.FullTextKey]</span>
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+        const menu = document.getElementById('@Html.IdFor(m => m.SearchType)');
+        const queryContainer = document.getElementById('DefaultQueryContainer');
+        const fieldsContainer = document.getElementById('DefaultQueryFields');
+
+        menu.addEventListener('change', function (e) {
+
+            if (e.target.value == e.target.getAttribute('data-raw-type')) {
+                queryContainer.classList.remove('d-none');
+                fieldsContainer.classList.add('d-none');
+            } else {
+                queryContainer.classList.add('d-none');
+                fieldsContainer.classList.remove('d-none');
+            }
+        });
+
+        menu.dispatchEvent(new Event('change'));
+    });
+</script>

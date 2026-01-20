@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Templates;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageTemplates = new("ManageTemplates", "Manage templates", isSecurityCritical: true);
 
@@ -18,12 +20,12 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Editor,
+            Name = "Editor",
             Permissions = _allPermissions,
         },
     ];

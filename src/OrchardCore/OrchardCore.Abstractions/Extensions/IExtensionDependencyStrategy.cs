@@ -1,8 +1,9 @@
 using OrchardCore.Environment.Extensions.Features;
 
-namespace OrchardCore.Environment.Extensions;
-
-public interface IExtensionDependencyStrategy
+namespace OrchardCore.Environment.Extensions
 {
-    bool HasDependency(IFeatureInfo observer, IFeatureInfo subject);
+    public interface IExtensionDependencyStrategy
+    {
+        bool HasDependency(IFeatureInfo observer, IFeatureInfo subject);
+    }
 }

@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Seo;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public class AdminMenu : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -12,48 +13,33 @@ public sealed class AdminMenu : AdminNavigationProvider
         { "groupId", SeoConstants.RobotsSettingsGroupId },
     };
 
-    internal readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
     {
-        S = stringLocalizer;
+        S = localizer;
     }
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                       .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
-                           .AddClass("seo")
-                           .Id("seo")
-                           .Action("Index", "Admin", _routeValues)
-                           .Permission(SeoConstants.ManageSeoSettings)
-                           .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
+            return Task.CompletedTask;
         }
 
         builder
-            .Add(S["Settings"], settings => settings
-                .Add(S["Search"], S["Search"].PrefixPosition(), search => search
-                    .Add(S["Search Engine Optimization"], S["Search Engine Optimization"].PrefixPosition(), seo => seo
-                        .AddClass("seo")
-                        .Id("seo")
-                        .Add(S["Robots"], S["Robots"].PrefixPosition(), robots => robots
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(SeoConstants.ManageSeoSettings)
-                            .LocalNav()
-                        )
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["Settings"], settings => settings
+                   .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
+                       .AddClass("seo")
+                       .Id("seo")
+                       .Action("Index", "Admin", _routeValues)
+                       .Permission(SeoConstants.ManageSeoSettings)
+                       .LocalNav()
                     )
                 )
             );
 
-        return ValueTask.CompletedTask;
+        return Task.CompletedTask;
     }
 }

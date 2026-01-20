@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Workflows.ViewModels;
-
-public class ForEachTaskViewModel
+namespace OrchardCore.Workflows.ViewModels
 {
-    [Required]
-    public string EnumerableExpression { get; set; }
+    public class ForEachTaskViewModel
+    {
+        [Required]
+        public string EnumerableExpression { get; set; }
 
-    [Required]
-    public string LoopVariableName { get; set; }
+        [Required]
+        public string LoopVariableName { get; set; }
+    }
 }

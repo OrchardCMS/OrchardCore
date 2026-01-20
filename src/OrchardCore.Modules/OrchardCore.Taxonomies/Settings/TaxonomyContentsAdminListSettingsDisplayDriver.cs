@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
@@ -9,61 +12,62 @@ using OrchardCore.Settings;
 using OrchardCore.Taxonomies.ViewModels;
 using YesSql;
 
-namespace OrchardCore.Taxonomies.Settings;
-
-public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplayDriver<TaxonomyContentsAdminListSettings>
+namespace OrchardCore.Taxonomies.Settings
 {
-    public const string GroupId = "taxonomyContentsAdminList";
-
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly YesSql.ISession _session;
-
-    public TaxonomyContentsAdminListSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService,
-        YesSql.ISession session)
+    public class TaxonomyContentsAdminListSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxonomyContentsAdminListSettings>
     {
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
-        _session = session;
-    }
+        public const string GroupId = "taxonomyContentsAdminList";
 
-    protected override string SettingsGroupId
-        => GroupId;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly YesSql.ISession _session;
 
-    public override async Task<IDisplayResult> EditAsync(ISite site, TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies))
+        public TaxonomyContentsAdminListSettingsDisplayDriver(
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService,
+            YesSql.ISession session)
         {
-            return null;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
+            _session = session;
         }
 
-        var taxonomies = await _session.Query<ContentItem, ContentItemIndex>(q => q.ContentType == "Taxonomy" && q.Published).ListAsync();
-
-        var entries = taxonomies.Select(x => new TaxonomyEntry
+        public override async Task<IDisplayResult> EditAsync(TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
         {
-            DisplayText = x.DisplayText,
-            ContentItemId = x.ContentItemId,
-            IsChecked = settings.TaxonomyContentItemIds.Any(id => string.Equals(x.ContentItemId, id, StringComparison.OrdinalIgnoreCase)),
-        }).ToArray();
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies))
+            {
+                return null;
+            }
 
-        return Initialize<TaxonomyContentsAdminListSettingsViewModel>("TaxonomyContentsAdminListSettings_Edit", model =>
+            var taxonomies = await _session.Query<ContentItem, ContentItemIndex>(q => q.ContentType == "Taxonomy" && q.Published).ListAsync();
+
+            var entries = taxonomies.Select(x => new TaxonomyEntry
+            {
+                DisplayText = x.DisplayText,
+                ContentItemId = x.ContentItemId,
+                IsChecked = settings.TaxonomyContentItemIds.Any(id => string.Equals(x.ContentItemId, id, StringComparison.OrdinalIgnoreCase))
+            }).ToArray();
+
+            return Initialize<TaxonomyContentsAdminListSettingsViewModel>("TaxonomyContentsAdminListSettings_Edit", model =>
+            {
+                model.TaxonomyEntries = entries;
+            }).Location("Content:2").OnGroup(GroupId);
+        }
+
+        public override async Task<IDisplayResult> UpdateAsync(TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
         {
-            model.TaxonomyEntries = entries;
-        }).Location("Content:2")
-        .OnGroup(SettingsGroupId);
-    }
+            if (context.GroupId == GroupId)
+            {
+                var model = new TaxonomyContentsAdminListSettingsViewModel();
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, TaxonomyContentsAdminListSettings settings, UpdateEditorContext context)
-    {
-        var model = new TaxonomyContentsAdminListSettingsViewModel();
+                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+                {
+                    settings.TaxonomyContentItemIds = model.TaxonomyEntries.Where(e => e.IsChecked).Select(e => e.ContentItemId).ToArray();
+                }
+            }
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-        settings.TaxonomyContentItemIds = model.TaxonomyEntries.Where(e => e.IsChecked).Select(e => e.ContentItemId).ToArray();
-
-        return await EditAsync(site, settings, context);
+            return await EditAsync(settings, context);
+        }
     }
 }

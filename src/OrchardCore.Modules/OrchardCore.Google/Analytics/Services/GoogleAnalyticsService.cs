@@ -1,18 +1,24 @@
+using System.Threading.Tasks;
+using OrchardCore.Entities;
 using OrchardCore.Google.Analytics.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Google.Analytics.Services;
-
-public class GoogleAnalyticsService : IGoogleAnalyticsService
+namespace OrchardCore.Google.Analytics.Services
 {
-    private readonly ISiteService _siteService;
-
-    public GoogleAnalyticsService(
-        ISiteService siteService)
+    public class GoogleAnalyticsService : IGoogleAnalyticsService
     {
-        _siteService = siteService;
-    }
+        private readonly ISiteService _siteService;
 
-    public Task<GoogleAnalyticsSettings> GetSettingsAsync()
-        => _siteService.GetSettingsAsync<GoogleAnalyticsSettings>();
+        public GoogleAnalyticsService(
+            ISiteService siteService)
+        {
+            _siteService = siteService;
+        }
+
+        public async Task<GoogleAnalyticsSettings> GetSettingsAsync()
+        {
+            var container = await _siteService.GetSiteSettingsAsync();
+            return container.As<GoogleAnalyticsSettings>();
+        }
+    }
 }

@@ -1,84 +1,86 @@
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
-using OrchardCore.Deployment;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Contents.Deployment.Download;
-
-[Admin("Download/{action}/{contentItemId}", AdminAttribute.NameFromControllerAndAction)]
-[Feature("OrchardCore.Contents.Deployment.Download")]
-public sealed class DownloadController : Controller
+namespace OrchardCore.Contents.Deployment.Download
 {
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IContentManager _contentManager;
-
-    public DownloadController(
-        IAuthorizationService authorizationService,
-        IContentManager contentManager)
+    [Admin]
+    [Feature("OrchardCore.Contents.Deployment.Download")]
+    public class DownloadController : Controller
     {
-        _authorizationService = authorizationService;
-        _contentManager = contentManager;
-    }
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IContentManager _contentManager;
 
-    [HttpGet]
-    public async Task<IActionResult> Display(string contentItemId, bool latest = false)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
+        public DownloadController(
+            IAuthorizationService authorizationService,
+            IContentManager contentManager
+            )
         {
-            return Forbid();
+            _authorizationService = authorizationService;
+            _contentManager = contentManager;
         }
 
-        var contentItem = await _contentManager.GetAsync(contentItemId, latest == false ? VersionOptions.Published : VersionOptions.Latest);
-
-        if (contentItem == null)
+        [HttpGet]
+        public async Task<IActionResult> Display(string contentItemId, bool latest = false)
         {
-            return NotFound();
+            if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
+            {
+                return Forbid();
+            }
+
+            var contentItem = await _contentManager.GetAsync(contentItemId, latest == false ? VersionOptions.Published : VersionOptions.Latest);
+
+            if (contentItem == null)
+            {
+                return NotFound();
+            }
+
+            // Export permission is required as the overriding permission.
+            // Requesting EditContent would allow custom permissions to deny access to this content item.
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+            {
+                return Forbid();
+            }
+
+            var model = new DisplayJsonContentItemViewModel
+            {
+                ContentItem = contentItem,
+                ContentItemJson = JObject.FromObject(contentItem).ToString()
+            };
+
+            return View(model);
         }
 
-        // Export permission is required as the overriding permission.
-        // Requesting EditContent would allow custom permissions to deny access to this content item.
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+        [HttpPost]
+        public async Task<IActionResult> Download(string contentItemId, bool latest = false)
         {
-            return Forbid();
+            if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
+            {
+                return Forbid();
+            }
+
+            var contentItem = await _contentManager.GetAsync(contentItemId, latest == false ? VersionOptions.Published : VersionOptions.Latest);
+
+            if (contentItem == null)
+            {
+                return NotFound();
+            }
+
+            // Export permission is required as the overriding permission.
+            // Requesting EditContent would allow custom permissions to deny access to this content item.
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+            {
+                return Forbid();
+            }
+
+            var jItem = JObject.FromObject(contentItem);
+
+            return File(Encoding.UTF8.GetBytes(jItem.ToString()), "application/json", $"{contentItem.ContentItemId}.json");
         }
-
-        var model = new DisplayJsonContentItemViewModel
-        {
-            ContentItem = contentItem,
-            ContentItemJson = JObject.FromObject(contentItem).ToString(),
-        };
-
-        return View(model);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Download(string contentItemId, bool latest = false)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
-        {
-            return Forbid();
-        }
-
-        var contentItem = await _contentManager.GetAsync(contentItemId, latest == false ? VersionOptions.Published : VersionOptions.Latest);
-
-        if (contentItem == null)
-        {
-            return NotFound();
-        }
-
-        // Export permission is required as the overriding permission.
-        // Requesting EditContent would allow custom permissions to deny access to this content item.
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
-        {
-            return Forbid();
-        }
-
-        var jItem = JObject.FromObject(contentItem);
-
-        return File(Encoding.UTF8.GetBytes(jItem.ToString()), "application/json", $"{contentItem.ContentItemId}.json");
     }
 }

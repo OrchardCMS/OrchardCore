@@ -1,11 +1,13 @@
+using System.Threading.Tasks;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Services;
-
-public interface IWorkflowExecutionContextHandler
+namespace OrchardCore.Workflows.Services
 {
-    Task EvaluatingExpressionAsync(WorkflowExecutionExpressionContext context);
-    Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context);
-    Task DehydrateValueAsync(SerializeWorkflowValueContext context);
-    Task RehydrateValueAsync(SerializeWorkflowValueContext context);
+    public interface IWorkflowExecutionContextHandler
+    {
+        Task EvaluatingExpressionAsync(WorkflowExecutionExpressionContext context);
+        Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context);
+        Task DehydrateValueAsync(SerializeWorkflowValueContext context);
+        Task RehydrateValueAsync(SerializeWorkflowValueContext context);
+    }
 }

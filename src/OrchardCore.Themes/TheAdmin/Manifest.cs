@@ -7,12 +7,5 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The default Admin theme.",
-    Dependencies =
-    [
-        "OrchardCore.Themes",
-    ],
-    Tags =
-    [
-        ManifestConstants.AdminTag,
-    ]
+    Tags = [ManifestConstants.AdminTag]
 )]

@@ -1,16 +1,18 @@
+using System.IO;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
-namespace OrchardCore.Environment.Extensions;
-
-public static class ExtensionsEnvironmentExtensions
+namespace OrchardCore.Environment.Extensions
 {
-    public static IFileInfo GetExtensionFileInfo(
-        this IHostEnvironment environment,
-        IExtensionInfo extensionInfo,
-        string subPath)
+    public static class ExtensionsEnvironmentExtensions
     {
-        return environment.ContentRootFileProvider.GetFileInfo(
-            Path.Combine(extensionInfo.SubPath, subPath));
+        public static IFileInfo GetExtensionFileInfo(
+            this IHostEnvironment environment,
+            IExtensionInfo extensionInfo,
+            string subPath)
+        {
+            return environment.ContentRootFileProvider.GetFileInfo(
+                Path.Combine(extensionInfo.SubPath, subPath));
+        }
     }
 }

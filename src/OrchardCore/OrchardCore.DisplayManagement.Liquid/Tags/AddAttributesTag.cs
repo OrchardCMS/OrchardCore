@@ -1,25 +1,30 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags;
-
-public class AddAttributesTag
+namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, IReadOnlyList<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public class AddAttributesTag
     {
-        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
-
-        if (objectValue is IShape shape)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
-            var attributes = arguments.Item2;
+            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
-            foreach (var attribute in attributes)
+            if (objectValue is IShape shape)
             {
-                shape.Attributes[attribute.Name.Replace('_', '-')] = (await attribute.Expression.EvaluateAsync(context)).ToStringValue();
-            }
-        }
+                var attributes = arguments.Item2;
 
-        return Completion.Normal;
+                foreach (var attribute in attributes)
+                {
+                    shape.Attributes[attribute.Name.Replace('_', '-')] = (await attribute.Expression.EvaluateAsync(context)).ToStringValue();
+                }
+            }
+
+            return Completion.Normal;
+        }
     }
 }

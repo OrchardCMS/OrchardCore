@@ -1,43 +1,47 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace OrchardCore.Mvc.LocationExpander;
-
-internal sealed class CompositeViewLocationExpanderProvider : IViewLocationExpanderProvider
+namespace OrchardCore.Mvc.LocationExpander
 {
-    public int Priority
+    internal class CompositeViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        get { throw new NotSupportedException(); }
-    }
-
-    public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
-    {
-        var expanderProviders = DiscoverProviders(context);
-
-        foreach (var provider in expanderProviders.OrderBy(x => x.Priority))
+        public int Priority
         {
-            viewLocations = provider.ExpandViewLocations(context, viewLocations);
+            get { throw new NotSupportedException(); }
         }
 
-        return viewLocations;
-    }
-
-    public void PopulateValues(ViewLocationExpanderContext context)
-    {
-        var expanderProviders = DiscoverProviders(context);
-
-        foreach (var provider in expanderProviders.OrderBy(x => x.Priority))
+        public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
         {
-            provider.PopulateValues(context);
-        }
-    }
+            var expanderProviders = DiscoverProviders(context);
 
-    private static IEnumerable<IViewLocationExpanderProvider> DiscoverProviders(ViewLocationExpanderContext context)
-    {
-        return context
-            .ActionContext
-            .HttpContext
-            .RequestServices
-            .GetServices<IViewLocationExpanderProvider>();
+            foreach (var provider in expanderProviders.OrderBy(x => x.Priority))
+            {
+                viewLocations = provider.ExpandViewLocations(context, viewLocations);
+            }
+
+            return viewLocations;
+        }
+
+        public void PopulateValues(ViewLocationExpanderContext context)
+        {
+            var expanderProviders = DiscoverProviders(context);
+
+            foreach (var provider in expanderProviders.OrderBy(x => x.Priority))
+            {
+                provider.PopulateValues(context);
+            }
+        }
+
+        private static IEnumerable<IViewLocationExpanderProvider> DiscoverProviders(ViewLocationExpanderContext context)
+        {
+            return context
+                .ActionContext
+                .HttpContext
+                .RequestServices
+                .GetServices<IViewLocationExpanderProvider>();
+        }
     }
 }

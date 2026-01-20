@@ -1,40 +1,41 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Queries;
-
-public sealed class QueryGlobalMethodProvider : IGlobalMethodProvider
+namespace OrchardCore.Queries
 {
-    private readonly GlobalMethod _executeQuery;
-
-    /// <summary>
-    /// Usage: executeQuery(name, parameters)
-    /// Ex: executeQuery("MySqlQuery", {"Owner":"bob"});.
-    /// </summary>
-    public QueryGlobalMethodProvider()
+    public class QueryGlobalMethodProvider : IGlobalMethodProvider
     {
-        _executeQuery = new GlobalMethod
+        private readonly GlobalMethod _executeQuery;
+
+        /// <summary>
+        /// Usage: executeQuery(name, parameters)
+        /// Ex: executeQuery("MySqlQuery", {"Owner":"bob"});.
+        /// </summary>
+        public QueryGlobalMethodProvider()
         {
-            Name = "executeQuery",
-            Method = serviceProvider => (Func<string, object, object>)((name, parameters) =>
+            _executeQuery = new GlobalMethod
             {
-                var queryManager = serviceProvider.GetRequiredService<IQueryManager>();
-                var query = queryManager.GetQueryAsync(name).GetAwaiter().GetResult();
-
-                if (query == null)
+                Name = "executeQuery",
+                Method = serviceProvider => (Func<string, object, object>)((name, parameters) =>
                 {
-                    return null;
-                }
+                    var queryManager = serviceProvider.GetRequiredService<IQueryManager>();
+                    var query = queryManager.GetQueryAsync(name).GetAwaiter().GetResult();
+                    if (query == null)
+                    {
+                        return null;
+                    }
 
-                var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
+                    var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
+                    return result.Items;
+                }),
+            };
+        }
 
-                return result.Items;
-            }),
-        };
-    }
-
-    public IEnumerable<GlobalMethod> GetMethods()
-    {
-        return [_executeQuery];
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            return new[] { _executeQuery };
+        }
     }
 }

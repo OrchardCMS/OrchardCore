@@ -1,47 +1,90 @@
-using Cysharp.Text;
+using System;
+using System.IO;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
 
-namespace OrchardCore.ResourceManagement.TagHelpers;
-
-[HtmlTargetElement("resources", Attributes = nameof(Type))]
-public class ResourcesTagHelper : TagHelper
+namespace OrchardCore.ResourceManagement.TagHelpers
 {
-    private readonly ILogger _logger;
-    private readonly IEnumerable<IResourcesTagHelperProcessor> _processors;
-
-    public ResourcesTagHelper(
-        ILogger<ResourcesTagHelper> logger,
-        IEnumerable<IResourcesTagHelperProcessor> processors)
+    public enum ResourceType
     {
-        _logger = logger;
-        _processors = processors;
+        Meta,
+        HeadLink,
+        Stylesheet,
+        HeadScript,
+        FootScript,
+        Header,
+        Footer
     }
 
-    public ResourceTagType Type { get; set; }
-
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    [HtmlTargetElement("resources", Attributes = nameof(Type))]
+    public class ResourcesTagHelper : TagHelper
     {
-        try
+        public ResourceType Type { get; set; }
+
+        private readonly IResourceManager _resourceManager;
+        private readonly ILogger _logger;
+
+        public ResourcesTagHelper(
+            IResourceManager resourceManager,
+            ILogger<ResourcesTagHelper> logger)
         {
-            await using var writer = new ZStringWriter();
+            _resourceManager = resourceManager;
+            _logger = logger;
+        }
 
-            var processorContext = new ResourcesTagHelperProcessorContext(Type, writer);
-
-            foreach (var processor in _processors)
+        public override void Process(TagHelperContext tagHelperContext, TagHelperOutput output)
+        {
+            try
             {
-                await processor.ProcessAsync(processorContext);
-            }
+                using var sw = new StringWriter();
 
-            output.Content.AppendHtml(writer.ToString());
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while rendering {Type} resource.", Type);
-        }
-        finally
-        {
-            output.TagName = null;
+                switch (Type)
+                {
+                    case ResourceType.Meta:
+                        _resourceManager.RenderMeta(sw);
+                        break;
+
+                    case ResourceType.HeadLink:
+                        _resourceManager.RenderHeadLink(sw);
+                        break;
+
+                    case ResourceType.Stylesheet:
+                        _resourceManager.RenderStylesheet(sw);
+                        break;
+
+                    case ResourceType.HeadScript:
+                        _resourceManager.RenderHeadScript(sw);
+                        break;
+
+                    case ResourceType.FootScript:
+                        _resourceManager.RenderFootScript(sw);
+                        break;
+
+                    case ResourceType.Header:
+                        _resourceManager.RenderMeta(sw);
+                        _resourceManager.RenderHeadLink(sw);
+                        _resourceManager.RenderStylesheet(sw);
+                        _resourceManager.RenderHeadScript(sw);
+                        break;
+
+                    case ResourceType.Footer:
+                        _resourceManager.RenderFootScript(sw);
+                        break;
+
+                    default:
+                        break;
+                }
+
+                output.Content.AppendHtml(sw.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while rendering {Type} resource.", Type);
+            }
+            finally
+            {
+                output.TagName = null;
+            }
         }
     }
 }

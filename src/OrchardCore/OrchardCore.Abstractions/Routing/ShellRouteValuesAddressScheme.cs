@@ -1,56 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace OrchardCore.Routing;
-
-/// <summary>
-/// Allows a tenant to add its own 'RouteValuesAddress' schemes used for link generation.
-/// </summary>
-public sealed class ShellRouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
+namespace OrchardCore.Routing
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IEnumerable<IShellRouteValuesAddressScheme> _schemes;
-    private readonly object _synLock = new();
-
-    private IEndpointAddressScheme<RouteValuesAddress> _defaultScheme;
-
-    public ShellRouteValuesAddressScheme(IHttpContextAccessor httpContextAccessor, IEnumerable<IShellRouteValuesAddressScheme> schemes)
+    /// <summary>
+    /// Allows a tenant to add its own 'RouteValuesAddress' schemes used for link generation.
+    /// </summary>
+    public sealed class ShellRouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
     {
-        _httpContextAccessor = httpContextAccessor;
-        _schemes = schemes;
-    }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEnumerable<IShellRouteValuesAddressScheme> _schemes;
 
-    public IEnumerable<Endpoint> FindEndpoints(RouteValuesAddress address)
-    {
-        ArgumentNullException.ThrowIfNull(address);
+        private bool _defaultSchemeInitialized;
+        private IEndpointAddressScheme<RouteValuesAddress> _defaultScheme;
 
-        // Run custom tenant schemes.
-        foreach (var scheme in _schemes)
+        public ShellRouteValuesAddressScheme(IHttpContextAccessor httpContextAccessor, IEnumerable<IShellRouteValuesAddressScheme> schemes)
         {
-            var endpoints = scheme.FindEndpoints(address);
-
-            if (endpoints.Any())
-            {
-                return endpoints;
-            }
+            _httpContextAccessor = httpContextAccessor;
+            _schemes = schemes;
         }
 
-        if (_defaultScheme is null)
+        public IEnumerable<Endpoint> FindEndpoints(RouteValuesAddress address)
         {
-            lock (_synLock)
+            ArgumentNullException.ThrowIfNull(address);
+
+            // Run custom tenant schemes.
+            foreach (var scheme in _schemes)
             {
-                if (_defaultScheme is null)
+                var endpoints = scheme.FindEndpoints(address);
+
+                if (endpoints.Any())
+                {
+                    return endpoints;
+                }
+            }
+
+            if (!_defaultSchemeInitialized)
+            {
+                lock (this)
                 {
                     // Try once to get and cache the default scheme but not me.
                     _defaultScheme = _httpContextAccessor.HttpContext?.RequestServices
                         .GetServices<IEndpointAddressScheme<RouteValuesAddress>>()
-                        .LastOrDefault(scheme => scheme.GetType() != GetType());
+                        .Where(scheme => scheme.GetType() != GetType())
+                        .LastOrDefault();
+
+                    _defaultSchemeInitialized = true;
                 }
             }
-        }
 
-        // Fallback to the default 'RouteValuesAddress' scheme.
-        return _defaultScheme?.FindEndpoints(address) ?? [];
+            // Fallback to the default 'RouteValuesAddress' scheme.
+            return _defaultScheme?.FindEndpoints(address) ?? [];
+        }
     }
 }

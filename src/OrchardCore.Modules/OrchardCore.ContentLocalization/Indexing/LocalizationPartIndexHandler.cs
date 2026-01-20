@@ -1,20 +1,22 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.ContentLocalization.Indexing;
-
-public class LocalizationPartIndexHandler : ContentPartIndexHandler<LocalizationPart>
+namespace OrchardCore.ContentLocalization.Indexing
 {
-    public override Task BuildIndexAsync(LocalizationPart part, BuildPartIndexContext context)
+    public class LocalizationPartIndexHandler : ContentPartIndexHandler<LocalizationPart>
     {
-        var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
-
-        foreach (var key in context.Keys)
+        public override Task BuildIndexAsync(LocalizationPart part, BuildPartIndexContext context)
         {
-            context.DocumentIndex.Set(key + ".LocalizationSet", part.LocalizationSet, options);
-            context.DocumentIndex.Set(key + ".Culture", part.Culture?.ToLowerInvariant(), options);
-        }
+            var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
 
-        return Task.CompletedTask;
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key + ".LocalizationSet", part.LocalizationSet, options);
+                context.DocumentIndex.Set(key + ".Culture", part.Culture?.ToLowerInvariant(), options);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

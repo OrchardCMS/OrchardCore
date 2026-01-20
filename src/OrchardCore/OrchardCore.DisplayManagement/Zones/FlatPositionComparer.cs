@@ -1,215 +1,105 @@
-namespace OrchardCore.DisplayManagement.Zones;
+using System;
+using System.Collections.Generic;
 
-public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
+namespace OrchardCore.DisplayManagement.Zones
 {
-    private static readonly char[] _splitChars = ['.', ':'];
-
-    public static FlatPositionComparer Instance { get; private set; }
-
-    static FlatPositionComparer()
+    public class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
     {
-        Instance = new FlatPositionComparer();
-    }
+        public static FlatPositionComparer Instance { get; private set; }
 
-    private FlatPositionComparer()
-    {
-    }
-
-    public int Compare(IPositioned a, IPositioned b)
-    {
-        if (ReferenceEquals(a, b))
+        static FlatPositionComparer()
         {
-            return 0;
+            Instance = new FlatPositionComparer();
         }
 
-        if (a is null)
+        private FlatPositionComparer()
         {
-            return -1;
-        }
-        else if (b is null)
-        {
-            return 1;
         }
 
-        var x = a.Position;
-        var y = b.Position;
-
-        return Compare(x, y);
-    }
-
-    public int Compare(string x, string y)
-    {
-        if (ReferenceEquals(x, y))
+        public int Compare(IPositioned a, IPositioned b)
         {
-            return 0;
+            var x = a.Position;
+            var y = b.Position;
+
+            return Compare(x, y);
         }
 
-        // Handle null/whitespace normalization without string allocation
-        var xSpan = GetNormalizedSpan(x);
-        var ySpan = GetNormalizedSpan(y);
-
-#if NET9_0_OR_GREATER
-        var xParts = xSpan.SplitAny(_splitChars);
-        var yParts = ySpan.SplitAny(_splitChars);
-#else
-        var xParts = new SpanSplitEnumerator(xSpan, _splitChars);
-        var yParts = new SpanSplitEnumerator(ySpan, _splitChars);
-#endif
-
-        var partIndex = 0;
-
-        while (xParts.MoveNext())
+        public int Compare(string x, string y)
         {
-            if (!yParts.MoveNext())
+            if (x == y)
             {
-                // x is further defined meaning it comes after y
-                return 1;
+                return 0;
             }
 
-#if NET9_0_OR_GREATER
-            var xPart = xSpan[xParts.Current];
-            var yPart = ySpan[yParts.Current];
-#else
-            var xPart = xParts.Current;
-            var yPart = yParts.Current;
-#endif
+            // null == "before"; "" == "0"
+            x = x == null
+                ? "before." // in order to have before < null when 'before' is explicitly defined
+                : x.Trim().Length == 0 ? "0" : x.Trim(':').TrimEnd('.'); // ':' is _sometimes_ used as a partition identifier
+            y = y == null
+                ? "before."
+                : y.Trim().Length == 0 ? "0" : y.Trim(':').TrimEnd('.');
 
-            // Normalize known partitions
-            var xIsInt = TryNormalizeKnownPartitions(xPart, out var xPos);
-            var yIsInt = TryNormalizeKnownPartitions(yPart, out var yPos);
-
-            if (!xIsInt)
+            var xParts = x.Split(['.', ':']);
+            var yParts = y.Split(['.', ':']);
+            for (var i = 0; i < xParts.Length; i++)
             {
-                xIsInt = xPart.IsEmpty || int.TryParse(xPart, out xPos);
+                // x is further defined meaning it comes after y (e.g. x == 1.2.3 and y == 1.2)
+                if (yParts.Length < i + 1)
+                {
+                    return 1;
+                }
+
+                int xPos, yPos;
+                var xPart = string.IsNullOrEmpty(xParts[i]) ? "before" : NormalizeKnownPartitions(xParts[i]);
+                var yPart = string.IsNullOrEmpty(yParts[i]) ? "before" : NormalizeKnownPartitions(yParts[i]);
+
+                var xIsInt = int.TryParse(xPart, out xPos);
+                var yIsInt = int.TryParse(yPart, out yPos);
+
+                if (!xIsInt && !yIsInt)
+                {
+                    return string.Compare(string.Join(".", xParts), string.Join(".", yParts), StringComparison.OrdinalIgnoreCase);
+                }
+
+                // Non-int after int or greater x pos than y pos (which is an int)
+                if (!xIsInt || (yIsInt && xPos > yPos))
+                {
+                    return 1;
+                }
+
+                if (!yIsInt || xPos < yPos)
+                {
+                    return -1;
+                }
             }
 
-            if (!yIsInt)
-            {
-                yIsInt = yPart.IsEmpty || int.TryParse(yPart, out yPos);
-            }
-
-            if (!xIsInt && !yIsInt)
-            {
-                // Fall back to string comparison of original spans
-                return xSpan.CompareTo(ySpan, StringComparison.OrdinalIgnoreCase);
-            }
-
-            // Non-int after int or greater x pos than y pos (which is an int)
-            if (!xIsInt || (yIsInt && xPos > yPos))
-            {
-                return 1;
-            }
-
-            if (!yIsInt || xPos < yPos)
+            // All things being equal y might be further defined than x (e.g. x == 1.2 and y == 1.2.3)
+            if (xParts.Length < yParts.Length)
             {
                 return -1;
             }
 
-            partIndex++;
+            return 0;
         }
 
-        // Check if y has more parts
-        if (yParts.MoveNext())
+        private static string NormalizeKnownPartitions(string partition)
         {
-            return -1;
-        }
-
-        return 0;
-    }
-
-    private static ReadOnlySpan<char> GetNormalizedSpan(string value)
-    {
-        if (value is null)
-        {
-            return "before.";
-        }
-
-        var span = value.AsSpan();
-        if (span.IsWhiteSpace())
-        {
-            return "0";
-        }
-
-        // Trim ':' from start and '.' from end
-        span = span.Trim(':');
-        span = span.TrimEnd('.');
-
-        return span;
-    }
-
-    private static bool TryNormalizeKnownPartitions(ReadOnlySpan<char> partition, out int position)
-    {
-        if (partition.Length < 5) // known partitions are long
-        {
-            position = 0;
-            return false;
-        }
-
-        if (partition.Equals("before", StringComparison.OrdinalIgnoreCase))
-        {
-            position = -9999;
-            return true;
-        }
-
-        if (partition.Equals("after", StringComparison.OrdinalIgnoreCase))
-        {
-            position = 9999;
-            return true;
-        }
-
-        position = 0;
-        return false;
-    }
-
-#if !NET9_0_OR_GREATER
-    private ref struct SpanSplitEnumerator
-    {
-        private readonly ReadOnlySpan<char> _span;
-        private readonly ReadOnlySpan<char> _separators;
-        private int _currentIndex;
-
-        public SpanSplitEnumerator(ReadOnlySpan<char> span, ReadOnlySpan<char> separators)
-        {
-            _span = span;
-            _separators = separators;
-            _currentIndex = 0;
-            Current = default;
-        }
-
-        public ReadOnlySpan<char> Current { get; private set; }
-
-        public bool MoveNext()
-        {
-            if (_currentIndex > _span.Length)
+            if (partition.Length < 5) // known partitions are long
             {
-                return false;
+                return partition;
             }
 
-            if (_currentIndex == _span.Length)
+            if (string.Compare(partition, "before", StringComparison.OrdinalIgnoreCase) == 0)
             {
-                Current = ReadOnlySpan<char>.Empty;
-                _currentIndex = _span.Length + 1; // Set past end to stop iteration
-                return true;
+                return "-9999";
             }
 
-            var remaining = _span[_currentIndex..];
-            var nextSeparator = remaining.IndexOfAny(_separators);
-
-            if (nextSeparator == -1)
+            if (string.Compare(partition, "after", StringComparison.OrdinalIgnoreCase) == 0)
             {
-                // No more separators, return the rest of the span
-                Current = remaining;
-                _currentIndex = _span.Length + 1; // Set past end to stop iteration
-            }
-            else
-            {
-                // Return the part before the separator (could be empty)
-                Current = remaining[..nextSeparator];
-                _currentIndex += nextSeparator + 1; // Move past the separator
+                return "9999";
             }
 
-            return true;
+            return partition;
         }
     }
-#endif
 }

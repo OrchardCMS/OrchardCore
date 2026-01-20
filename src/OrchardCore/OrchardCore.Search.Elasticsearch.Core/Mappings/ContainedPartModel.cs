@@ -1,8 +1,13 @@
-namespace OrchardCore.Search.Elasticsearch.Core.Mappings;
+using Nest;
 
-internal sealed class ContainedPartModel
+namespace OrchardCore.Search.Elasticsearch.Core.Mappings
 {
-    public string Ids { get; set; }
+    internal class ContainedPartModel
+    {
+        [Keyword(Name = "Ids")]
+        public string Ids { get; set; }
 
-    public float Order { get; set; }
+        [Number(Name = "Order")]
+        public string Order { get; set; }
+    }
 }

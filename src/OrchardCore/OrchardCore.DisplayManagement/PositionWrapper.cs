@@ -1,78 +1,54 @@
+using System.Collections.Generic;
+using System.IO;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Shapes;
 
-namespace OrchardCore.DisplayManagement;
-
-public sealed class PositionWrapper : IHtmlContent, IPositioned, IShape
+namespace OrchardCore.DisplayManagement
 {
-    private readonly IHtmlContent _value;
-    public string Position { get; set; }
-
-    public ShapeMetadata Metadata { get; set; } = new ShapeMetadata();
-
-    public string Id { get; set; }
-
-    public string TagName { get; set; }
-
-    public IList<string> Classes { get; }
-
-    public IDictionary<string, string> Attributes { get; }
-
-    private Dictionary<string, object> _properties;
-
-    public IDictionary<string, object> Properties => _properties ??= [];
-
-    public IReadOnlyList<IPositioned> Items => throw new System.NotImplementedException();
-
-    private PositionWrapper(IHtmlContent value, string position)
+    public class PositionWrapper : IHtmlContent, IPositioned, IShape
     {
-        _value = value;
-        Position = position;
-    }
+        private readonly IHtmlContent _value;
+        public string Position { get; set; }
 
-    private PositionWrapper(string value, string position)
-    {
-        _value = new HtmlContentString(value);
-        Position = position;
-    }
+        public ShapeMetadata Metadata { get; set; } = new ShapeMetadata();
 
-    public void WriteTo(TextWriter writer, HtmlEncoder encoder)
-    {
-        _value.WriteTo(writer, encoder);
-    }
+        public string Id { get; set; }
 
-    public ValueTask<IShape> AddAsync(object item, string position)
-    {
-        throw new System.NotImplementedException();
-    }
+        public string TagName { get; set; }
 
-    public static IPositioned TryWrap(object value, string position)
-    {
-        if (value is IPositioned wrapper)
+        public IList<string> Classes { get; }
+
+        public IDictionary<string, string> Attributes { get; }
+
+        private Dictionary<string, object> _properties;
+
+        public IDictionary<string, object> Properties => _properties ??= [];
+
+        public IReadOnlyList<IPositioned> Items => throw new System.NotImplementedException();
+
+        public PositionWrapper(IHtmlContent value, string position)
         {
-            // Update the new Position
-            if (position != null)
-            {
-                wrapper.Position = position;
-            }
-            return wrapper;
+            _value = value;
+            Position = position;
         }
-        else if (value is IHtmlContent content)
+
+        public PositionWrapper(string value, string position)
         {
-            return new PositionWrapper(content, position);
+            _value = new HtmlContentString(value);
+            Position = position;
         }
-        else if (value is string stringContent)
+
+        public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
-            return new PositionWrapper(stringContent, position);
+            _value.WriteTo(writer, encoder);
         }
-        else
+
+        public ValueTask<IShape> AddAsync(object item, string position)
         {
-            return null;
+            throw new System.NotImplementedException();
         }
     }
-
-    public static IHtmlContent UnWrap(PositionWrapper wrapper)
-        => wrapper._value;
 }

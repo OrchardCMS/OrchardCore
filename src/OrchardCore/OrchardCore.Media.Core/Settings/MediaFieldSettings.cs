@@ -1,17 +1,22 @@
+using System;
 using System.ComponentModel;
-using OrchardCore.ContentManagement.Metadata.Settings;
 
-namespace OrchardCore.Media.Settings;
-
-public class MediaFieldSettings : FieldSettings
+namespace OrchardCore.Media.Settings
 {
-    [DefaultValue(true)]
-    public bool Multiple { get; set; } = true;
+    public class MediaFieldSettings
+    {
+        public string Hint { get; set; }
 
-    [DefaultValue(true)]
-    public bool AllowMediaText { get; set; } = true;
+        public bool Required { get; set; }
 
-    public bool AllowAnchors { get; set; }
+        [DefaultValue(true)]
+        public bool Multiple { get; set; } = true;
 
-    public string[] AllowedExtensions { get; set; } = [];
+        [DefaultValue(true)]
+        public bool AllowMediaText { get; set; } = true;
+
+        public bool AllowAnchors { get; set; }
+
+        public string[] AllowedExtensions { get; set; } = [];
+    }
 }

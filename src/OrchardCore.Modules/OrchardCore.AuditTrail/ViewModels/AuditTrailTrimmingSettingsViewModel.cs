@@ -1,8 +1,11 @@
-namespace OrchardCore.AuditTrail.ViewModels;
+using System;
 
-public class AuditTrailTrimmingSettingsViewModel
+namespace OrchardCore.AuditTrail.ViewModels
 {
-    public int RetentionDays { get; set; }
-    public DateTime? LastRunUtc { get; set; }
-    public bool Disabled { get; set; }
+    public class AuditTrailTrimmingSettingsViewModel
+    {
+        public int RetentionDays { get; set; }
+        public DateTime? LastRunUtc { get; set; }
+        public bool Disabled { get; set; }
+    }
 }

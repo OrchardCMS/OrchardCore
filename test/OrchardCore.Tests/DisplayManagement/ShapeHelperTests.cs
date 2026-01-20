@@ -5,65 +5,66 @@ using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Tests.Stubs;
 
-namespace OrchardCore.Tests.DisplayManagement;
-
-public class ShapeHelperTests
+namespace OrchardCore.Tests.DisplayManagement
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public ShapeHelperTests()
+    public class ShapeHelperTests
     {
-        IServiceCollection serviceCollection = new ServiceCollection();
+        private readonly IServiceProvider _serviceProvider;
 
-        serviceCollection.AddLogging();
-        serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
-        serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-        serviceCollection.AddScoped<IThemeManager, ThemeManager>();
-        serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
-        serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
+        public ShapeHelperTests()
+        {
+            IServiceCollection serviceCollection = new ServiceCollection();
 
-        var defaultShapeTable = new ShapeTable
-        (
-            new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
-            new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
-        );
+            serviceCollection.AddLogging();
+            serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
+            serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
+            serviceCollection.AddScoped<IThemeManager, ThemeManager>();
+            serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
+            serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
-        serviceCollection.AddSingleton(defaultShapeTable);
+            var defaultShapeTable = new ShapeTable
+            (
+                new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
+                new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
+            );
 
-        _serviceProvider = serviceCollection.BuildServiceProvider();
-    }
+            serviceCollection.AddSingleton(defaultShapeTable);
 
-    [Fact]
-    public async Task CreatingNewShapeTypeByName()
-    {
-        dynamic shape = _serviceProvider.GetService<IShapeFactory>();
+            _serviceProvider = serviceCollection.BuildServiceProvider();
+        }
 
-        var alpha = await shape.Alpha();
+        [Fact]
+        public async Task CreatingNewShapeTypeByName()
+        {
+            dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
-        Assert.Equal("Alpha", alpha.Metadata.Type);
-    }
+            var alpha = await shape.Alpha();
 
-    [Fact]
-    public async Task CreatingShapeWithAdditionalNamedParameters()
-    {
-        dynamic shape = _serviceProvider.GetService<IShapeFactory>();
+            Assert.Equal("Alpha", alpha.Metadata.Type);
+        }
 
-        var alpha = await shape.Alpha(one: 1, two: "dos");
+        [Fact]
+        public async Task CreatingShapeWithAdditionalNamedParameters()
+        {
+            dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
-        Assert.Equal("Alpha", alpha.Metadata.Type);
-        Assert.Equal(1, alpha.one);
-        Assert.Equal("dos", alpha.two);
-    }
+            var alpha = await shape.Alpha(one: 1, two: "dos");
 
-    [Fact]
-    public async Task WithPropertyBearingObjectInsteadOfNamedParameters()
-    {
-        dynamic shape = _serviceProvider.GetService<IShapeFactory>();
+            Assert.Equal("Alpha", alpha.Metadata.Type);
+            Assert.Equal(1, alpha.one);
+            Assert.Equal("dos", alpha.two);
+        }
 
-        var alpha = await shape.Alpha(new { one = 1, two = "dos" });
+        [Fact]
+        public async Task WithPropertyBearingObjectInsteadOfNamedParameters()
+        {
+            dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
-        Assert.Equal("Alpha", alpha.Metadata.Type);
-        Assert.Equal(1, alpha.one);
-        Assert.Equal("dos", alpha.two);
+            var alpha = await shape.Alpha(new { one = 1, two = "dos" });
+
+            Assert.Equal("Alpha", alpha.Metadata.Type);
+            Assert.Equal(1, alpha.one);
+            Assert.Equal("dos", alpha.two);
+        }
     }
 }

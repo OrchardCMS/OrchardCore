@@ -1,27 +1,28 @@
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.Files;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-/// <summary>
-/// Provides an extension method for <see cref="OrchardCoreBuilder"/>.
-/// </summary>
-public static partial class OrchardCoreBuilderExtensions
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// Adds scripting services.
+    /// Provides an extension method for <see cref="OrchardCoreBuilder"/>.
     /// </summary>
-    /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
-    public static OrchardCoreBuilder AddScripting(this OrchardCoreBuilder builder)
+    public static partial class OrchardCoreBuilderExtensions
     {
-        builder.ApplicationServices.AddSingleton<IGlobalMethodProvider, CommonGeneratorMethods>();
-        builder.ApplicationServices.AddSingleton<IScriptingEngine, FilesScriptEngine>();
-
-        builder.ConfigureServices(services =>
+        /// <summary>
+        /// Adds scripting services.
+        /// </summary>
+        /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
+        public static OrchardCoreBuilder AddScripting(this OrchardCoreBuilder builder)
         {
-            services.AddSingleton<IScriptingManager, DefaultScriptingManager>();
-        });
+            builder.ApplicationServices.AddSingleton<IGlobalMethodProvider, CommonGeneratorMethods>();
+            builder.ApplicationServices.AddSingleton<IScriptingEngine, FilesScriptEngine>();
 
-        return builder;
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IScriptingManager, DefaultScriptingManager>();
+            });
+
+            return builder;
+        }
     }
 }

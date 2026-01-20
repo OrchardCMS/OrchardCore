@@ -1,42 +1,46 @@
-namespace OrchardCore.ResourceManagement;
+using System;
+using System.Collections.Generic;
 
-public class ResourceManifest
+namespace OrchardCore.ResourceManagement
 {
-    private readonly Dictionary<string, IDictionary<string, IList<ResourceDefinition>>> _resources = new(StringComparer.OrdinalIgnoreCase);
-
-    public virtual ResourceDefinition DefineResource(string resourceType, string resourceName)
+    public class ResourceManifest
     {
-        var definition = new ResourceDefinition(this, resourceType, resourceName);
-        var resources = GetResources(resourceType);
-        if (!resources.TryGetValue(resourceName, out var value))
+        private readonly Dictionary<string, IDictionary<string, IList<ResourceDefinition>>> _resources = new(StringComparer.OrdinalIgnoreCase);
+
+        public virtual ResourceDefinition DefineResource(string resourceType, string resourceName)
         {
-            value = new List<ResourceDefinition>();
-            resources[resourceName] = value;
+            var definition = new ResourceDefinition(this, resourceType, resourceName);
+            var resources = GetResources(resourceType);
+            if (!resources.TryGetValue(resourceName, out var value))
+            {
+                value = new List<ResourceDefinition>();
+                resources[resourceName] = value;
+            }
+
+            value.Add(definition);
+            return definition;
         }
 
-        value.Add(definition);
-        return definition;
-    }
-
-    public ResourceDefinition DefineScript(string name)
-    {
-        return DefineResource("script", name);
-    }
-
-    public ResourceDefinition DefineStyle(string name)
-    {
-        return DefineResource("stylesheet", name);
-    }
-
-    public virtual IDictionary<string, IList<ResourceDefinition>> GetResources(string resourceType)
-    {
-        if (!_resources.TryGetValue(resourceType, out var resources))
+        public ResourceDefinition DefineScript(string name)
         {
-            _resources[resourceType] = resources = new Dictionary<string, IList<ResourceDefinition>>(StringComparer.OrdinalIgnoreCase);
+            return DefineResource("script", name);
         }
 
-        return resources;
-    }
+        public ResourceDefinition DefineStyle(string name)
+        {
+            return DefineResource("stylesheet", name);
+        }
 
-    public string BasePath { get; } = "";
+        public virtual IDictionary<string, IList<ResourceDefinition>> GetResources(string resourceType)
+        {
+            if (!_resources.TryGetValue(resourceType, out var resources))
+            {
+                _resources[resourceType] = resources = new Dictionary<string, IList<ResourceDefinition>>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            return resources;
+        }
+
+        public string BasePath { get; } = "";
+    }
 }

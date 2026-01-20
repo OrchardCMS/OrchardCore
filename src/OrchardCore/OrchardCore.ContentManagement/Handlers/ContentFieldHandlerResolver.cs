@@ -1,34 +1,37 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.ContentManagement.Handlers;
-
-public class ContentFieldHandlerResolver : IContentFieldHandlerResolver
+namespace OrchardCore.ContentManagement.Handlers
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ContentOptions _contentOptions;
-
-    public ContentFieldHandlerResolver(
-        IServiceProvider serviceProvider,
-        IOptions<ContentOptions> contentDisplayOptions
-        )
+    public class ContentFieldHandlerResolver : IContentFieldHandlerResolver
     {
-        _serviceProvider = serviceProvider;
-        _contentOptions = contentDisplayOptions.Value;
-    }
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ContentOptions _contentOptions;
 
-    public IList<IContentFieldHandler> GetHandlers(string fieldName)
-    {
-        var services = new List<IContentFieldHandler>();
-
-        if (_contentOptions.ContentFieldOptionsLookup.TryGetValue(fieldName, out var contentFieldOption))
+        public ContentFieldHandlerResolver(
+            IServiceProvider serviceProvider,
+            IOptions<ContentOptions> contentDisplayOptions
+            )
         {
-            foreach (var handlerOption in contentFieldOption.Handlers)
-            {
-                services.Add((IContentFieldHandler)_serviceProvider.GetRequiredService(handlerOption));
-            }
+            _serviceProvider = serviceProvider;
+            _contentOptions = contentDisplayOptions.Value;
         }
 
-        return services;
+        public IList<IContentFieldHandler> GetHandlers(string fieldName)
+        {
+            var services = new List<IContentFieldHandler>();
+
+            if (_contentOptions.ContentFieldOptionsLookup.TryGetValue(fieldName, out var contentFieldOption))
+            {
+                foreach (var handlerOption in contentFieldOption.Handlers)
+                {
+                    services.Add((IContentFieldHandler)_serviceProvider.GetRequiredService(handlerOption));
+                }
+            }
+
+            return services;
+        }
     }
 }

@@ -1,94 +1,98 @@
-namespace OrchardCore.Environment.Cache;
+using System;
+using System.Collections.Generic;
 
-public class CacheContext
+namespace OrchardCore.Environment.Cache
 {
-    private HashSet<string> _contexts;
-    private HashSet<string> _tags;
-
-    public CacheContext(string cacheId)
+    public class CacheContext
     {
-        CacheId = cacheId;
-    }
+        private HashSet<string> _contexts;
+        private HashSet<string> _tags;
 
-    /// <summary>
-    /// Defines the absolute time the value should be cached for.
-    /// If not called a sliding value will be used.
-    /// </summary>
-    public CacheContext WithExpiryOn(DateTimeOffset expiry)
-    {
-        ExpiresOn = expiry;
-        return this;
-    }
-
-    /// <summary>
-    /// Defines the absolute time (relative from now) the value should be cached for.
-    /// If not called a sliding value will be used.
-    /// </summary>
-    public CacheContext WithExpiryAfter(TimeSpan duration)
-    {
-        ExpiresAfter = duration;
-        return this;
-    }
-
-    /// <summary>
-    /// Defines the sliding expiry time the value should be cached for.
-    /// If not called a default sliding value will be used (unless an absolute expiry time has been specified).
-    /// </summary>
-    public CacheContext WithExpirySliding(TimeSpan window)
-    {
-        ExpiresSliding = window;
-        return this;
-    }
-
-    /// <summary>
-    /// Defines a dimension to cache the shape for. For instance by using. <code>"user"</code>
-    /// each user will get a different value.
-    /// </summary>
-    public CacheContext AddContext(params string[] contexts)
-    {
-        _contexts ??= [];
-
-        foreach (var context in contexts)
+        public CacheContext(string cacheId)
         {
-            _contexts.Add(context);
+            CacheId = cacheId;
         }
 
-        return this;
-    }
-
-    /// <summary>
-    /// Removes a specific context.
-    /// </summary>
-    public CacheContext RemoveContext(string context)
-    {
-        _contexts?.Remove(context);
-
-        return this;
-    }
-
-    public CacheContext AddTag(params string[] tags)
-    {
-        _tags ??= [];
-
-        foreach (var tag in tags)
+        /// <summary>
+        /// Defines the absolute time the value should be cached for.
+        /// If not called a sliding value will be used.
+        /// </summary>
+        public CacheContext WithExpiryOn(DateTimeOffset expiry)
         {
-            _tags.Add(tag);
+            ExpiresOn = expiry;
+            return this;
         }
 
-        return this;
+        /// <summary>
+        /// Defines the absolute time (relative from now) the value should be cached for.
+        /// If not called a sliding value will be used.
+        /// </summary>
+        public CacheContext WithExpiryAfter(TimeSpan duration)
+        {
+            ExpiresAfter = duration;
+            return this;
+        }
+
+        /// <summary>
+        /// Defines the sliding expiry time the value should be cached for.
+        /// If not called a default sliding value will be used (unless an absolute expiry time has been specified).
+        /// </summary>
+        public CacheContext WithExpirySliding(TimeSpan window)
+        {
+            ExpiresSliding = window;
+            return this;
+        }
+
+        /// <summary>
+        /// Defines a dimension to cache the shape for. For instance by using. <code>"user"</code>
+        /// each user will get a different value.
+        /// </summary>
+        public CacheContext AddContext(params string[] contexts)
+        {
+            _contexts ??= [];
+
+            foreach (var context in contexts)
+            {
+                _contexts.Add(context);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes a specific context.
+        /// </summary>
+        public CacheContext RemoveContext(string context)
+        {
+            _contexts?.Remove(context);
+
+            return this;
+        }
+
+        public CacheContext AddTag(params string[] tags)
+        {
+            _tags ??= [];
+
+            foreach (var tag in tags)
+            {
+                _tags.Add(tag);
+            }
+
+            return this;
+        }
+
+        public CacheContext RemoveTag(string tag)
+        {
+            _tags?.Remove(tag);
+
+            return this;
+        }
+
+        public string CacheId { get; }
+        public ICollection<string> Contexts => (ICollection<string>)_contexts ?? [];
+        public IEnumerable<string> Tags => _tags ?? [];
+        public DateTimeOffset? ExpiresOn { get; private set; }
+        public TimeSpan? ExpiresAfter { get; private set; }
+        public TimeSpan? ExpiresSliding { get; private set; }
     }
-
-    public CacheContext RemoveTag(string tag)
-    {
-        _tags?.Remove(tag);
-
-        return this;
-    }
-
-    public string CacheId { get; }
-    public ICollection<string> Contexts => (ICollection<string>)_contexts ?? [];
-    public IEnumerable<string> Tags => _tags ?? [];
-    public DateTimeOffset? ExpiresOn { get; private set; }
-    public TimeSpan? ExpiresAfter { get; private set; }
-    public TimeSpan? ExpiresSliding { get; private set; }
 }

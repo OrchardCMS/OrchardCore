@@ -1,11 +1,12 @@
 using OrchardCore.Contents.Workflows.Activities;
 
-namespace OrchardCore.Contents.Workflows.ViewModels;
-
-public class UnpublishContentTaskViewModel : ContentTaskViewModel<UnpublishContentTask>
+namespace OrchardCore.Contents.Workflows.ViewModels
 {
-    /// <summary>
-    /// The expression resulting into a content item or content item ID to unpublish.
-    /// </summary>
-    public string Expression { get; set; }
+    public class UnpublishContentTaskViewModel : ContentTaskViewModel<UnpublishContentTask>
+    {
+        /// <summary>
+        /// The expression resulting into a content item or content item ID to unpublish.
+        /// </summary>
+        public string Expression { get; set; }
+    }
 }

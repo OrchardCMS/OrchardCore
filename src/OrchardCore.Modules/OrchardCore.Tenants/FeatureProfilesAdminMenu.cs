@@ -1,42 +1,45 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Tenants;
-
-public sealed class FeatureProfilesAdminMenu : AdminNavigationProvider
+namespace OrchardCore.Tenants
 {
-    private readonly ShellSettings _shellSettings;
-
-    internal readonly IStringLocalizer S;
-
-    public FeatureProfilesAdminMenu(
-        ShellSettings shellSettings,
-        IStringLocalizer<FeatureProfilesAdminMenu> stringLocalizer)
+    public class FeatureProfilesAdminMenu : INavigationProvider
     {
-        _shellSettings = shellSettings;
-        S = stringLocalizer;
-    }
+        private readonly ShellSettings _shellSettings;
+        protected readonly IStringLocalizer S;
 
-
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        // Don't add the menu item on non-default tenants.
-        if (!_shellSettings.IsDefaultShell())
+        public FeatureProfilesAdminMenu(IStringLocalizer<FeatureProfilesAdminMenu> localizer, ShellSettings shellSettings)
         {
-            return ValueTask.CompletedTask;
+            _shellSettings = shellSettings;
+            S = localizer;
         }
 
-        builder
-            .Add(S["Multi-Tenancy"], tenancy => tenancy
-                .AddClass("menu-multitenancy")
-                .Add(S["Feature Profiles"], S["Feature Profiles"].PrefixPosition(), featureProfiles => featureProfiles
-                    .Action("Index", "FeatureProfiles", "OrchardCore.Tenants")
-                    .Permission(Permissions.ManageTenantFeatureProfiles)
-                    .LocalNav()
-                )
-            );
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
 
-        return ValueTask.CompletedTask;
+            // Don't add the menu item on non-default tenants
+            if (!_shellSettings.IsDefaultShell())
+            {
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Multi-Tenancy"], tenancy => tenancy
+                    .AddClass("menu-multitenancy")
+                    .Add(S["Feature Profiles"], S["Feature Profiles"].PrefixPosition(), featureProfiles => featureProfiles
+                        .Action("Index", "FeatureProfiles", "OrchardCore.Tenants")
+                        .Permission(Permissions.ManageTenantFeatureProfiles)
+                        .LocalNav()
+                    )
+                );
+
+            return Task.CompletedTask;
+        }
     }
 }

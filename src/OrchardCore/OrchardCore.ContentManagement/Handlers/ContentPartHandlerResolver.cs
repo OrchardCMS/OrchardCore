@@ -1,34 +1,37 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.ContentManagement.Handlers;
-
-public class ContentPartHandlerResolver : IContentPartHandlerResolver
+namespace OrchardCore.ContentManagement.Handlers
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ContentOptions _contentOptions;
-
-    public ContentPartHandlerResolver(
-        IServiceProvider serviceProvider,
-        IOptions<ContentOptions> contentDisplayOptions
-        )
+    public class ContentPartHandlerResolver : IContentPartHandlerResolver
     {
-        _serviceProvider = serviceProvider;
-        _contentOptions = contentDisplayOptions.Value;
-    }
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ContentOptions _contentOptions;
 
-    public IList<IContentPartHandler> GetHandlers(string partName)
-    {
-        var services = new List<IContentPartHandler>();
-
-        if (_contentOptions.ContentPartOptionsLookup.TryGetValue(partName, out var contentPartOption))
+        public ContentPartHandlerResolver(
+            IServiceProvider serviceProvider,
+            IOptions<ContentOptions> contentDisplayOptions
+            )
         {
-            foreach (var handlerOption in contentPartOption.Handlers)
-            {
-                services.Add((IContentPartHandler)_serviceProvider.GetRequiredService(handlerOption));
-            }
+            _serviceProvider = serviceProvider;
+            _contentOptions = contentDisplayOptions.Value;
         }
 
-        return services;
+        public IList<IContentPartHandler> GetHandlers(string partName)
+        {
+            var services = new List<IContentPartHandler>();
+
+            if (_contentOptions.ContentPartOptionsLookup.TryGetValue(partName, out var contentPartOption))
+            {
+                foreach (var handlerOption in contentPartOption.Handlers)
+                {
+                    services.Add((IContentPartHandler)_serviceProvider.GetRequiredService(handlerOption));
+                }
+            }
+
+            return services;
+        }
     }
 }

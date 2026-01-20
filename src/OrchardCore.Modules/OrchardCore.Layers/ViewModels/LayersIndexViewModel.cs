@@ -1,16 +1,18 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Layers.Models;
 
-namespace OrchardCore.Layers.ViewModels;
-
-public class LayersIndexViewModel
+namespace OrchardCore.Layers.ViewModels
 {
-    [BindNever]
-    public string[] Zones { get; set; }
+    public class LayersIndexViewModel
+    {
+        [BindNever]
+        public string[] Zones { get; set; }
 
-    [BindNever]
-    public Dictionary<string, List<dynamic>> Widgets { get; set; } = [];
+        [BindNever]
+        public Dictionary<string, List<dynamic>> Widgets { get; set; } = [];
 
-    [BindNever]
-    public List<Layer> Layers { get; set; }
+        [BindNever]
+        public List<Layer> Layers { get; set; }
+    }
 }

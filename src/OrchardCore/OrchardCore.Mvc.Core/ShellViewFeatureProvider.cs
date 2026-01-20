@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -7,185 +11,186 @@ using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Mvc;
-
-public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature>, IApplicationFeatureProvider<DevelopmentViewsFeature>
+namespace OrchardCore.Mvc
 {
-    private readonly IHostEnvironment _hostingEnvironment;
-    private readonly IApplicationContext _applicationContext;
-
-    private ApplicationPartManager _applicationPartManager;
-    private IEnumerable<IApplicationFeatureProvider<ViewsFeature>> _featureProviders;
-
-    public ShellViewFeatureProvider(IServiceProvider services)
+    public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature>, IApplicationFeatureProvider<DevelopmentViewsFeature>
     {
-        _hostingEnvironment = services.GetRequiredService<IHostEnvironment>();
-        _applicationContext = services.GetRequiredService<IApplicationContext>();
-    }
+        private readonly IHostEnvironment _hostingEnvironment;
+        private readonly IApplicationContext _applicationContext;
 
-    public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
-    {
-        EnsureScopedServices();
+        private ApplicationPartManager _applicationPartManager;
+        private IEnumerable<IApplicationFeatureProvider<ViewsFeature>> _featureProviders;
 
-        // Check if the feature can be retrieved from the shell scope.
-        var viewsFeature = ShellScope.GetFeature<ViewsFeature>();
-        if (viewsFeature is not null)
+        public ShellViewFeatureProvider(IServiceProvider services)
         {
-            foreach (var descriptor in viewsFeature.ViewDescriptors)
+            _hostingEnvironment = services.GetRequiredService<IHostEnvironment>();
+            _applicationContext = services.GetRequiredService<IApplicationContext>();
+        }
+
+        public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
+        {
+            EnsureScopedServices();
+
+            // Check if the feature can be retrieved from the shell scope.
+            var viewsFeature = ShellScope.GetFeature<ViewsFeature>();
+            if (viewsFeature is not null)
             {
-                feature.ViewDescriptors.Add(descriptor);
+                foreach (var descriptor in viewsFeature.ViewDescriptors)
+                {
+                    feature.ViewDescriptors.Add(descriptor);
+                }
+
+                return;
             }
 
-            return;
-        }
+            // Set it as a shell scope feature to be used later on.
+            ShellScope.SetFeature(feature);
 
-        // Set it as a shell scope feature to be used later on.
-        ShellScope.SetFeature(feature);
-
-        PopulateFeatureInternal(feature);
-
-        // Apply views feature providers registered at the tenant level.
-        foreach (var provider in _featureProviders)
-        {
-            provider.PopulateFeature(parts, feature);
-        }
-    }
-
-    public void PopulateFeature(IEnumerable<ApplicationPart> parts, DevelopmentViewsFeature developmentViewsFeature)
-    {
-        EnsureScopedServices();
-
-        // Module compiled views are only served if not in dev mode or if the 'refs' folder doesn't exists.
-        var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
-        // But in dev mode we still provide all view descriptors.
-        if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
-        {
-            var viewsFeature = new ViewsFeature();
-            PopulateFeatureInternal(viewsFeature);
+            PopulateFeatureInternal(feature);
 
             // Apply views feature providers registered at the tenant level.
             foreach (var provider in _featureProviders)
             {
-                provider.PopulateFeature(parts, viewsFeature);
-            }
-
-            foreach (var descriptor in viewsFeature.ViewDescriptors)
-            {
-                developmentViewsFeature.ViewDescriptors.Add(descriptor);
+                provider.PopulateFeature(parts, feature);
             }
         }
-    }
 
-    private void PopulateFeatureInternal(ViewsFeature feature)
-    {
-        // Retrieve mvc views feature providers but not this one.
-        var mvcFeatureProviders = _applicationPartManager.FeatureProviders
-            .OfType<IApplicationFeatureProvider<ViewsFeature>>()
-            .Where(p => p.GetType() != typeof(ShellViewFeatureProvider));
-
-        var modules = _applicationContext.Application.Modules;
-        var moduleFeature = new ViewsFeature();
-
-        var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
-        foreach (var module in modules)
+        public void PopulateFeature(IEnumerable<ApplicationPart> parts, DevelopmentViewsFeature developmentViewsFeature)
         {
-            // If the module and the application assemblies are at the same location, the module is referenced as a project not as a package.
-            if (Path.GetDirectoryName(module.Assembly.Location) == Path.GetDirectoryName(_applicationContext.Application.Assembly.Location))
+            EnsureScopedServices();
+
+            // Module compiled views are only served if not in dev mode or if the 'refs' folder doesn't exists.
+            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
+
+            // But in dev mode we still provide all view descriptors.
+            if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
             {
-                // If the module is referenced as a project, view descriptors are not provided if in dev mode and if the 'refs' folder exists.
-                if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
+                var viewsFeature = new ViewsFeature();
+                PopulateFeatureInternal(viewsFeature);
+
+                // Apply views feature providers registered at the tenant level.
+                foreach (var provider in _featureProviders)
                 {
-                    continue;
+                    provider.PopulateFeature(parts, viewsFeature);
+                }
+
+                foreach (var descriptor in viewsFeature.ViewDescriptors)
+                {
+                    developmentViewsFeature.ViewDescriptors.Add(descriptor);
                 }
             }
+        }
 
-            // If the module is referenced as a package, view descriptors are always provided.
+        private void PopulateFeatureInternal(ViewsFeature feature)
+        {
+            // Retrieve mvc views feature providers but not this one.
+            var mvcFeatureProviders = _applicationPartManager.FeatureProviders
+                .OfType<IApplicationFeatureProvider<ViewsFeature>>()
+                .Where(p => p.GetType() != typeof(ShellViewFeatureProvider));
 
-            var assembliesWithViews = new List<Assembly>();
+            var modules = _applicationContext.Application.Modules;
+            var moduleFeature = new ViewsFeature();
 
-            var relatedAssemblyAttribute = module.Assembly.GetCustomAttribute<RelatedAssemblyAttribute>();
+            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
 
-            // Is there a dedicated Views assembly (< net6.0)
-            if (relatedAssemblyAttribute != null)
+            foreach (var module in modules)
             {
-                var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location), relatedAssemblyAttribute.AssemblyFileName + ".dll");
-
-                if (File.Exists(precompiledAssemblyPath))
+                // If the module and the application assemblies are at the same location, the module is referenced as a project not as a package.
+                if (Path.GetDirectoryName(module.Assembly.Location) == Path.GetDirectoryName(_applicationContext.Application.Assembly.Location))
                 {
-                    try
+                    // If the module is referenced as a project, view descriptors are not provided if in dev mode and if the 'refs' folder exists.
+                    if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
                     {
-                        var assembly = Assembly.LoadFile(precompiledAssemblyPath);
-                        assembliesWithViews.Add(assembly);
+                        continue;
                     }
-                    catch (FileLoadException)
+                }
+
+                // If the module is referenced as a package, view descriptors are always provided.
+
+                var assembliesWithViews = new List<Assembly>();
+
+                var relatedAssemblyAttribute = module.Assembly.GetCustomAttribute<RelatedAssemblyAttribute>();
+
+                // Is there a dedicated Views assembly (< net6.0)
+                if (relatedAssemblyAttribute != null)
+                {
+                    var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location), relatedAssemblyAttribute.AssemblyFileName + ".dll");
+
+                    if (File.Exists(precompiledAssemblyPath))
                     {
-                        // Don't throw if assembly cannot be loaded. This can happen if the file is not a managed assembly.
+                        try
+                        {
+                            var assembly = Assembly.LoadFile(precompiledAssemblyPath);
+                            assembliesWithViews.Add(assembly);
+                        }
+                        catch (FileLoadException)
+                        {
+                            // Don't throw if assembly cannot be loaded. This can happen if the file is not a managed assembly.
+                        }
                     }
                 }
-            }
 
-            // Look for compiled views in the same assembly as the module.
-            if (module.Assembly.GetCustomAttributes<RazorCompiledItemAttribute>().Any())
-            {
-                assembliesWithViews.Add(module.Assembly);
-            }
-
-            foreach (var assembly in assembliesWithViews)
-            {
-                var applicationPart = new ApplicationPart[] { new TenantCompiledRazorAssemblyPart(assembly) };
-
-                foreach (var provider in mvcFeatureProviders)
+                // Look for compiled views in the same assembly as the module.
+                if (module.Assembly.GetCustomAttributes<RazorCompiledItemAttribute>().Any())
                 {
-                    provider.PopulateFeature(applicationPart, moduleFeature);
+                    assembliesWithViews.Add(module.Assembly);
                 }
 
-                // Razor views are precompiled in the context of their modules, but at runtime
-                // their paths need to be relative to the virtual "Areas/{ModuleId}" folders.
-                // Note: For the app's module this folder is "Areas/{env.ApplicationName}".
-                foreach (var descriptor in moduleFeature.ViewDescriptors)
+                foreach (var assembly in assembliesWithViews)
                 {
-                    descriptor.RelativePath = '/' + module.SubPath + descriptor.RelativePath;
-                    feature.ViewDescriptors.Add(descriptor);
-                }
+                    var applicationPart = new ApplicationPart[] { new TenantCompiledRazorAssemblyPart(assembly) };
 
-                // For the app's module we still allow to explicitly specify view paths relative to the app content root.
-                // So for the application's module we re-apply the feature providers without updating the relative paths.
-                // Note: This is only needed in prod mode if app's views are precompiled and views files no longer exist.
-                if (module.Name == _hostingEnvironment.ApplicationName)
-                {
                     foreach (var provider in mvcFeatureProviders)
                     {
                         provider.PopulateFeature(applicationPart, moduleFeature);
                     }
 
+                    // Razor views are precompiled in the context of their modules, but at runtime
+                    // their paths need to be relative to the virtual "Areas/{ModuleId}" folders.
+                    // Note: For the app's module this folder is "Areas/{env.ApplicationName}".
                     foreach (var descriptor in moduleFeature.ViewDescriptors)
                     {
+                        descriptor.RelativePath = '/' + module.SubPath + descriptor.RelativePath;
                         feature.ViewDescriptors.Add(descriptor);
                     }
-                }
 
-                moduleFeature.ViewDescriptors.Clear();
+                    // For the app's module we still allow to explicitly specify view paths relative to the app content root.
+                    // So for the application's module we re-apply the feature providers without updating the relative paths.
+                    // Note: This is only needed in prod mode if app's views are precompiled and views files no longer exist.
+                    if (module.Name == _hostingEnvironment.ApplicationName)
+                    {
+                        foreach (var provider in mvcFeatureProviders)
+                        {
+                            provider.PopulateFeature(applicationPart, moduleFeature);
+                        }
+
+                        foreach (var descriptor in moduleFeature.ViewDescriptors)
+                        {
+                            feature.ViewDescriptors.Add(descriptor);
+                        }
+                    }
+
+                    moduleFeature.ViewDescriptors.Clear();
+                }
             }
         }
-    }
 
-    private void EnsureScopedServices()
-    {
-        var services = ShellScope.Services;
-
-        // The scope is null when this code is called through a 'ChangeToken' callback, e.g to recompile razor pages.
-        // So, here we resolve and cache tenant level singletons, application singletons can be resolved in the ctor.
-
-        if (services != null && _featureProviders == null)
+        private void EnsureScopedServices()
         {
-            lock (this)
+            var services = ShellScope.Services;
+
+            // The scope is null when this code is called through a 'ChangeToken' callback, e.g to recompile razor pages.
+            // So, here we resolve and cache tenant level singletons, application singletons can be resolved in the ctor.
+
+            if (services != null && _featureProviders == null)
             {
-                if (_featureProviders == null)
+                lock (this)
                 {
-                    _applicationPartManager = services.GetRequiredService<ApplicationPartManager>();
-                    _featureProviders = services.GetServices<IApplicationFeatureProvider<ViewsFeature>>();
+                    if (_featureProviders == null)
+                    {
+                        _applicationPartManager = services.GetRequiredService<ApplicationPartManager>();
+                        _featureProviders = services.GetServices<IApplicationFeatureProvider<ViewsFeature>>();
+                    }
                 }
             }
         }

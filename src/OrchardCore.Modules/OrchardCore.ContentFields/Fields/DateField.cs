@@ -1,8 +1,10 @@
+using System;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentFields.Fields;
-
-public class DateField : ContentField
+namespace OrchardCore.ContentFields.Fields
 {
-    public DateTime? Value { get; set; }
+    public class DateField : ContentField
+    {
+        public DateTime? Value { get; set; }
+    }
 }

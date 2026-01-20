@@ -13,9 +13,5 @@ using OrchardCore.Modules.Manifest;
     Id = GitHubConstants.Features.GitHubAuthentication,
     Name = "GitHub Authentication",
     Category = "GitHub",
-    Description = "Authenticates users with their GitHub Account.",
-    Dependencies =
-    [
-        "OrchardCore.Users.ExternalAuthentication",
-    ]
+    Description = "Authenticates users with their GitHub Account."
 )]

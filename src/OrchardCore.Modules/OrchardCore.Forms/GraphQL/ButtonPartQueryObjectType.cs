@@ -1,15 +1,16 @@
 using GraphQL.Types;
 using OrchardCore.Forms.Models;
 
-namespace OrchardCore.Forms.GraphQL;
-
-public class ButtonPartQueryObjectType : ObjectGraphType<ButtonPart>
+namespace OrchardCore.Forms.GraphQL
 {
-    public ButtonPartQueryObjectType()
+    public class ButtonPartQueryObjectType : ObjectGraphType<ButtonPart>
     {
-        Name = "ButtonPart";
+        public ButtonPartQueryObjectType()
+        {
+            Name = "ButtonPart";
 
-        Field(x => x.Text, nullable: true);
-        Field(x => x.Type, nullable: true);
+            Field(x => x.Text, nullable: true);
+            Field(x => x.Type, nullable: true);
+        }
     }
 }

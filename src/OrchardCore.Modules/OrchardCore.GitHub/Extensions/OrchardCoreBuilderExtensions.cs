@@ -2,19 +2,20 @@ using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.GitHub.Settings;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-public static class OrchardCoreBuilderExtensions
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static OrchardCoreBuilder ConfigureGitHubSettings(this OrchardCoreBuilder builder)
+    public static class OrchardCoreBuilderExtensions
     {
-        builder.ConfigureServices((tenantServices, serviceProvider) =>
+        public static OrchardCoreBuilder ConfigureGitHubSettings(this OrchardCoreBuilder builder)
         {
-            var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_GitHub");
+            builder.ConfigureServices((tenantServices, serviceProvider) =>
+            {
+                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_GitHub");
 
-            tenantServices.PostConfigure<GitHubAuthenticationSettings>(settings => configurationSection.Bind(settings));
-        });
+                tenantServices.PostConfigure<GitHubAuthenticationSettings>(settings => configurationSection.Bind(settings));
+            });
 
-        return builder;
+            return builder;
+        }
     }
 }

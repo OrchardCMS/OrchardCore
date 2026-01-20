@@ -1,32 +1,34 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Mvc.HelloWorld;
-
-public sealed class Startup : StartupBase
+namespace OrchardCore.Mvc.HelloWorld
 {
-    private readonly IConfiguration _configuration;
-
-    public Startup(IConfiguration configuration)
+    public class Startup : StartupBase
     {
-        _configuration = configuration;
-    }
+        private readonly IConfiguration _configuration;
 
-    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-    {
-        if (string.IsNullOrEmpty(_configuration["Sample"]))
+        public Startup(IConfiguration configuration)
         {
-            throw new Exception(":(");
+            _configuration = configuration;
         }
 
-        routes.MapAreaControllerRoute
-        (
-            name: "Home",
-            areaName: "OrchardCore.Mvc.HelloWorld",
-            pattern: "",
-            defaults: new { controller = "Home", action = "Index" }
-        );
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            if (string.IsNullOrEmpty(_configuration["Sample"]))
+            {
+                throw new Exception(":(");
+            }
+
+            routes.MapAreaControllerRoute
+            (
+                name: "Home",
+                areaName: "OrchardCore.Mvc.HelloWorld",
+                pattern: "",
+                defaults: new { controller = "Home", action = "Index" }
+            );
+        }
     }
 }

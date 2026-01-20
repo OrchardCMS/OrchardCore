@@ -1,66 +1,73 @@
+using System;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentManagement.Metadata.Builders;
-
-public abstract class ContentPartFieldDefinitionBuilder
+namespace OrchardCore.ContentManagement.Metadata.Builders
 {
-    protected readonly JsonObject _settings;
-
-    public ContentPartFieldDefinition Current { get; private set; }
-    public abstract string Name { get; }
-    public abstract string FieldType { get; }
-    public abstract string PartName { get; }
-
-    protected ContentPartFieldDefinitionBuilder(ContentPartFieldDefinition field)
+    public abstract class ContentPartFieldDefinitionBuilder
     {
-        Current = field;
+        protected readonly JsonObject _settings;
 
-        _settings = field.Settings.Clone();
-    }
+        public ContentPartFieldDefinition Current { get; private set; }
+        public abstract string Name { get; }
+        public abstract string FieldType { get; }
+        public abstract string PartName { get; }
 
-    public ContentPartFieldDefinitionBuilder MergeSettings(JsonObject settings)
-    {
-        _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
-        return this;
-    }
-
-    public ContentPartFieldDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
-    {
-        var existingJObject = _settings[typeof(T).Name] as JsonObject;
-        // If existing settings do not exist, create.
-        if (existingJObject == null)
+        protected ContentPartFieldDefinitionBuilder(ContentPartFieldDefinition field)
         {
-            existingJObject = ToJsonObject(new T());
-            _settings[typeof(T).Name] = existingJObject;
+            Current = field;
+
+            _settings = field.Settings.Clone();
         }
 
-        var settingsToMerge = existingJObject.ToObject<T>();
-        setting(settingsToMerge);
-        _settings[typeof(T).Name] = ToJsonObject(settingsToMerge);
-        return this;
+        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
+        public ContentPartFieldDefinitionBuilder WithSetting(string name, string value)
+        {
+            _settings[name] = value;
+            return this;
+        }
+
+        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
+        public ContentPartFieldDefinitionBuilder WithSetting(string name, string[] values)
+        {
+            _settings[name] = JArray.FromObject(values);
+            return this;
+        }
+
+        public ContentPartFieldDefinitionBuilder MergeSettings(JsonObject settings)
+        {
+            _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
+            return this;
+        }
+
+        public ContentPartFieldDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
+        {
+            var existingJObject = _settings[typeof(T).Name] as JsonObject;
+            // If existing settings do not exist, create.
+            if (existingJObject == null)
+            {
+                existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                _settings[typeof(T).Name] = existingJObject;
+            }
+
+            var settingsToMerge = existingJObject.ToObject<T>();
+            setting(settingsToMerge);
+            _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+            return this;
+        }
+
+        public ContentPartFieldDefinitionBuilder WithSettings<T>(T settings)
+        {
+            ArgumentNullException.ThrowIfNull(settings);
+
+            var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+            _settings[typeof(T).Name] = jObject;
+
+            return this;
+        }
+
+        public abstract ContentPartFieldDefinitionBuilder OfType(ContentFieldDefinition fieldDefinition);
+        public abstract ContentPartFieldDefinitionBuilder OfType(string fieldType);
+        public abstract ContentPartFieldDefinition Build();
     }
-
-    public ContentPartFieldDefinitionBuilder WithSettings<T>(T settings)
-    {
-        ArgumentNullException.ThrowIfNull(settings);
-
-        _settings[typeof(T).Name] = ToJsonObject(settings);
-
-        return this;
-    }
-
-    public ContentPartFieldDefinitionBuilder WithSettings<T>() where T : class, new()
-    {
-        _settings[typeof(T).Name] = ToJsonObject(new T());
-
-        return this;
-    }
-
-    public abstract ContentPartFieldDefinitionBuilder OfType(ContentFieldDefinition fieldDefinition);
-    public abstract ContentPartFieldDefinitionBuilder OfType(string fieldType);
-    public abstract ContentPartFieldDefinition Build();
-
-    private static JsonObject ToJsonObject(object obj)
-        => JObject.FromObject(obj, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
 }

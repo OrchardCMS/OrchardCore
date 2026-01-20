@@ -1,3 +1,5 @@
 namespace OrchardCore.Tenants.Models;
 
-public class TenantApiModel : TenantModelBase;
+public class TenantApiModel : TenantModelBase
+{
+}

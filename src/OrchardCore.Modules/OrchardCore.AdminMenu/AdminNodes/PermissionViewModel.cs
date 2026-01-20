@@ -1,7 +1,8 @@
-namespace OrchardCore.AdminMenu.AdminNodes;
-
-public class PermissionViewModel
+namespace OrchardCore.AdminMenu.AdminNodes
 {
-    public string Name { get; set; }
-    public string DisplayText { get; set; }
+    public class PermissionViewModel
+    {
+        public string Name { get; set; }
+        public string DisplayText { get; set; }
+    }
 }

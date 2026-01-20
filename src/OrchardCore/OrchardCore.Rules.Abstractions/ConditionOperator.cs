@@ -1,6 +1,7 @@
-namespace OrchardCore.Rules;
-
-public abstract class ConditionOperator
+namespace OrchardCore.Rules
 {
+    public abstract class ConditionOperator
+    {
 
+    }
 }

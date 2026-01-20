@@ -1,9 +1,12 @@
-namespace OrchardCore.Demo.Models;
+using System;
 
-public class UserProfile
+namespace OrchardCore.Demo.Models
 {
-    public int Age { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public class UserProfile
+    {
+        public int Age { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime UpdatedAt { get; set; }
+    }
 }

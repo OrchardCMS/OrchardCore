@@ -1,33 +1,41 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Shortcodes.Services;
 
-namespace OrchardCore.Shortcodes.Deployment;
-
-public sealed class AllShortcodeTemplatesDeploymentSource
-    : DeploymentSourceBase<AllShortcodeTemplatesDeploymentStep>
+namespace OrchardCore.Shortcodes.Deployment
 {
-    private readonly ShortcodeTemplatesManager _templatesManager;
-
-    public AllShortcodeTemplatesDeploymentSource(ShortcodeTemplatesManager templatesManager)
+    public class AllShortcodeTemplatesDeploymentSource : IDeploymentSource
     {
-        _templatesManager = templatesManager;
-    }
+        private readonly ShortcodeTemplatesManager _templatesManager;
 
-    protected override async Task ProcessAsync(AllShortcodeTemplatesDeploymentStep step, DeploymentPlanResult result)
-    {
-        var templateObjects = new JsonObject();
-        var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync();
-
-        foreach (var template in templates.ShortcodeTemplates)
+        public AllShortcodeTemplatesDeploymentSource(ShortcodeTemplatesManager templatesManager)
         {
-            templateObjects[template.Key] = JObject.FromObject(template.Value);
+            _templatesManager = templatesManager;
         }
 
-        result.Steps.Add(new JsonObject
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            ["name"] = "ShortcodeTemplates",
-            ["ShortcodeTemplates"] = templateObjects,
-        });
+            var allTemplatesStep = step as AllShortcodeTemplatesDeploymentStep;
+
+            if (allTemplatesStep == null)
+            {
+                return;
+            }
+
+            var templateObjects = new JsonObject();
+            var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync();
+
+            foreach (var template in templates.ShortcodeTemplates)
+            {
+                templateObjects[template.Key] = JObject.FromObject(template.Value);
+            }
+
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "ShortcodeTemplates",
+                ["ShortcodeTemplates"] = templateObjects,
+            });
+        }
     }
 }

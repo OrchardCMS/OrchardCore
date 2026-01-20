@@ -1,6 +1,7 @@
-namespace OrchardCore.Security.Options;
-
-public class ContentTypeOptionsValue
+namespace OrchardCore.Security.Options
 {
-    public const string NoSniff = "nosniff";
+    public class ContentTypeOptionsValue
+    {
+        public const string NoSniff = "nosniff";
+    }
 }

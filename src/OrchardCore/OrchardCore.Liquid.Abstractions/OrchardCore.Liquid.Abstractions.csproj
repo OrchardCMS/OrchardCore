@@ -18,8 +18,4 @@
     <PackageReference Include="Fluid.Core" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
-  </ItemGroup>
-
 </Project>

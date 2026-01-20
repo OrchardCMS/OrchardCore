@@ -1,29 +1,38 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
+using OrchardCore.Themes.Recipes;
 using OrchardCore.Themes.Services;
 
-namespace OrchardCore.Themes.Deployment;
-
-public sealed class ThemesDeploymentSource
-    : DeploymentSourceBase<ThemesDeploymentStep>
+namespace OrchardCore.Themes.Deployment
 {
-    private readonly ISiteThemeService _siteThemeService;
-    private readonly IAdminThemeService _adminThemeService;
-
-    public ThemesDeploymentSource(ISiteThemeService siteThemeService, IAdminThemeService adminThemeService)
+    public class ThemesDeploymentSource : IDeploymentSource
     {
-        _siteThemeService = siteThemeService;
-        _adminThemeService = adminThemeService;
-    }
+        private readonly ISiteThemeService _siteThemeService;
+        private readonly IAdminThemeService _adminThemeService;
 
-    protected override async Task ProcessAsync(ThemesDeploymentStep step, DeploymentPlanResult result)
-    {
-        result.Steps.Add(new JsonObject
+        public ThemesDeploymentSource(ISiteThemeService siteThemeService, IAdminThemeService adminThemeService)
         {
-            ["name"] = "Themes",
-            ["Site"] = await _siteThemeService.GetSiteThemeNameAsync(),
-            ["Admin"] = await _adminThemeService.GetAdminThemeNameAsync(),
-        });
+            _siteThemeService = siteThemeService;
+            _adminThemeService = adminThemeService;
+        }
+
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        {
+            var themesStep = step as ThemesDeploymentStep;
+
+            if (themesStep == null)
+            {
+                return;
+            }
+
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Themes",
+                [nameof(ThemeStepModel.Site)] = await _siteThemeService.GetSiteThemeNameAsync(),
+                [nameof(ThemeStepModel.Admin)] = await _adminThemeService.GetAdminThemeNameAsync(),
+            });
+        }
     }
 }

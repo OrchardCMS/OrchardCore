@@ -4,17 +4,18 @@ using OrchardCore.Forms.Workflows.Drivers;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
 
-namespace OrchardCore.Forms.Workflows;
-
-[RequireFeatures("OrchardCore.Workflows")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Forms.Workflows
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Workflows")]
+    public class Startup : StartupBase
     {
-        services.AddActivity<ValidateAntiforgeryTokenTask, ValidateAntiforgeryTokenTaskDisplayDriver>();
-        services.AddActivity<AddModelValidationErrorTask, AddModelValidationErrorTaskDisplayDriver>();
-        services.AddActivity<ValidateFormTask, ValidateFormTaskDisplayDriver>();
-        services.AddActivity<ValidateFormFieldTask, ValidateFormFieldTaskDisplayDriver>();
-        services.AddActivity<BindModelStateTask, BindModelStateTaskDisplayDriver>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<ValidateAntiforgeryTokenTask, ValidateAntiforgeryTokenTaskDisplayDriver>();
+            services.AddActivity<AddModelValidationErrorTask, AddModelValidationErrorTaskDisplayDriver>();
+            services.AddActivity<ValidateFormTask, ValidateFormTaskDisplayDriver>();
+            services.AddActivity<ValidateFormFieldTask, ValidateFormFieldTaskDisplayDriver>();
+            services.AddActivity<BindModelStateTask, BindModelStateTaskDisplayDriver>();
+        }
     }
 }

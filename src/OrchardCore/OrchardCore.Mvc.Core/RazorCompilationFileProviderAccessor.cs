@@ -1,43 +1,42 @@
+using System;
+using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Mvc;
-
-// Note: MvcRazorRuntimeCompilationOptions is deprecated in .NET 10
-// This class is kept for backward compatibility but will be removed in future versions
-#pragma warning disable ASPDEPR003 // Razor runtime compilation is obsolete
-public class RazorCompilationFileProviderAccessor
+namespace OrchardCore.Mvc
 {
-    private readonly Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.MvcRazorRuntimeCompilationOptions _options;
-    private IFileProvider _compositeFileProvider;
-
-    public RazorCompilationFileProviderAccessor(IOptions<Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.MvcRazorRuntimeCompilationOptions> options)
+    public class RazorCompilationFileProviderAccessor
     {
-        ArgumentNullException.ThrowIfNull(options);
+        private readonly MvcRazorRuntimeCompilationOptions _options;
+        private IFileProvider _compositeFileProvider;
 
-        _options = options.Value;
-    }
-
-    public IFileProvider FileProvider
-    {
-        get
+        public RazorCompilationFileProviderAccessor(IOptions<MvcRazorRuntimeCompilationOptions> options)
         {
-            _compositeFileProvider ??= GetCompositeFileProvider(_options);
+            ArgumentNullException.ThrowIfNull(options);
 
-            return _compositeFileProvider;
-        }
-    }
-
-    private static IFileProvider GetCompositeFileProvider(Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.MvcRazorRuntimeCompilationOptions options)
-    {
-        var fileProviders = options.FileProviders;
-
-        if (fileProviders.Count == 1)
-        {
-            return fileProviders[0];
+            _options = options.Value;
         }
 
-        return new CompositeFileProvider(fileProviders);
+        public IFileProvider FileProvider
+        {
+            get
+            {
+                _compositeFileProvider ??= GetCompositeFileProvider(_options);
+
+                return _compositeFileProvider;
+            }
+        }
+
+        private static IFileProvider GetCompositeFileProvider(MvcRazorRuntimeCompilationOptions options)
+        {
+            var fileProviders = options.FileProviders;
+
+            if (fileProviders.Count == 1)
+            {
+                return fileProviders[0];
+            }
+
+            return new CompositeFileProvider(fileProviders);
+        }
     }
 }
-#pragma warning restore ASPDEPR003

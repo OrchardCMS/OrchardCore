@@ -1,12 +1,16 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Notifications;
 
-public sealed class NotificationPermissionsProvider : IPermissionProvider
+public class NotificationPermissionsProvider : IPermissionProvider
 {
+    public static readonly Permission ManageNotifications = NotificationPermissions.ManageNotifications;
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        NotificationPermissions.ManageNotifications,
+        ManageNotifications,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -16,32 +20,32 @@ public sealed class NotificationPermissionsProvider : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Editor,
+            Name = "Editor",
             Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Moderator,
+            Name = "Moderator",
             Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Author,
+            Name = "Author",
             Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Contributor,
+            Name = "Contributor",
             Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Authenticated,
+            Name = "Authenticated",
             Permissions = _allPermissions,
         },
     ];

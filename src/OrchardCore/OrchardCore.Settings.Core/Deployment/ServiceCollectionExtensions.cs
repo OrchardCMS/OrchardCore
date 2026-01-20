@@ -1,27 +1,29 @@
+using System;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 
-namespace OrchardCore.Settings.Deployment;
-
-public static class ServiceCollectionExtensions
+namespace OrchardCore.Settings.Deployment
 {
-    /// <summary>
-    /// Registers a <see cref="SiteSettingsPropertyDeploymentSource{TModel}"/> step.
-    /// </summary>
-    public static void AddSiteSettingsPropertyDeploymentStep<TModel, TLocalizer>(this IServiceCollection services, Func<IStringLocalizer, LocalizedString> title, Func<IStringLocalizer, string> description) where TModel : class, new() where TLocalizer : class
+    public static class ServiceCollectionExtensions
     {
-        services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<TModel>>();
-        services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+        /// <summary>
+        /// Registers a <see cref="SiteSettingsPropertyDeploymentSource{TModel}"/> step.
+        /// </summary>
+        public static void AddSiteSettingsPropertyDeploymentStep<TModel, TLocalizer>(this IServiceCollection services, Func<IStringLocalizer, LocalizedString> title, Func<IStringLocalizer, string> description) where TModel : class, new() where TLocalizer : class
         {
-            // Do not name this S, it should not be collected up by the po extractor.
-            var stringLocalizer = sp.GetService<IStringLocalizer<TLocalizer>>();
-            return new SiteSettingsPropertyDeploymentStepDriver<TModel>(title(stringLocalizer), description(stringLocalizer));
-        });
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<TModel>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                // Do not name this S, it should not be collected up by the po extractor.
+                var stringLocalizer = sp.GetService<IStringLocalizer<TLocalizer>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<TModel>(title(stringLocalizer), description(stringLocalizer));
+            });
 
-        services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<TModel>());
-        services.AddJsonDerivedTypeInfo<SiteSettingsPropertyDeploymentStep<TModel>, DeploymentStep>();
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<TModel>());
+            services.AddJsonDerivedTypeInfo<SiteSettingsPropertyDeploymentStep<TModel>, DeploymentStep>();
+        }
     }
 }

@@ -1,16 +1,18 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace OrchardCore.Search.ViewModels;
-
-public class SearchSettingsViewModel
+namespace OrchardCore.Search.ViewModels
 {
-    public string DefaultIndexProfileName { get; set; }
+    public class SearchSettingsViewModel
+    {
+        public string ProviderName { get; set; }
 
-    public string Placeholder { get; set; }
+        public string Placeholder { get; set; }
 
-    public string PageTitle { get; set; }
+        public string PageTitle { get; set; }
 
-    [BindNever]
-    public IList<SelectListItem> Indexes { get; set; }
+        [BindNever]
+        public IList<SelectListItem> SearchServices { get; set; }
+    }
 }

@@ -1,31 +1,33 @@
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 
-namespace OrchardCore.DisplayManagement.Descriptors;
-
-public class DemoShapeProvider : ShapeTableProvider, IShapeAttributeProvider
+namespace OrchardCore.DisplayManagement.Descriptors
 {
-    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
+    public class DemoShapeProvider : ShapeTableProvider, IShapeAttributeProvider
     {
-        builder.Describe("Foo")
-            .OnDisplaying(displaying =>
-                displaying.ChildContent = new HtmlString("<h1>Hi</h1>")
-            );
-
-        return ValueTask.CompletedTask;
-    }
-
-    [Shape]
-#pragma warning disable CA1822 // Mark members as static
-    public IHtmlContent Baz(string text, int count)
-#pragma warning restore CA1822 // Mark members as static
-    {
-        var sb = new StringBuilder();
-        for (var i = 0; i < count; i++)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            sb.Append(text);
+            builder.Describe("Foo")
+                .OnDisplaying(displaying =>
+                    displaying.ChildContent = new HtmlString("<h1>Hi</h1>")
+                );
+
+            return ValueTask.CompletedTask;
         }
 
-        return new HtmlString(sb.ToString());
+        [Shape]
+#pragma warning disable CA1822 // Mark members as static
+        public IHtmlContent Baz(string text, int count)
+#pragma warning restore CA1822 // Mark members as static
+        {
+            var sb = new StringBuilder();
+            for (var i = 0; i < count; i++)
+            {
+                sb.Append(text);
+            }
+
+            return new HtmlString(sb.ToString());
+        }
     }
 }

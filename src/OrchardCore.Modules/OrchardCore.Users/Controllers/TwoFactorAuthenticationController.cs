@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +11,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -21,10 +26,12 @@ namespace OrchardCore.Users.Controllers;
 
 [Authorize]
 [Feature(UserConstants.Features.TwoFactorAuthentication)]
-public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseController, IUpdateModel
+public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseController, IUpdateModel
 {
     private readonly ILogger _logger;
-    private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
+    private readonly IEnumerable<ILoginFormEvent> _accountEvents;
+    private readonly IdentityOptions _identityOptions;
+    private readonly IShapeFactory _shapeFactory;
     private readonly IDisplayManager<TwoFactorMethod> _twoFactorDisplayManager;
 
     public TwoFactorAuthenticationController(
@@ -35,10 +42,12 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IOptions<TwoFactorOptions> twoFactorOptions,
-        IEnumerable<ILoginFormEvent> loginFormEvents,
+        IEnumerable<ILoginFormEvent> accountEvents,
         INotifier notifier,
         IDistributedCache distributedCache,
+        IOptions<IdentityOptions> identityOptions,
         ITwoFactorAuthenticationHandlerCoordinator twoFactorHandlerCoordinator,
+        IShapeFactory shapeFactory,
         IDisplayManager<TwoFactorMethod> twoFactorDisplayManager)
         : base(userManager,
             distributedCache,
@@ -51,7 +60,9 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             twoFactorOptions)
     {
         _logger = logger;
-        _loginFormEvents = loginFormEvents;
+        _accountEvents = accountEvents;
+        _identityOptions = identityOptions.Value;
+        _shapeFactory = shapeFactory;
         _twoFactorDisplayManager = twoFactorDisplayManager;
     }
 
@@ -77,7 +88,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             return RedirectToAccountLogin();
         }
 
-        var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
+        var twoFactorSettings = (await SiteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>();
 
         var model = new LoginWithTwoFactorAuthenticationViewModel
         {
@@ -91,9 +102,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return View(model);
     }
 
-    [HttpPost]
-    [AllowAnonymous]
-    [ActionName(nameof(LoginWithTwoFactorAuthentication))]
+    [HttpPost, AllowAnonymous, ActionName(nameof(LoginWithTwoFactorAuthentication))]
     public async Task<IActionResult> LoginWithTwoFactorAuthenticationPost(LoginWithTwoFactorAuthenticationViewModel model)
     {
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
@@ -116,7 +125,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
         if (ModelState.IsValid)
         {
-            var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
+            var twoFactorSettings = (await SiteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>();
             var rememberDevice = twoFactorSettings.AllowRememberClientTwoFactorAuthentication && model.RememberDevice;
 
             var authenticatorCode = StripToken(model.VerificationCode);
@@ -124,7 +133,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
             if (result.Succeeded)
             {
-                await _loginFormEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+                await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
                 return await LoggedInActionResultAsync(user, model.ReturnUrl);
             }
@@ -133,7 +142,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             {
                 _logger.LogWarning("User account locked out.");
                 ModelState.AddModelError(string.Empty, S["The account is locked out."]);
-                await _loginFormEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
+                await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
                 return RedirectToAccountLogin();
             }
@@ -141,7 +150,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             ModelState.AddModelError(string.Empty, S["Invalid verification code."]);
 
             // Login failed with a known user.
-            await _loginFormEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
+            await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
         }
 
         model.HasMultipleProviders = providers.Count > 1;
@@ -165,8 +174,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         });
     }
 
-    [HttpPost]
-    [AllowAnonymous]
+    [HttpPost, AllowAnonymous]
     public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel model)
     {
         if (ModelState.IsValid)
@@ -185,7 +193,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
             if (result.Succeeded)
             {
-                await _loginFormEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+                await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
                 return await LoggedInActionResultAsync(user, model.ReturnUrl);
             }
@@ -195,7 +203,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
                 _logger.LogWarning("User account locked out.");
 
                 ModelState.AddModelError(string.Empty, S["The account is locked out"]);
-                await _loginFormEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
+                await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
                 return RedirectToAccountLogin();
             }
@@ -207,6 +215,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return View(model);
     }
 
+    [Admin]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -227,7 +236,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost, Admin]
     public async Task<IActionResult> Index(TwoFactorAuthenticationViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -244,7 +253,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             {
                 u.Put(new TwoFactorPreference()
                 {
-                    DefaultProvider = model.PreferredProvider,
+                    DefaultProvider = model.PreferredProvider
                 });
 
                 await UserManager.UpdateAsync(u);
@@ -262,7 +271,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost, Admin]
     public async Task<IActionResult> ForgetTwoFactorClient()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -277,6 +286,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return RedirectToAction(nameof(Index));
     }
 
+    [Admin]
     public async Task<IActionResult> GenerateRecoveryCodes()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -296,8 +306,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return View();
     }
 
-    [HttpPost]
-    [ActionName(nameof(GenerateRecoveryCodes))]
+    [HttpPost, Admin, ActionName(nameof(GenerateRecoveryCodes))]
     public async Task<IActionResult> GenerateRecoveryCodesPost()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -313,7 +322,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             return RedirectToAction(nameof(Index));
         }
 
-        var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
+        var twoFactorSettings = (await SiteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>();
         var recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, twoFactorSettings.NumberOfRecoveryCodesToGenerate);
         await SetRecoveryCodesAsync(recoveryCodes.ToArray(), await UserManager.GetUserIdAsync(user));
 
@@ -322,6 +331,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
+    [Admin]
     public async Task<IActionResult> ShowRecoveryCodes()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -332,7 +342,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
         var userId = await UserManager.GetUserIdAsync(user);
 
-        var recoveryCodes = await GetCachedRecoveryCodesAsync(userId);
+        var recoveryCodes = await GetCachedRecoveryCodes(userId);
 
         if (recoveryCodes == null || recoveryCodes.Length == 0)
         {
@@ -345,7 +355,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         });
     }
 
-    [HttpPost]
+    [Admin, HttpPost]
     public async Task<IActionResult> EnableTwoFactorAuthentication()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -370,6 +380,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return await RedirectToTwoFactorAsync(user);
     }
 
+    [Admin]
     public async Task<IActionResult> DisableTwoFactorAuthentication()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -378,7 +389,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             return UserNotFound();
         }
 
-        if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(user))
+        if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync())
         {
             await Notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
 
@@ -388,8 +399,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return View();
     }
 
-    [HttpPost]
-    [ActionName(nameof(DisableTwoFactorAuthentication))]
+    [HttpPost, Admin, ActionName(nameof(DisableTwoFactorAuthentication))]
     public async Task<IActionResult> DisableTwoFactorAuthenticationPost()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -398,7 +408,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             return UserNotFound();
         }
 
-        if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(user))
+        if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync())
         {
             await Notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
 
@@ -418,7 +428,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task<string[]> GetCachedRecoveryCodesAsync(string userId)
+    private async Task<string[]> GetCachedRecoveryCodes(string userId)
     {
         var key = GetRecoveryCodesCacheKey(userId);
 
@@ -474,7 +484,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         model.IsTwoFaEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
         model.IsMachineRemembered = await SignInManager.IsTwoFactorClientRememberedAsync(user);
         model.RecoveryCodesLeft = await UserManager.CountRecoveryCodesAsync(user);
-        model.CanDisableTwoFactor = !await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(user);
+        model.CanDisableTwoFactor = !await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync();
         model.ValidTwoFactorProviders = providers.Select(providerName => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(providerName, providerName)).ToList();
 
         foreach (var key in TwoFactorOptions.Providers)
@@ -485,7 +495,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
                 IsEnabled = providers.Contains(key),
             };
 
-            var shape = await _twoFactorDisplayManager.BuildDisplayAsync(method, this, OrchardCoreConstants.DisplayType.SummaryAdmin);
+            var shape = await _twoFactorDisplayManager.BuildDisplayAsync(method, this, "SummaryAdmin");
 
             model.AuthenticationMethods.Add(shape);
         }

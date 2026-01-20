@@ -2,20 +2,21 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Shells.Database.Configuration;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-public static class DatabaseShellsOrchardCoreBuilderExtensions
+namespace Microsoft.Extensions.DependencyInjection
 {
-    /// <summary>
-    /// Host services to load shells settings and configuration from database.
-    /// </summary>
-    public static OrchardCoreBuilder AddDatabaseShellsConfiguration(this OrchardCoreBuilder builder)
+    public static class DatabaseShellsOrchardCoreBuilderExtensions
     {
-        var services = builder.ApplicationServices;
+        /// <summary>
+        /// Host services to load shells settings and configuration from database.
+        /// </summary>
+        public static OrchardCoreBuilder AddDatabaseShellsConfiguration(this OrchardCoreBuilder builder)
+        {
+            var services = builder.ApplicationServices;
 
-        services.Replace(ServiceDescriptor.Singleton<IShellsSettingsSources, DatabaseShellsSettingsSources>());
-        services.Replace(ServiceDescriptor.Singleton<IShellConfigurationSources, DatabaseShellConfigurationSources>());
+            services.Replace(ServiceDescriptor.Singleton<IShellsSettingsSources, DatabaseShellsSettingsSources>());
+            services.Replace(ServiceDescriptor.Singleton<IShellConfigurationSources, DatabaseShellConfigurationSources>());
 
-        return builder;
+            return builder;
+        }
     }
 }

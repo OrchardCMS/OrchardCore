@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -10,91 +12,91 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Users;
 
-namespace OrchardCore.Contents.Drivers;
-
-public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
+namespace OrchardCore.Contents.Drivers
 {
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly UserManager<IUser> _userManager;
-
-    internal readonly IStringLocalizer S;
-
-    public OwnerEditorDriver(IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor,
-        UserManager<IUser> userManager,
-        IStringLocalizer<OwnerEditorDriver> stringLocalizer)
+    public class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
     {
-        _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
-        _userManager = userManager;
-        S = stringLocalizer;
-    }
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<IUser> _userManager;
+        protected readonly IStringLocalizer S;
 
-    public override async Task<IDisplayResult> EditAsync(CommonPart part, BuildPartEditorContext context)
-    {
-        var currentUser = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
+        public OwnerEditorDriver(IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor,
+            UserManager<IUser> userManager,
+            IStringLocalizer<OwnerEditorDriver> stringLocalizer)
         {
-            return null;
+            _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
+            S = stringLocalizer;
         }
 
-        var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
-
-        if (settings.DisplayOwnerEditor)
+        public override async Task<IDisplayResult> EditAsync(CommonPart part, BuildPartEditorContext context)
         {
-            return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", async model =>
+            var currentUser = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
             {
-                if (!string.IsNullOrEmpty(part.ContentItem.Owner))
-                {
-                    // TODO Move this editor to a user picker.
-                    var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
-
-                    model.OwnerName = user?.UserName;
-                }
-            });
-        }
-
-        return null;
-    }
-
-    public override async Task<IDisplayResult> UpdateAsync(CommonPart part, UpdatePartEditorContext context)
-    {
-        var currentUser = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
-        {
-            return null;
-        }
-
-        var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
-
-        if (settings.DisplayOwnerEditor)
-        {
-            var model = new OwnerEditorViewModel();
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-            if (string.IsNullOrWhiteSpace(model.OwnerName))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["A value is required for Owner."]);
+                return null;
             }
-            else
-            {
-                var newOwner = await _userManager.FindByNameAsync(model.OwnerName);
 
-                if (newOwner == null)
+            var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
+
+            if (settings.DisplayOwnerEditor)
+            {
+                return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", async model =>
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["Invalid username provided for Owner."]);
+                    if (!string.IsNullOrEmpty(part.ContentItem.Owner))
+                    {
+                        // TODO Move this editor to a user picker.
+                        var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
+
+                        model.OwnerName = user?.UserName;
+                    }
+                });
+            }
+
+            return null;
+        }
+
+        public override async Task<IDisplayResult> UpdateAsync(CommonPart part, UpdatePartEditorContext context)
+        {
+            var currentUser = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
+            {
+                return null;
+            }
+
+            var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
+
+            if (settings.DisplayOwnerEditor)
+            {
+                var model = new OwnerEditorViewModel();
+
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+                if (string.IsNullOrWhiteSpace(model.OwnerName))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["A value is required for Owner."]);
                 }
                 else
                 {
-                    part.ContentItem.Owner = await _userManager.GetUserIdAsync(newOwner);
+                    var newOwner = await _userManager.FindByNameAsync(model.OwnerName);
+
+                    if (newOwner == null)
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["Invalid username provided for Owner."]);
+                    }
+                    else
+                    {
+                        part.ContentItem.Owner = await _userManager.GetUserIdAsync(newOwner);
+                    }
                 }
             }
-        }
 
-        return await EditAsync(part, context);
+            return await EditAsync(part, context);
+        }
     }
 }

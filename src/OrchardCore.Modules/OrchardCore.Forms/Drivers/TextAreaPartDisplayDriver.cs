@@ -1,52 +1,39 @@
-using Microsoft.Extensions.Localization;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
-using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Forms.Drivers;
-
-public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAreaPart>
+namespace OrchardCore.Forms.Drivers
 {
-    private readonly IStringLocalizer S;
-
-    public TextAreaPartDisplayDriver(IStringLocalizer<TextAreaPartDisplayDriver> stringLocalizer)
+    public class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAreaPart>
     {
-        S = stringLocalizer;
-    }
-
-    public override IDisplayResult Display(TextAreaPart part, BuildPartDisplayContext context)
-    {
-        return View("TextAreaPart", part).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
-    }
-
-    public override IDisplayResult Edit(TextAreaPart part, BuildPartEditorContext context)
-    {
-        return Initialize<TextAreaPartEditViewModel>("TextAreaPart_Fields_Edit", m =>
+        public override IDisplayResult Display(TextAreaPart part)
         {
-            m.Placeholder = part.Placeholder;
-            m.DefaultValue = part.DefaultValue;
-            m.Rows = part.Rows;
-        });
-    }
-
-    public override async Task<IDisplayResult> UpdateAsync(TextAreaPart part, UpdatePartEditorContext context)
-    {
-        var viewModel = new TextAreaPartEditViewModel();
-
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
-
-        part.Placeholder = viewModel.Placeholder?.Trim();
-        part.DefaultValue = viewModel.DefaultValue?.Trim();
-        part.Rows = viewModel.Rows;
-
-        if (viewModel.Rows < 1)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Rows), S["The Rows field should be greater than or equal 1."]);
+            return View("TextAreaPart", part).Location("Detail", "Content");
         }
 
-        return Edit(part, context);
+        public override IDisplayResult Edit(TextAreaPart part)
+        {
+            return Initialize<TextAreaPartEditViewModel>("TextAreaPart_Fields_Edit", m =>
+            {
+                m.Placeholder = part.Placeholder;
+                m.DefaultValue = part.DefaultValue;
+            });
+        }
+
+        public async override Task<IDisplayResult> UpdateAsync(TextAreaPart part, IUpdateModel updater)
+        {
+            var viewModel = new InputPartEditViewModel();
+
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            {
+                part.Placeholder = viewModel.Placeholder?.Trim();
+                part.DefaultValue = viewModel.DefaultValue?.Trim();
+            }
+
+            return Edit(part);
+        }
     }
 }

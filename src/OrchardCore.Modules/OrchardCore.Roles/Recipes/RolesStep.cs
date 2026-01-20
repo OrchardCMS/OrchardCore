@@ -1,117 +1,74 @@
+using System;
+using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Roles.Recipes;
-
-/// <summary>
-/// This recipe step creates a set of roles.
-/// </summary>
-public sealed class RolesStep : NamedRecipeStepHandler
+namespace OrchardCore.Roles.Recipes
 {
-    private readonly RoleManager<IRole> _roleManager;
-    private readonly ISystemRoleProvider _systemRoleProvider;
-
-    public RolesStep(
-        RoleManager<IRole> roleManager,
-        ISystemRoleProvider systemRoleProvider)
-        : base("Roles")
+    /// <summary>
+    /// This recipe step creates a set of roles.
+    /// </summary>
+    public class RolesStep : IRecipeStepHandler
     {
-        _roleManager = roleManager;
-        _systemRoleProvider = systemRoleProvider;
-    }
+        private readonly RoleManager<IRole> _roleManager;
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
-    {
-        var model = context.Step.ToObject<RolesStepModel>();
-
-        foreach (var roleEntry in model.Roles)
+        public RolesStep(RoleManager<IRole> roleManager)
         {
-            var roleName = roleEntry.Name?.Trim();
+            _roleManager = roleManager;
+        }
 
-            if (string.IsNullOrWhiteSpace(roleName))
+        public async Task ExecuteAsync(RecipeExecutionContext context)
+        {
+            if (!string.Equals(context.Name, "Roles", StringComparison.OrdinalIgnoreCase))
             {
-                continue;
+                return;
             }
 
-            var role = await _roleManager.FindByNameAsync(roleName);
-            var isNewRole = role == null;
+            var model = context.Step.ToObject<RolesStepModel>();
 
-            if (isNewRole)
+            foreach (var importedRole in model.Roles)
             {
-                role = new Role
-                {
-                    RoleName = roleName,
-                };
-            }
+                if (string.IsNullOrWhiteSpace(importedRole.Name))
+                    continue;
 
-            if (role is Role r)
-            {
-                r.RoleDescription = roleEntry.Description;
+                var role = (Role)await _roleManager.FindByNameAsync(importedRole.Name);
+                var isNewRole = role == null;
 
-                if (roleEntry.PermissionBehavior == PermissionBehavior.Replace)
+                if (isNewRole)
                 {
-                    // At this point, we know we are replacing permissions.
-                    // Remove all existing permission so we can add the replacements later.
-                    r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+                    role = new Role { RoleName = importedRole.Name };
                 }
 
-                if (!_systemRoleProvider.IsAdminRole(roleName))
+                role.RoleDescription = importedRole.Description;
+                role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+                role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
+
+                if (isNewRole)
                 {
-                    if (roleEntry.PermissionBehavior == PermissionBehavior.Remove)
-                    {
-                        // Materialize this list to prevent an exception. 
-                        var permissions = r.RoleClaims.Where(c => c.ClaimType == Permission.ClaimType && roleEntry.Permissions.Contains(c.ClaimValue)).ToArray();
-
-                        foreach (var permission in permissions)
-                        {
-                            r.RoleClaims.Remove(permission);
-                        }
-                    }
-                    else
-                    {
-                        var permissions = roleEntry.Permissions.Select(RoleClaim.Create)
-                            .Where(newClaim => !r.RoleClaims.Exists(existingClaim => existingClaim.ClaimType == newClaim.ClaimType && existingClaim.ClaimValue == newClaim.ClaimValue));
-
-                        r.RoleClaims.AddRange(permissions);
-                    }
+                    await _roleManager.CreateAsync(role);
                 }
-            }
-
-            if (isNewRole)
-            {
-                await _roleManager.CreateAsync(role);
-            }
-            else
-            {
-                await _roleManager.UpdateAsync(role);
+                else
+                {
+                    await _roleManager.UpdateAsync(role);
+                }
             }
         }
+
+        public class RolesStepModel
+        {
+            public RolesStepRoleModel[] Roles { get; set; }
+        }
     }
-}
 
-public sealed class RolesStepModel
-{
-    public RolesStepRoleModel[] Roles { get; set; }
-}
-
-public sealed class RolesStepRoleModel
-{
-    public string Name { get; set; }
-
-    public string Description { get; set; }
-
-    public string[] Permissions { get; set; }
-
-    public PermissionBehavior PermissionBehavior { get; set; }
-}
-
-public enum PermissionBehavior
-{
-    Replace,
-    Add,
-    Remove,
+    public class RolesStepRoleModel
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string[] Permissions { get; set; }
+    }
 }

@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Deployment.ViewModels;
-
-public class CreateDeploymentPlanViewModel
+namespace OrchardCore.Deployment.ViewModels
 {
-    [Required]
-    public string Name { get; set; }
+    public class CreateDeploymentPlanViewModel
+    {
+        [Required]
+        public string Name { get; set; }
+    }
 }

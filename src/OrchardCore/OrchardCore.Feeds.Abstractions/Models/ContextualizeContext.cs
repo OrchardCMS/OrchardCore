@@ -1,9 +1,11 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.Feeds.Models;
-
-public class ContextualizeContext
+namespace OrchardCore.Feeds.Models
 {
-    public IServiceProvider ServiceProvider { get; set; }
-    public IUrlHelper Url { get; set; }
+    public class ContextualizeContext
+    {
+        public IServiceProvider ServiceProvider { get; set; }
+        public IUrlHelper Url { get; set; }
+    }
 }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -43,11 +43,7 @@
   <ItemGroup>
     <PackageReference Include="Shortcodes" />
     <PackageReference Include="SixLabors.ImageSharp.Web" />
-    <PackageReference Include="System.IO.Hashing" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="OrchardCore.Tests" />
+    <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
 
 </Project>

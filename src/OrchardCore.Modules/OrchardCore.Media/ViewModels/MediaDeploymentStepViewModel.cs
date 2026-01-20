@@ -1,14 +1,17 @@
-namespace OrchardCore.Media.ViewModels;
+using System.Collections.Generic;
 
-public class MediaDeploymentStepViewModel
+namespace OrchardCore.Media.ViewModels
 {
-    public bool IncludeAll { get; set; } = true;
+    public class MediaDeploymentStepViewModel
+    {
+        public bool IncludeAll { get; set; } = true;
 
-    public string[] FilePaths { get; set; }
+        public string[] FilePaths { get; set; }
 
-    public string[] DirectoryPaths { get; set; }
+        public string[] DirectoryPaths { get; set; }
 
-    public MediaStoreEntryViewModel ParentEntry { get; set; }
+        public MediaStoreEntryViewModel ParentEntry { get; set; }
 
-    public IList<MediaStoreEntryViewModel> Entries { get; set; }
+        public IList<MediaStoreEntryViewModel> Entries { get; set; }
+    }
 }

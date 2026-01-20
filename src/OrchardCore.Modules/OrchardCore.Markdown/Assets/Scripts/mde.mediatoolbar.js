@@ -85,7 +85,7 @@ $(function () {
             name: "image",
             action: function (editor) {
                 $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
-                document.getElementById("mediaApp").classList.remove("d-none");
+                $("#mediaApp").show();
                 mediaApp.selectedMedias = [];
                 var modal = new bootstrap.Modal($('#mediaModalMarkdown'));
                 modal.show();

@@ -1,22 +1,24 @@
+using System.Collections.Generic;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 
-namespace OrchardCore.ContentLocalization.GraphQL;
-
-public class LocalizationPartIndexAliasProvider : IIndexAliasProvider
+namespace OrchardCore.ContentLocalization.GraphQL
 {
-    private static readonly IndexAlias[] _aliases =
-    [
-        new IndexAlias
-        {
-            Alias = "localizationPart",
-            Index = nameof(LocalizedContentItemIndex),
-            IndexType = typeof(LocalizedContentItemIndex),
-        }
-    ];
-
-    public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
+    public class LocalizationPartIndexAliasProvider : IIndexAliasProvider
     {
-        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+        private static readonly IndexAlias[] _aliases =
+        [
+            new IndexAlias
+            {
+                Alias = "localizationPart",
+                Index = nameof(LocalizedContentItemIndex),
+                IndexType = typeof(LocalizedContentItemIndex)
+            }
+        ];
+
+        public IEnumerable<IndexAlias> GetAliases()
+        {
+            return _aliases;
+        }
     }
 }

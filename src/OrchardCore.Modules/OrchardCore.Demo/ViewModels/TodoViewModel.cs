@@ -1,46 +1,48 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Demo.ViewModels;
-
-public class TodoViewModel : ShapeViewModel
+namespace OrchardCore.Demo.ViewModels
 {
-    public TodoViewModel()
-        : base("Todo")
+    public class TodoViewModel : ShapeViewModel
     {
-    }
-
-    public string TodoId { get; set; }
-
-    [Required]
-    public string Text { get; set; }
-
-    [Required]
-    public DateTime DueDate { get; set; }
-
-    public bool IsCompleted { get; set; }
-
-    public string DisplayMode
-    {
-        get
+        public TodoViewModel()
+            : base("Todo")
         {
-            return Metadata.DisplayType;
         }
-        set
+
+        public string TodoId { get; set; }
+
+        [Required]
+        public string Text { get; set; }
+
+        [Required]
+        public DateTime DueDate { get; set; }
+
+        public bool IsCompleted { get; set; }
+
+        public string DisplayMode
         {
-            var alternate = $"Todo_{value}";
-            if (Metadata.Alternates.Contains(alternate))
+            get
             {
-                if (Metadata.Alternates.Last == alternate)
+                return Metadata.DisplayType;
+            }
+            set
+            {
+                var alternate = $"Todo_{value}";
+                if (Metadata.Alternates.Contains(alternate))
                 {
-                    return;
+                    if (Metadata.Alternates.Last == alternate)
+                    {
+                        return;
+                    }
+
+                    Metadata.Alternates.Remove(alternate);
                 }
 
-                Metadata.Alternates.Remove(alternate);
+                Metadata.Alternates.Add(alternate);
+                Metadata.DisplayType = value;
             }
-
-            Metadata.Alternates.Add(alternate);
-            Metadata.DisplayType = value;
         }
     }
 }

@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Google.TagManager.ViewModels;
-
-public class GoogleTagManagerSettingsViewModel
+namespace OrchardCore.Google.TagManager.ViewModels
 {
-    [Required(AllowEmptyStrings = false)]
-    public string ContainerID { get; set; }
+    public class GoogleTagManagerSettingsViewModel
+    {
+        [Required(AllowEmptyStrings = false)]
+        public string ContainerID { get; set; }
+    }
 }

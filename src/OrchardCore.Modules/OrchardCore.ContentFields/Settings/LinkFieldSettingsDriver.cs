@@ -1,39 +1,41 @@
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Settings;
-
-public sealed class LinkFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LinkField>
+namespace OrchardCore.ContentFields.Settings
 {
-    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+    public class LinkFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LinkField>
     {
-        return Initialize<LinkFieldSettings>("LinkFieldSettings_Edit", model =>
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            var settings = partFieldDefinition.GetSettings<LinkFieldSettings>();
+            return Initialize<LinkFieldSettings>("LinkFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<LinkFieldSettings>();
 
-            model.Hint = settings.Hint;
-            model.HintLinkText = settings.HintLinkText;
-            model.Required = settings.Required;
-            model.LinkTextMode = settings.LinkTextMode;
-            model.UrlPlaceholder = settings.UrlPlaceholder;
-            model.TextPlaceholder = settings.TextPlaceholder;
-            model.DefaultUrl = settings.DefaultUrl;
-            model.DefaultText = settings.DefaultText;
-            model.DefaultTarget = settings.DefaultTarget;
-        }).Location("Content");
-    }
+                model.Hint = settings.Hint;
+                model.HintLinkText = settings.HintLinkText;
+                model.Required = settings.Required;
+                model.LinkTextMode = settings.LinkTextMode;
+                model.UrlPlaceholder = settings.UrlPlaceholder;
+                model.TextPlaceholder = settings.TextPlaceholder;
+                model.DefaultUrl = settings.DefaultUrl;
+                model.DefaultText = settings.DefaultText;
+            })
+                .Location("Content");
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-    {
-        var model = new LinkFieldSettings();
+        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+        {
+            var model = new LinkFieldSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        context.Builder.WithSettings(model);
+            context.Builder.WithSettings(model);
 
-        return Edit(partFieldDefinition, context);
+            return Edit(partFieldDefinition);
+        }
     }
 }

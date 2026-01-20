@@ -1,11 +1,14 @@
-namespace OrchardCore.Rules;
+using System.Collections.Generic;
 
-public class ConditionGroup : Condition
+namespace OrchardCore.Rules
 {
-    public List<Condition> Conditions { get; init; } = [];
-}
+    public class ConditionGroup : Condition
+    {
+        public List<Condition> Conditions { get; init; } = [];
+    }
 
-public abstract class DisplayTextConditionGroup : ConditionGroup
-{
-    public string DisplayText { get; set; }
+    public abstract class DisplayTextConditionGroup : ConditionGroup
+    {
+        public string DisplayText { get; set; }
+    }
 }

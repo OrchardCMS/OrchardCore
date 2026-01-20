@@ -1,30 +1,37 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Queries.Sql;
-
-public sealed class AdminMenu : AdminNavigationProvider
+namespace OrchardCore.Queries.Sql
 {
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public class AdminMenu : INavigationProvider
     {
-        S = stringLocalizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        builder
-            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
-                    .Add(S["Run SQL Query"], S["Run SQL Query"].PrefixPosition(), sql => sql
-                         .Action("Query", "Admin", "OrchardCore.Queries")
-                         .Permission(QueriesPermissions.ManageSqlQueries)
-                         .LocalNav()
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+        {
+            S = localizer;
+        }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Search"], search => search
+                    .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
+                        .Add(S["Run SQL Query"], S["Run SQL Query"].PrefixPosition(), sql => sql
+                             .Action("Query", "Admin", "OrchardCore.Queries")
+                             .Permission(Permissions.ManageSqlQueries)
+                             .LocalNav()
+                        )
                     )
-                )
-            );
+                );
 
-        return ValueTask.CompletedTask;
+            return Task.CompletedTask;
+        }
     }
 }

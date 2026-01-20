@@ -3,17 +3,18 @@ using OrchardCore.Twitter.Workflows.ViewModels;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Twitter.Workflows.Drivers;
-
-public sealed class UpdateTwitterStatusTaskDisplayDriver : ActivityDisplayDriver<UpdateTwitterStatusTask, UpdateTwitterStatusTaskViewModel>
+namespace OrchardCore.Twitter.Workflows.Drivers
 {
-    protected override void EditActivity(UpdateTwitterStatusTask activity, UpdateTwitterStatusTaskViewModel model)
+    public class UpdateTwitterStatusTaskDisplayDriver : ActivityDisplayDriver<UpdateTwitterStatusTask, UpdateTwitterStatusTaskViewModel>
     {
-        model.StatusTemplate = activity.StatusTemplate.Expression;
-    }
+        protected override void EditActivity(UpdateTwitterStatusTask activity, UpdateTwitterStatusTaskViewModel model)
+        {
+            model.StatusTemplate = activity.StatusTemplate.Expression;
+        }
 
-    protected override void UpdateActivity(UpdateTwitterStatusTaskViewModel model, UpdateTwitterStatusTask activity)
-    {
-        activity.StatusTemplate = new WorkflowExpression<string>(model.StatusTemplate);
+        protected override void UpdateActivity(UpdateTwitterStatusTaskViewModel model, UpdateTwitterStatusTask activity)
+        {
+            activity.StatusTemplate = new WorkflowExpression<string>(model.StatusTemplate);
+        }
     }
 }

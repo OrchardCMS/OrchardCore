@@ -4,16 +4,16 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Users.Deployment;
 
-public sealed class AllUsersDeploymentStepDriver : DisplayDriver<DeploymentStep, AllUsersDeploymentStep>
+public class AllUsersDeploymentStepDriver : DisplayDriver<DeploymentStep, AllUsersDeploymentStep>
 {
-    public override Task<IDisplayResult> DisplayAsync(AllUsersDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Display(AllUsersDeploymentStep step)
     {
-        return CombineAsync(
-                View("AllUsersDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
+        return Combine(
+                View("AllUsersDeploymentStep_Summary", step).Location("Summary", "Content"),
                 View("AllUsersDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content"));
     }
 
-    public override IDisplayResult Edit(AllUsersDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(AllUsersDeploymentStep step)
     {
         return View("AllUsersDeploymentStep_Edit", step).Location("Content");
     }

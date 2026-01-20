@@ -1,6 +1,7 @@
-namespace OrchardCore.ContentFields.Settings;
-
-public class TextFieldMonacoEditorSettings
+namespace OrchardCore.ContentFields.Settings
 {
-    public string Options { get; set; }
+    public class TextFieldMonacoEditorSettings
+    {
+        public string Options { get; set; }
+    }
 }

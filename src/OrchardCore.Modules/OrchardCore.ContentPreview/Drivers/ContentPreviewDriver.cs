@@ -1,16 +1,16 @@
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentPreview.Drivers;
-
-public sealed class ContentPreviewDriver : ContentDisplayDriver
+namespace OrchardCore.ContentPreview.Drivers
 {
-    public override IDisplayResult Edit(ContentItem contentItem, BuildEditorContext context)
+    public class ContentPreviewDriver : ContentDisplayDriver
     {
-        return Shape("ContentPreview_Button", new ContentItemViewModel(contentItem))
-            .Location("Actions:after");
+        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
+        {
+            return Shape("ContentPreview_Button", new ContentItemViewModel(contentItem)).Location("Actions:after");
+        }
     }
 }

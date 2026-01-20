@@ -1,31 +1,32 @@
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Routing;
 using OrchardCore.Mvc.Core.Utilities;
 
-namespace OrchardCore.Liquid.Filters;
-
-public class AbsoluteUrlFilter : ILiquidFilter
+namespace OrchardCore.Liquid.Filters
 {
-    private readonly IUrlHelperFactory _urlHelperFactory;
-
-    public AbsoluteUrlFilter(IUrlHelperFactory urlHelperFactory)
+    public class AbsoluteUrlFilter : ILiquidFilter
     {
-        _urlHelperFactory = urlHelperFactory;
-    }
-    public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
-    {
-        var relativePath = input.ToStringValue();
+        private readonly IUrlHelperFactory _urlHelperFactory;
 
-        if (string.IsNullOrWhiteSpace(relativePath))
+        public AbsoluteUrlFilter(IUrlHelperFactory urlHelperFactory)
         {
-            return ValueTask.FromResult(input);
+            _urlHelperFactory = urlHelperFactory;
         }
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
+        {
+            var relativePath = input.ToStringValue();
 
-        var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
+            if (string.IsNullOrWhiteSpace(relativePath))
+            {
+                return new ValueTask<FluidValue>(input);
+            }
 
-        var result = StringValue.Create(urlHelper.ToAbsoluteUrl(relativePath));
+            var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-        return ValueTask.FromResult<FluidValue>(result);
+            var result = new StringValue(urlHelper.ToAbsoluteUrl(relativePath));
+            return new ValueTask<FluidValue>(result);
+        }
     }
 }

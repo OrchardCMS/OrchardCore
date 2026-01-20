@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Microsoft.Extensions.Options;
 
 /// <summary>

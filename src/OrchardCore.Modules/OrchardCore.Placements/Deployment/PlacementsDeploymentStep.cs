@@ -1,14 +1,15 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Placements.Deployment;
-
-/// <summary>
-/// Adds placements to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class PlacementsDeploymentStep : DeploymentStep
+namespace OrchardCore.Placements.Deployment
 {
-    public PlacementsDeploymentStep()
+    /// <summary>
+    /// Adds placements to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class PlacementsDeploymentStep : DeploymentStep
     {
-        Name = "Placements";
+        public PlacementsDeploymentStep()
+        {
+            Name = "Placements";
+        }
     }
 }

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Notify;
@@ -6,55 +8,56 @@ using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Activities;
-
-public class NotifyTask : TaskActivity<NotifyTask>
+namespace OrchardCore.Workflows.Activities
 {
-    private readonly INotifier _notifier;
-    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-    protected readonly IStringLocalizer S;
-    private readonly HtmlEncoder _htmlEncoder;
-
-    public NotifyTask(
-        INotifier notifier,
-        IWorkflowExpressionEvaluator expressionEvaluator,
-        IStringLocalizer<NotifyTask> localizer,
-        HtmlEncoder htmlEncoder)
+    public class NotifyTask : TaskActivity<NotifyTask>
     {
-        _notifier = notifier;
-        _expressionEvaluator = expressionEvaluator;
-        S = localizer;
-        _htmlEncoder = htmlEncoder;
-    }
+        private readonly INotifier _notifier;
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        protected readonly IStringLocalizer S;
+        private readonly HtmlEncoder _htmlEncoder;
 
-    public override LocalizedString DisplayText => S["Notify Task"];
+        public NotifyTask(
+            INotifier notifier,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IStringLocalizer<NotifyTask> localizer,
+            HtmlEncoder htmlEncoder)
+        {
+            _notifier = notifier;
+            _expressionEvaluator = expressionEvaluator;
+            S = localizer;
+            _htmlEncoder = htmlEncoder;
+        }
 
-    public override LocalizedString Category => S["UI"];
+        public override LocalizedString DisplayText => S["Notify Task"];
 
-    public NotifyType NotificationType
-    {
-        get => GetProperty<NotifyType>();
-        set => SetProperty(value);
-    }
+        public override LocalizedString Category => S["UI"];
 
-    public WorkflowExpression<string> Message
-    {
-        get => GetProperty(() => new WorkflowExpression<string>());
-        set => SetProperty(value);
-    }
+        public NotifyType NotificationType
+        {
+            get => GetProperty<NotifyType>();
+            set => SetProperty(value);
+        }
 
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        public WorkflowExpression<string> Message
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
 
-    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext, _htmlEncoder);
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Outcomes(S["Done"]);
+        }
 
-        // The notification message can contain HTML by design
-        await _notifier.AddAsync(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext, _htmlEncoder);
 
-        return Outcomes("Done");
+            // The notification message can contain HTML by design
+            await _notifier.AddAsync(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
+
+            return Outcomes("Done");
+        }
     }
 }

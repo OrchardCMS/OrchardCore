@@ -3,7 +3,7 @@
 @inject IContentManager ContentManager
 
 @{
-  var matchAllQuery = OrchardCore.Queries.Sql.ViewModels.AdminQueryViewModel.MatchAllQueryBase64;
+    var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"SELECT * FROM ContentItemIndex"));
 }
 
 <style asp-name="codemirror"></style>
@@ -65,20 +65,24 @@
 {
     <span class="text-muted">@T["Query executed in {0} ms", Model.Elapsed.TotalMilliseconds]</span>
 
-    var json = "[";
-
-    var i = 0;
-    @foreach (var document in Model.Documents)
+    var json = "";
+    if (Model.Documents.Any())
     {
-        json += Json.Serialize(document);
-        if (i < Model.Documents.Count() - 1)
-        {
-            json += ",";
-        }
-        i++;
-    }
+        json = "[";
+        var i = 0;
 
-    json += "]";
+        @foreach (var document in Model.Documents)
+        {
+            json += Json.Serialize(document);
+            if (i < Model.Documents.Count() - 1)
+            {
+                json += ",";
+            }
+            i++;
+        }
+
+        json += "]";
+    }
 
     <div class="form-control" style="min-height: 400px;">
         <div id="monaco_editor" style="min-height: 385px;" dir="@Orchard.CultureDir()"></div>
@@ -137,10 +141,6 @@
             setTheme();
 
             const textArea = document.getElementById('monaco_textarea');
-            if (!textArea) {
-                return;
-            }
-
             const modelUri = monaco.Uri.parse("json://grid/settings.json");
             const jsonModel = monaco.editor.createModel(JSON.stringify(textArea, null, 4), "json", modelUri);
 

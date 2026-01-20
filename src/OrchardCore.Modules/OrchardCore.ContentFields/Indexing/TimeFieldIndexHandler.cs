@@ -1,25 +1,28 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.ContentFields.Indexing;
-
-public class TimeFieldIndexHandler : ContentFieldIndexHandler<TimeField>
+namespace OrchardCore.ContentFields.Indexing
 {
-    public override Task BuildIndexAsync(TimeField field, BuildFieldIndexContext context)
+    public class TimeFieldIndexHandler : ContentFieldIndexHandler<TimeField>
     {
-        var options = context.Settings.ToOptions();
-
-        DateTime? indexedValue = null;
-        if (field.Value.HasValue)
+        public override Task BuildIndexAsync(TimeField field, BuildFieldIndexContext context)
         {
-            indexedValue = new DateTime(field.Value.Value.Ticks);
-        }
+            var options = context.Settings.ToOptions();
 
-        foreach (var key in context.Keys)
-        {
-            context.DocumentIndex.Set(key, indexedValue, options);
-        }
+            DateTime? indexedValue = null;
+            if (field.Value.HasValue)
+            {
+                indexedValue = new DateTime(field.Value.Value.Ticks);
+            }
 
-        return Task.CompletedTask;
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, indexedValue, options);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

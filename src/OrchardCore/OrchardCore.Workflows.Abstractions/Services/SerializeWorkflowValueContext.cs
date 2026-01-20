@@ -1,13 +1,14 @@
-namespace OrchardCore.Workflows.Models;
-
-public class SerializeWorkflowValueContext
+namespace OrchardCore.Workflows.Models
 {
-    public SerializeWorkflowValueContext(object input)
+    public class SerializeWorkflowValueContext
     {
-        Input = input;
-        Output = input;
-    }
+        public SerializeWorkflowValueContext(object input)
+        {
+            Input = input;
+            Output = input;
+        }
 
-    public object Input { get; set; }
-    public object Output { get; set; }
+        public object Input { get; set; }
+        public object Output { get; set; }
+    }
 }

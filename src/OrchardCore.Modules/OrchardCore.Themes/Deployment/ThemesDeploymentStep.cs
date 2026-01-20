@@ -1,14 +1,15 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Themes.Deployment;
-
-/// <summary>
-/// Adds the currently selected admin theme and site theme to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class ThemesDeploymentStep : DeploymentStep
+namespace OrchardCore.Themes.Deployment
 {
-    public ThemesDeploymentStep()
+    /// <summary>
+    /// Adds the currently selected admin theme and site theme to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class ThemesDeploymentStep : DeploymentStep
     {
-        Name = "Themes";
+        public ThemesDeploymentStep()
+        {
+            Name = "Themes";
+        }
     }
 }

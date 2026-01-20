@@ -1,19 +1,21 @@
+using System.Threading.Tasks;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Models;
 
-namespace OrchardCore.Liquid.Indexing;
-
-public class LiquidPartIndexHandler : ContentPartIndexHandler<LiquidPart>
+namespace OrchardCore.Liquid.Indexing
 {
-    public override Task BuildIndexAsync(LiquidPart part, BuildPartIndexContext context)
+    public class LiquidPartIndexHandler : ContentPartIndexHandler<LiquidPart>
     {
-        var options = context.Settings.ToOptions() | DocumentIndexOptions.Sanitize;
-
-        foreach (var key in context.Keys)
+        public override Task BuildIndexAsync(LiquidPart part, BuildPartIndexContext context)
         {
-            context.DocumentIndex.Set(key, part.Liquid, options);
-        }
+            var options = context.Settings.ToOptions() | DocumentIndexOptions.Sanitize;
 
-        return Task.CompletedTask;
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Liquid, options);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

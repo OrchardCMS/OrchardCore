@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DisplayManagement;
 
-namespace OrchardCore.AuditTrail.ViewModels;
-
-public class AuditTrailItemViewModel
+namespace OrchardCore.AuditTrail.ViewModels
 {
-    [BindNever]
-    public IShape Shape { get; set; }
+    public class AuditTrailItemViewModel
+    {
+        [BindNever]
+        public IShape Shape { get; set; }
+    }
 }

@@ -1,4 +1,5 @@
-@import '../../../../../../../node_modules/bootstrap/scss/mixins/_color-mode';
+@import '../../_variables';
+@import '../../../../node_modules/bootstrap/scss/mixins/_color-mode';
 
 @include color-mode(dark) {
     --oc-scrollbar-color: #76787A;

@@ -1,54 +1,46 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Deployment;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
-
-public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationProvider
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    public class ExportContentToDeploymentTargetAdminMenu : INavigationProvider
     {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", ExportContentToDeploymentTargetSettingsDisplayDriver.GroupId },
-    };
-
-    internal readonly IStringLocalizer S;
-
-    public ExportContentToDeploymentTargetAdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
-    {
-        S = stringLocalizer;
-    }
-
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        if (NavigationHelper.UseLegacyFormat())
+        private static readonly RouteValueDictionary _routeValues = new()
         {
-            builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Export target"], S["Export target"].PrefixPosition(), targetSettings => targetSettings
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(DeploymentPermissions.ManageDeploymentPlan)
-                            .LocalNav()
-                        )
-                    )
-                )
-            );
+            { "area", "OrchardCore.Settings" },
+            { "groupId", ExportContentToDeploymentTargetSettingsDisplayDriver.GroupId },
+        };
 
-            return ValueTask.CompletedTask;
+        protected readonly IStringLocalizer S;
+
+        public ExportContentToDeploymentTargetAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        {
+            S = localizer;
         }
 
-        builder
-            .Add(S["Settings"], settings => settings
-                .Add(S["Deployment Targets"], S["Deployment Targets"].PrefixPosition(), targetSettings => targetSettings
-                    .Action("Index", "Admin", _routeValues)
-                    .Permission(DeploymentPermissions.ManageDeploymentPlan)
-                    .LocalNav()
-                )
-            );
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
 
-        return ValueTask.CompletedTask;
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
+                        .Add(S["Settings"], settings => settings
+                            .Add(S["Export Target Settings"], S["Export Target Settings"].PrefixPosition(), targetSettings => targetSettings
+                                .Action("Index", "Admin", _routeValues)
+                                .Permission(OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
+                                .LocalNav()
+                            )
+                        )
+                    )
+                );
+
+            return Task.CompletedTask;
+        }
     }
 }

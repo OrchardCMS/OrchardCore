@@ -1,43 +1,45 @@
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.Services;
-
-public class MembershipService : IMembershipService
+namespace OrchardCore.Users.Services
 {
-    private readonly UserManager<IUser> _userManager;
-    private readonly IUserClaimsPrincipalFactory<IUser> _claimsPrincipalFactory;
-
-    public MembershipService(
-        IUserClaimsPrincipalFactory<IUser> claimsPrincipalFactory,
-        UserManager<IUser> userManager)
+    public class MembershipService : IMembershipService
     {
-        _claimsPrincipalFactory = claimsPrincipalFactory;
-        _userManager = userManager;
-    }
+        private readonly UserManager<IUser> _userManager;
+        private readonly IUserClaimsPrincipalFactory<IUser> _claimsPrincipalFactory;
 
-    public async Task<bool> CheckPasswordAsync(string userName, string password)
-    {
-        var user = await _userManager.FindByNameAsync(userName);
-
-        if (user == null)
+        public MembershipService(
+            IUserClaimsPrincipalFactory<IUser> claimsPrincipalFactory,
+            UserManager<IUser> userManager)
         {
-            return false;
+            _claimsPrincipalFactory = claimsPrincipalFactory;
+            _userManager = userManager;
         }
 
-        return await _userManager.CheckPasswordAsync(user, password);
-    }
+        public async Task<bool> CheckPasswordAsync(string userName, string password)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
 
-    public async Task<IUser> GetUserAsync(string userName)
-    {
-        var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return false;
+            }
 
-        return user;
-    }
+            return await _userManager.CheckPasswordAsync(user, password);
+        }
 
-    public Task<ClaimsPrincipal> CreateClaimsPrincipal(IUser user)
-    {
-        return _claimsPrincipalFactory.CreateAsync(user as User);
+        public async Task<IUser> GetUserAsync(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+
+            return user;
+        }
+
+        public Task<ClaimsPrincipal> CreateClaimsPrincipal(IUser user)
+        {
+            return _claimsPrincipalFactory.CreateAsync(user as User);
+        }
     }
 }

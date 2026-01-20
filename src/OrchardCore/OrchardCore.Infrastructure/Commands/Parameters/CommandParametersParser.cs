@@ -1,41 +1,44 @@
+using System;
+using System.Collections.Generic;
 using System.Security;
 
-namespace OrchardCore.Environment.Commands.Parameters;
-
-public class CommandParametersParser : ICommandParametersParser
+namespace OrchardCore.Environment.Commands.Parameters
 {
-    [SecurityCritical]
-    public CommandParameters Parse(IEnumerable<string> args)
+    public class CommandParametersParser : ICommandParametersParser
     {
-        var arguments = new List<string>();
-        var switches = new Dictionary<string, string>();
-
-        foreach (var arg in args)
+        [SecurityCritical]
+        public CommandParameters Parse(IEnumerable<string> args)
         {
-            // Switch?
-            if (arg[0] == '/')
-            {
-                var index = arg.IndexOf(':');
-                var switchName = index < 0 ? arg[1..] : arg[1..index];
-                var switchValue = index < 0 || index >= arg.Length ? string.Empty : arg[(index + 1)..];
+            var arguments = new List<string>();
+            var switches = new Dictionary<string, string>();
 
-                if (string.IsNullOrEmpty(switchName))
+            foreach (var arg in args)
+            {
+                // Switch?
+                if (arg[0] == '/')
                 {
-                    throw new ArgumentException(string.Format("Invalid switch syntax: \"{0}\". Valid syntax is /<switchName>[:<switchValue>].", arg));
+                    var index = arg.IndexOf(':');
+                    var switchName = index < 0 ? arg[1..] : arg[1..index];
+                    var switchValue = index < 0 || index >= arg.Length ? string.Empty : arg[(index + 1)..];
+
+                    if (string.IsNullOrEmpty(switchName))
+                    {
+                        throw new ArgumentException(string.Format("Invalid switch syntax: \"{0}\". Valid syntax is /<switchName>[:<switchValue>].", arg));
+                    }
+
+                    switches.Add(switchName, switchValue);
                 }
-
-                switches.Add(switchName, switchValue);
+                else
+                {
+                    arguments.Add(arg);
+                }
             }
-            else
+
+            return new CommandParameters
             {
-                arguments.Add(arg);
-            }
+                Arguments = arguments,
+                Switches = switches
+            };
         }
-
-        return new CommandParameters
-        {
-            Arguments = arguments,
-            Switches = switches,
-        };
     }
 }

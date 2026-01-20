@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace HelloWorld.Controllers;
-
-public sealed class HomeController : Controller
+namespace HelloWorld.Controllers
 {
-    public IActionResult Index()
+    public class HomeController : Controller
     {
-        return View();
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

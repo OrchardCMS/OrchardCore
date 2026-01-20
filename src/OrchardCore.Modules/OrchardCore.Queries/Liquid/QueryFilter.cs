@@ -1,39 +1,39 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Queries.Liquid;
-
-public class QueryFilter : ILiquidFilter
+namespace OrchardCore.Queries.Liquid
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public QueryFilter(IServiceProvider serviceProvider)
+    public class QueryFilter : ILiquidFilter
     {
-        _serviceProvider = serviceProvider;
-    }
+        private readonly IQueryManager _queryManager;
 
-    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
-    {
-        var query = input.ToObjectValue() as Query;
-
-        if (query == null)
+        public QueryFilter(IQueryManager queryManager)
         {
-            return NilValue.Instance;
+            _queryManager = queryManager;
         }
 
-        var parameters = new Dictionary<string, object>();
-
-        foreach (var name in arguments.Names)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
-            parameters.Add(name, arguments[name].ToObjectValue());
+            var query = input.ToObjectValue() as Query;
+
+            if (query == null)
+            {
+                return NilValue.Instance;
+            }
+
+            var parameters = new Dictionary<string, object>();
+
+            foreach (var name in arguments.Names)
+            {
+                parameters.Add(name, arguments[name].ToObjectValue());
+            }
+
+            var result = await _queryManager.ExecuteQueryAsync(query, parameters);
+
+            return FluidValue.Create(result.Items, ctx.Options);
         }
-
-        var queryManager = _serviceProvider.GetRequiredService<IQueryManager>();
-
-        var result = await queryManager.ExecuteQueryAsync(query, parameters);
-
-        return FluidValue.Create(result.Items, ctx.Options);
     }
 }

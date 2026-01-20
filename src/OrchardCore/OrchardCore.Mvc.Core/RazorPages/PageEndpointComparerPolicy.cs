@@ -1,21 +1,23 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
 
-namespace OrchardCore.Mvc.RazorPages;
-
-public sealed class PageEndpointComparerPolicy : MatcherPolicy, IEndpointComparerPolicy
+namespace OrchardCore.Mvc.RazorPages
 {
-    public override int Order => -1000;
-
-    public IComparer<Endpoint> Comparer => new PageEndpointComparer();
-
-    private sealed class PageEndpointComparer : EndpointMetadataComparer<PageActionDescriptor>
+    public sealed class PageEndpointComparerPolicy : MatcherPolicy, IEndpointComparerPolicy
     {
-        protected override int CompareMetadata(PageActionDescriptor x, PageActionDescriptor y)
+        public override int Order => -1000;
+
+        public IComparer<Endpoint> Comparer => new PageEndpointComparer();
+
+        private class PageEndpointComparer : EndpointMetadataComparer<PageActionDescriptor>
         {
-            return base.CompareMetadata(x, y);
+            protected override int CompareMetadata(PageActionDescriptor x, PageActionDescriptor y)
+            {
+                return base.CompareMetadata(x, y);
+            }
         }
     }
 }

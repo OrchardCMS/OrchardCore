@@ -2,24 +2,25 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Email;
-
-/// <summary>
-/// Validates an email address.
-/// </summary>
-public class EmailAddressAttribute : ValidationAttribute
+namespace OrchardCore.Email
 {
-    /// <inheritdoc/>
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    /// <summary>
+    /// Validates an email address.
+    /// </summary>
+    public class EmailAddressAttribute : ValidationAttribute
     {
-        var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
-        var S = validationContext.GetService<IStringLocalizer<EmailAddressAttribute>>();
-
-        if (value == null || emailAddressValidator.Validate(value.ToString()))
+        /// <inheritdoc/>
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            return ValidationResult.Success;
-        }
+            var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
+            var S = validationContext.GetService<IStringLocalizer<EmailAddressAttribute>>();
 
-        return new ValidationResult(S["Invalid email address."], new[] { nameof(Email) });
+            if (value == null || emailAddressValidator.Validate(value.ToString()))
+            {
+                return ValidationResult.Success;
+            }
+
+            return new ValidationResult(S["Invalid email address."], new[] { nameof(Email) });
+        }
     }
 }

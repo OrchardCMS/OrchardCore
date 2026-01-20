@@ -1,16 +1,18 @@
-namespace OrchardCore.OpenId.ViewModels;
+using System.Collections.Generic;
 
-public class OpenIdValidationSettingsViewModel
+namespace OrchardCore.OpenId.ViewModels
 {
-    [Url]
-    public string MetadataAddress { get; set; }
+    public class OpenIdValidationSettingsViewModel
+    {
+        [Url]
+        public string MetadataAddress { get; set; }
 
-    [Url]
-    public string Authority { get; set; }
+        [Url]
+        public string Authority { get; set; }
 
-    public string Audience { get; set; }
-
-    public bool DisableTokenTypeValidation { get; set; }
-
-    public string Tenant { get; set; }
+        public string Audience { get; set; }
+        public bool DisableTokenTypeValidation { get; set; }
+        public string Tenant { get; set; }
+        public IEnumerable<string> AvailableTenants { get; set; }
+    }
 }

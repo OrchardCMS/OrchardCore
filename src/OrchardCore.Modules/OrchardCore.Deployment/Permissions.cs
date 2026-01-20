@@ -1,14 +1,20 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Deployment;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
+    public static readonly Permission ManageDeploymentPlan = CommonPermissions.ManageDeploymentPlan;
+    public static readonly Permission Export = CommonPermissions.Export;
+    public static readonly Permission Import = CommonPermissions.Import;
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        DeploymentPermissions.Import,
-        DeploymentPermissions.Export,
-        DeploymentPermissions.ManageDeploymentPlan,
+        Import,
+        Export,
+        ManageDeploymentPlan,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -18,7 +24,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

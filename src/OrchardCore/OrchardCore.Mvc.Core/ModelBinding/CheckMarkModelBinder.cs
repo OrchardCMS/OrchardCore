@@ -1,33 +1,36 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Mvc.ModelBinding;
-
-public class CheckMarkModelBinder : IModelBinder
+namespace OrchardCore.Mvc.ModelBinding
 {
-    public Task BindModelAsync(ModelBindingContext bindingContext)
+    public class CheckMarkModelBinder : IModelBinder
     {
-        ArgumentNullException.ThrowIfNull(bindingContext);
-
-        if (bindingContext.ModelType == typeof(bool))
+        public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
-            if (valueProviderResult == ValueProviderResult.None)
+            ArgumentNullException.ThrowIfNull(bindingContext);
+
+            if (bindingContext.ModelType == typeof(bool))
             {
-                return Task.CompletedTask;
+                var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
+                if (valueProviderResult == ValueProviderResult.None)
+                {
+                    return Task.CompletedTask;
+                }
+
+                bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueProviderResult);
+
+                if (valueProviderResult.Values == "✓")
+                {
+                    bindingContext.Result = ModelBindingResult.Success(bindingContext.ModelName);
+                }
+                else if (valueProviderResult.Values == "✗")
+                {
+                    bindingContext.Result = ModelBindingResult.Failed();
+                }
             }
 
-            bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueProviderResult);
-
-            if (valueProviderResult.Values == "✓")
-            {
-                bindingContext.Result = ModelBindingResult.Success(bindingContext.ModelName);
-            }
-            else if (valueProviderResult.Values == "✗")
-            {
-                bindingContext.Result = ModelBindingResult.Failed();
-            }
+            return Task.CompletedTask;
         }
-
-        return Task.CompletedTask;
     }
 }

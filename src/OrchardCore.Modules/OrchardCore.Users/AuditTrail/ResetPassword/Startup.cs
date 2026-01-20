@@ -4,14 +4,15 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Modules;
 using OrchardCore.Users.Events;
 
-namespace OrchardCore.Users.AuditTrail.ResetPassword;
-
-[RequireFeatures("OrchardCore.Users.AuditTrail", UserConstants.Features.ResetPassword)]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Users.AuditTrail.ResetPassword
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Users.AuditTrail", "OrchardCore.Users.ResetPassword")]
+    public class Startup : StartupBase
     {
-        services.AddScoped<IPasswordRecoveryFormEvents, UserResetPasswordEventHandler>();
-        services.AddTransient<IConfigureOptions<AuditTrailOptions>, UserResetPasswordAuditTrailEventConfiguration>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IPasswordRecoveryFormEvents, UserResetPasswordEventHandler>();
+            services.AddTransient<IConfigureOptions<AuditTrailOptions>, UserResetPasswordAuditTrailEventConfiguration>();
+        }
     }
 }

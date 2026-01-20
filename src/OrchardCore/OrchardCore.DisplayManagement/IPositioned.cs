@@ -1,6 +1,7 @@
-namespace OrchardCore.DisplayManagement;
-
-public interface IPositioned
+namespace OrchardCore.DisplayManagement
 {
-    string Position { get; set; }
+    public interface IPositioned
+    {
+        string Position { get; set; }
+    }
 }

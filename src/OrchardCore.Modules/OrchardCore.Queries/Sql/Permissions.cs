@@ -1,17 +1,17 @@
-using OrchardCore.Queries.Core;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries.Sql;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
+    public static readonly Permission ManageSqlQueries = new("ManageSqlQueries", "Manage SQL Queries");
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        QueriesPermissions.ManageSqlQueries,
+        ManageSqlQueries,
     ];
-
-    [Obsolete("This will be removed in a future release. Instead use 'QueriesPermissions.ManageSqlQueries'.")]
-    public static readonly Permission ManageSqlQueries = QueriesPermissions.ManageSqlQueries;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
@@ -20,12 +20,12 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Editor,
+            Name = "Editor",
             Permissions = _allPermissions,
         },
     ];

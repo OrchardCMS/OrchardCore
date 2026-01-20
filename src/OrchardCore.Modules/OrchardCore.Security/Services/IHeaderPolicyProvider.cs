@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Security.Services;
-
-public interface IHeaderPolicyProvider
+namespace OrchardCore.Security.Services
 {
-    void InitializePolicy();
+    public interface IHeaderPolicyProvider
+    {
+        void InitializePolicy();
 
-    void ApplyPolicy(HttpContext httpContext);
+        void ApplyPolicy(HttpContext httpContext);
+    }
 }

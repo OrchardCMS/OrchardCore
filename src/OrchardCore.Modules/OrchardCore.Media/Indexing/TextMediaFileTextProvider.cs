@@ -1,3 +1,6 @@
+using System.IO;
+using System.Threading.Tasks;
+
 namespace OrchardCore.Media.Indexing;
 
 public class TextMediaFileTextProvider : IMediaFileTextProvider

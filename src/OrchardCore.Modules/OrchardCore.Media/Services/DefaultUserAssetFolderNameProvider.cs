@@ -1,11 +1,12 @@
 using System.Security.Claims;
 
-namespace OrchardCore.Media.Services;
-
-public class DefaultUserAssetFolderNameProvider : IUserAssetFolderNameProvider
+namespace OrchardCore.Media.Services
 {
-    public string GetUserAssetFolderName(ClaimsPrincipal claimsPrincipal)
+    public class DefaultUserAssetFolderNameProvider : IUserAssetFolderNameProvider
     {
-        return claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+        public string GetUserAssetFolderName(ClaimsPrincipal claimsPrincipal)
+        {
+            return claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
     }
 }

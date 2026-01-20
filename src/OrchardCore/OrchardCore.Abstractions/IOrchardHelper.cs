@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore;
-
-public interface IOrchardHelper
+namespace OrchardCore
 {
-    HttpContext HttpContext { get; }
+    public interface IOrchardHelper
+    {
+        HttpContext HttpContext { get; }
+    }
 }

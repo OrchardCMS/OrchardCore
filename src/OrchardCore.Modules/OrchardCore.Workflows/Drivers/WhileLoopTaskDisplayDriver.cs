@@ -3,17 +3,18 @@ using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
 
-namespace OrchardCore.Workflows.Drivers;
-
-public sealed class WhileLoopTaskDisplayDriver : ActivityDisplayDriver<WhileLoopTask, WhileLoopTaskViewModel>
+namespace OrchardCore.Workflows.Drivers
 {
-    protected override void EditActivity(WhileLoopTask source, WhileLoopTaskViewModel model)
+    public class WhileLoopTaskDisplayDriver : ActivityDisplayDriver<WhileLoopTask, WhileLoopTaskViewModel>
     {
-        model.ConditionExpression = source.Condition.Expression;
-    }
+        protected override void EditActivity(WhileLoopTask source, WhileLoopTaskViewModel model)
+        {
+            model.ConditionExpression = source.Condition.Expression;
+        }
 
-    protected override void UpdateActivity(WhileLoopTaskViewModel model, WhileLoopTask activity)
-    {
-        activity.Condition = new WorkflowExpression<bool>(model.ConditionExpression.Trim());
+        protected override void UpdateActivity(WhileLoopTaskViewModel model, WhileLoopTask activity)
+        {
+            activity.Condition = new WorkflowExpression<bool>(model.ConditionExpression.Trim());
+        }
     }
 }

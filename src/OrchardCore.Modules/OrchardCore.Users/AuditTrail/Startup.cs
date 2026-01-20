@@ -10,19 +10,20 @@ using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 
-namespace OrchardCore.Users.AuditTrail;
-
-[Feature("OrchardCore.Users.AuditTrail")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Users.AuditTrail
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [Feature("OrchardCore.Users.AuditTrail")]
+    public class Startup : StartupBase
     {
-        services.AddTransient<IConfigureOptions<AuditTrailOptions>, UserAuditTrailEventConfiguration>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IConfigureOptions<AuditTrailOptions>, UserAuditTrailEventConfiguration>();
 
-        services.AddScoped<UserEventHandler, UserEventHandler>()
-            .AddScoped<IUserEventHandler>(sp => sp.GetRequiredService<UserEventHandler>())
-            .AddScoped<ILoginFormEvent>(sp => sp.GetRequiredService<UserEventHandler>());
+            services.AddScoped<UserEventHandler, UserEventHandler>()
+                .AddScoped<IUserEventHandler>(sp => sp.GetRequiredService<UserEventHandler>())
+                .AddScoped<ILoginFormEvent>(sp => sp.GetRequiredService<UserEventHandler>());
 
-        services.AddDisplayDriver<AuditTrailEvent, AuditTrailUserEventDisplayDriver>();
+            services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailUserEventDisplayDriver>();
+        }
     }
 }

@@ -1,77 +1,79 @@
+using System.Threading.Tasks;
+using GraphQL.Language.AST;
 using GraphQL.Validation;
-using GraphQLParser.AST;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Apis.GraphQL.ValidationRules;
-
-public class MaxNumberOfResultsValidationRule : IValidationRule
+namespace OrchardCore.Apis.GraphQL.ValidationRules
 {
-    private readonly int _maxNumberOfResults;
-    private readonly MaxNumberOfResultsValidationMode _maxNumberOfResultsValidationMode;
-    protected readonly IStringLocalizer S;
-    private readonly ILogger _logger;
-
-    public MaxNumberOfResultsValidationRule(
-        IOptions<GraphQLSettings> options,
-        IStringLocalizer<MaxNumberOfResultsValidationRule> localizer,
-        ILogger<MaxNumberOfResultsValidationRule> logger)
+    public class MaxNumberOfResultsValidationRule : IValidationRule
     {
-        var settings = options.Value;
-        _maxNumberOfResults = settings.MaxNumberOfResults;
-        _maxNumberOfResultsValidationMode = settings.MaxNumberOfResultsValidationMode;
-        S = localizer;
-        _logger = logger;
-    }
+        private readonly int _maxNumberOfResults;
+        private readonly MaxNumberOfResultsValidationMode _maxNumberOfResultsValidationMode;
+        protected readonly IStringLocalizer S;
+        private readonly ILogger _logger;
 
-    public ValueTask<INodeVisitor> GetPreNodeVisitorAsync(ValidationContext validationContext)
-    {
-        return ValueTask.FromResult((INodeVisitor)new NodeVisitors(
-        new MatchingNodeVisitor<GraphQLArgument>((arg, visitorContext) =>
+        public MaxNumberOfResultsValidationRule(
+            IOptions<GraphQLSettings> options,
+            IStringLocalizer<MaxNumberOfResultsValidationRule> localizer,
+            ILogger<MaxNumberOfResultsValidationRule> logger)
         {
-            if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
+            var settings = options.Value;
+            _maxNumberOfResults = settings.MaxNumberOfResults;
+            _maxNumberOfResultsValidationMode = settings.MaxNumberOfResultsValidationMode;
+            S = localizer;
+            _logger = logger;
+        }
+
+        public Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
+        {
+            return Task.FromResult((INodeVisitor)new NodeVisitors(
+            new MatchingNodeVisitor<Argument>((arg, visitorContext) =>
             {
-                var context = (GraphQLUserContext)validationContext.UserContext;
-
-                int? value = null;
-
-                if (arg.Value is GraphQLIntValue)
+                if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
                 {
-                    value = int.Parse((arg.Value as GraphQLIntValue).Value);
-                }
-                else
-                {
-                    if (validationContext.Variables.TryGetValue(arg.Value.ToString(), out var input))
+                    var context = (GraphQLUserContext)validationContext.UserContext;
+
+                    int? value = null;
+
+                    if (arg.Value is IntValue)
                     {
-                        value = (int?)input;
-                    }
-                }
-
-                if (value.HasValue && value > _maxNumberOfResults)
-                {
-                    if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
-                    {
-                        validationContext.ReportError(new ValidationError(
-                            validationContext.Document.Source,
-                            "ArgumentInputError",
-                            S["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults],
-                            arg));
+                        value = ((IntValue)arg.Value)?.Value;
                     }
                     else
                     {
-                        _logger.LogInformation("'{Value}' exceeds the maximum number of results for '{Name}' ({Total})", value.Value, arg.Name, _maxNumberOfResults);
+                        if (validationContext.Inputs.TryGetValue(arg.Value.ToString(), out var input))
+                        {
+                            value = (int?)input;
+                        }
+                    }
 
-                        arg = new GraphQLArgument(arg.Name, new GraphQLIntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
+                    if (value.HasValue && value > _maxNumberOfResults)
+                    {
+                        var errorMessage = S["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
+
+                        if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
+                        {
+                            validationContext.ReportError(new ValidationError(
+                                validationContext.Document.OriginalQuery,
+                                "ArgumentInputError",
+                                errorMessage,
+                                arg));
+                        }
+                        else
+                        {
+                            _logger.LogInformation("'{IntValue}' exceeds the maximum number of results for '{ArgumentName}' ({MaxNumber})",
+                                value.Value,
+                                arg.Name,
+                                _maxNumberOfResults);
+
+                            // If disabled mode we just log info and override the arg to be maxvalue.
+                            arg = new Argument(arg.NameNode, new IntValue(_maxNumberOfResults));
+                        }
                     }
                 }
-            }
-        })));
+            })));
+        }
     }
-
-    public ValueTask<IVariableVisitor> GetVariableVisitorAsync(ValidationContext context)
-        => ValueTask.FromResult<IVariableVisitor>(null);
-
-    public ValueTask<INodeVisitor> GetPostNodeVisitorAsync(ValidationContext context)
-        => ValueTask.FromResult<INodeVisitor>(null);
 }

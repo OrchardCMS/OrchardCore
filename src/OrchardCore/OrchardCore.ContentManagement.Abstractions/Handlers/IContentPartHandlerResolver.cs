@@ -1,6 +1,9 @@
-namespace OrchardCore.ContentManagement.Handlers;
+using System.Collections.Generic;
 
-public interface IContentPartHandlerResolver
+namespace OrchardCore.ContentManagement.Handlers
 {
-    IList<IContentPartHandler> GetHandlers(string partName);
+    public interface IContentPartHandlerResolver
+    {
+        IList<IContentPartHandler> GetHandlers(string partName);
+    }
 }

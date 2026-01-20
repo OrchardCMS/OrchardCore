@@ -1,8 +1,9 @@
-namespace OrchardCore.Workflows.Models;
-
-public class WorkflowTypeUpdatedContext : WorkflowTypeContext
+namespace OrchardCore.Workflows.Models
 {
-    public WorkflowTypeUpdatedContext(WorkflowType workflowType) : base(workflowType)
+    public class WorkflowTypeUpdatedContext : WorkflowTypeContext
     {
+        public WorkflowTypeUpdatedContext(WorkflowType workflowType) : base(workflowType)
+        {
+        }
     }
 }

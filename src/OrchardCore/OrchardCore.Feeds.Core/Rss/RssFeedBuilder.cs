@@ -1,45 +1,48 @@
+using System;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using OrchardCore.Feeds.Models;
 
-namespace OrchardCore.Feeds.Rss;
-
-public class RssFeedBuilder : IFeedBuilder
+namespace OrchardCore.Feeds.Rss
 {
-    public async Task<XDocument> ProcessAsync(FeedContext context, Func<Task> populate)
+    public class RssFeedBuilder : IFeedBuilder
     {
-        var rss = new XElement("rss");
-        rss.SetAttributeValue("version", "2.0");
-
-        var channel = new XElement("channel");
-        context.Response.Element = channel;
-        rss.Add(channel);
-
-        await populate();
-
-        return new XDocument(rss);
-    }
-
-    public FeedItem<TItem> AddItem<TItem>(FeedContext context, TItem item)
-    {
-        var feedItem = new FeedItem<TItem>
+        public async Task<XDocument> ProcessAsync(FeedContext context, Func<Task> populate)
         {
-            Item = item,
-            Element = new XElement("item"),
-        };
-        context.Response.Items.Add(feedItem);
-        context.Response.Element.Add(feedItem.Element);
-        return feedItem;
-    }
+            var rss = new XElement("rss");
+            rss.SetAttributeValue("version", "2.0");
 
-    public void AddProperty(FeedContext context, FeedItem feedItem, XElement element)
-    {
-        if (feedItem == null)
-        {
-            context.Response.Element.Add(element);
+            var channel = new XElement("channel");
+            context.Response.Element = channel;
+            rss.Add(channel);
+
+            await populate();
+
+            return new XDocument(rss);
         }
-        else
+
+        public FeedItem<TItem> AddItem<TItem>(FeedContext context, TItem item)
         {
-            feedItem.Element.Add(element);
+            var feedItem = new FeedItem<TItem>
+            {
+                Item = item,
+                Element = new XElement("item"),
+            };
+            context.Response.Items.Add(feedItem);
+            context.Response.Element.Add(feedItem.Element);
+            return feedItem;
+        }
+
+        public void AddProperty(FeedContext context, FeedItem feedItem, XElement element)
+        {
+            if (feedItem == null)
+            {
+                context.Response.Element.Add(element);
+            }
+            else
+            {
+                feedItem.Element.Add(element);
+            }
         }
     }
 }

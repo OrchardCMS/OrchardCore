@@ -1,17 +1,18 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Contents.Deployment;
-
-/// <summary>
-/// Adds all content items of a specific type to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class ContentDeploymentStep : DeploymentStep
+namespace OrchardCore.Contents.Deployment
 {
-    public ContentDeploymentStep()
+    /// <summary>
+    /// Adds all content items of a specific type to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class ContentDeploymentStep : DeploymentStep
     {
-        Name = "ContentDeploymentStep";
-    }
+        public ContentDeploymentStep()
+        {
+            Name = "ContentDeploymentStep";
+        }
 
-    public string[] ContentTypes { get; set; }
-    public bool ExportAsSetupRecipe { get; set; }
+        public string[] ContentTypes { get; set; }
+        public bool ExportAsSetupRecipe { get; set; }
+    }
 }

@@ -2,21 +2,22 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
-
-public sealed class ExportContentToDeploymentTargetDeploymentStepDriver : DisplayDriver<DeploymentStep, ExportContentToDeploymentTargetDeploymentStep>
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public override Task<IDisplayResult> DisplayAsync(ExportContentToDeploymentTargetDeploymentStep step, BuildDisplayContext context)
+    public class ExportContentToDeploymentTargetDeploymentStepDriver : DisplayDriver<DeploymentStep, ExportContentToDeploymentTargetDeploymentStep>
     {
-        return
-            CombineAsync(
-                View("ExportContentToDeploymentTargetDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-                View("ExportContentToDeploymentTargetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
+        public override IDisplayResult Display(ExportContentToDeploymentTargetDeploymentStep step)
+        {
+            return
+                Combine(
+                    View("ExportContentToDeploymentTargetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    View("ExportContentToDeploymentTargetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                );
+        }
 
-    public override IDisplayResult Edit(ExportContentToDeploymentTargetDeploymentStep step, BuildEditorContext context)
-    {
-        return View("ExportContentToDeploymentTargetDeploymentStep_Fields_Edit", step).Location("Content");
+        public override IDisplayResult Edit(ExportContentToDeploymentTargetDeploymentStep step)
+        {
+            return View("ExportContentToDeploymentTargetDeploymentStep_Fields_Edit", step).Location("Content");
+        }
     }
 }

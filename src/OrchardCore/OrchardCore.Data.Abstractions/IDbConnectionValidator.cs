@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace OrchardCore.Data;
 
 public interface IDbConnectionValidator

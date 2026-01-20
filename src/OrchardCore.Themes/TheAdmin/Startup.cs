@@ -1,26 +1,25 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Admin.Models;
-using OrchardCore.DisplayManagement.Handlers;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
-using OrchardCore.Themes.TheAdmin.Drivers;
+using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Themes.TheAdmin;
-
-public sealed class Startup : StartupBase
+namespace OrchardCore.Themes.TheAdmin
 {
-    private readonly IShellConfiguration _configuration;
-
-    public Startup(IShellConfiguration configuration)
+    public class Startup : StartupBase
     {
-        _configuration = configuration;
-    }
+        private readonly IShellConfiguration _configuration;
 
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddDisplayDriver<Navbar, ToggleThemeNavbarDisplayDriver>();
-        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
-        services.Configure<TheAdminThemeOptions>(_configuration.GetSection("TheAdminTheme:StyleSettings"));
+        public Startup(IShellConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+            services.Configure<TheAdminThemeOptions>(_configuration.GetSection("TheAdminTheme:StyleSettings"));
+        }
     }
 }

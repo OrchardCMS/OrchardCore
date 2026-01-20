@@ -1,14 +1,15 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Microsoft.Authentication.Deployment;
-
-/// <summary>
-/// Adds Microsoft Entra ID settings to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class AzureADDeploymentStep : DeploymentStep
+namespace OrchardCore.Microsoft.Authentication.Deployment
 {
-    public AzureADDeploymentStep()
+    /// <summary>
+    /// Adds Microsoft Entra ID settings to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class AzureADDeploymentStep : DeploymentStep
     {
-        Name = "Microsoft Entra ID";
+        public AzureADDeploymentStep()
+        {
+            Name = "Microsoft Entra ID";
+        }
     }
 }

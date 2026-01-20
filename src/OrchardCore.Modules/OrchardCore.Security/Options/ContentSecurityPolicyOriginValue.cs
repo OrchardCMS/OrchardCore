@@ -1,10 +1,11 @@
-namespace OrchardCore.Security.Options;
-
-public class ContentSecurityPolicyOriginValue
+namespace OrchardCore.Security.Options
 {
-    public const string Any = "*";
+    public class ContentSecurityPolicyOriginValue
+    {
+        public const string Any = "*";
 
-    public const string None = "'none'";
+        public const string None = "'none'";
 
-    public const string Self = "'self'";
+        public const string Self = "'self'";
+    }
 }

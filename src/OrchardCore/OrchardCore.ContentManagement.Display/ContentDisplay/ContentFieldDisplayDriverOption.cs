@@ -1,25 +1,28 @@
-namespace OrchardCore.ContentManagement.Display.ContentDisplay;
+using System;
 
-public class ContentFieldDisplayDriverOption
+namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
-    public ContentFieldDisplayDriverOption(Type displayDriverType)
+    public class ContentFieldDisplayDriverOption
     {
-        DisplayDriverType = displayDriverType;
-    }
+        public ContentFieldDisplayDriverOption(Type displayDriverType)
+        {
+            DisplayDriverType = displayDriverType;
+        }
 
-    public Type DisplayDriverType { get; }
+        public Type DisplayDriverType { get; }
 
-    public Func<string, bool> DisplayMode { get; private set; }
+        public Func<string, bool> DisplayMode { get; private set; }
 
-    public Func<string, bool> Editor { get; private set; }
+        public Func<string, bool> Editor { get; private set; }
 
-    internal void SetDisplayMode(Func<string, bool> displayMode)
-    {
-        DisplayMode = displayMode;
-    }
+        internal void SetDisplayMode(Func<string, bool> displayMode)
+        {
+            DisplayMode = displayMode;
+        }
 
-    internal void SetEditor(Func<string, bool> editor)
-    {
-        Editor = editor;
+        internal void SetEditor(Func<string, bool> editor)
+        {
+            Editor = editor;
+        }
     }
 }

@@ -1,58 +1,62 @@
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace OrchardCore.Modules;
-
-public class ModularApplicationContext : IApplicationContext
+namespace OrchardCore.Modules
 {
-    private readonly IHostEnvironment _environment;
-    private readonly IEnumerable<IModuleNamesProvider> _moduleNamesProviders;
-    private Application _application;
-    private static readonly object _initLock = new();
-
-    public ModularApplicationContext(IHostEnvironment environment, IEnumerable<IModuleNamesProvider> moduleNamesProviders)
+    public class ModularApplicationContext : IApplicationContext
     {
-        _environment = environment;
-        _moduleNamesProviders = moduleNamesProviders;
-    }
+        private readonly IHostEnvironment _environment;
+        private readonly IEnumerable<IModuleNamesProvider> _moduleNamesProviders;
+        private Application _application;
+        private static readonly object _initLock = new();
 
-    public Application Application
-    {
-        get
+        public ModularApplicationContext(IHostEnvironment environment, IEnumerable<IModuleNamesProvider> moduleNamesProviders)
         {
-            EnsureInitialized();
-            return _application;
+            _environment = environment;
+            _moduleNamesProviders = moduleNamesProviders;
         }
-    }
 
-    private void EnsureInitialized()
-    {
-        if (_application == null)
+        public Application Application
         {
-            lock (_initLock)
+            get
             {
-                _application ??= new Application(_environment, GetModules());
+                EnsureInitialized();
+                return _application;
             }
         }
-    }
 
-    private ConcurrentBag<Module> GetModules()
-    {
-        var modules = new ConcurrentBag<Module>
+        private void EnsureInitialized()
         {
-            new(_environment.ApplicationName, true),
-        };
+            if (_application == null)
+            {
+                lock (_initLock)
+                {
+                    _application ??= new Application(_environment, GetModules());
+                }
+            }
+        }
 
-        var names = _moduleNamesProviders
-            .SelectMany(p => p.GetModuleNames())
-            .Where(n => n != _environment.ApplicationName)
-            .Distinct();
-
-        Parallel.ForEach(names, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (name) =>
+        private ConcurrentBag<Module> GetModules()
         {
-            modules.Add(new Module(name, false));
-        });
+            var modules = new ConcurrentBag<Module>
+            {
+                new(_environment.ApplicationName, true),
+            };
 
-        return modules;
+            var names = _moduleNamesProviders
+                .SelectMany(p => p.GetModuleNames())
+                .Where(n => n != _environment.ApplicationName)
+                .Distinct();
+
+            Parallel.ForEach(names, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (name) =>
+            {
+                modules.Add(new Module(name, false));
+            });
+
+            return modules;
+        }
     }
 }

@@ -1,35 +1,38 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
-namespace OrchardCore.Forms.Drivers;
-
-public sealed class ValidationSummaryPartDisplayDriver : ContentPartDisplayDriver<ValidationSummaryPart>
+namespace OrchardCore.Forms.Drivers
 {
-    public override IDisplayResult Display(ValidationSummaryPart part, BuildPartDisplayContext context)
+    public class ValidationSummaryPartDisplayDriver : ContentPartDisplayDriver<ValidationSummaryPart>
     {
-        return View("ValidationSummaryPart", part)
-            .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
-    }
-
-    public override IDisplayResult Edit(ValidationSummaryPart part, BuildPartEditorContext context)
-    {
-        return Initialize<ValidationSummaryViewModel>("ValidationSummaryPart_Fields_Edit", model =>
+        public override IDisplayResult Display(ValidationSummaryPart part)
         {
-            model.ModelOnly = part.ModelOnly;
-        });
-    }
+            return View("ValidationSummaryPart", part).Location("Detail", "Content");
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(ValidationSummaryPart part, UpdatePartEditorContext context)
-    {
-        var model = new ValidationSummaryViewModel();
+        public override IDisplayResult Edit(ValidationSummaryPart part)
+        {
+            return Initialize<ValidationSummaryViewModel>("ValidationSummaryPart_Fields_Edit", model =>
+            {
+                model.ModelOnly = part.ModelOnly;
+            });
+        }
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        public override async Task<IDisplayResult> UpdateAsync(ValidationSummaryPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        {
+            var model = new ValidationSummaryViewModel();
 
-        part.ModelOnly = model.ModelOnly;
+            if (await updater.TryUpdateModelAsync(model, Prefix))
+            {
+                part.ModelOnly = model.ModelOnly;
+            }
 
-        return Edit(part, context);
+            return Edit(part);
+        }
     }
 }

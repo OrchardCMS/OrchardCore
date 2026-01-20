@@ -1,7 +1,12 @@
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Indexing.Core;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Modules;
 using OrchardCore.Queries;
+using OrchardCore.Recipes;
+using OrchardCore.Search.Elasticsearch.Core.Handlers;
 using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Core.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch;
@@ -11,21 +16,27 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Adds Elastic services.
     /// </summary>
-    public static IServiceCollection AddElasticsearchServices(this IServiceCollection services)
+    public static IServiceCollection AddElasticServices(this IServiceCollection services)
     {
-        services.AddScoped<ElasticsearchQueryService>();
+        services.AddSingleton<ElasticIndexSettingsService>();
+        services.AddSingleton<ElasticIndexManager>();
+        services.AddScoped<ElasticIndexingService>();
+        services.AddScoped<IModularTenantEvents, ElasticIndexInitializerService>();
+        services.AddScoped<IElasticSearchQueryService, ElasticSearchQueryService>();
+        services.AddScoped<IElasticQueryService, ElasticQueryService>();
+        services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
 
-        services.AddQuerySource<ElasticsearchQuerySource>(ElasticsearchQuerySource.SourceName);
+        // ElasticQuerySource is registered for both the Queries module and local usage.
+        services.AddScoped<IQuerySource, ElasticQuerySource>();
+        services.AddScoped<ElasticQuerySource>();
+        services.AddRecipeExecutionStep<ElasticIndexStep>();
+        services.AddRecipeExecutionStep<ElasticSettingsStep>();
+        services.AddRecipeExecutionStep<ElasticIndexRebuildStep>();
+        services.AddRecipeExecutionStep<ElasticIndexResetStep>();
 
-        return services;
-    }
-
-    public static IServiceCollection AddElasticsearchIndexingSource(this IServiceCollection services, string implementationType, Action<IndexingOptionsEntry> action = null)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(implementationType);
-
-        services.AddIndexingSource<ElasticsearchIndexManager, ElasticsearchDocumentIndexManager, ElasticsearchIndexNameProvider, ElasticsearchConnectionOptions>(ElasticsearchConstants.ProviderName, implementationType, action);
-
+        // Allows to serialize 'ElasticQuery' from its base type.
+        services.AddJsonDerivedTypeInfo<ElasticQuery, Query>();
+      
         return services;
     }
 }

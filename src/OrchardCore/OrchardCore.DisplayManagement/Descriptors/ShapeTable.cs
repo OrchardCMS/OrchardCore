@@ -1,13 +1,16 @@
-namespace OrchardCore.DisplayManagement.Descriptors;
+using System.Collections.Generic;
 
-public class ShapeTable
+namespace OrchardCore.DisplayManagement.Descriptors
 {
-    public ShapeTable(IDictionary<string, ShapeDescriptor> descriptors, IDictionary<string, ShapeBinding> bindings)
+    public class ShapeTable
     {
-        Descriptors = descriptors;
-        Bindings = bindings;
-    }
+        public ShapeTable(Dictionary<string, ShapeDescriptor> descriptors, Dictionary<string, ShapeBinding> bindings)
+        {
+            Descriptors = descriptors;
+            Bindings = bindings;
+        }
 
-    public IDictionary<string, ShapeDescriptor> Descriptors { get; }
-    public IDictionary<string, ShapeBinding> Bindings { get; }
+        public Dictionary<string, ShapeDescriptor> Descriptors { get; }
+        public Dictionary<string, ShapeBinding> Bindings { get; }
+    }
 }

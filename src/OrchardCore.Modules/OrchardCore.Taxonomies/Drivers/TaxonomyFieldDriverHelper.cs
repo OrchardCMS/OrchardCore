@@ -1,41 +1,45 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.ViewModels;
 
-namespace OrchardCore.Taxonomies.Drivers;
-
-public static class TaxonomyFieldDriverHelper
+namespace OrchardCore.Taxonomies.Drivers
 {
-    /// <summary>
-    /// Populates a list of <see cref="TermEntry"/> with the hierarchy of terms.
-    /// The list is ordered so that roots appear right before their child terms.
-    /// </summary>
-    public static void PopulateTermEntries(List<TermEntry> termEntries, TaxonomyField field, IEnumerable<ContentItem> contentItems, int level)
+    public static class TaxonomyFieldDriverHelper
     {
-        foreach (var contentItem in contentItems)
+        /// <summary>
+        /// Populates a list of <see cref="TermEntry"/> with the hierarchy of terms.
+        /// The list is ordered so that roots appear right before their child terms.
+        /// </summary>
+        public static void PopulateTermEntries(List<TermEntry> termEntries, TaxonomyField field, IEnumerable<ContentItem> contentItems, int level)
         {
-            var children = Array.Empty<ContentItem>();
-
-            if (((JsonObject)contentItem.Content)["Terms"] is JsonArray termsArray)
+            foreach (var contentItem in contentItems)
             {
-                children = termsArray.ToObject<ContentItem[]>();
-            }
+                var children = Array.Empty<ContentItem>();
 
-            var termEntry = new TermEntry
-            {
-                Term = contentItem,
-                ContentItemId = contentItem.ContentItemId,
-                Selected = field.TermContentItemIds.Contains(contentItem.ContentItemId),
-                Level = level,
-                IsLeaf = children.Length == 0,
-            };
+                if (((JsonObject)contentItem.Content)["Terms"] is JsonArray termsArray)
+                {
+                    children = termsArray.ToObject<ContentItem[]>();
+                }
 
-            termEntries.Add(termEntry);
+                var termEntry = new TermEntry
+                {
+                    Term = contentItem,
+                    ContentItemId = contentItem.ContentItemId,
+                    Selected = field.TermContentItemIds.Contains(contentItem.ContentItemId),
+                    Level = level,
+                    IsLeaf = children.Length == 0
+                };
 
-            if (children.Length > 0)
-            {
-                PopulateTermEntries(termEntries, field, children, level + 1);
+                termEntries.Add(termEntry);
+
+                if (children.Length > 0)
+                {
+                    PopulateTermEntries(termEntries, field, children, level + 1);
+                }
             }
         }
     }

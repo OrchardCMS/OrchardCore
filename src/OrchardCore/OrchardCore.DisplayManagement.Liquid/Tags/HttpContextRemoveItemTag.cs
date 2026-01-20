@@ -1,30 +1,34 @@
+using System;
+using System.IO;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags;
-
-public class HttpContextRemoveItemTag
+namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public class HttpContextRemoveItemTag
     {
-        var services = ((LiquidTemplateContext)context).Services;
-
-        var httpContext = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
-
-        if (httpContext != null)
+        public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
-            var itemKey = (await argument.EvaluateAsync(context)).ToStringValue();
+            var services = ((LiquidTemplateContext)context).Services;
 
-            if (!string.IsNullOrEmpty(itemKey))
+            var httpContext = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
+
+            if (httpContext != null)
             {
-                httpContext.Items.Remove(itemKey);
-            }
+                var itemKey = (await argument.EvaluateAsync(context)).ToStringValue();
 
+                if (!string.IsNullOrEmpty(itemKey))
+                {
+                    httpContext.Items.Remove(itemKey);
+                }
+
+            }
+            return Completion.Normal;
         }
-        return Completion.Normal;
     }
 }

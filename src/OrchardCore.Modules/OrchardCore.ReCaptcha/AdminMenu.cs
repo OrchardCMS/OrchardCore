@@ -1,54 +1,45 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.ReCaptcha.Drivers;
 
-namespace OrchardCore.ReCaptcha;
-
-public sealed class AdminMenu : AdminNavigationProvider
+namespace OrchardCore.ReCaptcha
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    public class AdminMenu : INavigationProvider
     {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", ReCaptchaSettingsDisplayDriver.GroupId },
-    };
-
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
-    {
-        S = stringLocalizer;
-    }
-
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        if (NavigationHelper.UseLegacyFormat())
+        private static readonly RouteValueDictionary _routeValues = new()
         {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", ReCaptchaSettingsDisplayDriver.GroupId },
+        };
+
+        protected readonly IStringLocalizer S;
+
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+        {
+            S = localizer;
+        }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
+
             builder
                 .Add(S["Security"], security => security
-                    .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
+                    .Add(S["Settings"], settings => settings
                         .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), reCaptcha => reCaptcha
-                            .Permission(ReCaptchaPermissions.ManageReCaptchaSettings)
+                            .Permission(Permissions.ManageReCaptchaSettings)
                             .Action("Index", "Admin", _routeValues)
                             .LocalNav()
                         )
                     )
                 );
 
-            return ValueTask.CompletedTask;
+            return Task.CompletedTask;
         }
-
-        builder
-            .Add(S["Settings"], settings => settings
-                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), reCaptcha => reCaptcha
-                        .Permission(ReCaptchaPermissions.ManageReCaptchaSettings)
-                        .Action("Index", "Admin", _routeValues)
-                        .LocalNav()
-                    )
-                )
-            );
-
-        return ValueTask.CompletedTask;
     }
 }

@@ -1,6 +1,7 @@
-namespace OrchardCore.Widgets.ViewModels;
-
-public class BuildEditorViewModel
+namespace OrchardCore.Widgets.ViewModels
 {
-    public dynamic EditorShape { get; set; }
+    public class BuildEditorViewModel
+    {
+        public dynamic EditorShape { get; set; }
+    }
 }

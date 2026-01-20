@@ -1,10 +1,11 @@
 using Shortcodes;
 
-namespace OrchardCore.Shortcodes.ViewModels;
-
-public class ShortcodeViewModel
+namespace OrchardCore.Shortcodes.ViewModels
 {
-    public Arguments Args { get; set; }
-    public string Content { get; set; }
-    public Context Context { get; set; }
+    public class ShortcodeViewModel
+    {
+        public Arguments Args { get; set; }
+        public string Content { get; set; }
+        public Context Context { get; set; }
+    }
 }

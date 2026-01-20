@@ -1,6 +1,7 @@
-namespace OrchardCore.Rules.Services;
-
-public interface IConditionOperatorResolver
+namespace OrchardCore.Rules.Services
 {
-    IOperatorComparer GetOperatorComparer(ConditionOperator conditionOperator);
+    public interface IConditionOperatorResolver
+    {
+        IOperatorComparer GetOperatorComparer(ConditionOperator conditionOperator);
+    }
 }

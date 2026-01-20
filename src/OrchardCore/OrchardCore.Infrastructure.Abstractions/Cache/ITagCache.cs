@@ -1,13 +1,17 @@
-namespace OrchardCore.Environment.Cache;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public interface ITagCache
+namespace OrchardCore.Environment.Cache
 {
-    Task TagAsync(string key, params string[] tags);
-    Task<IEnumerable<string>> GetTaggedItemsAsync(string tag);
-    Task RemoveTagAsync(string tag);
-}
+    public interface ITagCache
+    {
+        Task TagAsync(string key, params string[] tags);
+        Task<IEnumerable<string>> GetTaggedItemsAsync(string tag);
+        Task RemoveTagAsync(string tag);
+    }
 
-public interface ITagRemovedEventHandler
-{
-    Task TagRemovedAsync(string tag, IEnumerable<string> keys);
+    public interface ITagRemovedEventHandler
+    {
+        Task TagRemovedAsync(string tag, IEnumerable<string> keys);
+    }
 }

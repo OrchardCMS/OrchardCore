@@ -2,21 +2,22 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Search.Deployment;
-
-public sealed class SearchSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SearchSettingsDeploymentStep>
+namespace OrchardCore.Search.Deployment
 {
-    public override Task<IDisplayResult> DisplayAsync(SearchSettingsDeploymentStep step, BuildDisplayContext context)
+    public class SearchSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SearchSettingsDeploymentStep>
     {
-        return
-            CombineAsync(
-                View("SearchSettingsDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-                View("SearchSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
+        public override IDisplayResult Display(SearchSettingsDeploymentStep step)
+        {
+            return
+                Combine(
+                    View("SearchSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    View("SearchSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                );
+        }
 
-    public override IDisplayResult Edit(SearchSettingsDeploymentStep step, BuildEditorContext context)
-    {
-        return View("SearchSettingsDeploymentStep_Fields_Edit", step).Location("Content");
+        public override IDisplayResult Edit(SearchSettingsDeploymentStep step)
+        {
+            return View("SearchSettingsDeploymentStep_Fields_Edit", step).Location("Content");
+        }
     }
 }

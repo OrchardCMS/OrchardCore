@@ -1,6 +1,7 @@
-namespace OrchardCore.Layers.ViewModels;
-
-public class LayerSettingsViewModel
+namespace OrchardCore.Layers.ViewModels
 {
-    public string Zones { get; set; }
+    public class LayerSettingsViewModel
+    {
+        public string Zones { get; set; }
+    }
 }

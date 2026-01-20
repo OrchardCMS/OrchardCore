@@ -1,20 +1,22 @@
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Contents.Liquid;
-
-public static class DisplayTextFilter
+namespace OrchardCore.Contents.Liquid
 {
-    public static ValueTask<FluidValue> DisplayText(FluidValue input, FilterArguments _1, TemplateContext _2)
+    public static class DisplayTextFilter
     {
-        var contentItem = input.ToObjectValue() as ContentItem;
-
-        if (contentItem == null)
+        public static ValueTask<FluidValue> DisplayText(FluidValue input, FilterArguments _1, TemplateContext _2)
         {
-            return ValueTask.FromResult<FluidValue>(NilValue.Instance);
-        }
+            var contentItem = input.ToObjectValue() as ContentItem;
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(contentItem.DisplayText ?? string.Empty));
+            if (contentItem == null)
+            {
+                return new ValueTask<FluidValue>(NilValue.Instance);
+            }
+
+            return new ValueTask<FluidValue>(new StringValue(contentItem.DisplayText ?? ""));
+        }
     }
 }

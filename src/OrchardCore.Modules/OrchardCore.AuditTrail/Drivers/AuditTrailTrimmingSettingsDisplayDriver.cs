@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.AuditTrail.Settings;
@@ -7,52 +8,52 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.AuditTrail.Drivers;
-
-public sealed class AuditTrailTrimmingSettingsDisplayDriver : SiteDisplayDriver<AuditTrailTrimmingSettings>
+namespace OrchardCore.AuditTrail.Drivers
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
-
-    public AuditTrailTrimmingSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
+    public class AuditTrailTrimmingSettingsDisplayDriver : SectionDisplayDriver<ISite, AuditTrailTrimmingSettings>
     {
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
-    }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-    protected override string SettingsGroupId
-        => AuditTrailSettingsGroup.Id;
-
-    public override async Task<IDisplayResult> EditAsync(ISite site, AuditTrailTrimmingSettings section, BuildEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+        public AuditTrailTrimmingSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
-            return null;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
-        return Initialize<AuditTrailTrimmingSettingsViewModel>("AuditTrailTrimmingSettings_Edit", model =>
+        public override async Task<IDisplayResult> EditAsync(AuditTrailTrimmingSettings section, BuildEditorContext context)
         {
-            model.RetentionDays = section.RetentionDays;
-            model.LastRunUtc = section.LastRunUtc;
-            model.Disabled = section.Disabled;
-        }).Location("Content:10#Trimming;0")
-        .OnGroup(SettingsGroupId);
-    }
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+            {
+                return null;
+            }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, AuditTrailTrimmingSettings section, UpdateEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
-        {
-            return null;
+            return Initialize<AuditTrailTrimmingSettingsViewModel>("AuditTrailTrimmingSettings_Edit", model =>
+            {
+                model.RetentionDays = section.RetentionDays;
+                model.LastRunUtc = section.LastRunUtc;
+                model.Disabled = section.Disabled;
+            }).Location("Content:10#Trimming;0").OnGroup(AuditTrailSettingsGroup.Id);
         }
 
-        var model = new AuditTrailTrimmingSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-        section.RetentionDays = model.RetentionDays;
-        section.Disabled = model.Disabled;
+        public override async Task<IDisplayResult> UpdateAsync(AuditTrailTrimmingSettings section, BuildEditorContext context)
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+            {
+                return null;
+            }
 
-        return await EditAsync(site, section, context);
+            if (context.GroupId == AuditTrailSettingsGroup.Id)
+            {
+                var model = new AuditTrailTrimmingSettingsViewModel();
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
+                section.RetentionDays = model.RetentionDays;
+                section.Disabled = model.Disabled;
+            }
+
+            return await EditAsync(section, context);
+        }
     }
 }

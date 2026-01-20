@@ -1,52 +1,51 @@
+using System;
+using System.Collections.Generic;
 using Jint;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
-using JintOptions = Jint.Options;
 
-namespace OrchardCore.Scripting.JavaScript;
-
-public sealed class JavaScriptEngine : IScriptingEngine
+namespace OrchardCore.Scripting.JavaScript
 {
-    private readonly IMemoryCache _memoryCache;
-    private readonly JintOptions _jintOptions;
-
-    public JavaScriptEngine(IMemoryCache memoryCache, IOptions<JintOptions> jintOptions)
+    public sealed class JavaScriptEngine : IScriptingEngine
     {
-        _memoryCache = memoryCache;
-        _jintOptions = jintOptions.Value;
-    }
+        private readonly IMemoryCache _memoryCache;
 
-    public string Prefix => "js";
-
-    public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
-    {
-        var engine = new Engine(_jintOptions);
-
-        foreach (var method in methods)
+        public JavaScriptEngine(IMemoryCache memoryCache)
         {
-            engine.SetValue(method.Name, method.Method(serviceProvider));
+            _memoryCache = memoryCache;
         }
 
-        return new JavaScriptScope(engine, serviceProvider);
-    }
+        public string Prefix => "js";
 
-    public object Evaluate(IScriptingScope scope, string script)
-    {
-        static void ThrowInvalidScopeTypeException()
+        public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
         {
-            throw new ArgumentException($"Expected a scope of type {nameof(JavaScriptScope)}", nameof(scope));
+            var engine = new Engine();
+
+            foreach (var method in methods)
+            {
+                engine.SetValue(method.Name, method.Method(serviceProvider));
+            }
+
+            return new JavaScriptScope(engine, serviceProvider);
         }
 
-        if (scope is not JavaScriptScope jsScope)
+        public object Evaluate(IScriptingScope scope, string script)
         {
-            ThrowInvalidScopeTypeException();
+            static void ThrowInvalidScopeTypeException()
+            {
+                throw new ArgumentException($"Expected a scope of type {nameof(JavaScriptScope)}", nameof(scope));
+            }
+
+            if (scope is not JavaScriptScope jsScope)
+            {
+                ThrowInvalidScopeTypeException();
+            }
+
+            var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
+
+            var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
+
+            return result;
         }
-
-        var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
-
-        var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
-
-        return result;
     }
 }

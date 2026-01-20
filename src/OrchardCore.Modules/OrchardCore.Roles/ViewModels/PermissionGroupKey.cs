@@ -1,3 +1,5 @@
+using System;
+
 namespace OrchardCore.Roles.ViewModels;
 
 public class PermissionGroupKey
@@ -29,6 +31,6 @@ public class PermissionGroupKey
     {
         var other = obj as PermissionGroupKey;
 
-        return other != null && Key.Equals(other.Key, StringComparison.Ordinal);
+        return other != null && Key.Equals(other.Key);
     }
 }

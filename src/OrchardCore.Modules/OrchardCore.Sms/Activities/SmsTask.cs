@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -46,9 +48,13 @@ public class SmsTask : TaskActivity<SmsTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var result = await _smsService.SendAsync(
-            await _expressionEvaluator.EvaluateAsync(PhoneNumber, workflowContext, null),
-            await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null));
+        var message = new SmsMessage
+        {
+            To = await _expressionEvaluator.EvaluateAsync(PhoneNumber, workflowContext, null),
+            Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null),
+        };
+
+        var result = await _smsService.SendAsync(message);
 
         workflowContext.LastResult = result;
 

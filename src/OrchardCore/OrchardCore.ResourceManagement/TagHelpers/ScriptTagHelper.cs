@@ -1,274 +1,331 @@
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace OrchardCore.ResourceManagement.TagHelpers;
-
-[HtmlTargetElement("script", Attributes = NameAttributeName)]
-[HtmlTargetElement("script", Attributes = SrcAttributeName)]
-[HtmlTargetElement("script", Attributes = AtAttributeName)]
-public class ScriptTagHelper : TagHelper
+namespace OrchardCore.ResourceManagement.TagHelpers
 {
-    private const string NameAttributeName = "asp-name";
-    private const string SrcAttributeName = "asp-src";
-    private const string AtAttributeName = "at";
-    private const string AppendVersionAttributeName = "asp-append-version";
-
-    [HtmlAttributeName(NameAttributeName)]
-    public string Name { get; set; }
-
-    [HtmlAttributeName(SrcAttributeName)]
-    public string Src { get; set; }
-
-    [HtmlAttributeName(AppendVersionAttributeName)]
-    public bool? AppendVersion { get; set; }
-
-    public string CdnSrc { get; set; }
-    public string DebugSrc { get; set; }
-    public string DebugCdnSrc { get; set; }
-
-    public bool? UseCdn { get; set; }
-    public string Condition { get; set; }
-    public string Culture { get; set; }
-    public bool? Debug { get; set; }
-    public string DependsOn { get; set; }
-    public string Version { get; set; }
-
-    [HtmlAttributeName(AtAttributeName)]
-    public ResourceLocation At { get; set; }
-
-    private readonly IResourceManager _resourceManager;
-
-    public ScriptTagHelper(IResourceManager resourceManager)
+    [HtmlTargetElement("script", Attributes = NameAttributeName)]
+    [HtmlTargetElement("script", Attributes = SrcAttributeName)]
+    [HtmlTargetElement("script", Attributes = AtAttributeName)]
+    public class ScriptTagHelper : TagHelper
     {
-        _resourceManager = resourceManager;
-    }
+        private static readonly char[] _separator = [',', ' '];
 
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
-    {
-        output.SuppressOutput();
+        private const string NameAttributeName = "asp-name";
+        private const string SrcAttributeName = "asp-src";
+        private const string AtAttributeName = "at";
+        private const string AppendVersionAttributeName = "asp-append-version";
 
-        var hasName = !string.IsNullOrEmpty(Name);
-        var hasSource = !string.IsNullOrEmpty(Src);
+        [HtmlAttributeName(NameAttributeName)]
+        public string Name { get; set; }
 
-        if (!hasName && hasSource)
+        [HtmlAttributeName(SrcAttributeName)]
+        public string Src { get; set; }
+
+        [HtmlAttributeName(AppendVersionAttributeName)]
+        public bool? AppendVersion { get; set; }
+
+        public string CdnSrc { get; set; }
+        public string DebugSrc { get; set; }
+        public string DebugCdnSrc { get; set; }
+
+        public bool? UseCdn { get; set; }
+        public string Condition { get; set; }
+        public string Culture { get; set; }
+        public bool? Debug { get; set; }
+        public string DependsOn { get; set; }
+        public string Version { get; set; }
+
+        [HtmlAttributeName(AtAttributeName)]
+        public ResourceLocation At { get; set; }
+
+        private readonly IResourceManager _resourceManager;
+
+        public ScriptTagHelper(IResourceManager resourceManager)
         {
-            // <script asp-src="~/TheBlogTheme/js/clean-blog.min.js" at="Foot"></script>
-            RequireSettings setting;
-
-            if (string.IsNullOrEmpty(DependsOn))
-            {
-                // Include custom script url.
-                setting = _resourceManager.RegisterUrl("script", Src, DebugSrc);
-            }
-            else
-            {
-                // Anonymous declaration with dependencies, then display.
-
-                // Using the source as the name to prevent duplicate references to the same file.
-                var name = Src.ToLowerInvariant();
-
-                PopulateResourceDefinition(_resourceManager.InlineManifest.DefineScript(name));
-
-                setting = _resourceManager.RegisterResource("script", name);
-            }
-
-            PopulateRequireSettings(setting, output, hasName: false);
-
-            if (AppendVersion.HasValue)
-            {
-                setting.ShouldAppendVersion(AppendVersion);
-            }
-
-            if (At == ResourceLocation.Unspecified || At == ResourceLocation.Inline)
-            {
-                RenderScript(output, setting);
-            }
+            _resourceManager = resourceManager;
         }
-        else if (hasName && !hasSource)
+
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            // Resource required.
-            // <script asp-name="bootstrap" at="Foot"></script>
+            output.SuppressOutput();
 
-            var setting = _resourceManager.RegisterResource("script", Name);
-
-            PopulateRequireSettings(setting, output, hasName: true);
-
-            if (AppendVersion.HasValue)
+            if (string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
             {
-                setting.ShouldAppendVersion(AppendVersion);
-            }
+                // <script asp-src="~/TheBlogTheme/js/clean-blog.min.js"></script>
+                RequireSettings setting;
 
-            if (!string.IsNullOrEmpty(Version))
-            {
-                setting.UseVersion(Version);
-            }
-
-            // This allows additions to the pre registered scripts dependencies.
-            if (!string.IsNullOrEmpty(DependsOn))
-            {
-                setting.SetDependencies(DependsOn.Split(ResourceManagementConstants.ParameterValuesSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            // Allow Inline to work with both named scripts, and named inline scripts.
-            if (At != ResourceLocation.Unspecified)
-            {
-                // Named inline declaration.
-                var childContent = await output.GetChildContentAsync();
-                if (!childContent.IsEmptyOrWhiteSpace)
+                if (string.IsNullOrEmpty(DependsOn))
                 {
-                    // Inline content definition.
-                    _resourceManager.InlineManifest.DefineScript(Name)
-                       .SetInnerContent(childContent.GetContent());
+                    // Include custom script url
+                    setting = _resourceManager.RegisterUrl("script", Src, DebugSrc);
                 }
-
-                if (At == ResourceLocation.Inline)
+                else
                 {
-                    RenderScript(output, setting);
-                }
-            }
-            else
-            {
-                RenderScript(output, setting);
-            }
-        }
-        else if (hasName && hasSource)
-        {
-            // Inline declaration.
+                    // Anonymous declaration with dependencies, then display
 
-            PopulateResourceDefinition(_resourceManager.InlineManifest.DefineScript(Name));
+                    // Using the source as the name to prevent duplicate references to the same file
+                    var name = Src.ToLowerInvariant();
 
-            // If At is specified then we also render it.
-            if (At != ResourceLocation.Unspecified)
-            {
-                var setting = _resourceManager.RegisterResource("script", Name);
+                    var definition = _resourceManager.InlineManifest.DefineScript(name);
+                    definition.SetUrl(Src, DebugSrc);
 
-                PopulateRequireSettings(setting, output, hasName: true);
-
-                if (At == ResourceLocation.Inline)
-                {
-                    RenderScript(output, setting);
-                }
-            }
-        }
-        else
-        {
-            // Custom script content.
-            // <script at="Foot"> /* example JavaScript code*/ </script>
-
-            var childContent = await output.GetChildContentAsync();
-
-            if (!string.IsNullOrEmpty(DependsOn))
-            {
-                var dependencies = DependsOn.Split(ResourceManagementConstants.ParameterValuesSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (var dependency in dependencies)
-                {
-                    var versionParts = dependency.Split(ResourceManagementConstants.VersionSeparator, 2);
-
-                    var resourceName = versionParts[0];
-
-                    var script = _resourceManager.RegisterResource("script", resourceName);
-
-                    if (versionParts.Length == 2)
+                    if (!string.IsNullOrEmpty(Version))
                     {
-                        script.Version = versionParts[1];
+                        definition.SetVersion(Version);
                     }
 
-                    script.AtLocation(At);
+                    if (!string.IsNullOrEmpty(CdnSrc))
+                    {
+                        definition.SetCdn(CdnSrc, DebugCdnSrc);
+                    }
+
+                    if (!string.IsNullOrEmpty(Culture))
+                    {
+                        definition.SetCultures(Culture.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+                    }
+
+                    if (!string.IsNullOrEmpty(DependsOn))
+                    {
+                        definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+                    }
+
+                    if (AppendVersion.HasValue)
+                    {
+                        definition.ShouldAppendVersion(AppendVersion);
+                    }
+
+                    if (!string.IsNullOrEmpty(Version))
+                    {
+                        definition.SetVersion(Version);
+                    }
+
+                    setting = _resourceManager.RegisterResource("script", name);
+                }
+
+                if (At != ResourceLocation.Unspecified)
+                {
+                    setting.AtLocation(At);
+                }
+
+                if (!string.IsNullOrEmpty(Condition))
+                {
+                    setting.UseCondition(Condition);
+                }
+
+                if (Debug != null)
+                {
+                    setting.UseDebugMode(Debug.Value);
+                }
+
+                if (!string.IsNullOrEmpty(Culture))
+                {
+                    setting.UseCulture(Culture);
+                }
+
+                if (AppendVersion.HasValue)
+                {
+                    setting.ShouldAppendVersion(AppendVersion);
+                }
+
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
+
+                if (At == ResourceLocation.Unspecified || At == ResourceLocation.Inline)
+                {
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalScript(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
-
-            var builder = new TagBuilder("script");
-            builder.InnerHtml.AppendHtml(childContent);
-            builder.TagRenderMode = TagRenderMode.Normal;
-
-            foreach (var attribute in output.Attributes)
+            else if (!string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
             {
-                builder.Attributes.Add(attribute.Name, attribute.Value.ToString());
-            }
+                // Resource required
+                // <script asp-name="bootstrap"></script>
 
-            if (At == ResourceLocation.Head)
+                var setting = _resourceManager.RegisterResource("script", Name);
+
+                if (At != ResourceLocation.Unspecified)
+                {
+                    setting.AtLocation(At);
+                }
+
+                if (UseCdn != null)
+                {
+                    setting.UseCdn(UseCdn.Value);
+                }
+
+                if (!string.IsNullOrEmpty(Condition))
+                {
+                    setting.UseCondition(Condition);
+                }
+
+                if (Debug != null)
+                {
+                    setting.UseDebugMode(Debug.Value);
+                }
+
+                if (!string.IsNullOrEmpty(Culture))
+                {
+                    setting.UseCulture(Culture);
+                }
+
+                if (AppendVersion.HasValue)
+                {
+                    setting.ShouldAppendVersion(AppendVersion);
+                }
+
+                if (!string.IsNullOrEmpty(Version))
+                {
+                    setting.UseVersion(Version);
+                }
+
+                // This allows additions to the pre registered scripts dependencies.
+                if (!string.IsNullOrEmpty(DependsOn))
+                {
+                    setting.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
+
+                // Allow Inline to work with both named scripts, and named inline scripts.
+                if (At != ResourceLocation.Unspecified)
+                {
+                    // Named inline declaration.
+                    var childContent = await output.GetChildContentAsync();
+                    if (!childContent.IsEmptyOrWhiteSpace)
+                    {
+                        // Inline content definition
+                        _resourceManager.InlineManifest.DefineScript(Name)
+                           .SetInnerContent(childContent.GetContent());
+                    }
+
+                    if (At == ResourceLocation.Inline)
+                    {
+                        using var sw = new StringWriter();
+                        _resourceManager.RenderLocalScript(setting, sw);
+                        output.Content.AppendHtml(sw.ToString());
+                    }
+                }
+                else
+                {
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalScript(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
+                }
+            }
+            else if (!string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
             {
-                _resourceManager.RegisterHeadScript(builder);
+                // Inline declaration
+
+                var definition = _resourceManager.InlineManifest.DefineScript(Name);
+                definition.SetUrl(Src, DebugSrc);
+
+                if (!string.IsNullOrEmpty(Version))
+                {
+                    definition.SetVersion(Version);
+                }
+
+                if (!string.IsNullOrEmpty(CdnSrc))
+                {
+                    definition.SetCdn(CdnSrc, DebugCdnSrc);
+                }
+
+                if (!string.IsNullOrEmpty(Culture))
+                {
+                    definition.SetCultures(Culture.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                if (!string.IsNullOrEmpty(DependsOn))
+                {
+                    definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                if (AppendVersion.HasValue)
+                {
+                    definition.ShouldAppendVersion(AppendVersion);
+                }
+
+                if (!string.IsNullOrEmpty(Version))
+                {
+                    definition.SetVersion(Version);
+                }
+
+                // If At is specified then we also render it
+                if (At != ResourceLocation.Unspecified)
+                {
+                    var setting = _resourceManager.RegisterResource("script", Name);
+
+                    setting.AtLocation(At);
+
+                    if (UseCdn != null)
+                    {
+                        setting.UseCdn(UseCdn.Value);
+                    }
+
+                    if (!string.IsNullOrEmpty(Condition))
+                    {
+                        setting.UseCondition(Condition);
+                    }
+
+                    if (Debug != null)
+                    {
+                        setting.UseDebugMode(Debug.Value);
+                    }
+
+                    if (!string.IsNullOrEmpty(Culture))
+                    {
+                        setting.UseCulture(Culture);
+                    }
+
+                    foreach (var attribute in output.Attributes)
+                    {
+                        setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                    }
+
+                    if (At == ResourceLocation.Inline)
+                    {
+                        using var sw = new StringWriter();
+                        _resourceManager.RenderLocalScript(setting, sw);
+                        output.Content.AppendHtml(sw.ToString());
+                    }
+                }
             }
-            else if (At == ResourceLocation.Inline)
+            else if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
             {
-                output.Content.SetHtmlContent(builder);
+                // Custom script content
+
+                var childContent = await output.GetChildContentAsync();
+
+                var builder = new TagBuilder("script");
+                builder.InnerHtml.AppendHtml(childContent);
+                builder.TagRenderMode = TagRenderMode.Normal;
+
+                foreach (var attribute in output.Attributes)
+                {
+                    builder.Attributes.Add(attribute.Name, attribute.Value.ToString());
+                }
+
+                if (At == ResourceLocation.Head)
+                {
+                    _resourceManager.RegisterHeadScript(builder);
+                }
+                else if (At == ResourceLocation.Inline)
+                {
+                    output.Content.SetHtmlContent(builder);
+                }
+                else
+                {
+                    _resourceManager.RegisterFootScript(builder);
+                }
             }
-            else
-            {
-                _resourceManager.RegisterFootScript(builder);
-            }
         }
-    }
-
-    private void PopulateResourceDefinition(ResourceDefinition definition)
-    {
-        definition.SetUrl(Src, DebugSrc);
-
-        if (!string.IsNullOrEmpty(CdnSrc))
-        {
-            definition.SetCdn(CdnSrc, DebugCdnSrc);
-        }
-
-        if (!string.IsNullOrEmpty(Culture))
-        {
-            definition.SetCultures(Culture.Split(ResourceManagementConstants.ParameterValuesSeparator, StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        if (!string.IsNullOrEmpty(DependsOn))
-        {
-            definition.SetDependencies(DependsOn.Split(ResourceManagementConstants.ParameterValuesSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        if (AppendVersion.HasValue)
-        {
-            definition.ShouldAppendVersion(AppendVersion);
-        }
-
-        if (!string.IsNullOrEmpty(Version))
-        {
-            definition.SetVersion(Version);
-        }
-    }
-
-    private void PopulateRequireSettings(RequireSettings setting, TagHelperOutput output, bool hasName)
-    {
-        if (At != ResourceLocation.Unspecified)
-        {
-            setting.AtLocation(At);
-        }
-
-        if (hasName && UseCdn != null)
-        {
-            setting.UseCdn(UseCdn.Value);
-        }
-
-        if (!string.IsNullOrEmpty(Condition))
-        {
-            setting.UseCondition(Condition);
-        }
-
-        if (Debug != null)
-        {
-            setting.UseDebugMode(Debug.Value);
-        }
-
-        if (!string.IsNullOrEmpty(Culture))
-        {
-            setting.UseCulture(Culture);
-        }
-
-        foreach (var attribute in output.Attributes)
-        {
-            setting.SetAttribute(attribute.Name, attribute.Value.ToString());
-        }
-    }
-
-    private void RenderScript(TagHelperOutput output, RequireSettings setting)
-    {
-        using var sw = new StringWriter();
-        _resourceManager.RenderLocalScript(setting, sw);
-        output.Content.AppendHtml(sw.ToString());
     }
 }

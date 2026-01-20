@@ -1,12 +1,15 @@
-namespace OrchardCore.Routing;
+using System;
 
-[AttributeUsage(AttributeTargets.Method)]
-public class FormValueRequiredAttribute : Attribute
+namespace OrchardCore.Routing
 {
-    public FormValueRequiredAttribute(string formKey)
+    [AttributeUsage(AttributeTargets.Method)]
+    public class FormValueRequiredAttribute : Attribute
     {
-        FormKey = formKey;
-    }
+        public FormValueRequiredAttribute(string formKey)
+        {
+            FormKey = formKey;
+        }
 
-    public string FormKey { get; }
+        public string FormKey { get; }
+    }
 }

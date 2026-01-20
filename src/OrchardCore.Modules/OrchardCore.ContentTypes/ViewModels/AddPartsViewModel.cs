@@ -1,35 +1,38 @@
-namespace OrchardCore.ContentTypes.ViewModels;
+using System.Collections.Generic;
 
-public class AddPartsViewModel
+namespace OrchardCore.ContentTypes.ViewModels
 {
-    public AddPartsViewModel()
+    public class AddPartsViewModel
     {
-        PartSelections = [];
+        public AddPartsViewModel()
+        {
+            PartSelections = [];
+        }
+
+        public EditTypeViewModel Type { get; set; }
+        public List<PartSelectionViewModel> PartSelections { get; set; }
     }
 
-    public EditTypeViewModel Type { get; set; }
-    public List<PartSelectionViewModel> PartSelections { get; set; }
-}
-
-public class AddReusablePartViewModel
-{
-    public AddReusablePartViewModel()
+    public class AddReusablePartViewModel
     {
-        PartSelections = [];
+        public AddReusablePartViewModel()
+        {
+            PartSelections = [];
+        }
+
+        public EditTypeViewModel Type { get; set; }
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public string Description { get; set; }
+        public List<PartSelectionViewModel> PartSelections { get; set; }
+        public string SelectedPartName { get; set; }
     }
 
-    public EditTypeViewModel Type { get; set; }
-    public string Name { get; set; }
-    public string DisplayName { get; set; }
-    public string Description { get; set; }
-    public List<PartSelectionViewModel> PartSelections { get; set; }
-    public string SelectedPartName { get; set; }
-}
-
-public class PartSelectionViewModel
-{
-    public string PartName { get; set; }
-    public string PartDisplayName { get; set; }
-    public string PartDescription { get; set; }
-    public bool IsSelected { get; set; }
+    public class PartSelectionViewModel
+    {
+        public string PartName { get; set; }
+        public string PartDisplayName { get; set; }
+        public string PartDescription { get; set; }
+        public bool IsSelected { get; set; }
+    }
 }

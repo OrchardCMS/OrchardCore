@@ -1,6 +1,7 @@
-namespace OrchardCore.ContentFields.ViewModels;
-
-public class HeaderSettingsViewModel
+namespace OrchardCore.ContentFields.ViewModels
 {
-    public string Level { get; set; }
+    public class HeaderSettingsViewModel
+    {
+        public string Level { get; set; }
+    }
 }

@@ -1,13 +1,16 @@
-namespace OrchardCore.ContentLocalization.Handlers;
+using System.Threading.Tasks;
 
-public class ContentLocalizationHandlerBase : IContentLocalizationHandler
+namespace OrchardCore.ContentLocalization.Handlers
 {
-    public virtual Task LocalizedAsync(LocalizationContentContext context)
+    public class ContentLocalizationHandlerBase : IContentLocalizationHandler
     {
-        return Task.CompletedTask;
-    }
-    public virtual Task LocalizingAsync(LocalizationContentContext context)
-    {
-        return Task.CompletedTask;
+        public virtual Task LocalizedAsync(LocalizationContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+        public virtual Task LocalizingAsync(LocalizationContentContext context)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

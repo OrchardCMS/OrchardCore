@@ -1,42 +1,45 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Activities;
-
-public class IfElseTask : TaskActivity<IfElseTask>
+namespace OrchardCore.Workflows.Activities
 {
-    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-    protected readonly IStringLocalizer S;
-
-    public IfElseTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<IfElseTask> localizer)
+    public class IfElseTask : TaskActivity<IfElseTask>
     {
-        _scriptEvaluator = scriptEvaluator;
-        S = localizer;
-    }
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        protected readonly IStringLocalizer S;
 
-    public override LocalizedString DisplayText => S["If Else Task"];
+        public IfElseTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<IfElseTask> localizer)
+        {
+            _scriptEvaluator = scriptEvaluator;
+            S = localizer;
+        }
 
-    public override LocalizedString Category => S["Control Flow"];
+        public override LocalizedString DisplayText => S["If Else Task"];
 
-    /// <summary>
-    /// A script evaluating to either true or false.
-    /// </summary>
-    public WorkflowExpression<bool> Condition
-    {
-        get => GetProperty(() => new WorkflowExpression<bool>());
-        set => SetProperty(value);
-    }
+        public override LocalizedString Category => S["Control Flow"];
 
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["True"], S["False"]);
-    }
+        /// <summary>
+        /// A script evaluating to either true or false.
+        /// </summary>
+        public WorkflowExpression<bool> Condition
+        {
+            get => GetProperty(() => new WorkflowExpression<bool>());
+            set => SetProperty(value);
+        }
 
-    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        var result = await _scriptEvaluator.EvaluateAsync(Condition, workflowContext);
-        return Outcomes(result ? "True" : "False");
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Outcomes(S["True"], S["False"]);
+        }
+
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            var result = await _scriptEvaluator.EvaluateAsync(Condition, workflowContext);
+            return Outcomes(result ? "True" : "False");
+        }
     }
 }

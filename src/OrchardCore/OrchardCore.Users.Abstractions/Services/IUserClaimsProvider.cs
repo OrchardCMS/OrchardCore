@@ -1,8 +1,10 @@
 using System.Security.Claims;
+using System.Threading.Tasks;
 
-namespace OrchardCore.Users.Services;
-
-public interface IUserClaimsProvider
+namespace OrchardCore.Users.Services
 {
-    Task GenerateAsync(IUser user, ClaimsIdentity claims);
+    public interface IUserClaimsProvider
+    {
+        Task GenerateAsync(IUser user, ClaimsIdentity claims);
+    }
 }

@@ -1,7 +1,8 @@
-namespace OrchardCore.Workflows.Models;
-
-public class ExecutedActivity
+namespace OrchardCore.Workflows.Models
 {
-    public string ActivityId { get; set; }
-    public string Outcome { get; set; }
+    public class ExecutedActivity
+    {
+        public string ActivityId { get; set; }
+        public string Outcome { get; set; }
+    }
 }

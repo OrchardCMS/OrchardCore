@@ -1,35 +1,38 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.AuditTrail.ViewModels;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.AuditTrail.Drivers;
-
-public sealed class AuditTrailPartDisplayDriver : ContentPartDisplayDriver<AuditTrailPart>
+namespace OrchardCore.Contents.AuditTrail.Drivers
 {
-    public override IDisplayResult Edit(AuditTrailPart part, BuildPartEditorContext context)
+    public class AuditTrailPartDisplayDriver : ContentPartDisplayDriver<AuditTrailPart>
     {
-        var settings = context.TypePartDefinition.GetSettings<AuditTrailPartSettings>();
-        if (settings.ShowCommentInput)
+        public override IDisplayResult Edit(AuditTrailPart part, BuildPartEditorContext context)
         {
-            return Initialize<AuditTrailPartViewModel>(GetEditorShapeType(context), model =>
+            var settings = context.TypePartDefinition.GetSettings<AuditTrailPartSettings>();
+            if (settings.ShowCommentInput)
             {
-                if (part.ShowComment)
+                return Initialize<AuditTrailPartViewModel>(GetEditorShapeType(context), model =>
                 {
-                    model.Comment = part.Comment;
-                }
-            });
+                    if (part.ShowComment)
+                    {
+                        model.Comment = part.Comment;
+                    }
+                });
+            }
+
+            return null;
         }
 
-        return null;
-    }
+        public override async Task<IDisplayResult> UpdateAsync(AuditTrailPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        {
+            await updater.TryUpdateModelAsync(part, Prefix);
 
-    public override async Task<IDisplayResult> UpdateAsync(AuditTrailPart part, UpdatePartEditorContext context)
-    {
-        await context.Updater.TryUpdateModelAsync(part, Prefix);
-
-        return Edit(part, context);
+            return Edit(part, context);
+        }
     }
 }

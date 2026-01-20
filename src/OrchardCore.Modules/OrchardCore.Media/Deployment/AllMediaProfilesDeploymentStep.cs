@@ -1,14 +1,15 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Media.Deployment;
-
-/// <summary>
-/// Adds media profiles to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class AllMediaProfilesDeploymentStep : DeploymentStep
+namespace OrchardCore.Media.Deployment
 {
-    public AllMediaProfilesDeploymentStep()
+    /// <summary>
+    /// Adds media profiles to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class AllMediaProfilesDeploymentStep : DeploymentStep
     {
-        Name = "AllMediaProfiles";
+        public AllMediaProfilesDeploymentStep()
+        {
+            Name = "AllMediaProfiles";
+        }
     }
 }

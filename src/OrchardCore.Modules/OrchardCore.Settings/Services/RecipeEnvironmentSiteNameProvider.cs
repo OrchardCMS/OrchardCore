@@ -1,24 +1,28 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Settings;
-
-public class RecipeEnvironmentSiteNameProvider : IRecipeEnvironmentProvider
+namespace OrchardCore.Settings
 {
-    private readonly ISiteService _siteService;
-
-    public RecipeEnvironmentSiteNameProvider(ISiteService siteService)
+    public class RecipeEnvironmentSiteNameProvider : IRecipeEnvironmentProvider
     {
-        _siteService = siteService;
-    }
+        private readonly ISiteService _siteService;
 
-    public int Order => 0;
-
-    public async Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
-    {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        if (!string.IsNullOrEmpty(siteSettings.SiteName))
+        public RecipeEnvironmentSiteNameProvider(ISiteService siteService)
         {
-            environment[nameof(SiteSettings.SiteName)] = siteSettings.SiteName;
+            _siteService = siteService;
+        }
+
+        public int Order => 0;
+
+        public async Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
+        {
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            if (!string.IsNullOrEmpty(siteSettings.SiteName))
+            {
+                environment[nameof(SiteSettings.SiteName)] = siteSettings.SiteName;
+            }
         }
     }
 }

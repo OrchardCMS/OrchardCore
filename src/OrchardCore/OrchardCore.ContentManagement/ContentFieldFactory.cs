@@ -1,47 +1,41 @@
-using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.ContentManagement;
-
-/// <summary>
-/// Implements <see cref="ITypeActivatorFactory{ContentField}"/> by resolving all registered <see cref="ContentField"/> types
-/// and memoizing a statically typed <see cref="ITypeActivator{ContentField}"/>.
-/// </summary>
-public class ContentFieldFactory : ITypeActivatorFactory<ContentField>
+namespace OrchardCore.ContentManagement
 {
-    private readonly ITypeActivator<ContentField> _contentFieldActivator = new GenericTypeActivator<ContentField, ContentField>();
-
-    private readonly Dictionary<string, ITypeActivator<ContentField>> _contentFieldActivators;
-
-    public ContentFieldFactory(IOptions<ContentOptions> contentOptions, ILogger<ContentFieldFactory> logger)
+    /// <summary>
+    /// Implements <see cref="ITypeActivatorFactory{ContentField}"/> by resolving all registered <see cref="ContentField"/> types
+    /// and memoizing a statically typed <see cref="ITypeActivator{ContentField}"/>.
+    /// </summary>
+    public class ContentFieldFactory : ITypeActivatorFactory<ContentField>
     {
-        _contentFieldActivators = [];
+        private readonly ITypeActivator<ContentField> _contentFieldActivator = new GenericTypeActivator<ContentField, ContentField>();
 
-        // Check content options for configured fields.
-        foreach (var fieldOption in contentOptions.Value.ContentFieldOptions)
+        private readonly Dictionary<string, ITypeActivator<ContentField>> _contentFieldActivators;
+
+        public ContentFieldFactory(IOptions<ContentOptions> contentOptions)
         {
-            if (_contentFieldActivators.ContainsKey(fieldOption.Type.Name))
-            {
-                logger.LogWarning("The ContentField 'Name' was registered more than once. Content Fields should only be registered once using .AddContentField<{Name}>().", fieldOption.Type.Name);
+            _contentFieldActivators = [];
 
-                continue;
+            // Check content options for configured fields.
+            foreach (var fieldOption in contentOptions.Value.ContentFieldOptions)
+            {
+                var activatorType = typeof(GenericTypeActivator<,>).MakeGenericType(fieldOption.Type, typeof(ContentField));
+                var activator = (ITypeActivator<ContentField>)Activator.CreateInstance(activatorType);
+                _contentFieldActivators.Add(fieldOption.Type.Name, activator);
+            }
+        }
+
+        /// <inheritdoc />
+        public ITypeActivator<ContentField> GetTypeActivator(string fieldName)
+        {
+            if (_contentFieldActivators.TryGetValue(fieldName, out var activator))
+            {
+                return activator;
             }
 
-            var activatorType = typeof(GenericTypeActivator<,>).MakeGenericType(fieldOption.Type, typeof(ContentField));
-            var activator = (ITypeActivator<ContentField>)Activator.CreateInstance(activatorType);
-
-            _contentFieldActivators.Add(fieldOption.Type.Name, activator);
+            return _contentFieldActivator;
         }
-    }
-
-    /// <inheritdoc />
-    public ITypeActivator<ContentField> GetTypeActivator(string fieldName)
-    {
-        if (_contentFieldActivators.TryGetValue(fieldName, out var activator))
-        {
-            return activator;
-        }
-
-        return _contentFieldActivator;
     }
 }

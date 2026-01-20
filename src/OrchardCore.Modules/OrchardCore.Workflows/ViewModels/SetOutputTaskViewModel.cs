@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Workflows.ViewModels;
-
-public class SetOutputTaskViewModel
+namespace OrchardCore.Workflows.ViewModels
 {
-    [Required]
-    public string OutputName { get; set; }
+    public class SetOutputTaskViewModel
+    {
+        [Required]
+        public string OutputName { get; set; }
 
-    public string Value { get; set; }
+        public string Value { get; set; }
+    }
 }

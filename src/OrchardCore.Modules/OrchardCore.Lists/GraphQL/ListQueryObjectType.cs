@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -12,48 +15,49 @@ using OrchardCore.Lists.Models;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.Lists.GraphQL;
-
-public class ListQueryObjectType : ObjectGraphType<ListPart>
+namespace OrchardCore.Lists.GraphQL
 {
-    public ListQueryObjectType(IStringLocalizer<ListQueryObjectType> S)
+    public class ListQueryObjectType : ObjectGraphType<ListPart>
     {
-        Name = "ListPart";
-        Description = S["Represents a collection of content items."];
-
-        Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>("contentItems")
-            .Description(S["the content items"])
-            .Argument<IntGraphType>("first", S["the first n elements (10 by default)"], config => config.DefaultValue = 10)
-            .Argument<IntGraphType>("skip", S["the number of elements to skip"], config => config.DefaultValue = 0)
-            // Important to use ResolveLockedAsync to prevent concurrency error on database query, when using nested content items with List part
-            .ResolveLockedAsync(async g =>
-            {
-                var serviceProvider = g.RequestServices;
-                var session = serviceProvider.GetService<ISession>();
-                var accessor = serviceProvider.GetRequiredService<IDataLoaderContextAccessor>();
-
-                var dataLoader = accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>("ContainedPublishedContentItems",
-                   x => LoadPublishedContentItemsForListAsync(x, session, g.GetArgument<int>("skip"), g.GetArgument<int>("first")));
-
-                return await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId).GetResultAsync();
-            });
-    }
-
-    private static async Task<ILookup<string, ContentItem>> LoadPublishedContentItemsForListAsync(IEnumerable<string> contentItemIds, ISession session, int skip, int count)
-    {
-        if (contentItemIds is null || !contentItemIds.Any())
+        public ListQueryObjectType(IStringLocalizer<ListQueryObjectType> S)
         {
-            return new Dictionary<string, ContentItem>().ToLookup(k => k.Key, v => v.Value);
+            Name = "ListPart";
+            Description = S["Represents a collection of content items."];
+
+            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
+                .Name("contentItems")
+                .Description("the content items")
+                .Argument<IntGraphType, int>("first", "the first n elements (10 by default)", 10)
+                .Argument<IntGraphType, int>("skip", "the number of elements to skip", 0)
+                // Important to use ResolveLockedAsync to prevent concurrency error on database query, when using nested content items with List part
+                .ResolveLockedAsync(async g =>
+                {
+                    var serviceProvider = g.RequestServices;
+                    var session = serviceProvider.GetService<ISession>();
+                    var accessor = serviceProvider.GetRequiredService<IDataLoaderContextAccessor>();
+
+                    var dataLoader = accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>("ContainedPublishedContentItems", x => LoadPublishedContentItemsForListAsync(x, session));
+
+                    return ((await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId).GetResultAsync())
+                                .Skip(g.GetArgument<int>("skip"))
+                                .Take(g.GetArgument<int>("first")));
+                });
         }
 
-        var query = await session.Query<ContentItem>()
-                                 .With<ContentItemIndex>(ci => ci.Published)
-                                 .With<ContainedPartIndex>(cp => cp.ListContentItemId.IsIn(contentItemIds))
-                                 .OrderBy(o => o.Order)
-                                 .Skip(skip)
-                                 .Take(count)
-                                 .ListAsync();
+        private static async Task<ILookup<string, ContentItem>> LoadPublishedContentItemsForListAsync(IEnumerable<string> contentItemIds, ISession session)
+        {
+            if (contentItemIds is null || !contentItemIds.Any())
+            {
+                return new Dictionary<string, ContentItem>().ToLookup(k => k.Key, v => v.Value);
+            }
 
-        return query.ToLookup(k => k.As<ContainedPart>().ListContentItemId);
+            var query = await session.Query<ContentItem>()
+                                     .With<ContentItemIndex>(ci => ci.Published)
+                                     .With<ContainedPartIndex>(cp => cp.ListContentItemId.IsIn(contentItemIds))
+                                     .OrderBy(o => o.Order)
+                                     .ListAsync();
+
+            return query.ToLookup(k => k.As<ContainedPart>().ListContentItemId);
+        }
     }
 }

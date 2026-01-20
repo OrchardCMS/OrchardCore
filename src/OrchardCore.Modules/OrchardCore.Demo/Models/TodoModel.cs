@@ -1,9 +1,12 @@
-namespace OrchardCore.Demo.Models;
+using System;
 
-public class TodoModel
+namespace OrchardCore.Demo.Models
 {
-    public string TodoId { get; set; }
-    public string Text { get; set; }
-    public DateTime DueDate { get; set; }
-    public bool IsCompleted { get; set; }
+    public class TodoModel
+    {
+        public string TodoId { get; set; }
+        public string Text { get; set; }
+        public DateTime DueDate { get; set; }
+        public bool IsCompleted { get; set; }
+    }
 }

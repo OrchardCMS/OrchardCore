@@ -1,6 +1,7 @@
-namespace OrchardCore.Contents.AuditTrail.ViewModels;
-
-public class AuditTrailPartViewModel
+namespace OrchardCore.Contents.AuditTrail.ViewModels
 {
-    public string Comment { get; set; }
+    public class AuditTrailPartViewModel
+    {
+        public string Comment { get; set; }
+    }
 }

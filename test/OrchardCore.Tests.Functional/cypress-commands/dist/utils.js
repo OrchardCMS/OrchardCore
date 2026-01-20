@@ -1,5 +1,7 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 // https://stackoverflow.com/questions/105034/how-to-create-guid-uuid
 
 function generateUniqueName() {

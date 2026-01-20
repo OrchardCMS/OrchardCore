@@ -1,21 +1,22 @@
 using System.Text.Json.Nodes;
 
-namespace OrchardCore.ContentManagement.Metadata.Models;
-
-public class ContentTypePartDefinition : ContentDefinition
+namespace OrchardCore.ContentManagement.Metadata.Models
 {
-    public ContentTypePartDefinition(string name, ContentPartDefinition contentPartDefinition, JsonObject settings)
+    public class ContentTypePartDefinition : ContentDefinition
     {
-        Name = name;
-        PartDefinition = contentPartDefinition;
-        Settings = settings;
-
-        foreach (var field in PartDefinition.Fields)
+        public ContentTypePartDefinition(string name, ContentPartDefinition contentPartDefinition, JsonObject settings)
         {
-            field.ContentTypePartDefinition = this;
-        }
-    }
+            Name = name;
+            PartDefinition = contentPartDefinition;
+            Settings = settings;
 
-    public ContentPartDefinition PartDefinition { get; private set; }
-    public ContentTypeDefinition ContentTypeDefinition { get; set; }
+            foreach (var field in PartDefinition.Fields)
+            {
+                field.ContentTypePartDefinition = this;
+            }
+        }
+
+        public ContentPartDefinition PartDefinition { get; private set; }
+        public ContentTypeDefinition ContentTypeDefinition { get; set; }
+    }
 }

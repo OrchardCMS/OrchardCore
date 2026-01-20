@@ -1,41 +1,43 @@
+using System.Collections.Generic;
 using GraphQL.Builders;
 using GraphQL.Types;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Apis.GraphQL;
-
-public static class PermissionsExtensions
+namespace OrchardCore.Apis.GraphQL
 {
-    private const string MetaDataKey = "Permissions";
-
-    public static void RequirePermission(this IProvideMetadata type, Permission permission, object resource = null)
+    public static class PermissionsExtensions
     {
-        lock (type)
+        private const string MetaDataKey = "Permissions";
+
+        public static void RequirePermission(this IProvideMetadata type, Permission permission, object resource = null)
         {
-            var permissions = type.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey);
-
-            if (permissions == null)
+            lock (type)
             {
-                type.Metadata[MetaDataKey] = permissions = [];
+                var permissions = type.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey);
+
+                if (permissions == null)
+                {
+                    type.Metadata[MetaDataKey] = permissions = [];
+                }
+
+                permissions.Add(new GraphQLPermissionContext(permission, resource));
             }
-
-            permissions.Add(new GraphQLPermissionContext(permission, resource));
         }
-    }
 
-    public static FieldBuilder<TSourceType, TReturnType> RequirePermission<TSourceType, TReturnType>(this FieldBuilder<TSourceType, TReturnType> builder, Permission permission, object resource = null)
-    {
-        builder.FieldType.RequirePermission(permission, resource);
-        return builder;
-    }
+        public static FieldBuilder<TSourceType, TReturnType> RequirePermission<TSourceType, TReturnType>(this FieldBuilder<TSourceType, TReturnType> builder, Permission permission, object resource = null)
+        {
+            builder.FieldType.RequirePermission(permission, resource);
+            return builder;
+        }
 
-    public static IEnumerable<GraphQLPermissionContext> GetPermissions(this IProvideMetadata type)
-    {
-        return type?.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey) ?? [];
-    }
+        public static IEnumerable<GraphQLPermissionContext> GetPermissions(this IProvideMetadata type)
+        {
+            return type?.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey) ?? [];
+        }
 
-    public static bool HasPermissions(this IProvideMetadata type)
-    {
-        return type != null && type.HasMetadata(MetaDataKey);
+        public static bool HasPermissions(this IProvideMetadata type)
+        {
+            return type != null && type.HasMetadata(MetaDataKey);
+        }
     }
 }

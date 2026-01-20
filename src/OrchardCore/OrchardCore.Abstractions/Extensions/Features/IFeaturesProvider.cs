@@ -1,17 +1,20 @@
-namespace OrchardCore.Environment.Extensions.Features;
+using System.Collections.Generic;
 
-/// <summary>
-/// Provides opportunities to work with the Module Feature set.
-/// </summary>
-public interface IFeaturesProvider
+namespace OrchardCore.Environment.Extensions.Features
 {
     /// <summary>
-    /// Returns the Features corresponding with the Extension, Manifest, etc.
+    /// Provides opportunities to work with the Module Feature set.
     /// </summary>
-    /// <param name="extensionInfo"></param>
-    /// <param name="manifestInfo"></param>
-    /// <returns></returns>
-    IEnumerable<IFeatureInfo> GetFeatures(
-        IExtensionInfo extensionInfo,
-        IManifestInfo manifestInfo);
+    public interface IFeaturesProvider
+    {
+        /// <summary>
+        /// Returns the Features corresponding with the Extension, Manifest, etc.
+        /// </summary>
+        /// <param name="extensionInfo"></param>
+        /// <param name="manifestInfo"></param>
+        /// <returns></returns>
+        IEnumerable<IFeatureInfo> GetFeatures(
+            IExtensionInfo extensionInfo,
+            IManifestInfo manifestInfo);
+    }
 }

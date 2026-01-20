@@ -1,16 +1,10 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace OrchardCore.Search.Elasticsearch.ViewModels;
-
-public class ElasticQueryViewModel
+namespace OrchardCore.Search.Elasticsearch.ViewModels
 {
-    public string Index { get; set; }
-
-    public string Query { get; set; }
-
-    public bool ReturnContentItems { get; set; }
-
-    [BindNever]
-    public IEnumerable<SelectListItem> Indexes { get; set; }
+    public class ElasticQueryViewModel
+    {
+        public string[] Indices { get; set; }
+        public string Index { get; set; }
+        public string Query { get; set; }
+        public bool ReturnContentItems { get; set; }
+    }
 }

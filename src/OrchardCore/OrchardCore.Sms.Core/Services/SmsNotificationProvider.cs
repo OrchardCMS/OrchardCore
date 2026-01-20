@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Notifications;
 using OrchardCore.Users.Models;
@@ -17,7 +18,7 @@ public class SmsNotificationProvider : INotificationMethodProvider
         S = stringLocalizer;
     }
 
-    public string Method { get; } = "SMS";
+    public string Method => "SMS";
 
     public LocalizedString Name => S["SMS Notifications"];
 
@@ -25,12 +26,18 @@ public class SmsNotificationProvider : INotificationMethodProvider
     {
         var user = notify as User;
 
-        if (string.IsNullOrEmpty(user?.PhoneNumber))
+        if (string.IsNullOrEmpty(user?.Email))
         {
             return false;
         }
 
-        var result = await _smsService.SendAsync(user.PhoneNumber, message.TextBody);
+        var mailMessage = new SmsMessage()
+        {
+            To = user.Email,
+            Body = message.TextBody,
+        };
+
+        var result = await _smsService.SendAsync(mailMessage);
 
         return result.Succeeded;
     }

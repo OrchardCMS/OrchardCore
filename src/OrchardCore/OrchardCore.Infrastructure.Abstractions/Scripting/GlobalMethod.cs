@@ -1,7 +1,10 @@
-namespace OrchardCore.Scripting;
+using System;
 
-public class GlobalMethod
+namespace OrchardCore.Scripting
 {
-    public string Name { get; set; }
-    public Func<IServiceProvider, Delegate> Method { get; set; }
+    public class GlobalMethod
+    {
+        public string Name { get; set; }
+        public Func<IServiceProvider, Delegate> Method { get; set; }
+    }
 }

@@ -1,16 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Recipes;
-
-public static class ServiceCollectionExtensions
+namespace OrchardCore.Recipes
 {
-    public static IServiceCollection AddRecipeExecutionStep<TImplementation>(this IServiceCollection services)
-        where TImplementation : class, IRecipeStepHandler
+    public static class ServiceCollectionExtensions
     {
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IRecipeStepHandler, TImplementation>());
+        public static IServiceCollection AddRecipeExecutionStep<TImplementation>(
+            this IServiceCollection serviceCollection)
+            where TImplementation : class, IRecipeStepHandler
+        {
+            serviceCollection.AddScoped<IRecipeStepHandler, TImplementation>();
 
-        return services;
+            return serviceCollection;
+        }
     }
 }

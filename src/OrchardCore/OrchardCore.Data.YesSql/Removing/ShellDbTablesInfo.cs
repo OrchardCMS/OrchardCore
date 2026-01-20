@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -9,7 +13,7 @@ using YesSql.Sql.Schema;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
-internal sealed class ShellDbTablesInfo : ISchemaBuilder
+internal class ShellDbTablesInfo : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
     public string TablePrefix { get; set; }

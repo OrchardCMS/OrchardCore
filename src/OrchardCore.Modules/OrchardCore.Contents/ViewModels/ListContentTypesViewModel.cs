@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.Contents.ViewModels;
-
-public class ListContentTypesViewModel
+namespace OrchardCore.Contents.ViewModels
 {
-    public IEnumerable<ContentTypeDefinition> Types { get; set; }
+    public class ListContentTypesViewModel
+    {
+        public IEnumerable<ContentTypeDefinition> Types { get; set; }
+    }
 }

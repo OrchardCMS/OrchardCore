@@ -1,18 +1,19 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Search.Lucene.Deployment;
-
-/// <summary>
-/// Adds rebuild Lucene index task to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class LuceneIndexRebuildDeploymentStep : DeploymentStep
+namespace OrchardCore.Search.Lucene.Deployment
 {
-    public LuceneIndexRebuildDeploymentStep()
+    /// <summary>
+    /// Adds rebuild Lucene index task to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class LuceneIndexRebuildDeploymentStep : DeploymentStep
     {
-        Name = "LuceneIndexRebuild";
+        public LuceneIndexRebuildDeploymentStep()
+        {
+            Name = "LuceneIndexRebuild";
+        }
+
+        public bool IncludeAll { get; set; } = true;
+
+        public string[] IndexNames { get; set; }
     }
-
-    public bool IncludeAll { get; set; } = true;
-
-    public string[] IndexNames { get; set; }
 }

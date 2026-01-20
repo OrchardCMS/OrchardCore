@@ -1,16 +1,17 @@
-namespace OrchardCore.Deployment.Deployment;
-
-/// <summary>
-/// Adds deployment plans to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class DeploymentPlanDeploymentStep : DeploymentStep
+namespace OrchardCore.Deployment.Deployment
 {
-    public DeploymentPlanDeploymentStep()
+    /// <summary>
+    /// Adds deployment plans to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class DeploymentPlanDeploymentStep : DeploymentStep
     {
-        Name = "DeploymentPlan";
+        public DeploymentPlanDeploymentStep()
+        {
+            Name = "DeploymentPlan";
+        }
+
+        public bool IncludeAll { get; set; } = true;
+
+        public string[] DeploymentPlanNames { get; set; }
     }
-
-    public bool IncludeAll { get; set; } = true;
-
-    public string[] DeploymentPlanNames { get; set; }
 }

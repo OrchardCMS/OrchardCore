@@ -1,23 +1,24 @@
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Media.Filters;
-
-public class AssetUrlFilter : ILiquidFilter
+namespace OrchardCore.Media.Filters
 {
-    private readonly IMediaFileStore _mediaFileStore;
-
-    public AssetUrlFilter(IMediaFileStore mediaFileStore)
+    public class AssetUrlFilter : ILiquidFilter
     {
-        _mediaFileStore = mediaFileStore;
-    }
+        private readonly IMediaFileStore _mediaFileStore;
 
-    public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
-    {
-        var url = input.ToStringValue();
-        var imageUrl = _mediaFileStore.MapPathToPublicUrl(url);
+        public AssetUrlFilter(IMediaFileStore mediaFileStore)
+        {
+            _mediaFileStore = mediaFileStore;
+        }
 
-        return ValueTask.FromResult<FluidValue>(StringValue.Create(imageUrl ?? url));
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
+        {
+            var url = input.ToStringValue();
+            var imageUrl = _mediaFileStore.MapPathToPublicUrl(url);
+            return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
+        }
     }
 }

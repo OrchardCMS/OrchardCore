@@ -1,299 +1,303 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.AspNetCore.Razor.Language;
 
-namespace OrchardCore.DisplayManagement.Liquid.TagHelpers;
-
-// Internal for testing
-internal static class RequiredAttributeParser
+namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
-    public static void AddRequiredAttributes(string requiredAttributes, TagMatchingRuleDescriptorBuilder ruleBuilder)
+    // Internal for testing
+    internal static class RequiredAttributeParser
     {
-        var requiredAttributeParser = new DefaultRequiredAttributeParser(requiredAttributes);
-        requiredAttributeParser.AddRequiredAttributes(ruleBuilder);
-    }
-
-    private sealed class DefaultRequiredAttributeParser
-    {
-        private const char RequiredAttributeWildcardSuffix = '*';
-
-        private static readonly Dictionary<char, RequiredAttributeDescriptor.ValueComparisonMode> _cssValueComparisons =
-            new()
-            {
-                { '=', RequiredAttributeDescriptor.ValueComparisonMode.FullMatch },
-                { '^', RequiredAttributeDescriptor.ValueComparisonMode.PrefixMatch },
-                { '$', RequiredAttributeDescriptor.ValueComparisonMode.SuffixMatch },
-            };
-
-        private static readonly char[] _invalidPlainAttributeNameCharacters = [' ', '\t', ',', RequiredAttributeWildcardSuffix];
-
-        private static readonly char[] _invalidCssAttributeNameCharacters = (new[] { ' ', '\t', ',', ']' })
-            .Concat(_cssValueComparisons.Keys)
-            .ToArray();
-
-        private static readonly char[] _invalidCssQuotelessValueCharacters = [' ', '\t', ']'];
-
-        private int _index;
-        private readonly string _requiredAttributes;
-
-        public DefaultRequiredAttributeParser(string requiredAttributes)
+        public static void AddRequiredAttributes(string requiredAttributes, TagMatchingRuleDescriptorBuilder ruleBuilder)
         {
-            _requiredAttributes = requiredAttributes;
+            var requiredAttributeParser = new DefaultRequiredAttributeParser(requiredAttributes);
+            requiredAttributeParser.AddRequiredAttributes(ruleBuilder);
         }
 
-        private char Current => _requiredAttributes[_index];
-
-        private bool AtEnd => _index >= _requiredAttributes.Length;
-
-        public void AddRequiredAttributes(TagMatchingRuleDescriptorBuilder ruleBuilder)
+        private class DefaultRequiredAttributeParser
         {
-            if (string.IsNullOrEmpty(_requiredAttributes))
+            private const char RequiredAttributeWildcardSuffix = '*';
+
+            private static readonly Dictionary<char, RequiredAttributeDescriptor.ValueComparisonMode> _cssValueComparisons =
+                new()
+                {
+                    { '=', RequiredAttributeDescriptor.ValueComparisonMode.FullMatch },
+                    { '^', RequiredAttributeDescriptor.ValueComparisonMode.PrefixMatch },
+                    { '$', RequiredAttributeDescriptor.ValueComparisonMode.SuffixMatch },
+                };
+
+            private static readonly char[] _invalidPlainAttributeNameCharacters = [' ', '\t', ',', RequiredAttributeWildcardSuffix];
+
+            private static readonly char[] _invalidCssAttributeNameCharacters = (new[] { ' ', '\t', ',', ']' })
+                .Concat(_cssValueComparisons.Keys)
+                .ToArray();
+
+            private static readonly char[] _invalidCssQuotelessValueCharacters = [' ', '\t', ']'];
+
+            private int _index;
+            private readonly string _requiredAttributes;
+
+            public DefaultRequiredAttributeParser(string requiredAttributes)
             {
-                return;
+                _requiredAttributes = requiredAttributes;
             }
 
-            PassOptionalWhitespace();
+            private char Current => _requiredAttributes[_index];
 
-            do
+            private bool AtEnd => _index >= _requiredAttributes.Length;
+
+            public void AddRequiredAttributes(TagMatchingRuleDescriptorBuilder ruleBuilder)
             {
-                var successfulParse = true;
-                ruleBuilder.Attribute(attributeBuilder =>
+                if (string.IsNullOrEmpty(_requiredAttributes))
                 {
-                    if (At('['))
-                    {
-                        if (!TryParseCssSelector(attributeBuilder))
-                        {
-                            successfulParse = false;
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        ParsePlainSelector(attributeBuilder);
-                    }
-
-                    PassOptionalWhitespace();
-
-                    if (At(','))
-                    {
-                        _index++;
-
-                        if (!EnsureNotAtEnd(attributeBuilder))
-                        {
-                            successfulParse = false;
-                            return;
-                        }
-                    }
-                    else if (!AtEnd)
-                    {
-                        // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
-                        // attributeBuilder.Diagnostics.Add(diagnostic);
-                        successfulParse = false;
-                        return;
-                    }
-
-                    PassOptionalWhitespace();
-                });
-
-                if (!successfulParse)
-                {
-                    break;
+                    return;
                 }
-            }
-            while (!AtEnd);
-        }
 
-        private void ParsePlainSelector(RequiredAttributeDescriptorBuilder attributeBuilder)
-        {
-            var nameEndIndex = _requiredAttributes.IndexOfAny(_invalidPlainAttributeNameCharacters, _index);
-            string attributeName;
+                PassOptionalWhitespace();
 
-            var nameComparison = RequiredAttributeDescriptor.NameComparisonMode.FullMatch;
-            if (nameEndIndex == -1)
-            {
-                attributeName = _requiredAttributes[_index..];
-                _index = _requiredAttributes.Length;
+                do
+                {
+                    var successfulParse = true;
+                    ruleBuilder.Attribute(attributeBuilder =>
+                    {
+                        if (At('['))
+                        {
+                            if (!TryParseCssSelector(attributeBuilder))
+                            {
+                                successfulParse = false;
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            ParsePlainSelector(attributeBuilder);
+                        }
+
+                        PassOptionalWhitespace();
+
+                        if (At(','))
+                        {
+                            _index++;
+
+                            if (!EnsureNotAtEnd(attributeBuilder))
+                            {
+                                successfulParse = false;
+                                return;
+                            }
+                        }
+                        else if (!AtEnd)
+                        {
+                            // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
+                            // attributeBuilder.Diagnostics.Add(diagnostic);
+                            successfulParse = false;
+                            return;
+                        }
+
+                        PassOptionalWhitespace();
+                    });
+
+                    if (!successfulParse)
+                    {
+                        break;
+                    }
+                }
+                while (!AtEnd);
             }
-            else
+
+            private void ParsePlainSelector(RequiredAttributeDescriptorBuilder attributeBuilder)
             {
-                attributeName = _requiredAttributes[_index..nameEndIndex];
+                var nameEndIndex = _requiredAttributes.IndexOfAny(_invalidPlainAttributeNameCharacters, _index);
+                string attributeName;
+
+                var nameComparison = RequiredAttributeDescriptor.NameComparisonMode.FullMatch;
+                if (nameEndIndex == -1)
+                {
+                    attributeName = _requiredAttributes[_index..];
+                    _index = _requiredAttributes.Length;
+                }
+                else
+                {
+                    attributeName = _requiredAttributes[_index..nameEndIndex];
+                    _index = nameEndIndex;
+
+                    if (_requiredAttributes[nameEndIndex] == RequiredAttributeWildcardSuffix)
+                    {
+                        nameComparison = RequiredAttributeDescriptor.NameComparisonMode.PrefixMatch;
+
+                        // Move past wild card
+                        _index++;
+                    }
+                }
+
+                attributeBuilder.Name = attributeName;
+                attributeBuilder.NameComparisonMode = nameComparison;
+            }
+
+            private void ParseCssAttributeName(RequiredAttributeDescriptorBuilder builder)
+            {
+                var nameStartIndex = _index;
+                var nameEndIndex = _requiredAttributes.IndexOfAny(_invalidCssAttributeNameCharacters, _index);
+                nameEndIndex = nameEndIndex == -1 ? _requiredAttributes.Length : nameEndIndex;
                 _index = nameEndIndex;
 
-                if (_requiredAttributes[nameEndIndex] == RequiredAttributeWildcardSuffix)
-                {
-                    nameComparison = RequiredAttributeDescriptor.NameComparisonMode.PrefixMatch;
+                var attributeName = _requiredAttributes[nameStartIndex..nameEndIndex];
 
-                    // Move past wild card
-                    _index++;
-                }
+                builder.Name = attributeName;
             }
 
-            attributeBuilder.Name = attributeName;
-            attributeBuilder.NameComparisonMode = nameComparison;
-        }
-
-        private void ParseCssAttributeName(RequiredAttributeDescriptorBuilder builder)
-        {
-            var nameStartIndex = _index;
-            var nameEndIndex = _requiredAttributes.IndexOfAny(_invalidCssAttributeNameCharacters, _index);
-            nameEndIndex = nameEndIndex == -1 ? _requiredAttributes.Length : nameEndIndex;
-            _index = nameEndIndex;
-
-            var attributeName = _requiredAttributes[nameStartIndex..nameEndIndex];
-
-            builder.Name = attributeName;
-        }
-
-        private bool TryParseCssValueComparison(RequiredAttributeDescriptorBuilder builder, out RequiredAttributeDescriptor.ValueComparisonMode valueComparison)
-        {
-            Debug.Assert(!AtEnd);
-
-            if (_cssValueComparisons.TryGetValue(Current, out valueComparison))
+            private bool TryParseCssValueComparison(RequiredAttributeDescriptorBuilder builder, out RequiredAttributeDescriptor.ValueComparisonMode valueComparison)
             {
-                var op = Current;
-                _index++;
+                Debug.Assert(!AtEnd);
 
-                if (op != '=' && At('='))
+                if (_cssValueComparisons.TryGetValue(Current, out valueComparison))
                 {
-                    // Two length operator (ex: ^=). Move past the second piece
+                    var op = Current;
                     _index++;
+
+                    if (op != '=' && At('='))
+                    {
+                        // Two length operator (ex: ^=). Move past the second piece
+                        _index++;
+                    }
+                    else if (op != '=') // We're at an incomplete operator (ex: [foo^]
+                    {
+                        // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_PartialRequiredAttributeOperator(op, _requiredAttributes);
+                        // builder.Diagnostics.Add(diagnostic);
+
+                        return false;
+                    }
                 }
-                else if (op != '=') // We're at an incomplete operator (ex: [foo^]
+                else if (!At(']'))
                 {
-                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_PartialRequiredAttributeOperator(op, _requiredAttributes);
+                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeOperator(Current, _requiredAttributes);
                     // builder.Diagnostics.Add(diagnostic);
 
                     return false;
                 }
-            }
-            else if (!At(']'))
-            {
-                // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeOperator(Current, _requiredAttributes);
-                // builder.Diagnostics.Add(diagnostic);
 
-                return false;
-            }
+                builder.ValueComparisonMode = valueComparison;
 
-            builder.ValueComparisonMode = valueComparison;
-
-            return true;
-        }
-
-        private bool TryParseCssValue(RequiredAttributeDescriptorBuilder builder)
-        {
-            int valueStart;
-            int valueEnd;
-            if (At('\'') || At('"'))
-            {
-                var quote = Current;
-
-                // Move past the quote
-                _index++;
-
-                valueStart = _index;
-                valueEnd = _requiredAttributes.IndexOf(quote, _index);
-                if (valueEnd == -1)
-                {
-                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeMismatchedQuotes(quote, _requiredAttributes);
-                    // builder.Diagnostics.Add(diagnostic);
-
-                    return false;
-                }
-                _index = valueEnd + 1;
-            }
-            else
-            {
-                valueStart = _index;
-                var valueEndIndex = _requiredAttributes.IndexOfAny(_invalidCssQuotelessValueCharacters, _index);
-                valueEnd = valueEndIndex == -1 ? _requiredAttributes.Length : valueEndIndex;
-                _index = valueEnd;
-            }
-
-            var value = _requiredAttributes[valueStart..valueEnd];
-
-            builder.Value = value;
-
-            return true;
-        }
-
-        private bool TryParseCssSelector(RequiredAttributeDescriptorBuilder attributeBuilder)
-        {
-            Debug.Assert(At('['));
-
-            // Move past '['.
-            _index++;
-            PassOptionalWhitespace();
-
-            ParseCssAttributeName(attributeBuilder);
-
-            PassOptionalWhitespace();
-
-            if (!EnsureNotAtEnd(attributeBuilder))
-            {
-                return false;
-            }
-
-            if (!TryParseCssValueComparison(attributeBuilder, out var valueComparison))
-            {
-                return false;
-            }
-
-            PassOptionalWhitespace();
-
-            if (!EnsureNotAtEnd(attributeBuilder))
-            {
-                return false;
-            }
-
-            if (valueComparison != RequiredAttributeDescriptor.ValueComparisonMode.None && !TryParseCssValue(attributeBuilder))
-            {
-                return false;
-            }
-
-            PassOptionalWhitespace();
-
-            if (At(']'))
-            {
-                // Move past the ending bracket.
-                _index++;
                 return true;
             }
-            else if (AtEnd)
+
+            private bool TryParseCssValue(RequiredAttributeDescriptorBuilder builder)
             {
-                // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_CouldNotFindMatchingEndBrace(_requiredAttributes);
-                // attributeBuilder.Diagnostics.Add(diagnostic);
-            }
-            else
-            {
-                // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
-                // attributeBuilder.Diagnostics.Add(diagnostic);
+                int valueStart;
+                int valueEnd;
+                if (At('\'') || At('"'))
+                {
+                    var quote = Current;
+
+                    // Move past the quote
+                    _index++;
+
+                    valueStart = _index;
+                    valueEnd = _requiredAttributes.IndexOf(quote, _index);
+                    if (valueEnd == -1)
+                    {
+                        // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeMismatchedQuotes(quote, _requiredAttributes);
+                        // builder.Diagnostics.Add(diagnostic);
+
+                        return false;
+                    }
+                    _index = valueEnd + 1;
+                }
+                else
+                {
+                    valueStart = _index;
+                    var valueEndIndex = _requiredAttributes.IndexOfAny(_invalidCssQuotelessValueCharacters, _index);
+                    valueEnd = valueEndIndex == -1 ? _requiredAttributes.Length : valueEndIndex;
+                    _index = valueEnd;
+                }
+
+                var value = _requiredAttributes[valueStart..valueEnd];
+
+                builder.Value = value;
+
+                return true;
             }
 
-            return false;
-        }
-
-        private bool EnsureNotAtEnd(RequiredAttributeDescriptorBuilder _)
-        {
-            if (AtEnd)
+            private bool TryParseCssSelector(RequiredAttributeDescriptorBuilder attributeBuilder)
             {
-                // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_CouldNotFindMatchingEndBrace(_requiredAttributes);
-                // builder.Diagnostics.Add(diagnostic);
+                Debug.Assert(At('['));
+
+                // Move past '['.
+                _index++;
+                PassOptionalWhitespace();
+
+                ParseCssAttributeName(attributeBuilder);
+
+                PassOptionalWhitespace();
+
+                if (!EnsureNotAtEnd(attributeBuilder))
+                {
+                    return false;
+                }
+
+                if (!TryParseCssValueComparison(attributeBuilder, out var valueComparison))
+                {
+                    return false;
+                }
+
+                PassOptionalWhitespace();
+
+                if (!EnsureNotAtEnd(attributeBuilder))
+                {
+                    return false;
+                }
+
+                if (valueComparison != RequiredAttributeDescriptor.ValueComparisonMode.None && !TryParseCssValue(attributeBuilder))
+                {
+                    return false;
+                }
+
+                PassOptionalWhitespace();
+
+                if (At(']'))
+                {
+                    // Move past the ending bracket.
+                    _index++;
+                    return true;
+                }
+                else if (AtEnd)
+                {
+                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_CouldNotFindMatchingEndBrace(_requiredAttributes);
+                    // attributeBuilder.Diagnostics.Add(diagnostic);
+                }
+                else
+                {
+                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
+                    // attributeBuilder.Diagnostics.Add(diagnostic);
+                }
 
                 return false;
             }
 
-            return true;
-        }
-
-        private bool At(char c)
-        {
-            return !AtEnd && Current == c;
-        }
-
-        private void PassOptionalWhitespace()
-        {
-            while (!AtEnd && (Current == ' ' || Current == '\t'))
+            private bool EnsureNotAtEnd(RequiredAttributeDescriptorBuilder _)
             {
-                _index++;
+                if (AtEnd)
+                {
+                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_CouldNotFindMatchingEndBrace(_requiredAttributes);
+                    // builder.Diagnostics.Add(diagnostic);
+
+                    return false;
+                }
+
+                return true;
+            }
+
+            private bool At(char c)
+            {
+                return !AtEnd && Current == c;
+            }
+
+            private void PassOptionalWhitespace()
+            {
+                while (!AtEnd && (Current == ' ' || Current == '\t'))
+                {
+                    _index++;
+                }
             }
         }
     }

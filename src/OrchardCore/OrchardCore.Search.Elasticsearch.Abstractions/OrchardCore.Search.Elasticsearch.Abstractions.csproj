@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Elastic.Clients.Elasticsearch" />
+    <PackageReference Include="NEST" />
   </ItemGroup>
 
   <ItemGroup>

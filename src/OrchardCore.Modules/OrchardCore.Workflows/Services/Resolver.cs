@@ -1,20 +1,22 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace OrchardCore.Workflows.Services;
-
-/// <summary>
-/// Temporary replacement for Func until we add proper DI support using DryIoc or Autofac.
-/// </summary>
-public class Resolver<T>
+namespace OrchardCore.Workflows.Services
 {
-    private readonly IServiceProvider _serviceProvider;
-    public Resolver(IServiceProvider serviceProvider)
+    /// <summary>
+    /// Temporary replacement for Func until we add proper DI support using DryIoc or Autofac.
+    /// </summary>
+    public class Resolver<T>
     {
-        _serviceProvider = serviceProvider;
-    }
+        private readonly IServiceProvider _serviceProvider;
+        public Resolver(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
-    public T Resolve()
-    {
-        return _serviceProvider.GetService<T>();
+        public T Resolve()
+        {
+            return _serviceProvider.GetService<T>();
+        }
     }
 }

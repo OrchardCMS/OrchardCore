@@ -1,17 +1,19 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Rules.Models;
 
-namespace OrchardCore.Rules.Services;
-
-public class IsAnonymousConditionEvaluator : ConditionEvaluator<IsAnonymousCondition>
+namespace OrchardCore.Rules.Services
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public IsAnonymousConditionEvaluator(IHttpContextAccessor httpContextAccessor)
+    public class IsAnonymousConditionEvaluator : ConditionEvaluator<IsAnonymousCondition>
     {
-        _httpContextAccessor = httpContextAccessor;
-    }
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public override ValueTask<bool> EvaluateAsync(IsAnonymousCondition condition)
-        => _httpContextAccessor.HttpContext.User?.Identity.IsAuthenticated != true ? True : False;
+        public IsAnonymousConditionEvaluator(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public override ValueTask<bool> EvaluateAsync(IsAnonymousCondition condition)
+            => _httpContextAccessor.HttpContext.User?.Identity.IsAuthenticated != true ? True : False;
+    }
 }

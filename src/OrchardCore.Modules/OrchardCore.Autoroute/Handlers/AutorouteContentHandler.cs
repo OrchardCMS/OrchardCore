@@ -1,36 +1,38 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 
-namespace OrchardCore.Autoroute.Handlers;
-
-public class AutorouteContentHandler : ContentHandlerBase
+namespace OrchardCore.Autoroute.Handlers
 {
-    private readonly IAutorouteEntries _autorouteEntries;
-
-    public AutorouteContentHandler(IAutorouteEntries autorouteEntries)
+    public class AutorouteContentHandler : ContentHandlerBase
     {
-        _autorouteEntries = autorouteEntries;
-    }
+        private readonly IAutorouteEntries _autorouteEntries;
 
-    public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
-    {
-        return context.ForAsync<ContentItemMetadata>(async metadata =>
+        public AutorouteContentHandler(IAutorouteEntries autorouteEntries)
         {
-            // When a content item is contained we provide different route values when generating urls.
-            (var found, var entry) = await _autorouteEntries.TryGetEntryByContentItemIdAsync(context.ContentItem.ContentItemId);
+            _autorouteEntries = autorouteEntries;
+        }
 
-            if (found && !string.IsNullOrEmpty(entry.ContainedContentItemId))
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
+        {
+            return context.ForAsync<ContentItemMetadata>(async metadata =>
             {
-                metadata.DisplayRouteValues = new RouteValueDictionary {
-                    { "Area", "OrchardCore.Contents" },
-                    { "Controller", "Item" },
-                    { "Action", "Display" },
-                    { "ContentItemId", entry.ContentItemId},
-                    { "ContainedContentItemId", entry.ContainedContentItemId },
-                };
-            }
-        });
+                // When a content item is contained we provide different route values when generating urls.
+                (var found, var entry) = await _autorouteEntries.TryGetEntryByContentItemIdAsync(context.ContentItem.ContentItemId);
+
+                if (found && !string.IsNullOrEmpty(entry.ContainedContentItemId))
+                {
+                    metadata.DisplayRouteValues = new RouteValueDictionary {
+                        { "Area", "OrchardCore.Contents" },
+                        { "Controller", "Item" },
+                        { "Action", "Display" },
+                        { "ContentItemId", entry.ContentItemId},
+                        { "ContainedContentItemId", entry.ContainedContentItemId }
+                    };
+                }
+            });
+        }
     }
 }

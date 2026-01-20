@@ -1,12 +1,15 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.PublishLater.Indexes;
+using OrchardCore.PublishLater.Models;
 using YesSql.Sql;
 
 namespace OrchardCore.PublishLater;
 
-public sealed class Migrations : DataMigration
+public class Migrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -44,7 +47,7 @@ public sealed class Migrations : DataMigration
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom1Async()
     {
-        // The 'ScheduledPublishDateTimeUtc' column and related index are kept on existing databases,
+        // The 'ScheduledPublishUtc' column and related index are kept on existing databases,
         // this because dropping an index and altering a column don't work on all providers.
 
         await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table

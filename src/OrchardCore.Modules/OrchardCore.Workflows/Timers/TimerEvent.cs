@@ -1,106 +1,72 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using NCrontab;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Timers;
-
-public class TimerEvent : EventActivity
+namespace OrchardCore.Workflows.Timers
 {
-    public static string EventName => nameof(TimerEvent);
-
-    private readonly IClock _clock;
-    private readonly ISiteService _siteService;
-    private readonly ILogger _logger;
-    protected readonly IStringLocalizer S;
-
-    public TimerEvent(IClock clock, ISiteService siteService, ILogger<TimerEvent> logger, IStringLocalizer<TimerEvent> localizer)
+    public class TimerEvent : EventActivity
     {
-        _clock = clock;
-        _siteService = siteService;
-        _logger = logger;
-        S = localizer;
-    }
+        public static string EventName => nameof(TimerEvent);
+        private readonly IClock _clock;
+        protected readonly IStringLocalizer S;
 
-    public override string Name => EventName;
-
-    public override LocalizedString DisplayText => S["Timer Event"];
-
-    public override LocalizedString Category => S["Background"];
-
-    public string CronExpression
-    {
-        get => GetProperty(() => "*/5 * * * *");
-        set => SetProperty(value);
-    }
-
-    public bool UseLocalTime
-    {
-        get => GetProperty(() => false);
-        set => SetProperty(value);
-    }
-
-    private DateTime? StartedUtc
-    {
-        get => GetProperty<DateTime?>();
-        set => SetProperty(value);
-    }
-
-    public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return StartedUtc == null || await IsExpiredAsync();
-    }
-
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
-
-    public override async Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        if (await IsExpiredAsync())
+        public TimerEvent(IClock clock, IStringLocalizer<TimerEvent> localizer)
         {
-            workflowContext.LastResult = "TimerEvent";
-            return Outcomes("Done");
+            _clock = clock;
+            S = localizer;
         }
 
-        return Halt();
-    }
+        public override string Name => EventName;
 
-    private async Task<bool> IsExpiredAsync()
-    {
-        StartedUtc ??= _clock.UtcNow;
-        var schedule = CrontabSchedule.Parse(CronExpression);
+        public override LocalizedString DisplayText => S["Timer Event"];
 
-        ITimeZone timeZone = null;
+        public override LocalizedString Category => S["Background"];
 
-        if (UseLocalTime && _siteService is not null)
+        public string CronExpression
         {
-            try
+            get => GetProperty(() => "*/5 * * * *");
+            set => SetProperty(value);
+        }
+
+        private DateTime? StartedUtc
+        {
+            get => GetProperty<DateTime?>();
+            set => SetProperty(value);
+        }
+
+        public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return StartedUtc == null || IsExpired();
+        }
+
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Outcomes(S["Done"]);
+        }
+
+        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            if (IsExpired())
             {
-                timeZone = _clock.GetTimeZone((await _siteService.GetSiteSettingsAsync()).TimeZoneId);
+                workflowContext.LastResult = "TimerEvent";
+                return Outcomes("Done");
             }
-            catch (Exception ex) when (!ex.IsFatal())
-            {
-                _logger.LogError(ex, "Error while getting the time zone from the site settings.");
-            }
+
+            return Halt();
         }
 
-        var now = _clock.UtcNow;
-        var baseTime = StartedUtc.Value;
-
-        if (timeZone is not null)
+        private bool IsExpired()
         {
-            now = _clock.ConvertToTimeZone(now, timeZone).DateTime;
-            baseTime = _clock.ConvertToTimeZone(baseTime, timeZone).DateTime;
+            StartedUtc ??= _clock.UtcNow;
+            var schedule = CrontabSchedule.Parse(CronExpression);
+            var whenUtc = schedule.GetNextOccurrence(StartedUtc.Value);
+
+            return _clock.UtcNow >= whenUtc;
         }
-
-        var nextOccurrence = schedule.GetNextOccurrence(baseTime);
-
-        return now >= nextOccurrence;
     }
 }

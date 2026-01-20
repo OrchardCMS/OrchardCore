@@ -1,3 +1,6 @@
-namespace OrchardCore.Environment.Shell.Distributed;
-
-public class DistributedShellMarkerService;
+namespace OrchardCore.Environment.Shell.Distributed
+{
+    public class DistributedShellMarkerService
+    {
+    }
+}

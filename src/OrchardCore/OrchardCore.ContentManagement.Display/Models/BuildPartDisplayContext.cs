@@ -1,15 +1,16 @@
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 
-namespace OrchardCore.ContentManagement.Display.Models;
-
-public class BuildPartDisplayContext : BuildDisplayContext
+namespace OrchardCore.ContentManagement.Display.Models
 {
-    public BuildPartDisplayContext(ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
-        : base(context.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater)
+    public class BuildPartDisplayContext : BuildDisplayContext
     {
-        TypePartDefinition = typePartDefinition;
-    }
+        public BuildPartDisplayContext(ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
+            : base(context.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater)
+        {
+            TypePartDefinition = typePartDefinition;
+        }
 
-    public ContentTypePartDefinition TypePartDefinition { get; }
+        public ContentTypePartDefinition TypePartDefinition { get; }
+    }
 }

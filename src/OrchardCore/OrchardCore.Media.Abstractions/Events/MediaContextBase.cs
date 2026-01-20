@@ -1,9 +1,10 @@
-namespace OrchardCore.Media.Events;
-
-public class MediaContextBase
+namespace OrchardCore.Media.Events
 {
-    /// <summary>
-    /// The path of the file for the current filestore operation.
-    /// </summary>
-    public string Path { get; set; }
+    public class MediaContextBase
+    {
+        /// <summary>
+        /// The path of the file for the current filestore operation.
+        /// </summary>
+        public string Path { get; set; }
+    }
 }

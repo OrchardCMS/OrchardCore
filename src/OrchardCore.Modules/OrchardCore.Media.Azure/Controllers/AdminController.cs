@@ -1,44 +1,42 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.Media.Azure.ViewModels;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Media.Azure;
-
-[Feature("OrchardCore.Media.Azure.Storage")]
-[Admin("MediaAzureBlob/{action}", "AzureBlob.{action}")]
-public sealed class AdminController : Controller
+namespace OrchardCore.Media.Azure
 {
-    private readonly IAuthorizationService _authorizationService;
-    private readonly MediaBlobStorageOptions _options;
-
-    public AdminController(
-        IAuthorizationService authorizationService,
-        IOptions<MediaBlobStorageOptions> options)
+    [Feature("OrchardCore.Media.Azure.Storage")]
+    public class AdminController : Controller
     {
-        _authorizationService = authorizationService;
-        _options = options.Value;
-    }
+        private readonly IAuthorizationService _authorizationService;
+        private readonly MediaBlobStorageOptions _options;
 
-    public async Task<IActionResult> Options()
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewAzureMediaOptions))
+        public AdminController(
+            IAuthorizationService authorizationService,
+            IOptions<MediaBlobStorageOptions> options)
         {
-            return Forbid();
+            _authorizationService = authorizationService;
+            _options = options.Value;
         }
 
-        var model = new OptionsViewModel
+        public async Task<IActionResult> Options()
         {
-            CreateContainer = _options.CreateContainer,
-            RemoveContainer = _options.RemoveContainer,
-            RemoveFilesFromBasePath = _options.RemoveFilesFromBasePath,
-            ContainerName = _options.ContainerName,
-            ConnectionString = _options.ConnectionString,
-            BasePath = _options.BasePath,
-        };
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewAzureMediaOptions))
+            {
+                return Forbid();
+            }
 
-        return View(model);
+            var model = new OptionsViewModel
+            {
+                CreateContainer = _options.CreateContainer,
+                ContainerName = _options.ContainerName,
+                ConnectionString = _options.ConnectionString,
+                BasePath = _options.BasePath
+            };
+
+            return View(model);
+        }
     }
 }

@@ -1,0 +1,963 @@
+/**
+ * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
+ * Default stylesheet for Trumbowyg editor
+ * ------------------------
+ * @link https://alex-d.github.io/Trumbowyg/
+ * @license MIT
+ * @author Alexandre Demode (Alex-D)
+ *         Twitter : @AlexandreDemode
+ *         Website : alex-d.fr
+ */
+#trumbowyg-icons,
+.trumbowyg-icons {
+  overflow: hidden;
+  visibility: hidden;
+  height: 0;
+  width: 0;
+}
+#trumbowyg-icons svg,
+.trumbowyg-icons svg {
+  height: 0;
+  width: 0;
+}
+
+.trumbowyg-box *,
+.trumbowyg-box *::before,
+.trumbowyg-box *::after,
+.trumbowyg-modal *,
+.trumbowyg-modal *::before,
+.trumbowyg-modal *::after {
+  box-sizing: border-box;
+}
+.trumbowyg-box svg,
+.trumbowyg-modal svg {
+  width: 17px;
+  height: 100%;
+  color: #222;
+  fill: #222;
+}
+
+.trumbowyg-box {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+}
+
+.trumbowyg-editor-box {
+  display: block;
+  flex: 1;
+}
+
+.trumbowyg-box,
+.trumbowyg-editor-box {
+  position: relative;
+  width: 100%;
+}
+
+[dir] .trumbowyg-box, [dir] .trumbowyg-editor-box {
+  border: 1px solid #d7e0e2;
+}
+
+.trumbowyg-box .trumbowyg-editor {
+  min-height: 100%;
+}
+
+[dir] .trumbowyg-box .trumbowyg-editor {
+  margin: 0 auto;
+}
+
+[dir] .trumbowyg-box.trumbowyg-fullscreen {
+  background: #fefefe;
+  border: none !important;
+}
+
+.trumbowyg-editor-box,
+.trumbowyg-textarea {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  resize: none;
+  outline: none;
+  overflow: auto;
+  user-select: text;
+}
+
+[dir] .trumbowyg-editor-box, [dir] .trumbowyg-textarea {
+  padding: 20px;
+  border-style: none;
+}
+.trumbowyg-editor-box.trumbowyg-autogrow-on-enter,
+.trumbowyg-textarea.trumbowyg-autogrow-on-enter {
+  transition: height 300ms ease-out;
+}
+
+[dir] .trumbowyg-editor-box {
+  padding: 0;
+}
+
+.trumbowyg-editor {
+  outline: none;
+}
+
+[dir] .trumbowyg-editor {
+  padding: 20px;
+}
+
+.trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-box-blur .trumbowyg-editor::before {
+  color: transparent !important;
+}
+
+[dir] .trumbowyg-box-blur .trumbowyg-editor *, [dir] .trumbowyg-box-blur .trumbowyg-editor::before {
+  text-shadow: 0 0 7px #333;
+}
+@media screen and (min-width: 0 \0 ) {
+  .trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-box-blur .trumbowyg-editor::before {
+    color: rgba(200, 200, 200, 0.6) !important;
+  }
+}
+@supports (-ms-accelerator: true) {
+  .trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-box-blur .trumbowyg-editor::before {
+    color: rgba(200, 200, 200, 0.6) !important;
+  }
+}
+.trumbowyg-box-blur .trumbowyg-editor img,
+.trumbowyg-box-blur .trumbowyg-editor hr {
+  opacity: 0.2;
+}
+
+.trumbowyg-textarea {
+  position: relative;
+  display: block;
+  overflow: auto;
+  font-size: 14px;
+  font-family: "Consolas", "Courier", "Courier New", monospace;
+  line-height: 18px;
+}
+
+[dir] .trumbowyg-textarea {
+  border: none;
+}
+
+.trumbowyg-box.trumbowyg-editor-visible .trumbowyg-textarea {
+  height: 1px !important;
+  width: 25%;
+  min-height: 0 !important;
+  opacity: 0 !important;
+}
+
+[dir] .trumbowyg-box.trumbowyg-editor-visible .trumbowyg-textarea {
+  padding: 0 !important;
+  background: none;
+}
+
+.trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-textarea {
+  display: block;
+  flex: 1;
+}
+
+[dir] .trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-textarea {
+  margin-bottom: 1px;
+}
+.trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-editor-box {
+  display: none;
+}
+
+.trumbowyg-box.trumbowyg-disabled .trumbowyg-textarea {
+  opacity: 0.8;
+}
+
+[dir] .trumbowyg-box.trumbowyg-disabled .trumbowyg-textarea {
+  background: none;
+}
+
+.trumbowyg-editor-box[contenteditable=true]:empty:not(:focus)::before {
+  content: attr(placeholder);
+  color: #999;
+  pointer-events: none;
+  white-space: break-spaces;
+}
+
+.trumbowyg-button-pane {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  min-height: 36px;
+  position: relative;
+  list-style-type: none;
+  line-height: 10px;
+  backface-visibility: hidden;
+  overflow: hidden;
+  z-index: 11;
+}
+
+[dir] .trumbowyg-button-pane {
+  background: #ecf0f1;
+  border-bottom: 1px solid #d7e0e2;
+  margin: 0;
+  padding: 0 5px;
+}
+.trumbowyg-button-pane::before, .trumbowyg-button-pane::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 35px;
+  width: 100%;
+  height: 1px;
+}
+[dir] .trumbowyg-button-pane::before, [dir] .trumbowyg-button-pane::after {
+  background: #d7e0e2;
+}
+[dir=ltr] .trumbowyg-button-pane::before, [dir=ltr] .trumbowyg-button-pane::after {
+  left: 0;
+  right: 0;
+}
+[dir=rtl] .trumbowyg-button-pane::before, [dir=rtl] .trumbowyg-button-pane::after {
+  right: 0;
+  left: 0;
+}
+.trumbowyg-button-pane::after {
+  top: 71px;
+}
+.trumbowyg-button-pane .trumbowyg-button-group {
+  display: flex;
+  flex-wrap: wrap;
+}
+.trumbowyg-button-pane .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
+  color: transparent;
+}
+.trumbowyg-button-pane .trumbowyg-button-group::after {
+  content: " ";
+  display: block;
+  width: 1px;
+  height: 35px;
+  vertical-align: top;
+}
+[dir] .trumbowyg-button-pane .trumbowyg-button-group::after {
+  background: #d7e0e2;
+  margin: 0 5px;
+}
+.trumbowyg-button-pane .trumbowyg-button-group:last-child::after {
+  content: none;
+}
+.trumbowyg-button-pane button {
+  display: block;
+  position: relative;
+  width: 35px;
+  height: 35px;
+  overflow: hidden;
+  vertical-align: middle;
+  transition: background-color 150ms, opacity 150ms;
+}
+[dir] .trumbowyg-button-pane button {
+  padding: 1px 6px !important;
+  margin-bottom: 1px;
+  border: none;
+  cursor: pointer;
+  background: none;
+}
+.trumbowyg-button-pane button.trumbowyg-textual-button {
+  width: auto;
+  line-height: 35px;
+  user-select: none;
+}
+.trumbowyg-button-pane.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active),
+.trumbowyg-button-pane button.trumbowyg-disable, .trumbowyg-disabled .trumbowyg-button-pane button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
+  opacity: 0.2;
+  pointer-events: none;
+}
+[dir] .trumbowyg-button-pane.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active), [dir] .trumbowyg-button-pane button.trumbowyg-disable, [dir] .trumbowyg-disabled .trumbowyg-button-pane button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
+  cursor: default;
+}
+[dir] .trumbowyg-button-pane.trumbowyg-disable .trumbowyg-button-group::before, [dir] .trumbowyg-disabled .trumbowyg-button-pane .trumbowyg-button-group::before {
+  background: #e3e9eb;
+}
+.trumbowyg-button-pane button:not(.trumbowyg-disable):hover,
+.trumbowyg-button-pane button:not(.trumbowyg-disable):focus,
+.trumbowyg-button-pane button.trumbowyg-active {
+  outline: none;
+}
+[dir] .trumbowyg-button-pane button:not(.trumbowyg-disable):hover, [dir] .trumbowyg-button-pane button:not(.trumbowyg-disable):focus, [dir] .trumbowyg-button-pane button.trumbowyg-active {
+  background-color: #fff;
+}
+.trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+  display: block;
+  content: " ";
+  position: absolute;
+  top: 27px;
+  height: 0;
+  width: 0;
+}
+[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+  border: 3px solid transparent;
+  border-top-color: #555;
+}
+[dir=ltr] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+  right: 3px;
+}
+[dir=rtl] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+  left: 3px;
+}
+[dir=ltr] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button {
+  padding-left: 10px !important;
+  padding-right: 18px !important;
+}
+[dir=rtl] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button {
+  padding-right: 10px !important;
+  padding-left: 18px !important;
+}
+.trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button::after {
+  top: 17px;
+}
+[dir=ltr] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button::after {
+  right: 7px;
+}
+[dir=rtl] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button::after {
+  left: 7px;
+}
+[dir=ltr] .trumbowyg-button-pane .trumbowyg-right {
+  margin-left: auto;
+}
+[dir=rtl] .trumbowyg-button-pane .trumbowyg-right {
+  margin-right: auto;
+}
+
+.trumbowyg-dropdown {
+  max-width: 300px;
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: nowrap;
+  color: #222;
+  z-index: 12;
+}
+
+[dir] .trumbowyg-dropdown {
+  border: 1px solid #d7e0e2;
+  padding: 5px 0;
+  border-top: none;
+  background: #fff;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 3px;
+}
+
+[dir=ltr] .trumbowyg-dropdown {
+  margin-left: -1px;
+}
+
+[dir=rtl] .trumbowyg-dropdown {
+  margin-right: -1px;
+}
+.trumbowyg-dropdown button {
+  display: block;
+  width: 100%;
+  height: 35px;
+  line-height: 35px;
+  text-decoration: none;
+  color: #222;
+  font-size: 15px;
+  transition: all 150ms;
+}
+[dir] .trumbowyg-dropdown button {
+  background: #fff;
+  border: none;
+  cursor: pointer;
+}
+[dir=ltr] .trumbowyg-dropdown button {
+  padding: 0 20px 0 10px;
+  text-align: left;
+}
+[dir=rtl] .trumbowyg-dropdown button {
+  padding: 0 10px 0 20px;
+  text-align: right;
+}
+[dir] .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dropdown button:focus {
+  background: #ecf0f1;
+}
+[dir=ltr] .trumbowyg-dropdown button svg {
+  float: left;
+  margin-right: 14px;
+}
+[dir=rtl] .trumbowyg-dropdown button svg {
+  float: right;
+  margin-left: 14px;
+}
+
+/* Modal box */
+.trumbowyg-modal {
+  position: absolute;
+  top: 0;
+  max-width: 520px;
+  width: 100%;
+  height: 350px;
+  z-index: 12;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+[dir=ltr] .trumbowyg-modal {
+  left: 50%;
+  transform: translateX(-50%);
+}
+[dir=rtl] .trumbowyg-modal {
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.trumbowyg-modal-box {
+  position: absolute;
+  top: 0;
+  max-width: 500px;
+  width: calc(100% - 20px);
+  z-index: 1;
+  font-size: 14px;
+  font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif;
+  backface-visibility: hidden;
+}
+
+[dir] .trumbowyg-modal-box {
+  padding-bottom: 45px;
+  background-color: #fff;
+  text-align: center;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 3px;
+}
+
+[dir=ltr] .trumbowyg-modal-box {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+[dir=rtl] .trumbowyg-modal-box {
+  right: 50%;
+  transform: translateX(50%);
+}
+.trumbowyg-modal-box .trumbowyg-modal-title {
+  font-size: 24px;
+  font-weight: bold;
+  display: block;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-modal-title {
+  margin: 0 0 20px;
+  padding: 15px 0 13px;
+  border-bottom: 1px solid #d7e0e2;
+}
+.trumbowyg-modal-box .trumbowyg-progress {
+  width: 100%;
+  height: 3px;
+  position: absolute;
+  top: 58px;
+}
+.trumbowyg-modal-box .trumbowyg-progress .trumbowyg-progress-bar {
+  width: 0;
+  height: 100%;
+  transition: width 150ms linear;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-progress .trumbowyg-progress-bar {
+  background: #2BC06A;
+}
+.trumbowyg-modal-box .trumbowyg-input-row {
+  position: relative;
+  overflow: hidden;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-input-row {
+  margin: 15px 12px;
+  border: 1px solid #dedede;
+}
+.trumbowyg-modal-box .trumbowyg-input-infos {
+  transition: all 150ms;
+  width: 150px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-input-infos {
+  padding: 0 7px;
+  background-color: #fbfcfc;
+}
+[dir=ltr] .trumbowyg-modal-box .trumbowyg-input-infos {
+  text-align: left;
+  border-right: 1px solid #dedede;
+  left: 0;
+}
+[dir=rtl] .trumbowyg-modal-box .trumbowyg-input-infos {
+  text-align: right;
+  border-left: 1px solid #dedede;
+  right: 0;
+}
+.trumbowyg-modal-box .trumbowyg-input-infos label {
+  color: #69878f;
+  overflow: hidden;
+  height: 27px;
+  line-height: 27px;
+}
+.trumbowyg-modal-box .trumbowyg-input-infos label, .trumbowyg-modal-box .trumbowyg-input-infos label span {
+  display: block;
+  height: 27px;
+  line-height: 27px;
+  transition: all 150ms;
+}
+.trumbowyg-modal-box .trumbowyg-input-infos .trumbowyg-msg-error {
+  color: #e74c3c;
+}
+[dir=ltr] .trumbowyg-modal-box .trumbowyg-input-html {
+  padding: 1px 1px 1px 152px;
+}
+[dir=rtl] .trumbowyg-modal-box .trumbowyg-input-html {
+  padding: 1px 152px 1px 1px;
+}
+.trumbowyg-modal-box .trumbowyg-input-html, .trumbowyg-modal-box .trumbowyg-input-html input, .trumbowyg-modal-box .trumbowyg-input-html textarea, .trumbowyg-modal-box .trumbowyg-input-html select {
+  font-size: 14px;
+}
+.trumbowyg-modal-box .trumbowyg-input-html input, .trumbowyg-modal-box .trumbowyg-input-html textarea, .trumbowyg-modal-box .trumbowyg-input-html select {
+  transition: all 150ms;
+  height: 27px;
+  line-height: 27px;
+  width: 100%;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-input-html input, [dir] .trumbowyg-modal-box .trumbowyg-input-html textarea, [dir] .trumbowyg-modal-box .trumbowyg-input-html select {
+  border: 0;
+  padding: 0 7px;
+}
+.trumbowyg-modal-box .trumbowyg-input-html input:hover, .trumbowyg-modal-box .trumbowyg-input-html input:focus, .trumbowyg-modal-box .trumbowyg-input-html textarea:hover, .trumbowyg-modal-box .trumbowyg-input-html textarea:focus, .trumbowyg-modal-box .trumbowyg-input-html select:hover, .trumbowyg-modal-box .trumbowyg-input-html select:focus {
+  outline: 1px solid #95a5a6;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-input-html input:focus, [dir] .trumbowyg-modal-box .trumbowyg-input-html textarea:focus, [dir] .trumbowyg-modal-box .trumbowyg-input-html select:focus {
+  background: #fbfcfc;
+}
+.trumbowyg-modal-box .trumbowyg-input-html input[type=checkbox] {
+  width: 16px;
+  height: 16px;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-input-html input[type=checkbox] {
+  padding: 0;
+}
+[dir=ltr] .trumbowyg-modal-box .trumbowyg-input-html-with-checkbox {
+  text-align: left;
+  padding: 3px 1px 1px 3px;
+}
+[dir=rtl] .trumbowyg-modal-box .trumbowyg-input-html-with-checkbox {
+  text-align: right;
+  padding: 3px 3px 1px 1px;
+}
+.trumbowyg-modal-box .trumbowyg-input-error input, .trumbowyg-modal-box .trumbowyg-input-error select, .trumbowyg-modal-box .trumbowyg-input-error textarea {
+  outline: 1px solid #e74c3c;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-input-error .trumbowyg-input-infos label span:first-child {
+  margin-top: -27px;
+}
+.trumbowyg-modal-box .error {
+  display: block;
+  color: red;
+}
+[dir] .trumbowyg-modal-box .error {
+  margin-top: 25px;
+}
+.trumbowyg-modal-box .trumbowyg-modal-button {
+  position: absolute;
+  bottom: 10px;
+  text-decoration: none;
+  color: #fff;
+  display: block;
+  width: 100px;
+  height: 35px;
+  line-height: 33px;
+  font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif;
+  font-size: 16px;
+  transition: all 150ms;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-modal-button {
+  margin: 0 10px;
+  background-color: #333;
+  border: none;
+  cursor: pointer;
+}
+[dir=ltr] .trumbowyg-modal-box .trumbowyg-modal-button {
+  right: 0;
+}
+[dir=rtl] .trumbowyg-modal-box .trumbowyg-modal-button {
+  left: 0;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
+  background: #2bc06a;
+}
+[dir=ltr] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
+  right: 110px;
+}
+[dir=rtl] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
+  left: 110px;
+}
+.trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:hover, .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:focus {
+  outline: none;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:hover, [dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:focus {
+  background: #40d47e;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:active {
+  background: #25a25a;
+}
+.trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset {
+  color: #555;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset {
+  background: #e6e6e6;
+}
+.trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:hover, .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:focus {
+  outline: none;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:hover, [dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:focus {
+  background: #fbfbfb;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:active {
+  background: #d5d5d5;
+}
+
+.trumbowyg-overlay {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: none;
+  top: 0;
+  z-index: 10;
+}
+
+[dir] .trumbowyg-overlay {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+[dir=ltr] .trumbowyg-overlay {
+  left: 0;
+}
+
+[dir=rtl] .trumbowyg-overlay {
+  right: 0;
+}
+
+/**
+ * Fullscreen
+ */
+body.trumbowyg-body-fullscreen {
+  overflow: hidden;
+}
+
+.trumbowyg-fullscreen {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+}
+
+[dir] .trumbowyg-fullscreen {
+  margin: 0;
+  padding: 0;
+}
+
+[dir=ltr] .trumbowyg-fullscreen {
+  left: 0;
+}
+
+[dir=rtl] .trumbowyg-fullscreen {
+  right: 0;
+}
+[dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
+  border: none;
+}
+.trumbowyg-fullscreen .trumbowyg-editor-box,
+.trumbowyg-fullscreen .trumbowyg-textarea {
+  height: auto !important;
+  overflow: auto;
+}
+.trumbowyg-fullscreen .trumbowyg-overlay {
+  height: 100% !important;
+}
+.trumbowyg-fullscreen .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
+  color: #222;
+  fill: transparent;
+}
+
+.trumbowyg-editor {
+  /*
+   * For resetCss option
+   */
+}
+.trumbowyg-editor object,
+.trumbowyg-editor embed,
+.trumbowyg-editor video,
+.trumbowyg-editor img {
+  max-width: 100%;
+}
+.trumbowyg-editor video,
+.trumbowyg-editor img {
+  height: auto;
+}
+[dir] .trumbowyg-editor img {
+  cursor: move;
+}
+.trumbowyg-editor canvas:focus {
+  outline: none;
+}
+.trumbowyg-editor.trumbowyg-reset-css {
+  font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.45em !important;
+  color: #333 !important;
+  font-weight: normal !important;
+}
+[dir] .trumbowyg-editor.trumbowyg-reset-css {
+  background: #fefefe !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css a {
+  color: #15c !important;
+  text-decoration: underline !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css div,
+.trumbowyg-editor.trumbowyg-reset-css p,
+.trumbowyg-editor.trumbowyg-reset-css ul,
+.trumbowyg-editor.trumbowyg-reset-css ol,
+.trumbowyg-editor.trumbowyg-reset-css blockquote {
+  line-height: 1.4em !important;
+  font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
+  font-size: 14px !important;
+}
+[dir] .trumbowyg-editor.trumbowyg-reset-css div, [dir] .trumbowyg-editor.trumbowyg-reset-css p, [dir] .trumbowyg-editor.trumbowyg-reset-css ul, [dir] .trumbowyg-editor.trumbowyg-reset-css ol, [dir] .trumbowyg-editor.trumbowyg-reset-css blockquote {
+  box-shadow: none !important;
+  background: none !important;
+  margin: 0 !important;
+  margin-bottom: 15px !important;
+  border: none !important;
+}
+[dir] .trumbowyg-editor.trumbowyg-reset-css iframe, [dir] .trumbowyg-editor.trumbowyg-reset-css object, [dir] .trumbowyg-editor.trumbowyg-reset-css hr {
+  margin-bottom: 15px !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css blockquote {
+  font-style: italic !important;
+  color: #555 !important;
+}
+[dir=ltr] .trumbowyg-editor.trumbowyg-reset-css blockquote {
+  margin-left: 32px !important;
+}
+[dir=rtl] .trumbowyg-editor.trumbowyg-reset-css blockquote {
+  margin-right: 32px !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css ul {
+  list-style: disc !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css ol {
+  list-style: decimal !important;
+}
+[dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ul, [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ol {
+  padding-left: 20px !important;
+}
+[dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ul, [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ol {
+  padding-right: 20px !important;
+}
+[dir] .trumbowyg-editor.trumbowyg-reset-css ul ul, [dir] .trumbowyg-editor.trumbowyg-reset-css ol ol, [dir] .trumbowyg-editor.trumbowyg-reset-css ul ol, [dir] .trumbowyg-editor.trumbowyg-reset-css ol ul {
+  border: none !important;
+  margin: 2px !important;
+  padding: 0 !important;
+}
+[dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ul ul, [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ol ol, [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ul ol, [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ol ul {
+  padding-left: 24px !important;
+}
+[dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ul ul, [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ol ol, [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ul ol, [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ol ul {
+  padding-right: 24px !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css hr {
+  display: block !important;
+  height: 1px !important;
+}
+[dir] .trumbowyg-editor.trumbowyg-reset-css hr {
+  border: none !important;
+  border-top: 1px solid #CCC !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css h1,
+.trumbowyg-editor.trumbowyg-reset-css h2,
+.trumbowyg-editor.trumbowyg-reset-css h3,
+.trumbowyg-editor.trumbowyg-reset-css h4 {
+  color: #111 !important;
+  font-weight: bold !important;
+}
+[dir] .trumbowyg-editor.trumbowyg-reset-css h1, [dir] .trumbowyg-editor.trumbowyg-reset-css h2, [dir] .trumbowyg-editor.trumbowyg-reset-css h3, [dir] .trumbowyg-editor.trumbowyg-reset-css h4 {
+  background: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css h1 {
+  font-size: 32px !important;
+  line-height: 38px !important;
+}
+[dir] .trumbowyg-editor.trumbowyg-reset-css h1 {
+  margin-bottom: 20px !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css h2 {
+  font-size: 26px !important;
+  line-height: 34px !important;
+}
+[dir] .trumbowyg-editor.trumbowyg-reset-css h2 {
+  margin-bottom: 15px !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css h3 {
+  font-size: 22px !important;
+  line-height: 28px !important;
+}
+[dir] .trumbowyg-editor.trumbowyg-reset-css h3 {
+  margin-bottom: 7px !important;
+}
+.trumbowyg-editor.trumbowyg-reset-css h4 {
+  font-size: 16px !important;
+  line-height: 22px !important;
+}
+[dir] .trumbowyg-editor.trumbowyg-reset-css h4 {
+  margin-bottom: 7px !important;
+}
+
+/*
+ * Dark theme
+ */
+.trumbowyg-dark .trumbowyg-textarea {
+  color: #fff;
+}
+[dir] .trumbowyg-dark .trumbowyg-textarea {
+  background: #222;
+  border-color: #343434;
+}
+[dir] .trumbowyg-dark .trumbowyg-box {
+  border: 1px solid #343434;
+}
+[dir] .trumbowyg-dark .trumbowyg-box.trumbowyg-fullscreen {
+  background: #111;
+}
+[dir] .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor *, [dir] .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor::before {
+  text-shadow: 0 0 7px #ccc;
+}
+@media screen and (min-width: 0 \0 ) {
+  .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor::before {
+    color: rgba(20, 20, 20, 0.6) !important;
+  }
+}
+@supports (-ms-accelerator: true) {
+  .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor::before {
+    color: rgba(20, 20, 20, 0.6) !important;
+  }
+}
+.trumbowyg-dark .trumbowyg-box svg {
+  fill: #fff;
+  color: #fff;
+}
+[dir] .trumbowyg-dark .trumbowyg-button-pane {
+  background-color: #222;
+  border-bottom-color: #343434;
+}
+[dir] .trumbowyg-dark .trumbowyg-button-pane::before, [dir] .trumbowyg-dark .trumbowyg-button-pane::after {
+  background: #343434;
+}
+[dir] .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty)::after {
+  background-color: #343434;
+}
+.trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty) .trumbowyg-fullscreen-button svg {
+  color: transparent;
+}
+[dir] .trumbowyg-dark .trumbowyg-button-pane.trumbowyg-disable .trumbowyg-button-group::after {
+  background-color: #2a2a2a;
+}
+[dir] .trumbowyg-dark .trumbowyg-button-pane button:not(.trumbowyg-disable):hover, [dir] .trumbowyg-dark .trumbowyg-button-pane button:not(.trumbowyg-disable):focus, [dir] .trumbowyg-dark .trumbowyg-button-pane button.trumbowyg-active {
+  background-color: #333;
+}
+[dir] .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+  border-top-color: #fff;
+}
+.trumbowyg-dark .trumbowyg-fullscreen .trumbowyg-button-pane .trumbowyg-button-group:not(:empty) .trumbowyg-fullscreen-button svg {
+  color: #ecf0f1;
+  fill: transparent;
+}
+[dir] .trumbowyg-dark .trumbowyg-dropdown {
+  border-color: #343434;
+  background: #333;
+  box-shadow: rgba(0, 0, 0, 0.3) 0 2px 3px;
+}
+.trumbowyg-dark .trumbowyg-dropdown button {
+  color: #fff;
+}
+[dir] .trumbowyg-dark .trumbowyg-dropdown button {
+  background: #333;
+}
+[dir] .trumbowyg-dark .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dark .trumbowyg-dropdown button:focus {
+  background: #222;
+}
+.trumbowyg-dark .trumbowyg-modal-box {
+  color: #fff;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box {
+  background-color: #333;
+}
+.trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-title {
+  color: #fff;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-title {
+  border-bottom: 1px solid #555;
+  background: #3c3c3c;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-row {
+  border-color: #222;
+}
+.trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos {
+  color: #eee;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos {
+  background-color: #2f2f2f;
+}
+[dir=ltr] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos {
+  border-right-color: #222;
+}
+[dir=rtl] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos {
+  border-left-color: #222;
+}
+.trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos span {
+  color: #eee;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos span {
+  background-color: #2f2f2f;
+  border-color: #343434;
+}
+.trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-infos span.trumbowyg-msg-error {
+  color: #e74c3c;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-row.trumbowyg-input-error input, [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-row.trumbowyg-input-error select, [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-input-row.trumbowyg-input-error textarea {
+  border-color: #e74c3c;
+}
+.trumbowyg-dark .trumbowyg-modal-box input,
+.trumbowyg-dark .trumbowyg-modal-box select,
+.trumbowyg-dark .trumbowyg-modal-box textarea {
+  color: #fff;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box input, [dir] .trumbowyg-dark .trumbowyg-modal-box select, [dir] .trumbowyg-dark .trumbowyg-modal-box textarea {
+  border-color: #343434;
+  background: #222;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box input:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box input:focus, [dir] .trumbowyg-dark .trumbowyg-modal-box select:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box select:focus, [dir] .trumbowyg-dark .trumbowyg-modal-box textarea:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box textarea:focus {
+  border-color: #626262;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box input:focus, [dir] .trumbowyg-dark .trumbowyg-modal-box select:focus, [dir] .trumbowyg-dark .trumbowyg-modal-box textarea:focus {
+  background-color: #2f2f2f;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
+  background: #1b7943;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:focus {
+  background: #25a25a;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:active {
+  background: #176437;
+}
+.trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset {
+  color: #ccc;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset {
+  background: #333;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:focus {
+  background: #444;
+}
+[dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:active {
+  background: #111;
+}
+[dir] .trumbowyg-dark .trumbowyg-overlay {
+  background-color: rgba(15, 15, 15, 0.6);
+}

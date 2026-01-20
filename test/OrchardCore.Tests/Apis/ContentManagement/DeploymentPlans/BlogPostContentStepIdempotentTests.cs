@@ -1,82 +1,84 @@
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Tests.Apis.Context;
+using YesSql;
 using ISession = YesSql.ISession;
 
-namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans;
-
-public class BlogPostContentStepIdempotentTests
+namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
-    [Fact]
-    public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions()
+    public class BlogPostContentStepIdempotentTests
     {
-        using var context = new BlogPostDeploymentContext();
-
-        // Setup
-        await context.InitializeAsync();
-
-        // Act
-        var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
+        [Fact]
+        public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions()
         {
-            jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
-            jItem[nameof(ContentItem.DisplayText)] = "new version";
-        });
+            using var context = new BlogPostDeploymentContext();
 
-        for (var i = 0; i < 2; i++)
-        {
-            await context.PostRecipeAsync(recipe);
+            // Setup
+            await context.InitializeAsync();
 
-            // Test
-            await context.UsingTenantScopeAsync(async scope =>
+            // Act
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
             {
-                var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
-
-                Assert.Equal(2, blogPosts.Count());
-
-                var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                Assert.False(originalVersion?.Latest);
-                Assert.False(originalVersion?.Published);
-
-                var newVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "newversion");
-                Assert.Equal("new version", newVersion?.DisplayText);
-                Assert.True(newVersion?.Latest);
-                Assert.True(newVersion?.Published);
+                jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
+                jItem[nameof(ContentItem.DisplayText)] = "new version";
             });
-        }
-    }
 
-    [Fact]
-    public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions()
-    {
-        using var context = new BlogPostDeploymentContext();
-
-        // Setup
-        await context.InitializeAsync();
-
-        // Act
-        var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-        {
-            jItem[nameof(ContentItem.DisplayText)] = "existing version mutated";
-        });
-
-        for (var i = 0; i < 2; i++)
-        {
-            await context.PostRecipeAsync(recipe);
-
-            // Test
-            await context.UsingTenantScopeAsync(async scope =>
+            for (var i = 0; i < 2; i++)
             {
-                var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                await context.PostRecipeAsync(recipe);
 
-                Assert.Single(blogPosts);
-                var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
-                Assert.Equal("existing version mutated", mutatedVersion?.DisplayText);
-            });
+                // Test
+                await context.UsingTenantScopeAsync(async scope =>
+                {
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
+
+                    Assert.Equal(2, blogPosts.Count());
+
+                    var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                    Assert.False(originalVersion?.Latest);
+                    Assert.False(originalVersion?.Published);
+
+                    var newVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "newversion");
+                    Assert.Equal("new version", newVersion?.DisplayText);
+                    Assert.True(newVersion?.Latest);
+                    Assert.True(newVersion?.Published);
+                });
+            }
         }
-    }
 
+        [Fact]
+        public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions()
+        {
+            using var context = new BlogPostDeploymentContext();
+
+            // Setup
+            await context.InitializeAsync();
+
+            // Act
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
+            {
+                jItem[nameof(ContentItem.DisplayText)] = "existing version mutated";
+            });
+
+            for (var i = 0; i < 2; i++)
+            {
+                await context.PostRecipeAsync(recipe);
+
+                // Test
+                await context.UsingTenantScopeAsync(async scope =>
+                {
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
+
+                    Assert.Single(blogPosts);
+                    var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
+                    Assert.Equal("existing version mutated", mutatedVersion?.DisplayText);
+                });
+            }
+        }
+
+    }
 }

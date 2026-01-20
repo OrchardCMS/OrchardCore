@@ -1,82 +1,87 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Feeds.Models;
 
-namespace OrchardCore.Feeds.Controllers;
-
-public sealed class FeedController : Controller
+namespace OrchardCore.Feeds.Controllers
 {
-    private readonly IEnumerable<IFeedBuilderProvider> _feedFormatProviders;
-    private readonly IEnumerable<IFeedQueryProvider> _feedQueryProviders;
-    private readonly IFeedItemBuilder _feedItemBuilder;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IUpdateModelAccessor _updateModelAccessor;
-
-    public FeedController(
-        IEnumerable<IFeedQueryProvider> feedQueryProviders,
-        IEnumerable<IFeedBuilderProvider> feedFormatProviders,
-        IFeedItemBuilder feedItemBuilder,
-        IServiceProvider serviceProvider,
-        IUpdateModelAccessor updateModelAccessor)
+    public class FeedController : Controller
     {
-        _feedQueryProviders = feedQueryProviders;
-        _feedFormatProviders = feedFormatProviders;
-        _feedItemBuilder = feedItemBuilder;
-        _serviceProvider = serviceProvider;
-        _updateModelAccessor = updateModelAccessor;
-    }
+        private readonly IEnumerable<IFeedBuilderProvider> _feedFormatProviders;
+        private readonly IEnumerable<IFeedQueryProvider> _feedQueryProviders;
+        private readonly IFeedItemBuilder _feedItemBuilder;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
-    public async Task<ActionResult> Index(string format)
-    {
-        var context = new FeedContext(_updateModelAccessor.ModelUpdater, format);
-
-        var bestFormatterMatch = _feedFormatProviders
-            .Select(provider => provider.Match(context))
-            .Where(match => match != null && match.FeedBuilder != null)
-            .MaxBy(match => match.Priority);
-
-        if (bestFormatterMatch == null || bestFormatterMatch.FeedBuilder == null)
+        public FeedController(
+            IEnumerable<IFeedQueryProvider> feedQueryProviders,
+            IEnumerable<IFeedBuilderProvider> feedFormatProviders,
+            IFeedItemBuilder feedItemBuilder,
+            IServiceProvider serviceProvider,
+            IUpdateModelAccessor updateModelAccessor)
         {
-            return NotFound();
+            _feedQueryProviders = feedQueryProviders;
+            _feedFormatProviders = feedFormatProviders;
+            _feedItemBuilder = feedItemBuilder;
+            _serviceProvider = serviceProvider;
+            _updateModelAccessor = updateModelAccessor;
         }
 
-        context.Builder = bestFormatterMatch.FeedBuilder;
-
-        var queryMatches = new List<FeedQueryMatch>();
-
-        foreach (var provider in _feedQueryProviders)
+        public async Task<ActionResult> Index(string format)
         {
-            queryMatches.Add(await provider.MatchAsync(context));
-        }
+            var context = new FeedContext(_updateModelAccessor.ModelUpdater, format);
 
-        var bestQueryMatch = queryMatches
-            .Where(match => match != null && match.FeedQuery != null)
-            .MaxBy(match => match.Priority);
+            var bestFormatterMatch = _feedFormatProviders
+                .Select(provider => provider.Match(context))
+                .Where(match => match != null && match.FeedBuilder != null)
+                .MaxBy(match => match.Priority);
 
-        if (bestQueryMatch == null || bestQueryMatch.FeedQuery == null)
-        {
-            return NotFound();
-        }
-
-        var document = await context.Builder.ProcessAsync(context, async () =>
-        {
-            await bestQueryMatch.FeedQuery.ExecuteAsync(context);
-
-            await _feedItemBuilder.PopulateAsync(context);
-
-            foreach (var contextualizer in context.Response.Contextualizers)
+            if (bestFormatterMatch == null || bestFormatterMatch.FeedBuilder == null)
             {
-                if (ControllerContext != null)
-                {
-                    contextualizer(new ContextualizeContext
-                    {
-                        ServiceProvider = _serviceProvider,
-                        Url = Url,
-                    });
-                }
+                return NotFound();
             }
-        });
 
-        return Content(document.ToString(), "text/xml");
+            context.Builder = bestFormatterMatch.FeedBuilder;
+
+            var queryMatches = new List<FeedQueryMatch>();
+
+            foreach (var provider in _feedQueryProviders)
+            {
+                queryMatches.Add(await provider.MatchAsync(context));
+            }
+
+            var bestQueryMatch = queryMatches
+                .Where(match => match != null && match.FeedQuery != null)
+                .MaxBy(match => match.Priority);
+
+            if (bestQueryMatch == null || bestQueryMatch.FeedQuery == null)
+            {
+                return NotFound();
+            }
+
+            var document = await context.Builder.ProcessAsync(context, async () =>
+            {
+                await bestQueryMatch.FeedQuery.ExecuteAsync(context);
+
+                await _feedItemBuilder.PopulateAsync(context);
+
+                foreach (var contextualizer in context.Response.Contextualizers)
+                {
+                    if (ControllerContext != null)
+                    {
+                        contextualizer(new ContextualizeContext
+                        {
+                            ServiceProvider = _serviceProvider,
+                            Url = Url
+                        });
+                    }
+                }
+            });
+
+            return Content(document.ToString(), "text/xml");
+        }
     }
 }

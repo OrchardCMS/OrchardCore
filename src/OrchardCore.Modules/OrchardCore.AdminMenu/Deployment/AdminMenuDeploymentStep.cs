@@ -1,14 +1,15 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.AdminMenu.Deployment;
-
-/// <summary>
-/// Adds all admin menus to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class AdminMenuDeploymentStep : DeploymentStep
+namespace OrchardCore.AdminMenu.Deployment
 {
-    public AdminMenuDeploymentStep()
+    /// <summary>
+    /// Adds all admin menus to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class AdminMenuDeploymentStep : DeploymentStep
     {
-        Name = "AdminMenu";
+        public AdminMenuDeploymentStep()
+        {
+            Name = "AdminMenu";
+        }
     }
 }

@@ -1,49 +1,59 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Deployment;
 using YesSql;
 
-namespace OrchardCore.Contents.Deployment;
-
-public sealed class AllContentDeploymentSource
-    : DeploymentSourceBase<AllContentDeploymentStep>
+namespace OrchardCore.Contents.Deployment
 {
-    private readonly ISession _session;
-
-    public AllContentDeploymentSource(ISession session)
+    public class AllContentDeploymentSource : IDeploymentSource
     {
-        _session = session;
-    }
+        private readonly ISession _session;
 
-    protected override async Task ProcessAsync(AllContentDeploymentStep step, DeploymentPlanResult result)
-    {
-        var data = new JsonArray();
-        result.Steps.Add(new JsonObject
+        public AllContentDeploymentSource(ISession session)
         {
-            ["name"] = "Content",
-            ["data"] = data,
-        });
+            _session = session;
+        }
 
-        foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published).ListAsync())
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var objectData = JObject.FromObject(contentItem);
+            var allContentStep = step as AllContentDeploymentStep;
 
-            // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
-            objectData.Remove(nameof(ContentItem.Id));
-
-            if (step.ExportAsSetupRecipe)
+            if (allContentStep == null)
             {
-                objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
-                objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";
-                objectData[nameof(ContentItem.ContentItemId)] = "[js: uuid()]";
-                objectData.Remove(nameof(ContentItem.ContentItemVersionId));
-                objectData.Remove(nameof(ContentItem.CreatedUtc));
-                objectData.Remove(nameof(ContentItem.ModifiedUtc));
-                objectData.Remove(nameof(ContentItem.PublishedUtc));
+                return;
             }
 
-            data.Add(objectData);
+            var data = new JsonArray();
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Content",
+                ["data"] = data,
+            });
+
+            foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published).ListAsync())
+            {
+                var objectData = JObject.FromObject(contentItem);
+
+                // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
+                objectData.Remove(nameof(ContentItem.Id));
+
+                if (allContentStep.ExportAsSetupRecipe)
+                {
+                    objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
+                    objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";
+                    objectData[nameof(ContentItem.ContentItemId)] = "[js: uuid()]";
+                    objectData.Remove(nameof(ContentItem.ContentItemVersionId));
+                    objectData.Remove(nameof(ContentItem.CreatedUtc));
+                    objectData.Remove(nameof(ContentItem.ModifiedUtc));
+                    objectData.Remove(nameof(ContentItem.PublishedUtc));
+                }
+
+                data.Add(objectData);
+            }
+
+            return;
         }
     }
 }

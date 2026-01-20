@@ -1,38 +1,42 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents;
 using OrchardCore.Layers.Models;
 
-namespace OrchardCore.Layers.Handlers;
-
-public class LayerMetadataHandler : ContentHandlerBase
+namespace OrchardCore.Layers.Handlers
 {
-    private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
-
-    public LayerMetadataHandler(IVolatileDocumentManager<LayerState> layerStateManager)
+    public class LayerMetadataHandler : ContentHandlerBase
     {
-        _layerStateManager = layerStateManager;
-    }
+        private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
 
-    public override Task PublishedAsync(PublishContentContext context) => UpdateAsync(context.ContentItem);
-
-    public override Task RemovedAsync(RemoveContentContext context) => UpdateAsync(context.ContentItem);
-
-    public override Task UnpublishedAsync(PublishContentContext context) => UpdateAsync(context.ContentItem);
-
-    private Task UpdateAsync(ContentItem contentItem)
-    {
-        var layerMetadata = contentItem.As<LayerMetadata>();
-
-        if (layerMetadata == null)
+        public LayerMetadataHandler(IVolatileDocumentManager<LayerState> layerStateManager)
         {
-            return Task.CompletedTask;
+            _layerStateManager = layerStateManager;
         }
 
-        // Checked by the 'LayerFilter'.
-        return _layerStateManager.UpdateAsync(new LayerState());
+        public override Task PublishedAsync(PublishContentContext context) => UpdateAsync(context.ContentItem);
+
+        public override Task RemovedAsync(RemoveContentContext context) => UpdateAsync(context.ContentItem);
+
+        public override Task UnpublishedAsync(PublishContentContext context) => UpdateAsync(context.ContentItem);
+
+        private Task UpdateAsync(ContentItem contentItem)
+        {
+            var layerMetadata = contentItem.As<LayerMetadata>();
+
+            if (layerMetadata == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            // Checked by the 'LayerFilter'.
+            return _layerStateManager.UpdateAsync(new LayerState());
+        }
+    }
+
+    public class LayerState : Document
+    {
     }
 }
-
-public class LayerState : Document;

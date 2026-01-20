@@ -1,54 +1,57 @@
+using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Liquid.Filters;
-
-public class LocalTimeZoneFilter : ILiquidFilter
+namespace OrchardCore.Liquid.Filters
 {
-    private readonly ILocalClock _localClock;
-
-    public LocalTimeZoneFilter(ILocalClock localClock)
+    public class LocalTimeZoneFilter : ILiquidFilter
     {
-        _localClock = localClock;
-    }
+        private readonly ILocalClock _localClock;
 
-    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
-    {
-        DateTimeOffset value;
-
-        if (input.Type == FluidValues.String)
+        public LocalTimeZoneFilter(ILocalClock localClock)
         {
-            var stringValue = input.ToStringValue();
+            _localClock = localClock;
+        }
 
-            if (stringValue == "now" || stringValue == "today")
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        {
+            DateTimeOffset value;
+
+            if (input.Type == FluidValues.String)
             {
-                value = await _localClock.GetLocalNowAsync();
+                var stringValue = input.ToStringValue();
+
+                if (stringValue == "now" || stringValue == "today")
+                {
+                    value = await _localClock.LocalNowAsync;
+                }
+                else
+                {
+                    if (!DateTimeOffset.TryParse(stringValue, ctx.Options.CultureInfo, DateTimeStyles.AssumeUniversal, out value))
+                    {
+                        return NilValue.Instance;
+                    }
+                }
             }
             else
             {
-                if (!DateTimeOffset.TryParse(stringValue, ctx.Options.CultureInfo, DateTimeStyles.AssumeUniversal, out value))
+                switch (input.ToObjectValue())
                 {
-                    return NilValue.Instance;
+                    case DateTime dateTime:
+                        value = dateTime;
+                        break;
+                    case DateTimeOffset dateTimeOffset:
+                        value = dateTimeOffset;
+                        break;
+                    default:
+                        return NilValue.Instance;
                 }
             }
-        }
-        else
-        {
-            switch (input.ToObjectValue())
-            {
-                case DateTime dateTime:
-                    value = dateTime;
-                    break;
-                case DateTimeOffset dateTimeOffset:
-                    value = dateTimeOffset;
-                    break;
-                default:
-                    return NilValue.Instance;
-            }
-        }
 
-        return new ObjectValue(await _localClock.ConvertToLocalAsync(value));
+            return new ObjectValue(await _localClock.ConvertToLocalAsync(value));
+        }
     }
 }

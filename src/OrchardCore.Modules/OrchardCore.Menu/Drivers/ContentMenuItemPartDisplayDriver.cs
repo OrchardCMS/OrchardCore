@@ -1,48 +1,54 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.ViewModels;
 
-namespace OrchardCore.Menu.Drivers;
-
-public sealed class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<ContentMenuItemPart>
+namespace OrchardCore.Menu.Drivers
 {
-    public override IDisplayResult Display(ContentMenuItemPart part, BuildPartDisplayContext context)
+    public class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<ContentMenuItemPart>
     {
-        return Combine(
-            Dynamic("ContentMenuItemPart_Admin", shape =>
-            {
-                shape.MenuItemPart = part;
-            })
-            .Location("Admin", "Content:10"),
-            Dynamic("ContentMenuItemPart_Thumbnail", shape =>
-            {
-                shape.MenuItemPart = part;
-            })
-            .Location("Thumbnail", "Content:10")
-        );
-    }
-
-    public override IDisplayResult Edit(ContentMenuItemPart part, BuildPartEditorContext context)
-    {
-        return Initialize<ContentMenuItemPartEditViewModel>("ContentMenuItemPart_Edit", model =>
+        public override IDisplayResult Display(ContentMenuItemPart part, BuildPartDisplayContext context)
         {
-            model.Name = part.ContentItem.DisplayText;
-            model.CheckContentPermissions = part.CheckContentPermissions;
-            model.MenuItemPart = part;
-        });
-    }
+            return Combine(
+                Dynamic("ContentMenuItemPart_Admin", shape =>
+                {
+                    shape.MenuItemPart = part;
+                })
+                .Location("Admin", "Content:10"),
+                Dynamic("ContentMenuItemPart_Thumbnail", shape =>
+                {
+                    shape.MenuItemPart = part;
+                })
+                .Location("Thumbnail", "Content:10")
+            );
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentMenuItemPart part, UpdatePartEditorContext context)
-    {
-        var model = new ContentMenuItemPartEditViewModel();
+        public override IDisplayResult Edit(ContentMenuItemPart part)
+        {
+            return Initialize<ContentMenuItemPartEditViewModel>("ContentMenuItemPart_Edit", model =>
+            {
+                model.Name = part.ContentItem.DisplayText;
+                model.MenuItemPart = part;
+            });
+        }
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        public override async Task<IDisplayResult> UpdateAsync(ContentMenuItemPart part, IUpdateModel updater)
+        {
+            var model = new ContentMenuItemPartEditViewModel();
 
-        part.ContentItem.DisplayText = model.Name;
-        part.CheckContentPermissions = model.CheckContentPermissions;
+            if (await updater.TryUpdateModelAsync(model, Prefix))
+            {
+                part.ContentItem.DisplayText = model.Name;
+                // This code can be removed in a later release.
+#pragma warning disable 0618
+                part.Name = model.Name;
+#pragma warning restore 0618
+            }
 
-        return Edit(part, context);
+            return Edit(part);
+        }
     }
 }

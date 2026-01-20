@@ -1,6 +1,7 @@
-namespace OrchardCore.ContentTypes.Events;
-
-public class ContentPartImportingContext : ContentPartContext
+namespace OrchardCore.ContentTypes.Events
 {
-    public string ContentPartName { get; set; }
+    public class ContentPartImportingContext : ContentPartContext
+    {
+        public string ContentPartName { get; set; }
+    }
 }

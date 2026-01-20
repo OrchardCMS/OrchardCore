@@ -1,6 +1,7 @@
-namespace OrchardCore.Google.TagManager.Settings;
-
-public class GoogleTagManagerSettings
+namespace OrchardCore.Google.TagManager.Settings
 {
-    public string ContainerID { get; set; }
+    public class GoogleTagManagerSettings
+    {
+        public string ContainerID { get; set; }
+    }
 }

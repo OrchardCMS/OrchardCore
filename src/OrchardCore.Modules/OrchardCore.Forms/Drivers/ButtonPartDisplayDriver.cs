@@ -1,37 +1,39 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
-namespace OrchardCore.Forms.Drivers;
-
-public sealed class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPart>
+namespace OrchardCore.Forms.Drivers
 {
-    public override IDisplayResult Display(ButtonPart part, BuildPartDisplayContext context)
+    public class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPart>
     {
-        return View("ButtonPart", part)
-            .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
-    }
-
-    public override IDisplayResult Edit(ButtonPart part, BuildPartEditorContext context)
-    {
-        return Initialize<ButtonPartEditViewModel>("ButtonPart_Fields_Edit", m =>
+        public override IDisplayResult Display(ButtonPart part)
         {
-            m.Text = part.Text;
-            m.Type = part.Type;
-        });
-    }
+            return View("ButtonPart", part).Location("Detail", "Content");
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(ButtonPart part, UpdatePartEditorContext context)
-    {
-        var viewModel = new ButtonPartEditViewModel();
+        public override IDisplayResult Edit(ButtonPart part)
+        {
+            return Initialize<ButtonPartEditViewModel>("ButtonPart_Fields_Edit", m =>
+            {
+                m.Text = part.Text;
+                m.Type = part.Type;
+            });
+        }
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        public async override Task<IDisplayResult> UpdateAsync(ButtonPart part, IUpdateModel updater)
+        {
+            var viewModel = new ButtonPartEditViewModel();
 
-        part.Text = viewModel.Text?.Trim();
-        part.Type = viewModel.Type?.Trim();
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            {
+                part.Text = viewModel.Text?.Trim();
+                part.Type = viewModel.Type?.Trim();
+            }
 
-        return Edit(part, context);
+            return Edit(part);
+        }
     }
 }

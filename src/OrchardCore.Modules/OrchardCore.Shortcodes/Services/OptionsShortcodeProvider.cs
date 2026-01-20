@@ -1,31 +1,34 @@
+
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Shortcodes;
 
-namespace OrchardCore.Shortcodes.Services;
-
-public class OptionsShortcodeProvider : IShortcodeProvider
+namespace OrchardCore.Shortcodes.Services
 {
-    private static ValueTask<string> Null => new((string)null);
-
-    private readonly ShortcodeOptions _options;
-
-    public OptionsShortcodeProvider(IOptions<ShortcodeOptions> options)
+    public class OptionsShortcodeProvider : IShortcodeProvider
     {
-        _options = options.Value;
-    }
+        private static ValueTask<string> Null => new((string)null);
 
-    public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
-    {
-        if (_options.ShortcodeDelegates.TryGetValue(identifier, out var shortcode))
+        private readonly ShortcodeOptions _options;
+
+        public OptionsShortcodeProvider(IOptions<ShortcodeOptions> options)
         {
-            if (shortcode == null)
-            {
-                return Null;
-            }
-
-            return shortcode.Invoke(arguments, content, context);
+            _options = options.Value;
         }
 
-        return Null;
+        public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
+        {
+            if (_options.ShortcodeDelegates.TryGetValue(identifier, out var shortcode))
+            {
+                if (shortcode == null)
+                {
+                    return Null;
+                }
+
+                return shortcode.Invoke(arguments, content, context);
+            }
+
+            return Null;
+        }
     }
 }

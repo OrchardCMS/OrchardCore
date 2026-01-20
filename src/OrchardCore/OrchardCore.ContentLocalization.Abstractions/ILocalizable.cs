@@ -1,7 +1,8 @@
-namespace OrchardCore.ContentLocalization;
-
-public interface ILocalizable
+namespace OrchardCore.ContentLocalization
 {
-    string LocalizationSet { get; }
-    string Culture { get; }
+    public interface ILocalizable
+    {
+        string LocalizationSet { get; }
+        string Culture { get; }
+    }
 }

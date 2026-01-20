@@ -1,13 +1,14 @@
-namespace OrchardCore.Tests.Apis.Context;
-
-public class AgencyContext : SiteContext
+namespace OrchardCore.Tests.Apis.Context
 {
-    static AgencyContext()
+    public class AgencyContext : SiteContext
     {
-    }
+        static AgencyContext()
+        {
+        }
 
-    public AgencyContext()
-    {
-        this.WithRecipe("Agency");
+        public AgencyContext()
+        {
+            this.WithRecipe("Agency");
+        }
     }
 }

@@ -1,11 +1,13 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 
-namespace OrchardCore.DisplayManagement.Implementation;
-
-/// <summary>
-/// Coordinates the rendering of shapes.
-/// </summary>
-public interface IHtmlDisplay
+namespace OrchardCore.DisplayManagement.Implementation
 {
-    Task<IHtmlContent> ExecuteAsync(DisplayContext context);
+    /// <summary>
+    /// Coordinates the rendering of shapes.
+    /// </summary>
+    public interface IHtmlDisplay
+    {
+        Task<IHtmlContent> ExecuteAsync(DisplayContext context);
+    }
 }

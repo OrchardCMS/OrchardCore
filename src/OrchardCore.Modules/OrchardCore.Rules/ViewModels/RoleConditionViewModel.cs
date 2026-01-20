@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Rules.Models;
 
-namespace OrchardCore.Rules.ViewModels;
-
-public class RoleConditionViewModel
+namespace OrchardCore.Rules.ViewModels
 {
-    public string SelectedOperation { get; set; }
-    public string Value { get; set; }
+    public class RoleConditionViewModel
+    {
+        public string SelectedOperation { get; set; }
+        public string Value { get; set; }
 
-    [BindNever]
-    public RoleCondition Condition { get; set; }
+        [BindNever]
+        public RoleCondition Condition { get; set; }
+    }
 }

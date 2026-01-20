@@ -1,8 +1,9 @@
-namespace OrchardCore.CustomSettings.ViewModels;
-
-public class CustomSettingsDeploymentStepViewModel
+namespace OrchardCore.CustomSettings.ViewModels
 {
-    public bool IncludeAll { get; set; }
-    public string[] SettingsTypeNames { get; set; }
-    public string[] AllSettingsTypeNames { get; set; }
+    public class CustomSettingsDeploymentStepViewModel
+    {
+        public bool IncludeAll { get; set; }
+        public string[] SettingsTypeNames { get; set; }
+        public string[] AllSettingsTypeNames { get; set; }
+    }
 }

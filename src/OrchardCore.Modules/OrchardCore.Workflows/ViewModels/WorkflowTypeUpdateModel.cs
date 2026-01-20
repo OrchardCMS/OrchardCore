@@ -1,7 +1,8 @@
-namespace OrchardCore.Workflows.ViewModels;
-
-public class WorkflowTypeUpdateModel
+namespace OrchardCore.Workflows.ViewModels
 {
-    public long Id { get; set; }
-    public string State { get; set; }
+    public class WorkflowTypeUpdateModel
+    {
+        public long Id { get; set; }
+        public string State { get; set; }
+    }
 }

@@ -2,18 +2,19 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Localization.GraphQL;
-
-/// <summary>
-/// Represents the localization module entry point for Graph QL.
-/// </summary>
-[RequireFeatures("OrchardCore.Apis.GraphQL")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Localization.GraphQL
 {
-    /// <inheritdocs />
-    public override void ConfigureServices(IServiceCollection services)
+    /// <summary>
+    /// Represents the localization module entry point for Graph QL.
+    /// </summary>
+    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    public class Startup : StartupBase
     {
-        services.AddSingleton<ISchemaBuilder, SiteCulturesQuery>();
-        services.AddTransient<CultureQueryObjectType>();
+        /// <inheritdocs />
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<ISchemaBuilder, SiteCulturesQuery>();
+            services.AddTransient<CultureQueryObjectType>();
+        }
     }
 }

@@ -1,17 +1,19 @@
+using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Indexes;
 using YesSql.Sql;
 
-namespace OrchardCore.Deployment;
-
-public sealed class Migrations : DataMigration
+namespace OrchardCore.Deployment
 {
-    public async Task<int> CreateAsync()
+    public class Migrations : DataMigration
     {
-        await SchemaBuilder.CreateMapIndexTableAsync<DeploymentPlanIndex>(table => table
-            .Column<string>("Name")
-        );
+        public async Task<int> CreateAsync()
+        {
+            await SchemaBuilder.CreateMapIndexTableAsync<DeploymentPlanIndex>(table => table
+                .Column<string>("Name")
+            );
 
-        return 1;
+            return 1;
+        }
     }
 }

@@ -1,11 +1,14 @@
-namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+using System.Collections.Generic;
 
-/// <summary>
-/// This service determines which paths to examine, and provides
-/// the shape type based on the template file paths discovered.
-/// </summary>
-public interface IShapeTemplateHarvester
+namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
-    IEnumerable<string> SubPaths();
-    IEnumerable<HarvestShapeHit> HarvestShape(HarvestShapeInfo info);
+    /// <summary>
+    /// This service determines which paths to examine, and provides
+    /// the shape type based on the template file paths discovered.
+    /// </summary>
+    public interface IShapeTemplateHarvester
+    {
+        IEnumerable<string> SubPaths();
+        IEnumerable<HarvestShapeHit> HarvestShape(HarvestShapeInfo info);
+    }
 }

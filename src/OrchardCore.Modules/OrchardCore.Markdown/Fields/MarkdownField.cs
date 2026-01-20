@@ -1,8 +1,9 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Markdown.Fields;
-
-public class MarkdownField : ContentField
+namespace OrchardCore.Markdown.Fields
 {
-    public string Markdown { get; set; }
+    public class MarkdownField : ContentField
+    {
+        public string Markdown { get; set; }
+    }
 }

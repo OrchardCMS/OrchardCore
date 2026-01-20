@@ -1,6 +1,9 @@
-namespace OrchardCore.Cors.Settings;
+using System.Collections.Generic;
 
-public class CorsSettings
+namespace OrchardCore.Cors.Settings
 {
-    public IEnumerable<CorsPolicySetting> Policies { get; set; }
+    public class CorsSettings
+    {
+        public IEnumerable<CorsPolicySetting> Policies { get; set; }
+    }
 }

@@ -1,6 +1,7 @@
-namespace OrchardCore.Markdown.Services;
-
-public interface IMarkdownService
+namespace OrchardCore.Markdown.Services
 {
-    string ToHtml(string markdown);
+    public interface IMarkdownService
+    {
+        string ToHtml(string markdown);
+    }
 }

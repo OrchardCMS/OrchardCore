@@ -1,19 +1,22 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageQueries = new("ManageQueries", "Manage queries");
-    public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", "Execute Api - All queries", [ManageQueries]);
+    public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", "Execute Api - All queries", new[] { ManageQueries });
 
-    private static readonly Permission _executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", [ManageQueries, ExecuteApiAll]);
+    private static readonly Permission _executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", new[] { ManageQueries, ExecuteApiAll });
 
-    private readonly IQueryManager _queryManager;
     private readonly IEnumerable<Permission> _generalPermissions =
     [
         ManageQueries,
     ];
+
+    private readonly IQueryManager _queryManager;
 
     public Permissions(IQueryManager queryManager)
     {
@@ -28,9 +31,7 @@ public sealed class Permissions : IPermissionProvider
             ExecuteApiAll,
         };
 
-        var queries = await _queryManager.ListQueriesAsync(true);
-
-        foreach (var query in queries)
+        foreach (var query in await _queryManager.ListQueriesAsync())
         {
             list.Add(CreatePermissionForQuery(query.Name));
         }
@@ -42,12 +43,12 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Editor,
+            Name = "Editor",
             Permissions = _generalPermissions,
         },
     ];

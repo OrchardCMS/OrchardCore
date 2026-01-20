@@ -1,20 +1,20 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers;
 
-public sealed class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver<FormElementLabelPart>
+public class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver<FormElementLabelPart>
 {
-    public override IDisplayResult Display(FormElementLabelPart part, BuildPartDisplayContext context)
+    public override IDisplayResult Display(FormElementLabelPart part)
     {
-        return View("FormElementLabelPart", part)
-            .Location(OrchardCoreConstants.DisplayType.Detail, "Content:before");
+        return View("FormElementLabelPart", part).Location("Detail", "Content:before");
     }
 
-    public override IDisplayResult Edit(FormElementLabelPart part, BuildPartEditorContext context)
+    public override IDisplayResult Edit(FormElementLabelPart part)
     {
         return Initialize<FormElementLabelPartViewModel>("FormElementLabelPart_Fields_Edit", m =>
         {
@@ -23,15 +23,16 @@ public sealed class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver
         });
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(FormElementLabelPart part, UpdatePartEditorContext context)
+    public async override Task<IDisplayResult> UpdateAsync(FormElementLabelPart part, IUpdateModel updater)
     {
         var viewModel = new FormElementLabelPartViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        {
+            part.Label = viewModel.Label;
+            part.Option = viewModel.LabelOption;
+        }
 
-        part.Label = viewModel.Label;
-        part.Option = viewModel.LabelOption;
-
-        return Edit(part, context);
+        return Edit(part);
     }
 }

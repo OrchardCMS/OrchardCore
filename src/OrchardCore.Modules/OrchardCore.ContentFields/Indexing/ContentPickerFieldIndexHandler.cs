@@ -1,33 +1,35 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.ContentFields.Indexing;
-
-public class ContentPickerFieldIndexHandler : ContentFieldIndexHandler<ContentPickerField>
+namespace OrchardCore.ContentFields.Indexing
 {
-    public override Task BuildIndexAsync(ContentPickerField field, BuildFieldIndexContext context)
+    public class ContentPickerFieldIndexHandler : ContentFieldIndexHandler<ContentPickerField>
     {
-        var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
-
-        if (field.ContentItemIds.Length > 0)
+        public override Task BuildIndexAsync(ContentPickerField field, BuildFieldIndexContext context)
         {
-            foreach (var contentItemId in field.ContentItemIds)
+            var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
+
+            if (field.ContentItemIds.Length > 0)
+            {
+                foreach (var contentItemId in field.ContentItemIds)
+                {
+                    foreach (var key in context.Keys)
+                    {
+                        context.DocumentIndex.Set(key, contentItemId, options);
+                    }
+                }
+            }
+            else
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key, contentItemId, options);
+                    context.DocumentIndex.Set(key, IndexingConstants.NullValue, options);
                 }
             }
-        }
-        else
-        {
-            foreach (var key in context.Keys)
-            {
-                context.DocumentIndex.Set(key, ContentIndexingConstants.NullValue, options);
-            }
-        }
 
-        return Task.CompletedTask;
+            return Task.CompletedTask;
+        }
     }
 }

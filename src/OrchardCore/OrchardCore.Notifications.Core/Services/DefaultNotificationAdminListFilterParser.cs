@@ -2,7 +2,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.Notifications.Services;
 
-public sealed class DefaultNotificationAdminListFilterParser : INotificationAdminListFilterParser
+public class DefaultNotificationAdminListFilterParser : INotificationAdminListFilterParser
 {
     private readonly IQueryParser<Notification> _parser;
 

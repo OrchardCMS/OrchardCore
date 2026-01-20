@@ -1,6 +1,9 @@
-namespace OrchardCore.Layers.Models;
+using System;
 
-public class LayerSettings
+namespace OrchardCore.Layers.Models
 {
-    public string[] Zones { get; set; } = [];
+    public class LayerSettings
+    {
+        public string[] Zones { get; set; } = [];
+    }
 }

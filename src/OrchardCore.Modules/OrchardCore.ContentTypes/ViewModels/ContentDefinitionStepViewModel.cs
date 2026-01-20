@@ -1,10 +1,11 @@
-namespace OrchardCore.ContentTypes.ViewModels;
-
-public class ContentDefinitionStepViewModel
+namespace OrchardCore.ContentTypes.ViewModels
 {
-    public string[] ContentTypes { get; set; }
+    public class ContentDefinitionStepViewModel
+    {
+        public string[] ContentTypes { get; set; }
 
-    public string[] ContentParts { get; set; }
+        public string[] ContentParts { get; set; }
 
-    public bool IncludeAll { get; internal set; }
+        public bool IncludeAll { get; internal set; }
+    }
 }

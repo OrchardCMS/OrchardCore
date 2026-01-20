@@ -1,14 +1,15 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Layers.Deployment;
-
-/// <summary>
-/// Adds layers to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class AllLayersDeploymentStep : DeploymentStep
+namespace OrchardCore.Layers.Deployment
 {
-    public AllLayersDeploymentStep()
+    /// <summary>
+    /// Adds layers to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class AllLayersDeploymentStep : DeploymentStep
     {
-        Name = "AllLayers";
+        public AllLayersDeploymentStep()
+        {
+            Name = "AllLayers";
+        }
     }
 }

@@ -1,61 +1,64 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Configuration;
 
-namespace OrchardCore.Environment.Shell.Configuration;
-
-public static class ConfigurationSectionExtensions
+namespace OrchardCore.Environment.Shell.Configuration
 {
-    /// <summary>
-    /// A helper method that gets a configuration section using the new format (using single underscore) while being backward compatible with the dot-notation.
-    /// Not to be used by new code - new code should always use a single underscore when naming configuration keys that require separating segments.
-    /// Examples:
-    /// Good: "OrchardCore_Media_Azure".
-    /// Bad: "OrchardCore.Media.Azure".
-    /// See https://github.com/OrchardCMS/OrchardCore/issues/3766.
-    /// </summary>
-    public static IConfigurationSection GetSectionCompat(this IConfiguration configuration, string key)
+    public static class ConfigurationSectionExtensions
     {
-        var section = configuration.GetSection(key);
-
-        return section.Exists()
-            ? section
-            : key.Contains('_')
-                ? configuration.GetSection(key.Replace('_', '.'))
-                : section;
-    }
-
-    public static JsonNode AsJsonNode(this IConfiguration configuration)
-    {
-        if (configuration is IConfigurationSection configurationSection && configurationSection.Value != null)
+        /// <summary>
+        /// A helper method that gets a configuration section using the new format (using single underscore) while being backward compatible with the dot-notation.
+        /// Not to be used by new code - new code should always use a single underscore when naming configuration keys that require separating segments.
+        /// Examples:
+        /// Good: "OrchardCore_Media_Azure".
+        /// Bad: "OrchardCore.Media.Azure".
+        /// See https://github.com/OrchardCMS/OrchardCore/issues/3766.
+        /// </summary>
+        public static IConfigurationSection GetSectionCompat(this IConfiguration configuration, string key)
         {
-            return JsonValue.Create(configurationSection.Value);
+            var section = configuration.GetSection(key);
+
+            return section.Exists()
+                ? section
+                : key.Contains('_')
+                    ? configuration.GetSection(key.Replace('_', '.'))
+                    : section;
         }
 
-        var children = configuration.GetChildren().ToList();
-
-        if (children.Count == 0)
+        public static JsonNode AsJsonNode(this IConfiguration configuration)
         {
-            return null;
-        }
-
-        if (children[0].Key == "0")
-        {
-            var array = new JsonArray();
-
-            foreach (var child in children)
+            if (configuration is IConfigurationSection configurationSection && configurationSection.Value != null)
             {
-                array.Add(child.AsJsonNode());
+                return JsonValue.Create(configurationSection.Value);
             }
 
-            return array;
-        }
+            var children = configuration.GetChildren().ToList();
 
-        var result = new JsonObject();
-        foreach (var child in children)
-        {
-            result.TryAdd(child.Key, child.AsJsonNode());
-        }
+            if (children.Count == 0)
+            {
+                return null;
+            }
 
-        return result;
+            if (children[0].Key == "0")
+            {
+                var array = new JsonArray();
+
+                foreach (var child in children)
+                {
+                    array.Add(child.AsJsonNode());
+                }
+
+                return array;
+            }
+
+            var result = new JsonObject();
+            foreach (var child in children)
+            {
+                result.TryAdd(child.Key, child.AsJsonNode());
+            }
+
+            return result;
+        }
     }
 }

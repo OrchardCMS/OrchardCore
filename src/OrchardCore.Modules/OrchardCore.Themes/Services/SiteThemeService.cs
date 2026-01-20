@@ -1,43 +1,46 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Themes.Services;
-
-public class SiteThemeService : ISiteThemeService
+namespace OrchardCore.Themes.Services
 {
-    private readonly ISiteService _siteService;
-    private readonly IExtensionManager _extensionManager;
-
-    public SiteThemeService(
-        ISiteService siteService,
-        IExtensionManager extensionManager)
+    public class SiteThemeService : ISiteThemeService
     {
-        _siteService = siteService;
-        _extensionManager = extensionManager;
-    }
+        private readonly ISiteService _siteService;
+        private readonly IExtensionManager _extensionManager;
 
-    public async Task<IExtensionInfo> GetSiteThemeAsync()
-    {
-        var currentThemeName = await GetSiteThemeNameAsync();
-        if (string.IsNullOrEmpty(currentThemeName))
+        public SiteThemeService(
+            ISiteService siteService,
+            IExtensionManager extensionManager)
         {
-            return null;
+            _siteService = siteService;
+            _extensionManager = extensionManager;
         }
 
-        return _extensionManager.GetExtension(currentThemeName);
-    }
+        public async Task<IExtensionInfo> GetSiteThemeAsync()
+        {
+            var currentThemeName = await GetSiteThemeNameAsync();
+            if (string.IsNullOrEmpty(currentThemeName))
+            {
+                return null;
+            }
 
-    public async Task SetSiteThemeAsync(string themeName)
-    {
-        var site = await _siteService.LoadSiteSettingsAsync();
-        site.Properties["CurrentThemeName"] = themeName;
-        await _siteService.UpdateSiteSettingsAsync(site);
-    }
+            return _extensionManager.GetExtension(currentThemeName);
+        }
 
-    public async Task<string> GetSiteThemeNameAsync()
-    {
-        var site = await _siteService.GetSiteSettingsAsync();
+        public async Task SetSiteThemeAsync(string themeName)
+        {
+            var site = await _siteService.LoadSiteSettingsAsync();
+            site.Properties["CurrentThemeName"] = themeName;
+            await _siteService.UpdateSiteSettingsAsync(site);
+        }
 
-        return (string)site.Properties["CurrentThemeName"];
+        public async Task<string> GetSiteThemeNameAsync()
+        {
+            var site = await _siteService.GetSiteSettingsAsync();
+
+            return (string)site.Properties["CurrentThemeName"];
+        }
     }
 }

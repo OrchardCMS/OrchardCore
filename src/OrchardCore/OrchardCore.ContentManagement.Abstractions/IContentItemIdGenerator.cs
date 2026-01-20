@@ -1,6 +1,7 @@
-namespace OrchardCore.ContentManagement;
-
-public interface IContentItemIdGenerator
+namespace OrchardCore.ContentManagement
 {
-    string GenerateUniqueId(ContentItem contentItem);
+    public interface IContentItemIdGenerator
+    {
+        string GenerateUniqueId(ContentItem contentItem);
+    }
 }

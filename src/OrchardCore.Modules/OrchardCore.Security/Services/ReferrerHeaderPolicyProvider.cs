@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Security.Services;
-
-public class ReferrerHeaderPolicyProvider : HeaderPolicyProvider
+namespace OrchardCore.Security.Services
 {
-    public override void ApplyPolicy(HttpContext httpContext)
+    public class ReferrerHeaderPolicyProvider : HeaderPolicyProvider
     {
-        httpContext.Response.Headers[SecurityHeaderNames.ReferrerPolicy] = Options.ReferrerPolicy;
+        public override void ApplyPolicy(HttpContext httpContext)
+        {
+            httpContext.Response.Headers[SecurityHeaderNames.ReferrerPolicy] = Options.ReferrerPolicy;
+        }
     }
 }

@@ -1,8 +1,9 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Facebook.Widgets.Models;
-
-public class FacebookPluginPart : ContentPart
+namespace OrchardCore.Facebook.Widgets.Models
 {
-    public string Liquid { get; set; }
+    public class FacebookPluginPart : ContentPart
+    {
+        public string Liquid { get; set; }
+    }
 }

@@ -1,6 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
@@ -8,7 +12,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public sealed class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver<User, UserNotificationPreferencesPart>
+public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver<User, UserNotificationPreferencesPart>
 {
     private readonly IEnumerable<INotificationMethodProvider> _notificationMethodProviders;
 
@@ -50,37 +54,38 @@ public sealed class UserNotificationPreferencesPartDisplayDriver : SectionDispla
         return Task.FromResult<IDisplayResult>(result);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(User user, UserNotificationPreferencesPart part, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(User user, UserNotificationPreferencesPart part, IUpdateModel updater, BuildEditorContext context)
     {
         var model = new UserNotificationViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-        var sortedMethods = new List<string>(model.SortedMethods ?? []);
-
-        if (sortedMethods.Count > 0)
+        if (await updater.TryUpdateModelAsync(model, Prefix))
         {
-            // Important to execute this code only when sortedMethods has at least one element to avoid exception.
-            // Store all methods in the same order they appear.
-            part.Methods = _notificationMethodProviders
-                .OrderBy(provider => sortedMethods.IndexOf(provider.Method))
-                .ThenBy(provider => provider.Name.ToString())
-                .Select(x => x.Method)
+            var sortedMethods = new List<string>(model.SortedMethods ?? []);
+
+            if (sortedMethods.Count > 0)
+            {
+                // Important to execute this code only when sortedMethods has at least one element to avoid exception.
+                // Store all methods in the same order they appear.
+                part.Methods = _notificationMethodProviders
+                    .OrderBy(provider => sortedMethods.IndexOf(provider.Method))
+                    .ThenBy(provider => provider.Name.ToString())
+                    .Select(x => x.Method)
+                    .ToArray();
+            }
+            else
+            {
+                part.Methods = _notificationMethodProviders.OrderBy(provider => provider.Name.ToString())
+                    .Select(x => x.Method)
+                    .ToArray();
+            }
+
+            var selectedMethods = new List<string>(model.Methods ?? []);
+
+            // Store any method that is not selected as an optout.
+            part.Optout = _notificationMethodProviders.Where(provider => !selectedMethods.Contains(provider.Method))
+                .Select(provider => provider.Method)
                 .ToArray();
         }
-        else
-        {
-            part.Methods = _notificationMethodProviders.OrderBy(provider => provider.Name.ToString())
-                .Select(x => x.Method)
-                .ToArray();
-        }
-
-        var selectedMethods = new List<string>(model.Methods ?? []);
-
-        // Store any method that is not selected as an optout.
-        part.Optout = _notificationMethodProviders.Where(provider => !selectedMethods.Contains(provider.Method))
-            .Select(provider => provider.Method)
-            .ToArray();
 
         return await EditAsync(user, part, context);
     }

@@ -1,18 +1,20 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace OrchardCore.DisplayManagement.TagHelpers;
-
-[HtmlTargetElement("clear-wrappers", ParentTag = ShapeMetadataTagHelper.TagName, TagStructure = TagStructure.WithoutEndTag)]
-public class ClearWrappersTagHelper : TagHelper
+namespace OrchardCore.DisplayManagement.TagHelpers
 {
-    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    [HtmlTargetElement("clear-wrappers", ParentTag = ShapeMetadataTagHelper.TagName, TagStructure = TagStructure.WithoutEndTag)]
+    public class ClearWrappersTagHelper : TagHelper
     {
-        var shape = (IShape)context.Items[typeof(IShape)];
+        public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        {
+            var shape = (IShape)context.Items[typeof(IShape)];
 
-        shape?.Metadata.Wrappers.Clear();
+            shape?.Metadata.Wrappers.Clear();
 
-        output.SuppressOutput();
+            output.SuppressOutput();
 
-        return Task.CompletedTask;
+            return Task.CompletedTask;
+        }
     }
 }

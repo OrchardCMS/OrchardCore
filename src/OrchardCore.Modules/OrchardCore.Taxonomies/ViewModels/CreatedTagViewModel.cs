@@ -1,7 +1,8 @@
-namespace OrchardCore.Taxonomies.ViewModels;
-
-public class CreatedTagViewModel
+namespace OrchardCore.Taxonomies.ViewModels
 {
-    public string ContentItemId { get; set; }
-    public string DisplayText { get; set; }
+    public class CreatedTagViewModel
+    {
+        public string ContentItemId { get; set; }
+        public string DisplayText { get; set; }
+    }
 }

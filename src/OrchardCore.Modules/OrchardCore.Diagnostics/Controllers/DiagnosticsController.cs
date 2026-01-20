@@ -3,7 +3,7 @@ using OrchardCore.Diagnostics.ViewModels;
 
 namespace OrchardCore.Diagnostics.Controllers;
 
-public sealed class DiagnosticsController : Controller
+public class DiagnosticsController : Controller
 {
     [IgnoreAntiforgeryToken]
     public IActionResult Error(int? status)

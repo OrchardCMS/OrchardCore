@@ -1,14 +1,19 @@
-namespace OrchardCore.Environment.Cache.CacheContextProviders;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Adds all context values as they are to the cache entries. This allows for known value variation.
-/// </summary>
-public class KnownValueCacheContextProvider : ICacheContextProvider
+namespace OrchardCore.Environment.Cache.CacheContextProviders
 {
-    public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
+    /// <summary>
+    /// Adds all context values as they are to the cache entries. This allows for known value variation.
+    /// </summary>
+    public class KnownValueCacheContextProvider : ICacheContextProvider
     {
-        entries.Add(new CacheContextEntry("", string.Join(",", contexts)));
+        public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
+        {
+            entries.Add(new CacheContextEntry("", string.Join(",", contexts)));
 
-        return Task.CompletedTask;
+            return Task.CompletedTask;
+        }
     }
 }

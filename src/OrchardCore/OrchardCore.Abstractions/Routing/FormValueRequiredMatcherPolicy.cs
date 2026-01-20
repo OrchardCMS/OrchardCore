@@ -1,75 +1,79 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
 
-namespace OrchardCore.Routing;
-
-public class FormValueRequiredMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy, IEndpointComparerPolicy
+namespace OrchardCore.Routing
 {
-    public FormValueRequiredMatcherPolicy()
+    public class FormValueRequiredMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy, IEndpointComparerPolicy
     {
-    }
-
-    public override int Order => int.MinValue + 100;
-
-    public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
-    {
-        for (var i = 0; i < endpoints.Count; i++)
+        public FormValueRequiredMatcherPolicy()
         {
-            var action = endpoints[i].Metadata.GetMetadata<ActionDescriptor>();
+        }
 
-            if (action != null)
+        public override int Order => int.MinValue + 100;
+
+        public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
+        {
+            for (var i = 0; i < endpoints.Count; i++)
             {
-                for (var n = 0; n < action.EndpointMetadata.Count; n++)
+                var action = endpoints[i].Metadata.GetMetadata<ActionDescriptor>();
+
+                if (action != null)
                 {
-                    if (action.EndpointMetadata[n] is FormValueRequiredAttribute)
+                    for (var n = 0; n < action.EndpointMetadata.Count; n++)
                     {
-                        return true;
+                        if (action.EndpointMetadata[n] is FormValueRequiredAttribute)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
+
+            return false;
         }
 
-        return false;
-    }
-
-    public Task ApplyAsync(HttpContext httpContext, CandidateSet candidates)
-    {
-        if (!HttpMethods.IsPost(httpContext.Request.Method))
+        public Task ApplyAsync(HttpContext httpContext, CandidateSet candidates)
         {
+            if (!HttpMethods.IsPost(httpContext.Request.Method))
+            {
+                return Task.CompletedTask;
+            }
+
+            for (var i = 0; i < candidates.Count; i++)
+            {
+                if (!candidates.IsValidCandidate(i))
+                {
+                    continue;
+                }
+
+                var required = candidates[i].Endpoint.Metadata.GetMetadata<FormValueRequiredAttribute>();
+
+                if (required == null)
+                {
+                    continue;
+                }
+
+                var value = httpContext.Request.Form[required.FormKey];
+
+                candidates.SetValidity(i, !string.IsNullOrEmpty(value));
+            }
+
             return Task.CompletedTask;
         }
 
-        for (var i = 0; i < candidates.Count; i++)
+        public IComparer<Endpoint> Comparer => new FormValueRequiredEndpointComparer();
+
+        private class FormValueRequiredEndpointComparer : EndpointMetadataComparer<FormValueRequiredAttribute>
         {
-            if (!candidates.IsValidCandidate(i))
+            protected override int CompareMetadata(FormValueRequiredAttribute x, FormValueRequiredAttribute y)
             {
-                continue;
+                return base.CompareMetadata(x, y);
             }
-
-            var required = candidates[i].Endpoint.Metadata.GetMetadata<FormValueRequiredAttribute>();
-
-            if (required == null)
-            {
-                continue;
-            }
-
-            var value = httpContext.Request.Form[required.FormKey];
-
-            candidates.SetValidity(i, !string.IsNullOrEmpty(value));
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public IComparer<Endpoint> Comparer => new FormValueRequiredEndpointComparer();
-
-    private sealed class FormValueRequiredEndpointComparer : EndpointMetadataComparer<FormValueRequiredAttribute>
-    {
-        protected override int CompareMetadata(FormValueRequiredAttribute x, FormValueRequiredAttribute y)
-        {
-            return base.CompareMetadata(x, y);
         }
     }
 }

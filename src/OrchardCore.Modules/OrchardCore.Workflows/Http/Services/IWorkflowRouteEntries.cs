@@ -1,11 +1,14 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Workflows.Http.Models;
 
-namespace OrchardCore.Workflows.Http.Services;
-
-internal interface IWorkflowRouteEntries
+namespace OrchardCore.Workflows.Http.Services
 {
-    Task<IEnumerable<WorkflowRoutesEntry>> GetWorkflowRouteEntriesAsync(string httpMethod, RouteValueDictionary routeValues);
-    Task AddEntriesAsync(IEnumerable<WorkflowRoutesEntry> entries);
-    Task RemoveEntriesAsync(string workflowId);
+    internal interface IWorkflowRouteEntries
+    {
+        Task<IEnumerable<WorkflowRoutesEntry>> GetWorkflowRouteEntriesAsync(string httpMethod, RouteValueDictionary routeValues);
+        Task AddEntriesAsync(IEnumerable<WorkflowRoutesEntry> entries);
+        Task RemoveEntriesAsync(string workflowId);
+    }
 }

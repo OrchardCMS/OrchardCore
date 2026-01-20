@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.Templates.Cms.Module.Controllers;
-
-public sealed class HomeController : Controller
+namespace OrchardCore.Templates.Cms.Module.Controllers
 {
-    public ActionResult Index()
+    public class HomeController : Controller
     {
-        return View();
+        public ActionResult Index()
+        {
+            return View();
+        }
     }
 }

@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminDashboard;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageAdminDashboard = new("ManageAdminDashboard", "Manage the Admin Dashboard");
     public static readonly Permission AccessAdminDashboard = new("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
@@ -25,27 +27,27 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Editor,
+            Name = "Editor",
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Moderator,
+            Name = "Moderator",
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Author,
+            Name = "Author",
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Contributor,
+            Name = "Contributor",
             Permissions = _generalPermissions,
         },
     ];

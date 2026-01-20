@@ -1,6 +1,7 @@
-namespace OrchardCore.Media.Events;
-
-public class MediaDeletedContext : MediaContextBase
+namespace OrchardCore.Media.Events
 {
-    public bool Result { get; set; }
+    public class MediaDeletedContext : MediaContextBase
+    {
+        public bool Result { get; set; }
+    }
 }

@@ -1,16 +1,17 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.AuditTrail.Services.Models;
 
-namespace OrchardCore.Users.AuditTrail.Registration;
-
-public sealed class UserRegistrationAuditTrailEventConfiguration : IConfigureOptions<AuditTrailOptions>
+namespace OrchardCore.Users.AuditTrail.Registration
 {
-    public const string User = nameof(User);
-    public const string Registered = nameof(Registered);
-
-    public void Configure(AuditTrailOptions options)
+    public class UserRegistrationAuditTrailEventConfiguration : IConfigureOptions<AuditTrailOptions>
     {
-        options.For<UserRegistrationAuditTrailEventConfiguration>(User, S => S["User"])
-            .WithEvent(Registered, S => S["Registered"], S => S["A user was successfully registered."], true);
+        public const string User = nameof(User);
+        public const string Registered = nameof(Registered);
+
+        public void Configure(AuditTrailOptions options)
+        {
+            options.For<UserRegistrationAuditTrailEventConfiguration>(User, S => S["User"])
+                .WithEvent(Registered, S => S["Registered"], S => S["A user was successfully registered."], true);
+        }
     }
 }

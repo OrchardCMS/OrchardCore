@@ -1,6 +1,9 @@
-namespace OrchardCore.Deployment.Remote.Models;
+using System.Collections.Generic;
 
-public class RemoteClientList
+namespace OrchardCore.Deployment.Remote.Models
 {
-    public List<RemoteClient> RemoteClients { get; set; } = [];
+    public class RemoteClientList
+    {
+        public List<RemoteClient> RemoteClients { get; set; } = [];
+    }
 }

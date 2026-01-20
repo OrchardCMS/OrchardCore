@@ -1,75 +1,63 @@
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.CustomSettings;
-
-public sealed class AdminMenu : AdminNavigationProvider
+namespace OrchardCore.CustomSettings
 {
-    private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
-
-    private readonly CustomSettingsService _customSettingsService;
-
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(
-        IStringLocalizer<AdminMenu> localizer,
-        CustomSettingsService customSettingsService)
+    public class AdminMenu : INavigationProvider
     {
-        S = localizer;
-        _customSettingsService = customSettingsService;
-    }
+        private readonly CustomSettingsService _customSettingsService;
+        protected readonly IStringLocalizer S;
+        private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
 
-    protected override async ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
+        public AdminMenu(
+            IStringLocalizer<AdminMenu> localizer,
+            CustomSettingsService customSettingsService)
         {
-            if (!_routeValues.TryGetValue(type.Name, out var routeValues))
+            S = localizer;
+            _customSettingsService = customSettingsService;
+        }
+
+        public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
             {
-                routeValues = new RouteValueDictionary()
+                return;
+            }
+
+            foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
+            {
+                if (!_routeValues.TryGetValue(type.Name, out var routeValues))
                 {
-                     { "area", "OrchardCore.Settings" },
-                     { "groupId", type.Name },
-                };
+                    routeValues = new RouteValueDictionary()
+                    {
+                         { "area", "OrchardCore.Settings" },
+                         { "groupId", type.Name },
+                    };
 
-                _routeValues[type.Name] = routeValues;
-            }
+                    _routeValues[type.Name] = routeValues;
+                }
 
-            var htmlName = type.Name.HtmlClassify();
+                var htmlName = type.Name.HtmlClassify();
 
-            if (NavigationHelper.UseLegacyFormat())
-            {
                 builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), customSettings => customSettings
-                            .Action("Index", "Admin", routeValues)
-                            .AddClass(htmlName)
-                            .Id(htmlName)
-                            .Permission(Permissions.CreatePermissionForType(type))
-                            .Resource(type.Name)
-                            .LocalNav()
+                    .Add(S["Configuration"], configuration => configuration
+                        .Add(S["Settings"], settings => settings
+                            .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
+                                .Action("Index", "Admin", routeValues)
+                                .AddClass(htmlName)
+                                .Id(htmlName)
+                                .Permission(Permissions.CreatePermissionForType(type))
+                                .Resource(type.Name)
+                                .LocalNav()
+                            )
                         )
-                    )
-                );
-
-                continue;
+                    );
             }
-
-            builder
-                .Add(S["Settings"], settings => settings
-                    .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
-                        .Action("Index", "Admin", routeValues)
-                        .AddClass(htmlName)
-                        .Id(htmlName)
-                        .Permission(Permissions.CreatePermissionForType(type))
-                        .Resource(type.Name)
-                        .LocalNav()
-                    )
-                );
         }
     }
 }

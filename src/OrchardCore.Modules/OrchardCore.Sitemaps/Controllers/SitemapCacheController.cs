@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -6,84 +8,84 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.ViewModels;
 
-namespace OrchardCore.Sitemaps.Controllers;
-
-[Admin("SitemapsCache/{action}/{cacheFileName?}", "SitemapsCache{action}")]
-public sealed class SitemapCacheController : Controller
+namespace OrchardCore.Sitemaps.Controllers
 {
-    private readonly IAuthorizationService _authorizationService;
-    private readonly ISitemapCacheProvider _sitemapCacheProvider;
-    private readonly INotifier _notifier;
-
-    internal readonly IHtmlLocalizer H;
-
-    public SitemapCacheController(
-        IAuthorizationService authorizationService,
-        ISitemapCacheProvider sitemapCacheProvider,
-        INotifier notifier,
-        IHtmlLocalizer<SitemapCacheController> htmlLocalizer
-        )
+    [Admin]
+    public class SitemapCacheController : Controller
     {
-        _authorizationService = authorizationService;
-        _sitemapCacheProvider = sitemapCacheProvider;
-        _notifier = notifier;
-        H = htmlLocalizer;
-    }
+        private readonly IAuthorizationService _authorizationService;
+        private readonly ISitemapCacheProvider _sitemapCacheProvider;
+        private readonly INotifier _notifier;
+        protected readonly IHtmlLocalizer H;
 
-    public async Task<IActionResult> List()
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
+        public SitemapCacheController(
+            IAuthorizationService authorizationService,
+            ISitemapCacheProvider sitemapCacheProvider,
+            INotifier notifier,
+            IHtmlLocalizer<SitemapCacheController> htmlLocalizer
+            )
         {
-            return Forbid();
+            _authorizationService = authorizationService;
+            _sitemapCacheProvider = sitemapCacheProvider;
+            _notifier = notifier;
+            H = htmlLocalizer;
         }
 
-        var model = new ListSitemapCacheViewModel
+        public async Task<IActionResult> List()
         {
-            CachedFileNames = (await _sitemapCacheProvider.ListAsync()).ToArray(),
-        };
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Forbid();
+            }
 
-        return View(model);
-    }
+            var model = new ListSitemapCacheViewModel
+            {
+                CachedFileNames = (await _sitemapCacheProvider.ListAsync()).ToArray()
+            };
 
-    [HttpPost]
-    public async Task<IActionResult> PurgeAll()
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
-        {
-            return Forbid();
+            return View(model);
         }
 
-        var hasErrors = await _sitemapCacheProvider.PurgeAllAsync();
-        if (hasErrors)
+        [HttpPost]
+        public async Task<IActionResult> PurgeAll()
         {
-            await _notifier.ErrorAsync(H["Sitemap cache purged, with errors."]);
-        }
-        else
-        {
-            await _notifier.InformationAsync(H["Sitemap cache purged."]);
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Forbid();
+            }
+
+            var hasErrors = await _sitemapCacheProvider.PurgeAllAsync();
+            if (hasErrors)
+            {
+                await _notifier.ErrorAsync(H["Sitemap cache purged, with errors."]);
+            }
+            else
+            {
+                await _notifier.InformationAsync(H["Sitemap cache purged."]);
+            }
+
+            return RedirectToAction(nameof(List));
         }
 
-        return RedirectToAction(nameof(List));
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Purge(string cacheFileName)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
+        [HttpPost]
+        public async Task<IActionResult> Purge(string cacheFileName)
         {
-            return Forbid();
-        }
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Forbid();
+            }
 
-        var failed = await _sitemapCacheProvider.PurgeAsync(cacheFileName);
-        if (failed)
-        {
-            await _notifier.ErrorAsync(H["Error purging sitemap cache item."]);
-        }
-        else
-        {
-            await _notifier.InformationAsync(H["Sitemap cache item purged."]);
-        }
+            var failed = await _sitemapCacheProvider.PurgeAsync(cacheFileName);
+            if (failed)
+            {
+                await _notifier.ErrorAsync(H["Error purging sitemap cache item."]);
+            }
+            else
+            {
+                await _notifier.InformationAsync(H["Sitemap cache item purged."]);
+            }
 
-        return RedirectToAction(nameof(List));
+            return RedirectToAction(nameof(List));
+        }
     }
 }

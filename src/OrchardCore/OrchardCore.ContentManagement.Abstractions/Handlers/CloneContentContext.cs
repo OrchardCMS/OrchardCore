@@ -1,12 +1,13 @@
-namespace OrchardCore.ContentManagement.Handlers;
-
-public class CloneContentContext : ContentContextBase
+namespace OrchardCore.ContentManagement.Handlers
 {
-    public ContentItem CloneContentItem { get; set; }
-
-    public CloneContentContext(ContentItem contentItem, ContentItem cloneContentItem)
-        : base(contentItem)
+    public class CloneContentContext : ContentContextBase
     {
-        CloneContentItem = cloneContentItem;
+        public ContentItem CloneContentItem { get; set; }
+
+        public CloneContentContext(ContentItem contentItem, ContentItem cloneContentItem)
+            : base(contentItem)
+        {
+            CloneContentItem = cloneContentItem;
+        }
     }
 }

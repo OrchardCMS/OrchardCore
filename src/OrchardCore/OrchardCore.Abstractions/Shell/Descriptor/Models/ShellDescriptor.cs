@@ -1,24 +1,27 @@
-namespace OrchardCore.Environment.Shell.Descriptor.Models;
+using System.Collections.Generic;
 
-/// <summary>
-/// Contains a snapshot of a tenant's enabled features.
-/// The information is drawn out of the shell via IShellDescriptorManager
-/// and is passed to the ICompositionStrategy to build the ShellBlueprint.
-/// </summary>
-public class ShellDescriptor
+namespace OrchardCore.Environment.Shell.Descriptor.Models
 {
     /// <summary>
-    /// Gets or sets the version number of the shell descriptor.
+    /// Contains a snapshot of a tenant's enabled features.
+    /// The information is drawn out of the shell via IShellDescriptorManager
+    /// and is passed to the ICompositionStrategy to build the ShellBlueprint.
     /// </summary>
-    public int SerialNumber { get; set; }
+    public class ShellDescriptor
+    {
+        /// <summary>
+        /// Gets or sets the version number of the shell descriptor.
+        /// </summary>
+        public int SerialNumber { get; set; }
 
-    /// <summary>
-    /// Gets or sets the list of features in the shell.
-    /// </summary>
-    public IList<ShellFeature> Features { get; set; } = [];
+        /// <summary>
+        /// Gets or sets the list of features in the shell.
+        /// </summary>
+        public IList<ShellFeature> Features { get; set; } = [];
 
-    /// <summary>
-    /// Gets or sets the list of installed features in the shell.
-    /// </summary>
-    public IList<InstalledShellFeature> Installed { get; set; } = [];
+        /// <summary>
+        /// Gets or sets the list of installed features in the shell.
+        /// </summary>
+        public IList<InstalledShellFeature> Installed { get; set; } = [];
+    }
 }

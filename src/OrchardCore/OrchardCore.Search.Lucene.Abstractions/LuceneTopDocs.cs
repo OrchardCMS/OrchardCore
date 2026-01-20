@@ -1,9 +1,10 @@
 using Lucene.Net.Search;
 
-namespace OrchardCore.Search.Lucene;
-
-public class LuceneTopDocs
+namespace OrchardCore.Search.Lucene
 {
-    public TopDocs TopDocs { get; set; }
-    public int Count { get; set; }
+    public class LuceneTopDocs
+    {
+        public TopDocs TopDocs { get; set; }
+        public int Count { get; set; }
+    }
 }

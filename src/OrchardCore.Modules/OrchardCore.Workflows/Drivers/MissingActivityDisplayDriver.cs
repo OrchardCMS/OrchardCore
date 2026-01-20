@@ -1,15 +1,14 @@
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Display;
 
-namespace OrchardCore.Workflows.Drivers;
-
-public sealed class MissingActivityDisplayDriver : ActivityDisplayDriver<MissingActivity>
+namespace OrchardCore.Workflows.Drivers
 {
-    public override IDisplayResult Display(MissingActivity activity, BuildDisplayContext context)
+    public class MissingActivityDisplayDriver : ActivityDisplayDriver<MissingActivity>
     {
-        return View($"MissingActivity_Fields_Design", activity)
-            .Location("Design", "Content");
+        public override IDisplayResult Display(MissingActivity activity)
+        {
+            return View($"MissingActivity_Fields_Design", activity).Location("Design", "Content");
+        }
     }
 }

@@ -1,6 +1,9 @@
-namespace OrchardCore.Search.Lucene;
+using System.Collections.Generic;
 
-public class LuceneOptions
+namespace OrchardCore.Search.Lucene
 {
-    public IList<ILuceneAnalyzer> Analyzers { get; } = [];
+    public class LuceneOptions
+    {
+        public IList<ILuceneAnalyzer> Analyzers { get; } = [];
+    }
 }

@@ -1,52 +1,56 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 
 #nullable enable
 
 namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicArray[{Count}]")]
-[JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicArray>))]
-public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IEnumerable<JsonNode?>
+public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 {
     private readonly JsonArray _jsonArray;
-    private readonly Dictionary<int, object?> _dictionary = [];
 
-    public JsonDynamicArray() => _jsonArray = [];
+    public readonly Dictionary<int, object?> _dictionary = new();
+
+    public JsonDynamicArray() => _jsonArray = new JsonArray();
 
     public JsonDynamicArray(JsonArray jsonArray) => _jsonArray = jsonArray;
 
     public int Count => _jsonArray.Count;
 
-    public override JsonNode Node => _jsonArray;
-
     public object? this[int index]
     {
-        get => GetValue(index);
-        set => SetValue(index, value);
-    }
+        get
+        {
+            var value = GetValue(index);
+            if (value is JsonDynamicValue jsonDynamicValue)
+            {
+                return jsonDynamicValue.JsonValue;
+            }
 
-    public bool Remove(JsonNode? item)
-    {
-        var index = _jsonArray.IndexOf(item);
-        _dictionary.Remove(index);
-
-        return _jsonArray.Remove(item);
-    }
-
-    public void RemoveAt(int index)
-    {
-        _dictionary.Remove(index);
-        _jsonArray.RemoveAt(index);
+            return value;
+        }
+        set
+        {
+            SetValue(index, value);
+        }
     }
 
     public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object? result)
     {
-        result = GetValue((int)indexes[0]);
+        var value = GetValue((int)indexes[0]);
+        if (value is JsonDynamicValue jsonDynamicValue)
+        {
+            result = jsonDynamicValue.Value;
+            return true;
+        }
+
+        result = value;
         return true;
     }
 
@@ -98,7 +102,7 @@ public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IE
         return null;
     }
 
-    public void SetValue(int index, object? value)
+    public void SetValue(int index, object? value, object? nodeValue = null)
     {
         if (value is null)
         {
@@ -109,7 +113,8 @@ public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IE
 
         if (value is not JsonNode)
         {
-            value = JNode.FromObject(value);
+            var jsonNode = JNode.FromObject(value);
+            SetValue(index, jsonNode, value);
         }
 
         if (value is JsonObject jsonObject)
@@ -129,21 +134,12 @@ public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IE
         if (value is JsonValue jsonValue)
         {
             _jsonArray[index] = jsonValue;
-            _dictionary[index] = new JsonDynamicValue(jsonValue);
+            _dictionary[index] = new JsonDynamicValue(jsonValue, nodeValue);
             return;
         }
     }
 
-    public IEnumerator<object?> GetEnumerator()
-    {
-        for (var i = 0; i < _jsonArray.Count; i++)
-        {
-            yield return GetValue(i);
-        }
-    }
-
-    IEnumerator<JsonNode?> IEnumerable<JsonNode?>.GetEnumerator()
-        => _jsonArray.AsEnumerable().GetEnumerator();
+    public IEnumerator<JsonNode?> GetEnumerator() => _jsonArray.AsEnumerable().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -173,7 +169,14 @@ public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IE
             return false;
         }
 
-        result = GetValue(index);
+        var value = GetValue(index);
+        if (value is JsonDynamicValue jsonDynamicValue)
+        {
+            result = jsonDynamicValue.Value;
+            return true;
+        }
+
+        result = value;
         return true;
     }
 

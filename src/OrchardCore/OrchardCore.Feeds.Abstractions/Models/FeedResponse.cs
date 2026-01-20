@@ -1,14 +1,17 @@
+using System;
+using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace OrchardCore.Feeds.Models;
-
-public class FeedResponse
+namespace OrchardCore.Feeds.Models
 {
-    public XElement Element { get; set; }
-    public IList<FeedItem> Items { get; } = [];
-    public IList<Action<ContextualizeContext>> Contextualizers { get; } = [];
-    public void Contextualize(Action<ContextualizeContext> contextualizer)
+    public class FeedResponse
     {
-        Contextualizers.Add(contextualizer);
+        public XElement Element { get; set; }
+        public IList<FeedItem> Items { get; } = [];
+        public IList<Action<ContextualizeContext>> Contextualizers { get; } = [];
+        public void Contextualize(Action<ContextualizeContext> contextualizer)
+        {
+            Contextualizers.Add(contextualizer);
+        }
     }
 }

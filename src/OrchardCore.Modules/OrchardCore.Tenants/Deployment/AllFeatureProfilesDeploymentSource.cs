@@ -1,33 +1,39 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Tenants.Services;
 
-namespace OrchardCore.Tenants.Deployment;
-
-public sealed class AllFeatureProfilesDeploymentSource
-    : DeploymentSourceBase<AllFeatureProfilesDeploymentStep>
+namespace OrchardCore.Tenants.Deployment
 {
-    private readonly FeatureProfilesManager _featureProfilesManager;
-
-    public AllFeatureProfilesDeploymentSource(FeatureProfilesManager featureProfilesManager)
+    public class AllFeatureProfilesDeploymentSource : IDeploymentSource
     {
-        _featureProfilesManager = featureProfilesManager;
-    }
+        private readonly FeatureProfilesManager _featureProfilesManager;
 
-    protected override async Task ProcessAsync(AllFeatureProfilesDeploymentStep step, DeploymentPlanResult result)
-    {
-        var featureProfileObjects = new JsonObject();
-        var featureProfiles = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
-
-        foreach (var featureProfile in featureProfiles.FeatureProfiles)
+        public AllFeatureProfilesDeploymentSource(FeatureProfilesManager featureProfilesManager)
         {
-            featureProfileObjects[featureProfile.Key] = JObject.FromObject(featureProfile.Value);
+            _featureProfilesManager = featureProfilesManager;
         }
 
-        result.Steps.Add(new JsonObject
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            ["name"] = "FeatureProfiles",
-            ["FeatureProfiles"] = featureProfileObjects,
-        });
+            if (step is not AllFeatureProfilesDeploymentStep)
+            {
+                return;
+            }
+
+            var featureProfileObjects = new JsonObject();
+            var featureProfiles = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
+
+            foreach (var featureProfile in featureProfiles.FeatureProfiles)
+            {
+                featureProfileObjects[featureProfile.Key] = JObject.FromObject(featureProfile.Value);
+            }
+
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "FeatureProfiles",
+                ["FeatureProfiles"] = featureProfileObjects,
+            });
+        }
     }
 }

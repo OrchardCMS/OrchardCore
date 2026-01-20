@@ -1,14 +1,15 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Lists.Feeds;
-
-public class ListFeedEditViewModel
+namespace OrchardCore.Lists.Feeds
 {
-    public bool DisableRssFeed { get; set; }
+    public class ListFeedEditViewModel
+    {
+        public bool DisableRssFeed { get; set; }
 
-    public string FeedProxyUrl { get; set; }
+        public string FeedProxyUrl { get; set; }
 
-    public int FeedItemsCount { get; set; } = ListFeedQuery.DefaultItemsCount;
+        public int FeedItemsCount { get; set; } = ListFeedQuery.DefaultItemsCount;
 
-    public ContentItem ContentItem { get; set; }
+        public ContentItem ContentItem { get; set; }
+    }
 }

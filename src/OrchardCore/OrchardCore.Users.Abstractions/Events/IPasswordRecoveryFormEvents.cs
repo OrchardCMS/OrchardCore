@@ -1,29 +1,33 @@
-namespace OrchardCore.Users.Events;
+using System;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Contract for password recovery events.
-/// </summary>
-public interface IPasswordRecoveryFormEvents
+namespace OrchardCore.Users.Events
 {
     /// <summary>
-    /// Occurs during the user password is being reset.
+    /// Contract for password recovery events.
     /// </summary>
-    /// <param name="reportError">The reported error if failure happened during the rest process.</param>
-    Task ResettingPasswordAsync(Action<string, string> reportError);
+    public interface IPasswordRecoveryFormEvents
+    {
+        /// <summary>
+        /// Occurs during the user password is being reset.
+        /// </summary>
+        /// <param name="reportError">The reported error if failure happened during the rest process.</param>
+        Task ResettingPasswordAsync(Action<string, string> reportError);
 
-    /// <summary>
-    /// Occurs after the user password has been reset.
-    /// </summary>
-    Task PasswordResetAsync(PasswordRecoveryContext context);
+        /// <summary>
+        /// Occurs after the user password has been reset.
+        /// </summary>
+        Task PasswordResetAsync(PasswordRecoveryContext context);
 
-    /// <summary>
-    /// Occurs during the user password recovery.
-    /// </summary>
-    /// <param name="reportError">The reported error if failure happened during the recovery process.</param>
-    Task RecoveringPasswordAsync(Action<string, string> reportError);
+        /// <summary>
+        /// Occurs during the user password recovery.
+        /// </summary>
+        /// <param name="reportError">The reported error if failure happened during the recovery process.</param>
+        Task RecoveringPasswordAsync(Action<string, string> reportError);
 
-    /// <summary>
-    /// Occurs after the user password has been recovered.
-    /// </summary>
-    Task PasswordRecoveredAsync(PasswordRecoveryContext context);
+        /// <summary>
+        /// Occurs after the user password has been recovered.
+        /// </summary>
+        Task PasswordRecoveredAsync(PasswordRecoveryContext context);
+    }
 }

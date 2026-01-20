@@ -1,34 +1,37 @@
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 
-namespace OrchardCore.Environment.Shell;
-
-public class DefaultTenantOnlyFeatureValidationProvider : IFeatureValidationProvider
+namespace OrchardCore.Environment.Shell
 {
-    private readonly IExtensionManager _extensionManager;
-    private readonly ShellSettings _shellSettings;
-
-    public DefaultTenantOnlyFeatureValidationProvider(
-        IExtensionManager extensionManager,
-        ShellSettings shellSettings
-        )
+    public class DefaultTenantOnlyFeatureValidationProvider : IFeatureValidationProvider
     {
-        _extensionManager = extensionManager;
-        _shellSettings = shellSettings;
-    }
+        private readonly IExtensionManager _extensionManager;
+        private readonly ShellSettings _shellSettings;
 
-    public ValueTask<bool> IsFeatureValidAsync(string id)
-    {
-        var features = _extensionManager.GetFeatures((IEnumerable<string>)[id]);
-        if (!features.Any())
+        public DefaultTenantOnlyFeatureValidationProvider(
+            IExtensionManager extensionManager,
+            ShellSettings shellSettings
+            )
         {
-            return ValueTask.FromResult(false);
+            _extensionManager = extensionManager;
+            _shellSettings = shellSettings;
         }
 
-        if (_shellSettings.IsDefaultShell())
+        public ValueTask<bool> IsFeatureValidAsync(string id)
         {
-            return ValueTask.FromResult(true);
-        }
+            var features = _extensionManager.GetFeatures([id]);
+            if (!features.Any())
+            {
+                return new ValueTask<bool>(false);
+            }
 
-        return ValueTask.FromResult(!features.Any(f => f.DefaultTenantOnly));
+            if (_shellSettings.IsDefaultShell())
+            {
+                return new ValueTask<bool>(true);
+            }
+
+            return new ValueTask<bool>(!features.Any(f => f.DefaultTenantOnly));
+        }
     }
 }

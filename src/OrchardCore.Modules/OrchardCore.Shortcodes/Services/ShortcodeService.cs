@@ -1,29 +1,32 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Shortcodes;
 
-namespace OrchardCore.Shortcodes.Services;
-
-public class ShortcodeService : IShortcodeService
+namespace OrchardCore.Shortcodes.Services
 {
-    private readonly IEnumerable<IShortcodeContextProvider> _shortcodeContextProviders;
-    private readonly ShortcodesProcessor _shortcodesProcessor;
-
-    public ShortcodeService(
-        IEnumerable<IShortcodeProvider> shortcodeProviders,
-        IEnumerable<IShortcodeContextProvider> shortcodeContextProviders)
+    public class ShortcodeService : IShortcodeService
     {
-        _shortcodesProcessor = new ShortcodesProcessor(shortcodeProviders);
-        _shortcodeContextProviders = shortcodeContextProviders;
-    }
+        private readonly IEnumerable<IShortcodeContextProvider> _shortcodeContextProviders;
+        private readonly ShortcodesProcessor _shortcodesProcessor;
 
-    public ValueTask<string> ProcessAsync(string input, Context context = null)
-    {
-        context ??= new Context();
-
-        foreach (var contextProvider in _shortcodeContextProviders)
+        public ShortcodeService(
+            IEnumerable<IShortcodeProvider> shortcodeProviders,
+            IEnumerable<IShortcodeContextProvider> shortcodeContextProviders)
         {
-            contextProvider.Contextualize(context);
+            _shortcodesProcessor = new ShortcodesProcessor(shortcodeProviders);
+            _shortcodeContextProviders = shortcodeContextProviders;
         }
 
-        return _shortcodesProcessor.EvaluateAsync(input, context);
+        public ValueTask<string> ProcessAsync(string input, Context context = null)
+        {
+            context ??= new Context();
+
+            foreach (var contextProvider in _shortcodeContextProviders)
+            {
+                contextProvider.Contextualize(context);
+            }
+
+            return _shortcodesProcessor.EvaluateAsync(input, context);
+        }
     }
 }

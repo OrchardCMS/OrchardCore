@@ -2,24 +2,25 @@ using OrchardCore.Entities;
 using OrchardCore.Entities.Scripting;
 using OrchardCore.Scripting;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-/// <summary>
-/// Provides an extension method for <see cref="OrchardCoreBuilder"/>.
-/// </summary>
-public static partial class OrchardCoreBuilderExtensions
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// Adds IdGeneration services.
+    /// Provides an extension method for <see cref="OrchardCoreBuilder"/>.
     /// </summary>
-    /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
-    public static OrchardCoreBuilder AddIdGeneration(this OrchardCoreBuilder builder)
+    public static partial class OrchardCoreBuilderExtensions
     {
-        var services = builder.ApplicationServices;
+        /// <summary>
+        /// Adds IdGeneration services.
+        /// </summary>
+        /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
+        public static OrchardCoreBuilder AddIdGeneration(this OrchardCoreBuilder builder)
+        {
+            var services = builder.ApplicationServices;
 
-        services.AddSingleton<IIdGenerator, DefaultIdGenerator>();
-        services.AddSingleton<IGlobalMethodProvider, IdGeneratorMethod>();
+            services.AddSingleton<IIdGenerator, DefaultIdGenerator>();
+            services.AddSingleton<IGlobalMethodProvider, IdGeneratorMethod>();
 
-        return builder;
+            return builder;
+        }
     }
 }

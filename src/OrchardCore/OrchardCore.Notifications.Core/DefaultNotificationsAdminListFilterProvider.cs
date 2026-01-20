@@ -1,4 +1,6 @@
+using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Navigation.Core;
@@ -10,7 +12,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Notifications;
 
-public sealed class DefaultNotificationsAdminListFilterProvider : INotificationAdminListFilterProvider
+public class DefaultNotificationsAdminListFilterProvider : INotificationAdminListFilterProvider
 {
     public void Build(QueryEngineBuilder<Notification> builder)
     {
@@ -33,7 +35,7 @@ public sealed class DefaultNotificationsAdminListFilterProvider : INotificationA
                         }
                     }
 
-                    return ValueTask.FromResult(query);
+                    return new ValueTask<IQuery<Notification>>(query);
                 })
                 .MapTo<ListNotificationOptions>((val, model) =>
                 {
@@ -58,10 +60,10 @@ public sealed class DefaultNotificationsAdminListFilterProvider : INotificationA
                 {
                     if (Enum.TryParse<NotificationOrder>(val, true, out var sort) && sort == NotificationOrder.Oldest)
                     {
-                        return ValueTask.FromResult<IQuery<Notification>>(query.With<NotificationIndex>().OrderBy(x => x.CreatedAtUtc));
+                        return new ValueTask<IQuery<Notification>>(query.With<NotificationIndex>().OrderBy(x => x.CreatedAtUtc));
                     }
 
-                    return ValueTask.FromResult<IQuery<Notification>>(query.With<NotificationIndex>().OrderByDescending(x => x.CreatedAtUtc));
+                    return new ValueTask<IQuery<Notification>>(query.With<NotificationIndex>().OrderByDescending(x => x.CreatedAtUtc));
                 })
                 .MapTo<ListNotificationOptions>((val, model) =>
                 {
@@ -96,7 +98,7 @@ public sealed class DefaultNotificationsAdminListFilterProvider : INotificationA
 
                     var userId = httpAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                    return ValueTask.FromResult<IQuery<Notification>>(query.With<NotificationIndex>(t => t.UserId == userId));
+                    return new ValueTask<IQuery<Notification>>(query.With<NotificationIndex>(t => t.UserId == userId));
                 })
                 .AlwaysRun()
             );

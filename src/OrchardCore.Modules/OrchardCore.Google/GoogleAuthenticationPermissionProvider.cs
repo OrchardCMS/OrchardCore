@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Google;
 
-public sealed class GoogleAuthenticationPermissionProvider : IPermissionProvider
+public class GoogleAuthenticationPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageGoogleAuthentication = Permissions.ManageGoogleAuthentication;
 
@@ -18,7 +20,7 @@ public sealed class GoogleAuthenticationPermissionProvider : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

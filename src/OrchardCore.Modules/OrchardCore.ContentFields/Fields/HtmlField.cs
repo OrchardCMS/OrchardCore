@@ -1,8 +1,9 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentFields.Fields;
-
-public class HtmlField : ContentField
+namespace OrchardCore.ContentFields.Fields
 {
-    public string Html { get; set; }
+    public class HtmlField : ContentField
+    {
+        public string Html { get; set; }
+    }
 }

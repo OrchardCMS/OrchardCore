@@ -2,24 +2,24 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 
-namespace OrchardCore.Mvc.Routing;
-
-public class DefaultAreaControllerRouteMapper : IAreaControllerRouteMapper
+namespace OrchardCore.Mvc.Routing
 {
-    private const string DefaultAreaPattern = "/{area}/{controller}/{action}/{id?}";
-
-    public int Order => 1000;
-
-    public bool TryMapAreaControllerRoute(IEndpointRouteBuilder routes, ControllerActionDescriptor descriptor)
+    public class DefaultAreaControllerRouteMapper : IAreaControllerRouteMapper
     {
-        var (area, controller, action) = RoutingHelper.GetMvcRouteValues(descriptor);
+        private const string DefaultAreaPattern = "/{area}/{controller}/{action}/{id?}";
 
-        routes.MapControllerRoute(
-           name: descriptor.DisplayName,
-           pattern: RoutingHelper.ReplaceMvcPlaceholders(DefaultAreaPattern, area, controller, action),
-           defaults: new { area, controller, action }
-        );
+        public int Order => 1000;
 
-        return true;
+        public bool TryMapAreaControllerRoute(IEndpointRouteBuilder routes, ControllerActionDescriptor descriptor)
+        {
+            routes.MapAreaControllerRoute(
+               name: descriptor.DisplayName,
+               areaName: descriptor.RouteValues["area"],
+               pattern: DefaultAreaPattern.Replace("{action}", descriptor.ActionName),
+               defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
+            );
+
+            return true;
+        }
     }
 }

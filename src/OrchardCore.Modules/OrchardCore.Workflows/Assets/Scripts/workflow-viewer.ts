@@ -1,8 +1,7 @@
 ///<reference path='../Lib/jquery/typings.d.ts' />
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
-
-import './workflow-models';
-import WorkflowCanvas from './workflow-canvas';
+///<reference path='./workflow-models.ts' />
+///<reference path='./workflow-canvas.ts' />
 
 class WorkflowViewer extends WorkflowCanvas {
     private jsPlumbInstance: jsPlumbInstance;

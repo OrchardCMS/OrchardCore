@@ -4,26 +4,27 @@ using OrchardCore.MetaWeblog;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;
 
-namespace OrchardCore.Html.RemotePublishing;
-
-public sealed class HtmlBodyMetaWeblogDriver : MetaWeblogDriver
+namespace OrchardCore.Html.RemotePublishing
 {
-    public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
+    public class HtmlBodyMetaWeblogDriver : MetaWeblogDriver
     {
-        var bodyPart = contentItem.As<HtmlBodyPart>();
-        if (bodyPart == null)
+        public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
         {
-            return;
+            var bodyPart = contentItem.As<HtmlBodyPart>();
+            if (bodyPart == null)
+            {
+                return;
+            }
+
+            rpcStruct.Set("description", bodyPart.Html);
         }
 
-        rpcStruct.Set("description", bodyPart.Html);
-    }
-
-    public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
-    {
-        if (contentItem.As<HtmlBodyPart>() != null)
+        public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
         {
-            contentItem.Alter<HtmlBodyPart>(x => x.Html = rpcStruct.Optional<string>("description"));
+            if (contentItem.As<HtmlBodyPart>() != null)
+            {
+                contentItem.Alter<HtmlBodyPart>(x => x.Html = rpcStruct.Optional<string>("description"));
+            }
         }
     }
 }

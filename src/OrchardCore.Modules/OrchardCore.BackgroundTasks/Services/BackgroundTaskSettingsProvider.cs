@@ -1,30 +1,32 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
 
-namespace OrchardCore.BackgroundTasks.Services;
-
-public class BackgroundTaskSettingsProvider : IBackgroundTaskSettingsProvider
+namespace OrchardCore.BackgroundTasks.Services
 {
-    private readonly BackgroundTaskManager _backgroundTaskManager;
-    private readonly ISignal _signal;
-
-    public BackgroundTaskSettingsProvider(BackgroundTaskManager backgroundTaskManager, ISignal signal)
+    public class BackgroundTaskSettingsProvider : IBackgroundTaskSettingsProvider
     {
-        _backgroundTaskManager = backgroundTaskManager;
-        _signal = signal;
-    }
+        private readonly BackgroundTaskManager _backgroundTaskManager;
+        private readonly ISignal _signal;
 
-    public IChangeToken ChangeToken => _signal.GetToken(nameof(BackgroundTaskSettings));
-
-    public async Task<BackgroundTaskSettings> GetSettingsAsync(IBackgroundTask task)
-    {
-        var document = await _backgroundTaskManager.GetDocumentAsync();
-
-        if (document.Settings.TryGetValue(task.GetTaskName(), out var settings))
+        public BackgroundTaskSettingsProvider(BackgroundTaskManager backgroundTaskManager, ISignal signal)
         {
-            return settings;
+            _backgroundTaskManager = backgroundTaskManager;
+            _signal = signal;
         }
 
-        return null;
+        public IChangeToken ChangeToken => _signal.GetToken(nameof(BackgroundTaskSettings));
+
+        public async Task<BackgroundTaskSettings> GetSettingsAsync(IBackgroundTask task)
+        {
+            var document = await _backgroundTaskManager.GetDocumentAsync();
+
+            if (document.Settings.TryGetValue(task.GetTaskName(), out var settings))
+            {
+                return settings;
+            }
+
+            return null;
+        }
     }
 }

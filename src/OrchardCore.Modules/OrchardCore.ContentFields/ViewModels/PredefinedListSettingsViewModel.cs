@@ -1,10 +1,11 @@
 using OrchardCore.ContentFields.Settings;
 
-namespace OrchardCore.ContentFields.ViewModels;
-
-public class PredefinedListSettingsViewModel
+namespace OrchardCore.ContentFields.ViewModels
 {
-    public EditorOption Editor { get; set; }
-    public string Options { get; set; }
-    public string DefaultValue { get; set; }
+    public class PredefinedListSettingsViewModel
+    {
+        public EditorOption Editor { get; set; }
+        public string Options { get; set; }
+        public string DefaultValue { get; set; }
+    }
 }

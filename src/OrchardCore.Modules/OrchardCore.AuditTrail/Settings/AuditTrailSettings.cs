@@ -1,7 +1,10 @@
-namespace OrchardCore.AuditTrail.Settings;
+using System;
 
-public class AuditTrailSettings
+namespace OrchardCore.AuditTrail.Settings
 {
-    public AuditTrailCategorySettings[] Categories { get; set; } = [];
-    public bool ClientIpAddressAllowed { get; set; }
+    public class AuditTrailSettings
+    {
+        public AuditTrailCategorySettings[] Categories { get; set; } = [];
+        public bool ClientIpAddressAllowed { get; set; }
+    }
 }

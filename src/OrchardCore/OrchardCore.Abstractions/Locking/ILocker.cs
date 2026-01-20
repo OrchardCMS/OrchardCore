@@ -1,3 +1,8 @@
-namespace OrchardCore.Locking;
+using System;
 
-public interface ILocker : IDisposable, IAsyncDisposable;
+namespace OrchardCore.Locking
+{
+    public interface ILocker : IDisposable, IAsyncDisposable
+    {
+    }
+}

@@ -1,12 +1,15 @@
-namespace OrchardCore.Search.Lucene.Indexing;
+using System.Collections.Generic;
 
-/// <summary>
-/// Represents the information of a content type in a Lucene index.
-/// </summary>
-public class Mapping
+namespace OrchardCore.Search.Lucene.Indexing
 {
     /// <summary>
-    /// Gets the list properties to index indexed by name.
+    /// Represents the information of a content type in a Lucene index.
     /// </summary>
-    public Dictionary<string, Property> Properties { get; init; } = [];
+    public class Mapping
+    {
+        /// <summary>
+        /// Gets the list properties to index indexed by name.
+        /// </summary>
+        public Dictionary<string, Property> Properties { get; init; } = [];
+    }
 }

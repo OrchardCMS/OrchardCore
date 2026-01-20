@@ -2,8 +2,13 @@
 
 ## Supported Versions
 
-We primarily support the latest version only. For serious security issues, we'll patch several older versions too.
+| Version | Supported          |
+| ------- | ------------------ |
+| 1.0     | :x:                |
+| 1.1     | :x:                |
+| 1.2     | :x:                |
+| 1.3     | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
-Please report security issues privately, via email, to [contact@orchardcore.net](mailto:contact@orchardcore.net).
+Send an email to sebros@microsoft.com

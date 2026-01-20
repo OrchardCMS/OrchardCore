@@ -1,25 +1,26 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.ContentPreview;
-
-public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+namespace OrchardCore.ContentPreview
 {
-    private static readonly ResourceManifest _manifest;
-
-    static ResourceManagementOptionsConfiguration()
+    public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
-        _manifest = new ResourceManifest();
+        private static readonly ResourceManifest _manifest;
 
-        _manifest
-            .DefineScript("contentpreview-edit")
-            .SetUrl("~/OrchardCore.ContentPreview/Scripts/contentpreview.edit.min.js", "~/OrchardCore.ContentPreview/Scripts/contentpreview.edit.js")
-            .SetDependencies("jQuery")
-            .SetVersion("1.0.0");
-    }
+        static ResourceManagementOptionsConfiguration()
+        {
+            _manifest = new ResourceManifest();
 
-    public void Configure(ResourceManagementOptions options)
-    {
-        options.ResourceManifests.Add(_manifest);
+            _manifest
+                .DefineScript("contentpreview-edit")
+                .SetUrl("~/OrchardCore.ContentPreview/Scripts/contentpreview.edit.min.js", "~/OrchardCore.ContentPreview/Scripts/contentpreview.edit.js")
+                .SetDependencies("jQuery")
+                .SetVersion("1.0.0");
+        }
+
+        public void Configure(ResourceManagementOptions options)
+        {
+            options.ResourceManifests.Add(_manifest);
+        }
     }
 }

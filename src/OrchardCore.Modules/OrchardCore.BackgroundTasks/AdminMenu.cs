@@ -1,21 +1,22 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.BackgroundTasks;
-
-public sealed class AdminMenu : AdminNavigationProvider
+namespace OrchardCore.BackgroundTasks
 {
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public class AdminMenu : INavigationProvider
     {
-        S = stringLocalizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        if (NavigationHelper.UseLegacyFormat())
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer) => S = localizer;
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
+
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Tasks"], S["Tasks"].PrefixPosition(), tasks => tasks
@@ -27,18 +28,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     )
                 );
 
-            return ValueTask.CompletedTask;
+            return Task.CompletedTask;
         }
-
-        builder
-            .Add(S["Tools"], tools => tools
-                .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
-                    .Action("Index", "BackgroundTask", "OrchardCore.BackgroundTasks")
-                    .Permission(Permissions.ManageBackgroundTasks)
-                    .LocalNav()
-                )
-            );
-
-        return ValueTask.CompletedTask;
     }
 }

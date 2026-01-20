@@ -1,3 +1,6 @@
-namespace OrchardCore.Media.Events;
-
-public class MediaDeletingContext : MediaContextBase;
+namespace OrchardCore.Media.Events
+{
+    public class MediaDeletingContext : MediaContextBase
+    {
+    }
+}

@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
@@ -9,307 +12,308 @@ using OrchardCore.Mvc.Utilities;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.ViewModels;
 
-namespace OrchardCore.Taxonomies;
-
-public class TermShapes : ShapeTableProvider
+namespace OrchardCore.Taxonomies
 {
-    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
+    public class TermShapes : ShapeTableProvider
     {
-        // Add standard alternates to a TermPart because it is rendered by a content display driver not a part display driver.
-        builder.Describe("TermPart")
-            .OnDisplaying(context =>
-            {
-                var viewModel = context.Shape as TermPartViewModel;
-
-                var contentType = viewModel?.ContentItem?.ContentType;
-                var displayTypes = new[] { string.Empty, "_" + context.Shape.Metadata.DisplayType };
-
-                // [ShapeType]_[DisplayType], e.g. TermPart.Summary, TermPart.Detail.
-                context.Shape.Metadata.Alternates.Add($"TermPart_{context.Shape.Metadata.DisplayType}");
-
-                foreach (var displayType in displayTypes)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
+        {
+            // Add standard alternates to a TermPart because it is rendered by a content display driver not a part display driver.
+            builder.Describe("TermPart")
+                .OnDisplaying(context =>
                 {
-                    // [ContentType]_[DisplayType]__[PartType], e.g. Category-TermPart, Category-TermPart.Detail.
-                    context.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__TermPart");
-                }
-            });
+                    var viewModel = context.Shape as TermPartViewModel;
 
-        builder.Describe("Term")
-            .OnProcessing(async context =>
-            {
-                var termShape = context.Shape;
-                var identifier = termShape.GetProperty<string>("TaxonomyContentItemId") ?? termShape.GetProperty<string>("Alias");
+                    var contentType = viewModel?.ContentItem?.ContentType;
+                    var displayTypes = new[] { string.Empty, "_" + context.Shape.Metadata.DisplayType };
 
-                if (string.IsNullOrEmpty(identifier))
+                    // [ShapeType]_[DisplayType], e.g. TermPart.Summary, TermPart.Detail.
+                    context.Shape.Metadata.Alternates.Add($"TermPart_{context.Shape.Metadata.DisplayType}");
+
+                    foreach (var displayType in displayTypes)
+                    {
+                        // [ContentType]_[DisplayType]__[PartType], e.g. Category-TermPart, Category-TermPart.Detail.
+                        context.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__TermPart");
+                    }
+                });
+
+            builder.Describe("Term")
+                .OnProcessing(async context =>
                 {
-                    return;
-                }
+                    var termShape = context.Shape;
+                    var identifier = termShape.GetProperty<string>("TaxonomyContentItemId") ?? termShape.GetProperty<string>("Alias");
 
-                termShape.Classes.Add("term");
-
-                // Term population is executed when processing the shape so that its value
-                // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
-                // events and thus this code can be cached.
-
-                var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
-                var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-                var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
-
-                var taxonomyContentItemId = termShape.TryGetProperty("Alias", out object alias) && alias != null
-                    ? await handleManager.GetContentItemIdAsync(alias.ToString())
-                    : termShape.Properties["TaxonomyContentItemId"].ToString();
-
-                if (taxonomyContentItemId == null)
-                {
-                    return;
-                }
-
-                var taxonomyContentItem = await contentManager.GetAsync(taxonomyContentItemId);
-
-                if (taxonomyContentItem == null)
-                {
-                    return;
-                }
-
-                termShape.Properties["TaxonomyContentItem"] = taxonomyContentItem;
-                termShape.Properties["TaxonomyName"] = taxonomyContentItem.DisplayText;
-
-                var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
-                if (taxonomyPart == null)
-                {
-                    return;
-                }
-
-                // When a TermContentItemId is provided render the term and its child terms.
-                var level = 0;
-                List<ContentItem> termItems = null;
-                var termContentItemId = termShape.GetProperty<string>("TermContentItemId");
-                if (!string.IsNullOrEmpty(termContentItemId))
-                {
-                    level = FindTerm((JsonArray)taxonomyContentItem.Content.TaxonomyPart.Terms, termContentItemId, level, out var termContentItem);
-
-                    if (termContentItem == null)
+                    if (string.IsNullOrEmpty(identifier))
                     {
                         return;
                     }
 
-                    termItems =
-                    [
-                        termContentItem
-                    ];
-                }
-                else
-                {
-                    termItems = taxonomyPart.Terms;
-                }
+                    termShape.Classes.Add("term");
 
-                if (termItems == null)
-                {
-                    return;
-                }
+                    // Term population is executed when processing the shape so that its value
+                    // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
+                    // events and thus this code can be cached.
 
-                var differentiator = FormatName(termShape.GetProperty<string>("TaxonomyName"));
+                    var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
+                    var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
+                    var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
-                if (!string.IsNullOrEmpty(differentiator))
-                {
-                    // Term__[Differentiator] e.g. Term-Categories, Term-Tags.
-                    termShape.Metadata.Alternates.Add("Term__" + differentiator);
-                    termShape.Metadata.Differentiator = differentiator;
-                    termShape.Classes.Add(("term-" + differentiator).HtmlClassify());
-                }
+                    var taxonomyContentItemId = termShape.TryGetProperty("Alias", out object alias) && alias != null
+                        ? await handleManager.GetContentItemIdAsync(alias.ToString())
+                        : termShape.Properties["TaxonomyContentItemId"].ToString();
 
-                termShape.Classes.Add(("term-" + taxonomyPart.TermContentType).HtmlClassify());
-
-                var encodedContentType = taxonomyPart.TermContentType.EncodeAlternateElement();
-                // Term__[ContentType] e.g. Term-Category, Term-Tag.
-                termShape.Metadata.Alternates.Add("Term__" + encodedContentType);
-
-                // The first level of term item shapes is created.
-                // Each other level is created when the term item is displayed.
-
-                foreach (var termContentItem in termItems)
-                {
-                    ContentItem[] childTerms = null;
-                    if (((JsonObject)termContentItem.Content)["Terms"] is JsonArray termsArray)
+                    if (taxonomyContentItemId == null)
                     {
-                        childTerms = termsArray.ToObject<ContentItem[]>();
+                        return;
                     }
 
-                    var shape = await shapeFactory.CreateAsync("TermItem", Arguments.From(new
+                    var taxonomyContentItem = await contentManager.GetAsync(taxonomyContentItemId);
+
+                    if (taxonomyContentItem == null)
                     {
-                        Level = level,
-                        Term = termShape,
-                        TermContentItem = termContentItem,
-                        Terms = childTerms ?? [],
-                        TaxonomyContentItem = taxonomyContentItem,
-                    }));
+                        return;
+                    }
 
-                    shape.Metadata.Differentiator = differentiator;
+                    termShape.Properties["TaxonomyContentItem"] = taxonomyContentItem;
+                    termShape.Properties["TaxonomyName"] = taxonomyContentItem.DisplayText;
 
-                    // Don't use Items.Add() or the collection won't be sorted.
-                    await termShape.AddAsync(shape);
-                }
-            });
+                    var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
+                    if (taxonomyPart == null)
+                    {
+                        return;
+                    }
 
-        builder.Describe("TermItem")
-            .OnDisplaying(async context =>
-            {
-                var termItem = context.Shape;
-                var termShape = termItem.GetProperty<IShape>("Term");
-                var level = termItem.GetProperty<int>("Level");
-                var taxonomyContentItem = termItem.GetProperty<ContentItem>("TaxonomyContentItem");
-                var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
-                var differentiator = termItem.Metadata.Differentiator;
+                    // When a TermContentItemId is provided render the term and its child terms.
+                    var level = 0;
+                    List<ContentItem> termItems = null;
+                    var termContentItemId = termShape.GetProperty<string>("TermContentItemId");
+                    if (!string.IsNullOrEmpty(termContentItemId))
+                    {
+                        level = FindTerm((JsonArray)taxonomyContentItem.Content.TaxonomyPart.Terms, termContentItemId, level, out var termContentItem);
 
-                var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
+                        if (termContentItem == null)
+                        {
+                            return;
+                        }
 
-                if (termItem.GetProperty<ContentItem[]>("Terms") != null)
-                {
-                    foreach (var termContentItem in termItem.GetProperty<ContentItem[]>("Terms"))
+                        termItems =
+                        [
+                            termContentItem
+                        ];
+                    }
+                    else
+                    {
+                        termItems = taxonomyPart.Terms;
+                    }
+
+                    if (termItems == null)
+                    {
+                        return;
+                    }
+
+                    var differentiator = FormatName(termShape.GetProperty<string>("TaxonomyName"));
+
+                    if (!string.IsNullOrEmpty(differentiator))
+                    {
+                        // Term__[Differentiator] e.g. Term-Categories, Term-Tags.
+                        termShape.Metadata.Alternates.Add("Term__" + differentiator);
+                        termShape.Metadata.Differentiator = differentiator;
+                        termShape.Classes.Add(("term-" + differentiator).HtmlClassify());
+                    }
+
+                    termShape.Classes.Add(("term-" + taxonomyPart.TermContentType).HtmlClassify());
+
+                    var encodedContentType = taxonomyPart.TermContentType.EncodeAlternateElement();
+                    // Term__[ContentType] e.g. Term-Category, Term-Tag.
+                    termShape.Metadata.Alternates.Add("Term__" + encodedContentType);
+
+                    // The first level of term item shapes is created.
+                    // Each other level is created when the term item is displayed.
+
+                    foreach (var termContentItem in termItems)
                     {
                         ContentItem[] childTerms = null;
                         if (((JsonObject)termContentItem.Content)["Terms"] is JsonArray termsArray)
                         {
                             childTerms = termsArray.ToObject<ContentItem[]>();
                         }
+
                         var shape = await shapeFactory.CreateAsync("TermItem", Arguments.From(new
                         {
-                            Level = level + 1,
-                            TaxonomyContentItem = taxonomyContentItem,
-                            TermContentItem = termContentItem,
+                            Level = level,
                             Term = termShape,
+                            TermContentItem = termContentItem,
                             Terms = childTerms ?? [],
+                            TaxonomyContentItem = taxonomyContentItem
                         }));
 
                         shape.Metadata.Differentiator = differentiator;
 
                         // Don't use Items.Add() or the collection won't be sorted.
-                        await termItem.AddAsync(shape);
+                        await termShape.AddAsync(shape);
                     }
-                }
+                });
 
-                var encodedContentType = taxonomyPart.TermContentType.EncodeAlternateElement();
-
-                // TermItem__level__[level] e.g. TermItem-level-2.
-                termItem.Metadata.Alternates.Add("TermItem__level__" + level);
-
-                // TermItem__[ContentType] e.g. TermItem-Category
-                // TermItem__[ContentType]__level__[level] e.g. TermItem-Category-level-2.
-                termItem.Metadata.Alternates.Add("TermItem__" + encodedContentType);
-                termItem.Metadata.Alternates.Add("TermItem__" + encodedContentType + "__level__" + level);
-
-                if (!string.IsNullOrEmpty(differentiator))
+            builder.Describe("TermItem")
+                .OnDisplaying(async context =>
                 {
-                    // TermItem__[Differentiator] e.g. TermItem-Categories, TermItem-Travel.
-                    // TermItem__[Differentiator]__level__[level] e.g. TermItem-Categories-level-2.
-                    termItem.Metadata.Alternates.Add("TermItem__" + differentiator);
-                    termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__level__" + level);
+                    var termItem = context.Shape;
+                    var termShape = termItem.GetProperty<IShape>("Term");
+                    var level = termItem.GetProperty<int>("Level");
+                    var taxonomyContentItem = termItem.GetProperty<ContentItem>("TaxonomyContentItem");
+                    var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
+                    var differentiator = termItem.Metadata.Differentiator;
 
-                    // TermItem__[Differentiator]__[ContentType] e.g. TermItem-Categories-Category.
-                    // TermItem__[Differentiator]__[ContentType]__level__[level] e.g. TermItem-Categories-Category-level-2.
-                    termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__" + encodedContentType);
-                    termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
-                }
-            });
+                    var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
-        builder.Describe("TermContentItem")
-            .OnDisplaying(displaying =>
-            {
-                var termItem = displaying.Shape;
-                var level = termItem.GetProperty<int>("Level");
-                var differentiator = termItem.Metadata.Differentiator;
+                    if (termItem.GetProperty<ContentItem[]>("Terms") != null)
+                    {
+                        foreach (var termContentItem in termItem.GetProperty<ContentItem[]>("Terms"))
+                        {
+                            ContentItem[] childTerms = null;
+                            if (((JsonObject)termContentItem.Content)["Terms"] is JsonArray termsArray)
+                            {
+                                childTerms = termsArray.ToObject<ContentItem[]>();
+                            }
+                            var shape = await shapeFactory.CreateAsync("TermItem", Arguments.From(new
+                            {
+                                Level = level + 1,
+                                TaxonomyContentItem = taxonomyContentItem,
+                                TermContentItem = termContentItem,
+                                Term = termShape,
+                                Terms = childTerms ?? []
+                            }));
 
-                var termContentItem = termItem.GetProperty<ContentItem>("TermContentItem");
+                            shape.Metadata.Differentiator = differentiator;
 
-                var encodedContentType = termContentItem.ContentItem.ContentType.EncodeAlternateElement();
+                            // Don't use Items.Add() or the collection won't be sorted.
+                            await termItem.AddAsync(shape);
+                        }
+                    }
 
-                termItem.Metadata.Alternates.Add("TermContentItem__level__" + level);
+                    var encodedContentType = taxonomyPart.TermContentType.EncodeAlternateElement();
 
-                // TermContentItem__[ContentType] e.g. TermContentItem-Category.
-                // TermContentItem__[ContentType]__level__[level] e.g. TermContentItem-Category-level-2.
-                termItem.Metadata.Alternates.Add("TermContentItem__" + encodedContentType);
-                termItem.Metadata.Alternates.Add("TermContentItem__" + encodedContentType + "__level__" + level);
+                    // TermItem__level__[level] e.g. TermItem-level-2.
+                    termItem.Metadata.Alternates.Add("TermItem__level__" + level);
 
-                if (!string.IsNullOrEmpty(differentiator))
+                    // TermItem__[ContentType] e.g. TermItem-Category
+                    // TermItem__[ContentType]__level__[level] e.g. TermItem-Category-level-2.
+                    termItem.Metadata.Alternates.Add("TermItem__" + encodedContentType);
+                    termItem.Metadata.Alternates.Add("TermItem__" + encodedContentType + "__level__" + level);
+
+                    if (!string.IsNullOrEmpty(differentiator))
+                    {
+                        // TermItem__[Differentiator] e.g. TermItem-Categories, TermItem-Travel.
+                        // TermItem__[Differentiator]__level__[level] e.g. TermItem-Categories-level-2.
+                        termItem.Metadata.Alternates.Add("TermItem__" + differentiator);
+                        termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__level__" + level);
+
+                        // TermItem__[Differentiator]__[ContentType] e.g. TermItem-Categories-Category.
+                        // TermItem__[Differentiator]__[ContentType]__level__[level] e.g. TermItem-Categories-Category-level-2.
+                        termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__" + encodedContentType);
+                        termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
+                    }
+                });
+
+            builder.Describe("TermContentItem")
+                .OnDisplaying(displaying =>
                 {
-                    // TermContentItem__[Differentiator] e.g. TermContentItem-Categories.
-                    termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator);
-                    // TermContentItem__[Differentiator]__level__[level] e.g. TermContentItem-Categories-level-2.
-                    termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__level__" + level);
+                    var termItem = displaying.Shape;
+                    var level = termItem.GetProperty<int>("Level");
+                    var differentiator = termItem.Metadata.Differentiator;
 
-                    // TermContentItem__[Differentiator]__[ContentType] e.g. TermContentItem-Categories-Category.
-                    // TermContentItem__[Differentiator]__[ContentType] e.g. TermContentItem-Categories-Category-level-2.
-                    termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType);
-                    termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
-                }
-            });
+                    var termContentItem = termItem.GetProperty<ContentItem>("TermContentItem");
 
-        return ValueTask.CompletedTask;
-    }
+                    var encodedContentType = termContentItem.ContentItem.ContentType.EncodeAlternateElement();
 
-    private static int FindTerm(JsonArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
-    {
-        foreach (var term in termsArray.Cast<JsonObject>())
+                    termItem.Metadata.Alternates.Add("TermContentItem__level__" + level);
+
+                    // TermContentItem__[ContentType] e.g. TermContentItem-Category.
+                    // TermContentItem__[ContentType]__level__[level] e.g. TermContentItem-Category-level-2.
+                    termItem.Metadata.Alternates.Add("TermContentItem__" + encodedContentType);
+                    termItem.Metadata.Alternates.Add("TermContentItem__" + encodedContentType + "__level__" + level);
+
+                    if (!string.IsNullOrEmpty(differentiator))
+                    {
+                        // TermContentItem__[Differentiator] e.g. TermContentItem-Categories.
+                        termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator);
+                        // TermContentItem__[Differentiator]__level__[level] e.g. TermContentItem-Categories-level-2.
+                        termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__level__" + level);
+
+                        // TermContentItem__[Differentiator]__[ContentType] e.g. TermContentItem-Categories-Category.
+                        // TermContentItem__[Differentiator]__[ContentType] e.g. TermContentItem-Categories-Category-level-2.
+                        termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType);
+                        termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
+                    }
+                });
+
+            return ValueTask.CompletedTask;
+        }
+
+        private int FindTerm(JsonArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
         {
-            var contentItemId = term["ContentItemId"]?.ToString();
-            if (contentItemId == termContentItemId)
+            foreach (var term in termsArray.Cast<JsonObject>())
             {
-                contentItem = term.ToObject<ContentItem>();
-                return level;
-            }
-
-            if (term["Terms"] is JsonArray children)
-            {
-                level += 1;
-                level = FindTerm(children, termContentItemId, level, out var foundContentItem);
-
-                if (foundContentItem != null)
+                var contentItemId = term["ContentItemId"]?.ToString();
+                if (contentItemId == termContentItemId)
                 {
-                    contentItem = foundContentItem;
+                    contentItem = term.ToObject<ContentItem>();
                     return level;
                 }
+
+                if (term["Terms"] is JsonArray children)
+                {
+                    level += 1;
+                    level = FindTerm(children, termContentItemId, level, out var foundContentItem);
+
+                    if (foundContentItem != null)
+                    {
+                        contentItem = foundContentItem;
+                        return level;
+                    }
+                }
             }
+            contentItem = null;
+
+            return level;
         }
-        contentItem = null;
 
-        return level;
-    }
-
-    /// <summary>
-    /// Converts "foo-ba r" to "FooBaR".
-    /// </summary>
-    private static string FormatName(string name)
-    {
-        if (string.IsNullOrEmpty(name))
+        /// <summary>
+        /// Converts "foo-ba r" to "FooBaR".
+        /// </summary>
+        private static string FormatName(string name)
         {
-            return null;
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            name = name.Trim();
+            var nextIsUpper = true;
+            var result = new StringBuilder(name.Length);
+            for (var i = 0; i < name.Length; i++)
+            {
+                var c = name[i];
+
+                if (c == '-' || char.IsWhiteSpace(c))
+                {
+                    nextIsUpper = true;
+                    continue;
+                }
+
+                if (nextIsUpper)
+                {
+                    result.Append(c.ToString().ToUpper());
+                }
+                else
+                {
+                    result.Append(c);
+                }
+
+                nextIsUpper = false;
+            }
+
+            return result.ToString();
         }
-
-        name = name.Trim();
-        var nextIsUpper = true;
-        var result = new StringBuilder(name.Length);
-        for (var i = 0; i < name.Length; i++)
-        {
-            var c = name[i];
-
-            if (c == '-' || char.IsWhiteSpace(c))
-            {
-                nextIsUpper = true;
-                continue;
-            }
-
-            if (nextIsUpper)
-            {
-                result.Append(c.ToString().ToUpper());
-            }
-            else
-            {
-                result.Append(c);
-            }
-
-            nextIsUpper = false;
-        }
-
-        return result.ToString();
     }
 }

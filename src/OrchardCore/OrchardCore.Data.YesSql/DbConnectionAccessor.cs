@@ -1,29 +1,31 @@
+using System;
 using System.Data.Common;
 using YesSql;
 
-namespace OrchardCore.Data;
-
-/// <summary>
-/// Represents an accessor to the database connection.
-/// </summary>
-public class DbConnectionAccessor : IDbConnectionAccessor
+namespace OrchardCore.Data
 {
-    private readonly IStore _store;
-
     /// <summary>
-    /// Creates a new instance of the <see cref="DbConnectionAccessor"/>.
+    /// Represents an accessor to the database connection.
     /// </summary>
-    /// <param name="store">The <see cref="IStore"/>.</param>
-    public DbConnectionAccessor(IStore store)
+    public class DbConnectionAccessor : IDbConnectionAccessor
     {
-        ArgumentNullException.ThrowIfNull(store);
+        private readonly IStore _store;
 
-        _store = store;
-    }
+        /// <summary>
+        /// Creates a new instance of the <see cref="DbConnectionAccessor"/>.
+        /// </summary>
+        /// <param name="store">The <see cref="IStore"/>.</param>
+        public DbConnectionAccessor(IStore store)
+        {
+            ArgumentNullException.ThrowIfNull(store);
 
-    /// <inheritdocs />
-    public DbConnection CreateConnection()
-    {
-        return _store.Configuration.ConnectionFactory.CreateConnection();
+            _store = store;
+        }
+
+        /// <inheritdocs />
+        public DbConnection CreateConnection()
+        {
+            return _store.Configuration.ConnectionFactory.CreateConnection();
+        }
     }
 }

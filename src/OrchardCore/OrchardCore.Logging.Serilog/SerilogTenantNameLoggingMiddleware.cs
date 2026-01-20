@@ -1,24 +1,26 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Shell.Scope;
 using Serilog.Context;
 
-namespace OrchardCore.Logging;
-
-public class SerilogTenantNameLoggingMiddleware
+namespace OrchardCore.Logging
 {
-    private readonly RequestDelegate _next;
-
-    public SerilogTenantNameLoggingMiddleware(RequestDelegate next)
+    public class SerilogTenantNameLoggingMiddleware
     {
-        _next = next;
-    }
+        private readonly RequestDelegate _next;
 
-    public async Task Invoke(HttpContext context)
-    {
-        var tenantName = ShellScope.Context?.Settings.Name ?? "None";
-        using (LogContext.PushProperty("TenantName", tenantName))
+        public SerilogTenantNameLoggingMiddleware(RequestDelegate next)
         {
-            await _next.Invoke(context);
+            _next = next;
+        }
+
+        public async Task Invoke(HttpContext context)
+        {
+            var tenantName = ShellScope.Context?.Settings.Name ?? "None";
+            using (LogContext.PushProperty("TenantName", tenantName))
+            {
+                await _next.Invoke(context);
+            }
         }
     }
 }

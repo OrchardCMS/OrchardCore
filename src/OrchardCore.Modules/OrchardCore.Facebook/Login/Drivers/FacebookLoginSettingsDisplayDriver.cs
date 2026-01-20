@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -8,59 +9,63 @@ using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Facebook.Login.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook.Login.Drivers;
-
-public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<FacebookLoginSettings>
+namespace OrchardCore.Facebook.Login.Drivers
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public FacebookLoginSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+    public class FacebookLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookLoginSettings>
     {
-        _shellReleaseManager = shellReleaseManager;
-        _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
-    }
-    protected override string SettingsGroupId
-        => FacebookConstants.Features.Login;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
 
-    public override async Task<IDisplayResult> EditAsync(ISite site, FacebookLoginSettings settings, BuildEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+        public FacebookLoginSettingsDisplayDriver(
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor,
+            IShellHost shellHost,
+            ShellSettings shellSettings)
         {
-            return null;
+            _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
         }
 
-        return Initialize<FacebookLoginSettingsViewModel>("FacebookLoginSettings_Edit", model =>
+        public override async Task<IDisplayResult> EditAsync(FacebookLoginSettings settings, BuildEditorContext context)
         {
-            model.CallbackPath = settings.CallbackPath.Value;
-            model.SaveTokens = settings.SaveTokens;
-        }).Location("Content:5")
-        .OnGroup(SettingsGroupId);
-    }
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+            {
+                return null;
+            }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookLoginSettings settings, UpdateEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
-        {
-            return null;
+            return Initialize<FacebookLoginSettingsViewModel>("FacebookLoginSettings_Edit", model =>
+            {
+                model.CallbackPath = settings.CallbackPath.Value;
+                model.SaveTokens = settings.SaveTokens;
+            }).Location("Content:5").OnGroup(FacebookConstants.Features.Login);
         }
 
-        var model = new FacebookLoginSettingsViewModel();
+        public override async Task<IDisplayResult> UpdateAsync(FacebookLoginSettings settings, BuildEditorContext context)
+        {
+            if (context.GroupId == FacebookConstants.Features.Login)
+            {
+                var user = _httpContextAccessor.HttpContext?.User;
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+                {
+                    return null;
+                }
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+                var model = new FacebookLoginSettingsViewModel();
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        settings.CallbackPath = model.CallbackPath;
-        settings.SaveTokens = model.SaveTokens;
-
-        _shellReleaseManager.RequestRelease();
-
-        return await EditAsync(site, settings, context);
+                if (context.Updater.ModelState.IsValid)
+                {
+                    settings.CallbackPath = model.CallbackPath;
+                    settings.SaveTokens = model.SaveTokens;
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                }
+            }
+            return await EditAsync(settings, context);
+        }
     }
 }

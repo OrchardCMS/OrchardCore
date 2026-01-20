@@ -1,27 +1,28 @@
 using System.Text.Json.Nodes;
 using Lucene.Net.Search;
 
-namespace OrchardCore.Search.Lucene.QueryProviders.Filters;
-
-public class MatchAllFilterProvider : ILuceneBooleanFilterProvider
+namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 {
-    public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonNode filter, Query toFilter)
+    public class MatchAllFilterProvider : ILuceneBooleanFilterProvider
     {
-        if (type != "match_all")
+        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonNode filter, Query toFilter)
         {
-            return null;
+            if (type != "match_all")
+            {
+                return null;
+            }
+
+            if (toFilter is not BooleanQuery booleanQuery)
+            {
+                return null;
+            }
+
+            var matchAllQuery = new MatchAllDocsQuery();
+
+            booleanQuery.Add(matchAllQuery, Occur.MUST);
+            var queryFilter = new QueryWrapperFilter(matchAllQuery);
+
+            return new FilteredQuery(booleanQuery, queryFilter);
         }
-
-        if (toFilter is not BooleanQuery booleanQuery)
-        {
-            return null;
-        }
-
-        var matchAllQuery = new MatchAllDocsQuery();
-
-        booleanQuery.Add(matchAllQuery, Occur.MUST);
-        var queryFilter = new QueryWrapperFilter(matchAllQuery);
-
-        return new FilteredQuery(booleanQuery, queryFilter);
     }
 }

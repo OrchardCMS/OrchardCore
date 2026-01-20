@@ -1,98 +1,75 @@
+using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.Entities;
-using OrchardCore.Localization;
 
-namespace OrchardCore.ContentLocalization.Handlers;
-
-public class LocalizationPartHandler : ContentPartHandler<LocalizationPart>
+namespace OrchardCore.ContentLocalization.Handlers
 {
-    private readonly ILocalizationEntries _entries;
-    private readonly IIdGenerator _idGenerator;
-    private readonly ILocalizationService _localizationService;
-
-    public LocalizationPartHandler(
-        ILocalizationEntries entries,
-        IIdGenerator idGenerator,
-        ILocalizationService localizationService)
+    public class LocalizationPartHandler : ContentPartHandler<LocalizationPart>
     {
-        _entries = entries;
-        _idGenerator = idGenerator;
-        _localizationService = localizationService;
-    }
+        private readonly ILocalizationEntries _entries;
 
-    public override async Task CreatingAsync(CreateContentContext context, LocalizationPart part)
-    {
-        if (string.IsNullOrEmpty(part.LocalizationSet))
+        public LocalizationPartHandler(ILocalizationEntries entries)
         {
-            context.ContentItem.Alter<LocalizationPart>(p =>
-                p.LocalizationSet = _idGenerator.GenerateUniqueId()
-            );
+            _entries = entries;
         }
 
-        if (string.IsNullOrEmpty(part.Culture))
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LocalizationPart part)
         {
-            await context.ContentItem.AlterAsync<LocalizationPart>(async p =>
-                p.Culture = await _localizationService.GetDefaultCultureAsync()
-            );
-        }
-    }
-
-    public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LocalizationPart part)
-    {
-        return context.ForAsync<CultureAspect>(cultureAspect =>
-        {
-            if (part.Culture != null)
+            return context.ForAsync<CultureAspect>(cultureAspect =>
             {
-                cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
-                cultureAspect.HasCulture = true;
+                if (part.Culture != null)
+                {
+                    cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
+                    cultureAspect.HasCulture = true;
+                }
+
+                return Task.CompletedTask;
+            });
+        }
+
+        public override Task PublishedAsync(PublishContentContext context, LocalizationPart part)
+        {
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
+            {
+                // Update entries from the index table after the session is committed.
+                return _entries.UpdateEntriesAsync();
             }
 
             return Task.CompletedTask;
-        });
-    }
-
-    public override Task PublishedAsync(PublishContentContext context, LocalizationPart part)
-    {
-        if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
-        {
-            // Update entries from the index table after the session is committed.
-            return _entries.UpdateEntriesAsync();
         }
 
-        return Task.CompletedTask;
-    }
-
-    public override Task UnpublishedAsync(PublishContentContext context, LocalizationPart part)
-    {
-        if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
+        public override Task UnpublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            // Update entries from the index table after the session is committed.
-            return _entries.UpdateEntriesAsync();
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
+            {
+                // Update entries from the index table after the session is committed.
+                return _entries.UpdateEntriesAsync();
+            }
+
+            return Task.CompletedTask;
         }
 
-        return Task.CompletedTask;
-    }
-
-    public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)
-    {
-        if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null && context.NoActiveVersionLeft)
+        public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)
         {
-            // Update entries from the index table after the session is committed.
-            return _entries.UpdateEntriesAsync();
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null && context.NoActiveVersionLeft)
+            {
+                // Update entries from the index table after the session is committed.
+                return _entries.UpdateEntriesAsync();
+            }
+
+            return Task.CompletedTask;
         }
 
-        return Task.CompletedTask;
-    }
-
-    public override Task CloningAsync(CloneContentContext context, LocalizationPart part)
-    {
-        var clonedPart = context.CloneContentItem.As<LocalizationPart>();
-        clonedPart.LocalizationSet = string.Empty;
-        clonedPart.Apply();
-        return Task.CompletedTask;
+        public override Task CloningAsync(CloneContentContext context, LocalizationPart part)
+        {
+            var clonedPart = context.CloneContentItem.As<LocalizationPart>();
+            clonedPart.LocalizationSet = string.Empty;
+            clonedPart.Apply();
+            return Task.CompletedTask;
+        }
     }
 }

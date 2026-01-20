@@ -1,16 +1,17 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Settings.Deployment;
-
-public class SiteSettingsPropertyDeploymentStepFactory<TModel> : IDeploymentStepFactory
-    where TModel : class, new()
+namespace OrchardCore.Settings.Deployment
 {
-    private static readonly string _genericTypeKey = typeof(TModel).Name + "_SiteSettingsPropertyDeploymentStep";
-
-    public string Name => _genericTypeKey;
-
-    public DeploymentStep Create()
+    public class SiteSettingsPropertyDeploymentStepFactory<TModel> : IDeploymentStepFactory
+        where TModel : class, new()
     {
-        return new SiteSettingsPropertyDeploymentStep<TModel>();
+        private static readonly string _genericTypeKey = typeof(TModel).Name + "_SiteSettingsPropertyDeploymentStep";
+
+        public string Name => _genericTypeKey;
+
+        public DeploymentStep Create()
+        {
+            return new SiteSettingsPropertyDeploymentStep<TModel>();
+        }
     }
 }

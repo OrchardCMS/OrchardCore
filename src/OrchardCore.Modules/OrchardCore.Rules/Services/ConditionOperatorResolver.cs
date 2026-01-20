@@ -1,23 +1,25 @@
+using System;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Rules.Services;
-
-public class ConditionOperatorResolver : IConditionOperatorResolver
+namespace OrchardCore.Rules.Services
 {
-    private readonly ConditionOperatorOptions _options;
-
-    public ConditionOperatorResolver(IOptions<ConditionOperatorOptions> options)
+    public class ConditionOperatorResolver : IConditionOperatorResolver
     {
-        _options = options.Value;
-    }
+        private readonly ConditionOperatorOptions _options;
 
-    public IOperatorComparer GetOperatorComparer(ConditionOperator conditionOperator)
-    {
-        if (_options.ConditionOperatorOptionByType.TryGetValue(conditionOperator.GetType(), out var option))
+        public ConditionOperatorResolver(IOptions<ConditionOperatorOptions> options)
         {
-            return option.Comparer;
+            _options = options.Value;
         }
 
-        throw new InvalidOperationException($"Operator comparer for '{conditionOperator.GetType().Name}; not registered");
+        public IOperatorComparer GetOperatorComparer(ConditionOperator conditionOperator)
+        {
+            if (_options.ConditionOperatorOptionByType.TryGetValue(conditionOperator.GetType(), out var option))
+            {
+                return option.Comparer;
+            }
+
+            throw new InvalidOperationException($"Operator comparer for '{conditionOperator.GetType().Name}; not registered");
+        }
     }
 }

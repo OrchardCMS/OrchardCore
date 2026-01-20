@@ -1,6 +1,8 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
@@ -10,192 +12,165 @@ using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Contents.Workflows.Activities;
-
-public abstract class ContentActivity : Activity
+namespace OrchardCore.Contents.Workflows.Activities
 {
-
-    protected readonly IStringLocalizer S;
-
-    protected ContentActivity(
-        IContentManager contentManager,
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IStringLocalizer localizer)
+    public abstract class ContentActivity : Activity
     {
-        ContentManager = contentManager;
-        ScriptEvaluator = scriptEvaluator;
-        S = localizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    protected IContentManager ContentManager { get; }
-
-    protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
-
-    /// <summary>
-    /// A <see cref="ContentEventContext"/> updated when executed inline from a <see cref="ContentEvent"/>.
-    /// </summary>
-    protected ContentEventContext InlineEvent { get; private set; } = new ContentEventContext();
-
-    public override LocalizedString Category => S["Content"];
-
-    /// <summary>
-    /// An expression that evaluates to an <see cref="IContent"/> item.
-    /// </summary>
-    public WorkflowExpression<IContent> Content
-    {
-        get => GetProperty(() => new WorkflowExpression<IContent>());
-        set => SetProperty(value);
-    }
-
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
-
-    public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
-    {
-        if (input != null && input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEventObj))
+        protected ContentActivity(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer localizer)
         {
-            InlineEvent = contentEventObj switch
-            {
-                ContentEventContext contentEvent => contentEvent,
-                IDictionary<string, object> contentEventDict => JObject.FromObject(contentEventDict).ToObject<ContentEventContext>(),
-                _ => throw new InvalidCastException($"Cannot convert {contentEventObj} to ContentEventContext")
-            };
-
-            InlineEvent.IsStart = workflowContext.Status == WorkflowStatus.Starting;
+            ContentManager = contentManager;
+            ScriptEvaluator = scriptEvaluator;
+            S = localizer;
         }
 
-        return Task.CompletedTask;
-    }
+        protected IContentManager ContentManager { get; }
 
-    public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes("Done");
-    }
+        protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
 
-    public override async Task OnWorkflowRestartingAsync(WorkflowExecutionContext workflowContext, CancellationToken cancellationToken = default)
-    {
-        ContentItem contentItem = null;
+        /// <summary>
+        /// A <see cref="ContentEventContext"/> updated when executed inline from a <see cref="ContentEvent"/>.
+        /// </summary>
+        protected ContentEventContext InlineEvent { get; private set; } = new ContentEventContext();
 
-        if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
+        public override LocalizedString Category => S["Content"];
+
+        /// <summary>
+        /// An expression that evaluates to an <see cref="IContent"/> item.
+        /// </summary>
+        public WorkflowExpression<IContent> Content
         {
-            if (contentEvent is not JsonObject jsonObject)
+            get => GetProperty(() => new WorkflowExpression<IContent>());
+            set => SetProperty(value);
+        }
+
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Outcomes(S["Done"]);
+        }
+
+        public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
+        {
+            var contentEvent = input?.GetValue<ContentEventContext>(ContentEventConstants.ContentEventInputKey);
+
+            if (contentEvent != null)
             {
-                jsonObject = [];
-                if (contentEvent is Dictionary<string, object> items)
+                InlineEvent = contentEvent;
+
+                InlineEvent.IsStart = workflowContext.Status == WorkflowStatus.Starting;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return Outcomes("Done");
+        }
+
+        public override async Task OnWorkflowRestartingAsync(WorkflowExecutionContext workflowContext, CancellationToken cancellationToken = default)
+        {
+            ContentItem contentItem = null;
+
+            if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
+            {
+                var contentEventContext = ((JsonObject)contentEvent).ToObject<ContentEventContext>();
+
+                if (contentEventContext?.ContentItemVersionId != null)
                 {
-                    foreach (var item in items)
-                    {
-                        jsonObject[item.Key] = JsonSerializer.SerializeToNode(item.Value);
-                    }
+                    contentItem = await ContentManager.GetVersionAsync(contentEventContext.ContentItemVersionId);
+                }
+                if (contentItem == null && contentEventContext?.ContentItemId != null)
+                {
+                    contentItem = await ContentManager.GetAsync(contentEventContext.ContentItemId);
                 }
             }
 
-            var contentEventContext = jsonObject.ToObject<ContentEventContext>();
+            if (contentItem == null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
+            {
+                var item = ((JsonObject)contentItemEvent).ToObject<ContentItem>();
 
-            if (contentEventContext?.ContentItemVersionId != null)
-            {
-                contentItem = await ContentManager.GetVersionAsync(contentEventContext.ContentItemVersionId);
-            }
-            if (contentItem == null && contentEventContext?.ContentItemId != null)
-            {
-                contentItem = await ContentManager.GetAsync(contentEventContext.ContentItemId);
-            }
-        }
-
-        if (contentItem == null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
-        {
-            if (contentItemEvent is not JsonObject jsonObject)
-            {
-                jsonObject = [];
-                if (contentEvent is Dictionary<string, object> items)
+                if (item?.ContentItemId != null)
                 {
-                    foreach (var item in items)
-                    {
-                        jsonObject[item.Key] = JsonSerializer.SerializeToNode(item.Value);
-                    }
+                    contentItem = await ContentManager.GetAsync(item.ContentItemId);
                 }
             }
 
-            var existingContentItem = jsonObject.ToObject<ContentItem>();
-
-            if (existingContentItem?.ContentItemId != null)
+            if (contentItem != null)
             {
-                contentItem = await ContentManager.GetAsync(existingContentItem.ContentItemId);
+                workflowContext.Input[ContentEventConstants.ContentItemInputKey] = contentItem;
             }
         }
 
-        if (contentItem != null)
+        protected virtual async Task<IContent> GetContentAsync(WorkflowExecutionContext workflowContext)
         {
-            workflowContext.Input[ContentEventConstants.ContentItemInputKey] = contentItem;
-        }
-    }
+            IContent content;
 
-    protected virtual async Task<IContent> GetContentAsync(WorkflowExecutionContext workflowContext)
-    {
-        IContent content;
-
-        // Try to evaluate a content item from the Content expression, if provided.
-        if (!string.IsNullOrWhiteSpace(Content.Expression))
-        {
-            var expression = new WorkflowExpression<object> { Expression = Content.Expression };
-            var result = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
-
-            if (result is ContentItem contentItem)
+            // Try to evaluate a content item from the Content expression, if provided.
+            if (!string.IsNullOrWhiteSpace(Content.Expression))
             {
-                content = contentItem;
-            }
-            else if (result is string contentItemId)
-            {
-                content = new ContentItemIdExpressionResult(contentItemId);
+                var expression = new WorkflowExpression<object> { Expression = Content.Expression };
+                var result = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+
+                if (result is ContentItem contentItem)
+                {
+                    content = contentItem;
+                }
+                else if (result is string contentItemId)
+                {
+                    content = new ContentItemIdExpressionResult(contentItemId);
+                }
+                else
+                {
+                    // Try to map the result to a content item.
+                    var json = JConvert.SerializeObject(result);
+                    content = JConvert.DeserializeObject<ContentItem>(json);
+                }
             }
             else
             {
-                // Try to map the result to a content item.
-                var json = JConvert.SerializeObject(result);
-                content = JConvert.DeserializeObject<ContentItem>(json);
+                // If no expression was provided, see if the content item was provided as an input or as a property.
+                content = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)
+                    ?? workflowContext.Properties.GetValue<IContent>(ContentEventConstants.ContentItemInputKey);
             }
-        }
-        else
-        {
-            // If no expression was provided, see if the content item was provided as an input or as a property.
-            content = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)
-                ?? workflowContext.Properties.GetValue<IContent>(ContentEventConstants.ContentItemInputKey);
-        }
 
-        if (content?.ContentItem?.ContentItemId != null)
-        {
-            return content;
-        }
-
-        return null;
-    }
-
-    protected virtual async Task<string> GetContentItemIdAsync(WorkflowExecutionContext workflowContext)
-    {
-        // Try to evaluate a content item id from the Content expression, if provided.
-        if (!string.IsNullOrWhiteSpace(Content.Expression))
-        {
-            var expression = new WorkflowExpression<object> { Expression = Content.Expression };
-            var contentItemIdResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
-
-            if (contentItemIdResult is string contentItemId)
+            if (content != null && content.ContentItem.ContentItemId != null)
             {
-                return contentItemId;
+                return content;
             }
+
+            return null;
         }
 
-        return null;
-    }
-
-    protected class ContentItemIdExpressionResult : IContent
-    {
-        public ContentItemIdExpressionResult(string contentItemId)
+        protected virtual async Task<string> GetContentItemIdAsync(WorkflowExecutionContext workflowContext)
         {
-            ContentItem = new ContentItem() { ContentItemId = contentItemId };
+            // Try to evaluate a content item id from the Content expression, if provided.
+            if (!string.IsNullOrWhiteSpace(Content.Expression))
+            {
+                var expression = new WorkflowExpression<object> { Expression = Content.Expression };
+                var contentItemIdResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+
+                if (contentItemIdResult is string contentItemId)
+                {
+                    return contentItemId;
+                }
+            }
+
+            return null;
         }
 
-        public ContentItem ContentItem { get; }
+        protected class ContentItemIdExpressionResult : IContent
+        {
+            public ContentItemIdExpressionResult(string contentItemId)
+            {
+                ContentItem = new ContentItem() { ContentItemId = contentItemId };
+            }
+
+            public ContentItem ContentItem { get; }
+        }
     }
 }

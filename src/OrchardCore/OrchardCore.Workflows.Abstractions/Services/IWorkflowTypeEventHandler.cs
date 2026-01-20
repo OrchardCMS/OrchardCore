@@ -1,10 +1,12 @@
+using System.Threading.Tasks;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Services;
-
-public interface IWorkflowTypeEventHandler
+namespace OrchardCore.Workflows.Services
 {
-    Task CreatedAsync(WorkflowTypeCreatedContext context);
-    Task UpdatedAsync(WorkflowTypeUpdatedContext context);
-    Task DeletedAsync(WorkflowTypeDeletedContext context);
+    public interface IWorkflowTypeEventHandler
+    {
+        Task CreatedAsync(WorkflowTypeCreatedContext context);
+        Task UpdatedAsync(WorkflowTypeUpdatedContext context);
+        Task DeletedAsync(WorkflowTypeDeletedContext context);
+    }
 }

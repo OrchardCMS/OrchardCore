@@ -1,42 +1,40 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.Indexing;
-
-/// <summary>
-/// An implementation of <see cref="ContentPartIndexHandler&lt;TPart&gt;"/> is able to take part in the rendering of
-/// a <see typeparamref="TPart"/> instance.
-/// </summary>
-public abstract class ContentPartIndexHandler<TPart> : IContentPartIndexHandler where TPart : ContentPart
+namespace OrchardCore.Indexing
 {
-    Task IContentPartIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildDocumentIndexContext context, IContentIndexSettings settings)
+    /// <summary>
+    /// An implementation of <see cref="ContentPartIndexHandler&lt;TPart&gt;"/> is able to take part in the rendering of
+    /// a <see typeparamref="TPart"/> instance.
+    /// </summary>
+    public abstract class ContentPartIndexHandler<TPart> : IContentPartIndexHandler where TPart : ContentPart
     {
-        var part = contentPart as TPart;
-
-        if (part == null)
+        Task IContentPartIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildIndexContext context, IContentIndexSettings settings)
         {
-            return Task.CompletedTask;
-        }
+            var part = contentPart as TPart;
 
-        var keys = new List<string>
-        {
-            typePartDefinition.Name,
-        };
+            if (part == null)
+            {
+                return Task.CompletedTask;
+            }
 
-        foreach (var key in context.Keys)
-        {
-            keys.Add($"{key}.{typePartDefinition.Name}");
-        }
+            var keys = new List<string>
+            {
+                typePartDefinition.Name,
+            };
 
-        if (context.DocumentIndex is ContentItemDocumentIndex contentItemIndex && context.Record is ContentItem contentItem)
-        {
-            var buildPartIndexContext = new BuildPartIndexContext(contentItemIndex, contentItem, keys, typePartDefinition, settings);
+            foreach (var key in context.Keys)
+            {
+                keys.Add($"{key}.{typePartDefinition.Name}");
+            }
+
+            var buildPartIndexContext = new BuildPartIndexContext(context.DocumentIndex, context.ContentItem, keys, typePartDefinition, settings);
 
             return BuildIndexAsync(part, buildPartIndexContext);
         }
 
-        return null;
+        public abstract Task BuildIndexAsync(TPart part, BuildPartIndexContext context);
     }
-
-    public abstract Task BuildIndexAsync(TPart part, BuildPartIndexContext context);
 }

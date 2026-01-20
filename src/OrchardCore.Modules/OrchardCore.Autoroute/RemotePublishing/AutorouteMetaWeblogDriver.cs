@@ -1,38 +1,40 @@
+using System;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.MetaWeblog;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;
 
-namespace OrchardCore.Autoroute.RemotePublishing;
-
-public sealed class AutorouteMetaWeblogDriver : MetaWeblogDriver
+namespace OrchardCore.Autoroute.RemotePublishing
 {
-    public override void SetCapabilities(Action<string, string> setCapability)
+    public class AutorouteMetaWeblogDriver : MetaWeblogDriver
     {
-        setCapability("supportsSlug", "Yes");
-    }
-
-    public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
-    {
-        var autoroutePart = contentItem.As<AutoroutePart>();
-        if (autoroutePart == null)
+        public override void SetCapabilities(Action<string, string> setCapability)
         {
-            return;
+            setCapability("supportsSlug", "Yes");
         }
 
-        rpcStruct.Set("wp_slug", autoroutePart.Path);
-    }
-
-    public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
-    {
-        if (contentItem.As<AutoroutePart>() != null)
+        public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
         {
-            var slug = rpcStruct.Optional<string>("wp_slug");
-
-            if (!string.IsNullOrWhiteSpace(slug))
+            var autoroutePart = contentItem.As<AutoroutePart>();
+            if (autoroutePart == null)
             {
-                contentItem.Alter<AutoroutePart>(x => x.Path = slug);
+                return;
+            }
+
+            rpcStruct.Set("wp_slug", autoroutePart.Path);
+        }
+
+        public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
+        {
+            if (contentItem.As<AutoroutePart>() != null)
+            {
+                var slug = rpcStruct.Optional<string>("wp_slug");
+
+                if (!string.IsNullOrWhiteSpace(slug))
+                {
+                    contentItem.Alter<AutoroutePart>(x => x.Path = slug);
+                }
             }
         }
     }

@@ -3,29 +3,30 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Modules;
 
-namespace OrchardCore.Search.Elasticsearch;
-
-public class ElasticContentPickerShapeProvider : IShapeAttributeProvider
+namespace OrchardCore.Search.Elasticsearch
 {
-    protected readonly IStringLocalizer S;
-
-    public ElasticContentPickerShapeProvider(IStringLocalizer<ElasticContentPickerShapeProvider> stringLocalizer)
+    [Feature("OrchardCore.Search.Elasticsearch.ContentPicker")]
+    public class ElasticContentPickerShapeProvider : IShapeAttributeProvider
     {
-        S = stringLocalizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    [Shape]
-#pragma warning disable CA1707 // Remove the underscores from member name
-    public IHtmlContent ContentPickerField_Option__Elasticsearch(dynamic shape)
-#pragma warning restore CA1707
-    {
-        var selected = shape.Editor == "Elasticsearch";
-        if (selected)
+        public ElasticContentPickerShapeProvider(IStringLocalizer<ElasticContentPickerShapeProvider> stringLocalizer)
         {
-            return new HtmlString($"<option value=\"Elasticsearch\" selected=\"selected\">{S["Elasticsearch"]}</option>");
+            S = stringLocalizer;
         }
 
-        return new HtmlString($"<option value=\"Elasticsearch\">{S["Elasticsearch"]}</option>");
+        [Shape]
+        public IHtmlContent ContentPickerField_Option__Elasticsearch(dynamic shape)
+        {
+            var selected = shape.Editor == "Elasticsearch";
+            if (selected)
+            {
+                return new HtmlString($"<option value=\"Elasticsearch\" selected=\"selected\">{S["Elasticsearch"]}</option>");
+            }
+
+            return new HtmlString($"<option value=\"Elasticsearch\">{S["Elasticsearch"]}</option>");
+        }
     }
 }

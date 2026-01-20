@@ -5,14 +5,15 @@ using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.UserTasks.Activities;
 using OrchardCore.Workflows.UserTasks.Drivers;
 
-namespace OrchardCore.Workflows.UserTasks;
-
-[RequireFeatures("OrchardCore.Workflows", "OrchardCore.Contents", "OrchardCore.Roles")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Workflows.UserTasks
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Workflows", "OrchardCore.Contents", "OrchardCore.Roles")]
+    public class Startup : StartupBase
     {
-        services.AddScoped<IContentDisplayDriver, UserTaskEventContentDriver>();
-        services.AddActivity<UserTaskEvent, UserTaskEventDisplayDriver>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentDisplayDriver, UserTaskEventContentDriver>();
+            services.AddActivity<UserTaskEvent, UserTaskEventDisplayDriver>();
+        }
     }
 }

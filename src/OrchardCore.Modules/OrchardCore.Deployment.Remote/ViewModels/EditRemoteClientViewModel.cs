@@ -1,8 +1,9 @@
-namespace OrchardCore.Deployment.Remote.ViewModels;
-
-public class EditRemoteClientViewModel
+namespace OrchardCore.Deployment.Remote.ViewModels
 {
-    public string Id { get; set; }
-    public string ClientName { get; set; }
-    public string ApiKey { get; set; }
+    public class EditRemoteClientViewModel
+    {
+        public string Id { get; set; }
+        public string ClientName { get; set; }
+        public string ApiKey { get; set; }
+    }
 }

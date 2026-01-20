@@ -1,25 +1,29 @@
+using System;
 using System.Data.Common;
 using StackExchange.Profiling.Data;
 using YesSql;
 
-namespace OrchardCore.MiniProfiler;
-
-internal sealed class MiniProfilerConnectionFactory : IConnectionFactory
+namespace OrchardCore.MiniProfiler
 {
-    private readonly IConnectionFactory _factory;
-
-    public Type DbConnectionType => typeof(ProfiledDbConnection);
-
-    public MiniProfilerConnectionFactory(IConnectionFactory factory)
+    internal class MiniProfilerConnectionFactory : IConnectionFactory
     {
-        _factory = factory;
-    }
+        protected static readonly string ConnectionName = nameof(ProfiledDbConnection).ToLower();
 
-    public DbConnection CreateConnection()
-    {
-        // Forward the call to the actual factory.
-        var connection = _factory.CreateConnection();
+        private readonly IConnectionFactory _factory;
 
-        return new ProfiledDbConnection(connection, new CurrentDbProfiler(() => StackExchange.Profiling.MiniProfiler.Current));
+        public Type DbConnectionType => typeof(ProfiledDbConnection);
+
+        public MiniProfilerConnectionFactory(IConnectionFactory factory)
+        {
+            _factory = factory;
+        }
+
+        public DbConnection CreateConnection()
+        {
+            // Forward the call to the actual factory.
+            var connection = _factory.CreateConnection();
+
+            return new ProfiledDbConnection(connection, new CurrentDbProfiler(() => StackExchange.Profiling.MiniProfiler.Current));
+        }
     }
 }

@@ -4,19 +4,20 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Drivers;
-
-public sealed class UserPickerFieldUserNamesDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
+namespace OrchardCore.ContentFields.Drivers
 {
-    public override IDisplayResult Display(UserPickerField field, BuildFieldDisplayContext context)
+    public class UserPickerFieldUserNamesDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
     {
-        return Initialize<DisplayUserPickerFieldUserNamesViewModel>(GetDisplayShapeType(context), model =>
+        public override IDisplayResult Display(UserPickerField field, BuildFieldDisplayContext context)
         {
-            model.Field = field;
-            model.Part = context.ContentPart;
-            model.PartFieldDefinition = context.PartFieldDefinition;
-        })
-        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
-        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
+            return Initialize<DisplayUserPickerFieldUserNamesViewModel>(GetDisplayShapeType(context), model =>
+            {
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            })
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
+        }
     }
 }

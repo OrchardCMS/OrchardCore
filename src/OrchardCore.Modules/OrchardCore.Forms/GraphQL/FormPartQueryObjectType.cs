@@ -1,16 +1,17 @@
 using GraphQL.Types;
 using OrchardCore.Forms.Models;
 
-namespace OrchardCore.Forms.GraphQL;
-
-public class FormPartQueryObjectType : ObjectGraphType<FormPart>
+namespace OrchardCore.Forms.GraphQL
 {
-    public FormPartQueryObjectType()
+    public class FormPartQueryObjectType : ObjectGraphType<FormPart>
     {
-        Name = "FormPart";
+        public FormPartQueryObjectType()
+        {
+            Name = "FormPart";
 
-        Field(x => x.WorkflowTypeId, nullable: true);
-        Field(x => x.Action, nullable: true);
-        Field(x => x.Method, nullable: true);
+            Field(x => x.WorkflowTypeId, nullable: true);
+            Field(x => x.Action, nullable: true);
+            Field(x => x.Method, nullable: true);
+        }
     }
 }

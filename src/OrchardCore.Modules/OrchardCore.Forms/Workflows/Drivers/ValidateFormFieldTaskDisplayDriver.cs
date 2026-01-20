@@ -2,19 +2,20 @@ using OrchardCore.Forms.Workflows.Activities;
 using OrchardCore.Forms.Workflows.ViewModels;
 using OrchardCore.Workflows.Display;
 
-namespace OrchardCore.Forms.Workflows.Drivers;
-
-public sealed class ValidateFormFieldTaskDisplayDriver : ActivityDisplayDriver<ValidateFormFieldTask, ValidateFormFieldTaskViewModel>
+namespace OrchardCore.Forms.Workflows.Drivers
 {
-    protected override void EditActivity(ValidateFormFieldTask activity, ValidateFormFieldTaskViewModel model)
+    public class ValidateFormFieldTaskDisplayDriver : ActivityDisplayDriver<ValidateFormFieldTask, ValidateFormFieldTaskViewModel>
     {
-        model.FieldName = activity.FieldName;
-        model.ErrorMessage = activity.ErrorMessage;
-    }
+        protected override void EditActivity(ValidateFormFieldTask activity, ValidateFormFieldTaskViewModel model)
+        {
+            model.FieldName = activity.FieldName;
+            model.ErrorMessage = activity.ErrorMessage;
+        }
 
-    protected override void UpdateActivity(ValidateFormFieldTaskViewModel model, ValidateFormFieldTask activity)
-    {
-        activity.FieldName = model.FieldName?.Trim();
-        activity.ErrorMessage = model.ErrorMessage?.Trim();
+        protected override void UpdateActivity(ValidateFormFieldTaskViewModel model, ValidateFormFieldTask activity)
+        {
+            activity.FieldName = model.FieldName?.Trim();
+            activity.ErrorMessage = model.ErrorMessage?.Trim();
+        }
     }
 }

@@ -1,27 +1,29 @@
+using System.Threading.Tasks;
 using OrchardCore.Rules.Models;
 
-namespace OrchardCore.Rules.Services;
-
-public class AnyConditionEvaluator : ConditionEvaluator<AnyConditionGroup>
+namespace OrchardCore.Rules.Services
 {
-    private readonly IConditionResolver _conditionResolver;
-
-    public AnyConditionEvaluator(IConditionResolver conditionResolver)
+    public class AnyConditionEvaluator : ConditionEvaluator<AnyConditionGroup>
     {
-        _conditionResolver = conditionResolver;
-    }
+        private readonly IConditionResolver _conditionResolver;
 
-    public override async ValueTask<bool> EvaluateAsync(AnyConditionGroup condition)
-    {
-        foreach (var childCondition in condition.Conditions)
+        public AnyConditionEvaluator(IConditionResolver conditionResolver)
         {
-            var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
-            if (evaluator is null || await evaluator.EvaluateAsync(childCondition))
-            {
-                return true;
-            }
+            _conditionResolver = conditionResolver;
         }
 
-        return false;
+        public async override ValueTask<bool> EvaluateAsync(AnyConditionGroup condition)
+        {
+            foreach (var childCondition in condition.Conditions)
+            {
+                var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
+                if (evaluator is null || await evaluator.EvaluateAsync(childCondition))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

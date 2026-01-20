@@ -24,14 +24,14 @@ var optionsList = Vue.component('options-list',
 
 var policyDetails = Vue.component('policy-details',
     {
-        components: { optionsList: optionsList },
+        components: { optionsList : optionsList },
         props: ['policy'],
         template: '#policy-details'
     });
 
 var corsApp = new Vue({
     el: '#corsAdmin',
-    components: { policyDetails: policyDetails, optionsList: optionsList },
+    components: { policyDetails : policyDetails, optionsList : optionsList },
     data: {
         selectedPolicy: null,
         policies: null,
@@ -43,59 +43,56 @@ var corsApp = new Vue({
     methods: {
         newPolicy: function () {
             this.selectedPolicy = {
-                name: 'New policy',
-                allowedOrigins: [],
-                allowAnyOrigin: true,
-                allowedMethods: [],
-                allowAnyMethod: true,
-                allowedHeaders: [],
-                allowAnyHeader: true,
-                allowCredentials: true,
-                isDefaultPolicy: false,
-                exposedHeaders: []
+                Name: 'New policy',
+                AllowedOrigins: [],
+                AllowAnyOrigin: true,
+                AllowedMethods: [],
+                AllowAnyMethod: true,
+                AllowedHeaders: [],
+                AllowAnyHeader: true,
+                AllowCredentials: true,
+                IsDefaultPolicy: false
             };
         },
         editPolicy: function (policy) {
             this.selectedPolicy = Object.assign({}, policy);
-            this.selectedPolicy.originalName = this.selectedPolicy.name;
+            this.selectedPolicy.OriginalName = this.selectedPolicy.Name;
         },
         deletePolicy: function (policy, event) {
             this.selectedPolicy = null;
-            var policyToRemove = this.policies.filter(function (item) { return item.name === policy.name; });
+            var policyToRemove = this.policies.filter(function (item) { return item.Name === policy.Name; });
             if (policyToRemove.length > 0)
                 this.policies.splice($.inArray(policyToRemove[0], this.policies), 1);
             event.stopPropagation();
             this.save();
         },
         updatePolicy: function (policy, event) {
-            if (policy.isDefaultPolicy) {
-                this.policies.forEach(p => p.isDefaultPolicy = false);
+            if (policy.IsDefaultPolicy) {
+                this.policies.forEach(p => p.IsDefaultPolicy = false);
             }
-
-            if (policy.originalName) {
-                var policyIndex = this.policies.findIndex((oldPolicy) => oldPolicy.name === policy.originalName);
+            if (policy.OriginalName) {
+                var policyIndex = this.policies.findIndex((oldPolicy) => oldPolicy.Name === policy.OriginalName);
                 this.policies[policyIndex] = policy;
             }
             else {
                 this.policies.push(policy);
             }
-
             this.save();
             this.back();
         },
         save: function () {
-            document.getElementById('corsSettings').value = JSON.stringify(this.policies);
+            document.getElementById('CorsSettings').value = JSON.stringify(this.policies);
             document.getElementById('corsForm').submit();
         },
         back: function () {
             this.selectedPolicy = null;
         },
-        searchBox: function () {
+        searchBox: function() {
             var searchBox = $('#search-box');
 
             // On Enter, edit the item if there is a single one
-            searchBox.keydown(function (e) {
-                if (e.key == 'Enter') {
+            searchBox.keypress(function (event) {
+                if (event.which == 13) {
 
                     // Edit the item if there is a single filtered element
                     var visible = $('#corsAdmin > ul > li:visible');
@@ -112,7 +109,7 @@ var corsApp = new Vue({
                 var elementsToFilter = $("[data-filter-value]");
 
                 // On ESC, clear the search box and display all
-                if (e.key === 'Escape' || search == '') {
+                if (e.keyCode == 27 || search == '') {
                     searchBox.val('');
                     elementsToFilter.toggle(true);
                     $('#list-alert').addClass("d-none");
@@ -124,8 +121,9 @@ var corsApp = new Vue({
                         var found = text.indexOf(search) > -1;
                         $(this).toggle(found);
 
-                        if (found) {
-                            intVisible++;
+                        if(found)
+                        {
+                            intVisible++; 
                         }
                     });
 

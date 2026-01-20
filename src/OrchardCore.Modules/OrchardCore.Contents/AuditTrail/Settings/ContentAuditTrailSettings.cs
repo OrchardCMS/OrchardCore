@@ -1,6 +1,9 @@
-namespace OrchardCore.Contents.AuditTrail.Settings;
+using System;
 
-public class ContentAuditTrailSettings
+namespace OrchardCore.Contents.AuditTrail.Settings
 {
-    public string[] AllowedContentTypes { get; set; } = [];
+    public class ContentAuditTrailSettings
+    {
+        public string[] AllowedContentTypes { get; set; } = [];
+    }
 }

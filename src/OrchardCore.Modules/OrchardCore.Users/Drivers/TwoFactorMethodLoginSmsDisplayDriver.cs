@@ -5,12 +5,12 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class TwoFactorMethodLoginSmsDisplayDriver : DisplayDriver<TwoFactorMethod>
+public class TwoFactorMethodLoginSmsDisplayDriver : DisplayDriver<TwoFactorMethod>
 {
-    public override IDisplayResult Edit(TwoFactorMethod model, BuildEditorContext context)
+    public override IDisplayResult Edit(TwoFactorMethod model)
     {
         return View("SmsAuthenticatorValidation", model)
-            .Location("Content")
-            .OnGroup(TokenOptions.DefaultPhoneProvider);
+        .Location("Content")
+        .OnGroup(TokenOptions.DefaultPhoneProvider);
     }
 }

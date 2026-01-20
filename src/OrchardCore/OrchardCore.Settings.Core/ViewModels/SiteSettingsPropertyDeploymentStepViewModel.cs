@@ -1,7 +1,8 @@
-namespace OrchardCore.Settings.ViewModels;
-
-public class SiteSettingsPropertyDeploymentStepViewModel
+namespace OrchardCore.Settings.ViewModels
 {
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public class SiteSettingsPropertyDeploymentStepViewModel
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+    }
 }

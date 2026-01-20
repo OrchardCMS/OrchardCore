@@ -1,7 +1,10 @@
-namespace OrchardCore.Data.Documents;
+using System;
 
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-public class FileDocumentStoreAttribute : Attribute
+namespace OrchardCore.Data.Documents
 {
-    public string FileName { get; set; }
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    public class FileDocumentStoreAttribute : Attribute
+    {
+        public string FileName { get; set; }
+    }
 }

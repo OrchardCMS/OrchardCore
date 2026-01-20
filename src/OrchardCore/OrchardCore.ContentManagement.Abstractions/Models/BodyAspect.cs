@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Html;
 
-namespace OrchardCore.ContentManagement.Models;
-
-public class BodyAspect
+namespace OrchardCore.ContentManagement.Models
 {
-    public IHtmlContent Body { get; set; }
+    public class BodyAspect
+    {
+        public IHtmlContent Body { get; set; }
+    }
 }

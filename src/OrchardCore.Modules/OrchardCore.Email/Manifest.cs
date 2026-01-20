@@ -5,6 +5,7 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Provides the necessary infrastructure for configuring email settings.",
-    Category = "Communication"
+    Description = "Provides email settings configuration and a default email service based on SMTP.",
+    Dependencies = ["OrchardCore.Resources"],
+    Category = "Messaging"
 )]

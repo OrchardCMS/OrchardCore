@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.TheTheme.Controllers;
-
-public sealed class HomeController : Controller
+namespace OrchardCore.TheTheme.Controllers
 {
-    public IActionResult Index()
+    public class HomeController : Controller
     {
-        return View();
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

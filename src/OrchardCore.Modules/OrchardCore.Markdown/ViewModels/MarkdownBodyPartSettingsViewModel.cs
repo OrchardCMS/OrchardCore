@@ -1,6 +1,7 @@
-namespace OrchardCore.Markdown.ViewModels;
-
-public class MarkdownBodyPartSettingsViewModel
+namespace OrchardCore.Markdown.ViewModels
 {
-    public bool SanitizeHtml { get; set; }
+    public class MarkdownBodyPartSettingsViewModel
+    {
+        public bool SanitizeHtml { get; set; }
+    }
 }

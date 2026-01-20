@@ -1,7 +1,11 @@
-namespace OrchardCore.Caching.Distributed;
+using System;
+using System.Threading.Tasks;
 
-public interface IMessageBus
+namespace OrchardCore.Caching.Distributed
 {
-    Task SubscribeAsync(string channel, Action<string, string> handler);
-    Task PublishAsync(string channel, string message);
+    public interface IMessageBus
+    {
+        Task SubscribeAsync(string channel, Action<string, string> handler);
+        Task PublishAsync(string channel, string message);
+    }
 }

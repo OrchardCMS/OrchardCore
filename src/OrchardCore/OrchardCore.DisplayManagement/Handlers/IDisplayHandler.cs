@@ -1,8 +1,11 @@
-namespace OrchardCore.DisplayManagement.Handlers;
+using System.Threading.Tasks;
 
-public interface IDisplayHandler<TModel>
+namespace OrchardCore.DisplayManagement.Handlers
 {
-    Task BuildDisplayAsync(TModel model, BuildDisplayContext context);
-    Task BuildEditorAsync(TModel model, BuildEditorContext context);
-    Task UpdateEditorAsync(TModel model, UpdateEditorContext context);
+    public interface IDisplayHandler<TModel>
+    {
+        Task BuildDisplayAsync(TModel model, BuildDisplayContext context);
+        Task BuildEditorAsync(TModel model, BuildEditorContext context);
+        Task UpdateEditorAsync(TModel model, UpdateEditorContext context);
+    }
 }

@@ -2,17 +2,18 @@ using OrchardCore.Tenants.Workflows.Activities;
 using OrchardCore.Tenants.Workflows.ViewModels;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Tenants.Workflows.Drivers;
-
-public sealed class EnableTenantTaskDisplayDriver : TenantTaskDisplayDriver<EnableTenantTask, EnableTenantTaskViewModel>
+namespace OrchardCore.Tenants.Workflows.Drivers
 {
-    protected override void EditActivity(EnableTenantTask activity, EnableTenantTaskViewModel model)
+    public class EnableTenantTaskDisplayDriver : TenantTaskDisplayDriver<EnableTenantTask, EnableTenantTaskViewModel>
     {
-        model.TenantNameExpression = activity.TenantName.Expression;
-    }
+        protected override void EditActivity(EnableTenantTask activity, EnableTenantTaskViewModel model)
+        {
+            model.TenantNameExpression = activity.TenantName.Expression;
+        }
 
-    protected override void UpdateActivity(EnableTenantTaskViewModel model, EnableTenantTask activity)
-    {
-        activity.TenantName = new WorkflowExpression<string>(model.TenantNameExpression);
+        protected override void UpdateActivity(EnableTenantTaskViewModel model, EnableTenantTask activity)
+        {
+            activity.TenantName = new WorkflowExpression<string>(model.TenantNameExpression);
+        }
     }
 }

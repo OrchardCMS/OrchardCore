@@ -8,32 +8,32 @@ using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.ContentManagement.Display;
-
-public static class ServiceCollectionExtensions
+namespace OrchardCore.ContentManagement.Display
 {
-    public static IServiceCollection AddContentManagementDisplay(this IServiceCollection services)
+    public static class ServiceCollectionExtensions
     {
-        services.Configure<TemplateOptions>(o =>
+        public static IServiceCollection AddContentManagementDisplay(this IServiceCollection services)
         {
-            o.MemberAccessStrategy.Register<ContentItemViewModel>();
-            o.MemberAccessStrategy.Register<ContentPartViewModel>();
-        });
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ContentItemViewModel>();
+                o.MemberAccessStrategy.Register<ContentPartViewModel>();
+            });
 
-        services.TryAddTransient<IContentItemDisplayManager, ContentItemDisplayManager>();
+            services.TryAddTransient<IContentItemDisplayManager, ContentItemDisplayManager>();
+            services.TryAddEnumerable(new ServiceDescriptor(typeof(IContentDisplayHandler), typeof(ContentItemDisplayCoordinator), ServiceLifetime.Scoped));
 
-        services.AddScoped<IContentDisplayHandler, ContentItemDisplayCoordinator>();
+            services.AddScoped<IPlacementNodeFilterProvider, ContentTypePlacementNodeFilterProvider>();
+            services.AddScoped<IPlacementNodeFilterProvider, ContentPartPlacementNodeFilterProvider>();
 
-        services.AddScoped<IPlacementNodeFilterProvider, ContentTypePlacementNodeFilterProvider>();
-        services.AddScoped<IPlacementNodeFilterProvider, ContentPartPlacementNodeFilterProvider>();
+            services.AddScoped<IContentPartDisplayDriverResolver, ContentPartDisplayDriverResolver>();
+            services.AddScoped<IContentFieldDisplayDriverResolver, ContentFieldDisplayDriverResolver>();
 
-        services.AddScoped<IContentPartDisplayDriverResolver, ContentPartDisplayDriverResolver>();
-        services.AddScoped<IContentFieldDisplayDriverResolver, ContentFieldDisplayDriverResolver>();
+            services.AddOptions<ContentDisplayOptions>();
 
-        services.AddOptions<ContentDisplayOptions>();
+            services.AddLiquidFilter<ConsoleLogFilter>("console_log");
 
-        services.AddLiquidFilter<ConsoleLogFilter>("console_log");
-
-        return services;
+            return services;
+        }
     }
 }

@@ -1,6 +1,9 @@
-namespace OrchardCore.DisplayManagement.Liquid;
+using System.Threading.Tasks;
 
-public class LiquidPage : Razor.RazorPage<dynamic>
+namespace OrchardCore.DisplayManagement.Liquid
 {
-    public override Task ExecuteAsync() => LiquidViewTemplate.RenderAsync(this);
+    public class LiquidPage : Razor.RazorPage<dynamic>
+    {
+        public override Task ExecuteAsync() => LiquidViewTemplate.RenderAsync(this);
+    }
 }

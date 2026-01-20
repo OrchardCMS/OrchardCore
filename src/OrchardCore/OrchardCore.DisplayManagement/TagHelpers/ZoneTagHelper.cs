@@ -1,57 +1,60 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 
-namespace OrchardCore.DisplayManagement.TagHelpers;
-
-[HtmlTargetElement("zone", Attributes = NameAttribute)]
-public class ZoneTagHelper : TagHelper
+namespace OrchardCore.DisplayManagement.TagHelpers
 {
-    private const string PositionAttribute = "position";
-    private const string NameAttribute = "name";
-
-    private readonly ILayoutAccessor _layoutAccessor;
-    private readonly ILogger _logger;
-
-    public ZoneTagHelper(ILayoutAccessor layoutAccessor, ILogger<ZoneTagHelper> logger)
+    [HtmlTargetElement("zone", Attributes = NameAttribute)]
+    public class ZoneTagHelper : TagHelper
     {
-        _layoutAccessor = layoutAccessor;
-        _logger = logger;
-    }
+        private const string PositionAttribute = "position";
+        private const string NameAttribute = "name";
 
-    [HtmlAttributeName(PositionAttribute)]
-    public string Position { get; set; }
+        private readonly ILayoutAccessor _layoutAccessor;
+        private readonly ILogger _logger;
 
-    [HtmlAttributeName(NameAttribute)]
-    public string Name { get; set; }
-
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
-    {
-        if (string.IsNullOrEmpty(Name))
+        public ZoneTagHelper(ILayoutAccessor layoutAccessor, ILogger<ZoneTagHelper> logger)
         {
-            throw new ArgumentException("The name attribute can't be empty");
+            _layoutAccessor = layoutAccessor;
+            _logger = logger;
         }
 
-        var childContent = await output.GetChildContentAsync();
-        var layout = await _layoutAccessor.GetLayoutAsync();
+        [HtmlAttributeName(PositionAttribute)]
+        public string Position { get; set; }
 
-        var zone = layout.Zones[Name];
+        [HtmlAttributeName(NameAttribute)]
+        public string Name { get; set; }
 
-        if (zone is Shape shape)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            await shape.AddAsync(childContent, Position);
-        }
-        else
-        {
-            _logger.LogWarning(
-                "Unable to add shape to the zone using the <zone> tag helper because the zone's type is " +
-                "\"{ActualType}\" instead of the expected {ExpectedType}",
-                zone.GetType().FullName,
-                nameof(Shape));
-        }
+            if (string.IsNullOrEmpty(Name))
+            {
+                throw new ArgumentException("The name attribute can't be empty");
+            }
 
-        // Don't render the zone tag or the inner content
-        output.SuppressOutput();
+            var childContent = await output.GetChildContentAsync();
+            var layout = await _layoutAccessor.GetLayoutAsync();
+
+            var zone = layout.Zones[Name];
+
+            if (zone is Shape shape)
+            {
+                await shape.AddAsync(childContent, Position);
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "Unable to add shape to the zone using the <zone> tag helper because the zone's type is " +
+                    "\"{ActualType}\" instead of the expected {ExpectedType}",
+                    zone.GetType().FullName,
+                    nameof(Shape));
+            }
+
+            // Don't render the zone tag or the inner content
+            output.SuppressOutput();
+        }
     }
 }

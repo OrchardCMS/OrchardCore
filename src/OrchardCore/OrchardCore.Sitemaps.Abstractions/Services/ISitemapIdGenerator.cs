@@ -1,6 +1,7 @@
-namespace OrchardCore.Sitemaps.Services;
-
-public interface ISitemapIdGenerator
+namespace OrchardCore.Sitemaps.Services
 {
-    string GenerateUniqueId();
+    public interface ISitemapIdGenerator
+    {
+        string GenerateUniqueId();
+    }
 }

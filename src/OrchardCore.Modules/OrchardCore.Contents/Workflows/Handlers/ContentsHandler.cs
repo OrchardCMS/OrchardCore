@@ -1,72 +1,74 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Contents.Workflows.Activities;
-using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Contents.Workflows.Handlers;
-
-public class ContentsHandler : ContentHandlerBase
+namespace OrchardCore.Contents.Workflows.Handlers
 {
-    private readonly IWorkflowManager _workflowManager;
-
-    public ContentsHandler(IWorkflowManager workflowManager)
+    public class ContentsHandler : ContentHandlerBase
     {
-        _workflowManager = workflowManager;
-    }
+        private readonly IWorkflowManager _workflowManager;
 
-    public override Task CreatedAsync(CreateContentContext context)
-    {
-        return TriggerWorkflowEventAsync(nameof(ContentCreatedEvent), context.ContentItem);
-    }
-
-    public override Task UpdatedAsync(UpdateContentContext context)
-    {
-        return TriggerWorkflowEventAsync(nameof(ContentUpdatedEvent), context.ContentItem);
-    }
-
-    public override Task DraftSavedAsync(SaveDraftContentContext context)
-    {
-        return TriggerWorkflowEventAsync(nameof(ContentDraftSavedEvent), context.ContentItem);
-    }
-
-    public override Task PublishedAsync(PublishContentContext context)
-    {
-        return TriggerWorkflowEventAsync(nameof(ContentPublishedEvent), context.ContentItem);
-    }
-
-    public override Task UnpublishedAsync(PublishContentContext context)
-    {
-        return TriggerWorkflowEventAsync(nameof(ContentUnpublishedEvent), context.ContentItem);
-    }
-
-    public override Task RemovedAsync(RemoveContentContext context)
-    {
-        return TriggerWorkflowEventAsync(nameof(ContentDeletedEvent), context.ContentItem);
-    }
-
-    public override Task VersionedAsync(VersionContentContext context)
-    {
-        return TriggerWorkflowEventAsync(nameof(ContentVersionedEvent), context.ContentItem);
-    }
-
-    private Task<IEnumerable<WorkflowExecutionContext>> TriggerWorkflowEventAsync(string name, ContentItem contentItem)
-    {
-        var contentEvent = new ContentEventContext()
+        public ContentsHandler(IWorkflowManager workflowManager)
         {
-            Name = name,
-            ContentType = contentItem.ContentType,
-            ContentItemId = contentItem.ContentItemId,
-            ContentItemVersionId = contentItem.ContentItemVersionId,
-        };
+            _workflowManager = workflowManager;
+        }
 
-        var input = new Dictionary<string, object>
+        public override Task CreatedAsync(CreateContentContext context)
         {
-            { ContentEventConstants.ContentItemInputKey, contentItem },
-            { ContentEventConstants.ContentEventInputKey, contentEvent },
-        };
+            return TriggerWorkflowEventAsync(nameof(ContentCreatedEvent), context.ContentItem);
+        }
 
-        return _workflowManager.TriggerEventAsync(name, input, correlationId: contentItem.ContentItemId);
+        public override Task UpdatedAsync(UpdateContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentUpdatedEvent), context.ContentItem);
+        }
+
+        public override Task DraftSavedAsync(SaveDraftContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentDraftSavedEvent), context.ContentItem);
+        }
+
+        public override Task PublishedAsync(PublishContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentPublishedEvent), context.ContentItem);
+        }
+
+        public override Task UnpublishedAsync(PublishContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentUnpublishedEvent), context.ContentItem);
+        }
+
+        public override Task RemovedAsync(RemoveContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentDeletedEvent), context.ContentItem);
+        }
+
+        public override Task VersionedAsync(VersionContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentVersionedEvent), context.ContentItem);
+        }
+
+        private Task TriggerWorkflowEventAsync(string name, ContentItem contentItem)
+        {
+            var contentEvent = new ContentEventContext()
+            {
+                Name = name,
+                ContentType = contentItem.ContentType,
+                ContentItemId = contentItem.ContentItemId,
+                ContentItemVersionId = contentItem.ContentItemVersionId,
+            };
+
+            var input = new Dictionary<string, object>
+            {
+                { ContentEventConstants.ContentItemInputKey, contentItem },
+                { ContentEventConstants.ContentEventInputKey, contentEvent }
+            };
+
+            return _workflowManager.TriggerEventAsync(name, input, correlationId: contentItem.ContentItemId);
+        }
     }
 }

@@ -1,5 +1,7 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Text;
-using Amazon;
 using Amazon.S3;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,19 +13,16 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AmazonS3;
-using OrchardCore.Media.AmazonS3.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
 using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using SixLabors.ImageSharp.Web.Caching;
-using SixLabors.ImageSharp.Web.Caching.AWS;
 
 namespace OrchardCore.Media.AmazonS3;
 
-public sealed class Startup : Modules.StartupBase
+public class Startup : Modules.StartupBase
 {
     private readonly ILogger _logger;
     private readonly IShellConfiguration _configuration;
@@ -33,15 +32,13 @@ public sealed class Startup : Modules.StartupBase
         => (_configuration, _logger)
             = (configuration, logger);
 
-    static Startup() => AWSConfigs.InitializeCollections = true;
-
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddPermissionProvider<Permissions>();
-        services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, _configuration, _logger);
+        var storeOptions = new AwsStorageOptions().BindConfiguration(_configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 
@@ -134,54 +131,4 @@ public sealed class Startup : Modules.StartupBase
 
     private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
         => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
-}
-
-[Feature("OrchardCore.Media.AmazonS3.ImageSharpImageCache")]
-public sealed class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
-{
-    private readonly IShellConfiguration _configuration;
-    private readonly ILogger _logger;
-
-    public ImageSharpAmazonS3CacheStartup(
-        IShellConfiguration configuration,
-        ILogger<ImageSharpAmazonS3CacheStartup> logger)
-    {
-        _configuration = configuration;
-        _logger = logger;
-    }
-
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.ImageSharpCache;
-
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddTransient<IConfigureOptions<AwsImageSharpImageCacheOptions>, AwsImageSharpImageCacheOptionsConfiguration>();
-        services.AddTransient<IConfigureOptions<AWSS3StorageCacheOptions>, AWSS3StorageCacheOptionsConfiguration>();
-
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageSharpCache, _configuration, _logger);
-        var validationErrors = storeOptions.Validate().ToList();
-        var stringBuilder = new StringBuilder();
-
-        if (validationErrors.Count > 0)
-        {
-            foreach (var error in validationErrors)
-            {
-                stringBuilder.Append(error.ErrorMessage);
-            }
-
-            _logger.LogError("S3 ImageSharp Image Cache configuration validation failed with errors: {Errors} fallback to local file storage.", stringBuilder);
-        }
-        else
-        {
-            _logger.LogInformation(
-                "Starting with ImageSharp Image Cache configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
-
-            // Following https://docs.sixlabors.com/articles/imagesharp.web/imagecaches.html we'd use
-            // SetCache<AWSS3StorageCache>() but that's only available on IImageSharpBuilder after AddImageSharp(),
-            // what happens in OrchardCore.Media. Thus, an explicit Replace() is necessary.
-            services.Replace(ServiceDescriptor.Singleton<IImageCache, AWSS3StorageCache>());
-
-            services.AddScoped<IModularTenantEvents, ImageSharpS3ImageCacheBucketTenantEvents>();
-        }
-    }
 }

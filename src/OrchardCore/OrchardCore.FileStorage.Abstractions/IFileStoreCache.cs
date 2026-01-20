@@ -1,10 +1,15 @@
-namespace OrchardCore.FileStorage;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Cache a file store.
-/// </summary>
-public interface IFileStoreCache
+namespace OrchardCore.FileStorage
 {
-    Task<bool> IsCachedAsync(string path);
-    Task SetCacheAsync(Stream stream, IFileStoreEntry fileStoreEntry, CancellationToken cancellationToken);
+    /// <summary>
+    /// Cache a file store.
+    /// </summary>
+    public interface IFileStoreCache
+    {
+        Task<bool> IsCachedAsync(string path);
+        Task SetCacheAsync(Stream stream, IFileStoreEntry fileStoreEntry, CancellationToken cancellationToken);
+    }
 }

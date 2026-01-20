@@ -3,17 +3,18 @@ using OrchardCore.Workflows.Events;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
 
-namespace OrchardCore.Workflows.Drivers;
-
-public sealed class WorkflowFaultEventDisplayDriver : ActivityDisplayDriver<WorkflowFaultEvent, WorkflowFaultViewModel>
+namespace OrchardCore.Workflows.Drivers
 {
-    protected override void EditActivity(WorkflowFaultEvent activity, WorkflowFaultViewModel model)
+    public class WorkflowFaultEventDisplayDriver : ActivityDisplayDriver<WorkflowFaultEvent, WorkflowFaultViewModel>
     {
-        model.ErrorFilter = activity.ErrorFilter.Expression;
-    }
+        protected override void EditActivity(WorkflowFaultEvent activity, WorkflowFaultViewModel model)
+        {
+            model.ErrorFilter = activity.ErrorFilter.Expression;
+        }
 
-    protected override void UpdateActivity(WorkflowFaultViewModel model, WorkflowFaultEvent activity)
-    {
-        activity.ErrorFilter = new WorkflowExpression<bool>(model.ErrorFilter);
+        protected override void UpdateActivity(WorkflowFaultViewModel model, WorkflowFaultEvent activity)
+        {
+            activity.ErrorFilter = new WorkflowExpression<bool>(model.ErrorFilter);
+        }
     }
 }

@@ -1,31 +1,35 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Sitemaps.Models;
 
-namespace OrchardCore.Sitemaps.Builders;
-
-public class DefaultSitemapModifiedDateProvider : ISitemapModifiedDateProvider
+namespace OrchardCore.Sitemaps.Builders
 {
-    private readonly IEnumerable<ISitemapSourceModifiedDateProvider> _sitemapSourceModifiedDateProviders;
-
-    public DefaultSitemapModifiedDateProvider(IEnumerable<ISitemapSourceModifiedDateProvider> sitemapSourceModifiedDateProviders)
+    public class DefaultSitemapModifiedDateProvider : ISitemapModifiedDateProvider
     {
-        _sitemapSourceModifiedDateProviders = sitemapSourceModifiedDateProviders;
-    }
+        private readonly IEnumerable<ISitemapSourceModifiedDateProvider> _sitemapSourceModifiedDateProviders;
 
-    public async Task<DateTime?> GetLastModifiedDateAsync(SitemapType sitemap)
-    {
-        DateTime? lastModifiedDate = null;
-        foreach (var source in sitemap.SitemapSources)
+        public DefaultSitemapModifiedDateProvider(IEnumerable<ISitemapSourceModifiedDateProvider> sitemapSourceModifiedDateProviders)
         {
-            foreach (var modifiedDateProviders in _sitemapSourceModifiedDateProviders)
-            {
-                var result = await modifiedDateProviders.GetLastModifiedDateAsync(source);
-                if (result.HasValue && (lastModifiedDate == null || result.Value > lastModifiedDate))
-                {
-                    lastModifiedDate = result;
-                }
-            }
+            _sitemapSourceModifiedDateProviders = sitemapSourceModifiedDateProviders;
         }
 
-        return lastModifiedDate;
+        public async Task<DateTime?> GetLastModifiedDateAsync(SitemapType sitemap)
+        {
+            DateTime? lastModifiedDate = null;
+            foreach (var source in sitemap.SitemapSources)
+            {
+                foreach (var modifiedDateProviders in _sitemapSourceModifiedDateProviders)
+                {
+                    var result = await modifiedDateProviders.GetLastModifiedDateAsync(source);
+                    if (result.HasValue && (lastModifiedDate == null || result.Value > lastModifiedDate))
+                    {
+                        lastModifiedDate = result;
+                    }
+                }
+            }
+
+            return lastModifiedDate;
+        }
     }
 }

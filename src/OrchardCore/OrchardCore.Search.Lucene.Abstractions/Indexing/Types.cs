@@ -1,20 +1,21 @@
-namespace OrchardCore.Search.Lucene.Indexing;
-
-public enum Types
+namespace OrchardCore.Search.Lucene.Indexing
 {
-    // Numeric
-    Long,
+    public enum Types
+    {
+        // Numeric
+        Long,
 
-    Integer,
-    Short,
-    Byte,
-    Double,
-    Float,
-    ScaledFloat,
+        Integer,
+        Short,
+        Byte,
+        Double,
+        Float,
+        ScaledFloat,
 
-    Boolean,
-    Binary,
-    Date,
-    Text,
-    Keyword,
+        Boolean,
+        Binary,
+        Date,
+        Text,
+        Keyword,
+    }
 }

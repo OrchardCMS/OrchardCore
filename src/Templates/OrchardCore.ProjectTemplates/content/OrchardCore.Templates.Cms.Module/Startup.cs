@@ -18,35 +18,35 @@ using OrchardCore.Templates.Cms.Module.ViewModels;
 #endif
 using OrchardCore.Modules;
 
-namespace OrchardCore.Templates.Cms.Module;
-
-public sealed class Startup : StartupBase
+namespace OrchardCore.Templates.Cms.Module
 {
-    public override void ConfigureServices(IServiceCollection services)
+    public class Startup : StartupBase
     {
-#if (AddPart)
-        services.Configure<TemplateOptions>(o =>
+        public override void ConfigureServices(IServiceCollection services)
         {
-            o.MemberAccessStrategy.Register<MyTestPartViewModel>();
-        });
+#if (AddPart)
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<MyTestPartViewModel>();
+            });
 
-        services.AddContentPart<MyTestPart>()
-            .UseDisplayDriver<MyTestPartDisplayDriver>()
-            .AddHandler<MyTestPartHandler>();
+            services.AddContentPart<MyTestPart>()
+                .UseDisplayDriver<MyTestPartDisplayDriver>()
+                .AddHandler<MyTestPartHandler>();
 
-        services.AddScoped<IContentTypePartDefinitionDisplayDriver, MyTestPartSettingsDisplayDriver>();
-        services.AddDataMigration<Migrations>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, MyTestPartSettingsDisplayDriver>();
+            services.AddDataMigration<Migrations>();
 #endif
-    }
+        }
 
-    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-    {
-        routes.MapAreaControllerRoute(
-            name: "Home",
-            areaName: "OrchardCore.Templates.Cms.Module",
-            pattern: "Home/Index",
-            defaults: new { controller = "Home", action = "Index" }
-        );
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "Home",
+                areaName: "OrchardCore.Templates.Cms.Module",
+                pattern: "Home/Index",
+                defaults: new { controller = "Home", action = "Index" }
+            );
+        }
     }
 }
-

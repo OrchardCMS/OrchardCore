@@ -1,23 +1,28 @@
-namespace OrchardCore.Environment.Cache;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-public class CacheContextManager : ICacheContextManager
+namespace OrchardCore.Environment.Cache
 {
-    private readonly IEnumerable<ICacheContextProvider> _cacheContextProviders;
-
-    public CacheContextManager(IEnumerable<ICacheContextProvider> cacheContextProviders)
+    public class CacheContextManager : ICacheContextManager
     {
-        _cacheContextProviders = cacheContextProviders;
-    }
+        private readonly IEnumerable<ICacheContextProvider> _cacheContextProviders;
 
-    public async Task<IEnumerable<CacheContextEntry>> GetDiscriminatorsAsync(IEnumerable<string> contexts)
-    {
-        var entries = new List<CacheContextEntry>();
-
-        foreach (var provider in _cacheContextProviders.Reverse())
+        public CacheContextManager(IEnumerable<ICacheContextProvider> cacheContextProviders)
         {
-            await provider.PopulateContextEntriesAsync(contexts, entries);
+            _cacheContextProviders = cacheContextProviders;
         }
 
-        return entries;
+        public async Task<IEnumerable<CacheContextEntry>> GetDiscriminatorsAsync(IEnumerable<string> contexts)
+        {
+            var entries = new List<CacheContextEntry>();
+
+            foreach (var provider in _cacheContextProviders.Reverse())
+            {
+                await provider.PopulateContextEntriesAsync(contexts, entries);
+            }
+
+            return entries;
+        }
     }
 }

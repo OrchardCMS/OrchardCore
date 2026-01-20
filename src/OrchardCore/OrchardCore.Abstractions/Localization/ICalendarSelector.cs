@@ -1,13 +1,16 @@
-namespace OrchardCore.Localization;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Represents a contract for selection a calendar.
-/// </summary>
-public interface ICalendarSelector
+namespace OrchardCore.Localization
 {
     /// <summary>
-    /// Gets a calendar.
+    /// Represents a contract for selection a calendar.
     /// </summary>
-    /// <returns>The selected calendar.</returns>
-    Task<CalendarSelectorResult> GetCalendarAsync();
+    public interface ICalendarSelector
+    {
+        /// <summary>
+        /// Gets a calendar.
+        /// </summary>
+        /// <returns>The selected calendar.</returns>
+        Task<CalendarSelectorResult> GetCalendarAsync();
+    }
 }

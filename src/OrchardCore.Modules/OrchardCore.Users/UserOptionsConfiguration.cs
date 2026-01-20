@@ -1,29 +1,30 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Users;
-
-public sealed class UserOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+namespace OrchardCore.Users
 {
-    private static readonly ResourceManifest _manifest;
-
-    static UserOptionsConfiguration()
+    public class UserOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
-        _manifest = new ResourceManifest();
+        private static readonly ResourceManifest _manifest;
 
-        _manifest
-            .DefineScript("password-generator")
-            .SetUrl("~/OrchardCore.Users/Scripts/password-generator.min.js", "~/OrchardCore.Users/Scripts/password-generator.js")
-            .SetVersion("1.0.0");
+        static UserOptionsConfiguration()
+        {
+            _manifest = new ResourceManifest();
 
-        _manifest
-            .DefineScript("qrcode")
-            .SetUrl("~/OrchardCore.Users/Scripts/qrcode.min.js", "~/OrchardCore.Users/Scripts/qrcode.js")
-            .SetVersion("1.0.0");
-    }
+            _manifest
+                .DefineScript("password-generator")
+                .SetUrl("~/OrchardCore.Users/Scripts/password-generator.min.js", "~/OrchardCore.Users/Scripts/password-generator.js")
+                .SetVersion("1.0.0");
 
-    public void Configure(ResourceManagementOptions options)
-    {
-        options.ResourceManifests.Add(_manifest);
+            _manifest
+                .DefineScript("qrcode")
+                .SetUrl("~/OrchardCore.Users/Scripts/qrcode.min.js", "~/OrchardCore.Users/Scripts/qrcode.js")
+                .SetVersion("1.0.0");
+        }
+
+        public void Configure(ResourceManagementOptions options)
+        {
+            options.ResourceManifests.Add(_manifest);
+        }
     }
 }

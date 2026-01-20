@@ -1,43 +1,46 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Contents.Scripting;
-
-public sealed class UrlMethodsProvider : IGlobalMethodProvider
+namespace OrchardCore.Contents.Scripting
 {
-    private readonly GlobalMethod _getUrlPrefix;
-
-    public UrlMethodsProvider()
+    public class UrlMethodsProvider : IGlobalMethodProvider
     {
-        _getUrlPrefix = new GlobalMethod
+        private readonly GlobalMethod _getUrlPrefix;
+
+        public UrlMethodsProvider()
         {
-            Name = "getUrlPrefix",
-            Method = serviceProvider => (string path, bool? escaped) =>
+            _getUrlPrefix = new GlobalMethod
             {
-                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-
-                var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
-                if (!pathBase.HasValue)
+                Name = "getUrlPrefix",
+                Method = serviceProvider => (string path, bool? escaped) =>
                 {
-                    pathBase = "/";
-                }
+                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
-                path = path?.Trim(' ', '/') ?? string.Empty;
-                if (path.Length > 0)
-                {
-                    pathBase = pathBase.Add($"/{path}");
-                }
+                    var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
+                    if (!pathBase.HasValue)
+                    {
+                        pathBase = "/";
+                    }
 
-                if (escaped.HasValue && escaped.Value)
-                {
-                    return pathBase.ToString();
-                }
+                    path = path?.Trim(' ', '/') ?? string.Empty;
+                    if (path.Length > 0)
+                    {
+                        pathBase = pathBase.Add($"/{path}");
+                    }
 
-                return pathBase.Value;
-            },
-        };
+                    if (escaped.HasValue && escaped.Value)
+                    {
+                        return pathBase.ToString();
+                    }
+
+                    return pathBase.Value;
+                },
+            };
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods() => new[] { _getUrlPrefix };
     }
-
-    public IEnumerable<GlobalMethod> GetMethods() => new[] { _getUrlPrefix };
 }

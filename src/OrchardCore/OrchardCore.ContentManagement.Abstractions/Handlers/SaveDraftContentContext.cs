@@ -1,8 +1,9 @@
-namespace OrchardCore.ContentManagement.Handlers;
-
-public class SaveDraftContentContext : ContentContextBase
+namespace OrchardCore.ContentManagement.Handlers
 {
-    public SaveDraftContentContext(ContentItem contentItem) : base(contentItem)
+    public class SaveDraftContentContext : ContentContextBase
     {
+        public SaveDraftContentContext(ContentItem contentItem) : base(contentItem)
+        {
+        }
     }
 }

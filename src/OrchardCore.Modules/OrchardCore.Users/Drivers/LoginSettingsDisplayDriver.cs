@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -6,49 +8,51 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.Drivers;
-
-public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings>
+namespace OrchardCore.Users.Drivers
 {
-    public const string GroupId = "userLogin";
-
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
-
-    public LoginSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+    public class LoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginSettings>
     {
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
-    }
+        public const string GroupId = "userLogin";
 
-    protected override string SettingsGroupId
-        => GroupId;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-    public override IDisplayResult Edit(ISite site, LoginSettings settings, BuildEditorContext context)
-    {
-        return Initialize<LoginSettings>("LoginSettings_Edit", model =>
+        public LoginSettingsDisplayDriver(
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
-            model.UseSiteTheme = settings.UseSiteTheme;
-            model.DisableLocalLogin = settings.DisableLocalLogin;
-            model.AllowChangingEmail = settings.AllowChangingEmail;
-            model.AllowChangingUsername = settings.AllowChangingUsername;
-            model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
-        }).Location("Content:5#General")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.ManageUsers))
-        .OnGroup(SettingsGroupId);
-    }
-
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, LoginSettings section, UpdateEditorContext context)
-    {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
-        {
-            return null;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
-        await context.Updater.TryUpdateModelAsync(section, Prefix);
+        public override IDisplayResult Edit(LoginSettings settings)
+        {
+            return Initialize<LoginSettings>("LoginSettings_Edit", model =>
+            {
+                model.UseSiteTheme = settings.UseSiteTheme;
+                model.UseExternalProviderIfOnlyOneDefined = settings.UseExternalProviderIfOnlyOneDefined;
+                model.DisableLocalLogin = settings.DisableLocalLogin;
+                model.UseScriptToSyncRoles = settings.UseScriptToSyncRoles;
+                model.SyncRolesScript = settings.SyncRolesScript;
+                model.AllowChangingEmail = settings.AllowChangingEmail;
+                model.AllowChangingUsername = settings.AllowChangingUsername;
+                model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
+            }).Location("Content:5#General")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsers))
+            .OnGroup(GroupId);
+        }
 
-        return await EditAsync(site, section, context);
+        public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
+        {
+            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase)
+                || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+            {
+                return null;
+            }
+
+            await context.Updater.TryUpdateModelAsync(section, Prefix);
+
+            return await EditAsync(section, context);
+        }
     }
 }

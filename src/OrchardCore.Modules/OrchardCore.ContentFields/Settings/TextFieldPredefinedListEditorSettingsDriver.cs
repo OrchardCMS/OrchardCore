@@ -1,60 +1,64 @@
+using System;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Settings;
-
-public sealed class TextFieldPredefinedListEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
+namespace OrchardCore.ContentFields.Settings
 {
-    internal readonly IStringLocalizer S;
-
-    public TextFieldPredefinedListEditorSettingsDriver(IStringLocalizer<TextFieldPredefinedListEditorSettingsDriver> localizer)
+    public class TextFieldPredefinedListEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
-        S = localizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
-    {
-        return Initialize<PredefinedListSettingsViewModel>("TextFieldPredefinedListEditorSettings_Edit", model =>
+        public TextFieldPredefinedListEditorSettingsDriver(IStringLocalizer<TextFieldPredefinedListEditorSettingsDriver> localizer)
         {
-            var settings = partFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
+            S = localizer;
+        }
 
-            model.DefaultValue = settings.DefaultValue;
-            model.Editor = settings.Editor;
-            model.Options = JConvert.SerializeObject(settings.Options ?? [], JOptions.Indented);
-        }).Location("Editor");
-    }
-
-    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-    {
-        if (partFieldDefinition.Editor() == "PredefinedList")
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            var model = new PredefinedListSettingsViewModel();
-            var settings = new TextFieldPredefinedListEditorSettings();
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-            try
+            return Initialize<PredefinedListSettingsViewModel>("TextFieldPredefinedListEditorSettings_Edit", model =>
             {
-                settings.DefaultValue = model.DefaultValue;
-                settings.Editor = model.Editor;
-                settings.Options = string.IsNullOrWhiteSpace(model.Options)
-                    ? []
-                    : JConvert.DeserializeObject<ListValueOption[]>(model.Options);
+                var settings = partFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
+
+                model.DefaultValue = settings.DefaultValue;
+                model.Editor = settings.Editor;
+                model.Options = JConvert.SerializeObject(settings.Options ?? [], JOptions.Indented);
+            })
+            .Location("Editor");
+        }
+
+        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+        {
+            if (partFieldDefinition.Editor() == "PredefinedList")
+            {
+                var model = new PredefinedListSettingsViewModel();
+                var settings = new TextFieldPredefinedListEditorSettings();
+
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+                try
+                {
+                    settings.DefaultValue = model.DefaultValue;
+                    settings.Editor = model.Editor;
+                    settings.Options = string.IsNullOrWhiteSpace(model.Options)
+                        ? []
+                        : JConvert.DeserializeObject<ListValueOption[]>(model.Options);
+                }
+                catch
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
+                    return Edit(partFieldDefinition);
+                }
 
                 context.Builder.WithSettings(settings);
             }
-            catch
-            {
-                context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
-            }
-        }
 
-        return Edit(partFieldDefinition, context);
+            return Edit(partFieldDefinition);
+        }
     }
 }

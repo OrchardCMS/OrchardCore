@@ -1,84 +1,87 @@
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.ViewModels;
 
-namespace OrchardCore.Workflows.Display;
-
-/// <summary>
-/// Base class for activity drivers.
-/// </summary>
-public abstract class ActivityDisplayDriver<TActivity> : DisplayDriver<IActivity, TActivity>
-    where TActivity : class, IActivity
+namespace OrchardCore.Workflows.Display
 {
-    protected static readonly string ActivityName = typeof(TActivity).Name;
-
-    private static readonly string _thumbnailShapeType = $"{ActivityName}_Fields_Thumbnail";
-    private static readonly string _designShapeType = $"{ActivityName}_Fields_Design";
-
-    public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
+    /// <summary>
+    /// Base class for activity drivers.
+    /// </summary>
+    public abstract class ActivityDisplayDriver<TActivity> : DisplayDriver<IActivity, TActivity> where TActivity : class, IActivity
     {
-        return CombineAsync(
-            Shape(_thumbnailShapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
-            Shape(_designShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
-        );
-    }
-}
+        private static readonly string _thumbnailshapeType = $"{typeof(TActivity).Name}_Fields_Thumbnail";
+        private static readonly string _designShapeType = $"{typeof(TActivity).Name}_Fields_Design";
 
-/// <summary>
-/// Base class for activity drivers using a strongly typed view model.
-/// </summary>
-public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity>
-    where TActivity : class, IActivity where TEditViewModel : class, new()
-{
-    private static readonly string _editShapeType = $"{ActivityName}_Fields_Edit";
-
-    public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
-    {
-        return Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel))
-            .Location("Content");
-    }
-
-    public override async Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
-    {
-        var viewModel = new TEditViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
-        await UpdateActivityAsync(viewModel, activity);
-
-        return Edit(activity, context);
+        public override IDisplayResult Display(TActivity model)
+        {
+            return Combine(
+                Shape(_thumbnailshapeType, new ActivityViewModel<TActivity>(model)).Location("Thumbnail", "Content"),
+                Shape(_designShapeType, new ActivityViewModel<TActivity>(model)).Location("Design", "Content")
+            );
+        }
     }
 
     /// <summary>
-    /// Edit the view model before it's used in the editor.
+    /// Base class for activity drivers using a strongly typed view model.
     /// </summary>
-    protected virtual ValueTask EditActivityAsync(TActivity activity, TEditViewModel model)
+    public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity> where TActivity : class, IActivity where TEditViewModel : class, new()
     {
-        EditActivity(activity, model);
+        private static readonly string _editShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
 
-        return ValueTask.CompletedTask;
-    }
+        public override IDisplayResult Edit(TActivity model)
+        {
+            return Initialize(_editShapeType, (System.Func<TEditViewModel, ValueTask>)(viewModel =>
+            {
+                return EditActivityAsync(model, viewModel);
+            })).Location("Content");
+        }
 
-    /// <summary>
-    /// Edit the view model before it's used in the editor.
-    /// </summary>
-    protected virtual void EditActivity(TActivity activity, TEditViewModel model)
-    {
-    }
+        public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
+        {
+            var viewModel = new TEditViewModel();
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            {
+                await UpdateActivityAsync(viewModel, model);
+            }
 
-    /// <summary>
-    /// Updates the activity when the view model is validated.
-    /// </summary>
-    protected virtual Task UpdateActivityAsync(TEditViewModel model, TActivity activity)
-    {
-        UpdateActivity(model, activity);
+            return Edit(model);
+        }
 
-        return Task.CompletedTask;
-    }
+        /// <summary>
+        /// Edit the view model before it's used in the editor.
+        /// </summary>
+        protected virtual ValueTask EditActivityAsync(TActivity activity, TEditViewModel model)
+        {
+            EditActivity(activity, model);
 
-    /// <summary>
-    /// Updates the activity when the view model is validated.
-    /// </summary>
-    protected virtual void UpdateActivity(TEditViewModel model, TActivity activity)
-    {
+            return new ValueTask();
+        }
+
+        /// <summary>
+        /// Edit the view model before it's used in the editor.
+        /// </summary>
+        protected virtual void EditActivity(TActivity activity, TEditViewModel model)
+        {
+        }
+
+        /// <summary>
+        /// Updates the activity when the view model is validated.
+        /// </summary>
+        protected virtual Task UpdateActivityAsync(TEditViewModel model, TActivity activity)
+        {
+            UpdateActivity(model, activity);
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Updates the activity when the view model is validated.
+        /// </summary>
+        protected virtual void UpdateActivity(TEditViewModel model, TActivity activity)
+        {
+        }
     }
 }

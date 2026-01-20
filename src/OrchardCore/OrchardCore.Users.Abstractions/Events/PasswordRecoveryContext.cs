@@ -1,16 +1,19 @@
-namespace OrchardCore.Users.Events;
+using System;
 
-/// <summary>
-/// Context for password recovery events.
-/// </summary>
-public class PasswordRecoveryContext
+namespace OrchardCore.Users.Events
 {
-    public PasswordRecoveryContext(IUser user)
+    /// <summary>
+    /// Context for password recovery events.
+    /// </summary>
+    public class PasswordRecoveryContext
     {
-        ArgumentNullException.ThrowIfNull(user);
+        public PasswordRecoveryContext(IUser user)
+        {
+            ArgumentNullException.ThrowIfNull(user);
 
-        User = user;
+            User = user;
+        }
+
+        public IUser User { get; }
     }
-
-    public IUser User { get; }
 }

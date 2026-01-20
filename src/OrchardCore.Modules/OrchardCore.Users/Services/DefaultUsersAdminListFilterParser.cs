@@ -1,17 +1,18 @@
 using OrchardCore.Users.Models;
 using YesSql.Filters.Query;
 
-namespace OrchardCore.Users.Services;
-
-public sealed class DefaultUsersAdminListFilterParser : IUsersAdminListFilterParser
+namespace OrchardCore.Users.Services
 {
-    private readonly IQueryParser<User> _parser;
-
-    public DefaultUsersAdminListFilterParser(IQueryParser<User> parser)
+    public class DefaultUsersAdminListFilterParser : IUsersAdminListFilterParser
     {
-        _parser = parser;
-    }
+        private readonly IQueryParser<User> _parser;
 
-    public QueryFilterResult<User> Parse(string text)
-        => _parser.Parse(text);
+        public DefaultUsersAdminListFilterParser(IQueryParser<User> parser)
+        {
+            _parser = parser;
+        }
+
+        public QueryFilterResult<User> Parse(string text)
+            => _parser.Parse(text);
+    }
 }

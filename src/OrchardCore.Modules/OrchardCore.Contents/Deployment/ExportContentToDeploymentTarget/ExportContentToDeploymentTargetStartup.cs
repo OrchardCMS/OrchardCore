@@ -6,25 +6,27 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
-namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
-
-[Feature("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
-public sealed class ExportContentToDeploymentTargetStartup : StartupBase
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [Feature("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
+    public class ExportContentToDeploymentTargetStartup : StartupBase
     {
-        services.AddNavigationProvider<ExportContentToDeploymentTargetAdminMenu>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, ExportContentToDeploymentTargetAdminMenu>();
 
-        services.AddSiteDisplayDriver<ExportContentToDeploymentTargetSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ISite>, ExportContentToDeploymentTargetSettingsDisplayDriver>();
 
-        services.AddDeployment<ExportContentToDeploymentTargetDeploymentSource, ExportContentToDeploymentTargetDeploymentStep, ExportContentToDeploymentTargetDeploymentStepDriver>();
+            services.AddDeployment<ExportContentToDeploymentTargetDeploymentSource, ExportContentToDeploymentTargetDeploymentStep, ExportContentToDeploymentTargetDeploymentStepDriver>();
 
-        services.AddDataMigration<ExportContentToDeploymentTargetMigrations>();
-        services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
-        services.AddDisplayDriver<ContentOptionsViewModel, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
+            services.AddDataMigration<ExportContentToDeploymentTargetMigrations>();
+            services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
+            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
 
-        services.AddSiteSettingsPropertyDeploymentStep<ExportContentToDeploymentTargetSettings, ExportContentToDeploymentTargetStartup>(S => S["Export Content To Deployment Target settings"], S => S["Exports the Export Content To Deployment Target settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<ExportContentToDeploymentTargetSettings, ExportContentToDeploymentTargetStartup>(S => S["Export Content To Deployment Target settings"], S => S["Exports the Export Content To Deployment Target settings."]);
+        }
     }
 }

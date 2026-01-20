@@ -1,42 +1,44 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.ContentFields.Indexing;
-
-public class UserPickerFieldIndexHandler : ContentFieldIndexHandler<UserPickerField>
+namespace OrchardCore.ContentFields.Indexing
 {
-    public override Task BuildIndexAsync(UserPickerField field, BuildFieldIndexContext context)
+    public class UserPickerFieldIndexHandler : ContentFieldIndexHandler<UserPickerField>
     {
-        var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
-
-        if (field.UserIds.Length > 0)
+        public override Task BuildIndexAsync(UserPickerField field, BuildFieldIndexContext context)
         {
-            foreach (var userId in field.UserIds)
+            var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
+
+            if (field.UserIds.Length > 0)
+            {
+                foreach (var userId in field.UserIds)
+                {
+                    foreach (var key in context.Keys)
+                    {
+                        context.DocumentIndex.Set(key, userId, options);
+                    }
+                }
+
+                var userNames = field.GetUserNames();
+                foreach (var userName in userNames)
+                {
+                    foreach (var key in context.Keys)
+                    {
+                        context.DocumentIndex.Set(key, userName, options);
+                    }
+                }
+            }
+            else
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key, userId, options);
+                    context.DocumentIndex.Set(key, IndexingConstants.NullValue, options);
                 }
             }
 
-            var userNames = field.GetUserNames();
-            foreach (var userName in userNames)
-            {
-                foreach (var key in context.Keys)
-                {
-                    context.DocumentIndex.Set(key, userName, options);
-                }
-            }
+            return Task.CompletedTask;
         }
-        else
-        {
-            foreach (var key in context.Keys)
-            {
-                context.DocumentIndex.Set(key, ContentIndexingConstants.NullValue, options);
-            }
-        }
-
-        return Task.CompletedTask;
     }
 }

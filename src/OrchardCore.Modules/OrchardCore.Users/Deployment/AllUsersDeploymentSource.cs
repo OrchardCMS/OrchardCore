@@ -1,12 +1,12 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Users.Models;
 using YesSql;
 
 namespace OrchardCore.Users.Deployment;
 
-public sealed class AllUsersDeploymentSource
-    : DeploymentSourceBase<AllUsersDeploymentStep>
+public class AllUsersDeploymentSource : IDeploymentSource
 {
     private readonly ISession _session;
 
@@ -15,8 +15,13 @@ public sealed class AllUsersDeploymentSource
         _session = session;
     }
 
-    protected override async Task ProcessAsync(AllUsersDeploymentStep step, DeploymentPlanResult result)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
+        if (step is not AllUsersDeploymentStep allRolesStep)
+        {
+            return;
+        }
+
         var allUsers = await _session.Query<User>().ListAsync();
         var users = new JsonArray();
 

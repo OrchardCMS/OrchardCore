@@ -1,15 +1,17 @@
+using System;
 using OrchardCore.AuditTrail.Models;
 using YesSql;
 using YesSql.Filters.Query.Services;
 
-namespace OrchardCore.AuditTrail.Services;
-
-public class AuditTrailQueryContext : QueryExecutionContext<AuditTrailEvent>
+namespace OrchardCore.AuditTrail.Services
 {
-    public AuditTrailQueryContext(IServiceProvider serviceProvider, IQuery<AuditTrailEvent> query) : base(query)
+    public class AuditTrailQueryContext : QueryExecutionContext<AuditTrailEvent>
     {
-        ServiceProvider = serviceProvider;
-    }
+        public AuditTrailQueryContext(IServiceProvider serviceProvider, IQuery<AuditTrailEvent> query) : base(query)
+        {
+            ServiceProvider = serviceProvider;
+        }
 
-    public IServiceProvider ServiceProvider { get; }
+        public IServiceProvider ServiceProvider { get; }
+    }
 }

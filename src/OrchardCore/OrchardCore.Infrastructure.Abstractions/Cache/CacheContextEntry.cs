@@ -1,13 +1,14 @@
-namespace OrchardCore.Environment.Cache;
-
-public readonly struct CacheContextEntry
+namespace OrchardCore.Environment.Cache
 {
-    public CacheContextEntry(string key, string value)
+    public readonly struct CacheContextEntry
     {
-        Key = key;
-        Value = value;
-    }
+        public CacheContextEntry(string key, string value)
+        {
+            Key = key;
+            Value = value;
+        }
 
-    public string Key { get; init; }
-    public string Value { get; init; }
+        public string Key { get; init; }
+        public string Value { get; init; }
+    }
 }

@@ -1,30 +1,33 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Shells.Database.Configuration;
 
-namespace OrchardCore.Shells.Database.Extensions;
-
-public static class DatabaseShellContextFactoryExtensions
+namespace OrchardCore.Shells.Database.Extensions
 {
-    internal static Task<ShellContext> GetDatabaseContextAsync(
-        this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
+    public static class DatabaseShellContextFactoryExtensions
     {
-        if (options.DatabaseProvider is null)
+        internal static Task<ShellContext> GetDatabaseContextAsync(
+            this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
         {
-            throw new InvalidOperationException("The 'OrchardCore.Shells.Database' configuration section should define a 'DatabaseProvider'");
+            if (options.DatabaseProvider is null)
+            {
+                throw new InvalidOperationException("The 'OrchardCore.Shells.Database' configuration section should define a 'DatabaseProvider'");
+            }
+
+            var settings = new ShellSettings()
+                .AsDefaultShell()
+                .AsDisposable()
+                .AsRunning();
+
+            settings["DatabaseProvider"] = options.DatabaseProvider;
+            settings["ConnectionString"] = options.ConnectionString;
+            settings["TablePrefix"] = options.TablePrefix;
+            settings["Schema"] = options.Schema;
+
+            return shellContextFactory.CreateDescribedContextAsync(settings, new ShellDescriptor());
         }
-
-        var settings = new ShellSettings()
-            .AsDefaultShell()
-            .AsDisposable()
-            .AsRunning();
-
-        settings["DatabaseProvider"] = options.DatabaseProvider;
-        settings["ConnectionString"] = options.ConnectionString;
-        settings["TablePrefix"] = options.TablePrefix;
-        settings["Schema"] = options.Schema;
-
-        return shellContextFactory.CreateDescribedContextAsync(settings, new ShellDescriptor());
     }
 }

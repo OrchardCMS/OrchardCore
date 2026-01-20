@@ -1,5 +1,10 @@
+using System;
 using System.Buffers;
 using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
@@ -7,7 +12,6 @@ using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Json;
@@ -20,143 +24,133 @@ using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
 using YesSql.Serialization;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-/// <summary>
-/// Provides extension methods for <see cref="OrchardCoreBuilder"/> to add database access functionality.
-/// </summary>
-public static class OrchardCoreBuilderExtensions
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// Adds host and tenant level data access services.
+    /// Provides extension methods for <see cref="OrchardCoreBuilder"/> to add database access functionality.
     /// </summary>
-    /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
-    public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
+    public static class OrchardCoreBuilderExtensions
     {
-        builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
-
-        builder.ConfigureServices((services, serviceProvider) =>
+        /// <summary>
+        /// Adds host and tenant level data access services.
+        /// </summary>
+        /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
+        public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
-            var configuration = serviceProvider.GetService<IShellConfiguration>();
+            builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
 
-            services.Configure<YesSqlOptions>(configuration.GetSection("OrchardCore_YesSql"));
-            services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
-            services.AddScoped<IDataMigrationManager, DataMigrationManager>();
-            services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
-
-            services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();
-            services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
-
-            // Adding supported databases
-            services.TryAddDataProvider(name: "Sql Server", value: DatabaseProviderValue.SqlConnection, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
-            services.TryAddDataProvider(name: "Sqlite", value: DatabaseProviderValue.Sqlite, hasConnectionString: false, hasTablePrefix: false, isDefault: true);
-            services.TryAddDataProvider(name: "MySql", value: DatabaseProviderValue.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
-            services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
-
-            // Configuring data access
-            services.AddSingleton(sp =>
+            builder.ConfigureServices(services =>
             {
-                var shellSettings = sp.GetService<ShellSettings>();
+                services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
+                services.AddScoped<IDataMigrationManager, DataMigrationManager>();
+                services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
-                // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
-                if (shellSettings.IsUninitialized() || shellSettings["DatabaseProvider"] is null)
+                services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();
+                services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
+
+                // Adding supported databases
+                services.TryAddDataProvider(name: "Sql Server", value: DatabaseProviderValue.SqlConnection, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Sqlite", value: DatabaseProviderValue.Sqlite, hasConnectionString: false, hasTablePrefix: false, isDefault: true);
+                services.TryAddDataProvider(name: "MySql", value: DatabaseProviderValue.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
+
+                // Configuring data access
+                services.AddSingleton(sp =>
                 {
-                    return null;
-                }
+                    var shellSettings = sp.GetService<ShellSettings>();
 
-                var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
+                    // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
+                    if (shellSettings.IsUninitialized() || shellSettings["DatabaseProvider"] is null)
+                    {
+                        return null;
+                    }
 
-                var databaseTableOptions = shellSettings.GetDatabaseTableOptions();
-                var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions, databaseTableOptions);
+                    var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
+                    var databaseTableOptions = shellSettings.GetDatabaseTableOptions();
+                    var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions, databaseTableOptions);
 
-                switch (shellSettings["DatabaseProvider"])
+                    switch (shellSettings["DatabaseProvider"])
+                    {
+                        case DatabaseProviderValue.SqlConnection:
+                            storeConfiguration
+                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
+                                .UseBlockIdGenerator();
+                            break;
+                        case DatabaseProviderValue.Sqlite:
+                            var shellOptions = sp.GetService<IOptions<ShellOptions>>().Value;
+                            var sqliteOptions = sp.GetService<IOptions<SqliteOptions>>().Value;
+
+                            var databaseFolder = SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name);
+                            Directory.CreateDirectory(databaseFolder);
+
+                            var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings["DatabaseName"]);
+                            storeConfiguration
+                                .UseSqLite(connectionString, IsolationLevel.ReadUncommitted)
+                                .UseDefaultIdGenerator();
+                            break;
+                        case DatabaseProviderValue.MySql:
+                            storeConfiguration
+                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
+                                .UseBlockIdGenerator();
+                            break;
+                        case DatabaseProviderValue.Postgres:
+                            storeConfiguration
+                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
+                                .UseBlockIdGenerator();
+                            break;
+                        default:
+                            throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
+                    {
+                        var tablePrefix = shellSettings["TablePrefix"].Trim() + databaseTableOptions.TableNameSeparator;
+
+                        storeConfiguration.SetTablePrefix(tablePrefix);
+                    }
+
+                    var store = StoreFactory.Create(storeConfiguration);
+
+                    var indexes = sp.GetServices<IIndexProvider>();
+
+                    store.RegisterIndexes(indexes);
+
+                    return store;
+                });
+
+                services.Initialize(async sp =>
                 {
-                    case DatabaseProviderValue.SqlConnection:
-                        storeConfiguration
-                            .UseSqlServer(shellSettings["ConnectionString"], yesSqlOptions.IsolationLevel, shellSettings["Schema"])
-                            .UseBlockIdGenerator();
-                        break;
-                    case DatabaseProviderValue.Sqlite:
-                        var shellOptions = sp.GetService<IOptions<ShellOptions>>().Value;
-                        var sqliteOptions = sp.GetService<IOptions<SqliteOptions>>().Value;
+                    var store = sp.GetService<IStore>();
+                    if (store == null)
+                    {
+                        return;
+                    }
 
-                        var databaseFolder = SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name);
-                        Directory.CreateDirectory(databaseFolder);
+                    await store.InitializeAsync();
 
-                        var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings);
+                    var storeCollectionOptions = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
+                    foreach (var collection in storeCollectionOptions.Collections)
+                    {
+                        await store.InitializeCollectionAsync(collection);
+                    }
+                });
 
-                        storeConfiguration
-                            .UseSqLite(connectionString, yesSqlOptions.IsolationLevel)
-                            .UseDefaultIdGenerator();
-                        break;
-                    case DatabaseProviderValue.MySql:
-                        storeConfiguration
-                            .UseMySql(shellSettings["ConnectionString"], yesSqlOptions.IsolationLevel, shellSettings["Schema"])
-                            .UseBlockIdGenerator();
-                        break;
-                    case DatabaseProviderValue.Postgres:
-                        storeConfiguration
-                            .UsePostgreSql(shellSettings["ConnectionString"], yesSqlOptions.IsolationLevel, shellSettings["Schema"])
-                            .UseBlockIdGenerator();
-                        break;
-                    default:
-                        throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
-                }
-
-                if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
+                services.AddScoped(sp =>
                 {
-                    var tablePrefix = shellSettings["TablePrefix"].Trim() + databaseTableOptions.TableNameSeparator;
+                    var store = sp.GetService<IStore>();
 
-                    storeConfiguration.SetTablePrefix(tablePrefix);
-                }
+                    if (store == null)
+                    {
+                        return null;
+                    }
 
-                var store = StoreFactory.Create(storeConfiguration);
+                    var session = store.CreateSession();
 
-                var indexes = sp.GetServices<IIndexProvider>();
+                    var scopedServices = sp.GetServices<IScopedIndexProvider>();
 
-                store.RegisterIndexes(indexes);
+                    session.RegisterIndexes(scopedServices.ToArray());
 
-                return store;
-            });
-
-            services.Initialize(async sp =>
-            {
-                var store = sp.GetService<IStore>();
-                if (store == null)
-                {
-                    return;
-                }
-
-                await store.InitializeAsync();
-
-                var storeCollectionOptions = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
-                foreach (var collection in storeCollectionOptions.Collections)
-                {
-                    await store.InitializeCollectionAsync(collection);
-                }
-            });
-
-            services.AddScoped(sp =>
-            {
-                var store = sp.GetService<IStore>();
-
-                if (store == null)
-                {
-                    return null;
-                }
-
-                var session = store.CreateSession();
-
-                var scopedServices = sp.GetServices<IScopedIndexProvider>();
-
-                session.RegisterIndexes(scopedServices.ToArray());
-
-                // Register automated document store commit and rollback when the ISession is used
-                // on the DI scope of the shell. All other scopes will not be automatically committed.
-                var shellScope = ShellScope.Current;
-                if (sp == shellScope?.ServiceProvider)
-                {
-                    shellScope
+                    ShellScope.Current
                         .RegisterBeforeDispose(scope =>
                         {
                             return scope.ServiceProvider
@@ -169,58 +163,59 @@ public static class OrchardCoreBuilderExtensions
                                 .GetRequiredService<IDocumentStore>()
                                 .CancelAsync();
                         });
-                }
 
-                return session;
+                    return session;
+                });
+
+                services.AddScoped<IDocumentStore, DocumentStore>();
+                services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
+                services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
 
-            services.AddScoped<IDocumentStore, DocumentStore>();
-            services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
-            services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
-        });
-
-        return builder;
-    }
-
-    private static YesSql.Configuration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
-    {
-        var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
-        var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-
-        var serializerOptions = sp.GetRequiredService<IOptions<DocumentJsonSerializerOptions>>();
-
-        var storeConfiguration = new YesSql.Configuration
-        {
-            CommandsPageSize = yesSqlOptions.CommandsPageSize,
-            QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
-            EnableThreadSafetyChecks = yesSqlOptions.EnableThreadSafetyChecks,
-            TableNameConvention = tableNameFactory.Create(databaseTableOptions),
-            IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
-            Logger = loggerFactory.CreateLogger("YesSql"),
-            ContentSerializer = new DefaultContentJsonSerializer(serializerOptions.Value.SerializerOptions),
-            IsolationLevel = yesSqlOptions.IsolationLevel,
-        };
-
-        if (yesSqlOptions.IdGenerator != null)
-        {
-            storeConfiguration.IdGenerator = yesSqlOptions.IdGenerator;
+            return builder;
         }
 
-        if (yesSqlOptions.IdentifierAccessorFactory != null)
+        private static YesSql.Configuration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
         {
-            storeConfiguration.IdentifierAccessorFactory = yesSqlOptions.IdentifierAccessorFactory;
-        }
+            var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
-        if (yesSqlOptions.VersionAccessorFactory != null)
-        {
-            storeConfiguration.VersionAccessorFactory = yesSqlOptions.VersionAccessorFactory;
-        }
+            var typeInfoResolvers = sp.GetServices<IJsonTypeInfoResolver>().ToList();
+            var derivedTypesOptions = sp.GetService<IOptions<JsonDerivedTypesOptions>>();
+            typeInfoResolvers.Add(new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value));
 
-        if (yesSqlOptions.ContentSerializer != null)
-        {
-            storeConfiguration.ContentSerializer = yesSqlOptions.ContentSerializer;
-        }
+            var storeConfiguration = new YesSql.Configuration
+            {
+                CommandsPageSize = yesSqlOptions.CommandsPageSize,
+                QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
+                TableNameConvention = tableNameFactory.Create(databaseTableOptions),
+                IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
+                Logger = loggerFactory.CreateLogger("YesSql"),
+            };
 
-        return storeConfiguration;
+            storeConfiguration.ContentSerializer = new DefaultJsonContentSerializer(typeInfoResolvers);
+
+            if (yesSqlOptions.IdGenerator != null)
+            {
+                storeConfiguration.IdGenerator = yesSqlOptions.IdGenerator;
+            }
+
+            if (yesSqlOptions.IdentifierAccessorFactory != null)
+            {
+                storeConfiguration.IdentifierAccessorFactory = yesSqlOptions.IdentifierAccessorFactory;
+            }
+
+            if (yesSqlOptions.VersionAccessorFactory != null)
+            {
+                storeConfiguration.VersionAccessorFactory = yesSqlOptions.VersionAccessorFactory;
+            }
+
+            if (yesSqlOptions.ContentSerializer != null)
+            {
+                storeConfiguration.ContentSerializer = yesSqlOptions.ContentSerializer;
+            }
+
+            return storeConfiguration;
+        }
     }
 }

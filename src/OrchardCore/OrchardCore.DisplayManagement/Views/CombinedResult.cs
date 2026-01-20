@@ -1,39 +1,42 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 
-namespace OrchardCore.DisplayManagement.Views;
-
-public class CombinedResult : IDisplayResult
+namespace OrchardCore.DisplayManagement.Views
 {
-    private readonly IEnumerable<IDisplayResult> _results;
-
-    public CombinedResult(params IDisplayResult[] results)
+    public class CombinedResult : IDisplayResult
     {
-        _results = results;
-    }
+        private readonly IEnumerable<IDisplayResult> _results;
 
-    public CombinedResult(IEnumerable<IDisplayResult> results)
-    {
-        _results = results;
-    }
-
-    public async Task ApplyAsync(BuildDisplayContext context)
-    {
-        foreach (var result in _results)
+        public CombinedResult(params IDisplayResult[] results)
         {
-            await result.ApplyAsync(context);
+            _results = results;
         }
-    }
 
-    public async Task ApplyAsync(BuildEditorContext context)
-    {
-        foreach (var result in _results)
+        public CombinedResult(IEnumerable<IDisplayResult> results)
         {
-            await result.ApplyAsync(context);
+            _results = results;
         }
-    }
 
-    public IEnumerable<IDisplayResult> GetResults()
-    {
-        return _results;
+        public async Task ApplyAsync(BuildDisplayContext context)
+        {
+            foreach (var result in _results)
+            {
+                await result.ApplyAsync(context);
+            }
+        }
+
+        public async Task ApplyAsync(BuildEditorContext context)
+        {
+            foreach (var result in _results)
+            {
+                await result.ApplyAsync(context);
+            }
+        }
+
+        public IEnumerable<IDisplayResult> GetResults()
+        {
+            return _results;
+        }
     }
 }

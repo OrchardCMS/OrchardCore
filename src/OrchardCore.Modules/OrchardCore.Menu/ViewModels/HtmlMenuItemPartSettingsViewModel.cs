@@ -1,6 +1,7 @@
-namespace OrchardCore.Menu.ViewModels;
-
-public class HtmlMenuItemPartSettingsViewModel
+namespace OrchardCore.Menu.ViewModels
 {
-    public bool SanitizeHtml { get; set; }
+    public class HtmlMenuItemPartSettingsViewModel
+    {
+        public bool SanitizeHtml { get; set; }
+    }
 }

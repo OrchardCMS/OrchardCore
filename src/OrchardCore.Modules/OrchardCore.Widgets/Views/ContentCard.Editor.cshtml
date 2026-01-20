@@ -1,4 +1,3 @@
-@using OrchardCore.ContentTypes.Shapes
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
@@ -9,9 +8,6 @@
 @await DisplayAsync(Model)
 
 @{
-    var inputShape = await Factory.CreateAsync<ContentCardFieldsEditShape>("ContentCard_Fields_Edit", shape =>
-    {
-        shape.CardShape = Model;
-    });
+    var inputShape = await New.ContentCard_Fields_Edit(CardShape : Model);
 }
 @await DisplayAsync(inputShape)

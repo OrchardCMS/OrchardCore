@@ -1,22 +1,24 @@
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Entities.Scripting;
-
-public class IdGeneratorMethod : IGlobalMethodProvider
+namespace OrchardCore.Entities.Scripting
 {
-    private static readonly GlobalMethod _uuid = new()
+    public class IdGeneratorMethod : IGlobalMethodProvider
     {
-        Name = "uuid",
-        Method = serviceProvider => () =>
-       {
-           var idGenerator = serviceProvider.GetRequiredService<IIdGenerator>();
-           return idGenerator.GenerateUniqueId();
-       },
-    };
+        private static readonly GlobalMethod _uuid = new()
+        {
+            Name = "uuid",
+            Method = serviceProvider => () =>
+           {
+               var idGenerator = serviceProvider.GetRequiredService<IIdGenerator>();
+               return idGenerator.GenerateUniqueId();
+           },
+        };
 
-    public IEnumerable<GlobalMethod> GetMethods()
-    {
-        yield return _uuid;
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return _uuid;
+        }
     }
 }

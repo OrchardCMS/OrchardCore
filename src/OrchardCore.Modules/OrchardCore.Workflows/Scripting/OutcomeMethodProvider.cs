@@ -1,22 +1,25 @@
+using System;
+using System.Collections.Generic;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Workflows.Scripting;
-
-public class OutcomeMethodProvider : IGlobalMethodProvider
+namespace OrchardCore.Workflows.Scripting
 {
-    private readonly GlobalMethod _setOutcomeMethod;
-
-    public OutcomeMethodProvider(IList<string> outcomes)
+    public class OutcomeMethodProvider : IGlobalMethodProvider
     {
-        _setOutcomeMethod = new GlobalMethod
+        private readonly GlobalMethod _setOutcomeMethod;
+
+        public OutcomeMethodProvider(IList<string> outcomes)
         {
-            Name = "setOutcome",
-            Method = serviceProvider => (Action<string>)(name => outcomes.Add(name)),
-        };
-    }
+            _setOutcomeMethod = new GlobalMethod
+            {
+                Name = "setOutcome",
+                Method = serviceProvider => (Action<string>)(name => outcomes.Add(name)),
+            };
+        }
 
-    public IEnumerable<GlobalMethod> GetMethods()
-    {
-        return new[] { _setOutcomeMethod };
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            return new[] { _setOutcomeMethod };
+        }
     }
 }

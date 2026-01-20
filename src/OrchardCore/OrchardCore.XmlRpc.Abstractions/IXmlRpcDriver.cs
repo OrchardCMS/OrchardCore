@@ -1,6 +1,7 @@
-namespace OrchardCore.XmlRpc;
-
-public interface IXmlRpcDriver
+namespace OrchardCore.XmlRpc
 {
-    void Process(object item);
+    public interface IXmlRpcDriver
+    {
+        void Process(object item);
+    }
 }

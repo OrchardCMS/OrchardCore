@@ -1,24 +1,28 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Cors;
-
-public sealed class AdminMenu : AdminNavigationProvider
+namespace OrchardCore.Cors
 {
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public class AdminMenu : INavigationProvider
     {
-        S = localizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        if (NavigationHelper.UseLegacyFormat())
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
+            S = localizer;
+        }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
+
             builder
                 .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
+                    .Add(S["Settings"], settings => settings
                         .Add(S["CORS"], S["CORS"].PrefixPosition(), entry => entry
                             .AddClass("cors")
                             .Id("cors")
@@ -29,22 +33,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     )
                 );
 
-            return ValueTask.CompletedTask;
+            return Task.CompletedTask;
         }
-
-        builder
-            .Add(S["Settings"], settings => settings
-                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["Cross-Origin Resource Sharing"], S["Cross-Origin Resource Sharing"].PrefixPosition(), entry => entry
-                        .AddClass("cors")
-                        .Id("cors")
-                        .Action("Index", "Admin", "OrchardCore.Cors")
-                        .Permission(Permissions.ManageCorsSettings)
-                        .LocalNav()
-                    )
-                )
-            );
-
-        return ValueTask.CompletedTask;
     }
 }

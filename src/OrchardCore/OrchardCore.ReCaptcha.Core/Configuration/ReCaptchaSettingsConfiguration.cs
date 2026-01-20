@@ -1,22 +1,26 @@
 using Microsoft.Extensions.Options;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
 
-namespace OrchardCore.ReCaptcha.Configuration;
-
-public sealed class ReCaptchaSettingsConfiguration : IConfigureOptions<ReCaptchaSettings>
+namespace OrchardCore.ReCaptcha.Configuration
 {
-    private readonly ISiteService _site;
-
-    public ReCaptchaSettingsConfiguration(ISiteService site)
+    public class ReCaptchaSettingsConfiguration : IConfigureOptions<ReCaptchaSettings>
     {
-        _site = site;
-    }
+        private readonly ISiteService _site;
 
-    public void Configure(ReCaptchaSettings options)
-    {
-        var settings = _site.GetSettings<ReCaptchaSettings>();
+        public ReCaptchaSettingsConfiguration(ISiteService site)
+        {
+            _site = site;
+        }
 
-        options.SiteKey = settings.SiteKey;
-        options.SecretKey = settings.SecretKey;
+        public void Configure(ReCaptchaSettings options)
+        {
+            var settings = _site.GetSiteSettingsAsync()
+                .GetAwaiter().GetResult()
+                .As<ReCaptchaSettings>();
+
+            options.SiteKey = settings.SiteKey;
+            options.SecretKey = settings.SecretKey;
+        }
     }
 }

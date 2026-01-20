@@ -1,13 +1,16 @@
-namespace OrchardCore.ContentManagement;
+using System;
 
-internal sealed class GenericTypeActivator<T, TInstance> : ITypeActivator<TInstance> where T : TInstance, new()
+namespace OrchardCore.ContentManagement
 {
-    /// <inheritdoc />
-    public Type Type => typeof(T);
-
-    /// <inheritdoc />
-    public TInstance CreateInstance()
+    internal class GenericTypeActivator<T, TInstance> : ITypeActivator<TInstance> where T : TInstance, new()
     {
-        return new T();
+        /// <inheritdoc />
+        public Type Type => typeof(T);
+
+        /// <inheritdoc />
+        public TInstance CreateInstance()
+        {
+            return new T();
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -6,93 +7,94 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Utilities;
 
-namespace OrchardCore.Contents;
-
-public class Shapes : ShapeTableProvider
+namespace OrchardCore.Contents
 {
-    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
+    public class Shapes : ShapeTableProvider
     {
-        builder.Describe("Content")
-            .OnDisplaying(displaying =>
-            {
-                var shape = displaying.Shape;
-                var contentItem = shape.GetProperty<ContentItem>("ContentItem");
-
-                if (contentItem != null)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
+        {
+            builder.Describe("Content")
+                .OnDisplaying(displaying =>
                 {
-                    // Alternates in order of specificity.
-                    // Display type > content type > specific content > display type for a content type > display type for specific content
-                    // BasicShapeTemplateHarvester.Adjust will then adjust the template name
+                    var shape = displaying.Shape;
+                    var contentItem = shape.GetProperty<ContentItem>("ContentItem");
 
-                    // Content__[DisplayType] e.g. Content-Summary
-                    displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType.EncodeAlternateElement());
+                    if (contentItem != null)
+                    {
+                        // Alternates in order of specificity.
+                        // Display type > content type > specific content > display type for a content type > display type for specific content
+                        // BasicShapeTemplateHarvester.Adjust will then adjust the template name
 
-                    var encodedContentType = contentItem.ContentType.EncodeAlternateElement();
+                        // Content__[DisplayType] e.g. Content-Summary
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType.EncodeAlternateElement());
 
-                    // Content__[ContentType] e.g. Content-BlogPost,
-                    displaying.Shape.Metadata.Alternates.Add("Content__" + encodedContentType);
+                        var encodedContentType = contentItem.ContentType.EncodeAlternateElement();
 
-                    // Content__[Id] e.g. Content-42,
-                    displaying.Shape.Metadata.Alternates.Add("Content__" + contentItem.Id);
+                        // Content__[ContentType] e.g. Content-BlogPost,
+                        displaying.Shape.Metadata.Alternates.Add("Content__" + encodedContentType);
 
-                    // Content_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
-                    displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + encodedContentType);
+                        // Content__[Id] e.g. Content-42,
+                        displaying.Shape.Metadata.Alternates.Add("Content__" + contentItem.Id);
 
-                    // Content_[DisplayType]__[Id] e.g. Content-42.Summary
-                    displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + contentItem.Id);
-                }
-            });
+                        // Content_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + encodedContentType);
 
-        // This shapes provides a way to lazily load a content item render it in any display type.
-        builder.Describe("ContentItem")
-            .OnProcessing(async context =>
-            {
-                var content = context.Shape;
-                var handle = content.GetProperty<string>("Handle");
-                var displayType = content.GetProperty<string>("DisplayType");
-                var alternate = content.GetProperty<string>("Alternate");
+                        // Content_[DisplayType]__[Id] e.g. Content-42.Summary
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + contentItem.Id);
+                    }
+                });
 
-                if (string.IsNullOrEmpty(handle))
+            // This shapes provides a way to lazily load a content item render it in any display type.
+            builder.Describe("ContentItem")
+                .OnProcessing(async context =>
                 {
-                    // This code is provided for backwards compatibility and can be removed in a future version.
-                    handle = content.GetProperty<string>("Alias");
+                    var content = context.Shape;
+                    var handle = content.GetProperty<string>("Handle");
+                    var displayType = content.GetProperty<string>("DisplayType");
+                    var alternate = content.GetProperty<string>("Alternate");
+
                     if (string.IsNullOrEmpty(handle))
+                    {
+                        // This code is provided for backwards compatibility and can be removed in a future version.
+                        handle = content.GetProperty<string>("Alias");
+                        if (string.IsNullOrEmpty(handle))
+                        {
+                            return;
+                        }
+                    }
+
+                    var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
+                    var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
+                    var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
+                    var updateModelAccessor = context.ServiceProvider.GetRequiredService<IUpdateModelAccessor>();
+
+                    var contentItemId = await handleManager.GetContentItemIdAsync(handle);
+
+                    if (string.IsNullOrEmpty(contentItemId))
                     {
                         return;
                     }
-                }
 
-                var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-                var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
-                var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
-                var updateModelAccessor = context.ServiceProvider.GetRequiredService<IUpdateModelAccessor>();
+                    var contentItem = await contentManager.GetAsync(contentItemId);
 
-                var contentItemId = await handleManager.GetContentItemIdAsync(handle);
+                    if (contentItem == null)
+                    {
+                        return;
+                    }
 
-                if (string.IsNullOrEmpty(contentItemId))
-                {
-                    return;
-                }
+                    content.Properties["ContentItem"] = contentItem;
 
-                var contentItem = await contentManager.GetAsync(contentItemId);
+                    var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
 
-                if (contentItem == null)
-                {
-                    return;
-                }
+                    if (!string.IsNullOrEmpty(alternate))
+                    {
+                        displayShape.Metadata.Alternates.Add(alternate);
+                    }
 
-                content.Properties["ContentItem"] = contentItem;
+                    await context.Shape.AddAsync(displayShape, string.Empty);
+                });
 
-                var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
-
-                if (!string.IsNullOrEmpty(alternate))
-                {
-                    displayShape.Metadata.Alternates.Add(alternate);
-                }
-
-                await context.Shape.AddAsync(displayShape, string.Empty);
-            });
-
-        return ValueTask.CompletedTask;
+            return ValueTask.CompletedTask;
+        }
     }
 }

@@ -1,63 +1,46 @@
+using System;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Roles;
 using OrchardCore.Security;
 
-namespace OrchardCore.Settings.Services;
-
-/// <summary>
-/// This authorization handler validates any permission when the user is the site owner.
-/// </summary>
-public class SuperUserHandler : IAuthorizationHandler
+namespace OrchardCore.Settings.Services
 {
-    private readonly ISiteService _siteService;
-    private readonly ISystemRoleProvider _systemRoleProvider;
-
-    public SuperUserHandler(
-        ISiteService siteService,
-        ISystemRoleProvider systemRoleProvider)
+    /// <summary>
+    /// This authorization handler validates any permission when the user is the site owner.
+    /// </summary>
+    public class SuperUserHandler : IAuthorizationHandler
     {
-        _siteService = siteService;
-        _systemRoleProvider = systemRoleProvider;
-    }
+        private readonly ISiteService _siteService;
 
-    public async Task HandleAsync(AuthorizationHandlerContext context)
-    {
-        var user = context?.User;
-
-        if (user == null)
+        public SuperUserHandler(ISiteService siteService)
         {
-            return;
+            _siteService = siteService;
         }
 
-        var adminRole = _systemRoleProvider.GetAdminRole();
-
-        if (user.IsInRole(adminRole.RoleName))
+        public async Task HandleAsync(AuthorizationHandlerContext context)
         {
-            SucceedAllRequirements(context);
+            var userId = context?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return;
+            }
 
-            return;
+            var site = await _siteService.GetSiteSettingsAsync();
+
+            if (string.Equals(userId, site.SuperUser, StringComparison.OrdinalIgnoreCase))
+            {
+                SucceedAllRequirements(context);
+            }
         }
 
-        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
+        private static void SucceedAllRequirements(AuthorizationHandlerContext context)
         {
-            return;
-        }
-
-        var site = await _siteService.GetSiteSettingsAsync();
-
-        if (string.Equals(userId, site.SuperUser, StringComparison.OrdinalIgnoreCase))
-        {
-            SucceedAllRequirements(context);
-        }
-    }
-
-    private static void SucceedAllRequirements(AuthorizationHandlerContext context)
-    {
-        foreach (var requirement in context.Requirements.OfType<PermissionRequirement>())
-        {
-            context.Succeed(requirement);
+            foreach (var requirement in context.Requirements.OfType<PermissionRequirement>())
+            {
+                context.Succeed(requirement);
+            }
         }
     }
 }

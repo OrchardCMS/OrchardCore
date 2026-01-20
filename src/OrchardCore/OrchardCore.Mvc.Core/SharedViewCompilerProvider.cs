@@ -1,42 +1,45 @@
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace OrchardCore.Mvc;
-
-/// <summary>
-/// Shares across tenants the same <see cref="IViewCompiler"/>.
-/// </summary>
-public class SharedViewCompilerProvider : IViewCompilerProvider
+namespace OrchardCore.Mvc
 {
-    private readonly object _synLock = new();
-    private static IViewCompiler _compiler;
-    private readonly IServiceProvider _services;
-
-    public SharedViewCompilerProvider(IServiceProvider services)
+    /// <summary>
+    /// Shares across tenants the same <see cref="IViewCompiler"/>.
+    /// </summary>
+    public class SharedViewCompilerProvider : IViewCompilerProvider
     {
-        _services = services;
-    }
+        private readonly object _synLock = new();
+        private static IViewCompiler _compiler;
+        private readonly IServiceProvider _services;
 
-    public IViewCompiler GetCompiler()
-    {
-        if (_compiler is not null)
+        public SharedViewCompilerProvider(IServiceProvider services)
         {
-            return _compiler;
+            _services = services;
         }
 
-        lock (_synLock)
+        public IViewCompiler GetCompiler()
         {
             if (_compiler is not null)
             {
                 return _compiler;
             }
 
-            _compiler = _services
-                .GetServices<IViewCompilerProvider>()
-                .FirstOrDefault()
-                ?.GetCompiler();
-        }
+            lock (_synLock)
+            {
+                if (_compiler is not null)
+                {
+                    return _compiler;
+                }
 
-        return _compiler;
+                _compiler = _services
+                    .GetServices<IViewCompilerProvider>()
+                    .FirstOrDefault()
+                    .GetCompiler();
+            }
+
+            return _compiler;
+        }
     }
 }

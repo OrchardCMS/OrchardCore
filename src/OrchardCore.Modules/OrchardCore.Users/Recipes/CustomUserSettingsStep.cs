@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -10,18 +13,22 @@ namespace OrchardCore.Users.Recipes;
 /// <summary>
 /// This recipe step updates the custom user settings.
 /// </summary>
-public sealed class CustomUserSettingsStep : NamedRecipeStepHandler
+public class CustomUserSettingsStep : IRecipeStepHandler
 {
     private readonly ISession _session;
 
     public CustomUserSettingsStep(ISession session)
-        : base("custom-user-settings")
     {
         _session = session;
     }
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
+    public async Task ExecuteAsync(RecipeExecutionContext context)
     {
+        if (!string.Equals(context.Name, "custom-user-settings", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
         var model = context.Step;
 
         var customUserSettingsList = (JsonArray)model
@@ -56,7 +63,7 @@ public sealed class CustomUserSettingsStep : NamedRecipeStepHandler
             foreach (var userSetting in userSettings.Cast<JsonObject>())
             {
                 var contentItem = userSetting.ToObject<ContentItem>();
-                user.Properties[contentItem.ContentType] = userSetting.DeepClone();
+                user.Properties[contentItem.ContentType] = userSetting;
             }
 
             await _session.SaveAsync(user);

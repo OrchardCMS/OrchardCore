@@ -2,17 +2,8 @@
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
-    var displayName = Model.Value.ContentType;
 
-    if (!string.IsNullOrEmpty(Model.Value.ContentType))
-    {
-        var definition = await ContentDefinitionManager.GetTypeDefinitionAsync(Model.Value.ContentType);
-
-        if (definition != null)
-        {
-            displayName = definition.DisplayName;
-        }
-    }
+    var displayName = await ContentDefinitionManager.GetTypeDefinitionAsync(Model.Value.ContentType);
 }
 
 <div class="@(Model.Value.Enabled ? "" : "disabled")">

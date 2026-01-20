@@ -5,21 +5,22 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
 
-namespace OrchardCore.Documents;
-
-/// <summary>
-/// A <see cref="DocumentManager{TDocument}"/> using a given type of <see cref="IDocumentStore"/>.
-/// </summary>
-public class DocumentManager<TDocumentStore, TDocument> : DocumentManager<TDocument>, IDocumentManager<TDocumentStore, TDocument>
-    where TDocumentStore : IDocumentStore where TDocument : class, IDocument, new()
+namespace OrchardCore.Documents
 {
-    public DocumentManager(
-        IDistributedCache distributedCache,
-        IMemoryCache memoryCache,
-        IOptionsMonitor<DocumentOptions> options,
-        ILogger<DocumentManager<TDocument>> logger)
-        : base(distributedCache, memoryCache, options, logger)
+    /// <summary>
+    /// A <see cref="DocumentManager{TDocument}"/> using a given type of <see cref="IDocumentStore"/>.
+    /// </summary>
+    public class DocumentManager<TDocumentStore, TDocument> : DocumentManager<TDocument>, IDocumentManager<TDocumentStore, TDocument>
+        where TDocumentStore : IDocumentStore where TDocument : class, IDocument, new()
     {
-        DocumentStoreServiceType = typeof(TDocumentStore);
+        public DocumentManager(
+            IDistributedCache distributedCache,
+            IMemoryCache memoryCache,
+            IOptionsMonitor<DocumentOptions> options,
+            ILogger<DocumentManager<TDocument>> logger)
+            : base(distributedCache, memoryCache, options, logger)
+        {
+            DocumentStoreServiceType = typeof(TDocumentStore);
+        }
     }
 }

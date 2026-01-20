@@ -1,29 +1,29 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Navigation;
-
-public sealed class Startup : StartupBase
+namespace OrchardCore.Navigation
 {
-    private readonly IShellConfiguration _shellConfiguration;
-
-    public Startup(IShellConfiguration shellConfiguration)
+    public class Startup : StartupBase
     {
-        _shellConfiguration = shellConfiguration;
-    }
+        private readonly IShellConfiguration _shellConfiguration;
 
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddNavigation();
+        public Startup(IShellConfiguration shellConfiguration)
+        {
+            _shellConfiguration = shellConfiguration;
+        }
 
-        services.AddShapeTableProvider<NavigationShapes>();
-        services.AddShapeTableProvider<PagerShapesTableProvider>();
-        services.AddShapeAttributes<PagerShapes>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddNavigation();
 
-        var navigationConfiguration = _shellConfiguration.GetSection("OrchardCore_Navigation");
-        services.Configure<PagerOptions>(navigationConfiguration.GetSection("PagerOptions"));
+            services.AddScoped<IShapeTableProvider, NavigationShapes>();
+            services.AddScoped<IShapeTableProvider, PagerShapesTableProvider>();
+            services.AddShapeAttributes<PagerShapes>();
+
+            var navigationConfiguration = _shellConfiguration.GetSection("OrchardCore_Navigation");
+            services.Configure<PagerOptions>(navigationConfiguration.GetSection("PagerOptions"));
+        }
     }
 }

@@ -1,6 +1,10 @@
-namespace OrchardCore.Deployment;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public interface IDeploymentTargetProvider
+namespace OrchardCore.Deployment
 {
-    Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync();
+    public interface IDeploymentTargetProvider
+    {
+        Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync();
+    }
 }

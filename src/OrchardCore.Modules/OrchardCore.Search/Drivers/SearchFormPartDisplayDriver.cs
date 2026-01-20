@@ -1,17 +1,19 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
 
 namespace OrchardCore.Search.Drivers;
 
-public sealed class SearchFormPartDisplayDriver : ContentPartDisplayDriver<SearchFormPart>
+public class SearchFormPartDisplayDriver : ContentPartDisplayDriver<SearchFormPart>
 {
     public override IDisplayResult Display(SearchFormPart part, BuildPartDisplayContext context)
     {
-        return View(GetDisplayShapeType(context), part)
-            .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
+        return View(GetDisplayShapeType(context), part).Location("Detail", "Content");
     }
 
     public override IDisplayResult Edit(SearchFormPart part, BuildPartEditorContext context)
@@ -23,15 +25,16 @@ public sealed class SearchFormPartDisplayDriver : ContentPartDisplayDriver<Searc
         }).Location("Content");
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(SearchFormPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(SearchFormPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
         var model = new SearchPartViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        if (await updater.TryUpdateModelAsync(model, Prefix))
+        {
+            part.Placeholder = model.Placeholder;
+            part.IndexName = string.IsNullOrWhiteSpace(model.IndexName) ? null : model.IndexName.Trim();
+        }
 
-        part.Placeholder = model.Placeholder;
-        part.IndexName = string.IsNullOrWhiteSpace(model.IndexName) ? null : model.IndexName.Trim();
-
-        return Edit(part, context);
+        return Edit(part);
     }
 }

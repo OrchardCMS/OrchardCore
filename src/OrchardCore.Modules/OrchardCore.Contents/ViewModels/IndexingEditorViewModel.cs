@@ -1,6 +1,7 @@
-namespace OrchardCore.Contents.ViewModels;
-
-public class IndexingEditorViewModel
+namespace OrchardCore.Contents.ViewModels
 {
-    public bool IsIndexed { get; set; }
+    public class IndexingEditorViewModel
+    {
+        public bool IsIndexed { get; set; }
+    }
 }

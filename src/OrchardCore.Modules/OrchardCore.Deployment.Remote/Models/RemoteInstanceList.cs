@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Deployment.Remote.Models;
-
-public class RemoteInstanceList : Document
+namespace OrchardCore.Deployment.Remote.Models
 {
-    public List<RemoteInstance> RemoteInstances { get; set; } = [];
+    public class RemoteInstanceList : Document
+    {
+        public List<RemoteInstance> RemoteInstances { get; set; } = [];
+    }
 }

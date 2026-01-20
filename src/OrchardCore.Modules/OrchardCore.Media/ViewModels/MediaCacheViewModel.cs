@@ -1,6 +1,7 @@
-namespace OrchardCore.Media.ViewModels;
-
-public class MediaCacheViewModel
+namespace OrchardCore.Media.ViewModels
 {
-    public bool IsConfigured { get; set; }
+    public class MediaCacheViewModel
+    {
+        public bool IsConfigured { get; set; }
+    }
 }

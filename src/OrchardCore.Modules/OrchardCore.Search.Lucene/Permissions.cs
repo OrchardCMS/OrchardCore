@@ -1,34 +1,33 @@
-using OrchardCore.Indexing;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.Lucene;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
-    private readonly IIndexProfileStore _indexStore;
+    public static readonly Permission ManageLuceneIndexes = LuceneIndexPermissionHelper.ManageLuceneIndexes;
 
-    [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.ManageLuceneIndexes'.")]
-    public static readonly Permission ManageLuceneIndexes = LuceneSearchPermissions.ManageLuceneIndexes;
+    public static readonly Permission QueryLuceneApi = new("QueryLuceneApi", "Query Lucene Api", new[] { ManageLuceneIndexes });
 
-    [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.QueryLuceneApi'.")]
-    public static readonly Permission QueryLuceneApi = LuceneSearchPermissions.QueryLuceneApi;
+    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-    public Permissions(IIndexProfileStore indexStore)
+    public Permissions(LuceneIndexSettingsService luceneIndexSettingsService)
     {
-        _indexStore = indexStore;
+        _luceneIndexSettingsService = luceneIndexSettingsService;
     }
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
         var permissions = new List<Permission>()
         {
-            LuceneSearchPermissions.ManageLuceneIndexes,
-            LuceneSearchPermissions.QueryLuceneApi,
+            ManageLuceneIndexes,
+            QueryLuceneApi,
         };
 
-        var indexes = await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName);
+        var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
 
-        foreach (var index in indexes)
+        foreach (var index in luceneIndexSettings)
         {
             permissions.Add(LuceneIndexPermissionHelper.GetLuceneIndexPermission(index.IndexName));
         }
@@ -40,18 +39,18 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions =
             [
-                LuceneSearchPermissions.ManageLuceneIndexes,
+                ManageLuceneIndexes,
             ],
         },
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Editor,
+            Name = "Editor",
             Permissions =
             [
-                LuceneSearchPermissions.QueryLuceneApi,
+                QueryLuceneApi,
             ],
         },
     ];

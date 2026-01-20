@@ -1,7 +1,10 @@
-namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
+using System.Text.Json.Nodes;
 
-public interface IPlacementNodeFilterProvider
+namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
-    string Key { get; }
-    bool IsMatch(ShapePlacementContext context, object expression);
+    public interface IPlacementNodeFilterProvider
+    {
+        string Key { get; }
+        bool IsMatch(ShapePlacementContext context, object expression);
+    }
 }

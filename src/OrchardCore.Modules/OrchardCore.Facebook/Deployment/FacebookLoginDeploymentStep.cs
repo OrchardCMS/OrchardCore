@@ -1,14 +1,15 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Facebook.Deployment;
-
-/// <summary>
-/// Adds Facebook Login settings to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class FacebookLoginDeploymentStep : DeploymentStep
+namespace OrchardCore.Facebook.Deployment
 {
-    public FacebookLoginDeploymentStep()
+    /// <summary>
+    /// Adds Facebook Login settings to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class FacebookLoginDeploymentStep : DeploymentStep
     {
-        Name = "Facebook Login";
+        public FacebookLoginDeploymentStep()
+        {
+            Name = "Facebook Login";
+        }
     }
 }

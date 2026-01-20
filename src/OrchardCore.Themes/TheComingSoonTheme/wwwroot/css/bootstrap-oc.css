@@ -162,72 +162,72 @@ video.bg-video {
 }
 
 .message-primary {
-  color: rgb(25.2, 51, 51);
-  background-color: rgb(212.4, 221, 221);
-  border-color: rgb(191.1, 204, 204);
+  color: #193333;
+  background-color: #d4dddd;
+  border-color: #bfcccc;
 }
 .message-primary .alert-link {
-  color: rgb(20.16, 40.8, 40.8);
+  color: #142929;
 }
 
 .message-secondary {
-  color: rgb(64.8, 70.2, 75);
-  background-color: rgb(225.6, 227.4, 229);
-  border-color: rgb(210.9, 213.6, 216);
+  color: #41464b;
+  background-color: #e2e3e5;
+  border-color: #d3d6d8;
 }
 .message-secondary .alert-link {
-  color: rgb(51.84, 56.16, 60);
+  color: #34383c;
 }
 
 .message-success {
-  color: rgb(15, 81, 50.4);
-  background-color: rgb(209, 231, 220.8);
-  border-color: rgb(186, 219, 203.7);
+  color: #0f5132;
+  background-color: #d1e7dd;
+  border-color: #badbcc;
 }
 .message-success .alert-link {
-  color: rgb(12, 64.8, 40.32);
+  color: #0c4128;
 }
 
 .message-info {
-  color: rgb(7.8, 121.2, 144);
-  background-color: rgb(206.6, 244.4, 252);
-  border-color: rgb(182.4, 239.1, 250.5);
+  color: #087990;
+  background-color: #cff4fc;
+  border-color: #b6effb;
 }
 .message-info .alert-link {
-  color: rgb(6.24, 96.96, 115.2);
+  color: #066173;
 }
 
 .message-warning {
-  color: rgb(153, 115.8, 4.2);
-  background-color: rgb(255, 242.6, 205.4);
-  border-color: rgb(255, 236.4, 180.6);
+  color: #997404;
+  background-color: #fff3cd;
+  border-color: #ffecb5;
 }
 .message-warning .alert-link {
-  color: rgb(122.4, 92.64, 3.36);
+  color: #7a5d03;
 }
 
 .message-danger {
-  color: rgb(132, 31.8, 41.4);
-  background-color: rgb(248, 214.6, 217.8);
-  border-color: rgb(244.5, 194.4, 199.2);
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
 }
 .message-danger .alert-link {
-  color: rgb(105.6, 25.44, 33.12);
+  color: #6a1a21;
 }
 
 .message-light {
-  color: rgb(148.8, 149.4, 150);
-  background-color: rgb(253.6, 253.8, 254);
-  border-color: rgb(252.9, 253.2, 253.5);
+  color: #959596;
+  background-color: #fefefe;
+  border-color: #fdfdfe;
 }
 .message-light .alert-link {
-  color: rgb(119.04, 119.52, 120);
+  color: #777778;
 }
 
 .message-dark {
   color: black;
   background-color: #cccccc;
-  border-color: rgb(178.5, 178.5, 178.5);
+  border-color: #b3b3b3;
 }
 .message-dark .alert-link {
   color: black;
@@ -259,10 +259,6 @@ video.bg-video {
 
 .widget-align-justify {
   text-align: justify;
-}
-
-.widget-align-inherit {
-  text-align: inherit;
 }
 
 .widget-size-100, .widget-size-75, .widget .widget-size-75, .widget-size-66, .widget .widget-size-66, .widget-size-50, .widget .widget-size-50, .widget-size-33, .widget .widget-size-33, .widget-size-25, .widget .widget-size-25 {
@@ -364,7 +360,7 @@ ul.pager li a {
 }
 ul.pager li a:hover {
   z-index: 2;
-  color: rgb(33.6, 68, 68);
+  color: #224444;
   text-decoration: none;
   background-color: #e9ecef;
   border-color: #dee2e6;

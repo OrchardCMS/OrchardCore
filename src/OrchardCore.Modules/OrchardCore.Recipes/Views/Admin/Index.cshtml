@@ -89,7 +89,7 @@
             var elementsToFilter = $("[data-filter-value]");
 
             // On ESC, clear the search box and display all features
-            if (e.key === "Escape" || search == '') {
+            if (e.keyCode == 27 || search == '') {
                 searchBox.val('');
                 elementsToFilter.toggle(true);
             }

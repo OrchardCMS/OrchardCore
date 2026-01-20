@@ -1,6 +1,10 @@
-namespace OrchardCore.Media.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public interface IMediaProfileService
+namespace OrchardCore.Media.Services
 {
-    Task<IDictionary<string, string>> GetMediaProfileCommands(string name);
+    public interface IMediaProfileService
+    {
+        Task<IDictionary<string, string>> GetMediaProfileCommands(string name);
+    }
 }

@@ -70,23 +70,38 @@
       "name": "Roles",
       "Roles": [
         {
+          "Name": "Administrator",
+          "Description": "Administrator",
+          "Permissions": []
+        },
+        {
           "Name": "Moderator",
-          "Description": "Grants users the ability to moderate content.",
+          "Description": "Moderator",
           "Permissions": []
         },
         {
           "Name": "Editor",
-          "Description": "Grants users the ability to edit existing content.",
+          "Description": "Editor",
           "Permissions": []
         },
         {
           "Name": "Author",
-          "Description": "Grants users the ability to create content.",
+          "Description": "Author",
           "Permissions": []
         },
         {
           "Name": "Contributor",
-          "Description": "Grants users the ability to contribute content.",
+          "Description": "Contributor",
+          "Permissions": []
+        },
+        {
+          "Name": "Authenticated",
+          "Description": "Authenticated",
+          "Permissions": []
+        },
+        {
+          "Name": "Anonymous",
+          "Description": "Anonymous",
           "Permissions": []
         }
       ]

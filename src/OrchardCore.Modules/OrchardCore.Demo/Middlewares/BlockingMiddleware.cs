@@ -1,25 +1,27 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Demo;
-
-public class BlockingMiddleware
+namespace OrchardCore.Demo
 {
-    private readonly RequestDelegate _next;
-
-    public BlockingMiddleware(RequestDelegate next)
+    public class BlockingMiddleware
     {
-        _next = next;
-    }
+        private readonly RequestDelegate _next;
 
-    public async Task Invoke(HttpContext httpContext)
-    {
-        if (httpContext.Request.Path.Value == "/middleware")
+        public BlockingMiddleware(RequestDelegate next)
         {
-            await httpContext.Response.WriteAsync("middleware");
+            _next = next;
         }
-        else
+
+        public async Task Invoke(HttpContext httpContext)
         {
-            await _next.Invoke(httpContext);
+            if (httpContext.Request.Path.Value == "/middleware")
+            {
+                await httpContext.Response.WriteAsync("middleware");
+            }
+            else
+            {
+                await _next.Invoke(httpContext);
+            }
         }
     }
 }

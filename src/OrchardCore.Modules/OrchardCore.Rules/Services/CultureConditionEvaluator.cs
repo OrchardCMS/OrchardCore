@@ -1,26 +1,28 @@
 using System.Globalization;
+using System.Threading.Tasks;
 using OrchardCore.Rules.Models;
 
-namespace OrchardCore.Rules.Services;
-
-public class CultureConditionEvaluator : ConditionEvaluator<CultureCondition>
+namespace OrchardCore.Rules.Services
 {
-    private readonly IConditionOperatorResolver _operatorResolver;
-
-    public CultureConditionEvaluator(IConditionOperatorResolver operatorResolver)
+    public class CultureConditionEvaluator : ConditionEvaluator<CultureCondition>
     {
-        _operatorResolver = operatorResolver;
-    }
+        private readonly IConditionOperatorResolver _operatorResolver;
 
-    public override ValueTask<bool> EvaluateAsync(CultureCondition condition)
-    {
-        var currentCulture = CultureInfo.CurrentCulture;
+        public CultureConditionEvaluator(IConditionOperatorResolver operatorResolver)
+        {
+            _operatorResolver = operatorResolver;
+        }
 
-        var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
+        public override ValueTask<bool> EvaluateAsync(CultureCondition condition)
+        {
+            var currentCulture = CultureInfo.CurrentCulture;
 
-        var result = operatorComparer.Compare(condition.Operation, currentCulture.Name, condition.Value) ||
-            operatorComparer.Compare(condition.Operation, currentCulture.Parent.Name, condition.Value);
+            var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
 
-        return result ? True : False;
+            var result = operatorComparer.Compare(condition.Operation, currentCulture.Name, condition.Value) ||
+                operatorComparer.Compare(condition.Operation, currentCulture.Parent.Name, condition.Value);
+
+            return result ? True : False;
+        }
     }
 }

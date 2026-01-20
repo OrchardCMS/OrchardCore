@@ -1,15 +1,19 @@
 using GraphQL.Types;
 using OrchardCore.Forms.Models;
 
-namespace OrchardCore.Forms.GraphQL;
-
-public class LabelPartQueryObjectType : ObjectGraphType<LabelPart>
+namespace OrchardCore.Forms.GraphQL
 {
-    public LabelPartQueryObjectType()
+    public class LabelPartQueryObjectType : ObjectGraphType<LabelPart>
     {
-        Name = "LabelPart";
+        public LabelPartQueryObjectType()
+        {
+            Name = "LabelPart";
 
-        Field(x => x.For, nullable: true);
-        Field("value", context => context.ContentItem.DisplayText);
+            Field(x => x.For, nullable: true);
+            Field<StringGraphType>("value", resolve: context =>
+            {
+                return context.Source.ContentItem.DisplayText;
+            });
+        }
     }
 }

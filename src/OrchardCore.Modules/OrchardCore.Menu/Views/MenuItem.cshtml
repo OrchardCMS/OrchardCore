@@ -2,9 +2,11 @@
     TagBuilder tag = Tag(Model, "li");
 
     // Morphing the shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
     Model.Classes.Clear();
+    Model.Metadata.Type = "MenuItemLink";
 
-    tag.InnerHtml.AppendHtml(await DisplayAsAsync(Model, "MenuItemLink"));
+    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
     if ((bool)Model.HasItems)
     {

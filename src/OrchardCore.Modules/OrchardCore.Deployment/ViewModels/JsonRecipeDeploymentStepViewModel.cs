@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Deployment.ViewModels;
-
-public class JsonRecipeDeploymentStepViewModel
+namespace OrchardCore.Deployment.ViewModels
 {
-    public string Json { get; set; }
+    public class JsonRecipeDeploymentStepViewModel
+    {
+        public string Json { get; set; }
 
-    [BindNever]
-    public string Schema { get; set; }
+        [BindNever]
+        public string Schema { get; set; }
+    }
 }

@@ -3,16 +3,16 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Autoroute.Models;
 
-namespace OrchardCore.Autoroute.GraphQL;
-
-public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
+namespace OrchardCore.Autoroute.GraphQL
 {
-    public AutorouteInputObjectType(IStringLocalizer<AutorouteInputObjectType> stringLocalizer)
-        : base(stringLocalizer)
+    public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
     {
-        Name = "AutoroutePartInput";
-        Description = S["the custom URL part of the content item"];
+        public AutorouteInputObjectType(IStringLocalizer<AutorouteInputObjectType> S)
+        {
+            Name = "AutoroutePartInput";
+            Description = S["the custom URL part of the content item"];
 
-        AddScalarFilterFields<StringGraphType>("path", S["the path of the content item to filter"]);
+            AddScalarFilterFields<StringGraphType>("path", S["the path of the content item to filter"]);
+        }
     }
 }

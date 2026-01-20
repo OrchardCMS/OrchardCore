@@ -6,21 +6,22 @@ using OrchardCore.Facebook.Filters;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook;
 
 [Feature(FacebookConstants.Features.Pixel)]
-public sealed class StartupPixel : StartupBase
+public class StartupPixel : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSiteDisplayDriver<FacebookPixelSettingsDisplayDriver>();
-        services.AddPermissionProvider<PixelPermissionProvider>();
-        services.AddNavigationProvider<AdminMenuPixel>();
+        services.AddScoped<IDisplayDriver<ISite>, FacebookPixelSettingsDisplayDriver>();
+        services.AddScoped<IPermissionProvider, PixelPermissionProvider>();
+        services.AddScoped<INavigationProvider, AdminMenuPixel>();
 
         services.Configure<MvcOptions>((options) =>
         {
-            options.Filters.Add<FacebookPixelFilter>();
+            options.Filters.Add(typeof(FacebookPixelFilter));
         });
     }
 }

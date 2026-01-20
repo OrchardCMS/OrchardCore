@@ -1,34 +1,36 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment.ViewModels;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Deployment.Steps;
-
-public sealed class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomFileDeploymentStep>
+namespace OrchardCore.Deployment.Steps
 {
-    public override Task<IDisplayResult> DisplayAsync(CustomFileDeploymentStep step, BuildDisplayContext context)
+    public class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomFileDeploymentStep>
     {
-        return
-            CombineAsync(
-                View("CustomFileDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-                View("CustomFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(CustomFileDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<CustomFileDeploymentStepViewModel>("CustomFileDeploymentStep_Fields_Edit", model =>
+        public override IDisplayResult Display(CustomFileDeploymentStep step)
         {
-            model.FileContent = step.FileContent;
-            model.FileName = step.FileName;
-        }).Location("Content");
-    }
+            return
+                Combine(
+                    View("CustomFileDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    View("CustomFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                );
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(CustomFileDeploymentStep step, UpdateEditorContext context)
-    {
-        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.FileName, x => x.FileContent);
+        public override IDisplayResult Edit(CustomFileDeploymentStep step)
+        {
+            return Initialize<CustomFileDeploymentStepViewModel>("CustomFileDeploymentStep_Fields_Edit", model =>
+            {
+                model.FileContent = step.FileContent;
+                model.FileName = step.FileName;
+            }).Location("Content");
+        }
 
-        return Edit(step, context);
+        public override async Task<IDisplayResult> UpdateAsync(CustomFileDeploymentStep step, IUpdateModel updater)
+        {
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.FileName, x => x.FileContent);
+
+            return Edit(step);
+        }
     }
 }

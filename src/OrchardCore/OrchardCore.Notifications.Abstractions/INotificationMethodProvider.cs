@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Notifications;

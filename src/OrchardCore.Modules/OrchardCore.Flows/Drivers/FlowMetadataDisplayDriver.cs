@@ -1,40 +1,42 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 
-namespace OrchardCore.Flows.Drivers;
-
-public sealed class FlowMetadataDisplayDriver : ContentDisplayDriver
+namespace OrchardCore.Flows.Drivers
 {
-    public override IDisplayResult Edit(ContentItem model, BuildEditorContext context)
+    public class FlowMetadataDisplayDriver : ContentDisplayDriver
     {
-        var flowMetadata = model.As<FlowMetadata>();
-
-        if (flowMetadata == null)
+        public override IDisplayResult Edit(ContentItem model, IUpdateModel updater)
         {
-            return null;
+            var flowMetadata = model.As<FlowMetadata>();
+
+            if (flowMetadata == null)
+            {
+                return null;
+            }
+
+            return Initialize<FlowMetadata>("FlowMetadata_Edit", m =>
+            {
+                m.Alignment = flowMetadata.Alignment;
+                m.Size = flowMetadata.Size;
+            }).Location("Footer");
         }
 
-        return Initialize<FlowMetadata>("FlowMetadata_Edit", m =>
+        public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, IUpdateModel updater)
         {
-            m.Alignment = flowMetadata.Alignment;
-            m.Size = flowMetadata.Size;
-        }).Location("Footer");
-    }
+            var flowMetadata = contentItem.As<FlowMetadata>();
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, UpdateEditorContext context)
-    {
-        var flowMetadata = contentItem.As<FlowMetadata>();
+            if (flowMetadata == null)
+            {
+                return null;
+            }
 
-        if (flowMetadata == null)
-        {
-            return null;
+            await contentItem.AlterAsync<FlowMetadata>(model => updater.TryUpdateModelAsync(model, Prefix));
+
+            return Edit(contentItem, updater);
         }
-
-        await contentItem.AlterAsync<FlowMetadata>(model => context.Updater.TryUpdateModelAsync(model, Prefix));
-
-        return Edit(contentItem, context);
     }
 }

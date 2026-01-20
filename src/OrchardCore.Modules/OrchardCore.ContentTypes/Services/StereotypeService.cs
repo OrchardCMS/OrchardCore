@@ -1,48 +1,27 @@
-using Microsoft.Extensions.Logging;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Modules;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace OrchardCore.ContentTypes.Services;
-
-public class StereotypeService : IStereotypeService
+namespace OrchardCore.ContentTypes.Services
 {
-    private readonly IEnumerable<IStereotypesProvider> _providers;
-    private readonly IContentDefinitionService _contentDefinitionService;
-    private readonly ILogger<StereotypeService> _logger;
-
-    public StereotypeService(
-        IEnumerable<IStereotypesProvider> providers,
-        IContentDefinitionService contentDefinitionService,
-        ILogger<StereotypeService> logger)
+    public class StereotypeService : IStereotypeService
     {
-        _providers = providers;
-        _contentDefinitionService = contentDefinitionService;
-        _logger = logger;
-    }
+        private readonly IEnumerable<IStereotypesProvider> _providers;
 
-    public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
-    {
-        var providerStereotypes = (await _providers.InvokeAsync(provider => provider.GetStereotypesAsync(), _logger)).ToList();
-
-        var stereotypes = providerStereotypes.Select(providerStereotype => providerStereotype.Stereotype)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var contentType in await _contentDefinitionService.GetTypesAsync())
+        public StereotypeService(IEnumerable<IStereotypesProvider> providers)
         {
-            if (!contentType.TypeDefinition.TryGetStereotype(out var stereotype) ||
-                stereotypes.Contains(stereotype))
-            {
-                continue;
-            }
-
-            providerStereotypes.Add(new StereotypeDescription
-            {
-                Stereotype = stereotype,
-                DisplayName = stereotype,
-            });
+            _providers = providers;
         }
 
-        return providerStereotypes.OrderBy(x => x.DisplayName);
+        public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
+        {
+            var descriptions = new List<StereotypeDescription>();
+
+            foreach (var provider in _providers)
+            {
+                descriptions.AddRange(await provider.GetStereotypesAsync());
+            }
+
+            return descriptions;
+        }
     }
 }

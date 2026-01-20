@@ -1,94 +1,97 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Zones;
 
-namespace OrchardCore.DisplayManagement.Title;
-
-public class PageTitleBuilder : IPageTitleBuilder
+namespace OrchardCore.DisplayManagement.Title
 {
-    private static readonly HtmlString _defaultTitleSeparator = new(" - ");
-
-    private readonly List<PositionalTitlePart> _titleParts;
-    private HtmlContentBuilder _title;
-    private IHtmlContent _fixedTitle;
-
-    public PageTitleBuilder()
+    public class PageTitleBuilder : IPageTitleBuilder
     {
-        _titleParts = new List<PositionalTitlePart>(5);
-    }
+        private readonly static HtmlString _defaultTitleSeparator = new(" - ");
 
-    public void SetFixedTitle(IHtmlContent title)
-    {
-        _fixedTitle = title;
-    }
+        private readonly List<PositionalTitlePart> _titleParts;
+        private HtmlContentBuilder _title;
+        private IHtmlContent _fixedTitle;
 
-    public void AddSegment(IHtmlContent titlePart, string position)
-    {
-        _title = null;
-
-        _titleParts.Add(new PositionalTitlePart
+        public PageTitleBuilder()
         {
-            Value = titlePart,
-            Position = position,
-        });
-    }
-
-    public void AddSegments(IEnumerable<IHtmlContent> titleParts, string position)
-    {
-        foreach (var titlePart in titleParts)
-        {
-            AddSegment(titlePart, position);
-        }
-    }
-
-    public IHtmlContent GenerateTitle(IHtmlContent separator)
-    {
-        if (_fixedTitle != null)
-        {
-            return _fixedTitle;
+            _titleParts = new List<PositionalTitlePart>(5);
         }
 
-        if (_title is { Count: > 0 })
+        public void SetFixedTitle(IHtmlContent title)
         {
-            return _title;
+            _fixedTitle = title;
         }
 
-        separator ??= _defaultTitleSeparator;
-
-        _titleParts.Sort(FlatPositionComparer.Instance);
-
-        if (_titleParts.Count == 0)
+        public void AddSegment(IHtmlContent titlePart, string position)
         {
-            return HtmlString.Empty;
-        }
+            _title = null;
 
-        // _titleParts.Count * 2 because we add a separator for each entry
-        var htmlContentBuilder = new HtmlContentBuilder(_titleParts.Count * 2);
-
-        for (var i = 0; i < _titleParts.Count; i++)
-        {
-            htmlContentBuilder.AppendHtml(_titleParts[i].Value);
-
-            if (i < _titleParts.Count - 1)
+            _titleParts.Add(new PositionalTitlePart
             {
-                htmlContentBuilder.AppendHtml(separator);
+                Value = titlePart,
+                Position = position
+            });
+        }
+
+        public void AddSegments(IEnumerable<IHtmlContent> titleParts, string position)
+        {
+            foreach (var titlePart in titleParts)
+            {
+                AddSegment(titlePart, position);
             }
         }
 
-        _title = htmlContentBuilder;
+        public IHtmlContent GenerateTitle(IHtmlContent separator)
+        {
+            if (_fixedTitle != null)
+            {
+                return _fixedTitle;
+            }
 
-        return _title;
+            if (_title is { Count: > 0 })
+            {
+                return _title;
+            }
+
+            separator ??= _defaultTitleSeparator;
+
+            _titleParts.Sort(FlatPositionComparer.Instance);
+
+            if (_titleParts.Count == 0)
+            {
+                return HtmlString.Empty;
+            }
+
+            // _titleParts.Count * 2 because we add a separator for each entry
+            var htmlContentBuilder = new HtmlContentBuilder(_titleParts.Count * 2);
+
+            for (var i = 0; i < _titleParts.Count; i++)
+            {
+                htmlContentBuilder.AppendHtml(_titleParts[i].Value);
+
+                if (i < _titleParts.Count - 1)
+                {
+                    htmlContentBuilder.AppendHtml(separator);
+                }
+            }
+
+            _title = htmlContentBuilder;
+
+            return _title;
+        }
+
+        public void Clear()
+        {
+            _fixedTitle = null;
+            _title = null;
+            _titleParts.Clear();
+        }
     }
 
-    public void Clear()
+    internal class PositionalTitlePart : IPositioned
     {
-        _fixedTitle = null;
-        _title = null;
-        _titleParts.Clear();
+        public string Position { get; set; }
+        public IHtmlContent Value { get; set; }
     }
-}
-
-internal sealed class PositionalTitlePart : IPositioned
-{
-    public string Position { get; set; }
-    public IHtmlContent Value { get; set; }
 }

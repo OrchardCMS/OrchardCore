@@ -1,22 +1,25 @@
-namespace OrchardCore.Modules.Manifest;
+using System;
 
-/// <summary>
-/// Marks an assembly as a module of a given type, auto generated on building.
-/// </summary>
-[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
-public class ModuleMarkerAttribute : ModuleAttribute
+namespace OrchardCore.Modules.Manifest
 {
     /// <summary>
-    /// Constructs the attribute given <paramref name="id"/> and <paramref name="type"/>.
+    /// Marks an assembly as a module of a given type, auto generated on building.
     /// </summary>
-    /// <param name="id">The identifier for the Module.</param>
-    /// <param name="type">Allows authors to specify a module specific Type.</param>
-    public ModuleMarkerAttribute(
-        string id,
-        string type
-    )
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
+    public class ModuleMarkerAttribute : ModuleAttribute
     {
-        Id = id;
-        Type = type;
+        /// <summary>
+        /// Constructs the attribute given <paramref name="id"/> and <paramref name="type"/>.
+        /// </summary>
+        /// <param name="id">The identifier for the Module.</param>
+        /// <param name="type">Allows authors to specify a module specific Type.</param>
+        public ModuleMarkerAttribute(
+            string id,
+            string type
+        )
+        {
+            Id = id;
+            Type = type;
+        }
     }
 }

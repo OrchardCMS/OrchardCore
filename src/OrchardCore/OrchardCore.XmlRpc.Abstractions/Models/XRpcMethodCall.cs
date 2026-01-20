@@ -1,7 +1,10 @@
-namespace OrchardCore.XmlRpc.Models;
+using System.Collections.Generic;
 
-public class XRpcMethodCall
+namespace OrchardCore.XmlRpc.Models
 {
-    public string MethodName { get; set; }
-    public IList<XRpcData> Params { get; set; } = [];
+    public class XRpcMethodCall
+    {
+        public string MethodName { get; set; }
+        public IList<XRpcData> Params { get; set; } = [];
+    }
 }

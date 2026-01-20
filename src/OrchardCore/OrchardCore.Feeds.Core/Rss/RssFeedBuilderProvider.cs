@@ -1,20 +1,21 @@
 using OrchardCore.Feeds.Models;
 
-namespace OrchardCore.Feeds.Rss;
-
-public class RssFeedBuilderProvider : IFeedBuilderProvider
+namespace OrchardCore.Feeds.Rss
 {
-    public FeedBuilderMatch Match(FeedContext context)
+    public class RssFeedBuilderProvider : IFeedBuilderProvider
     {
-        if (context.Format == "rss")
+        public FeedBuilderMatch Match(FeedContext context)
         {
-            return new FeedBuilderMatch
+            if (context.Format == "rss")
             {
-                FeedBuilder = new RssFeedBuilder(),
-                Priority = -5,
-            };
-        }
+                return new FeedBuilderMatch
+                {
+                    FeedBuilder = new RssFeedBuilder(),
+                    Priority = -5
+                };
+            }
 
-        return null;
+            return null;
+        }
     }
 }

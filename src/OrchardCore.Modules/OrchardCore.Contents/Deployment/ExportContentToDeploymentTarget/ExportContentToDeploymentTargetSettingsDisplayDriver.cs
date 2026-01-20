@@ -1,54 +1,54 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
-
-public sealed class ExportContentToDeploymentTargetSettingsDisplayDriver : SiteDisplayDriver<ExportContentToDeploymentTargetSettings>
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public const string GroupId = "ExportContentToDeploymentTarget";
-
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
-
-    public ExportContentToDeploymentTargetSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+    public class ExportContentToDeploymentTargetSettingsDisplayDriver : SectionDisplayDriver<ISite, ExportContentToDeploymentTargetSettings>
     {
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
-    }
+        public const string GroupId = "ExportContentToDeploymentTarget";
 
-    protected override string SettingsGroupId
-        => GroupId;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-    public override async Task<IDisplayResult> EditAsync(ISite site, ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.ManageDeploymentPlan))
+        public ExportContentToDeploymentTargetSettingsDisplayDriver(
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
-            return null;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
-        return Initialize<ExportContentToDeploymentTargetSettingsViewModel>("ExportContentToDeploymentTargetSettings_Edit", model =>
+        public override async Task<IDisplayResult> EditAsync(ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)
         {
-            model.ExportContentToDeploymentTargetPlanId = settings.ExportContentToDeploymentTargetPlanId;
-        }).Location("Content:2")
-        .OnGroup(SettingsGroupId);
-    }
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan))
+            {
+                return null;
+            }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, ExportContentToDeploymentTargetSettings settings, UpdateEditorContext context)
-    {
-        var model = new ExportContentToDeploymentTargetSettingsViewModel();
+            return Initialize<ExportContentToDeploymentTargetSettingsViewModel>("ExportContentToDeploymentTargetSettings_Edit", model =>
+            {
+                model.ExportContentToDeploymentTargetPlanId = settings.ExportContentToDeploymentTargetPlanId;
+            }).Location("Content:2").OnGroup(GroupId);
+        }
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ExportContentToDeploymentTargetPlanId);
+        public override async Task<IDisplayResult> UpdateAsync(ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)
+        {
+            if (context.GroupId == GroupId)
+            {
+                var model = new ExportContentToDeploymentTargetSettingsViewModel();
 
-        settings.ExportContentToDeploymentTargetPlanId = model.ExportContentToDeploymentTargetPlanId;
+                await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ExportContentToDeploymentTargetPlanId);
 
-        return await EditAsync(site, settings, context);
+                settings.ExportContentToDeploymentTargetPlanId = model.ExportContentToDeploymentTargetPlanId;
+            }
+
+            return await EditAsync(settings, context);
+        }
     }
 }

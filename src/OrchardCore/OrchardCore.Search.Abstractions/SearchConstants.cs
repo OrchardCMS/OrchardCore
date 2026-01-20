@@ -1,6 +1,6 @@
 namespace OrchardCore.Search;
 
-public static class SearchConstants
+public class SearchConstants
 {
     public const string SearchSettingsGroupId = "search";
 }

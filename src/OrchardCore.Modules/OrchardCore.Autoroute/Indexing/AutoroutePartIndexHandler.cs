@@ -1,21 +1,23 @@
+using System.Threading.Tasks;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.Autoroute.Indexing;
-
-public class AutoroutePartIndexHandler : ContentPartIndexHandler<AutoroutePart>
+namespace OrchardCore.Autoroute.Indexing
 {
-    public override Task BuildIndexAsync(AutoroutePart part, BuildPartIndexContext context)
+    public class AutoroutePartIndexHandler : ContentPartIndexHandler<AutoroutePart>
     {
-        var options = context.Settings.ToOptions()
-            & ~DocumentIndexOptions.Sanitize
-            ;
-
-        foreach (var key in context.Keys)
+        public override Task BuildIndexAsync(AutoroutePart part, BuildPartIndexContext context)
         {
-            context.DocumentIndex.Set(key, part.Path, options);
-        }
+            var options = context.Settings.ToOptions()
+                & ~DocumentIndexOptions.Sanitize
+                ;
 
-        return Task.CompletedTask;
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Path, options);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

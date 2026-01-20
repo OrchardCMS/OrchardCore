@@ -1,9 +1,10 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentFields.Fields;
-
-public class YoutubeField : ContentField
+namespace OrchardCore.ContentFields.Fields
 {
-    public string EmbeddedAddress { get; set; }
-    public string RawAddress { get; set; }
+    public class YoutubeField : ContentField
+    {
+        public string EmbeddedAddress { get; set; }
+        public string RawAddress { get; set; }
+    }
 }

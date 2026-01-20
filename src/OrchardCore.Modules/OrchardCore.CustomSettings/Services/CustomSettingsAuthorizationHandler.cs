@@ -1,43 +1,46 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.CustomSettings.Services;
-
-public sealed class CustomSettingsAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+namespace OrchardCore.CustomSettings.Services
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public CustomSettingsAuthorizationHandler(IServiceProvider serviceProvider)
+    public class CustomSettingsAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
-        _serviceProvider = serviceProvider;
-    }
+        private readonly IServiceProvider _serviceProvider;
 
-    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
-    {
-        if (context.HasSucceeded)
+        public CustomSettingsAuthorizationHandler(IServiceProvider serviceProvider)
         {
-            // This handler is not revoking any pre-existing grants.
-            return;
+            _serviceProvider = serviceProvider;
         }
 
-        if (requirement.Permission.Name != "ManageResourceSettings")
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            return;
-        }
+            if (context.HasSucceeded)
+            {
+                // This handler is not revoking any pre-existing grants.
+                return;
+            }
 
-        if (context.Resource == null || context.Resource.ToString() == "")
-        {
-            return;
-        }
+            if (requirement.Permission.Name != "ManageResourceSettings")
+            {
+                return;
+            }
 
-        // Lazy load to prevent circular dependencies
-        var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
+            if (context.Resource == null || context.Resource.ToString() == "")
+            {
+                return;
+            }
 
-        if (await authorizationService.AuthorizeAsync(context.User, new Permission(Permissions.CreatePermissionName(context.Resource.ToString()))))
-        {
-            context.Succeed(requirement);
+            // Lazy load to prevent circular dependencies
+            var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
+
+            if (await authorizationService.AuthorizeAsync(context.User, new Permission(Permissions.CreatePermissionName(context.Resource.ToString()))))
+            {
+                context.Succeed(requirement);
+            }
         }
     }
 }

@@ -10,25 +10,14 @@ namespace System.Text.Json;
 /// </summary>
 public static class JOptions
 {
-    public static readonly JsonConverter[] KnownConverters =
-    [
-        DynamicJsonConverter.Instance,
-        PathStringJsonConverter.Instance,
-        TimeSpanJsonConverter.Instance,
-        DateTimeJsonConverter.Instance,
-        new JsonStringEnumConverter()
-    ];
-
     public static readonly JsonSerializerOptions Base = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
-        ReferenceHandler = null, // Needed by JsonObjectCreationHandling.Populate.
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
         ReadCommentHandling = JsonCommentHandling.Skip,
         PropertyNameCaseInsensitive = true,
         AllowTrailingCommas = true,
-        WriteIndented = false,
-        NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        WriteIndented = false
     };
 
     public static readonly JsonSerializerOptions Default;
@@ -43,11 +32,8 @@ public static class JOptions
     static JOptions()
     {
         Default = new JsonSerializerOptions(Base);
-
-        foreach (var converter in KnownConverters)
-        {
-            Default.Converters.Add(converter);
-        }
+        Default.Converters.Add(new DynamicJsonConverter());
+        Default.Converters.Add(new PathStringJsonConverter());
 
         Indented = new JsonSerializerOptions(Default)
         {
@@ -76,8 +62,8 @@ public static class JOptions
 
         Document = new JsonDocumentOptions
         {
-            CommentHandling = JsonCommentHandling.Skip,
-            AllowTrailingCommas = true,
+            CommentHandling = Default.ReadCommentHandling,
+            AllowTrailingCommas = Default.AllowTrailingCommas,
         };
     }
 }

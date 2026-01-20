@@ -1,28 +1,31 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Rules.Models;
 
-namespace OrchardCore.Rules.Services;
-
-public class HomepageConditionEvaluator : ConditionEvaluator<HomepageCondition>
+namespace OrchardCore.Rules.Services
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public HomepageConditionEvaluator(IHttpContextAccessor httpContextAccessor)
+    public class HomepageConditionEvaluator : ConditionEvaluator<HomepageCondition>
     {
-        _httpContextAccessor = httpContextAccessor;
-    }
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public override ValueTask<bool> EvaluateAsync(HomepageCondition condition)
-    {
-        var requestPath = _httpContextAccessor.HttpContext.Request.Path.Value;
-
-        var result = string.Equals("/", requestPath, StringComparison.Ordinal) || string.IsNullOrEmpty(requestPath);
-
-        if (!condition.Value)
+        public HomepageConditionEvaluator(IHttpContextAccessor httpContextAccessor)
         {
-            result = !result;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        return result ? True : False;
+        public override ValueTask<bool> EvaluateAsync(HomepageCondition condition)
+        {
+            var requestPath = _httpContextAccessor.HttpContext.Request.Path.Value;
+
+            var result = string.Equals("/", requestPath, StringComparison.Ordinal) || string.IsNullOrEmpty(requestPath);
+
+            if (!condition.Value)
+            {
+                result = !result;
+            }
+
+            return result ? True : False;
+        }
     }
 }

@@ -1,19 +1,16 @@
-namespace OrchardCore.ContentManagement.Handlers;
-
-public class PublishContentContext : ContentContextBase
+namespace OrchardCore.ContentManagement.Handlers
 {
-    public PublishContentContext(ContentItem contentItem, ContentItem previousContentItem) : base(contentItem)
+    public class PublishContentContext : ContentContextBase
     {
-#pragma warning disable CS0618 // Type or member is obsolete
-        PublishingItem = contentItem;
-#pragma warning restore CS0618 // Type or member is obsolete
-        PreviousItem = previousContentItem;
+        public PublishContentContext(ContentItem contentItem, ContentItem previousContentItem) : base(contentItem)
+        {
+            PublishingItem = contentItem;
+            PreviousItem = previousContentItem;
+        }
+
+        public ContentItem PublishingItem { get; set; }
+        public ContentItem PreviousItem { get; set; }
+
+        public bool Cancel { get; set; }
     }
-
-    [Obsolete("This method is obsolete and will be removed in future releases.")]
-    public ContentItem PublishingItem { get; set; }
-
-    public ContentItem PreviousItem { get; set; }
-
-    public bool Cancel { get; set; }
 }

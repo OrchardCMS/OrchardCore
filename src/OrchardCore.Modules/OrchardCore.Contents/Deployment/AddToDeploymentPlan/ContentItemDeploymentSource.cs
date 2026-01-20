@@ -1,49 +1,53 @@
+using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
-
-public sealed class ContentItemDeploymentSource
-    : DeploymentSourceBase<ContentItemDeploymentStep>
+namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
-    private readonly IContentManager _contentManager;
-
-    public ContentItemDeploymentSource(IContentManager contentManager)
+    public class ContentItemDeploymentSource : IDeploymentSource
     {
-        _contentManager = contentManager;
-    }
+        private readonly IContentManager _contentManager;
 
-    protected override async Task ProcessAsync(ContentItemDeploymentStep step, DeploymentPlanResult result)
-    {
-        if (step.ContentItemId == null)
+        public ContentItemDeploymentSource(IContentManager contentManager)
         {
-            return;
+            _contentManager = contentManager;
         }
 
-        var contentItem = await _contentManager.GetAsync(step.ContentItemId);
-
-        if (contentItem == null)
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            return;
-        }
+            var contentItemDeploymentStep = step as ContentItemDeploymentStep;
 
-        var jContentItem = JObject.FromObject(contentItem);
-        jContentItem.Remove(nameof(ContentItem.Id));
-
-        var contentStep = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Content");
-        if (contentStep != null)
-        {
-            var data = contentStep["data"] as JsonArray;
-            data.Add(jContentItem);
-        }
-        else
-        {
-            result.Steps.Add(new JsonObject
+            if (contentItemDeploymentStep == null || contentItemDeploymentStep.ContentItemId == null)
             {
-                ["name"] = "Content",
-                ["data"] = new JsonArray(jContentItem),
-            });
+                return;
+            }
+
+            var contentItem = await _contentManager.GetAsync(contentItemDeploymentStep.ContentItemId);
+
+            if (contentItem == null)
+            {
+                return;
+            }
+
+            var jContentItem = JObject.FromObject(contentItem);
+            jContentItem.Remove(nameof(ContentItem.Id));
+
+            var contentStep = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Content");
+            if (contentStep != null)
+            {
+                var data = contentStep["data"] as JsonArray;
+                data.Add(jContentItem);
+            }
+            else
+            {
+                result.Steps.Add(new JsonObject
+                {
+                    ["name"] = "Content",
+                    ["data"] = new JsonArray(jContentItem),
+                });
+            }
         }
     }
 }

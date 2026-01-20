@@ -1,24 +1,27 @@
-namespace OrchardCore.Modules;
+using System;
 
-public class Asset
+namespace OrchardCore.Modules
 {
-    public Asset(string asset)
+    public class Asset
     {
-        asset = asset.Replace('\\', '/');
-        var index = asset.IndexOf('|');
+        public Asset(string asset)
+        {
+            asset = asset.Replace('\\', '/');
+            var index = asset.IndexOf('|');
 
-        if (index == -1)
-        {
-            ModuleAssetPath = string.Empty;
-            ProjectAssetPath = string.Empty;
+            if (index == -1)
+            {
+                ModuleAssetPath = string.Empty;
+                ProjectAssetPath = string.Empty;
+            }
+            else
+            {
+                ModuleAssetPath = asset[..index];
+                ProjectAssetPath = asset[(index + 1)..];
+            }
         }
-        else
-        {
-            ModuleAssetPath = asset[..index];
-            ProjectAssetPath = asset[(index + 1)..];
-        }
+
+        public string ModuleAssetPath { get; }
+        public string ProjectAssetPath { get; }
     }
-
-    public string ModuleAssetPath { get; }
-    public string ProjectAssetPath { get; }
 }

@@ -1,20 +1,23 @@
+using System.IO;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags;
-
-public class ClearClassesTag
+namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public static async ValueTask<Completion> WriteToAsync(Expression expression, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public class ClearClassesTag
     {
-        var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
-
-        if (objectValue is IShape shape && shape.Classes.Count > 0)
+        public static async ValueTask<Completion> WriteToAsync(Expression expression, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
-            shape.Classes.Clear();
-        }
+            var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
 
-        return Completion.Normal;
+            if (objectValue is IShape shape && shape.Classes.Count > 0)
+            {
+                shape.Classes.Clear();
+            }
+
+            return Completion.Normal;
+        }
     }
 }

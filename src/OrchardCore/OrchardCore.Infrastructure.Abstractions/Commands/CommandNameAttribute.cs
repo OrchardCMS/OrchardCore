@@ -1,48 +1,50 @@
+using System;
 using System.Text;
 
-namespace OrchardCore.Environment.Commands;
-
-[AttributeUsage(AttributeTargets.Method)]
-public class CommandNameAttribute : Attribute
+namespace OrchardCore.Environment.Commands
 {
-    public CommandNameAttribute(params string[] commandsAlias)
+    [AttributeUsage(AttributeTargets.Method)]
+    public class CommandNameAttribute : Attribute
     {
-        Commands = commandsAlias;
-    }
-
-    public string[] Commands { get; }
-}
-
-[AttributeUsage(AttributeTargets.Method)]
-public class CommandHelpAttribute : Attribute
-{
-    public CommandHelpAttribute(string helpText)
-    {
-        HelpText = helpText;
-    }
-
-    public CommandHelpAttribute(params string[] helpText)
-    {
-        if (helpText.Length == 0)
+        public CommandNameAttribute(params string[] commandsAlias)
         {
-            return;
+            Commands = commandsAlias;
         }
 
-        if (helpText.Length == 1)
-        {
-            HelpText = helpText[0];
-            return;
-        }
-
-        var builder = new StringBuilder();
-
-        foreach (var value in helpText)
-        {
-            builder.AppendLine(value);
-        }
-
-        HelpText = builder.ToString();
+        public string[] Commands { get; }
     }
 
-    public string HelpText { get; }
+    [AttributeUsage(AttributeTargets.Method)]
+    public class CommandHelpAttribute : Attribute
+    {
+        public CommandHelpAttribute(string helpText)
+        {
+            HelpText = helpText;
+        }
+
+        public CommandHelpAttribute(params string[] helpText)
+        {
+            if (helpText.Length == 0)
+            {
+                return;
+            }
+
+            if (helpText.Length == 1)
+            {
+                HelpText = helpText[0];
+                return;
+            }
+
+            var builder = new StringBuilder();
+
+            foreach (var value in helpText)
+            {
+                builder.AppendLine(value);
+            }
+
+            HelpText = builder.ToString();
+        }
+
+        public string HelpText { get; }
+    }
 }

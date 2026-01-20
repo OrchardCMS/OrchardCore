@@ -1,47 +1,49 @@
+using System;
 using System.Text.Json;
 using Microsoft.AspNetCore.DataProtection;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Workflows.Services;
-
-public class SecurityTokenService : ISecurityTokenService
+namespace OrchardCore.Workflows.Services
 {
-    private readonly ITimeLimitedDataProtector _dataProtector;
-    private readonly IClock _clock;
-
-    public SecurityTokenService(
-        IDataProtectionProvider dataProtectionProvider,
-        IClock clock)
+    public class SecurityTokenService : ISecurityTokenService
     {
-        _dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
-        _clock = clock;
-    }
+        private readonly ITimeLimitedDataProtector _dataProtector;
+        private readonly IClock _clock;
 
-    public string CreateToken<T>(T payload, TimeSpan lifetime)
-    {
-        var json = JConvert.SerializeObject(payload);
-
-        return _dataProtector.Protect(json, _clock.UtcNow.Add(lifetime));
-    }
-
-    public bool TryDecryptToken<T>(string token, out T payload)
-    {
-        payload = default;
-
-        try
+        public SecurityTokenService(
+            IDataProtectionProvider dataProtectionProvider,
+            IClock clock)
         {
-            var json = _dataProtector.Unprotect(token, out var expiration);
+            _dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+            _clock = clock;
+        }
 
-            if (_clock.UtcNow < expiration.ToUniversalTime())
+        public string CreateToken<T>(T payload, TimeSpan lifetime)
+        {
+            var json = JConvert.SerializeObject(payload);
+
+            return _dataProtector.Protect(json, _clock.UtcNow.Add(lifetime));
+        }
+
+        public bool TryDecryptToken<T>(string token, out T payload)
+        {
+            payload = default;
+
+            try
             {
-                payload = JConvert.DeserializeObject<T>(json);
-                return true;
-            }
-        }
-        catch
-        {
-        }
+                var json = _dataProtector.Unprotect(token, out var expiration);
 
-        return false;
+                if (_clock.UtcNow < expiration.ToUniversalTime())
+                {
+                    payload = JConvert.DeserializeObject<T>(json);
+                    return true;
+                }
+            }
+            catch
+            {
+            }
+
+            return false;
+        }
     }
 }

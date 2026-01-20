@@ -1,41 +1,44 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Sitemaps.Routing;
-
-public class SitemapRouteTransformer : DynamicRouteValueTransformer
+namespace OrchardCore.Sitemaps.Routing
 {
-    private readonly SitemapEntries _entries;
-    private readonly SitemapsOptions _options;
-
-    public SitemapRouteTransformer(SitemapEntries entries, IOptions<SitemapsOptions> options)
+    public class SitemapRouteTransformer : DynamicRouteValueTransformer
     {
-        _entries = entries;
-        _options = options.Value;
-    }
+        private readonly SitemapEntries _entries;
+        private readonly SitemapsOptions _options;
 
-    public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
-    {
-        // Use route value provided by SitemapTransformer template.
-        var path = values["sitemap"] as string;
-
-        if (!string.IsNullOrEmpty(path))
+        public SitemapRouteTransformer(SitemapEntries entries, IOptions<SitemapsOptions> options)
         {
-            (var found, var sitemapId) = await _entries.TryGetSitemapIdByPathAsync(path);
-
-            if (found)
-            {
-                var routeValues = new RouteValueDictionary(_options.GlobalRouteValues)
-                {
-                    [_options.SitemapIdKey] = sitemapId,
-                };
-
-                return routeValues;
-            }
+            _entries = entries;
+            _options = options.Value;
         }
 
-        return null;
+        public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
+        {
+            // Use route value provided by SitemapTransformer template.
+            var path = values["sitemap"] as string;
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                (var found, var sitemapId) = await _entries.TryGetSitemapIdByPathAsync(path);
+
+                if (found)
+                {
+                    var routeValues = new RouteValueDictionary(_options.GlobalRouteValues)
+                    {
+                        [_options.SitemapIdKey] = sitemapId
+                    };
+
+                    return routeValues;
+                }
+            }
+
+            return null;
+        }
     }
 }

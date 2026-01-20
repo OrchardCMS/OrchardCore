@@ -1,6 +1,7 @@
-namespace OrchardCore.Workflows.ViewModels;
-
-public class ActivityMetadataEditViewModel
+namespace OrchardCore.Workflows.ViewModels
 {
-    public string Title { get; set; }
+    public class ActivityMetadataEditViewModel
+    {
+        public string Title { get; set; }
+    }
 }

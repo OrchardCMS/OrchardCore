@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Notifications;
 using OrchardCore.Notifications.Models;
@@ -5,7 +7,7 @@ using YesSql;
 
 namespace OrchardCore.Navigation.Core;
 
-public sealed class DefaultNotificationsAdminListQueryService : INotificationsAdminListQueryService
+public class DefaultNotificationsAdminListQueryService : INotificationsAdminListQueryService
 {
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;

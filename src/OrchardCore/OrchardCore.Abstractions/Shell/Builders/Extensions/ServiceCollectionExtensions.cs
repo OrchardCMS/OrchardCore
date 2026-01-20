@@ -1,4 +1,6 @@
-using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Builders;
 
@@ -24,11 +26,10 @@ public static class ServiceCollectionExtensions
             services.AddSingleton(new TOptions());
         }
 
-        services.Initialize(sp =>
+        services.Initialize(async sp =>
         {
             var options = sp.GetRequiredService<TOptions>();
-
-            return configureAsync(sp, options);
+            await configureAsync(sp, options);
         });
 
         return services;
@@ -39,8 +40,7 @@ public static class ServiceCollectionExtensions
     /// asynchronously a type of options just after a tenant container is created.
     /// </summary>
     public static IServiceCollection Configure<TOptions, TConfigure>(this IServiceCollection services)
-        where TOptions : class, IAsyncOptions, new()
-        where TConfigure : IAsyncConfigureOptions<TOptions>
+        where TOptions : class, IAsyncOptions, new() where TConfigure : IAsyncConfigureOptions<TOptions>
     {
         if (!services.Any(d => d.ServiceType == typeof(TOptions)))
         {
@@ -50,18 +50,11 @@ public static class ServiceCollectionExtensions
         if (!services.Any(d => d.ServiceType == typeof(TConfigure)))
         {
             services.AddTransient(typeof(TConfigure));
-            services.Initialize(sp =>
+            services.Initialize(async sp =>
             {
                 var options = sp.GetRequiredService<TOptions>();
                 var setup = sp.GetRequiredService<TConfigure>();
-                var logger = sp.GetRequiredService<ILogger<TConfigure>>();
-
-                if (logger.IsEnabled(LogLevel.Debug))
-                {
-                    logger.LogDebug("Invoking the ConfigureAsync method on '{ConfigureType}' to configure the '{OptionsType}'", typeof(TConfigure).FullName, typeof(TOptions).FullName);
-                }
-
-                return setup.ConfigureAsync(options);
+                await setup.ConfigureAsync(options);
             });
         }
 

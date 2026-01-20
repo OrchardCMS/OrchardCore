@@ -1,22 +1,25 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace OrchardCore.DisplayManagement.TagHelpers;
-
-[HtmlTargetElement(TagName, TagStructure = TagStructure.NormalOrSelfClosing)]
-public class ShapeMetadataTagHelper : TagHelper
+namespace OrchardCore.DisplayManagement.TagHelpers
 {
-    internal const string TagName = "metadata";
-
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    [HtmlTargetElement(TagName, TagStructure = TagStructure.NormalOrSelfClosing)]
+    public class ShapeMetadataTagHelper : TagHelper
     {
-        var shape = (IShape)context.Items[typeof(IShape)];
+        internal const string TagName = "metadata";
 
-        if (shape != null && output.Attributes.ContainsName("display-type"))
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            shape.Metadata.DisplayType = Convert.ToString(output.Attributes["display-type"].Value);
-        }
+            var shape = (IShape)context.Items[typeof(IShape)];
 
-        await output.GetChildContentAsync();
-        output.SuppressOutput();
+            if (shape != null && output.Attributes.ContainsName("display-type"))
+            {
+                shape.Metadata.DisplayType = Convert.ToString(output.Attributes["display-type"].Value);
+            }
+
+            await output.GetChildContentAsync();
+            output.SuppressOutput();
+        }
     }
 }

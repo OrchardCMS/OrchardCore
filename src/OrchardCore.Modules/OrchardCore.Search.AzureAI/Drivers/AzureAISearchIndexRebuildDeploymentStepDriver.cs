@@ -1,43 +1,39 @@
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Indexing;
 using OrchardCore.Search.AzureAI.Deployment;
+using OrchardCore.Search.AzureAI.Services;
 using OrchardCore.Search.AzureAI.ViewModels;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
+public class AzureAISearchIndexRebuildDeploymentStepDriver(AzureAISearchIndexSettingsService indexSettingsService)
     : DisplayDriver<DeploymentStep, AzureAISearchIndexRebuildDeploymentStep>
 {
-    private readonly IIndexProfileStore _indexProfileStore;
+    private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
 
-    public AzureAISearchIndexRebuildDeploymentStepDriver(IIndexProfileStore indexProfileStore)
-    {
-        _indexProfileStore = indexProfileStore;
-    }
-
-    public override Task<IDisplayResult> DisplayAsync(AzureAISearchIndexRebuildDeploymentStep step, BuildDisplayContext context)
-        => CombineAsync(
-            View("AzureAISearchIndexRebuildDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
+    public override IDisplayResult Display(AzureAISearchIndexRebuildDeploymentStep step)
+        => Combine(
+            View("AzureAISearchIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
             View("AzureAISearchIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
 
-    public override IDisplayResult Edit(AzureAISearchIndexRebuildDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(AzureAISearchIndexRebuildDeploymentStep step)
         => Initialize<AzureAISearchIndexRebuildDeploymentStepViewModel>("AzureAISearchIndexRebuildDeploymentStep_Fields_Edit", async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
-            model.AllIndexNames = (await _indexProfileStore.GetByProviderAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
+            model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
         }).Location("Content");
 
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexRebuildDeploymentStep step, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexRebuildDeploymentStep step, IUpdateModel updater)
     {
         step.Indices = [];
 
-        await context.Updater.TryUpdateModelAsync(step, Prefix,
-            p => p.IncludeAll,
-            p => p.Indices);
+        await updater.TryUpdateModelAsync(step, Prefix, p => p.IncludeAll, p => p.Indices);
 
         if (step.IncludeAll)
         {
@@ -45,6 +41,6 @@ public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
             step.Indices = [];
         }
 
-        return Edit(step, context);
+        return Edit(step);
     }
 }

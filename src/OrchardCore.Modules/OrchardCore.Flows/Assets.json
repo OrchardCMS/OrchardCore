@@ -1,14 +1,14 @@
 [
   {
-    "action": "min",
-    "name": "flows",
-    "source": "Assets/js/flows.edit.js",
-    "tags": ["admin", "dashboard", "js"]
+    "inputs": [
+      "Assets/js/flows.edit.js"
+    ],
+    "output": "wwwroot/Scripts/flows.edit.js"
   },
   {
-    "action": "sass",
-    "name": "flows",
-    "source": "Assets/scss/flows.edit.scss",
-    "tags": ["admin", "dashboard", "css"]
+    "inputs": [
+      "Assets/scss/flows.edit.scss"
+    ],
+    "output": "wwwroot/Styles/flows.edit.css"
   }
 ]

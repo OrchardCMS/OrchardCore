@@ -1,25 +1,61 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ReCaptcha.Services;
 
-namespace OrchardCore.ReCaptcha.ActionFilters;
-
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-public class ValidateReCaptchaAttribute : ActionFilterAttribute
+namespace OrchardCore.ReCaptcha.ActionFilters
 {
-    public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class ValidateReCaptchaAttribute : ActionFilterAttribute
     {
-        var reCaptchaService = context.HttpContext.RequestServices.GetRequiredService<ReCaptchaService>();
-        var reCaptchaResponse = context.HttpContext.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
+        private readonly ReCaptchaMode _mode;
 
-        if (string.IsNullOrWhiteSpace(reCaptchaResponse) || !await reCaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse))
+        public ValidateReCaptchaAttribute(ReCaptchaMode mode = ReCaptchaMode.AlwaysShow)
         {
-            var S = context.HttpContext.RequestServices.GetService<IStringLocalizer<ReCaptchaService>>();
-
-            context.ModelState.AddModelError("ReCaptcha", S["Failed to validate captcha"]);
+            _mode = mode;
         }
 
-        await next();
+        public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
+        {
+            var recaptchaService = context.HttpContext.RequestServices.GetService<ReCaptchaService>();
+            var S = context.HttpContext.RequestServices.GetService<IStringLocalizer<ReCaptchaService>>();
+            var isValidCaptcha = false;
+            var reCaptchaResponse = context.HttpContext.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
+
+            if (!string.IsNullOrWhiteSpace(reCaptchaResponse))
+                isValidCaptcha = await recaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse);
+
+            var isRobot = false;
+
+            switch (_mode)
+            {
+                case ReCaptchaMode.PreventRobots:
+                    isRobot = recaptchaService.IsThisARobot();
+                    break;
+                case ReCaptchaMode.AlwaysShow:
+                    isRobot = true;
+                    break;
+            }
+
+            if (isRobot && !isValidCaptcha)
+            {
+                context.ModelState.AddModelError("ReCaptcha", S["Failed to validate captcha"]);
+            }
+
+            await next();
+
+            if (context.ModelState.IsValid)
+            {
+                recaptchaService.ThisIsAHuman();
+            }
+            else
+            {
+                recaptchaService.MaybeThisIsARobot();
+            }
+
+            return;
+        }
     }
 }

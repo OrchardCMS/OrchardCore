@@ -1,46 +1,43 @@
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
-namespace OrchardCore.Sitemaps.Handlers;
-
-public class CustomPathSitemapSourceUpdateHandler : ISitemapSourceUpdateHandler
+namespace OrchardCore.Sitemaps.Handlers
 {
-    private readonly ISitemapManager _sitemapManager;
-
-    public CustomPathSitemapSourceUpdateHandler(ISitemapManager sitemapManager)
+    public class CustomPathSitemapSourceUpdateHandler : ISitemapSourceUpdateHandler
     {
-        _sitemapManager = sitemapManager;
-    }
+        private readonly ISitemapManager _sitemapManager;
 
-    public async Task UpdateSitemapAsync(SitemapUpdateContext context)
-    {
-        var sitemaps = (await _sitemapManager.LoadSitemapsAsync()).Where(s => s.GetType() == typeof(Sitemap));
-
-        if (!sitemaps.Any())
+        public CustomPathSitemapSourceUpdateHandler(ISitemapManager sitemapManager)
         {
-            return;
+            _sitemapManager = sitemapManager;
         }
 
-        var sitemapNeedsUpdate = false;
-
-        foreach (var sitemap in sitemaps)
+        public async Task UpdateSitemapAsync(SitemapUpdateContext context)
         {
-            // Do not break out of this loop, as it must check each sitemap.
-            foreach (var source in sitemap.SitemapSources
-                .Select(s => s as CustomPathSitemapSource))
+            var sitemaps = (await _sitemapManager.LoadSitemapsAsync()).Where(s => s.GetType() == typeof(Sitemap));
+
+            if (!sitemaps.Any())
             {
-                if (source == null)
-                {
-                    continue;
-                }
-
-                sitemap.Identifier = IdGenerator.GenerateId();
-                sitemapNeedsUpdate = true;
+                return;
             }
-        }
 
-        if (sitemapNeedsUpdate)
-        {
+            foreach (var sitemap in sitemaps)
+            {
+                // Do not break out of this loop, as it must check each sitemap.
+                foreach (var source in sitemap.SitemapSources
+                    .Select(s => s as CustomPathSitemapSource))
+                {
+                    if (source == null)
+                    {
+                        continue;
+                    }
+
+                    sitemap.Identifier = IdGenerator.GenerateId();
+                }
+            }
+
             await _sitemapManager.UpdateSitemapAsync();
         }
     }

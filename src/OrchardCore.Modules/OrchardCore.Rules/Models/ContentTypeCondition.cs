@@ -1,7 +1,8 @@
-namespace OrchardCore.Rules.Models;
-
-public class ContentTypeCondition : Condition
+namespace OrchardCore.Rules.Models
 {
-    public string Value { get; set; }
-    public ConditionOperator Operation { get; set; }
+    public class ContentTypeCondition : Condition
+    {
+        public string Value { get; set; }
+        public ConditionOperator Operation { get; set; }
+    }
 }

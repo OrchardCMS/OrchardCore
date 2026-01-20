@@ -1,8 +1,9 @@
-namespace OrchardCore.Html.Settings;
-
-public class HtmlBodyPartMonacoEditorSettings
+namespace OrchardCore.Html.Settings
 {
-    public string Options { get; set; }
-    public bool InsertMediaWithUrl { get; set; }
-    public bool AllowCustomScripts { get; set; }
+    public class HtmlBodyPartMonacoEditorSettings
+    {
+        public string Options { get; set; }
+        public bool InsertMediaWithUrl { get; set; }
+        public bool AllowCustomScripts { get; set; }
+    }
 }

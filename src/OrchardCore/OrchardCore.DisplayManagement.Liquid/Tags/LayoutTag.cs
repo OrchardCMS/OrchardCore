@@ -1,26 +1,29 @@
+using System.IO;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags;
-
-public class LayoutTag
+namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public static async ValueTask<Completion> WriteToAsync(Expression expression, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public class LayoutTag
     {
-        var services = ((LiquidTemplateContext)context).Services;
-
-        var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
-        var viewContext = viewContextAccessor.ViewContext;
-
-        if (viewContext.View is RazorView razorView && razorView.RazorPage is Razor.IRazorPage razorPage)
+        public static async ValueTask<Completion> WriteToAsync(Expression expression, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
-            razorPage.ViewLayout = (await expression.EvaluateAsync(context)).ToStringValue();
-        }
+            var services = ((LiquidTemplateContext)context).Services;
 
-        return Completion.Normal;
+            var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
+
+            if (viewContext.View is RazorView razorView && razorView.RazorPage is Razor.IRazorPage razorPage)
+            {
+                razorPage.ViewLayout = (await expression.EvaluateAsync(context)).ToStringValue();
+            }
+
+            return Completion.Normal;
+        }
     }
 }

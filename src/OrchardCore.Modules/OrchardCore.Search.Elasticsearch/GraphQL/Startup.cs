@@ -3,16 +3,17 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.GraphQL.Queries;
 
-namespace OrchardCore.Search.Elasticsearch.GraphQL;
-
-/// <summary>
-/// These services are registered on the tenant service collection.
-/// </summary>
-[RequireFeatures("OrchardCore.Apis.GraphQL", "OrchardCore.Queries")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Search.Elasticsearch.GraphQL
 {
-    public override void ConfigureServices(IServiceCollection services)
+    /// <summary>
+    /// These services are registered on the tenant service collection.
+    /// </summary>
+    [RequireFeatures("OrchardCore.Apis.GraphQL", "OrchardCore.Queries")]
+    public class Startup : StartupBase
     {
-        services.AddSingleton<ISchemaBuilder, ElasticsearchQueryFieldTypeProvider>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<ISchemaBuilder, ElasticQueryFieldTypeProvider>();
+        }
     }
 }

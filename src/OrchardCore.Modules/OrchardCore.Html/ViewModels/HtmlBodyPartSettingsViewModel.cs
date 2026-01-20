@@ -1,6 +1,7 @@
-namespace OrchardCore.Html.ViewModels;
-
-public class HtmlBodyPartSettingsViewModel
+namespace OrchardCore.Html.ViewModels
 {
-    public bool SanitizeHtml { get; set; }
+    public class HtmlBodyPartSettingsViewModel
+    {
+        public bool SanitizeHtml { get; set; }
+    }
 }

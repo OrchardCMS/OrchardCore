@@ -1,6 +1,9 @@
-namespace OrchardCore.Taxonomies.Settings;
+using System;
 
-public class TaxonomyContentsAdminListSettings
+namespace OrchardCore.Taxonomies.Settings
 {
-    public string[] TaxonomyContentItemIds { get; set; } = [];
+    public class TaxonomyContentsAdminListSettings
+    {
+        public string[] TaxonomyContentItemIds { get; set; } = [];
+    }
 }

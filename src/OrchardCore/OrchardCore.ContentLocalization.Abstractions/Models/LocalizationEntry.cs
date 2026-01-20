@@ -1,9 +1,10 @@
-namespace OrchardCore.ContentLocalization.Models;
-
-public class LocalizationEntry
+namespace OrchardCore.ContentLocalization.Models
 {
-    public long DocumentId;
-    public string ContentItemId;
-    public string LocalizationSet;
-    public string Culture;
+    public class LocalizationEntry
+    {
+        public long DocumentId;
+        public string ContentItemId;
+        public string LocalizationSet;
+        public string Culture;
+    }
 }

@@ -1,8 +1,10 @@
+using System;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentFields.Fields;
-
-public class ContentPickerField : ContentField
+namespace OrchardCore.ContentFields.Fields
 {
-    public string[] ContentItemIds { get; set; } = [];
+    public class ContentPickerField : ContentField
+    {
+        public string[] ContentItemIds { get; set; } = [];
+    }
 }

@@ -1,8 +1,11 @@
-namespace OrchardCore.Search.Elasticsearch.ViewModels;
+using System;
 
-public class IndexViewModel
+namespace OrchardCore.Search.Elasticsearch.ViewModels
 {
-    public string Name { get; set; }
-    public string AnalyzerName { get; set; }
-    public DateTime LastUpdateUtc { get; set; }
+    public class IndexViewModel
+    {
+        public string Name { get; set; }
+        public string AnalyzerName { get; set; }
+        public DateTime LastUpdateUtc { get; set; }
+    }
 }

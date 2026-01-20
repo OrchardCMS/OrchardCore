@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Forms.ViewModels;
-
-public class ButtonPartEditViewModel
+namespace OrchardCore.Forms.ViewModels
 {
-    [Required]
-    public string Text { get; set; }
+    public class ButtonPartEditViewModel
+    {
+        [Required]
+        public string Text { get; set; }
 
-    public string Type { get; set; }
+        public string Type { get; set; }
+    }
 }

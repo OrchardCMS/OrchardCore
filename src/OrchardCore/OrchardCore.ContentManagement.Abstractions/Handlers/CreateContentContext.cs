@@ -1,10 +1,9 @@
-namespace OrchardCore.ContentManagement.Handlers;
-
-public class CreateContentContext : ContentContextBase
+namespace OrchardCore.ContentManagement.Handlers
 {
-    public CreateContentContext(ContentItem contentItem) : base(contentItem)
+    public class CreateContentContext : ContentContextBase
     {
+        public CreateContentContext(ContentItem contentItem) : base(contentItem)
+        {
+        }
     }
-
-    public bool Cancel { get; set; }
 }

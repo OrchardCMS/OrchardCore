@@ -1,5 +1,8 @@
+using System;
 using System.Globalization;
+using System.IO;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
@@ -7,53 +10,54 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.DynamicCache.Liquid;
-
-public class CacheExpiresOnTag
+namespace OrchardCore.DynamicCache.Liquid
 {
-    public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public class CacheExpiresOnTag
     {
-        var services = ((LiquidTemplateContext)context).Services;
-
-        var cacheScopeManager = services.GetService<ICacheScopeManager>();
-
-        if (cacheScopeManager == null)
+        public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
-            return Completion.Normal;
-        }
+            var services = ((LiquidTemplateContext)context).Services;
 
-        DateTimeOffset value;
-        var input = await argument.EvaluateAsync(context);
-        if (input.Type == FluidValues.String)
-        {
-            var stringValue = input.ToStringValue();
-            if (!DateTimeOffset.TryParse(stringValue, context.CultureInfo, DateTimeStyles.AssumeUniversal, out value))
+            var cacheScopeManager = services.GetService<ICacheScopeManager>();
+
+            if (cacheScopeManager == null)
             {
                 return Completion.Normal;
             }
-        }
-        else
-        {
-            switch (input.ToObjectValue())
+
+            DateTimeOffset value;
+            var input = await argument.EvaluateAsync(context);
+            if (input.Type == FluidValues.String)
             {
-                case DateTime dateTime:
-                    value = dateTime;
-                    break;
-
-                case DateTimeOffset dateTimeOffset:
-                    value = dateTimeOffset;
-                    break;
-
-                default:
+                var stringValue = input.ToStringValue();
+                if (!DateTimeOffset.TryParse(stringValue, context.CultureInfo, DateTimeStyles.AssumeUniversal, out value))
+                {
                     return Completion.Normal;
+                }
             }
-        }
+            else
+            {
+                switch (input.ToObjectValue())
+                {
+                    case DateTime dateTime:
+                        value = dateTime;
+                        break;
 
-        if (value != DateTimeOffset.MinValue)
-        {
-            cacheScopeManager.WithExpiryOn(value);
-        }
+                    case DateTimeOffset dateTimeOffset:
+                        value = dateTimeOffset;
+                        break;
 
-        return Completion.Normal;
+                    default:
+                        return Completion.Normal;
+                }
+            }
+
+            if (value != DateTimeOffset.MinValue)
+            {
+                cacheScopeManager.WithExpiryOn(value);
+            }
+
+            return Completion.Normal;
+        }
     }
 }

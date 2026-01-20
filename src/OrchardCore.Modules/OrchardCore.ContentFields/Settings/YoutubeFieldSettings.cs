@@ -1,14 +1,11 @@
-using OrchardCore.ContentManagement.Metadata.Settings;
-
-namespace OrchardCore.ContentFields.Settings;
-
-public class YoutubeFieldSettings : FieldSettings
+namespace OrchardCore.ContentFields.Settings
 {
-    public string Label { get; set; }
-
-    public int Width { get; set; }
-
-    public int Height { get; set; }
-
-    public string Placeholder { get; set; } = string.Empty;
+    public class YoutubeFieldSettings
+    {
+        public string Hint { get; set; }
+        public string Label { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public bool Required { get; set; }
+    }
 }

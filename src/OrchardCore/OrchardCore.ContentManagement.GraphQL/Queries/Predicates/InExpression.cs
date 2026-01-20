@@ -1,54 +1,48 @@
 using System.Text;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
-
-/// <summary>
-/// An <see cref="IPredicate" /> that constrains the property to a specified list of values.
-/// </summary>
-public class InExpression : IPredicate
+namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 {
-    private readonly string _propertyName;
-
-    public InExpression(string propertyName, object[] values)
+    /// <summary>
+    /// An <see cref="IPredicate" /> that constrains the property to a specified list of values.
+    /// </summary>
+    public class InExpression : IPredicate
     {
-        _propertyName = propertyName;
-        Values = values;
-    }
+        private readonly string _propertyName;
 
-    public object[] Values { get; protected set; }
-
-    public void SearchUsedAlias(IPredicateQuery predicateQuery)
-    {
-        predicateQuery.SearchUsedAlias(_propertyName);
-    }
-
-    public string ToSqlString(IPredicateQuery predicateQuery)
-    {
-        // 'columnName in ()' is always false
-        if (Values.Length == 0)
+        public InExpression(string propertyName, object[] values)
         {
-            return "1=0";
+            _propertyName = propertyName;
+            Values = values;
         }
 
-        // Generates:
-        //  columnName in (@p1, @p2, @p3)
+        public object[] Values { get; protected set; }
 
-        var array = new StringBuilder();
-        for (var i = 0; i < Values.Length; i++)
+        public void SearchUsedAlias(IPredicateQuery predicateQuery)
         {
-            var parameter = predicateQuery.NewQueryParameter(Values[i]);
+            predicateQuery.SearchUsedAlias(_propertyName);
+        }
 
-            if (i > 0)
+        public string ToSqlString(IPredicateQuery predicateQuery)
+        {
+            // 'columnName in ()' is always false
+            if (Values.Length == 0) return "1=0";
+
+            // Generates:
+            //  columnName in (@p1, @p2, @p3)
+
+            var array = new StringBuilder();
+            for (var i = 0; i < Values.Length; i++)
             {
-                array.Append(", ");
+                var parameter = predicateQuery.NewQueryParameter(Values[i]);
+
+                if (i > 0) array.Append(", ");
+                array.Append(parameter);
             }
 
-            array.Append(parameter);
+            var columnName = predicateQuery.GetColumnName(_propertyName);
+            var inClause = predicateQuery.Dialect.InSelectOperator(array.ToString());
+
+            return $"{columnName} {inClause}";
         }
-
-        var columnName = predicateQuery.GetColumnName(_propertyName);
-        var inClause = predicateQuery.Dialect.InSelectOperator(array.ToString());
-
-        return $"{columnName} {inClause}";
     }
 }

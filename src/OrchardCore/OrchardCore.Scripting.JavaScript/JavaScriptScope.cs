@@ -1,16 +1,18 @@
+using System;
 using Jint;
 
-namespace OrchardCore.Scripting.JavaScript;
-
-public class JavaScriptScope : IScriptingScope
+namespace OrchardCore.Scripting.JavaScript
 {
-    public JavaScriptScope(Engine engine, IServiceProvider serviceProvider)
+    public class JavaScriptScope : IScriptingScope
     {
-        Engine = engine;
-        ServiceProvider = serviceProvider;
+        public JavaScriptScope(Engine engine, IServiceProvider serviceProvider)
+        {
+            Engine = engine;
+            ServiceProvider = serviceProvider;
+        }
+
+        public Engine Engine { get; }
+
+        public IServiceProvider ServiceProvider { get; }
     }
-
-    public Engine Engine { get; }
-
-    public IServiceProvider ServiceProvider { get; }
 }

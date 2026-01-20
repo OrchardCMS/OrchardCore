@@ -1,19 +1,21 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.ContentFields.Indexing;
-
-public class HtmlFieldIndexHandler : ContentFieldIndexHandler<HtmlField>
+namespace OrchardCore.ContentFields.Indexing
 {
-    public override Task BuildIndexAsync(HtmlField field, BuildFieldIndexContext context)
+    public class HtmlFieldIndexHandler : ContentFieldIndexHandler<HtmlField>
     {
-        var options = context.Settings.ToOptions();
-
-        foreach (var key in context.Keys)
+        public override Task BuildIndexAsync(HtmlField field, BuildFieldIndexContext context)
         {
-            context.DocumentIndex.Set(key, field.Html, options);
-        }
+            var options = context.Settings.ToOptions();
 
-        return Task.CompletedTask;
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, field.Html, options);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

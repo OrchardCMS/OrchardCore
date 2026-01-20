@@ -1,24 +1,31 @@
+using System;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Search.Lucene.Deployment;
-
-public sealed class LuceneIndexResetDeploymentSource
-    : DeploymentSourceBase<LuceneIndexResetDeploymentStep>
+namespace OrchardCore.Search.Lucene.Deployment
 {
-    protected override Task ProcessAsync(LuceneIndexResetDeploymentStep step, DeploymentPlanResult result)
+    public class LuceneIndexResetDeploymentSource : IDeploymentSource
     {
-        var indicesToReset = step.IncludeAll
-            ? []
-            : step.IndexNames;
-
-        result.Steps.Add(new JsonObject
+        public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            ["name"] = "lucene-index-reset",
-            ["includeAll"] = step.IncludeAll,
-            ["Indices"] = JArray.FromObject(indicesToReset),
-        });
+            var luceneIndexResetStep = step as LuceneIndexResetDeploymentStep;
 
-        return Task.CompletedTask;
+            if (luceneIndexResetStep == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            var indicesToReset = luceneIndexResetStep.IncludeAll ? [] : luceneIndexResetStep.IndexNames;
+
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "lucene-index-reset",
+                ["includeAll"] = luceneIndexResetStep.IncludeAll,
+                ["Indices"] = JArray.FromObject(indicesToReset),
+            });
+
+            return Task.CompletedTask;
+        }
     }
 }

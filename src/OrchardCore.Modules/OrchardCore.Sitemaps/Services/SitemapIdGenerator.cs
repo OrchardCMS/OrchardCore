@@ -1,18 +1,19 @@
 using OrchardCore.Entities;
 
-namespace OrchardCore.Sitemaps.Services;
-
-public class SitemapIdGenerator : ISitemapIdGenerator
+namespace OrchardCore.Sitemaps.Services
 {
-    private readonly IIdGenerator _idGenerator;
-
-    public SitemapIdGenerator(IIdGenerator idGenerator)
+    public class SitemapIdGenerator : ISitemapIdGenerator
     {
-        _idGenerator = idGenerator;
-    }
+        private readonly IIdGenerator _idGenerator;
 
-    public string GenerateUniqueId()
-    {
-        return _idGenerator.GenerateUniqueId();
+        public SitemapIdGenerator(IIdGenerator idGenerator)
+        {
+            _idGenerator = idGenerator;
+        }
+
+        public string GenerateUniqueId()
+        {
+            return _idGenerator.GenerateUniqueId();
+        }
     }
 }

@@ -3,13 +3,14 @@ using OrchardCore.Modules;
 using OrchardCore.Scripting.JavaScript;
 using OrchardCore.Scripting.Providers;
 
-namespace OrchardCore.Scripting;
-
-public sealed class Startup : StartupBase
+namespace OrchardCore.Scripting
 {
-    public override void ConfigureServices(IServiceCollection services)
+    public class Startup : StartupBase
     {
-        services.AddJavaScriptEngine();
-        services.AddSingleton<IGlobalMethodProvider, LogProvider>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddJavaScriptEngine();
+            services.AddSingleton<IGlobalMethodProvider, LogProvider>();
+        }
     }
 }

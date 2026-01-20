@@ -6,20 +6,12 @@ const path = require("path");
 global.log = function (msg) {
     let now = new Date().toLocaleTimeString();
     console.log(`[${now}] ${msg}\n`);
-
-    if (msg.indexOf("Exception") >= 0) {
-        throw new Error("An exception was detected");
-    }
-
-    if (msg.indexOf("fail:") == 0) {
-        throw new Error("An error was logged");
-    }
 };
 
 // Build the dotnet application in release mode
-function build(dir, dotnetVersion) {
+function build(dir) {
     global.log("Building ...");
-    child_process.spawnSync("dotnet", ["build", "-c", "Release", "-f", dotnetVersion], { cwd: dir });
+    child_process.spawnSync("dotnet", ["build", "-c", "Release"], { cwd: dir });
 }
 
 // destructive action that deletes the App_Data folder
@@ -28,29 +20,12 @@ function deleteDirectory(dir) {
     global.log(`${dir} deleted`);
 }
 
-// Copy the migrations recipe.
-function copyMigrationsRecipeFile(dir) {
-
-    const recipeFilePath = 'Recipes/migrations.recipe.json';
-
-    if (!fs.existsSync(`./${recipeFilePath}`) || fs.existsSync(`${dir}/${recipeFilePath}`)) {
-        return;
-    }
-
-    if (!fs.existsSync(`${dir}/Recipes`)) {
-        fs.mkdirSync(`${dir}/Recipes`);
-    }
-
-    fs.copyFile(`./${recipeFilePath}`, `${dir}/${recipeFilePath}`);
-    global.log(`migrations recipe copied to ${dir}/Recipes`);
-}
-
 // Host the dotnet application, does not rebuild
-function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = 'net10.0' } = {}) {
+function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = 'net8.0' } = {}) {
     if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
         global.log("Application already built, skipping build");
     } else {
-        build(dir, dotnetVersion);
+        build(dir);
     }
     global.log("Starting application ...");
 
@@ -78,29 +53,24 @@ function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = '
 }
 
 // combines the functions above, useful when triggering tests from CI
-function e2e(dir, assembly, { dotnetVersion = 'net10.0' } = {}) {
-    copyMigrationsRecipeFile(dir);
+function e2e(dir, assembly, { dotnetVersion = 'net8.0' } = {}) {
     deleteDirectory(path.join(dir, "App_Data_Tests"));
     var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 
-    // Wait for server to start up before launching Cypress
-    global.log("Waiting for server to start...");
-    setTimeout(() => {
-        let test = child_process.exec("npx cypress run");
-        test.stdout.on("data", data => {
-            console.log(data);
-        });
+    let test = child_process.exec("npx cypress run");
+    test.stdout.on("data", data => {
+        console.log(data);
+    });
 
-        test.stderr.on("data", data => {
-            console.log(`stderr: ${data}`);
-        });
+    test.stderr.on("data", data => {
+        console.log(`stderr: ${data}`);
+    });
 
-        test.on("close", code => {
-            console.log(`Cypress process exited with code ${code}`);
-            server.kill("SIGINT");
-            process.exit(code);
-        });
-    }, 10000); // Wait 10 seconds for server to start
+    test.on("close", code => {
+        console.log(`Cypress process exited with code ${code}`);
+        server.kill("SIGINT");
+        process.exit(code);
+    });
 }
 
 export { build, deleteDirectory, e2e, host };

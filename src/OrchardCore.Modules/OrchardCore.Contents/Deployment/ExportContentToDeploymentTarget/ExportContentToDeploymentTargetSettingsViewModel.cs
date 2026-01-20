@@ -1,6 +1,7 @@
-namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
-
-public class ExportContentToDeploymentTargetSettingsViewModel
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public long ExportContentToDeploymentTargetPlanId { get; set; }
+    public class ExportContentToDeploymentTargetSettingsViewModel
+    {
+        public long ExportContentToDeploymentTargetPlanId { get; set; }
+    }
 }

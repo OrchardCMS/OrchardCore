@@ -4,14 +4,15 @@ using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Markdown.GraphQL;
-
-[RequireFeatures("OrchardCore.Apis.GraphQL")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Markdown.GraphQL
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    public class Startup : StartupBase
     {
-        services.AddObjectGraphType<MarkdownBodyPart, MarkdownBodyQueryObjectType>();
-        services.AddObjectGraphType<MarkdownField, MarkdownFieldQueryObjectType>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddObjectGraphType<MarkdownBodyPart, MarkdownBodyQueryObjectType>();
+            services.AddObjectGraphType<MarkdownField, MarkdownFieldQueryObjectType>();
+        }
     }
 }

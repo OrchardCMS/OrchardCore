@@ -1,38 +1,41 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace OrchardCore.DisplayManagement.TagHelpers;
-
-[HtmlTargetElement("datetime")]
-public class DateTimeTagHelper : TagHelper
+namespace OrchardCore.DisplayManagement.TagHelpers
 {
-    private const string UtcAttribute = "utc";
-    private const string FormatAttribute = "format";
-
-    protected IShapeFactory _shapeFactory;
-    protected IDisplayHelper _displayHelper;
-
-    public DateTimeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
+    [HtmlTargetElement("datetime")]
+    public class DateTimeTagHelper : TagHelper
     {
-        _shapeFactory = shapeFactory;
-        _displayHelper = displayHelper;
-    }
+        private const string UtcAttribute = "utc";
+        private const string FormatAttribute = "format";
 
-    [HtmlAttributeName(UtcAttribute)]
-    public DateTime? Utc { set; get; }
+        protected IShapeFactory _shapeFactory;
+        protected IDisplayHelper _displayHelper;
 
-    [HtmlAttributeName(FormatAttribute)]
-    public string Format { set; get; }
+        public DateTimeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
+        {
+            _shapeFactory = shapeFactory;
+            _displayHelper = displayHelper;
+        }
 
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
-    {
-        var shapeType = "DateTime";
-        var shape = await _shapeFactory.CreateAsync(shapeType);
-        shape.Properties["Utc"] = Utc;
-        shape.Properties["Format"] = Format;
+        [HtmlAttributeName(UtcAttribute)]
+        public DateTime? Utc { set; get; }
 
-        output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
+        [HtmlAttributeName(FormatAttribute)]
+        public string Format { set; get; }
 
-        // We don't want any encapsulating tag around the shape
-        output.TagName = null;
+        public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        {
+            var shapeType = "DateTime";
+            dynamic shape = await _shapeFactory.CreateAsync(shapeType);
+            shape.Utc = Utc;
+            shape.Format = Format;
+
+            output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
+
+            // We don't want any encapsulating tag around the shape
+            output.TagName = null;
+        }
     }
 }

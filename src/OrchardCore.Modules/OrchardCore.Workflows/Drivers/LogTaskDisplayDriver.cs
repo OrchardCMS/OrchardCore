@@ -3,19 +3,20 @@ using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
 
-namespace OrchardCore.Workflows.Drivers;
-
-public sealed class LogTaskDisplayDriver : ActivityDisplayDriver<LogTask, LogTaskViewModel>
+namespace OrchardCore.Workflows.Drivers
 {
-    protected override void EditActivity(LogTask activity, LogTaskViewModel model)
+    public class LogTaskDisplayDriver : ActivityDisplayDriver<LogTask, LogTaskViewModel>
     {
-        model.LogLevel = activity.LogLevel;
-        model.Text = activity.Text.Expression;
-    }
+        protected override void EditActivity(LogTask activity, LogTaskViewModel model)
+        {
+            model.LogLevel = activity.LogLevel;
+            model.Text = activity.Text.Expression;
+        }
 
-    protected override void UpdateActivity(LogTaskViewModel model, LogTask activity)
-    {
-        activity.LogLevel = model.LogLevel;
-        activity.Text = new WorkflowExpression<string>(model.Text);
+        protected override void UpdateActivity(LogTaskViewModel model, LogTask activity)
+        {
+            activity.LogLevel = model.LogLevel;
+            activity.Text = new WorkflowExpression<string>(model.Text);
+        }
     }
 }

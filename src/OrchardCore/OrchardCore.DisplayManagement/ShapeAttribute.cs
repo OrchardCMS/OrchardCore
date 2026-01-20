@@ -1,16 +1,19 @@
-namespace OrchardCore.DisplayManagement;
+using System;
 
-[AttributeUsage(AttributeTargets.Method)]
-public class ShapeAttribute : Attribute
+namespace OrchardCore.DisplayManagement
 {
-    public ShapeAttribute()
+    [AttributeUsage(AttributeTargets.Method)]
+    public class ShapeAttribute : Attribute
     {
-    }
+        public ShapeAttribute()
+        {
+        }
 
-    public ShapeAttribute(string shapeType)
-    {
-        ShapeType = shapeType;
-    }
+        public ShapeAttribute(string shapeType)
+        {
+            ShapeType = shapeType;
+        }
 
-    public string ShapeType { get; private set; }
+        public string ShapeType { get; private set; }
+    }
 }

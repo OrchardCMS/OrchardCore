@@ -1,8 +1,11 @@
-namespace OrchardCore.Deployment.ViewModels;
+using System.Collections.Generic;
 
-public class DisplayDeploymentPlanViewModel
+namespace OrchardCore.Deployment.ViewModels
 {
-    public DeploymentPlan DeploymentPlan { get; set; }
-    public IEnumerable<dynamic> Items { get; set; }
-    public IDictionary<string, dynamic> Thumbnails { get; set; }
+    public class DisplayDeploymentPlanViewModel
+    {
+        public DeploymentPlan DeploymentPlan { get; set; }
+        public IEnumerable<dynamic> Items { get; set; }
+        public IDictionary<string, dynamic> Thumbnails { get; set; }
+    }
 }

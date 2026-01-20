@@ -2,38 +2,39 @@ using GraphQL.Types;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
-
-public sealed class ContentItemInterface : InterfaceGraphType<ContentItem>
+namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
-    private readonly GraphQLContentOptions _options;
-
-    public ContentItemInterface(IOptions<GraphQLContentOptions> optionsAccessor)
+    public class ContentItemInterface : InterfaceGraphType<ContentItem>
     {
-        _options = optionsAccessor.Value;
+        private readonly GraphQLContentOptions _options;
 
-        Name = "ContentItem";
-
-        Field(ci => ci.ContentItemId);
-        Field(ci => ci.ContentItemVersionId, nullable: true);
-        Field(ci => ci.ContentType);
-        Field(ci => ci.DisplayText, nullable: true);
-        Field(ci => ci.Published);
-        Field(ci => ci.Latest);
-        Field(ci => ci.ModifiedUtc, nullable: true);
-        Field(ci => ci.PublishedUtc, nullable: true);
-        Field(ci => ci.CreatedUtc, nullable: true);
-        Field(ci => ci.Owner, nullable: true);
-        Field(ci => ci.Author, nullable: true);
-    }
-
-    public override FieldType AddField(FieldType fieldType)
-    {
-        if (!_options.ShouldSkip(typeof(ContentItemType), fieldType.Name))
+        public ContentItemInterface(IOptions<GraphQLContentOptions> optionsAccessor)
         {
-            return base.AddField(fieldType);
+            _options = optionsAccessor.Value;
+
+            Name = "ContentItem";
+
+            Field(ci => ci.ContentItemId);
+            Field(ci => ci.ContentItemVersionId);
+            Field(ci => ci.ContentType);
+            Field(ci => ci.DisplayText, nullable: true);
+            Field(ci => ci.Published);
+            Field(ci => ci.Latest);
+            Field<DateTimeGraphType>("modifiedUtc", resolve: ci => ci.Source.ModifiedUtc);
+            Field<DateTimeGraphType>("publishedUtc", resolve: ci => ci.Source.PublishedUtc);
+            Field<DateTimeGraphType>("createdUtc", resolve: ci => ci.Source.CreatedUtc);
+            Field(ci => ci.Owner);
+            Field(ci => ci.Author);
         }
 
-        return null;
+        public override FieldType AddField(FieldType fieldType)
+        {
+            if (!_options.ShouldSkip(typeof(ContentItemType), fieldType.Name))
+            {
+                return base.AddField(fieldType);
+            }
+
+            return null;
+        }
     }
 }

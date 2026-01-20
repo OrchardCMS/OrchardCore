@@ -1,20 +1,21 @@
 using System.ComponentModel.DataAnnotations;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Queries.Deployment;
-
-/// <summary>
-/// Adds all content items from the result of a Query to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class QueryBasedContentDeploymentStep : DeploymentStep
+namespace OrchardCore.Queries.Deployment
 {
-    public QueryBasedContentDeploymentStep()
+    /// <summary>
+    /// Adds all content items from the result of a Query to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class QueryBasedContentDeploymentStep : DeploymentStep
     {
-        Name = "QueryBasedContentDeploymentStep";
-    }
+        public QueryBasedContentDeploymentStep()
+        {
+            Name = "QueryBasedContentDeploymentStep";
+        }
 
-    [Required]
-    public string QueryName { get; set; }
-    public string QueryParameters { get; set; }
-    public bool ExportAsSetupRecipe { get; set; }
+        [Required]
+        public string QueryName { get; set; }
+        public string QueryParameters { get; set; }
+        public bool ExportAsSetupRecipe { get; set; }
+    }
 }

@@ -1,38 +1,42 @@
-namespace OrchardCore.Modules;
+using System;
+using System.Threading.Tasks;
 
-public static class ClockExtensions
+namespace OrchardCore.Modules
 {
-    /// <summary>
-    /// Converts a <see cref="DateTime" /> to the specified <see cref="ITimeZone" /> instance.
-    /// </summary>
-    public static DateTimeOffset ConvertToTimeZone(this IClock clock, DateTime dateTime, ITimeZone timeZone)
+    public static class ClockExtensions
     {
-        var dateTimeUtc = dateTime.Kind switch
+        /// <summary>
+        /// Converts a <see cref="DateTime" /> to the specified <see cref="ITimeZone" /> instance.
+        /// </summary>
+        public static DateTimeOffset ConvertToTimeZone(this IClock clock, DateTime dateTime, ITimeZone timeZone)
         {
-            DateTimeKind.Utc => dateTime,
-            DateTimeKind.Local => dateTime.ToUniversalTime(),
+            var dateTimeUtc = dateTime.Kind switch
+            {
+                DateTimeKind.Utc => dateTime,
+                DateTimeKind.Local => dateTime.ToUniversalTime(),
 
-            // 'DateTimeKind.Unspecified'.
-            _ => DateTime.SpecifyKind(dateTime, DateTimeKind.Utc),
-        };
+                // 'DateTimeKind.Unspecified'.
+                _ => DateTime.SpecifyKind(dateTime, DateTimeKind.Utc),
+            };
 
-        return clock.ConvertToTimeZone(new DateTimeOffset(dateTimeUtc), timeZone);
-    }
+            return clock.ConvertToTimeZone(new DateTimeOffset(dateTimeUtc), timeZone);
+        }
 
-    /// <summary>
-    /// Converts a <see cref="DateTime" /> to the specified <see cref="ITimeZone" /> instance.
-    /// </summary>
-    public static Task<DateTimeOffset> ConvertToLocalAsync(this ILocalClock localClock, DateTime dateTime)
-    {
-        var dateTimeUtc = dateTime.Kind switch
+        /// <summary>
+        /// Converts a <see cref="DateTime" /> to the specified <see cref="ITimeZone" /> instance.
+        /// </summary>
+        public static Task<DateTimeOffset> ConvertToLocalAsync(this ILocalClock localClock, DateTime dateTime)
         {
-            DateTimeKind.Utc => dateTime,
-            DateTimeKind.Local => dateTime.ToUniversalTime(),
+            var dateTimeUtc = dateTime.Kind switch
+            {
+                DateTimeKind.Utc => dateTime,
+                DateTimeKind.Local => dateTime.ToUniversalTime(),
 
-            // 'DateTimeKind.Unspecified'.
-            _ => DateTime.SpecifyKind(dateTime, DateTimeKind.Utc),
-        };
+                // 'DateTimeKind.Unspecified'.
+                _ => DateTime.SpecifyKind(dateTime, DateTimeKind.Utc),
+            };
 
-        return localClock.ConvertToLocalAsync(new DateTimeOffset(dateTimeUtc));
+            return localClock.ConvertToLocalAsync(new DateTimeOffset(dateTimeUtc));
+        }
     }
 }

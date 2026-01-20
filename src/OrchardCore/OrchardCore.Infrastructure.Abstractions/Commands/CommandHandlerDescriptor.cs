@@ -1,6 +1,9 @@
-namespace OrchardCore.Environment.Commands;
+using System.Collections.Generic;
 
-public class CommandHandlerDescriptor
+namespace OrchardCore.Environment.Commands
 {
-    public IEnumerable<CommandDescriptor> Commands { get; set; }
+    public class CommandHandlerDescriptor
+    {
+        public IEnumerable<CommandDescriptor> Commands { get; set; }
+    }
 }

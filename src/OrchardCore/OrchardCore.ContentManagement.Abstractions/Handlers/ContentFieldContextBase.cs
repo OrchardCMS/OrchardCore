@@ -1,17 +1,18 @@
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentManagement.Handlers;
-
-public class ContentFieldContextBase
+namespace OrchardCore.ContentManagement.Handlers
 {
-    protected ContentFieldContextBase(ContentItem contentItem)
+    public class ContentFieldContextBase
     {
-        ContentItem = contentItem;
+        protected ContentFieldContextBase(ContentItem contentItem)
+        {
+            ContentItem = contentItem;
+        }
+
+        public ContentItem ContentItem { get; private set; }
+
+        public ContentPartFieldDefinition ContentPartFieldDefinition { get; set; }
+
+        public string PartName { get; set; }
     }
-
-    public ContentItem ContentItem { get; private set; }
-
-    public ContentPartFieldDefinition ContentPartFieldDefinition { get; set; }
-
-    public string PartName { get; set; }
 }

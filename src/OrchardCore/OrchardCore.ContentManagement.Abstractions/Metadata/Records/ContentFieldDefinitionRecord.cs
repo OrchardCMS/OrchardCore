@@ -1,9 +1,10 @@
-namespace OrchardCore.ContentManagement.Metadata.Records;
-
-/// <summary>
-/// Represents a field name.
-/// </summary>
-public class ContentFieldDefinitionRecord
+namespace OrchardCore.ContentManagement.Metadata.Records
 {
-    public string Name { get; set; }
+    /// <summary>
+    /// Represents a field name.
+    /// </summary>
+    public class ContentFieldDefinitionRecord
+    {
+        public string Name { get; set; }
+    }
 }

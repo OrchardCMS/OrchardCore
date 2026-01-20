@@ -1,3 +1,6 @@
-namespace OrchardCore.Locking.Distributed;
-
-public interface IDistributedLock : ILock;
+namespace OrchardCore.Locking.Distributed
+{
+    public interface IDistributedLock : ILock
+    {
+    }
+}

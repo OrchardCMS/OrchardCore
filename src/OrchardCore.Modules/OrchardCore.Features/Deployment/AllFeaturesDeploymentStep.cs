@@ -1,16 +1,17 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Features.Deployment;
-
-/// <summary>
-/// Adds enabled and disabled features to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class AllFeaturesDeploymentStep : DeploymentStep
+namespace OrchardCore.Features.Deployment
 {
-    public AllFeaturesDeploymentStep()
+    /// <summary>
+    /// Adds enabled and disabled features to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class AllFeaturesDeploymentStep : DeploymentStep
     {
-        Name = "AllFeatures";
-    }
+        public AllFeaturesDeploymentStep()
+        {
+            Name = "AllFeatures";
+        }
 
-    public bool IgnoreDisabledFeatures { get; set; }
+        public bool IgnoreDisabledFeatures { get; set; }
+    }
 }

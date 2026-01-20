@@ -1,22 +1,24 @@
+using System;
 using System.Linq.Expressions;
 using OrchardCore.ContentManagement.Records;
 using YesSql;
 
-namespace OrchardCore.ContentManagement.CompiledQueries;
-
-public class PublishedContentItemById : ICompiledQuery<ContentItem>
+namespace OrchardCore.ContentManagement.CompiledQueries
 {
-    public PublishedContentItemById(string contentItemId)
+    public class PublishedContentItemById : ICompiledQuery<ContentItem>
     {
-        ContentItemId = contentItemId;
-    }
+        public PublishedContentItemById(string contentItemId)
+        {
+            ContentItemId = contentItemId;
+        }
 
-    public string ContentItemId { get; set; }
+        public string ContentItemId { get; set; }
 
-    public Expression<Func<IQuery<ContentItem>, IQuery<ContentItem>>> Query()
-    {
-        return query => query
-            .With<ContentItemIndex>()
-            .Where(x => x.ContentItemId == ContentItemId && x.Published == true);
+        public Expression<Func<IQuery<ContentItem>, IQuery<ContentItem>>> Query()
+        {
+            return query => query
+                .With<ContentItemIndex>()
+                .Where(x => x.ContentItemId == ContentItemId && x.Published == true);
+        }
     }
 }

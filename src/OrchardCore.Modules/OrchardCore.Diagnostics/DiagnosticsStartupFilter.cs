@@ -1,51 +1,53 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Hosting;
 
-namespace OrchardCore.Diagnostics;
-
-public sealed class DiagnosticsStartupFilter : IStartupFilter
+namespace OrchardCore.Diagnostics
 {
-    private readonly FileExtensionContentTypeProvider _contentTypeProvider = new();
-
-    private readonly IHostEnvironment _hostEnvironment;
-
-    public DiagnosticsStartupFilter(IHostEnvironment hostEnvironment)
+    public class DiagnosticsStartupFilter : IStartupFilter
     {
-        _hostEnvironment = hostEnvironment;
-    }
+        private readonly FileExtensionContentTypeProvider _contentTypeProvider = new();
 
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-    {
-        return app =>
+        private readonly IHostEnvironment _hostEnvironment;
+
+        public DiagnosticsStartupFilter(IHostEnvironment hostEnvironment)
         {
-            if (!_hostEnvironment.IsDevelopment())
+            _hostEnvironment = hostEnvironment;
+        }
+
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        {
+            return app =>
             {
-                app.UseExceptionHandler("/Error");
-            }
-
-            app.UseStatusCodePagesWithReExecute("/Error/{0}");
-
-            app.Use(async (context, next) =>
-            {
-                await next();
-
-                if (context.Response.StatusCode < 200 || context.Response.StatusCode >= 400)
+                if (!_hostEnvironment.IsDevelopment())
                 {
-                    if (_contentTypeProvider.TryGetContentType(context.Request.Path.Value, out var contentType))
+                    app.UseExceptionHandler("/Error");
+                }
+
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
+                app.Use(async (context, next) =>
+                {
+                    await next();
+
+                    if (context.Response.StatusCode < 200 || context.Response.StatusCode >= 400)
                     {
-                        var statusCodePagesFeature = context.Features.Get<IStatusCodePagesFeature>();
-                        if (statusCodePagesFeature != null)
+                        if (_contentTypeProvider.TryGetContentType(context.Request.Path.Value, out var contentType))
                         {
-                            statusCodePagesFeature.Enabled = false;
+                            var statusCodePagesFeature = context.Features.Get<IStatusCodePagesFeature>();
+                            if (statusCodePagesFeature != null)
+                            {
+                                statusCodePagesFeature.Enabled = false;
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            next(app);
-        };
+                next(app);
+            };
+        }
     }
 }

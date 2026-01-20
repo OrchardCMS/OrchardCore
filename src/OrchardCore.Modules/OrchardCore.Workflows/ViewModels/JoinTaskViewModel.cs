@@ -1,8 +1,9 @@
 using OrchardCore.Workflows.Activities;
 
-namespace OrchardCore.Workflows.ViewModels;
-
-public class JoinTaskViewModel
+namespace OrchardCore.Workflows.ViewModels
 {
-    public JoinTask.JoinMode Mode { get; set; }
+    public class JoinTaskViewModel
+    {
+        public JoinTask.JoinMode Mode { get; set; }
+    }
 }

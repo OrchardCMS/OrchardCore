@@ -1,10 +1,12 @@
+using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
 
-namespace OrchardCore.AuditTrail.Services;
-
-public class AuditTrailEventHandlerBase : IAuditTrailEventHandler
+namespace OrchardCore.AuditTrail.Services
 {
-    public virtual Task CreateAsync(AuditTrailCreateContext context) => Task.CompletedTask;
-    public virtual Task AlterAsync(AuditTrailCreateContext context, AuditTrailEvent auditTrailEvent) => Task.CompletedTask;
+    public class AuditTrailEventHandlerBase : IAuditTrailEventHandler
+    {
+        public virtual Task CreateAsync(AuditTrailCreateContext context) => Task.CompletedTask;
+        public virtual Task AlterAsync(AuditTrailCreateContext context, AuditTrailEvent auditTrailEvent) => Task.CompletedTask;
+    }
 }

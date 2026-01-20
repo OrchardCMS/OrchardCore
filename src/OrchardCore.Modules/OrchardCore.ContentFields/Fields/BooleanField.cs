@@ -1,8 +1,9 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentFields.Fields;
-
-public class BooleanField : ContentField
+namespace OrchardCore.ContentFields.Fields
 {
-    public bool Value { get; set; }
+    public class BooleanField : ContentField
+    {
+        public bool Value { get; set; }
+    }
 }

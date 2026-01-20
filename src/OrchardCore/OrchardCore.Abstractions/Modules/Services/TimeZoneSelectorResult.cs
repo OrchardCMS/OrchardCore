@@ -1,7 +1,11 @@
-namespace OrchardCore.Modules;
+using System;
+using System.Threading.Tasks;
 
-public class TimeZoneSelectorResult
+namespace OrchardCore.Modules
 {
-    public int Priority { get; set; }
-    public Func<Task<string>> TimeZoneId { get; set; }
+    public class TimeZoneSelectorResult
+    {
+        public int Priority { get; set; }
+        public Func<Task<string>> TimeZoneId { get; set; }
+    }
 }

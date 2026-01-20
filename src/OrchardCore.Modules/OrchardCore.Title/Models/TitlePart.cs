@@ -1,8 +1,9 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Title.Models;
-
-public class TitlePart : ContentPart
+namespace OrchardCore.Title.Models
 {
-    public string Title { get; set; }
+    public class TitlePart : ContentPart
+    {
+        public string Title { get; set; }
+    }
 }

@@ -1,38 +1,40 @@
+using System;
+using System.Threading.Tasks;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.Setup.Events;
 using OrchardCore.Setup.Services;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.Services;
-
-/// <summary>
-/// Handles setup events by creating the initial administrator user during application setup.
-/// </summary>
-public class SetupEventHandler : ISetupEventHandler
+namespace OrchardCore.Users.Services
 {
-    private readonly IUserService _userService;
-
-    public SetupEventHandler(IUserService userService)
+    /// <summary>
+    /// During setup, creates the admin user account.
+    /// </summary>
+    public class SetupEventHandler : ISetupEventHandler
     {
-        _userService = userService;
-    }
+        private readonly IUserService _userService;
 
-    /// <inheritdoc/>
-    public Task SetupAsync(SetupContext context)
-    {
-        var user = new User
+        public SetupEventHandler(IUserService userService)
         {
-            UserName = context.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUserName) ? adminUserName?.ToString() : string.Empty,
-            UserId = context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString() : string.Empty,
-            Email = context.Properties.TryGetValue(SetupConstants.AdminEmail, out var adminEmail) ? adminEmail?.ToString() : string.Empty,
-            EmailConfirmed = true,
-        };
+            _userService = userService;
+        }
 
-        user.RoleNames.Add(OrchardCoreConstants.Roles.Administrator);
-
-        return _userService.CreateUserAsync(user, context.Properties[SetupConstants.AdminPassword]?.ToString(), (key, message) =>
+        public Task SetupAsync(SetupContext context)
         {
-            context.Errors[key] = message;
-        });
+            var user = new User
+            {
+                UserName = context.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUserName) ? adminUserName?.ToString() : string.Empty,
+                UserId = context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString() : string.Empty,
+                Email = context.Properties.TryGetValue(SetupConstants.AdminEmail, out var adminEmail) ? adminEmail?.ToString() : string.Empty,
+                EmailConfirmed = true
+            };
+
+            user.RoleNames.Add("Administrator");
+
+            return _userService.CreateUserAsync(user, context.Properties[SetupConstants.AdminPassword]?.ToString(), (key, message) =>
+            {
+                context.Errors[key] = message;
+            });
+        }
     }
 }

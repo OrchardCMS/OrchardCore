@@ -2,32 +2,33 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Redis.Options;
-
-public sealed class RedisCacheOptionsSetup : IConfigureOptions<RedisCacheOptions>
+namespace OrchardCore.Redis.Options
 {
-    private readonly IRedisService _redis;
-    private readonly string _tenant;
-
-    public RedisCacheOptionsSetup(IRedisService redis, ShellSettings shellSettings)
+    public class RedisCacheOptionsSetup : IConfigureOptions<RedisCacheOptions>
     {
-        _redis = redis;
-        _tenant = shellSettings.Name;
-    }
+        private readonly IRedisService _redis;
+        private readonly string _tenant;
 
-    public void Configure(RedisCacheOptions options)
-    {
-        var redis = _redis;
-        options.ConnectionMultiplexerFactory = async () =>
+        public RedisCacheOptionsSetup(IRedisService redis, ShellSettings shellSettings)
         {
-            if (redis.Connection == null)
+            _redis = redis;
+            _tenant = shellSettings.Name;
+        }
+
+        public void Configure(RedisCacheOptions options)
+        {
+            var redis = _redis;
+            options.ConnectionMultiplexerFactory = async () =>
             {
-                await redis.ConnectAsync();
-            }
+                if (redis.Connection == null)
+                {
+                    await redis.ConnectAsync();
+                }
 
-            return redis.Connection;
-        };
+                return redis.Connection;
+            };
 
-        options.InstanceName = $"{redis.InstancePrefix}{_tenant}";
+            options.InstanceName = $"{redis.InstancePrefix}{_tenant}";
+        }
     }
 }

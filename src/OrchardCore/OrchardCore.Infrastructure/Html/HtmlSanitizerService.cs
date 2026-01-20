@@ -1,19 +1,20 @@
 using Ganss.Xss;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Infrastructure.Html;
-
-public class HtmlSanitizerService : IHtmlSanitizerService
+namespace OrchardCore.Infrastructure.Html
 {
-    private readonly HtmlSanitizer _sanitizer = new();
-
-    public HtmlSanitizerService(IOptions<HtmlSanitizerOptions> options)
+    public class HtmlSanitizerService : IHtmlSanitizerService
     {
-        foreach (var action in options.Value.Configure)
-        {
-            action?.Invoke(_sanitizer);
-        }
-    }
+        private readonly HtmlSanitizer _sanitizer = new();
 
-    public string Sanitize(string html) => _sanitizer.Sanitize(html);
+        public HtmlSanitizerService(IOptions<HtmlSanitizerOptions> options)
+        {
+            foreach (var action in options.Value.Configure)
+            {
+                action?.Invoke(_sanitizer);
+            }
+        }
+
+        public string Sanitize(string html) => _sanitizer.Sanitize(html);
+    }
 }

@@ -1,7 +1,11 @@
-namespace OrchardCore.Recipes.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public interface IRecipeEnvironmentProvider
+namespace OrchardCore.Recipes.Services
 {
-    Task PopulateEnvironmentAsync(IDictionary<string, object> environment);
-    int Order { get; }
+    public interface IRecipeEnvironmentProvider
+    {
+        Task PopulateEnvironmentAsync(IDictionary<string, object> environment);
+        int Order { get; }
+    }
 }

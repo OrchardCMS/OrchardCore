@@ -2,21 +2,22 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Tenants.Deployment;
-
-public sealed class AllFeatureProfilesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllFeatureProfilesDeploymentStep>
+namespace OrchardCore.Tenants.Deployment
 {
-    public override Task<IDisplayResult> DisplayAsync(AllFeatureProfilesDeploymentStep step, BuildDisplayContext context)
+    public class AllFeatureProfilesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllFeatureProfilesDeploymentStep>
     {
-        return
-            CombineAsync(
-                View("AllFeatureProfilesDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-                View("AllFeatureProfilesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
+        public override IDisplayResult Display(AllFeatureProfilesDeploymentStep step)
+        {
+            return
+                Combine(
+                    View("AllFeatureProfilesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                    View("AllFeatureProfilesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+                );
+        }
 
-    public override IDisplayResult Edit(AllFeatureProfilesDeploymentStep step, BuildEditorContext context)
-    {
-        return View("AllFeatureProfilesDeploymentStep_Edit", step).Location("Content");
+        public override IDisplayResult Edit(AllFeatureProfilesDeploymentStep step)
+        {
+            return View("AllFeatureProfilesDeploymentStep_Edit", step).Location("Content");
+        }
     }
 }

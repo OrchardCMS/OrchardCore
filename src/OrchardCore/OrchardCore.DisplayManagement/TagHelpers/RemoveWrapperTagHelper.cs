@@ -1,18 +1,21 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace OrchardCore.DisplayManagement.TagHelpers;
-
-[HtmlTargetElement("remove-wrapper", ParentTag = ShapeMetadataTagHelper.TagName, Attributes = "name", TagStructure = TagStructure.WithoutEndTag)]
-public class RemoveWrapperTagHelper : TagHelper
+namespace OrchardCore.DisplayManagement.TagHelpers
 {
-    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    [HtmlTargetElement("remove-wrapper", ParentTag = ShapeMetadataTagHelper.TagName, Attributes = "name", TagStructure = TagStructure.WithoutEndTag)]
+    public class RemoveWrapperTagHelper : TagHelper
     {
-        var shape = (IShape)context.Items[typeof(IShape)];
+        public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        {
+            var shape = (IShape)context.Items[typeof(IShape)];
 
-        shape?.Metadata.Wrappers.Remove(Convert.ToString(output.Attributes["name"].Value));
+            shape?.Metadata.Wrappers.Remove(Convert.ToString(output.Attributes["name"].Value));
 
-        output.SuppressOutput();
+            output.SuppressOutput();
 
-        return Task.CompletedTask;
+            return Task.CompletedTask;
+        }
     }
 }

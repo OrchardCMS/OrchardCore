@@ -1,61 +1,64 @@
-namespace OrchardCore.XmlRpc.Models;
+using System;
 
-public class XRpcData
+namespace OrchardCore.XmlRpc.Models
 {
-    private object _value;
-
-    public object Value
+    public class XRpcData
     {
-        get { return _value; }
-        set { SetValue(value); }
+        private object _value;
+
+        public object Value
+        {
+            get { return _value; }
+            set { SetValue(value); }
+        }
+
+        protected virtual void SetValue(object value)
+        {
+            _value = value;
+        }
+
+        public virtual Type Type { get { return typeof(object); } }
+
+        public static XRpcData<T> For<T>(T t)
+        {
+            return new XRpcData<T> { Value = t };
+        }
     }
 
-    protected virtual void SetValue(object value)
+    public class XRpcData<T> : XRpcData
     {
-        _value = value;
+        private T _value;
+
+        public new T Value
+        {
+            get { return _value; }
+            set { SetValue(value); }
+        }
+
+        private void SetValue(T value)
+        {
+            _value = value;
+            base.SetValue(value);
+        }
+
+        protected override void SetValue(object value)
+        {
+            _value = (T)Convert.ChangeType(value, typeof(T));
+            base.SetValue(value);
+        }
+
+        public override Type Type { get { return typeof(T); } }
     }
 
-    public virtual Type Type { get { return typeof(object); } }
-
-    public static XRpcData<T> For<T>(T t)
+    public class XRpcFault
     {
-        return new XRpcData<T> { Value = t };
+        public XRpcFault(int code, string message)
+        {
+            Code = code;
+            Message = message;
+        }
+
+        public string Message { get; set; }
+        public int Code { get; set; }
     }
-}
-
-public class XRpcData<T> : XRpcData
-{
-    private T _value;
-
-    public new T Value
-    {
-        get { return _value; }
-        set { SetValue(value); }
-    }
-
-    private void SetValue(T value)
-    {
-        _value = value;
-        base.SetValue(value);
-    }
-
-    protected override void SetValue(object value)
-    {
-        _value = (T)Convert.ChangeType(value, typeof(T));
-        base.SetValue(value);
-    }
-
-    public override Type Type { get { return typeof(T); } }
-}
-
-public class XRpcFault
-{
-    public XRpcFault(int code, string message)
-    {
-        Code = code;
-        Message = message;
-    }
-
-    public string Message { get; set; }
-    public int Code { get; set; }
 }

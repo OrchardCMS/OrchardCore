@@ -1,7 +1,8 @@
-namespace OrchardCore.Rules.Models;
-
-public class UrlCondition : Condition
+namespace OrchardCore.Rules.Models
 {
-    public string Value { get; set; }
-    public ConditionOperator Operation { get; set; }
+    public class UrlCondition : Condition
+    {
+        public string Value { get; set; }
+        public ConditionOperator Operation { get; set; }
+    }
 }

@@ -1,39 +1,43 @@
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.ViewModels;
 
-namespace OrchardCore.Rules.Drivers;
-
-public sealed class AnyConditionDisplayDriver : DisplayDriver<Condition, AnyConditionGroup>
+namespace OrchardCore.Rules.Drivers
 {
-    public override Task<IDisplayResult> DisplayAsync(AnyConditionGroup condition, BuildDisplayContext context)
+    public class AnyConditionDisplayDriver : DisplayDriver<Condition, AnyConditionGroup>
     {
-        return
-            CombineAsync(
-                View("AnyCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-                View("AnyCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content"),
-                Initialize<ConditionGroupViewModel>("ConditionGroup_Fields_Summary", m =>
-                {
-                    m.Entries = condition.Conditions.Select(x => new ConditionEntry { Condition = x }).ToArray();
-                    m.Condition = condition;
-                }).Location(OrchardCoreConstants.DisplayType.Summary, "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(AnyConditionGroup condition, BuildEditorContext context)
-    {
-        return Initialize<AnyConditionViewModel>("AnyCondition_Fields_Edit", m =>
+        public override IDisplayResult Display(AnyConditionGroup condition)
         {
-            m.DisplayText = condition.DisplayText;
-            m.Condition = condition;
-        }).Location("Content");
-    }
+            return
+                Combine(
+                    View("AnyCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                    View("AnyCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content"),
+                    Initialize<ConditionGroupViewModel>("ConditionGroup_Fields_Summary", m =>
+                    {
+                        m.Entries = condition.Conditions.Select(x => new ConditionEntry { Condition = x }).ToArray();
+                        m.Condition = condition;
+                    }).Location("Summary", "Content")
+                );
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(AnyConditionGroup condition, UpdateEditorContext context)
-    {
-        await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.DisplayText);
+        public override IDisplayResult Edit(AnyConditionGroup condition)
+        {
+            return Initialize<AnyConditionViewModel>("AnyCondition_Fields_Edit", m =>
+            {
+                m.DisplayText = condition.DisplayText;
+                m.Condition = condition;
+            }).Location("Content");
+        }
 
-        return Edit(condition, context);
+        public override async Task<IDisplayResult> UpdateAsync(AnyConditionGroup condition, IUpdateModel updater)
+        {
+            await updater.TryUpdateModelAsync(condition, Prefix, x => x.DisplayText);
+
+            return Edit(condition);
+        }
     }
 }

@@ -1,23 +1,25 @@
+using System.Collections.Generic;
 using GraphQL.Types;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.Taxonomies.Models;
 
-namespace OrchardCore.Taxonomies.GraphQL;
-
-public class TaxonomyPartQueryObjectType : ObjectGraphType<TaxonomyPart>
+namespace OrchardCore.Taxonomies.GraphQL
 {
-    public TaxonomyPartQueryObjectType(IStringLocalizer<TaxonomyPartQueryObjectType> S)
+    public class TaxonomyPartQueryObjectType : ObjectGraphType<TaxonomyPart>
     {
-        Name = "TaxonomyPart";
+        public TaxonomyPartQueryObjectType()
+        {
+            Name = "TaxonomyPart";
 
-        Field(x => x.TermContentType);
+            Field(x => x.TermContentType);
 
-        Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>("contentItems")
-            .Description(S["the content items"])
-            .PagingArguments()
-            .Resolve(x => x.Page(x.Source.Terms));
+            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
+                .Name("contentItems")
+                .Description("the content items")
+                .PagingArguments()
+                .Resolve(x => x.Page(x.Source.Terms));
+        }
     }
 }

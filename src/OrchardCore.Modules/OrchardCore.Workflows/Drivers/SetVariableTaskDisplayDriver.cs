@@ -3,19 +3,20 @@ using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
 
-namespace OrchardCore.Workflows.Drivers;
-
-public sealed class SetVariableTaskDisplayDriver : ActivityDisplayDriver<SetPropertyTask, SetPropertyTaskViewModel>
+namespace OrchardCore.Workflows.Drivers
 {
-    protected override void EditActivity(SetPropertyTask source, SetPropertyTaskViewModel model)
+    public class SetVariableTaskDisplayDriver : ActivityDisplayDriver<SetPropertyTask, SetPropertyTaskViewModel>
     {
-        model.PropertyName = source.PropertyName;
-        model.Value = source.Value.Expression;
-    }
+        protected override void EditActivity(SetPropertyTask source, SetPropertyTaskViewModel model)
+        {
+            model.PropertyName = source.PropertyName;
+            model.Value = source.Value.Expression;
+        }
 
-    protected override void UpdateActivity(SetPropertyTaskViewModel model, SetPropertyTask activity)
-    {
-        activity.PropertyName = model.PropertyName.Trim();
-        activity.Value = new WorkflowExpression<object>(model.Value);
+        protected override void UpdateActivity(SetPropertyTaskViewModel model, SetPropertyTask activity)
+        {
+            activity.PropertyName = model.PropertyName.Trim();
+            activity.Value = new WorkflowExpression<object>(model.Value);
+        }
     }
 }

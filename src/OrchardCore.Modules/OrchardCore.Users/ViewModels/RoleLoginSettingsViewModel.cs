@@ -1,3 +1,6 @@
+using System;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+
 namespace OrchardCore.Users.ViewModels;
 
 public class RoleLoginSettingsViewModel

@@ -2,14 +2,15 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Services;
 
-namespace OrchardCore.Deployment.Core;
-
-public static class ServiceCollectionExtensions
+namespace OrchardCore.Deployment.Core
 {
-    public static IServiceCollection AddDeploymentServices(this IServiceCollection services)
+    public static class ServiceCollectionExtensions
     {
-        services.AddScoped<IDeploymentManager, DeploymentManager>();
+        public static IServiceCollection AddDeploymentServices(this IServiceCollection services)
+        {
+            services.AddScoped<IDeploymentManager, DeploymentManager>();
 
-        return services;
+            return services;
+        }
     }
 }

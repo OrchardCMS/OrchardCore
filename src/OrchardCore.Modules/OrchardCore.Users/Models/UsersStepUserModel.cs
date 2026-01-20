@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace OrchardCore.Users.Models;
 
 public class UsersStepUserModel
@@ -23,7 +25,6 @@ public class UsersStepUserModel
     public string SecurityStamp { get; set; }
 
     public string ResetToken { get; set; }
-
     public string PhoneNumber { get; set; }
 
     public bool PhoneNumberConfirmed { get; set; }

@@ -1,25 +1,28 @@
-namespace OrchardCore.Data.Migration.Records;
+using System.Collections.Generic;
 
-/// <summary>
-/// Represents a record in the database migration.
-/// </summary>
-public class DataMigrationRecord
+namespace OrchardCore.Data.Migration.Records
 {
     /// <summary>
-    /// Creates a new instance of the <see cref="DataMigrationRecord"/>.
+    /// Represents a record in the database migration.
     /// </summary>
-    public DataMigrationRecord()
+    public class DataMigrationRecord
     {
-        DataMigrations = [];
+        /// <summary>
+        /// Creates a new instance of the <see cref="DataMigrationRecord"/>.
+        /// </summary>
+        public DataMigrationRecord()
+        {
+            DataMigrations = [];
+        }
+
+        /// <summary>
+        /// Gete or sets the record Id.
+        /// </summary>
+        public long Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database migrations.
+        /// </summary>
+        public List<DataMigration> DataMigrations { get; set; }
     }
-
-    /// <summary>
-    /// Gets or sets the record Id.
-    /// </summary>
-    public long Id { get; set; }
-
-    /// <summary>
-    /// Gets or sets the database migrations.
-    /// </summary>
-    public List<DataMigration> DataMigrations { get; set; }
 }

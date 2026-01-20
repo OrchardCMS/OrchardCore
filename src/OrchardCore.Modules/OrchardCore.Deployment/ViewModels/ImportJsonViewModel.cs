@@ -1,6 +1,7 @@
-namespace OrchardCore.Deployment.ViewModels;
-
-public class ImportJsonViewModel
+namespace OrchardCore.Deployment.ViewModels
 {
-    public string Json { get; set; }
+    public class ImportJsonViewModel
+    {
+        public string Json { get; set; }
+    }
 }

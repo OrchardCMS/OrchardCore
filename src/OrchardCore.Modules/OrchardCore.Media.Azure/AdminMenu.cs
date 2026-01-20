@@ -1,37 +1,26 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Media.Azure;
-
-public sealed class AdminMenu : AdminNavigationProvider
+namespace OrchardCore.Media.Azure
 {
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public class AdminMenu : INavigationProvider
     {
-        S = stringLocalizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        if (NavigationHelper.UseLegacyFormat())
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                        .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
-                            .Action("Options", "Admin", "OrchardCore.Media.Azure")
-                            .Permission(Permissions.ViewAzureMediaOptions)
-                            .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
+            S = localizer;
         }
 
-        builder
-            .Add(S["Settings"], settings => settings
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
+
+            builder.Add(S["Configuration"], configuration => configuration
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                     .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
                         .Action("Options", "Admin", "OrchardCore.Media.Azure")
@@ -41,6 +30,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 )
             );
 
-        return ValueTask.CompletedTask;
+            return Task.CompletedTask;
+        }
     }
 }

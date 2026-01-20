@@ -1,52 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 using Azure;
 using Azure.Search.Documents.Indexes.Models;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Entities;
-using OrchardCore.Indexing;
-using OrchardCore.Indexing.Models;
+using Microsoft.Extensions.Options;
+using OrchardCore.Contents.Indexing;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
 using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public sealed class AzureAISearchIndexManager : IIndexManager
+public class AzureAISearchIndexManager(
+    AzureAIClientFactory clientFactory,
+    ILogger<AzureAISearchIndexManager> logger,
+    IOptions<AzureAISearchDefaultOptions> azureAIOptions,
+    IEnumerable<IAzureAISearchIndexEvents> indexEvents,
+    IMemoryCache memoryCache,
+    ShellSettings shellSettings)
 {
+    public const string OwnerKey = "Content__ContentItem__Owner";
+    public const string AuthorKey = "Content__ContentItem__Author";
     public const string FullTextKey = "Content__ContentItem__FullText";
     public const string DisplayTextAnalyzedKey = "Content__ContentItem__DisplayText__Analyzed";
 
-    private readonly AzureAIClientFactory _clientFactory;
-    private readonly ILogger _logger;
-    private readonly IEnumerable<IIndexEvents> _indexEvents;
+    private const string _prefixCacheKey = "AzureAISearchIndexesPrefix";
 
-    public AzureAISearchIndexManager(
-        AzureAIClientFactory clientFactory,
-        ILogger<AzureAISearchIndexManager> logger,
-        IEnumerable<IIndexEvents> indexEvents)
-    {
-        _clientFactory = clientFactory;
-        _logger = logger;
-        _indexEvents = indexEvents;
-    }
+    private readonly AzureAIClientFactory _clientFactory = clientFactory;
+    private readonly ILogger _logger = logger;
+    private readonly IEnumerable<IAzureAISearchIndexEvents> _indexEvents = indexEvents;
+    private readonly IMemoryCache _memoryCache = memoryCache;
+    private readonly ShellSettings _shellSettings = shellSettings;
+    private readonly AzureAISearchDefaultOptions _azureAIOptions = azureAIOptions.Value;
 
-    public async Task<bool> CreateAsync(IndexProfile indexProfile)
+    public async Task<bool> CreateAsync(AzureAISearchIndexSettings settings)
     {
-        if (await ExistsAsync(indexProfile.IndexFullName))
+        if (await ExistsAsync(settings.IndexName))
         {
-            return false;
+            return true;
         }
 
         try
         {
-            var context = new IndexCreateContext(indexProfile);
+            var context = new AzureAISearchIndexCreateContext(settings, GetFullIndexName(settings.IndexName));
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger);
 
-            var searchIndex = GetSearchIndex(indexProfile);
+            var searchIndex = GetSearchIndex(context.IndexFullName, settings);
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            await client.CreateIndexAsync(searchIndex);
+            var response = client.CreateIndexAsync(searchIndex);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger);
 
@@ -54,24 +62,26 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to create index in Azure AI Search. Message: {Message}", ex.Message);
+            _logger.LogError(ex, "Unable to create index in Azure AI Search.");
         }
 
         return false;
     }
 
-    public async Task<bool> ExistsAsync(string indexFullName)
-        => await GetAsync(indexFullName) != null;
+    public async Task<bool> ExistsAsync(string indexName)
+        => await GetAsync(indexName) != null;
 
-    public async Task<SearchIndex> GetAsync(string indexFullName)
+    public async Task<SearchIndex> GetAsync(string indexName)
     {
         try
         {
+            var indexFullName = GetFullIndexName(indexName);
+
             var client = _clientFactory.CreateSearchIndexClient();
 
             var response = await client.GetIndexAsync(indexFullName);
 
-            return response.Value;
+            return response?.Value;
         }
         catch (RequestFailedException e)
         {
@@ -88,24 +98,22 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         return null;
     }
 
-    public async Task<bool> DeleteAsync(IndexProfile indexProfile)
+    public async Task<bool> DeleteAsync(string indexName)
     {
-        ArgumentNullException.ThrowIfNull(indexProfile);
-
-        if (!await ExistsAsync(indexProfile.IndexFullName))
+        if (!await ExistsAsync(indexName))
         {
             return false;
         }
 
         try
         {
-            var context = new IndexRemoveContext(indexProfile.IndexFullName);
+            var context = new AzureAISearchIndexRemoveContext(indexName, GetFullIndexName(indexName));
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            await client.DeleteIndexAsync(context.IndexFullName);
+            var response = await client.DeleteIndexAsync(context.IndexFullName);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger);
 
@@ -119,146 +127,133 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         return false;
     }
 
-    public async Task<bool> RebuildAsync(IndexProfile indexProfile)
+    public async Task RebuildAsync(AzureAISearchIndexSettings settings)
     {
         try
         {
-            var context = new IndexRebuildContext(indexProfile);
+            var context = new AzureAISearchIndexRebuildContext(settings, GetFullIndexName(settings.IndexName));
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            if (await ExistsAsync(indexProfile.IndexFullName))
+            if (await ExistsAsync(settings.IndexName))
             {
-                await client.DeleteIndexAsync(indexProfile.IndexFullName);
+                await client.DeleteIndexAsync(context.IndexFullName);
             }
 
-            var searchIndex = GetSearchIndex(indexProfile);
+            var searchIndex = GetSearchIndex(context.IndexFullName, settings);
 
-            await client.CreateIndexAsync(searchIndex);
+            var response = await client.CreateIndexAsync(searchIndex);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
-
-            return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unable to update Azure AI Search index.");
         }
-
-        return false;
     }
 
-    private static SearchIndex GetSearchIndex(IndexProfile indexProfile)
+    public string GetFullIndexName(string indexName)
     {
-        var searchFields = new List<SearchField>();
+        ArgumentException.ThrowIfNullOrWhiteSpace(indexName);
 
-        var suggesterFieldNames = new List<string>();
-        var metadata = indexProfile.As<AzureAISearchIndexMetadata>();
+        return GetIndexPrefix() + '-' + indexName;
+    }
 
-        foreach (var indexMap in metadata.IndexMappings)
+    private string GetIndexPrefix()
+    {
+        if (!_memoryCache.TryGetValue<string>(_prefixCacheKey, out var value))
         {
-            if (searchFields.Exists(x => x.Name.EqualsOrdinalIgnoreCase(indexMap.AzureFieldKey)))
+            var builder = new StringBuilder();
+
+            if (!string.IsNullOrWhiteSpace(_azureAIOptions.IndexesPrefix))
             {
-                continue;
+                builder.Append(_azureAIOptions.IndexesPrefix.ToLowerInvariant());
+                builder.Append('-');
             }
 
-            if (indexMap.IsSuggester && !suggesterFieldNames.Contains(indexMap.AzureFieldKey))
+            builder.Append(_shellSettings.Name.ToLowerInvariant());
+
+            if (AzureAISearchIndexNamingHelper.TryGetSafePrefix(builder.ToString(), out var safePrefix))
             {
-                suggesterFieldNames.Add(indexMap.AzureFieldKey);
+                value = safePrefix;
+                _memoryCache.Set(_prefixCacheKey, safePrefix);
             }
-
-            var field = GetSearchFieldTemplate(indexMap, metadata.AnalyzerName);
-
-            if (field is null)
-            {
-                continue;
-            }
-
-            searchFields.Add(field);
         }
 
-        var searchIndex = new SearchIndex(indexProfile.IndexFullName)
+        return value ?? string.Empty;
+    }
+
+    private static SearchIndex GetSearchIndex(string fullIndexName, AzureAISearchIndexSettings settings)
+    {
+        var searchFields = new List<SearchField>()
+        {
+            new SimpleField(IndexingConstants.ContentItemIdKey, SearchFieldDataType.String)
+            {
+                IsKey = true,
+                IsFilterable = true,
+                IsSortable = true,
+            },
+            new SimpleField(IndexingConstants.ContentItemVersionIdKey, SearchFieldDataType.String)
+            {
+                IsFilterable = true,
+                IsSortable = true,
+            },
+            new SimpleField(OwnerKey, SearchFieldDataType.String)
+            {
+                IsFilterable = true,
+                IsSortable = true,
+            },
+            new SearchableField(DisplayTextAnalyzedKey)
+            {
+                AnalyzerName = settings.AnalyzerName,
+            },
+            new SearchableField(FullTextKey)
+            {
+                AnalyzerName = settings.AnalyzerName,
+            },
+        };
+
+        foreach (var indexMap in settings.IndexMappings)
+        {
+            if (!AzureAISearchIndexNamingHelper.TryGetSafeFieldName(indexMap.AzureFieldKey, out var safeFieldName))
+            {
+                continue;
+            }
+
+            if (searchFields.Exists(x => x.Name.EqualsOrdinalIgnoreCase(safeFieldName)))
+            {
+                continue;
+            }
+
+            if (indexMap.Options.HasFlag(Indexing.DocumentIndexOptions.Keyword))
+            {
+                searchFields.Add(new SimpleField(safeFieldName, GetFieldType(indexMap.Type))
+                {
+                    IsFilterable = true,
+                    IsSortable = true,
+                });
+
+                continue;
+            }
+
+            searchFields.Add(new SearchableField(safeFieldName, true)
+            {
+                AnalyzerName = settings.AnalyzerName,
+            });
+        }
+
+        var searchIndex = new SearchIndex(fullIndexName)
         {
             Fields = searchFields,
+            Suggesters =
+            {
+                new SearchSuggester("sg", FullTextKey),
+            },
         };
-
-        if (suggesterFieldNames.Count > 0)
-        {
-            searchIndex.Suggesters.Add(new SearchSuggester("sg", suggesterFieldNames));
-        }
 
         return searchIndex;
-    }
-
-    private static SearchFieldTemplate GetSearchFieldTemplate(AzureAISearchIndexMap indexMap, string analyzerName)
-    {
-        if (indexMap.Type == Types.Vector)
-        {
-            if (indexMap.VectorInfo is null || indexMap.VectorInfo.Dimensions <= 0)
-            {
-                return null;
-            }
-
-            return new VectorSearchField(indexMap.AzureFieldKey, indexMap.VectorInfo.Dimensions, indexMap.VectorInfo.VectorSearchConfiguration);
-        }
-
-        if (indexMap.IsSearchable)
-        {
-            return new SearchableField(indexMap.AzureFieldKey, collection: indexMap.IsCollection)
-            {
-                AnalyzerName = !string.IsNullOrEmpty(analyzerName)
-                ? analyzerName
-                : AzureAISearchDefaultOptions.DefaultAnalyzer,
-                IsKey = indexMap.IsKey,
-                IsFilterable = indexMap.IsFilterable,
-                IsSortable = indexMap.IsSortable,
-                IsHidden = indexMap.IsHidden,
-                IsFacetable = indexMap.IsFacetable,
-            };
-        }
-
-        var fieldType = GetFieldType(indexMap.Type);
-
-        if (fieldType == SearchFieldDataType.Complex)
-        {
-            if (indexMap.SubFields is null || indexMap.SubFields.Count == 0)
-            {
-                return null;
-            }
-
-            var field = new ComplexField(indexMap.AzureFieldKey, collection: indexMap.IsCollection);
-
-            foreach (var subField in indexMap.SubFields)
-            {
-                var subFieldTemplate = GetSearchFieldTemplate(subField, analyzerName);
-
-                if (subFieldTemplate is null)
-                {
-                    continue;
-                }
-
-                field.Fields.Add(subFieldTemplate);
-            }
-
-            if (field.Fields.Count == 0)
-            {
-                // Complex fields must have at least one sub-field defined.
-                return null;
-            }
-
-            return field;
-        }
-
-        return new SimpleField(indexMap.AzureFieldKey, fieldType)
-        {
-            IsKey = indexMap.IsKey,
-            IsFilterable = indexMap.IsFilterable,
-            IsSortable = indexMap.IsSortable,
-            IsHidden = indexMap.IsHidden,
-            IsFacetable = indexMap.IsFacetable,
-        };
     }
 
     private static SearchFieldDataType GetFieldType(Types type)
@@ -269,9 +264,6 @@ public sealed class AzureAISearchIndexManager : IIndexManager
             Types.Number => SearchFieldDataType.Double,
             Types.Integer => SearchFieldDataType.Int64,
             Types.GeoPoint => SearchFieldDataType.GeographyPoint,
-            Types.Text => SearchFieldDataType.String,
-            Types.Complex => SearchFieldDataType.Complex,
-            Types.Vector => SearchFieldDataType.Single,
-            _ => throw new ArgumentOutOfRangeException(nameof(type), $"The type '{type}' is not support by Azure AI Search")
+            _ => SearchFieldDataType.String,
         };
 }

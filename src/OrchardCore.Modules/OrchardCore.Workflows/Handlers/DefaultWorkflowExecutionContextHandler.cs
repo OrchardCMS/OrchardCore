@@ -1,14 +1,16 @@
+using System.Threading.Tasks;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Scripting;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.WorkflowContextProviders;
-
-public class DefaultWorkflowExecutionContextHandler : WorkflowExecutionContextHandlerBase
+namespace OrchardCore.Workflows.WorkflowContextProviders
 {
-    public override Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context)
+    public class DefaultWorkflowExecutionContextHandler : WorkflowExecutionContextHandlerBase
     {
-        context.ScopedMethodProviders.Add(new WorkflowMethodsProvider(context.WorkflowContext));
-        return Task.CompletedTask;
+        public override Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context)
+        {
+            context.ScopedMethodProviders.Add(new WorkflowMethodsProvider(context.WorkflowContext));
+            return Task.CompletedTask;
+        }
     }
 }

@@ -1,19 +1,23 @@
-namespace OrchardCore.Sitemaps.Handlers;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public class SitemapTypeUpdateHandler : ISitemapTypeUpdateHandler
+namespace OrchardCore.Sitemaps.Handlers
 {
-    private readonly IEnumerable<ISitemapSourceUpdateHandler> _sitemapSourceUpdateHandlers;
-
-    public SitemapTypeUpdateHandler(IEnumerable<ISitemapSourceUpdateHandler> sitemapSourceUpdateHandlers)
+    public class SitemapTypeUpdateHandler : ISitemapTypeUpdateHandler
     {
-        _sitemapSourceUpdateHandlers = sitemapSourceUpdateHandlers;
-    }
+        private readonly IEnumerable<ISitemapSourceUpdateHandler> _sitemapSourceUpdateHandlers;
 
-    public async Task UpdateSitemapAsync(SitemapUpdateContext context)
-    {
-        foreach (var sitemapSourceUpdateHandler in _sitemapSourceUpdateHandlers)
+        public SitemapTypeUpdateHandler(IEnumerable<ISitemapSourceUpdateHandler> sitemapSourceUpdateHandlers)
         {
-            await sitemapSourceUpdateHandler.UpdateSitemapAsync(context);
+            _sitemapSourceUpdateHandlers = sitemapSourceUpdateHandlers;
+        }
+
+        public async Task UpdateSitemapAsync(SitemapUpdateContext context)
+        {
+            foreach (var sitemapSourceUpdateHandler in _sitemapSourceUpdateHandlers)
+            {
+                await sitemapSourceUpdateHandler.UpdateSitemapAsync(context);
+            }
         }
     }
 }

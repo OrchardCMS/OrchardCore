@@ -1,16 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting.Files;
 
-namespace OrchardCore.Scripting;
-
-public static class ServiceCollectionExtensions
+namespace OrchardCore.Scripting
 {
-    public static IServiceCollection AddScripting(this IServiceCollection services)
+    public static class ServiceCollectionExtensions
     {
-        services.AddSingleton<IScriptingManager, DefaultScriptingManager>();
-        services.AddSingleton<IGlobalMethodProvider, CommonGeneratorMethods>();
+        public static IServiceCollection AddScripting(this IServiceCollection services)
+        {
+            services.AddSingleton<IScriptingManager, DefaultScriptingManager>();
+            services.AddSingleton<IGlobalMethodProvider, CommonGeneratorMethods>();
 
-        services.AddSingleton<IScriptingEngine, FilesScriptEngine>();
-        return services;
+            services.AddSingleton<IScriptingEngine, FilesScriptEngine>();
+            return services;
+        }
     }
 }

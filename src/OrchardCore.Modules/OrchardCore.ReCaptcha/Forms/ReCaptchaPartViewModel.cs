@@ -1,6 +1,7 @@
-namespace OrchardCore.ReCaptcha.Forms;
-
-public class ReCaptchaPartViewModel
+namespace OrchardCore.ReCaptcha.Forms
 {
-    public bool SettingsAreConfigured { get; set; }
+    public class ReCaptchaPartViewModel
+    {
+        public bool SettingsAreConfigured { get; set; }
+    }
 }

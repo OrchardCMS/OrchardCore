@@ -12,22 +12,7 @@ using OrchardCore.Users;
     Id = UserConstants.Features.Users,
     Name = "Users",
     Description = "The users module enables authentication UI and user management.",
-    Dependencies =
-    [
-        "OrchardCore.Roles.Core",
-    ],
-    Category = "Security"
-)]
-
-[assembly: Feature(
-    Id = UserConstants.Features.ExternalAuthentication,
-    Name = "External Authentication",
-    Description = "Provides a way to allow authentication using an external identity provider.",
-    EnabledByDependencyOnly = true,
-    Dependencies =
-    [
-        UserConstants.Features.Users,
-    ],
+    Dependencies = ["OrchardCore.Roles.Core"],
     Category = "Security"
 )]
 
@@ -35,15 +20,12 @@ using OrchardCore.Users;
     Id = "OrchardCore.Users.ChangeEmail",
     Name = "Users Change Email",
     Description = "The Change email feature allows users to change their email address.",
-    Dependencies =
-    [
-        UserConstants.Features.Users,
-    ],
+    Dependencies = [UserConstants.Features.Users],
     Category = "Security"
 )]
 
 [assembly: Feature(
-    Id = UserConstants.Features.UserRegistration,
+    Id = "OrchardCore.Users.Registration",
     Name = "Users Registration",
     Description = "The registration feature allows external users to sign up to the site and ask to confirm their email.",
     Dependencies =
@@ -55,7 +37,7 @@ using OrchardCore.Users;
 )]
 
 [assembly: Feature(
-    Id = UserConstants.Features.ResetPassword,
+    Id = "OrchardCore.Users.ResetPassword",
     Name = "Users Reset Password",
     Description = "The reset password feature allows users to reset their password.",
     Dependencies =
@@ -72,19 +54,6 @@ using OrchardCore.Users;
     Description = "Provides a way to set the time zone per user.",
     Dependencies = [UserConstants.Features.Users],
     Category = "Settings"
-)]
-
-[assembly: Feature(
-    Id = "OrchardCore.Users.Localization",
-    Name = "User Localization",
-    Description = "Provides a way to set the culture per user.",
-    Dependencies =
-    [
-        UserConstants.Features.Users,
-        "OrchardCore.Localization"
-    ],
-    Category = "Settings",
-    Priority = "-1" // Added to avoid changing the order in the localization module.
 )]
 
 [assembly: Feature(
@@ -122,7 +91,7 @@ using OrchardCore.Users;
 [assembly: Feature(
     Id = UserConstants.Features.TwoFactorAuthentication,
     Name = "Two-Factor Authentication Services",
-    Description = "Provides Two-factor core services.",
+    Description = "Provices Two-factor core services.",
     Dependencies = [UserConstants.Features.Users],
     EnabledByDependencyOnly = true,
     Category = "Security"

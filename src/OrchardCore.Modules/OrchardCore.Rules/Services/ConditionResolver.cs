@@ -1,28 +1,30 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Rules.Services;
-
-public class ConditionResolver : IConditionResolver
+namespace OrchardCore.Rules.Services
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ConditionOptions _options;
-
-    public ConditionResolver(IServiceProvider serviceProvider, IOptions<ConditionOptions> options)
+    public class ConditionResolver : IConditionResolver
     {
-        _serviceProvider = serviceProvider;
-        _options = options.Value;
-    }
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ConditionOptions _options;
 
-    public IConditionEvaluator GetConditionEvaluator(Condition condition)
-    {
-        if (_options.Evaluators.TryGetValue(condition.GetType(), out var conditionEvaluatorType))
+        public ConditionResolver(IServiceProvider serviceProvider, IOptions<ConditionOptions> options)
         {
-            return _serviceProvider.GetRequiredService(conditionEvaluatorType) as IConditionEvaluator;
+            _serviceProvider = serviceProvider;
+            _options = options.Value;
         }
 
-        // throw new InvalidOperationException($"Condition evaluator for '{condition.GetType().Name}; not registered");
+        public IConditionEvaluator GetConditionEvaluator(Condition condition)
+        {
+            if (_options.Evaluators.TryGetValue(condition.GetType(), out var conditionEvaluatorType))
+            {
+                return _serviceProvider.GetRequiredService(conditionEvaluatorType) as IConditionEvaluator;
+            }
 
-        return null;
+            // throw new InvalidOperationException($"Condition evaluator for '{condition.GetType().Name}; not registered");
+
+            return null;
+        }
     }
 }

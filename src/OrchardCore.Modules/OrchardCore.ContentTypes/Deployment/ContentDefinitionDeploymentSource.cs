@@ -1,38 +1,45 @@
+using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.ContentTypes.Deployment;
-
-public sealed class ContentDefinitionDeploymentSource
-    : DeploymentSourceBase<ContentDefinitionDeploymentStep>
+namespace OrchardCore.ContentTypes.Deployment
 {
-    private readonly IContentDefinitionStore _contentDefinitionStore;
-
-    public ContentDefinitionDeploymentSource(IContentDefinitionStore contentDefinitionStore)
+    public class ContentDefinitionDeploymentSource : IDeploymentSource
     {
-        _contentDefinitionStore = contentDefinitionStore;
-    }
+        private readonly IContentDefinitionStore _contentDefinitionStore;
 
-    protected override async Task ProcessAsync(ContentDefinitionDeploymentStep step, DeploymentPlanResult result)
-    {
-        var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
-
-        var contentTypes = step.IncludeAll
-            ? contentTypeDefinitionRecord.ContentTypeDefinitionRecords
-            : contentTypeDefinitionRecord.ContentTypeDefinitionRecords
-                .Where(x => step.ContentTypes.Contains(x.Name));
-
-        var contentParts = step.IncludeAll
-            ? contentTypeDefinitionRecord.ContentPartDefinitionRecords
-            : contentTypeDefinitionRecord.ContentPartDefinitionRecords
-                    .Where(x => step.ContentParts.Contains(x.Name));
-
-        result.Steps.Add(new JsonObject
+        public ContentDefinitionDeploymentSource(IContentDefinitionStore contentDefinitionStore)
         {
-            ["name"] = "ContentDefinition",
-            ["ContentTypes"] = JArray.FromObject(contentTypes),
-            ["ContentParts"] = JArray.FromObject(contentParts),
-        });
+            _contentDefinitionStore = contentDefinitionStore;
+        }
+
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        {
+            if (step is not ContentDefinitionDeploymentStep contentDefinitionStep)
+            {
+                return;
+            }
+
+            var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
+
+            var contentTypes = contentDefinitionStep.IncludeAll
+                ? contentTypeDefinitionRecord.ContentTypeDefinitionRecords
+                : contentTypeDefinitionRecord.ContentTypeDefinitionRecords
+                    .Where(x => contentDefinitionStep.ContentTypes.Contains(x.Name));
+
+            var contentParts = contentDefinitionStep.IncludeAll
+                ? contentTypeDefinitionRecord.ContentPartDefinitionRecords
+                : contentTypeDefinitionRecord.ContentPartDefinitionRecords
+                        .Where(x => contentDefinitionStep.ContentParts.Contains(x.Name));
+
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "ContentDefinition",
+                ["ContentTypes"] = JArray.FromObject(contentTypes),
+                ["ContentParts"] = JArray.FromObject(contentParts),
+            });
+        }
     }
 }

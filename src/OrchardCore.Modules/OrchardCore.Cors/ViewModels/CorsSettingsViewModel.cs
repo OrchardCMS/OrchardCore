@@ -1,8 +1,9 @@
-namespace OrchardCore.Cors.ViewModels;
-
-public class CorsSettingsViewModel
+namespace OrchardCore.Cors.ViewModels
 {
-    public CorsPolicyViewModel[] Policies { get; set; }
+    public class CorsSettingsViewModel
+    {
+        public CorsPolicyViewModel[] Policies { get; set; }
 
-    public string DefaultPolicyName { get; set; }
+        public string DefaultPolicyName { get; set; }
+    }
 }

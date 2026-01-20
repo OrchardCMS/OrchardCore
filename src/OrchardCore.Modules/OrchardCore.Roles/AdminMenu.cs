@@ -1,46 +1,36 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Roles;
-
-public sealed class AdminMenu : AdminNavigationProvider
+namespace OrchardCore.Roles
 {
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public class AdminMenu : INavigationProvider
     {
-        S = stringLocalizer;
-    }
+        protected readonly IStringLocalizer S;
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        if (NavigationHelper.UseLegacyFormat())
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
+            S = localizer;
+        }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
+
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
-                        .AddClass("roles")
-                        .Id("roles")
+                        .AddClass("roles").Id("roles")
                         .Action("Index", "Admin", "OrchardCore.Roles")
-                        .Permission(RolesPermissions.ManageRoles)
+                        .Permission(Permissions.ManageRoles)
                         .LocalNav()
                     )
                 );
 
-            return ValueTask.CompletedTask;
+            return Task.CompletedTask;
         }
-
-        builder
-            .Add(S["Access Control"], accessControl => accessControl
-                .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
-                    .AddClass("roles")
-                    .Id("roles")
-                    .Action("Index", "Admin", "OrchardCore.Roles")
-                    .Permission(RolesPermissions.ManageRoles)
-                    .LocalNav()
-                )
-            );
-
-        return ValueTask.CompletedTask;
     }
 }

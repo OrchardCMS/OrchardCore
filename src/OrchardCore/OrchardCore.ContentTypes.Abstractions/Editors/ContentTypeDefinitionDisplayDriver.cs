@@ -1,12 +1,13 @@
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 
-namespace OrchardCore.ContentTypes.Editors;
-
-public abstract class ContentTypeDefinitionDisplayDriver : DisplayDriver<ContentTypeDefinition, BuildDisplayContext, BuildEditorContext, UpdateTypeEditorContext>, IContentTypeDefinitionDisplayDriver
+namespace OrchardCore.ContentTypes.Editors
 {
-    public override bool CanHandleModel(ContentTypeDefinition model)
+    public abstract class ContentTypeDefinitionDisplayDriver : DisplayDriver<ContentTypeDefinition, BuildDisplayContext, BuildEditorContext, UpdateTypeEditorContext>, IContentTypeDefinitionDisplayDriver
     {
-        return true;
+        public override bool CanHandleModel(ContentTypeDefinition model)
+        {
+            return true;
+        }
     }
 }

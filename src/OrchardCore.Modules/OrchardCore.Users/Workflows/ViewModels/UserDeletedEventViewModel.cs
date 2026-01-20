@@ -1,15 +1,16 @@
 using OrchardCore.Users.Workflows.Activities;
 
-namespace OrchardCore.Users.Workflows.ViewModels;
-
-public class UserDeletedEventViewModel : UserEventViewModel<UserDeletedEvent>
+namespace OrchardCore.Users.Workflows.ViewModels
 {
-    public UserDeletedEventViewModel()
+    public class UserDeletedEventViewModel : UserEventViewModel<UserDeletedEvent>
     {
-    }
+        public UserDeletedEventViewModel()
+        {
+        }
 
-    public UserDeletedEventViewModel(UserDeletedEvent activity)
-    {
-        Activity = activity;
+        public UserDeletedEventViewModel(UserDeletedEvent activity)
+        {
+            Activity = activity;
+        }
     }
 }

@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Security.Services;
-
-public class ContentTypeOptionsHeaderPolicyProvider : HeaderPolicyProvider
+namespace OrchardCore.Security.Services
 {
-    public override void ApplyPolicy(HttpContext httpContext)
+    public class ContentTypeOptionsHeaderPolicyProvider : HeaderPolicyProvider
     {
-        httpContext.Response.Headers[SecurityHeaderNames.XContentTypeOptions] = Options.ContentTypeOptions;
+        public override void ApplyPolicy(HttpContext httpContext)
+        {
+            httpContext.Response.Headers[SecurityHeaderNames.XContentTypeOptions] = Options.ContentTypeOptions;
+        }
     }
 }

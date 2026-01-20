@@ -1,29 +1,37 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Facebook.Services;
 
-namespace OrchardCore.Facebook.Deployment;
-
-public sealed class FacebookLoginDeploymentSource
-    : DeploymentSourceBase<FacebookLoginDeploymentStep>
+namespace OrchardCore.Facebook.Deployment
 {
-    private readonly IFacebookService _facebookService;
-
-    public FacebookLoginDeploymentSource(IFacebookService facebookService)
+    public class FacebookLoginDeploymentSource : IDeploymentSource
     {
-        _facebookService = facebookService;
-    }
+        private readonly IFacebookService _facebookService;
 
-    protected override async Task ProcessAsync(FacebookLoginDeploymentStep step, DeploymentPlanResult result)
-    {
-        var settings = await _facebookService.GetSettingsAsync();
+        public FacebookLoginDeploymentSource(IFacebookService facebookService)
+        {
+            _facebookService = facebookService;
+        }
 
-        // The 'name' property should match the related recipe step name.
-        var jObject = new JsonObject { ["name"] = "FacebookCoreSettings" };
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        {
+            var facebookLoginStep = step as FacebookLoginDeploymentStep;
 
-        // Merge settings as the recipe step doesn't use a child property.
-        jObject.Merge(JObject.FromObject(settings));
+            if (facebookLoginStep == null)
+            {
+                return;
+            }
 
-        result.Steps.Add(jObject);
+            var settings = await _facebookService.GetSettingsAsync();
+
+            // The 'name' property should match the related recipe step name.
+            var jObject = new JsonObject { ["name"] = "FacebookCoreSettings" };
+
+            // Merge settings as the recipe step doesn't use a child property.
+            jObject.Merge(JObject.FromObject(settings));
+
+            result.Steps.Add(jObject);
+        }
     }
 }

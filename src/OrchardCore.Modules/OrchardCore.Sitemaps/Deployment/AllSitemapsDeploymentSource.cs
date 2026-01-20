@@ -1,35 +1,35 @@
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
-using OrchardCore.Json;
 using OrchardCore.Sitemaps.Services;
 
-namespace OrchardCore.Sitemaps.Deployment;
-
-public sealed class AllSitemapsDeploymentSource
-    : DeploymentSourceBase<AllSitemapsDeploymentStep>
+namespace OrchardCore.Sitemaps.Deployment
 {
-    private readonly ISitemapManager _sitemapManager;
-    private readonly DocumentJsonSerializerOptions _documentJsonSerializerOptions;
-
-    public AllSitemapsDeploymentSource(
-        ISitemapManager sitemapManager,
-        IOptions<DocumentJsonSerializerOptions> documentJsonSerializerOptions)
+    public class AllSitemapsDeploymentSource : IDeploymentSource
     {
-        _sitemapManager = sitemapManager;
-        _documentJsonSerializerOptions = documentJsonSerializerOptions.Value;
-    }
+        private readonly ISitemapManager _sitemapManager;
 
-    protected override async Task ProcessAsync(AllSitemapsDeploymentStep step, DeploymentPlanResult result)
-    {
-        var sitemaps = await _sitemapManager.GetSitemapsAsync();
-
-        var jArray = JArray.FromObject(sitemaps, _documentJsonSerializerOptions.SerializerOptions);
-
-        result.Steps.Add(new JsonObject
+        public AllSitemapsDeploymentSource(ISitemapManager sitemapManager)
         {
-            ["name"] = "Sitemaps",
-            ["data"] = jArray,
-        });
+            _sitemapManager = sitemapManager;
+        }
+
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        {
+            if (step is not AllSitemapsDeploymentStep)
+            {
+                return;
+            }
+
+            var sitemaps = await _sitemapManager.GetSitemapsAsync();
+
+            var jArray = JArray.FromObject(sitemaps);
+
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Sitemaps",
+                ["data"] = jArray,
+            });
+        }
     }
 }

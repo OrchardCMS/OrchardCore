@@ -1,193 +1,178 @@
+using System;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Environment.Shell.Builders;
-
-public class ShellContainerFactory : IShellContainerFactory
+namespace OrchardCore.Environment.Shell.Builders
 {
-    private IFeatureInfo _applicationFeature;
-
-    private readonly IHostEnvironment _hostingEnvironment;
-    private readonly IExtensionManager _extensionManager;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IServiceCollection _applicationServices;
-    private readonly ILogger _logger;
-
-    public ShellContainerFactory(
-        IHostEnvironment hostingEnvironment,
-        IExtensionManager extensionManager,
-        IServiceProvider serviceProvider,
-        IServiceCollection applicationServices,
-        ILogger<ShellContainerFactory> logger)
+    public class ShellContainerFactory : IShellContainerFactory
     {
-        _hostingEnvironment = hostingEnvironment;
-        _extensionManager = extensionManager;
-        _applicationServices = applicationServices;
-        _logger = logger;
-        _serviceProvider = serviceProvider;
-    }
+        private IFeatureInfo _applicationFeature;
 
-    public async Task<IServiceProvider> CreateContainerAsync(ShellSettings settings, ShellBlueprint blueprint)
-    {
-        if (_logger.IsEnabled(LogLevel.Debug))
+        private readonly IHostEnvironment _hostingEnvironment;
+        private readonly IExtensionManager _extensionManager;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceCollection _applicationServices;
+
+        public ShellContainerFactory(
+            IHostEnvironment hostingEnvironment,
+            IExtensionManager extensionManager,
+            IServiceProvider serviceProvider,
+            IServiceCollection applicationServices)
         {
-            _logger.LogDebug("Creating service provider container for tenant '{TenantName}'", settings.Name);
+            _hostingEnvironment = hostingEnvironment;
+            _extensionManager = extensionManager;
+            _applicationServices = applicationServices;
+            _serviceProvider = serviceProvider;
         }
 
-        var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
-
-        tenantServiceCollection.AddSingleton(settings);
-        tenantServiceCollection.AddSingleton(sp =>
+        public async Task<IServiceProvider> CreateContainerAsync(ShellSettings settings, ShellBlueprint blueprint)
         {
-            // Resolve it lazily as it's constructed lazily
-            var shellSettings = sp.GetRequiredService<ShellSettings>();
-            return shellSettings.ShellConfiguration;
-        });
+            var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-        tenantServiceCollection.AddSingleton(blueprint.Descriptor);
-        tenantServiceCollection.AddSingleton(blueprint);
-
-        // Execute IStartup registrations
-        foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IStartup).IsAssignableFrom(t.Key)))
-        {
-            tenantServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
-        }
-
-        // To not trigger features loading before it is normally done by 'ShellHost',
-        // init here the application feature in place of doing it in the constructor.
-        EnsureApplicationFeature();
-
-        foreach (var rawStartup in blueprint.Dependencies.Keys.Where(t => t.Name == "Startup"))
-        {
-            // Startup classes inheriting from IStartup are already treated
-            if (typeof(IStartup).IsAssignableFrom(rawStartup))
+            tenantServiceCollection.AddSingleton(settings);
+            tenantServiceCollection.AddSingleton(sp =>
             {
-                continue;
-            }
-
-            // Ignore Startup class from main application.
-            if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeatures) && startupFeatures.Any(f => f.Id == _applicationFeature.Id))
-            {
-                continue;
-            }
-
-            // Create a wrapper around this method
-            var configureServicesMethod = rawStartup.GetMethod(
-                nameof(IStartup.ConfigureServices),
-                BindingFlags.Public | BindingFlags.Instance,
-                null,
-                CallingConventions.Any,
-                [typeof(IServiceCollection)],
-                null);
-
-            var configureMethod = rawStartup.GetMethod(
-                nameof(IStartup.Configure),
-                BindingFlags.Public | BindingFlags.Instance);
-
-            var orderProperty = rawStartup.GetProperty(
-                nameof(IStartup.Order),
-                BindingFlags.Public | BindingFlags.Instance);
-
-            var configureOrderProperty = rawStartup.GetProperty(
-                nameof(IStartup.ConfigureOrder),
-                BindingFlags.Public | BindingFlags.Instance);
-
-            // Add the startup class to the DI so we can instantiate it with
-            // valid ctor arguments
-            tenantServiceCollection.AddSingleton(rawStartup);
-
-            tenantServiceCollection.AddSingleton<IStartup>(sp =>
-            {
-                var startupInstance = sp.GetService(rawStartup);
-                return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
+                // Resolve it lazily as it's constructed lazily
+                var shellSettings = sp.GetRequiredService<ShellSettings>();
+                return shellSettings.ShellConfiguration;
             });
-        }
 
-        // Index all service descriptors by their feature id
-        var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
+            tenantServiceCollection.AddSingleton(blueprint.Descriptor);
+            tenantServiceCollection.AddSingleton(blueprint);
 
-        var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
-        var startups = shellServiceProvider.GetServices<IStartup>();
+            // Execute IStartup registrations
 
-        // IStartup instances are ordered by module dependency with an Order of 0 by default.
-        // OrderBy performs a stable sort so order is preserved among equal Order values.
-        startups = startups.OrderBy(s => s.Order);
-
-        // Let any module add custom service descriptors to the tenant.
-        foreach (var startup in startups)
-        {
-            // For raw startup classes, use the original type named 'Startup' to find the feature.
-            var startupType = startup is StartupBaseMock mock ? mock.StartupType : startup.GetType();
-            var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startupType).Value?.FirstOrDefault();
-
-            // If the startup is not coming from an extension, associate it to the application feature.
-            // For instance when Startup classes are registered with Configure<Startup>() from the application.
-
-            featureAwareServiceCollection.SetCurrentFeature(feature ?? _applicationFeature);
-            startup.ConfigureServices(featureAwareServiceCollection);
-        }
-
-        await shellServiceProvider.DisposeAsync();
-
-        // Rebuild the service provider from the updated collection.
-        shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
-
-        var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
-        PopulateTypeFeatureProvider(typeFeatureProvider, featureAwareServiceCollection);
-
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            _logger.LogDebug("Done Creating service provider container for tenant '{TenantName}'", settings.Name);
-        }
-
-        return shellServiceProvider;
-    }
-
-    private void EnsureApplicationFeature()
-    {
-        if (_applicationFeature is null)
-        {
-            lock (this)
+            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IStartup).IsAssignableFrom(t.Key)))
             {
-                _applicationFeature ??= _extensionManager.GetFeatures()
-                        .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
+                tenantServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
             }
-        }
-    }
 
-    private void PopulateTypeFeatureProvider(ITypeFeatureProvider typeFeatureProvider, FeatureAwareServiceCollection featureAwareServiceCollection)
-    {
-        // Register all DIed types in ITypeFeatureProvider.
-        foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
-        {
-            foreach (var serviceDescriptor in featureServiceCollection.Value)
+            // To not trigger features loading before it is normally done by 'ShellHost',
+            // init here the application feature in place of doing it in the constructor.
+            EnsureApplicationFeature();
+
+            foreach (var rawStartup in blueprint.Dependencies.Keys.Where(t => t.Name == "Startup"))
             {
-                var type = serviceDescriptor.GetImplementationType();
-
-                if (type is not null)
+                // Startup classes inheriting from IStartup are already treated
+                if (typeof(IStartup).IsAssignableFrom(rawStartup))
                 {
-                    var feature = featureServiceCollection.Key;
+                    continue;
+                }
 
-                    if (feature == _applicationFeature)
+                // Ignore Startup class from main application
+                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeature) && startupFeature.FeatureInfo.Id == _applicationFeature.Id)
+                {
+                    continue;
+                }
+
+                // Create a wrapper around this method
+                var configureServicesMethod = rawStartup.GetMethod(
+                    nameof(IStartup.ConfigureServices),
+                    BindingFlags.Public | BindingFlags.Instance,
+                    null,
+                    CallingConventions.Any,
+                    [typeof(IServiceCollection)],
+                    null);
+
+                var configureMethod = rawStartup.GetMethod(
+                    nameof(IStartup.Configure),
+                    BindingFlags.Public | BindingFlags.Instance);
+
+                var orderProperty = rawStartup.GetProperty(
+                    nameof(IStartup.Order),
+                    BindingFlags.Public | BindingFlags.Instance);
+
+                var configureOrderProperty = rawStartup.GetProperty(
+                    nameof(IStartup.ConfigureOrder),
+                    BindingFlags.Public | BindingFlags.Instance);
+
+                // Add the startup class to the DI so we can instantiate it with
+                // valid ctor arguments
+                tenantServiceCollection.AddSingleton(rawStartup);
+
+                tenantServiceCollection.AddSingleton<IStartup>(sp =>
+                {
+                    var startupInstance = sp.GetService(rawStartup);
+                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
+                });
+            }
+
+            // Index all service descriptors by their feature id
+            var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
+
+            var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
+            var startups = shellServiceProvider.GetServices<IStartup>();
+
+            // IStartup instances are ordered by module dependency with an Order of 0 by default.
+            // OrderBy performs a stable sort so order is preserved among equal Order values.
+            startups = startups.OrderBy(s => s.Order);
+
+            // Let any module add custom service descriptors to the tenant
+            foreach (var startup in startups)
+            {
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
+
+                // If the startup is not coming from an extension, associate it to the application feature.
+                // For instance when Startup classes are registered with Configure<Startup>() from the application.
+
+                featureAwareServiceCollection.SetCurrentFeature(feature ?? _applicationFeature);
+                startup.ConfigureServices(featureAwareServiceCollection);
+            }
+
+            await shellServiceProvider.DisposeAsync();
+
+            // Rebuild the service provider from the updated collection.
+            shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
+
+            // Register all DIed types in ITypeFeatureProvider
+            var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
+
+            foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
+            {
+                foreach (var serviceDescriptor in featureServiceCollection.Value)
+                {
+                    var type = serviceDescriptor.GetImplementationType();
+
+                    if (type is not null)
                     {
-                        var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+                        var feature = featureServiceCollection.Key;
 
-                        if (attribute is not null)
+                        if (feature == _applicationFeature)
                         {
-                            feature = featureServiceCollection.Key.Extension.Features
-                                .FirstOrDefault(f => f.Id == attribute.FeatureName)
-                                ?? feature;
-                        }
-                    }
+                            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
 
-                    typeFeatureProvider.TryAdd(type, feature);
+                            if (attribute is not null)
+                            {
+                                feature = featureServiceCollection.Key.Extension.Features
+                                    .FirstOrDefault(f => f.Id == attribute.FeatureName)
+                                    ?? feature;
+                            }
+                        }
+
+                        typeFeatureProvider.TryAdd(type, feature);
+                    }
+                }
+            }
+
+            return shellServiceProvider;
+        }
+
+        private void EnsureApplicationFeature()
+        {
+            if (_applicationFeature is null)
+            {
+                lock (this)
+                {
+                    _applicationFeature ??= _extensionManager.GetFeatures()
+                            .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
                 }
             }
         }

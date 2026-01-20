@@ -1,14 +1,15 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Search.Deployment;
-
-/// <summary>
-/// Adds layers to a <see cref="DeploymentPlanResult"/>.
-/// </summary>
-public class SearchSettingsDeploymentStep : DeploymentStep
+namespace OrchardCore.Search.Deployment
 {
-    public SearchSettingsDeploymentStep()
+    /// <summary>
+    /// Adds layers to a <see cref="DeploymentPlanResult"/>.
+    /// </summary>
+    public class SearchSettingsDeploymentStep : DeploymentStep
     {
-        Name = "SearchSettings";
+        public SearchSettingsDeploymentStep()
+        {
+            Name = "SearchSettings";
+        }
     }
 }

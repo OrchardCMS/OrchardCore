@@ -4,13 +4,14 @@ using OrchardCore.Email.Workflows.Drivers;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
 
-namespace OrchardCore.Email.Workflows;
-
-[RequireFeatures("OrchardCore.Workflows")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.Email.Workflows
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Workflows")]
+    public class Startup : StartupBase
     {
-        services.AddActivity<EmailTask, EmailTaskDisplayDriver>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<EmailTask, EmailTaskDisplayDriver>();
+        }
     }
 }

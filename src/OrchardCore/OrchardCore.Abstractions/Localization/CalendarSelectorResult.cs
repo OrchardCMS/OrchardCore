@@ -1,17 +1,21 @@
-namespace OrchardCore.Localization;
+using System;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Represents a result for the selected calendar.
-/// </summary>
-public class CalendarSelectorResult
+namespace OrchardCore.Localization
 {
     /// <summary>
-    /// Gets or sets the priority.
+    /// Represents a result for the selected calendar.
     /// </summary>
-    public int Priority { get; set; }
+    public class CalendarSelectorResult
+    {
+        /// <summary>
+        /// Gets or sets the priority.
+        /// </summary>
+        public int Priority { get; set; }
 
-    /// <summary>
-    /// Gets or sets a calendar name.
-    /// </summary>
-    public Func<Task<CalendarName>> CalendarName { get; set; }
+        /// <summary>
+        /// Gets or sets a calendar name.
+        /// </summary>
+        public Func<Task<CalendarName>> CalendarName { get; set; }
+    }
 }

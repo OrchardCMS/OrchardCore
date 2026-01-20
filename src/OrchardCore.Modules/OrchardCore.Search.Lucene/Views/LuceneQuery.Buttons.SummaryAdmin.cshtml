@@ -1,22 +1,12 @@
-@using OrchardCore.Queries
-@using OrchardCore.Search.Lucene.Models
-@using OrchardCore.Entities
+@model dynamic
 
 @{
-    var query = Model.Query as Query;
-    var metadata = query.As<LuceneQueryMetadata>();
-
-    string base64Query = null;
-
-    if (!string.IsNullOrEmpty(metadata.Template))
-    {
-        base64Query = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(metadata.Template));
-    }
+    var base64Query = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes((string)Model.Query.Template ?? ""));
 }
 
-<a asp-action="QueryIndex"
+<a asp-action="Query"
    asp-controller="Admin"
    asp-area="OrchardCore.Search.Lucene"
    asp-route-query="@base64Query"
-   asp-route-indexName="@metadata.Index"
+   asp-route-indexName="@Model.Query.Index"
    class="btn btn-success btn-sm">@T["Run"]</a>

@@ -1,25 +1,28 @@
-namespace OrchardCore.ContentManagement;
+using System;
 
-/// <summary>
-/// Represents a service that can provide an <see cref="ITypeActivator{TInstance}"/> instance.
-/// </summary>
-public interface ITypeActivatorFactory<TInstance>
-{
-    ITypeActivator<TInstance> GetTypeActivator(string partName);
-}
-
-/// <summary>
-/// Represents the type information for a content element.
-/// </summary>
-public interface ITypeActivator<TInstance>
+namespace OrchardCore.ContentManagement
 {
     /// <summary>
-    /// The <see cref="Type"/> of the content element represented by the activator.
+    /// Represents a service that can provide an <see cref="ITypeActivator{TInstance}"/> instance.
     /// </summary>
-    Type Type { get; }
+    public interface ITypeActivatorFactory<TInstance>
+    {
+        ITypeActivator<TInstance> GetTypeActivator(string partName);
+    }
 
     /// <summary>
-    /// Creates an instance of the content element type represented by the activator.
+    /// Represents the type information for a content element.
     /// </summary>
-    TInstance CreateInstance();
+    public interface ITypeActivator<TInstance>
+    {
+        /// <summary>
+        /// The <see cref="Type"/> of the content element represented by the activator.
+        /// </summary>
+        Type Type { get; }
+
+        /// <summary>
+        /// Creates an instance of the content element type represented by the activator.
+        /// </summary>
+        TInstance CreateInstance();
+    }
 }

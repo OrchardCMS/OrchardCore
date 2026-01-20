@@ -1,18 +1,21 @@
-namespace OrchardCore.Modules.Manifest;
+using System;
 
-/// <summary>
-/// Enlists the package or project name of a referenced module, auto generated on building.
-/// </summary>
-[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
-public class ModuleNameAttribute : Attribute
+namespace OrchardCore.Modules.Manifest
 {
-    public ModuleNameAttribute(string name)
+    /// <summary>
+    /// Enlists the package or project name of a referenced module, auto generated on building.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
+    public class ModuleNameAttribute : Attribute
     {
-        Name = name ?? string.Empty;
-    }
+        public ModuleNameAttribute(string name)
+        {
+            Name = name ?? string.Empty;
+        }
 
-    /// <Summary>
-    /// The package or project name of the referenced module.
-    /// </Summary>
-    public string Name { get; }
+        /// <Summary>
+        /// The package or project name of the referenced module.
+        /// </Summary>
+        public string Name { get; }
+    }
 }

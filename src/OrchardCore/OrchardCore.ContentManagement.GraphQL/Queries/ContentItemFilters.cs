@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authorization;
@@ -11,14 +12,13 @@ using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
-public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
+public class ContentItemFilters : GraphQLFilter<ContentItem>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
 
-    public ContentItemFilters(
-        IHttpContextAccessor httpContextAccessor,
+    public ContentItemFilters(IHttpContextAccessor httpContextAccessor,
         IContentDefinitionManager contentDefinitionManager,
         IAuthorizationService authorizationService)
     {

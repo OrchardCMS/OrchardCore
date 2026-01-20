@@ -1,20 +1,23 @@
-namespace OrchardCore.Workflows.Helpers;
+using System.Collections.Generic;
 
-public static class ListExtensions
+namespace OrchardCore.Workflows.Helpers
 {
-    public static void AddRange<T>(this IList<T> list, IEnumerable<T> items)
+    public static class ListExtensions
     {
-        foreach (var item in items)
+        public static void AddRange<T>(this IList<T> list, IEnumerable<T> items)
         {
-            list.Add(item);
+            foreach (var item in items)
+            {
+                list.Add(item);
+            }
         }
-    }
 
-    public static void RemoveRange<T>(this IList<T> list, IEnumerable<T> items)
-    {
-        foreach (var item in items)
+        public static void RemoveRange<T>(this IList<T> list, IEnumerable<T> items)
         {
-            list.Remove(item);
+            foreach (var item in items)
+            {
+                list.Remove(item);
+            }
         }
     }
 }

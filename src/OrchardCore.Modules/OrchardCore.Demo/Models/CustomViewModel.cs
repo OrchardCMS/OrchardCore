@@ -1,8 +1,9 @@
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Demo.Models;
-
-public class CustomViewModel : ShapeViewModel
+namespace OrchardCore.Demo.Models
 {
-    public string Value { get; set; }
+    public class CustomViewModel : ShapeViewModel
+    {
+        public string Value { get; set; }
+    }
 }

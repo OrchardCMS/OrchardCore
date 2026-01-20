@@ -1,10 +1,16 @@
-namespace OrchardCore.Search.Elasticsearch.Core.Mappings;
+using Nest;
 
-internal sealed class DisplayTextModel
+namespace OrchardCore.Search.Elasticsearch.Core.Mappings
 {
-    public string Analyzed { get; set; }
+    internal class DisplayTextModel
+    {
+        [Text(Name = "Analyzed")]
+        public string Analyzed { get; set; }
 
-    public string Normalized { get; set; }
+        [Keyword(Name = "Normalized")]
+        public string Normalized { get; set; }
 
-    public string Keyword { get; set; }
+        [Keyword(Name = "keyword")]
+        public string Keyword { get; set; }
+    }
 }

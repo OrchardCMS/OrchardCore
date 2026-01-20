@@ -1,30 +1,45 @@
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
+using OrchardCore.Users.TimeZone.Services;
 using OrchardCore.Users.TimeZone.ViewModels;
 
-namespace OrchardCore.Users.TimeZone.Drivers;
-
-public sealed class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
+namespace OrchardCore.Users.TimeZone.Drivers
 {
-    public override IDisplayResult Edit(User user, UserTimeZone userTimeZone, BuildEditorContext context)
+    public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
     {
-        return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", model =>
+        private readonly UserTimeZoneService _userTimeZoneService;
+
+        public UserTimeZoneDisplayDriver(UserTimeZoneService userTimeZoneService)
         {
-            model.TimeZoneId = userTimeZone.TimeZoneId;
-        }).Location("Content:2");
-    }
+            _userTimeZoneService = userTimeZoneService;
+        }
 
-    public override async Task<IDisplayResult> UpdateAsync(User user, UserTimeZone userTimeZone, UpdateEditorContext context)
-    {
-        var model = new UserTimeZoneViewModel();
+        public override IDisplayResult Edit(UserTimeZone userTimeZone, BuildEditorContext context)
+        {
+            return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", model =>
+            {
+                model.TimeZoneId = userTimeZone.TimeZoneId;
+            }).Location("Content:2");
+        }
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        public override async Task<IDisplayResult> UpdateAsync(User user, UserTimeZone userTimeZone, IUpdateModel updater, BuildEditorContext context)
+        {
+            var model = new UserTimeZoneViewModel();
 
-        userTimeZone.TimeZoneId = model.TimeZoneId;
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            {
+                userTimeZone.TimeZoneId = model.TimeZoneId;
 
-        return await EditAsync(user, userTimeZone, context);
+                // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
+                await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
+            }
+
+            return await EditAsync(userTimeZone, context);
+        }
     }
 }

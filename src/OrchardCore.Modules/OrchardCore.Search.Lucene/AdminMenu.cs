@@ -1,32 +1,39 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Search.Lucene;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvider
 {
-    internal readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S = localizer;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        S = stringLocalizer;
-    }
+        if (!NavigationHelper.IsAdminMenu(name))
+        {
+            return Task.CompletedTask;
+        }
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
         builder
             .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+                .AddClass("search").Id("search")
+                .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
+                    .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
+                        .Action("Index", "Admin", "OrchardCore.Search.Lucene")
+                        .Permission(Permissions.ManageLuceneIndexes)
+                        .LocalNav()
+                     )
+                )
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
                     .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
                         .Action("Query", "Admin", "OrchardCore.Search.Lucene")
-                        .AddClass("lucenequery")
-                        .Id("lucenequery")
-                        .Permission(LuceneSearchPermissions.ManageLuceneIndexes)
+                        .Permission(Permissions.ManageLuceneIndexes)
                         .LocalNav()
                     )
                 )
             );
 
-        return ValueTask.CompletedTask;
+        return Task.CompletedTask;
     }
 }

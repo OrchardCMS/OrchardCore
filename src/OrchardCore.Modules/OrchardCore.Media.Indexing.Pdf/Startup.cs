@@ -3,7 +3,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Indexing.Pdf;
 
-public sealed class Startup : StartupBase
+public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

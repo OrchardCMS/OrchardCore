@@ -1,20 +1,25 @@
-namespace OrchardCore.Environment.Commands;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-[AttributeUsage(AttributeTargets.Method)]
-public class OrchardSwitchesAttribute : Attribute
+namespace OrchardCore.Environment.Commands
 {
-    private readonly string _switches;
-
-    public OrchardSwitchesAttribute(string switches)
+    [AttributeUsage(AttributeTargets.Method)]
+    public class OrchardSwitchesAttribute : Attribute
     {
-        _switches = switches;
-    }
+        private readonly string _switches;
 
-    public IEnumerable<string> Switches
-    {
-        get
+        public OrchardSwitchesAttribute(string switches)
         {
-            return (_switches ?? "").Trim().Split(',').Select(s => s.Trim());
+            _switches = switches;
+        }
+
+        public IEnumerable<string> Switches
+        {
+            get
+            {
+                return (_switches ?? "").Trim().Split(',').Select(s => s.Trim());
+            }
         }
     }
 }

@@ -21,21 +21,16 @@
 
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    function onDocumentReady(fn) {
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", fn);
-        } else {
-            fn();
-        }
-    }
-
-    onDocumentReady(function () {
-        const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
-        if (!divEditor) {
-            return;
-        }
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
-            var settings = @Html.Raw(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options);
+
+            const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
+
+            if (!divEditor) {
+                return;
+            }
+
+            var settings = @Html.Raw(monacoSettings.Options);
             if (settings.automaticLayout == undefined) {
                 settings.automaticLayout = true;
             }

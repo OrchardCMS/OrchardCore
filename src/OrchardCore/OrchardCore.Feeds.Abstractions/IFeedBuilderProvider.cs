@@ -1,14 +1,15 @@
 using OrchardCore.Feeds.Models;
 
-namespace OrchardCore.Feeds;
-
-public interface IFeedBuilderProvider
+namespace OrchardCore.Feeds
 {
-    FeedBuilderMatch Match(FeedContext context);
-}
+    public interface IFeedBuilderProvider
+    {
+        FeedBuilderMatch Match(FeedContext context);
+    }
 
-public class FeedBuilderMatch
-{
-    public int Priority { get; set; }
-    public IFeedBuilder FeedBuilder { get; set; }
+    public class FeedBuilderMatch
+    {
+        public int Priority { get; set; }
+        public IFeedBuilder FeedBuilder { get; set; }
+    }
 }

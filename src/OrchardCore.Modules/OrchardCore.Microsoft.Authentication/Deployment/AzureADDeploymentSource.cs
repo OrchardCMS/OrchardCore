@@ -1,28 +1,36 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 
-namespace OrchardCore.Microsoft.Authentication.Deployment;
-
-public sealed class AzureADDeploymentSource
-    : DeploymentSourceBase<AzureADDeploymentStep>
+namespace OrchardCore.Microsoft.Authentication.Deployment
 {
-    private readonly IAzureADService _azureADService;
-
-    public AzureADDeploymentSource(IAzureADService azureADService)
+    public class AzureADDeploymentSource : IDeploymentSource
     {
-        _azureADService = azureADService;
-    }
+        private readonly IAzureADService _azureADService;
 
-    protected override async Task ProcessAsync(AzureADDeploymentStep step, DeploymentPlanResult result)
-    {
-        var azureADSettings = await _azureADService.GetSettingsAsync();
-
-        result.Steps.Add(new JsonObject
+        public AzureADDeploymentSource(IAzureADService azureADService)
         {
-            ["name"] = nameof(AzureADSettings),
-            ["AzureADSettings"] = JObject.FromObject(azureADSettings),
-        });
+            _azureADService = azureADService;
+        }
+
+        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        {
+            var azureADStep = step as AzureADDeploymentStep;
+
+            if (azureADStep == null)
+            {
+                return;
+            }
+
+            var settings = await _azureADService.GetSettingsAsync();
+
+            var obj = new JsonObject { ["name"] = nameof(AzureADSettings) };
+
+            obj.Merge(JObject.FromObject(settings));
+
+            result.Steps.Add(obj);
+        }
     }
 }

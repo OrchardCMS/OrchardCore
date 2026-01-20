@@ -1,8 +1,10 @@
+using System;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentFields.Fields;
-
-public class TimeField : ContentField
+namespace OrchardCore.ContentFields.Fields
 {
-    public TimeSpan? Value { get; set; }
+    public class TimeField : ContentField
+    {
+        public TimeSpan? Value { get; set; }
+    }
 }

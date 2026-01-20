@@ -1,42 +1,46 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Tenants;
-
-public sealed class AdminMenu : AdminNavigationProvider
+namespace OrchardCore.Tenants
 {
-    private readonly ShellSettings _shellSettings;
-
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(
-        ShellSettings shellSettings,
-        IStringLocalizer<AdminMenu> stringLocalizer)
+    public class AdminMenu : INavigationProvider
     {
-        _shellSettings = shellSettings;
-        S = stringLocalizer;
-    }
+        private readonly ShellSettings _shellSettings;
+        protected readonly IStringLocalizer S;
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        // Don't add the menu item on non-default tenants.
-        if (!_shellSettings.IsDefaultShell())
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer, ShellSettings shellSettings)
         {
-            return ValueTask.CompletedTask;
+            _shellSettings = shellSettings;
+            S = localizer;
         }
 
-        builder
-            .Add(S["Multi-Tenancy"], "after.25", tenancy => tenancy
-                .AddClass("menu-multitenancy")
-                .Id("multitenancy")
-                .Add(S["Tenants"], S["Tenants"].PrefixPosition(), tenant => tenant
-                    .Action("Index", "Admin", "OrchardCore.Tenants")
-                    .Permission(Permissions.ManageTenants)
-                    .LocalNav()
-                ),
-                priority: 1);
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!NavigationHelper.IsAdminMenu(name))
+            {
+                return Task.CompletedTask;
+            }
 
-        return ValueTask.CompletedTask;
+            // Don't add the menu item on non-default tenants
+            if (!_shellSettings.IsDefaultShell())
+            {
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Multi-Tenancy"], "after", tenancy => tenancy
+                    .AddClass("menu-multitenancy")
+                    .Id("multitenancy")
+                    .Add(S["Tenants"], S["Tenants"].PrefixPosition(), tenant => tenant
+                        .Action("Index", "Admin", "OrchardCore.Tenants")
+                        .Permission(Permissions.ManageTenants)
+                        .LocalNav()
+                    ),
+                    priority: 1);
+
+            return Task.CompletedTask;
+        }
     }
 }

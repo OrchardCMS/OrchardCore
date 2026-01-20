@@ -1,21 +1,16 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Collections.Generic;
 
-namespace OrchardCore.Roles.ViewModels;
-
-public class RolesViewModel
+namespace OrchardCore.Roles.ViewModels
 {
-    public List<RoleEntry> RoleEntries { get; set; } = [];
-}
+    public class RolesViewModel
+    {
+        public List<RoleEntry> RoleEntries { get; set; } = [];
+    }
 
-public class RoleEntry
-{
-    public string Name { get; set; }
-
-    public string Description { get; set; }
-
-    [BindNever]
-    public bool IsSystemRole { get; set; }
-
-    [BindNever]
-    public bool IsAdminRole { get; set; }
+    public class RoleEntry
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool Selected { get; set; }
+    }
 }

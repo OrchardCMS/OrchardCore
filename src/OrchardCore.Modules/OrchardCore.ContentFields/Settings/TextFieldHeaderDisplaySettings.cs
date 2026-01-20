@@ -1,6 +1,7 @@
-namespace OrchardCore.ContentFields.Settings;
-
-public class TextFieldHeaderDisplaySettings
+namespace OrchardCore.ContentFields.Settings
 {
-    public string Level { get; set; }
+    public class TextFieldHeaderDisplaySettings
+    {
+        public string Level { get; set; }
+    }
 }

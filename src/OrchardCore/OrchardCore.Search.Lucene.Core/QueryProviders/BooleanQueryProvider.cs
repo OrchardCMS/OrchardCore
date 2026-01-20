@@ -1,129 +1,126 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lucene.Net.Search;
 using OrchardCore.Search.Lucene.QueryProviders.Filters;
 
-namespace OrchardCore.Search.Lucene.QueryProviders;
-
-public class BooleanQueryProvider : ILuceneQueryProvider
+namespace OrchardCore.Search.Lucene.QueryProviders
 {
-    private readonly IEnumerable<ILuceneBooleanFilterProvider> _filters;
-
-    public BooleanQueryProvider(IEnumerable<ILuceneBooleanFilterProvider> filters)
+    public class BooleanQueryProvider : ILuceneQueryProvider
     {
-        _filters = filters;
-    }
+        private readonly IEnumerable<ILuceneBooleanFilterProvider> _filters;
 
-    public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
-    {
-        if (type != "bool")
+        public BooleanQueryProvider(IEnumerable<ILuceneBooleanFilterProvider> filters)
         {
-            return null;
+            _filters = filters;
         }
 
-        var boolQuery = new BooleanQuery();
-
-        foreach (var property in query)
+        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
         {
-            var occur = Occur.MUST;
-            var isProps = false;
-
-            switch (property.Key.ToLowerInvariant())
+            if (type != "bool")
             {
-                case "must":
-                    occur = Occur.MUST;
-                    break;
-                case "mustnot":
-                case "must_not":
-                    occur = Occur.MUST_NOT;
-                    break;
-                case "should":
-                    occur = Occur.SHOULD;
-                    break;
-                case "boost":
-                    boolQuery.Boost = property.Value.Value<float>();
-                    isProps = true;
-                    break;
-                case "minimum_should_match":
-                    boolQuery.MinimumNumberShouldMatch = property.Value.Value<int>();
-                    isProps = true;
-                    break;
-                case "filter":
-                    return CreateFilteredQuery(builder, context, boolQuery, property.Value);
-                default: throw new ArgumentException($"Invalid property '{property.Key}' in boolean query");
+                return null;
             }
 
-            if (!isProps)
+            var boolQuery = new BooleanQuery();
+
+            foreach (var property in query)
             {
-                switch (property.Value.GetValueKind())
+                var occur = Occur.MUST;
+                var isProps = false;
+
+                switch (property.Key.ToLowerInvariant())
                 {
-                    case JsonValueKind.Object:
-                        boolQuery.Add(builder.CreateQueryFragment(context, property.Value.AsObject()), occur);
+                    case "must":
+                        occur = Occur.MUST;
                         break;
-                    case JsonValueKind.Array:
-                        foreach (var item in property.Value.AsArray())
-                        {
-                            if (item.GetValueKind() != JsonValueKind.Object)
+                    case "mustnot":
+                    case "must_not":
+                        occur = Occur.MUST_NOT;
+                        break;
+                    case "should":
+                        occur = Occur.SHOULD;
+                        break;
+                    case "boost":
+                        boolQuery.Boost = property.Value.Value<float>();
+                        isProps = true;
+                        break;
+                    case "minimum_should_match":
+                        boolQuery.MinimumNumberShouldMatch = property.Value.Value<int>();
+                        isProps = true;
+                        break;
+                    case "filter":
+                        return CreateFilteredQuery(builder, context, boolQuery, property.Value);
+                    default: throw new ArgumentException($"Invalid property '{property.Key}' in boolean query");
+                }
+
+                if (!isProps)
+                {
+                    switch (property.Value.GetValueKind())
+                    {
+                        case JsonValueKind.Object:
+                            boolQuery.Add(builder.CreateQueryFragment(context, property.Value.AsObject()), occur);
+                            break;
+                        case JsonValueKind.Array:
+                            foreach (var item in property.Value.AsArray())
                             {
-                                throw new ArgumentException($"Invalid value in boolean query");
+                                if (item.GetValueKind() != JsonValueKind.Object)
+                                {
+                                    throw new ArgumentException($"Invalid value in boolean query");
+                                }
+                                boolQuery.Add(builder.CreateQueryFragment(context, item.AsObject()), occur);
                             }
-                            boolQuery.Add(builder.CreateQueryFragment(context, item.AsObject()), occur);
-                        }
-                        break;
-                    default: throw new ArgumentException($"Invalid value in boolean query");
+                            break;
+                        default: throw new ArgumentException($"Invalid value in boolean query");
+                    }
                 }
             }
+
+            return boolQuery;
         }
 
-        return boolQuery;
-    }
-
-    private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query, JsonNode filter)
-    {
-        Query filteredQuery;
-
-        switch (filter.GetValueKind())
+        private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query, JsonNode filter)
         {
-            case JsonValueKind.Object:
-                var first = filter.AsObject().FirstOrDefault();
-                if (string.IsNullOrEmpty(first.Key))
-                {
-                    return null;
-                }
+            Query filteredQuery = null;
+            var queryObj = filter.AsObject();
 
-                foreach (var queryProvider in _filters)
-                {
-                    filteredQuery = queryProvider.CreateFilteredQuery(builder, context, first.Key, first.Value, query);
-
-                    if (filteredQuery != null)
-                    {
-                        return filteredQuery;
-                    }
-                }
-                break;
-            case JsonValueKind.Array:
-                foreach (var item in filter.AsArray())
-                {
-                    var firstQuery = item.AsObject().FirstOrDefault();
-                    if (string.IsNullOrEmpty(firstQuery.Key))
-                    {
-                        return null;
-                    }
+            switch (filter.GetValueKind())
+            {
+                case JsonValueKind.Object:
+                    var first = queryObj.First();
 
                     foreach (var queryProvider in _filters)
                     {
-                        filteredQuery = queryProvider.CreateFilteredQuery(builder, context, firstQuery.Key, firstQuery.Value, query);
+                        filteredQuery = queryProvider.CreateFilteredQuery(builder, context, first.Key, first.Value, query);
 
                         if (filteredQuery != null)
                         {
-                            return filteredQuery;
+                            break;
                         }
                     }
-                }
-                break;
-            default: throw new ArgumentException($"Invalid value in boolean query");
-        }
+                    break;
+                case JsonValueKind.Array:
+                    foreach (var item in filter.AsArray())
+                    {
+                        var firstQuery = item.AsObject().First();
 
-        return null;
+                        foreach (var queryProvider in _filters)
+                        {
+                            filteredQuery = queryProvider.CreateFilteredQuery(builder, context, firstQuery.Key, firstQuery.Value, query);
+
+                            if (filteredQuery != null)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                default: throw new ArgumentException($"Invalid value in boolean query");
+            }
+
+            return filteredQuery;
+        }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -7,64 +8,47 @@ using OrchardCore.ReCaptcha.Core;
 using OrchardCore.ReCaptcha.Drivers;
 using OrchardCore.ReCaptcha.Users.Handlers;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
-using OrchardCore.Users;
 using OrchardCore.Users.Events;
-using OrchardCore.Users.Models;
 
-namespace OrchardCore.ReCaptcha;
-
-[Feature("OrchardCore.ReCaptcha")]
-public sealed class Startup : StartupBase
+namespace OrchardCore.ReCaptcha
 {
-    public override void ConfigureServices(IServiceCollection services)
+    [Feature("OrchardCore.ReCaptcha")]
+    public class Startup : StartupBase
     {
-        services.AddReCaptcha();
-        services.AddSiteDisplayDriver<ReCaptchaSettingsDisplayDriver>();
-        services.AddNavigationProvider<AdminMenu>();
-        services.AddPermissionProvider<Permissions>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddReCaptcha();
+
+            services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
+        }
     }
-}
 
-[Feature("OrchardCore.ReCaptcha")]
-[RequireFeatures("OrchardCore.Deployment")]
-public sealed class DeploymentStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
+    [Feature("OrchardCore.ReCaptcha")]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
     {
-        services.AddSiteSettingsPropertyDeploymentStep<ReCaptchaSettings, DeploymentStartup>(S => S["ReCaptcha settings"], S => S["Exports the ReCaptcha settings."]);
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSiteSettingsPropertyDeploymentStep<ReCaptchaSettings, DeploymentStartup>(S => S["ReCaptcha settings"], S => S["Exports the ReCaptcha settings."]);
+        }
     }
-}
 
-[Feature("OrchardCore.ReCaptcha.Users")]
-public sealed class UsersStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
+    [Feature("OrchardCore.ReCaptcha.Users")]
+    public class StartupUsers : StartupBase
     {
-        services.AddScoped<IRegistrationFormEvents, RegistrationFormEventHandler>();
-        services.AddScoped<ILoginFormEvent, LoginFormEventEventHandler>();
-        services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
-        services.AddDisplayDriver<LoginForm, ReCaptchaLoginFormDisplayDriver>();
-    }
-}
-
-[Feature("OrchardCore.ReCaptcha.Users")]
-[RequireFeatures(UserConstants.Features.ResetPassword)]
-public sealed class UsersResetPasswordStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddDisplayDriver<ForgotPasswordForm, ReCaptchaForgotPasswordFormDisplayDriver>();
-        services.AddDisplayDriver<ResetPasswordForm, ReCaptchaResetPasswordFormDisplayDriver>();
-    }
-}
-
-[Feature("OrchardCore.ReCaptcha.Users")]
-[RequireFeatures(UserConstants.Features.UserRegistration)]
-public sealed class UsersRegistrationStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IRegistrationFormEvents, RegistrationFormEventHandler>();
+            services.AddScoped<ILoginFormEvent, LoginFormEventEventHandler>();
+            services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add<ReCaptchaLoginFilter>();
+            });
+        }
     }
 }

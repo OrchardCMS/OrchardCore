@@ -1,134 +1,121 @@
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
-namespace OrchardCore.Environment.Shell.Builders;
-
-public class ShellContextFactory : IShellContextFactory
+namespace OrchardCore.Environment.Shell.Builders
 {
-    private readonly ICompositionStrategy _compositionStrategy;
-    private readonly IShellContainerFactory _shellContainerFactory;
-    private readonly IEnumerable<ShellFeature> _shellFeatures;
-    private readonly ILogger _logger;
-
-    public ShellContextFactory(
-        ICompositionStrategy compositionStrategy,
-        IShellContainerFactory shellContainerFactory,
-        IEnumerable<ShellFeature> shellFeatures,
-        ILogger<ShellContextFactory> logger)
+    public class ShellContextFactory : IShellContextFactory
     {
-        _compositionStrategy = compositionStrategy;
-        _shellContainerFactory = shellContainerFactory;
-        _shellFeatures = shellFeatures;
-        _logger = logger;
-    }
+        private readonly ICompositionStrategy _compositionStrategy;
+        private readonly IShellContainerFactory _shellContainerFactory;
+        private readonly IEnumerable<ShellFeature> _shellFeatures;
+        private readonly ILogger _logger;
 
-    async Task<ShellContext> IShellContextFactory.CreateShellContextAsync(ShellSettings settings)
-    {
-        if (_logger.IsEnabled(LogLevel.Information))
+        public ShellContextFactory(
+            ICompositionStrategy compositionStrategy,
+            IShellContainerFactory shellContainerFactory,
+            IEnumerable<ShellFeature> shellFeatures,
+            ILogger<ShellContextFactory> logger)
         {
-            _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
+            _compositionStrategy = compositionStrategy;
+            _shellContainerFactory = shellContainerFactory;
+            _shellFeatures = shellFeatures;
+            _logger = logger;
         }
 
-        var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
-
-        ShellDescriptor currentDescriptor = null;
-        await (await describedContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        async Task<ShellContext> IShellContextFactory.CreateShellContextAsync(ShellSettings settings)
         {
-            var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
-            currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
-        });
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
+            }
 
-        if (currentDescriptor is not null)
-        {
-            // Mark as using shared setting that should not be disposed.
-            await describedContext.WithSharedSettings().DisposeAsync();
-            return await CreateDescribedContextAsync(settings, currentDescriptor);
+            var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
+
+            ShellDescriptor currentDescriptor = null;
+            await (await describedContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+            {
+                var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
+                currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
+            });
+
+            if (currentDescriptor is not null)
+            {
+                // Mark as using shared setting that should not be disposed.
+                await describedContext.WithSharedSettings().DisposeAsync();
+                return await CreateDescribedContextAsync(settings, currentDescriptor);
+            }
+
+            return describedContext;
         }
 
-        return describedContext;
-    }
-
-    Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
-    {
-        if (_logger.IsEnabled(LogLevel.Debug))
+        Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
         {
-            _logger.LogDebug("No shell settings available. Creating shell context for setup");
-        }
-
-        var descriptor = MinimumShellDescriptor();
-
-        return CreateDescribedContextAsync(settings, descriptor);
-    }
-
-    public async Task<ShellContext> CreateDescribedContextAsync(ShellSettings settings, ShellDescriptor shellDescriptor)
-    {
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            _logger.LogDebug("Creating described context for tenant '{TenantName}'", settings.Name);
-        }
-
-        // Prevent settings from being disposed when an intermediate container is disposed.
-        Interlocked.Increment(ref settings._shellCreating);
-        try
-        {
-            await settings.EnsureConfigurationAsync();
-
-            var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
-            var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
-
-            var options = provider.GetRequiredService<IOptions<ShellContainerOptions>>().Value;
-
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogDebug("Invoking shell container initializers described context for tenant '{TenantName}'. There are a total of '{TotalInitializers}' initializers to invoke", settings.Name, options.Initializers.Count);
+                _logger.LogDebug("No shell settings available. Creating shell context for setup");
             }
 
-            foreach (var initializeAsync in options.Initializers)
-            {
-                await initializeAsync(provider);
-            }
+            var descriptor = MinimumShellDescriptor();
 
+            return CreateDescribedContextAsync(settings, descriptor);
+        }
+
+        public async Task<ShellContext> CreateDescribedContextAsync(ShellSettings settings, ShellDescriptor shellDescriptor)
+        {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogDebug("Done creating described context for tenant '{TenantName}'", settings.Name);
+                _logger.LogDebug("Creating described context for tenant '{TenantName}'", settings.Name);
             }
 
-            return new ShellContext
+            // Prevent settings from being disposed when an intermediate container is disposed.
+            Interlocked.Increment(ref settings._shellCreating);
+            try
             {
-                Settings = settings,
-                Blueprint = blueprint,
-                ServiceProvider = provider,
+                await settings.EnsureConfigurationAsync();
+
+                var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
+                var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
+
+                var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
+                foreach (var initializeAsync in options.Initializers)
+                {
+                    await initializeAsync(provider);
+                }
+
+                return new ShellContext
+                {
+                    Settings = settings,
+                    Blueprint = blueprint,
+                    ServiceProvider = provider
+                };
+            }
+            finally
+            {
+                Interlocked.Decrement(ref settings._shellCreating);
+            }
+        }
+
+        /// <summary>
+        /// The minimum shell descriptor is used to bootstrap the first container that will be used
+        /// to call all module IStartup implementation. It's composed of module names that reference
+        /// core components necessary for the desired scenario.
+        /// </summary>
+        /// <returns></returns>
+        private ShellDescriptor MinimumShellDescriptor()
+        {
+            // Load default features from the list of registered ShellFeature instances in the DI
+
+            return new ShellDescriptor
+            {
+                SerialNumber = -1,
+                Features = new List<ShellFeature>(_shellFeatures)
             };
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while creating described context for tenant '{TenantName}'", settings.Name);
-
-            throw;
-        }
-        finally
-        {
-            Interlocked.Decrement(ref settings._shellCreating);
-        }
-    }
-
-    /// <summary>
-    /// The minimum shell descriptor is used to bootstrap the first container that will be used
-    /// to call all module IStartup implementation. It's composed of module names that reference
-    /// core components necessary for the desired scenario.
-    /// </summary>
-    /// <returns></returns>
-    private ShellDescriptor MinimumShellDescriptor()
-    {
-        // Load default features from the list of registered ShellFeature instances in the DI
-
-        return new ShellDescriptor
-        {
-            SerialNumber = -1,
-            Features = new List<ShellFeature>(_shellFeatures),
-        };
     }
 }

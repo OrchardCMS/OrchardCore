@@ -3,7 +3,7 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Notifications;
 
-public sealed class NotificationOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+public class NotificationOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
     private static readonly ResourceManifest _manifest;
 

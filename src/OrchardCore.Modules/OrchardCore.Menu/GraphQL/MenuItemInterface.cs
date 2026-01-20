@@ -1,13 +1,16 @@
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
+using OrchardCore.Menu.Models;
 
-namespace OrchardCore.Menu.GraphQL;
-
-public class MenuItemInterface : InterfaceGraphType<ContentItem>
+namespace OrchardCore.Menu.GraphQL
 {
-    public MenuItemInterface()
+    public class MenuItemInterface : InterfaceGraphType<ContentItem>
     {
-        Name = "MenuItem";
-        Field<MenuItemsListQueryObjectType>("menuItemsList");
+        public MenuItemInterface()
+        {
+            Name = "MenuItem";
+
+            Field(typeof(MenuItemsListQueryObjectType), "menuItemsList", resolve: context => context.Source.As<MenuItemsListPart>());
+        }
     }
 }

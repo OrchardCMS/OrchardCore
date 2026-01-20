@@ -1,0 +1,17 @@
+@using OrchardCore.Users.Services
+@model EnableEmailAuthenticatorViewModel
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="TwoFactorAuthentication">@T["Two-Factor Authentication"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Configure Email Authenticator"])</li>
+    </ol>
+</nav>
+
+<div class="alert alert-info">
+    @T["To utilize email as a two-factor authentication method, please click the 'Request Code' button below in order to confirm your email address."]
+</div>
+
+<form asp-action="RequestCode" method="post">
+    <button type="submit" class="btn btn-primary">@T["Request Code"]</button>
+</form>

@@ -1,35 +1,38 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Contents.Workflows.Drivers;
-
-public sealed class CreateContentTaskDisplayDriver : ContentTaskDisplayDriver<CreateContentTask, CreateContentTaskViewModel>
+namespace OrchardCore.Contents.Workflows.Drivers
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-
-    public CreateContentTaskDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+    public class CreateContentTaskDisplayDriver : ContentTaskDisplayDriver<CreateContentTask, CreateContentTaskViewModel>
     {
-        _contentDefinitionManager = contentDefinitionManager;
-    }
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    protected override async ValueTask EditActivityAsync(CreateContentTask activity, CreateContentTaskViewModel model)
-    {
-        model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-            .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
-            .ToList();
+        public CreateContentTaskDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+        {
+            _contentDefinitionManager = contentDefinitionManager;
+        }
 
-        model.ContentType = activity.ContentType;
-        model.Publish = activity.Publish;
-        model.ContentProperties = activity.ContentProperties.Expression;
-    }
+        protected override async ValueTask EditActivityAsync(CreateContentTask activity, CreateContentTaskViewModel model)
+        {
+            model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
+                .ToList();
 
-    protected override void UpdateActivity(CreateContentTaskViewModel model, CreateContentTask activity)
-    {
-        activity.ContentType = model.ContentType;
-        activity.Publish = model.Publish;
-        activity.ContentProperties = new WorkflowExpression<string>(model.ContentProperties);
+            model.ContentType = activity.ContentType;
+            model.Publish = activity.Publish;
+            model.ContentProperties = activity.ContentProperties.Expression;
+        }
+
+        protected override void UpdateActivity(CreateContentTaskViewModel model, CreateContentTask activity)
+        {
+            activity.ContentType = model.ContentType;
+            activity.Publish = model.Publish;
+            activity.ContentProperties = new WorkflowExpression<string>(model.ContentProperties);
+        }
     }
 }

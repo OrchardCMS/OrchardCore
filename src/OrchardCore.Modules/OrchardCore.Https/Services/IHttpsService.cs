@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
 using OrchardCore.Https.Settings;
 
-namespace OrchardCore.Https.Services;
-
-public interface IHttpsService
+namespace OrchardCore.Https.Services
 {
-    Task<HttpsSettings> GetSettingsAsync();
+    public interface IHttpsService
+    {
+        Task<HttpsSettings> GetSettingsAsync();
+    }
 }

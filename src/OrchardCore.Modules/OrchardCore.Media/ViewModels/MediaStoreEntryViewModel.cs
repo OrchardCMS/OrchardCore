@@ -1,12 +1,15 @@
-namespace OrchardCore.Media.ViewModels;
+using System.Collections.Generic;
 
-public class MediaStoreEntryViewModel
+namespace OrchardCore.Media.ViewModels
 {
-    public string Name { get; set; }
+    public class MediaStoreEntryViewModel
+    {
+        public string Name { get; set; }
 
-    public string Path { get; set; }
+        public string Path { get; set; }
 
-    public MediaStoreEntryViewModel Parent { get; set; }
+        public MediaStoreEntryViewModel Parent { get; set; }
 
-    public IList<MediaStoreEntryViewModel> Entries { get; set; }
+        public IList<MediaStoreEntryViewModel> Entries { get; set; }
+    }
 }

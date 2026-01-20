@@ -1,26 +1,28 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Contents.AuditTrail;
-
-[RequireFeatures("OrchardCore.AuditTrail")]
-public sealed class Migrations : DataMigration
+namespace OrchardCore.Contents.AuditTrail
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-
-    public Migrations(IContentDefinitionManager contentDefinitionManager)
+    [RequireFeatures("OrchardCore.AuditTrail")]
+    public class Migrations : DataMigration
     {
-        _contentDefinitionManager = contentDefinitionManager;
-    }
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public async Task<int> CreateAsync()
-    {
-        await _contentDefinitionManager.AlterPartDefinitionAsync("AuditTrailPart", part => part
-            .Attachable()
-            .WithDescription("Allows editors to enter a comment to be saved into the Audit Trail event when saving a content item."));
+        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        {
+            _contentDefinitionManager = contentDefinitionManager;
+        }
 
-        return 1;
+        public async Task<int> CreateAsync()
+        {
+            await _contentDefinitionManager.AlterPartDefinitionAsync("AuditTrailPart", part => part
+                .Attachable()
+                .WithDescription("Allows editors to enter a comment to be saved into the Audit Trail event when saving a content item."));
+
+            return 1;
+        }
     }
 }

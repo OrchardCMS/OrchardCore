@@ -1,11 +1,12 @@
-namespace OrchardCore.Indexing;
-
-/// <summary>
-/// Represents the indexing settings for a content part or a field.
-/// </summary>
-public interface IContentIndexSettings
+namespace OrchardCore.Indexing
 {
-    bool Included { get; set; }
+    /// <summary>
+    /// Represents the indexing settings for a content part or a field.
+    /// </summary>
+    public interface IContentIndexSettings
+    {
+        public bool Included { get; set; }
 
-    DocumentIndexOptions ToOptions();
+        public DocumentIndexOptions ToOptions();
+    }
 }

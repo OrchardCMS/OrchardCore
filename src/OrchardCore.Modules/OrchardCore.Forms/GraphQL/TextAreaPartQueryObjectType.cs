@@ -1,15 +1,16 @@
 using GraphQL.Types;
 using OrchardCore.Forms.Models;
 
-namespace OrchardCore.Forms.GraphQL;
-
-public class TextAreaPartQueryObjectType : ObjectGraphType<TextAreaPart>
+namespace OrchardCore.Forms.GraphQL
 {
-    public TextAreaPartQueryObjectType()
+    public class TextAreaPartQueryObjectType : ObjectGraphType<TextAreaPart>
     {
-        Name = "TextAreaPart";
+        public TextAreaPartQueryObjectType()
+        {
+            Name = "TextAreaPart";
 
-        Field(x => x.DefaultValue, nullable: true);
-        Field(x => x.Placeholder, nullable: true);
+            Field(x => x.DefaultValue, nullable: true);
+            Field(x => x.Placeholder, nullable: true);
+        }
     }
 }

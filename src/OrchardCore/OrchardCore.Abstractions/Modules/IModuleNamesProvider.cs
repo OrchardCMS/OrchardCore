@@ -1,6 +1,9 @@
-namespace OrchardCore.Modules;
+using System.Collections.Generic;
 
-public interface IModuleNamesProvider
+namespace OrchardCore.Modules
 {
-    IEnumerable<string> GetModuleNames();
+    public interface IModuleNamesProvider
+    {
+        IEnumerable<string> GetModuleNames();
+    }
 }

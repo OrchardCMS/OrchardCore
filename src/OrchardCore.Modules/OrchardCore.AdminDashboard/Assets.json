@@ -1,8 +1,9 @@
 [
-  {
-    "action": "sass",
-    "name": "admin-dashboard",
-    "source": "Assets/scss/dashboard.scss",
-    "tags": ["admin", "dashboard", "css"]
-  }
-]
+    {
+      "generateSourceMaps": false,
+      "inputs": [
+        "Assets/scss/dashboard.scss"
+      ],
+      "output": "wwwroot/Styles/dashboard.css"
+    }
+  ]

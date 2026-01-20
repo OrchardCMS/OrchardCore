@@ -1,40 +1,43 @@
+using System;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 
-namespace OrchardCore.Search.Lucene.QueryProviders;
-
-public class TermQueryProvider : ILuceneQueryProvider
+namespace OrchardCore.Search.Lucene.QueryProviders
 {
-    public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
+    public class TermQueryProvider : ILuceneQueryProvider
     {
-        if (type != "term")
+        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
         {
-            return null;
-        }
+            if (type != "term")
+            {
+                return null;
+            }
 
-        var first = query.First();
+            var first = query.First();
 
-        // A term query has only one member, which can either be a string or an object
+            // A term query has only one member, which can either be a string or an object
 
-        switch (first.Value.GetValueKind())
-        {
-            case JsonValueKind.String:
-                return new TermQuery(new Term(first.Key, first.Value.ToString()));
+            switch (first.Value.GetValueKind())
+            {
+                case JsonValueKind.String:
+                    return new TermQuery(new Term(first.Key, first.Value.ToString()));
 
-            case JsonValueKind.Object:
-                var obj = first.Value.AsObject();
-                var value = obj["value"].Value<string>();
-                var termQuery = new TermQuery(new Term(first.Key, value));
+                case JsonValueKind.Object:
+                    var obj = first.Value.AsObject();
+                    var value = obj["value"].Value<string>();
+                    var termQuery = new TermQuery(new Term(first.Key, value));
 
-                if (obj.TryGetPropertyValue("boost", out var boost))
-                {
-                    termQuery.Boost = boost.Value<float>();
-                }
+                    if (obj.TryGetPropertyValue("boost", out var boost))
+                    {
+                        termQuery.Boost = boost.Value<float>();
+                    }
 
-                return termQuery;
-            default: throw new ArgumentException("Invalid term query");
+                    return termQuery;
+                default: throw new ArgumentException("Invalid term query");
+            }
         }
     }
 }

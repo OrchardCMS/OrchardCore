@@ -1,0 +1,13 @@
+// 
+// Colors
+// 
+
+// Define Grayscale values used in variables before Bootstrap loads
+$gray-900: #212529;
+
+// Override Bootstrap color and state values
+$teal: #0085A1;
+$primary: $teal;
+
+// Override Bootstrap default contrast ratio
+$min-contrast-ratio: 3;

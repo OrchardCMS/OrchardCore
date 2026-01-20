@@ -1,30 +1,33 @@
+using System;
+using System.Linq;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Modules.Manifest;
 
-namespace OrchardCore.DisplayManagement.Events;
-
-public class ThemeFeatureBuilderEvents : FeatureBuilderEvents
+namespace OrchardCore.DisplayManagement.Events
 {
-    public override void Building(FeatureBuildingContext context)
+    public class ThemeFeatureBuilderEvents : FeatureBuilderEvents
     {
-        var moduleInfo = context.ExtensionInfo.Manifest.ModuleInfo;
-
-        if (moduleInfo is ThemeAttribute || (moduleInfo is ModuleMarkerAttribute &&
-            moduleInfo.Type.Equals("Theme", StringComparison.OrdinalIgnoreCase)))
+        public override void Building(FeatureBuildingContext context)
         {
-            var extensionInfo = new ThemeExtensionInfo(context.ExtensionInfo);
+            var moduleInfo = context.ExtensionInfo.Manifest.ModuleInfo;
 
-            if (extensionInfo.HasBaseTheme())
+            if (moduleInfo is ThemeAttribute || (moduleInfo is ModuleMarkerAttribute &&
+                moduleInfo.Type.Equals("Theme", StringComparison.OrdinalIgnoreCase)))
             {
-                context.FeatureDependencyIds = context
-                    .FeatureDependencyIds
-                    .Concat(new[] { extensionInfo.BaseTheme })
-                    .ToArray();
-            }
+                var extensionInfo = new ThemeExtensionInfo(context.ExtensionInfo);
 
-            context.ExtensionInfo = extensionInfo;
+                if (extensionInfo.HasBaseTheme())
+                {
+                    context.FeatureDependencyIds = context
+                        .FeatureDependencyIds
+                        .Concat(new[] { extensionInfo.BaseTheme })
+                        .ToArray();
+                }
+
+                context.ExtensionInfo = extensionInfo;
+            }
         }
     }
 }

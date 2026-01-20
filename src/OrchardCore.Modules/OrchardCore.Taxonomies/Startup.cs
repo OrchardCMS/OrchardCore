@@ -1,5 +1,10 @@
+using System;
 using Fluid;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -9,15 +14,17 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
-using OrchardCore.Taxonomies.Core;
+using OrchardCore.Taxonomies.Controllers;
 using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.GraphQL;
@@ -29,85 +36,118 @@ using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
 
-namespace OrchardCore.Taxonomies;
-
-public sealed class Startup : StartupBase
+namespace OrchardCore.Taxonomies
 {
-    public override void ConfigureServices(IServiceCollection services)
+    public class Startup : StartupBase
     {
-        services.Configure<TemplateOptions>(o =>
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
         {
-            o.MemberAccessStrategy.Register<TaxonomyField>();
-            o.MemberAccessStrategy.Register<TaxonomyPartViewModel>();
-            o.MemberAccessStrategy.Register<TermPartViewModel>();
-            o.MemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
-            o.MemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
-        })
-        .AddLiquidFilter<InheritedTermsFilter>("inherited_terms")
-        .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
+            _adminOptions = adminOptions.Value;
+        }
 
-        services.AddDataMigration<Migrations>();
-        services.AddShapeTableProvider<TermShapes>();
-        services.AddPermissionProvider<Permissions>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<TaxonomyField>();
+                o.MemberAccessStrategy.Register<TaxonomyPartViewModel>();
+                o.MemberAccessStrategy.Register<TermPartViewModel>();
+                o.MemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
+                o.MemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
+            })
+            .AddLiquidFilter<InheritedTermsFilter>("inherited_terms")
+            .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
 
-        // Taxonomy Part
-        services.AddContentPart<TaxonomyPart>()
-            .UseDisplayDriver<TaxonomyPartDisplayDriver>()
-            .AddHandler<TaxonomyPartHandler>();
+            services.AddDataMigration<Migrations>();
+            services.AddScoped<IShapeTableProvider, TermShapes>();
+            services.AddScoped<IPermissionProvider, Permissions>();
 
-        // Taxonomy Field
-        services.AddContentField<TaxonomyField>()
-            .UseDisplayDriver<TaxonomyFieldDisplayDriver>(d => !string.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase))
-            .AddHandler<TaxonomyFieldHandler>();
+            // Taxonomy Part
+            services.AddContentPart<TaxonomyPart>()
+                .UseDisplayDriver<TaxonomyPartDisplayDriver>()
+                .AddHandler<TaxonomyPartHandler>();
 
-        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
-        services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
+            // Taxonomy Field
+            services.AddContentField<TaxonomyField>()
+                .UseDisplayDriver<TaxonomyFieldDisplayDriver>(d => !string.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase))
+                .AddHandler<TaxonomyFieldHandler>();
 
-        // Taxonomy Tags Display Mode and Editor.
-        services.AddContentField<TaxonomyField>()
-            .UseDisplayDriver<TaxonomyFieldTagsDisplayDriver>(d => string.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase));
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
 
-        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
+            // Taxonomy Tags Display Mode and Editor.
+            services.AddContentField<TaxonomyField>()
+                .UseDisplayDriver<TaxonomyFieldTagsDisplayDriver>(d => string.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase));
 
-        services.AddScopedIndexProvider<TaxonomyIndexProvider>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
 
-        // Terms.
-        services.AddContentPart<TermPart>();
-        services.AddScoped<IContentHandler, TermPartContentHandler>();
-        services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
+            services.AddScopedIndexProvider<TaxonomyIndexProvider>();
 
-        services.AddScoped<IContentsTaxonomyListQueryService, DefaultContentsTaxonomyListQueryService>();
+            // Terms.
+            services.AddContentPart<TermPart>();
+            services.AddScoped<IContentHandler, TermPartContentHandler>();
+            services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var taxonomyControllerName = typeof(AdminController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "Taxonomies.Create",
+                areaName: "OrchardCore.Taxonomies",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Create/{id}",
+                defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Create) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Taxonomies.Edit",
+                areaName: "OrchardCore.Taxonomies",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Edit/{taxonomyContentItemId}/{taxonomyItemId}",
+                defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Edit) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Taxonomies.Delete",
+                areaName: "OrchardCore.Taxonomies",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}",
+                defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Delete) }
+            );
+        }
     }
-}
 
-[Feature("OrchardCore.Taxonomies.ContentsAdminList")]
-public sealed class ContentsAdminListStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
+    [Feature("OrchardCore.Taxonomies.ContentsAdminList")]
+    public class ContentsAdminListStartup : StartupBase
     {
-        services.AddScoped<IContentsAdminListFilter, TaxonomyContentsAdminListFilter>();
-        services.AddDisplayDriver<ContentOptionsViewModel, TaxonomyContentsAdminListDisplayDriver>();
-        services.AddNavigationProvider<AdminMenu>();
-        services.AddSiteDisplayDriver<TaxonomyContentsAdminListSettingsDisplayDriver>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentsAdminListFilter, TaxonomyContentsAdminListFilter>();
+            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, TaxonomyContentsAdminListDisplayDriver>();
+
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, TaxonomyContentsAdminListSettingsDisplayDriver>();
+        }
     }
-}
 
-[Feature("OrchardCore.Taxonomies.ContentsAdminList")]
-[RequireFeatures("OrchardCore.Deployment")]
-public sealed class ContentsAdminListDeploymentStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
+    [Feature("OrchardCore.Taxonomies.ContentsAdminList")]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class ContentsAdminListDeploymentStartup : StartupBase
     {
-        services.AddSiteSettingsPropertyDeploymentStep<TaxonomyContentsAdminListSettings, ContentsAdminListDeploymentStartup>(S => S["Taxonomy Filters settings"], S => S["Exports the Taxonomy filters settings."]);
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSiteSettingsPropertyDeploymentStep<TaxonomyContentsAdminListSettings, ContentsAdminListDeploymentStartup>(S => S["Taxonomy Filters settings"], S => S["Exports the Taxonomy filters settings."]);
+        }
     }
-}
 
-[RequireFeatures("OrchardCore.Apis.GraphQL")]
-public sealed class GraphQLStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
+    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    public class GraphQLStartup : StartupBase
     {
-        services.AddObjectGraphType<TaxonomyPart, TaxonomyPartQueryObjectType>();
-        services.AddObjectGraphType<TaxonomyField, TaxonomyFieldQueryObjectType>();
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddObjectGraphType<TaxonomyPart, TaxonomyPartQueryObjectType>();
+            services.AddObjectGraphType<TaxonomyField, TaxonomyFieldQueryObjectType>();
+        }
     }
 }

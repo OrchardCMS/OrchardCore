@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -8,7 +12,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
@@ -16,276 +19,258 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
-using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Flows.Drivers;
-
-public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
+namespace OrchardCore.Flows.Drivers
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IContentManager _contentManager;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger _logger;
-    private readonly INotifier _notifier;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IEnumerable<IContentHandler> _contentHandlers;
-    private readonly IEnumerable<IContentHandler> _reversedContentHandlers;
-
-    internal readonly IHtmlLocalizer H;
-
-    public BagPartDisplayDriver(
-        IContentManager contentManager,
-        IContentDefinitionManager contentDefinitionManager,
-        IServiceProvider serviceProvider,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<BagPartDisplayDriver> logger,
-        INotifier notifier,
-        IHtmlLocalizer<BagPartDisplayDriver> htmlLocalizer,
-        IEnumerable<IContentHandler> contentHandlers,
-        IAuthorizationService authorizationService
-        )
+    public class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
     {
-        _contentDefinitionManager = contentDefinitionManager;
-        _contentManager = contentManager;
-        _serviceProvider = serviceProvider;
-        _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
-        _notifier = notifier;
-        H = htmlLocalizer;
-        _contentHandlers = contentHandlers;
-        _reversedContentHandlers = contentHandlers.Reverse();
-        _authorizationService = authorizationService;
-    }
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentManager _contentManager;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
+        private readonly INotifier _notifier;
+        protected readonly IHtmlLocalizer H;
+        private readonly IAuthorizationService _authorizationService;
 
-    public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
-    {
-        var hasItems = bagPart.ContentItems.Count > 0;
-
-        return Initialize<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Empty", m =>
+        public BagPartDisplayDriver(
+            IContentManager contentManager,
+            IContentDefinitionManager contentDefinitionManager,
+            IServiceProvider serviceProvider,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<BagPartDisplayDriver> logger,
+            INotifier notifier,
+            IHtmlLocalizer<BagPartDisplayDriver> htmlLocalizer,
+            IAuthorizationService authorizationService
+            )
         {
-            m.BagPart = bagPart;
-            m.BuildPartDisplayContext = context;
-            m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
-        })
-        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
-        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
-    }
+            _contentDefinitionManager = contentDefinitionManager;
+            _contentManager = contentManager;
+            _serviceProvider = serviceProvider;
+            _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
+            _notifier = notifier;
+            H = htmlLocalizer;
+            _authorizationService = authorizationService;
+        }
 
-    public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
-    {
-        return Initialize<BagPartEditViewModel>(GetEditorShapeType(context), async m =>
+        public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
         {
+            var hasItems = bagPart.ContentItems.Count > 0;
+
+            return Initialize<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Empty", m =>
+            {
+                m.BagPart = bagPart;
+                m.BuildPartDisplayContext = context;
+                m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
+            })
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
+        }
+
+        public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
+        {
+            return Initialize<BagPartEditViewModel>(GetEditorShapeType(context), async m =>
+            {
+                var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
+                m.BagPart = bagPart;
+                m.Updater = context.Updater;
+                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
+                m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
+            });
+        }
+
+        public override async Task<IDisplayResult> UpdateAsync(BagPart part, UpdatePartEditorContext context)
+        {
+            var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
             var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            m.BagPart = bagPart;
-            m.Updater = context.Updater;
-            m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
-            m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
-            m.TypePartDefinition = context.TypePartDefinition;
-        });
-    }
+            var model = new BagPartEditViewModel { BagPart = part };
 
-    public override async Task<IDisplayResult> UpdateAsync(BagPart part, UpdatePartEditorContext context)
-    {
-        var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
-        var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var model = new BagPartEditViewModel { BagPart = part };
+            var contentItems = new List<ContentItem>();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-        var contentItems = new Dictionary<string, ContentItem>();
-        var existsingContentItems = part.ContentItems.ToDictionary(x => x.ContentItemId, StringComparer.OrdinalIgnoreCase);
-
-        // Handle the content found in the request
-        for (var i = 0; i < model.Prefixes.Length; i++)
-        {
-            var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
-
-            // Try to match the requested id with an existing id
-            ContentItem existingContentItem = null;
-
-            existsingContentItems.TryGetValue(model.ContentItems[i], out existingContentItem);
-
-            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-
-            if (existingContentItem == null && !await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem))
+            // Handle the content found in the request
+            for (var i = 0; i < model.Prefixes.Length; i++)
             {
-                // At this point the user is somehow trying to add content with no privileges. ignore the request
-                continue;
+                var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
+
+                // assign the owner of the item to ensure we can validate access to it later.
+                contentItem.Owner = GetCurrentOwner();
+
+                // Try to match the requested id with an existing id
+                var existingContentItem = part.ContentItems.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
+
+                if (existingContentItem == null && !await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, contentItem))
+                {
+                    // at this point the user is somehow trying to add content with no privileges. ignore the request
+                    continue;
+                }
+
+                // When the content item already exists merge its elements to preserve nested content item ids.
+                // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
+                // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
+                if (existingContentItem != null)
+                {
+                    if (!await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, existingContentItem))
+                    {
+                        // at this point the user is somehow modifying existing content with no privileges.
+                        // honor the existing data and ignore the data in the request
+                        contentItems.Add(existingContentItem);
+
+                        continue;
+                    }
+
+                    // at this point the user have privileges to edit, merge the data from the request
+                    contentItem.ContentItemId = model.ContentItems[i];
+                    contentItem.Merge(existingContentItem);
+                }
+
+                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
+
+                contentItems.Add(contentItem);
             }
 
-            // When the content item already exists merge its elements to preserve nested content item ids.
-            // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
-            // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
-            if (existingContentItem != null)
+            // at the end, lets add existing readonly contents.
+            foreach (var existingContentItem in part.ContentItems)
             {
-                if (!await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, existingContentItem))
+                if (contentItems.Any(x => x.ContentItemId == existingContentItem.ContentItemId))
                 {
-                    // At this point, the user is somehow modifying existing content with no privileges.
-                    // honor the existing data and ignore the data in the request
-                    contentItems.Add(existingContentItem.ContentItemId, existingContentItem);
+                    // item was already added using the edit
 
                     continue;
                 }
 
-                // At this point the user have privileges to edit, merge the data from the request
-                var updateContentContext = new UpdateContentContext(contentItem);
+                if (await AuthorizeAsync(contentDefinitionManager, CommonPermissions.DeleteContent, existingContentItem))
+                {
+                    // at this point the user has permission to delete a securable item or the type isn't securable
+                    // if the existing content id isn't in the requested ids, don't add the content item... meaning the user deleted it
+                    if (!model.ContentItems.Contains(existingContentItem.ContentItemId))
+                    {
+                        continue;
+                    }
+                }
 
-                await _contentHandlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), updateContentContext, _logger);
-
-                contentItem.ContentItemId = model.ContentItems[i];
-                contentItem.Merge(existingContentItem);
-
-                await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
-                await _reversedContentHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), updateContentContext, _logger);
-            }
-            else
-            {
-                var createContentContext = new CreateContentContext(contentItem);
-
-                await _contentHandlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), createContentContext, _logger);
-                await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
-                await _reversedContentHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), createContentContext, _logger);
+                // since the content item isn't editable, lets add it so it's not removed from the collection
+                contentItems.Add(existingContentItem);
             }
 
-            contentItems.Add(contentItem.ContentItemId, contentItem);
+            // TODO, some how here contentItems should be sorted by a defined order
+            part.ContentItems = contentItems;
+
+            return Edit(part, context);
         }
 
-        // At the end, lets add existing readonly contents.
-        foreach (var existingContentItem in part.ContentItems)
+        private async Task<IEnumerable<BagPartWidgetViewModel>> GetAccessibleWidgetsAsync(IEnumerable<ContentItem> contentItems, IContentDefinitionManager contentDefinitionManager)
         {
-            if (contentItems.ContainsKey(existingContentItem.ContentItemId))
+            var widgets = new List<BagPartWidgetViewModel>();
+
+            foreach (var contentItem in contentItems)
             {
-                // Item was already added using the edit.
-
-                continue;
-            }
-
-            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(existingContentItem.ContentType);
-
-            if (await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, existingContentItem))
-            {
-                // At this point, the user has permission to delete a securable item or the type isn't securable
-                // if the existing content id isn't in the requested ids, don't add the content item... meaning the user deleted it.
-                if (!model.ContentItems.Contains(existingContentItem.ContentItemId))
+                var widget = new BagPartWidgetViewModel
                 {
+                    ContentItem = contentItem,
+                    Viewable = true,
+                    Editable = true,
+                    Deletable = true,
+                };
+
+                var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+                if (contentTypeDefinition == null)
+                {
+                    _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", contentItem.ContentItemId, contentItem.ContentType);
+
+                    await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", contentItem.ContentItemId, contentItem.ContentType]);
+
                     continue;
+                }
+
+                if (contentTypeDefinition.IsSecurable())
+                {
+                    widget.Viewable = await AuthorizeAsync(CommonPermissions.ViewContent, contentItem);
+                    widget.Editable = await AuthorizeAsync(CommonPermissions.EditContent, contentItem);
+                    widget.Deletable = await AuthorizeAsync(CommonPermissions.DeleteContent, contentItem);
+                }
+
+                widget.ContentTypeDefinition = contentTypeDefinition;
+
+                if (widget.Editable || widget.Viewable)
+                {
+                    widgets.Add(widget);
                 }
             }
 
-            // Since the content item isn't editable, lets add it so it's not removed from the collection
-            contentItems.Add(existingContentItem.ContentItemId, existingContentItem);
+            return widgets;
         }
 
-        // TODO, some how here contentItems should be sorted by a defined order
-        part.ContentItems = contentItems.Values.ToList();
-
-        return Edit(part, context);
-    }
-
-    private async Task<IEnumerable<BagPartWidgetViewModel>> GetAccessibleWidgetsAsync(IEnumerable<ContentItem> contentItems, IContentDefinitionManager contentDefinitionManager)
-    {
-        var widgets = new List<BagPartWidgetViewModel>();
-
-        foreach (var contentItem in contentItems)
+        private async Task<bool> AuthorizeAsync(IContentDefinitionManager contentDefinitionManager, Permission permission, ContentItem contentItem)
         {
-            var widget = new BagPartWidgetViewModel
+            var contentType = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+            if (contentType?.IsSecurable() ?? false)
             {
-                ContentItem = contentItem,
-                Viewable = true,
-                Editable = true,
-                Deletable = true,
-            };
-
-            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-
-            if (contentTypeDefinition == null)
-            {
-                _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", contentItem.ContentItemId, contentItem.ContentType);
-
-                await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", contentItem.ContentItemId, contentItem.ContentType]);
-
-                continue;
+                return true;
             }
 
-            widget.Viewable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.ViewContent, contentItem);
-            widget.Editable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem);
-            widget.Deletable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, contentItem);
-            widget.ContentTypeDefinition = contentTypeDefinition;
-
-            if (widget.Editable || widget.Viewable)
-            {
-                widgets.Add(widget);
-            }
-        }
-
-        return widgets;
-    }
-
-    private async Task<bool> AuthorizeAsync(ContentTypeDefinition contentTypeDefinition, Permission permission, ContentItem contentItem)
-    {
-        if (contentTypeDefinition is not null && contentTypeDefinition.IsSecurable())
-        {
             return await AuthorizeAsync(permission, contentItem);
         }
 
-        return true;
-    }
+        private Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem)
+            => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
 
-    private Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem)
-        => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
-
-    private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
-    {
-        var settings = typePartDefinition.GetSettings<BagPartSettings>();
-        var contentTypes = Enumerable.Empty<ContentTypeDefinition>();
-
-        if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
         {
-            contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
-        }
-        else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
-        {
-            var definitions = new List<ContentTypeDefinition>();
+            var settings = typePartDefinition.GetSettings<BagPartSettings>();
+            var contentTypes = Enumerable.Empty<ContentTypeDefinition>();
 
-            foreach (var contentType in settings.ContainedContentTypes)
+            if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
             {
-                var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+                contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                    .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
+            }
+            else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
+            {
+                var definitions = new List<ContentTypeDefinition>();
 
-                if (definition == null)
+                foreach (var contentType in settings.ContainedContentTypes)
+                {
+                    var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+
+                    if (definition == null)
+                    {
+                        continue;
+                    }
+
+                    definitions.Add(definition);
+                }
+
+                contentTypes = definitions;
+            }
+
+            var user = _httpContextAccessor.HttpContext.User;
+
+            var accessibleContentTypes = new List<ContentTypeDefinition>();
+
+            foreach (var contentType in contentTypes)
+            {
+                if (contentType.IsSecurable() && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, contentType, GetCurrentOwner()))
                 {
                     continue;
                 }
 
-                definitions.Add(definition);
+                accessibleContentTypes.Add(contentType);
             }
 
-            contentTypes = definitions;
+            return accessibleContentTypes;
         }
 
-        var user = _httpContextAccessor.HttpContext.User;
-
-        var accessibleContentTypes = new List<ContentTypeDefinition>();
-
-        foreach (var contentType in contentTypes)
+        private string GetCurrentOwner()
         {
-            if (contentType.IsSecurable() && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, contentType, GetCurrentOwner()))
-            {
-                continue;
-            }
-
-            accessibleContentTypes.Add(contentType);
+            return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
-
-        return accessibleContentTypes;
-    }
-
-    private string GetCurrentOwner()
-    {
-        return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

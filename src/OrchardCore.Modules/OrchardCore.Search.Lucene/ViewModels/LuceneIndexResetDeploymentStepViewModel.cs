@@ -1,8 +1,9 @@
-namespace OrchardCore.Search.Lucene.ViewModels;
-
-public class LuceneIndexResetDeploymentStepViewModel
+namespace OrchardCore.Search.Lucene.ViewModels
 {
-    public bool IncludeAll { get; set; }
-    public string[] IndexNames { get; set; }
-    public string[] AllIndexNames { get; set; }
+    public class LuceneIndexResetDeploymentStepViewModel
+    {
+        public bool IncludeAll { get; set; }
+        public string[] IndexNames { get; set; }
+        public string[] AllIndexNames { get; set; }
+    }
 }

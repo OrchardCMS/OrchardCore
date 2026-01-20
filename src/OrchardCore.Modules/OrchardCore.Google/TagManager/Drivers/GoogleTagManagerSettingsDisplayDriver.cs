@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -7,55 +8,55 @@ using OrchardCore.Google.TagManager.Settings;
 using OrchardCore.Google.TagManager.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Google.TagManager.Drivers;
-
-public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<GoogleTagManagerSettings>
+namespace OrchardCore.Google.TagManager.Drivers
 {
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public GoogleTagManagerSettingsDisplayDriver(
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+    public class GoogleTagManagerSettingsDisplayDriver : SectionDisplayDriver<ISite, GoogleTagManagerSettings>
     {
-        _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
-    }
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-    protected override string SettingsGroupId
-        => GoogleConstants.Features.GoogleTagManager;
-
-    public override async Task<IDisplayResult> EditAsync(ISite site, GoogleTagManagerSettings settings, BuildEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
+        public GoogleTagManagerSettingsDisplayDriver(
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor)
         {
-            return null;
+            _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        return Initialize<GoogleTagManagerSettingsViewModel>("GoogleTagManagerSettings_Edit", model =>
+        public override async Task<IDisplayResult> EditAsync(GoogleTagManagerSettings settings, BuildEditorContext context)
         {
-            model.ContainerID = settings.ContainerID;
-        }).Location("Content:5")
-        .OnGroup(SettingsGroupId);
-    }
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
+            {
+                return null;
+            }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleTagManagerSettings settings, UpdateEditorContext context)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
-        {
-            return null;
+            return Initialize<GoogleTagManagerSettingsViewModel>("GoogleTagManagerSettings_Edit", model =>
+            {
+                model.ContainerID = settings.ContainerID;
+            }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleTagManager);
         }
 
-        var model = new GoogleTagManagerSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-        if (context.Updater.ModelState.IsValid)
+        public override async Task<IDisplayResult> UpdateAsync(GoogleTagManagerSettings settings, BuildEditorContext context)
         {
-            settings.ContainerID = model.ContainerID;
-        }
+            if (context.GroupId == GoogleConstants.Features.GoogleTagManager)
+            {
+                var user = _httpContextAccessor.HttpContext?.User;
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
+                {
+                    return null;
+                }
 
-        return await EditAsync(site, settings, context);
+                var model = new GoogleTagManagerSettingsViewModel();
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+                if (context.Updater.ModelState.IsValid)
+                {
+                    settings.ContainerID = model.ContainerID;
+                }
+            }
+
+            return await EditAsync(settings, context);
+        }
     }
 }

@@ -1,195 +1,201 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Environment.Shell.Scope;
 
-namespace OrchardCore.Navigation;
-
-public static class NavigationHelper
+namespace OrchardCore.Navigation
 {
-    public static bool UseLegacyFormat()
+    public class NavigationHelper
     {
-        return AppContext.TryGetSwitch(NavigationConstants.LegacyAdminMenuNavigationSwitchKey, out var enable) && enable;
-    }
+        /// <summary>
+        /// Checks if the given name matches the value <see cref="NavigationConstants.AdminId"/>.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>boolean.</returns>
+        public static bool IsAdminMenu(string name)
+            => NavigationConstants.AdminId == name;
 
-    /// <summary>
-    /// Populates the menu shapes.
-    /// </summary>
-    /// <param name="shapeFactory">The shape factory.</param>
-    /// <param name="parentShape">The menu parent shape.</param>
-    /// <param name="menu">The menu shape.</param>
-    /// <param name="menuItems">The current level to populate.</param>
-    /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
-    public static async Task PopulateMenuAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
-    {
-        await PopulateMenuLevelAsync(shapeFactory, parentShape, menu, menuItems, viewContext);
-        ApplySelection(parentShape, viewContext);
-    }
-
-    /// <summary>
-    /// Populates the menu shapes for the level recursively.
-    /// </summary>
-    /// <param name="shapeFactory">The shape factory.</param>
-    /// <param name="parentShape">The menu parent shape.</param>
-    /// <param name="menu">The menu shape.</param>
-    /// <param name="menuItems">The current level to populate.</param>
-    /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
-    public static async Task PopulateMenuLevelAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
-    {
-        foreach (var menuItem in menuItems)
+        /// <summary>
+        /// Populates the menu shapes.
+        /// </summary>
+        /// <param name="shapeFactory">The shape factory.</param>
+        /// <param name="parentShape">The menu parent shape.</param>
+        /// <param name="menu">The menu shape.</param>
+        /// <param name="menuItems">The current level to populate.</param>
+        /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
+        public static async Task PopulateMenuAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
-            dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
+            await PopulateMenuLevelAsync(shapeFactory, parentShape, menu, menuItems, viewContext);
+            ApplySelection(parentShape, viewContext);
+        }
 
-            if (menuItem.Items != null && menuItem.Items.Count > 0)
+        /// <summary>
+        /// Populates the menu shapes for the level recursively.
+        /// </summary>
+        /// <param name="shapeFactory">The shape factory.</param>
+        /// <param name="parentShape">The menu parent shape.</param>
+        /// <param name="menu">The menu shape.</param>
+        /// <param name="menuItems">The current level to populate.</param>
+        /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
+        public static async Task PopulateMenuLevelAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
+        {
+            foreach (var menuItem in menuItems)
             {
-                await PopulateMenuLevelAsync(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
-            }
+                dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
 
-            await parentShape.AddAsync(menuItemShape, menuItem.Position);
-        }
-    }
-
-    /// <summary>
-    /// Builds a menu item shape.
-    /// </summary>
-    /// <param name="shapeFactory">The shape factory.</param>
-    /// <param name="parentShape">The parent shape.</param>
-    /// <param name="menu">The menu shape.</param>
-    /// <param name="menuItem">The menu item to build the shape for.</param>
-    /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
-    /// <returns>The menu item shape.</returns>
-    private static async Task<dynamic> BuildMenuItemShapeAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, MenuItem menuItem, ViewContext viewContext)
-    {
-        var menuItemShape = (await shapeFactory.NavigationItem())
-            .Text(menuItem.Text)
-            .Href(menuItem.Href)
-            .Target(menuItem.Target)
-            .Url(menuItem.Url)
-            .LinkToFirstChild(menuItem.LinkToFirstChild)
-            .RouteValues(menuItem.RouteValues)
-            .Item(menuItem)
-            .Menu(menu)
-            .Parent(parentShape)
-            .Level(parentShape.Level == null ? 1 : (int)parentShape.Level + 1)
-            .Priority(menuItem.Priority)
-            .Local(menuItem.LocalNav)
-            .Hash((parentShape.Hash + menuItem.Text.Value).GetHashCode().ToString())
-            .Score(0);
-
-        menuItemShape.Id = menuItem.Id;
-
-        if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
-        {
-            menuItemShape.Href = QueryHelpers.AddQueryString(menuItem.Href, menu.MenuName, menuItemShape.Hash);
-        }
-
-        MarkAsSelectedIfMatchesQueryOrCookie(menuItem, menuItemShape, viewContext);
-
-        foreach (var className in menuItem.Classes)
-        {
-            menuItemShape.Classes.Add(className);
-        }
-
-        return menuItemShape;
-    }
-
-    private static void MarkAsSelectedIfMatchesQueryOrCookie(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
-    {
-        if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
-        {
-            var hash = viewContext.HttpContext.Request.Query[(string)menuItemShape.Menu.MenuName];
-
-            if (hash.Count > 0)
-            {
-                if (hash[0] == menuItemShape.Hash)
+                if (menuItem.Items != null && menuItem.Items.Any())
                 {
-                    menuItemShape.Score += 2;
+                    await PopulateMenuLevelAsync(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
                 }
-            }
-            else
-            {
-                var cookie = viewContext.HttpContext.Request.Cookies[menuItemShape.Menu.MenuName + '_' + ShellScope.Context.Settings.Name];
 
-                if (cookie == menuItemShape.Hash)
-                {
-                    menuItemShape.Score++;
-                }
+                await parentShape.AddAsync(menuItemShape, menuItem.Position);
             }
         }
 
-        menuItemShape.Selected = menuItemShape.Score > 0;
-    }
-
-    /// <summary>
-    /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
-    /// </summary>
-    /// <param name="parentShape">The menu shape.</param>
-    /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
-    private static void ApplySelection(dynamic parentShape, ViewContext viewContext)
-    {
-        var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
-
-        // Apply the selection to the hierarchy
-        if (selectedItem != null)
+        /// <summary>
+        /// Builds a menu item shape.
+        /// </summary>
+        /// <param name="shapeFactory">The shape factory.</param>
+        /// <param name="parentShape">The parent shape.</param>
+        /// <param name="menu">The menu shape.</param>
+        /// <param name="menuItem">The menu item to build the shape for.</param>
+        /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
+        /// <returns>The menu item shape.</returns>
+        private static async Task<dynamic> BuildMenuItemShapeAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, MenuItem menuItem, ViewContext viewContext)
         {
-            viewContext.HttpContext.Response.Cookies.Append(HttpUtility.UrlEncode($"{selectedItem.Menu.MenuName}_{ShellScope.Context.Settings.Name}"), selectedItem.Hash);
+            var menuItemShape = (await shapeFactory.NavigationItem())
+                .Text(menuItem.Text)
+                .Href(menuItem.Href)
+                .Url(menuItem.Url)
+                .LinkToFirstChild(menuItem.LinkToFirstChild)
+                .RouteValues(menuItem.RouteValues)
+                .Item(menuItem)
+                .Menu(menu)
+                .Parent(parentShape)
+                .Level(parentShape.Level == null ? 1 : (int)parentShape.Level + 1)
+                .Priority(menuItem.Priority)
+                .Local(menuItem.LocalNav)
+                .Hash((parentShape.Hash + menuItem.Text.Value).GetHashCode().ToString())
+                .Score(0);
 
-            while (selectedItem.Parent != null)
+            menuItemShape.Id = menuItem.Id;
+
+            if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
             {
-                selectedItem = selectedItem.Parent;
-                selectedItem.Selected = true;
+                menuItemShape.Href = QueryHelpers.AddQueryString(menuItem.Href, menu.MenuName, menuItemShape.Hash);
             }
-        }
-    }
 
-    /// <summary>
-    /// Traverses the menu and returns the selected item with the highest priority.
-    /// </summary>
-    /// <param name="parentShape">The menu shape.</param>
-    /// <returns>The selected menu item shape.</returns>
-    private static dynamic GetHighestPrioritySelectedMenuItem(dynamic parentShape)
-    {
-        dynamic result = null;
+            MarkAsSelectedIfMatchesQueryOrCookie(menuItem, menuItemShape, viewContext);
 
-        var tempStack = new Stack<dynamic>(new dynamic[] { parentShape });
-
-        while (tempStack.Count > 0)
-        {
-            // evaluate first
-            dynamic item = tempStack.Pop();
-
-            if (item.Selected == true)
+            foreach (var className in menuItem.Classes)
             {
-                if (result == null) // found the first one
+                menuItemShape.Classes.Add(className);
+            }
+
+            return menuItemShape;
+        }
+
+        private static void MarkAsSelectedIfMatchesQueryOrCookie(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
+        {
+            if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
+            {
+                var hash = viewContext.HttpContext.Request.Query[(string)menuItemShape.Menu.MenuName];
+
+                if (hash.Count > 0)
                 {
-                    result = item;
-                }
-                else // found more selected: tie break required.
-                {
-                    if (item.Score > result.Score)
+                    if (hash[0] == menuItemShape.Hash)
                     {
-                        result.Selected = false;
+                        menuItemShape.Score += 2;
+                    }
+                }
+                else
+                {
+                    var cookie = viewContext.HttpContext.Request.Cookies[menuItemShape.Menu.MenuName + '_' + ShellScope.Context.Settings.Name];
+
+                    if (cookie == menuItemShape.Hash)
+                    {
+                        menuItemShape.Score++;
+                    }
+                }
+            }
+
+            menuItemShape.Selected = menuItemShape.Score > 0;
+        }
+
+        /// <summary>
+        /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
+        /// </summary>
+        /// <param name="parentShape">The menu shape.</param>
+        /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
+        private static void ApplySelection(dynamic parentShape, ViewContext viewContext)
+        {
+            var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
+
+            // Apply the selection to the hierarchy
+            if (selectedItem != null)
+            {
+                viewContext.HttpContext.Response.Cookies.Append(HttpUtility.UrlEncode($"{selectedItem.Menu.MenuName}_{ShellScope.Context.Settings.Name}"), selectedItem.Hash);
+
+                while (selectedItem.Parent != null)
+                {
+                    selectedItem = selectedItem.Parent;
+                    selectedItem.Selected = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Traverses the menu and returns the selected item with the highest priority.
+        /// </summary>
+        /// <param name="parentShape">The menu shape.</param>
+        /// <returns>The selected menu item shape.</returns>
+        private static dynamic GetHighestPrioritySelectedMenuItem(dynamic parentShape)
+        {
+            dynamic result = null;
+
+            var tempStack = new Stack<dynamic>(new dynamic[] { parentShape });
+
+            while (tempStack.Any())
+            {
+                // evaluate first
+                dynamic item = tempStack.Pop();
+
+                if (item.Selected == true)
+                {
+                    if (result == null) // found the first one
+                    {
                         result = item;
                     }
-                    else if (item.Priority > result.Priority)
+                    else // found more selected: tie break required.
                     {
-                        result.Selected = false;
-                        result = item;
+                        if (item.Score > result.Score)
+                        {
+                            result.Selected = false;
+                            result = item;
+                        }
+                        else if (item.Priority > result.Priority)
+                        {
+                            result.Selected = false;
+                            result = item;
+                        }
+                        else
+                        {
+                            item.Selected = false;
+                        }
                     }
-                    else
-                    {
-                        item.Selected = false;
-                    }
+                }
+
+                // add children to the stack to be evaluated too
+                foreach (var i in item.Items)
+                {
+                    tempStack.Push(i);
                 }
             }
 
-            // add children to the stack to be evaluated too
-            foreach (var i in item.Items)
-            {
-                tempStack.Push(i);
-            }
+            return result;
         }
-
-        return result;
     }
 }

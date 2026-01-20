@@ -1,11 +1,12 @@
 using OrchardCore.Environment.Extensions.Features;
 
-namespace OrchardCore.Environment.Extensions;
-
-public class ExtensionPriorityStrategy : IExtensionPriorityStrategy
+namespace OrchardCore.Environment.Extensions
 {
-    public int GetPriority(IFeatureInfo feature)
+    public class ExtensionPriorityStrategy : IExtensionPriorityStrategy
     {
-        return feature.Priority;
+        public int GetPriority(IFeatureInfo feature)
+        {
+            return feature.Priority;
+        }
     }
 }

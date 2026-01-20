@@ -1,8 +1,9 @@
-namespace OrchardCore.ResourceManagement;
-
-public enum ResourcePosition
+namespace OrchardCore.ResourceManagement
 {
-    ByDependency,
-    First,
-    Last,
+    public enum ResourcePosition
+    {
+        ByDependency,
+        First,
+        Last
+    }
 }

@@ -1,10 +1,11 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Spatial.Fields;
-
-public class GeoPointField : ContentField
+namespace OrchardCore.Spatial.Fields
 {
-    public decimal? Latitude { get; set; }
+    public class GeoPointField : ContentField
+    {
+        public decimal? Latitude { get; set; }
 
-    public decimal? Longitude { get; set; }
+        public decimal? Longitude { get; set; }
+    }
 }

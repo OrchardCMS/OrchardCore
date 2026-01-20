@@ -1,6 +1,7 @@
-namespace OrchardCore.CustomSettings.ViewModels;
-
-public class CustomSettingsEditViewModel
+namespace OrchardCore.CustomSettings.ViewModels
 {
-    public dynamic Editor { get; set; }
+    public class CustomSettingsEditViewModel
+    {
+        public dynamic Editor { get; set; }
+    }
 }

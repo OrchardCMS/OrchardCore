@@ -1,19 +1,20 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Settings;
 
-public sealed class Permissions : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
+    public static readonly Permission ManageSettings = new("ManageSettings", "Manage settings");
+
+    // This permission is not exposed, it's just used for the APIs to generate/check custom ones.
+    public static readonly Permission ManageGroupSettings = new("ManageResourceSettings", "Manage settings", new[] { ManageSettings });
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        SettingsPermissions.ManageSettings,
+        ManageSettings,
     ];
-
-    [Obsolete("This will be removed in a future release. Instead use 'SettingsPermissions.ManageSettings'.")]
-    public static readonly Permission ManageSettings = SettingsPermissions.ManageSettings;
-
-    [Obsolete("This will be removed in a future release. Instead use 'SettingsPermissions.ManageGroupSettings'.")]
-    public static readonly Permission ManageGroupSettings = SettingsPermissions.ManageGroupSettings;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
@@ -22,7 +23,7 @@ public sealed class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = OrchardCoreConstants.Roles.Administrator,
+            Name = "Administrator",
             Permissions = _allPermissions,
         },
     ];

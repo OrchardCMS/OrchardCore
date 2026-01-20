@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
@@ -14,9 +13,9 @@ namespace OrchardCore.Templates.Cms.Module
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public Task<int> CreateAsync()
+        public int Create()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("MyTestPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("MyTestPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a MyTest part for your content item."));
 

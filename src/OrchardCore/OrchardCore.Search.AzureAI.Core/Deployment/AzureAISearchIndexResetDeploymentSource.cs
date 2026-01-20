@@ -1,23 +1,26 @@
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public sealed class AzureAISearchIndexResetDeploymentSource
-    : DeploymentSourceBase<AzureAISearchIndexResetDeploymentStep>
+public class AzureAISearchIndexResetDeploymentSource : IDeploymentSource
 {
     public const string Name = "azureai-index-reset";
 
-    protected override Task ProcessAsync(AzureAISearchIndexResetDeploymentStep step, DeploymentPlanResult result)
+    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        var indicesToReset = step.IncludeAll
-            ? []
-            : step.Indices;
+        if (step is not AzureAISearchIndexResetDeploymentStep resetStep)
+        {
+            return Task.CompletedTask;
+        }
+
+        var indicesToReset = resetStep.IncludeAll ? [] : resetStep.Indices;
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = Name,
-            ["includeAll"] = step.IncludeAll,
+            ["includeAll"] = resetStep.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToReset),
         });
 

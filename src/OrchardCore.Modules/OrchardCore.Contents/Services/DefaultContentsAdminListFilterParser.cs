@@ -1,17 +1,18 @@
 using OrchardCore.ContentManagement;
 using YesSql.Filters.Query;
 
-namespace OrchardCore.Contents.Services;
-
-public sealed class DefaultContentsAdminListFilterParser : IContentsAdminListFilterParser
+namespace OrchardCore.Contents.Services
 {
-    private readonly IQueryParser<ContentItem> _parser;
-
-    public DefaultContentsAdminListFilterParser(IQueryParser<ContentItem> parser)
+    public class DefaultContentsAdminListFilterParser : IContentsAdminListFilterParser
     {
-        _parser = parser;
-    }
+        private readonly IQueryParser<ContentItem> _parser;
 
-    public QueryFilterResult<ContentItem> Parse(string text)
-        => _parser.Parse(text);
+        public DefaultContentsAdminListFilterParser(IQueryParser<ContentItem> parser)
+        {
+            _parser = parser;
+        }
+
+        public QueryFilterResult<ContentItem> Parse(string text)
+            => _parser.Parse(text);
+    }
 }
