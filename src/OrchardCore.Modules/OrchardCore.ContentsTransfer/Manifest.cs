@@ -4,7 +4,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Contents Transfer",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provides a way to import and export content from and to Excel files.",
     Category = "Content Management"
 )]
