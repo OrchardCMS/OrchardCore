@@ -25,7 +25,7 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
 
 What to do if you change an SCSS, JS, or TS/TSX file in any of Orchard Core's projects, and want to update the output files (that go into the `wwwroot` folders)?
 
-1. Make sure you completed the above "Prerequisites" steps.
+1. Make sure you completed the above "Prerequisites" steps. You should always run at least `yarn` to update the dependencies.
 2. Run `yarn build` from the command line in the root of the repository. This will build all changed assets.
 
 Alternatively, if you make a lot of changes during development that you want to test quickly, you don't need to run the full build every time. Instead, use `yarn watch` to automatically build assets when you save a file. For this, run `yarn watch -n asset-name`, where `asset-name` is the `name` property you can find for the given file in the `Assets.json` file of the given project's root folder. E.g., for the Audit Trail module's `audittrailui.scss` file it's `audittrail`, so the command is `yarn watch -n audittrail`. You can also watch multiple assets at once by separating their names with commas, e.g., `yarn watch -n audittrail, audit-trail-diff-viewer`.
@@ -326,12 +326,14 @@ Consolidate multiple copy operations into a single entry:
 ```
 
 **Benefits:**
+
 - ✅ Reduces duplication in Assets.json
 - ✅ Groups related files together
 - ✅ Easier to maintain and read
 - ✅ Fully backward compatible with single string sources
 
 **Notes:**
+
 - The `source` field can be a string (single pattern) or an array of strings (multiple patterns)
 - Each pattern in the array can be a file path, glob pattern, or wildcard
 - The `dest` should always be a folder (we do not support renaming files)
@@ -477,10 +479,12 @@ if (src.startsWith("node_modules")) {
 **⚠️ Critical Limitation:** The `concat` action resolves dependencies from the **workspace root** `node_modules/` directory. This means all modules/themes using the same dependency with `concat` must coordinate their version requirements.
 
 **Why?** Yarn workspaces use "selective hoisting":
-- If all workspaces request the **same version**: Yarn hoists it to the root `node_modules/` ✅
-- If workspaces request **different versions**: Yarn hoists the most common version to root, and installs others locally in each workspace's `node_modules/` ❌
+
+- ✅ If all workspaces request the **same version**: Yarn hoists it to the root `node_modules/`
+- ❌ If workspaces request **different versions**: Yarn hoists the most common version to root, and installs others locally in each workspace's `node_modules/`
 
 Since `concat` **always** resolves from the root `node_modules/`, it will:
+
 - ✅ Work correctly when all versions match (hoisted to root)
 - ❌ **Fail** when different versions are needed (ignores local installs)
 
@@ -492,9 +496,10 @@ SomeTheme/Assets/package.json:              "bootstrap": "4.6.1"  ← Different!
 ```
 
 **Result:**
+
 - `bootstrap@5.3.8` → hoisted to `node_modules/bootstrap/` (most common)
 - `bootstrap@4.6.1` → installed in `SomeTheme/Assets/node_modules/bootstrap/`
-- `concat` action will **always use 5.3.8** from root, even for SomeTheme ❌
+- ❌ `concat` action will **always use 5.3.8** from root, even for SomeTheme
 
 ##### Solutions for Multiple Versions
 
@@ -545,6 +550,7 @@ Now you can reference either version in your `Assets.json`:
 ```
 
 **Benefits:**
+
 - ✅ Both versions are hoisted to root `node_modules/` and work with `concat`
 - ✅ Managed via package managers (no manual file copying)
 - ✅ Version updates are tracked in `package.json`
@@ -727,6 +733,7 @@ We use **NPM package aliasing** to manage multiple versions of the same package 
 ```
 
 This allows you to:
+
 - ✅ Install multiple versions of the same package
 - ✅ Reference them from `node_modules` in your `Assets.json`
 - ✅ Update versions via NPM/Yarn instead of manual copying
@@ -744,59 +751,69 @@ The following section describes the internal architecture of the asset managemen
 
 The OrchardCore asset management system uses a **three-tier package structure** designed to separate concerns and minimize version conflicts:
 
-#### 1. Root `package.json` - Workspace & Build Toolchain Manager
+#### 1. Root `package.json` - Workspace Orchestrator
 **Location:** Root of the repository  
 **Purpose:** 
+
 - Manages Yarn workspaces for the monorepo
-- Contains **all build tooling dependencies** (Parcel, Vite, Webpack, Sass, PostCSS, etc.)
-- Defines global development dependencies
+- Contains **general development dependencies** (ESLint, TypeScript, etc.)
+- References the assets-manager CLI tool as a workspace dependency
+- Defines npm scripts that invoke the assets-manager CLI
 - Can provide version constraints via `resolutions` to prevent conflicts
 
+**Why it's minimal:**
+
+- Keeps the root focused on workspace orchestration
+- Delegates build tooling to the assets-manager package
+- Avoids dependency duplication across the workspace
+
+#### 2. `.scripts/assets-manager/package.json` - Build Toolchain Package
+**Location:** `.scripts/assets-manager/`  
+**Purpose:**
+
+- Contains **all build tool dependencies** (Parcel, Vite, Webpack, Sass, PostCSS, etc.)
+- Provides the executable entry point (`bin: ./build.mjs`)
+- Defines the assets-manager CLI tool metadata
+- Centralizes all asset compilation tooling
+
 **Why it contains build tools:**
+
 - Single source of truth for all build tool versions
 - Eliminates duplication across the monorepo
 - Simplifies dependency updates (update once, applies everywhere)
 - Yarn workspaces automatically hoists these to the root `node_modules`
-
-#### 2. `.scripts/assets-manager/package.json` - CLI Tool Package
-**Location:** `.scripts/assets-manager/`  
-**Purpose:**
-- Defines the assets-manager CLI tool metadata
-- Provides the executable entry point (`bin: ./build.mjs`)
-- Contains **no dependencies** - inherits everything from workspace root
-
-**Why it's minimal:**
-- The assets-manager is a **CLI orchestrator**, not a library
-- All actual build tools are consumed from the workspace root
-- Keeps the package focused on its core responsibility: orchestrating builds
+- Clear separation: "What builds the assets" vs "What the workspace needs"
 
 #### 3. Module/Theme `Assets/package.json` Files
 **Location:** `src/OrchardCore.{Modules,Themes}/*/Assets/`  
 **Purpose:**
+
 - Contains **runtime dependencies** for the specific module/theme
 - Libraries that get bundled into the application (jQuery, Vue, Bootstrap, etc.)
 - These are the actual packages used by the frontend code
 
 **Why they're separate:**
+
 - Each module/theme has different runtime requirements
 - Version constraints specific to that module's needs
-- Clear separation: "What I build with" vs "What I ship"
+- Clear separation: "What I ship" vs "What builds it"
 
 ### Dependency Flow
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ Root package.json                                       │
-│ - Build tools (Parcel, Vite, Webpack, Sass)             │
 │ - Workspace orchestration                               │
+│ - General dev dependencies (ESLint, TypeScript)         │
+│ - References assets-manager as workspace dependency     │
 │ - Version constraints (resolutions)                     │
 └────────────┬────────────────────────────────────────────┘
              │ (workspace dependency)
              ▼
 ┌─────────────────────────────────────────────────────────┐
 │ .scripts/assets-manager/package.json                    │
-│ - CLI metadata only                                     │
-│ - No dependencies (inherits from root)                  │
+│ - Build tools (Parcel, Vite, Webpack, Sass)             │
+│ - Asset compilation dependencies                        │
 │ - Entry point: build.mjs                                │
 └────────────┬────────────────────────────────────────────┘
              │ (processes)
@@ -811,10 +828,10 @@ The OrchardCore asset management system uses a **three-tier package structure** 
 
 ### Benefits of This Architecture
 
-1. **No Duplication:** Build tools are defined once in the root
-2. **No Version Conflicts:** `resolutions` field enforces consistency
-3. **Easy Maintenance:** Update build tools in one place
-4. **Clear Separation:** Build tools vs runtime dependencies are distinct
+1. **Clear Separation:** Build tools vs workspace deps vs runtime dependencies are distinct
+2. **No Duplication:** Build tools are defined once in assets-manager package
+3. **No Version Conflicts:** `resolutions` field in root enforces consistency
+4. **Easy Maintenance:** Update build tools in one place (assets-manager package)
 5. **Workspace Efficiency:** Yarn hoisting optimizes disk usage and installation time
 
 ### How It Works
@@ -822,7 +839,7 @@ The OrchardCore asset management system uses a **three-tier package structure** 
 When you run `yarn build`:
 1. The root `package.json` script calls `assets-manager build`
 2. Yarn resolves `assets-manager` to `.scripts/assets-manager/build.mjs`
-3. The build script uses build tools (Parcel/Vite/Webpack) from root `node_modules`
+3. The build script uses build tools (Parcel/Vite/Webpack) from its own dependencies
 4. For each module, it processes the `Assets.json` and bundles the runtime dependencies
 5. Output goes to the module's `wwwroot` folder
 
@@ -831,17 +848,23 @@ When you run `yarn build`:
 #### Adding Build Tool Dependencies
 To add or update a build tool (e.g., upgrading Parcel, adding a new PostCSS plugin):
 
-1. Add/update it in the **root** `package.json` under `devDependencies`
+1. Add/update it in the **`.scripts/assets-manager/package.json`** under `dependencies`
 2. Run `yarn install` from the repository root
-3. If you need to enforce a specific version across all workspaces, add it to `resolutions`
+3. If you need to enforce a specific version across all workspaces, add it to the root `package.json` `resolutions`
 
 **Example:**
 ```json
-// package.json (root)
+// .scripts/assets-manager/package.json
 {
-  "devDependencies": {
+  "dependencies": {
     "parcel": "2.14.0"  // Update version
-  },
+  }
+}
+```
+
+```json
+// package.json (root) - optional, for enforcing versions
+{
   "resolutions": {
     "parcel": "2.14.0"  // Enforce everywhere
   }
