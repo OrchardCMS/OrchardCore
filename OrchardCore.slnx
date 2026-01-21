@@ -64,7 +64,7 @@
     <File Path="renovate.json5" />
   </Folder>
   <Folder Name="/src/">
-    <Project DefaultStartup="true" Path="src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj" />
+    <Project Path="src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj" />
   </Folder>
   <Folder Name="/src/OrchardCore.Frameworks/">
     <Project Path="src/OrchardCore/OrchardCore.Mvc.Core/OrchardCore.Mvc.Core.csproj" />
@@ -197,6 +197,8 @@
     <Project Path="src/OrchardCore/OrchardCore.ContentPreview.Abstractions/OrchardCore.ContentPreview.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Contents.Core/OrchardCore.Contents.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Contents.TagHelpers/OrchardCore.Contents.TagHelpers.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.ContentsTransfer.Abstractions/OrchardCore.ContentsTransfer.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.ContentsTransfer.Core/OrchardCore.ContentsTransfer.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.ContentTypes.Abstractions/OrchardCore.ContentTypes.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Data.Abstractions/OrchardCore.Data.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Data.YesSql.Abstractions/OrchardCore.Data.YesSql.Abstractions.csproj" />

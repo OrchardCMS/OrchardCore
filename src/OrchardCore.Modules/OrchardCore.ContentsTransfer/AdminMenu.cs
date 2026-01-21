@@ -1,42 +1,21 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentsTransfer.Controllers;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    protected readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
-    public AdminMenu(
-        IContentDefinitionManager contentDefinitionManager,
-        IStringLocalizer<AdminMenu> stringLocalizer,
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor
-        )
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        _contentDefinitionManager = contentDefinitionManager;
         S = stringLocalizer;
-        _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!string.Equals("admin", name, StringComparison.OrdinalIgnoreCase))
-        {
-            return Task.CompletedTask;
-        }
-
         var adminControllerName = typeof(AdminController).ControllerName();
 
         builder
@@ -44,19 +23,21 @@ public class AdminMenu : INavigationProvider
                 .Add(S["Bulk Import"], S["Bulk Import"].PrefixPosition(), transfer => transfer
                     .Action(nameof(AdminController.List), adminControllerName, new
                     {
-                        area = ContentTransferConstants.Feature.ModuleId
+                        area = ContentTransferConstants.Feature.ModuleId,
                     })
                     .Permission(ContentTransferPermissions.ListContentTransferEntries)
+                    .LocalNav()
                 )
                 .Add(S["Bulk Export"], S["Bulk Export"].PrefixPosition(), transfer => transfer
                     .Action(nameof(AdminController.Export), adminControllerName, new
                     {
-                        area = ContentTransferConstants.Feature.ModuleId
+                        area = ContentTransferConstants.Feature.ModuleId,
                     })
                     .Permission(ContentTransferPermissions.ExportContentFromFile)
+                    .LocalNav()
                 )
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

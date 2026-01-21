@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentsTransfer.Models;
 using OrchardCore.ContentsTransfer.ViewModels;
@@ -8,29 +5,26 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace CrestApps.Contents.Imports.Drivers;
+namespace OrchardCore.ContentsTransfer.Drivers;
 
-public class ImportContentDisplayDriver : DisplayDriver<ImportContent>
+public sealed class ImportContentDisplayDriver : DisplayDriver<ImportContent>
 {
-    protected readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
-    private static readonly HashSet<string> _allowedExtensions = new()
+    private static readonly HashSet<string> _allowedExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
-        ".csv",
-        ".xls",
-        ".xlsx"
+        ".xlsx",
     };
 
-    public ImportContentDisplayDriver(
-        IStringLocalizer<ImportContentDisplayDriver> stringLocalizer
-        )
+    public ImportContentDisplayDriver(IStringLocalizer<ImportContentDisplayDriver> stringLocalizer)
     {
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(ImportContent model)
-        => Initialize<ContentImportViewModel>("ImportContentFile_Edit", viewModel => viewModel.File = model.File)
-            .Location("Content:1");
+    public override Task<IDisplayResult> EditAsync(ImportContent model, BuildEditorContext context)
+        => Task.FromResult<IDisplayResult>(
+            Initialize<ContentImportViewModel>("ImportContentFile_Edit", viewModel => viewModel.File = model.File)
+            .Location("Content:1"));
 
     public override async Task<IDisplayResult> UpdateAsync(ImportContent model, UpdateEditorContext context)
     {
@@ -48,13 +42,13 @@ public class ImportContentDisplayDriver : DisplayDriver<ImportContent>
 
                 if (!_allowedExtensions.Contains(extension))
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.File), S["This extension is not allowed"]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.File), S["Only .xlsx files are supported."]);
                 }
 
                 model.File = viewModel.File;
             }
         }
 
-        return Edit(model);
+        return await EditAsync(model, context);
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
 using YesSql.Services;
@@ -176,10 +175,7 @@ public class ContentImportManager : IContentImportManager
 
     public async Task ExportAsync(ContentExportContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentNullException.ThrowIfNull(context);
 
         await _contentImportHandlers.InvokeAsync(handler => handler.ExportAsync(context), _logger);
 

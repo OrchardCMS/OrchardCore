@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OrchardCore.ContentsTransfer.Models;
+namespace OrchardCore.ContentsTransfer;
 
 public class ContentTransferEntryQueryResult
 {
