@@ -2425,7 +2425,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/liquid@workspace:src/OrchardCore.Modules/OrchardCore.Liquid/Assets"
   dependencies:
-    monaco-editor: "npm:0.55.1"
+    monaco-editor: "npm:0.56.0-dev-20260121"
   languageName: unknown
   linkType: soft
 
@@ -2504,7 +2504,7 @@ __metadata:
     jquery.easing: "npm:1.4.1"
     jquery.ui.widget: "npm:1.10.3"
     js-cookie: "npm:3.0.5"
-    monaco-editor: "npm:0.55.1"
+    monaco-editor: "npm:0.56.0-dev-20260121"
     nestedSortable: "npm:1.3.4"
     nouislider: "npm:15.7.0"
     popper.js: "npm:1.16.1"
@@ -10477,13 +10477,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.55.1":
-  version: 0.55.1
-  resolution: "monaco-editor@npm:0.55.1"
+"monaco-editor@npm:0.56.0-dev-20260121":
+  version: 0.56.0-dev-20260121
+  resolution: "monaco-editor@npm:0.56.0-dev-20260121"
   dependencies:
     dompurify: "npm:3.2.7"
     marked: "npm:14.0.0"
-  checksum: 10/73836b612a923342001b8cbb459aad0de486c94672fb7cf9d28bdafed9f3b7523d5aba510d9f8e7d24476a5aacf0d3a5c0cdc520ed4764f6f89f8cf5ba8d9329
+  checksum: 10/63b231a189ab9e36730716604c6d28dfd68e305f6dbb41817041284fd6bfaf016f42df1fea7e24dbd1369de6d8bda4b96c44a8e065ee7f106444d94effa342c5
   languageName: node
   linkType: hard
 

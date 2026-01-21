@@ -1,0 +1,1 @@
+define("vs/json.worker-DGsNKzKv", ["require", "exports"], (function(require, r){"use strict";const e=""+new URL(require.toUrl("./assets/json.worker-DHFIjIvp.js"),document.baseURI).href;r.__worker_url_0__=e}));

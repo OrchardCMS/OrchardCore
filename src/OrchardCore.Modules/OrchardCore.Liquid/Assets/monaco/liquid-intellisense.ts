@@ -166,24 +166,22 @@ const completionItemProvider: monaco.languages.CompletionItemProvider = {
 };
 
 function ConfigureLiquidIntellisense(monaco: any, suggestHtml: boolean = true) {
-    // TODO: Enable HTML suggestions inside Liquid templates. Currently disabled due to problems with the latest
-    // Monaco editor version.
-    // if (suggestHtml) {
-    //     var modeConfiguration: monaco.html.ModeConfiguration = {
-    //         completionItems: true,
-    //         colors: true,
-    //         foldingRanges: true,
-    //         selectionRanges: true,
-    //         diagnostics: false,
-    //         documentFormattingEdits: true,
-    //         documentRangeFormattingEdits: true,
-    //     };
-    //     var options: monaco.html.Options = {
-    //         format: monaco.html.htmlDefaults.options.format,
-    //         suggest: { html5: true },
-    //     };
-    //     monaco.html.registerHTMLLanguageService("liquid", options, modeConfiguration);
-    // }
+    if (suggestHtml) {
+        var modeConfiguration: monaco.html.ModeConfiguration = {
+            completionItems: true,
+            colors: true,
+            foldingRanges: true,
+            selectionRanges: true,
+            diagnostics: false,
+            documentFormattingEdits: true,
+            documentRangeFormattingEdits: true,
+        };
+        var options: monaco.html.Options = {
+            format: monaco.html.htmlDefaults.options.format,
+            suggest: { html5: true },
+        };
+        monaco.html.registerHTMLLanguageService("liquid", options, modeConfiguration);
+    }
 
     monaco.languages.registerCompletionItemProvider("liquid", completionItemProvider);
 }
