@@ -802,27 +802,27 @@ The OrchardCore asset management system uses a **three-tier package structure** 
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ Root package.json                                       │
-│ - Workspace orchestration                               │
-│ - General dev dependencies (ESLint, TypeScript)         │
-│ - References assets-manager as workspace dependency     │
-│ - Version constraints (resolutions)                     │
+│ Root package.json                                   │
+│ - Workspace orchestration                           │
+│ - General dev dependencies (ESLint, TypeScript)     │
+│ - References assets-manager as workspace dependency │
+│ - Version constraints (resolutions)                 │
 └────────────┬────────────────────────────────────────────┘
              │ (workspace dependency)
              ▼
 ┌─────────────────────────────────────────────────────────┐
-│ .scripts/assets-manager/package.json                    │
-│ - Build tools (Parcel, Vite, Webpack, Sass)             │
-│ - Asset compilation dependencies                        │
-│ - Entry point: build.mjs                                │
+│ .scripts/assets-manager/package.json                │
+│ - Build tools (Parcel, Vite, Webpack, Sass)         │
+│ - Asset compilation dependencies                    │
+│ - Entry point: build.mjs                            │
 └────────────┬────────────────────────────────────────────┘
              │ (processes)
              ▼
 ┌─────────────────────────────────────────────────────────┐
-│ Module/Theme Assets/package.json                        │
-│ - Runtime dependencies (jQuery, Vue, etc.)              │
-│ - Libraries that get bundled                            │
-│ - Module-specific versions                              |
+│ Module/Theme Assets/package.json                    │
+│ - Runtime dependencies (jQuery, Vue, etc.)          │
+│ - Libraries that get bundled                        │
+│ - Module-specific versions                          |
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -837,6 +837,7 @@ The OrchardCore asset management system uses a **three-tier package structure** 
 ### How It Works
 
 When you run `yarn build`:
+
 1. The root `package.json` script calls `assets-manager build`
 2. Yarn resolves `assets-manager` to `.scripts/assets-manager/build.mjs`
 3. The build script uses build tools (Parcel/Vite/Webpack) from its own dependencies
