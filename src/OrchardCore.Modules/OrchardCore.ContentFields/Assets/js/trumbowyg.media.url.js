@@ -27,7 +27,7 @@
 
                                 $(window).trigger('scroll');
 
-                                for (i = 0; i < mediaApp.selectedMedias.length; i++) {
+                                for (let i = 0; i < mediaApp.selectedMedias.length; i++) {
                                     var img = document.createElement("img");
                                     img.src = mediaApp.selectedMedias[i].url;
                                     img.alt = mediaApp.selectedMedias[i].name;

@@ -14,6 +14,7 @@ Vue.component('mediaFieldThumbsContainer', {
             <li v-for="media in mediaItems"
                 :key="media.vuekey"
                 class="media-thumb-item media-container-main-list-item card overflow"
+                :class="{'media-thumb-item-active': !allowMultiple && selectedMedia === media}"
                 :style="{width: thumbSize + 2 + 'px'}"
                 v-on:click="selectMedia(media)"
                 v-if="!media.isRemoved">

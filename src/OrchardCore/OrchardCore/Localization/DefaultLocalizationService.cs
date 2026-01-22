@@ -18,4 +18,6 @@ public class DefaultLocalizationService : ILocalizationService
 
     /// <inheritdocs />
     public Task<string[]> GetSupportedCulturesAsync() => _supportedCultures;
+
+    public IEnumerable<CultureInfo> GetAllCulturesAndAliases() => CultureInfo.GetCultures(CultureTypes.AllCultures);
 }

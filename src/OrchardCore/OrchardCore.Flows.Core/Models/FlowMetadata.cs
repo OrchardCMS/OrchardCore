@@ -8,6 +8,7 @@ public enum FlowAlignment
     Center,
     Right,
     Justify,
+    Inherit,
 }
 
 public class FlowMetadata : ContentPart
