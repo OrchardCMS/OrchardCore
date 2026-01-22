@@ -125,11 +125,11 @@ public class BlobFileStore : IFileStore
     private async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentByHierarchyAsync(string path = null)
     {
         path = this.NormalizePath(path);
-        
+
         var prefix = this.Combine(_basePrefix, path);
         prefix = NormalizePrefix(prefix);
 
-        var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
+        var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix, CancellationToken.None);
 
         await foreach (var blob in page)
         {
@@ -161,14 +161,14 @@ public class BlobFileStore : IFileStore
     private async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentFlatAsync(string path = null)
     {
         path = this.NormalizePath(path);
-        
+
         // Folders are considered case sensitive in blob storage.
         var directories = new HashSet<string>();
 
         var prefix = this.Combine(_basePrefix, path);
         prefix = NormalizePrefix(prefix);
 
-        var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
+        var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix, CancellationToken.None);
         await foreach (var blob in page)
         {
             var name = WebUtility.UrlDecode(blob.Name);
@@ -265,7 +265,7 @@ public class BlobFileStore : IFileStore
             var prefix = this.Combine(_basePrefix, path);
             prefix = NormalizePrefix(prefix);
 
-            var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
+            var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix, CancellationToken.None);
             await foreach (var blob in page)
             {
                 var blobReference = _blobContainer.GetBlobClient(blob.Name);
@@ -424,7 +424,7 @@ public class BlobFileStore : IFileStore
         prefix = NormalizePrefix(prefix);
 
         // Directory exists if path contains any files.
-        var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
+        var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix, CancellationToken.None);
 
         var enumerator = page.GetAsyncEnumerator();
 
