@@ -1,3 +1,4 @@
+using OrchardCore.ContentTypes.Shapes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 
@@ -21,11 +22,20 @@ public class ContentCardShapes : ShapeTableProvider
             {
                 // Defines Edit Alternates for the Content Item being edited.
                 var contentCardEditor = context.Shape;
-                var collectionType = contentCardEditor.GetProperty<string>("CollectionShapeType");
-                var contentType = contentCardEditor.GetProperty<string>("ContentTypeValue");
-                var parentContentType = contentCardEditor.GetProperty<string>("ParentContentType");
-                var namedPart = contentCardEditor.GetProperty<string>("CollectionPartName");
-                if (contentCardEditor.TryGetProperty<bool>("BuildEditor", out var buildEditor) && buildEditor)
+                
+                // Access properties - works with both dynamic and strongly typed shapes
+                var collectionType = (contentCardEditor as ContentCardShape)?.CollectionShapeType 
+                    ?? contentCardEditor.GetProperty<string>("CollectionShapeType");
+                var contentType = (contentCardEditor as ContentCardShape)?.ContentTypeValue 
+                    ?? contentCardEditor.GetProperty<string>("ContentTypeValue");
+                var parentContentType = (contentCardEditor as ContentCardShape)?.ParentContentType 
+                    ?? contentCardEditor.GetProperty<string>("ParentContentType");
+                var namedPart = (contentCardEditor as ContentCardShape)?.CollectionPartName 
+                    ?? contentCardEditor.GetProperty<string>("CollectionPartName");
+                var buildEditor = (contentCardEditor as ContentCardShape)?.BuildEditor 
+                    ?? contentCardEditor.TryGetProperty<bool>("BuildEditor", out var be) && be;
+                    
+                if (buildEditor)
                 {
                     // Define edit card shape per collection type
                     // ContentCard_Edit__[CollectionType]
@@ -79,11 +89,26 @@ public class ContentCardShapes : ShapeTableProvider
             .OnDisplaying(context =>
             {
                 // Alternates for Outer Frame of ContentCard
-                dynamic contentCardFrame = context.Shape;
-                string collectionType = contentCardFrame.ChildContent.CollectionShapeType;
-                var contentType = contentCardFrame.ChildContent.ContentTypeValue as string;
-                string parentContentType = contentCardFrame.ChildContent.ParentContentType;
-                string namedPart = contentCardFrame.ChildContent.CollectionPartName;
+                var contentCardFrame = context.Shape;
+                
+                // Access ChildContent - works with both dynamic and strongly typed shapes
+                var childContent = (contentCardFrame as ContentCardFrameShape)?.ChildContent 
+                    ?? contentCardFrame.GetProperty<IShape>("ChildContent");
+                    
+                if (childContent == null)
+                {
+                    return;
+                }
+                
+                // Access properties from ChildContent
+                var collectionType = (childContent as ContentCardShape)?.CollectionShapeType 
+                    ?? childContent.GetProperty<string>("CollectionShapeType");
+                var contentType = (childContent as ContentCardShape)?.ContentTypeValue 
+                    ?? childContent.GetProperty<string>("ContentTypeValue");
+                var parentContentType = (childContent as ContentCardShape)?.ParentContentType 
+                    ?? childContent.GetProperty<string>("ParentContentType");
+                var namedPart = (childContent as ContentCardShape)?.CollectionPartName 
+                    ?? childContent.GetProperty<string>("CollectionPartName");
 
                 // Define Frame card shape per collection type
                 // ContentCard_Frame__[CollectionType]
@@ -136,8 +161,24 @@ public class ContentCardShapes : ShapeTableProvider
            .OnDisplaying(context =>
            {
                var contentCardEditorFields = context.Shape;
-               var collectionType = contentCardEditorFields.GetProperty<IShape>("CardShape").GetProperty<string>("CollectionShapeType");
-               contentCardEditorFields.Metadata.Alternates.Add($"{collectionType}_Fields_Edit");
+               
+               // Access CardShape property - works with both dynamic and strongly typed shapes
+               var cardShape = (contentCardEditorFields as ContentCardFieldsEditShape)?.CardShape 
+                   ?? contentCardEditorFields.GetProperty<IShape>("CardShape");
+                   
+               if (cardShape == null)
+               {
+                   return;
+               }
+               
+               // Access CollectionShapeType from CardShape
+               var collectionType = (cardShape as ContentCardShape)?.CollectionShapeType 
+                   ?? cardShape.GetProperty<string>("CollectionShapeType");
+                   
+               if (!string.IsNullOrEmpty(collectionType))
+               {
+                   contentCardEditorFields.Metadata.Alternates.Add($"{collectionType}_Fields_Edit");
+               }
            });
 
         return ValueTask.CompletedTask;

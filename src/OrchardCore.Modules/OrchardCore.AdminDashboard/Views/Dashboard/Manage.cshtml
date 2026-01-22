@@ -29,7 +29,7 @@
             <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="new-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 @T["Add Widget"]
             </button>
-            <ul class="dropdown-menu dropdown-menu-end scrollable" aria-labelledby="bulk-action-menu-button">
+            <ul class="dropdown-menu dropdown-menu-end scrollable">
                 @foreach (var item in Model.Creatable)
                 {
                     <li><a class="dropdown-item add-list-widget btn-sm" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[Html.Encode(item.Text)]</a></li>

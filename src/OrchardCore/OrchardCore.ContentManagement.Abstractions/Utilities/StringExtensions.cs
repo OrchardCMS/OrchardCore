@@ -188,18 +188,6 @@ public static class StringExtensions
         return name;
     }
 
-    [Obsolete("Use Char.IsLetter() instead.")]
-    public static bool IsLetter(this char c)
-    {
-        return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z');
-    }
-
-    [Obsolete("Use Char.IsWhiteSpace() instead.")]
-    public static bool IsSpace(this char c)
-    {
-        return c == '\r' || c == '\n' || c == '\t' || c == '\f' || c == ' ';
-    }
-
     public static bool IsReservedContentName(this string name) => _reservedNames.Contains(name);
 
     public static string RemoveDiacritics(this string name)
