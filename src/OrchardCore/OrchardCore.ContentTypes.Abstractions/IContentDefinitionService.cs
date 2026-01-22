@@ -3,11 +3,10 @@ using OrchardCore.ContentManagement.Metadata.Models;
 namespace OrchardCore.ContentTypes;
 
 /// <summary>
-/// Provides a reusable coordinator service for content definition operations.
+/// Provides a reusable service for content definition operations.
 /// This interface provides methods that trigger content definition events and can be used across modules.
-/// For view model-related operations, use the implementation directly in the ContentTypes module.
 /// </summary>
-public interface IContentDefinitionCoordinator
+public interface IContentDefinitionService
 {
     /// <summary>
     /// Creates a new content type with the specified name and display name.
@@ -84,6 +83,18 @@ public interface IContentDefinitionCoordinator
     /// <param name="fieldName">The name of the field to remove.</param>
     /// <param name="partName">The name of the part to remove the field from.</param>
     Task RemoveFieldFromPartAsync(string fieldName, string partName);
+
+    /// <summary>
+    /// Alters a field's settings in a content part.
+    /// </summary>
+    /// <param name="context">The context containing field alteration details.</param>
+    Task AlterFieldAsync(AlterFieldContext context);
+
+    /// <summary>
+    /// Alters a type part's settings in a content type.
+    /// </summary>
+    /// <param name="context">The context containing type part alteration details.</param>
+    Task AlterTypePartAsync(AlterTypePartContext context);
 
     /// <summary>
     /// Alters the order of parts in a content type.
