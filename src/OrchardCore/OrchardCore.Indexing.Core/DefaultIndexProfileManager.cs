@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Abstractions.Indexing;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core;
@@ -10,15 +11,18 @@ namespace OrchardCore.Indexing.Core;
 public sealed class DefaultIndexProfileManager : IIndexProfileManager
 {
     private readonly IIndexProfileStore _store;
+    private readonly IDistributedLock _distributedLock;
     private readonly IEnumerable<IIndexProfileHandler> _handlers;
     private readonly ILogger _logger;
 
     public DefaultIndexProfileManager(
         IIndexProfileStore store,
+        IDistributedLock distributedLock,
         IEnumerable<IIndexProfileHandler> handlers,
         ILogger<DefaultIndexProfileManager> logger)
     {
         _store = store;
+        _distributedLock = distributedLock;
         _handlers = handlers;
         _logger = logger;
     }
@@ -202,20 +206,62 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
         return models;
     }
 
-    public async ValueTask SynchronizeAsync(IndexProfile index)
+    public async ValueTask<bool> SynchronizeAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        var synchronizedContext = new IndexProfileSynchronizedContext(index);
-        await _handlers.InvokeAsync((handler, ctx) => handler.SynchronizedAsync(ctx), synchronizedContext, _logger);
+        (var locker, var locked) = await _distributedLock.TryAcquireLockAsync($"IndexProfileSynchronize-{index.Id}", TimeSpan.FromSeconds(5));
+
+        if (!locked)
+        {
+            _logger.LogWarning("Unable to acquire lock for synchronizing index profile '{IndexProfileId}'", index.Id);
+
+            await locker.DisposeAsync();
+
+            return false;
+        }
+
+        try
+        {
+            var synchronizedContext = new IndexProfileSynchronizedContext(index);
+
+            await _handlers.InvokeAsync((handler, ctx) => handler.SynchronizedAsync(ctx), synchronizedContext, _logger);
+
+            return true;
+        }
+        finally
+        {
+            await locker.DisposeAsync();
+        }
     }
 
-    public async ValueTask ResetAsync(IndexProfile index)
+    public async ValueTask<bool> ResetAsync(IndexProfile index)
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        var validatingContext = new IndexProfileResetContext(index);
-        await _handlers.InvokeAsync((handler, ctx) => handler.ResetAsync(ctx), validatingContext, _logger);
+        // Reset operation should be protected against concurrent executions.
+        (var locker, var locked) = await _distributedLock.TryAcquireLockAsync($"IndexProfileReset-{index.Id}", TimeSpan.FromSeconds(5));
+
+        if (!locked)
+        {
+            _logger.LogWarning("Unable to acquire lock for resetting index profile '{IndexProfileId}'", index.Id);
+
+            await locker.DisposeAsync();
+
+            return false;
+        }
+
+        try
+        {
+            var validatingContext = new IndexProfileResetContext(index);
+            await _handlers.InvokeAsync((handler, ctx) => handler.ResetAsync(ctx), validatingContext, _logger);
+
+            return true;
+        }
+        finally
+        {
+            await locker.DisposeAsync();
+        }
     }
 
     private async ValueTask LoadAsync(IndexProfile index)

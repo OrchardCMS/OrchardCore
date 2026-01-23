@@ -130,7 +130,7 @@ public interface IIndexProfileManager
     /// <returns>
     /// A <see cref="Task"/> that represents the asynchronous operation.
     /// </returns>
-    ValueTask SynchronizeAsync(IndexProfile indexProfile);
+    ValueTask<bool> SynchronizeAsync(IndexProfile indexProfile);
 
     /// <summary>
     /// Asynchronously resets the specified index entity.
@@ -139,7 +139,7 @@ public interface IIndexProfileManager
     /// <returns>
     /// A <see cref="Task"/> that represents the asynchronous operation.
     /// </returns>
-    ValueTask ResetAsync(IndexProfile indexProfile);
+    ValueTask<bool> ResetAsync(IndexProfile indexProfile);
 
     /// <summary>
     /// Asynchronously retrieves a model by its unique name.

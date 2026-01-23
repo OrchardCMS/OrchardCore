@@ -40,7 +40,11 @@ public sealed class ResetIndexStep : NamedRecipeStepHandler
 
             foreach (var index in indexes)
             {
-                await indexProfileManager.ResetAsync(index);
+                if (!await indexProfileManager.ResetAsync(index))
+                {
+                    continue;
+                }
+
                 await indexProfileManager.UpdateAsync(index);
                 await indexProfileManager.SynchronizeAsync(index);
             }

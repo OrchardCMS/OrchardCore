@@ -41,10 +41,20 @@ public sealed class AzureAISearchIndexRebuildStep : NamedRecipeStepHandler
 
             foreach (var indexProfile in indexProfiles)
             {
-                await indexProfileManager.ResetAsync(indexProfile);
-                await indexProfileManager.UpdateAsync(indexProfile);
-                await indexManager.RebuildAsync(indexProfile);
-                await indexProfileManager.SynchronizeAsync(indexProfile);
+                var reset = await indexProfileManager.ResetAsync(indexProfile);
+
+                if (reset)
+                {
+                    await indexProfileManager.UpdateAsync(indexProfile);
+                }
+
+                // Always attempt to rebuild the index even if we failed to reset it.
+                var rebuilt = await indexManager.RebuildAsync(indexProfile);
+
+                if (rebuilt && reset)
+                {
+                    await indexProfileManager.SynchronizeAsync(indexProfile);
+                }
             }
         });
     }

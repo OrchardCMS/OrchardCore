@@ -395,11 +395,17 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        await _indexProfileManager.ResetAsync(indexProfile);
-        await _indexProfileManager.UpdateAsync(indexProfile);
-        await _indexProfileManager.SynchronizeAsync(indexProfile);
+        if (await _indexProfileManager.ResetAsync(indexProfile))
+        {
+            await _indexProfileManager.UpdateAsync(indexProfile);
+            await _indexProfileManager.SynchronizeAsync(indexProfile);
 
-        await _notifier.SuccessAsync(H["An index has been reset successfully. The synchronizing process was triggered in the background."]);
+            await _notifier.SuccessAsync(H["An index has been reset successfully. The synchronizing process was triggered in the background."]);
+        }
+        else
+        {
+            await _notifier.ErrorAsync(H["An error occurred while resetting the index."]);
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -452,10 +458,17 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        await _indexProfileManager.ResetAsync(indexProfile);
-        await _indexProfileManager.UpdateAsync(indexProfile);
+        var reset = await _indexProfileManager.ResetAsync(indexProfile);
 
-        if (await indexManager.RebuildAsync(indexProfile))
+        if (reset)
+        {
+            await _indexProfileManager.UpdateAsync(indexProfile);
+        }
+
+        // Always attempt to rebuild the index even if we failed to reset it.
+        var rebuilt = await indexManager.RebuildAsync(indexProfile);
+
+        if (rebuilt && reset)
         {
             await _indexProfileManager.SynchronizeAsync(indexProfile);
 
@@ -545,9 +558,11 @@ public sealed class AdminController : Controller
                             continue;
                         }
 
-                        await _indexProfileManager.ResetAsync(indexProfile);
-                        await _indexProfileManager.UpdateAsync(indexProfile);
-                        await _indexProfileManager.SynchronizeAsync(indexProfile);
+                        if (await _indexProfileManager.ResetAsync(indexProfile))
+                        {
+                            await _indexProfileManager.UpdateAsync(indexProfile);
+                            await _indexProfileManager.SynchronizeAsync(indexProfile);
+                        }
 
                         resetCounter++;
                     }
@@ -617,9 +632,11 @@ public sealed class AdminController : Controller
 
                         rebuildCounter++;
 
-                        await _indexProfileManager.ResetAsync(indexProfile);
-                        await _indexProfileManager.UpdateAsync(indexProfile);
-                        await _indexProfileManager.SynchronizeAsync(indexProfile);
+                        if (await _indexProfileManager.ResetAsync(indexProfile))
+                        {
+                            await _indexProfileManager.UpdateAsync(indexProfile);
+                            await _indexProfileManager.SynchronizeAsync(indexProfile);
+                        }
                     }
 
                     if (rebuildCounter == 0)

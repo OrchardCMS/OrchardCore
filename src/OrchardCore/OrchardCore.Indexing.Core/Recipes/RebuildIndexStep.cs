@@ -53,9 +53,17 @@ public sealed class RebuildIndexStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                await indexProfileManager.ResetAsync(index);
-                await indexProfileManager.UpdateAsync(index);
-                if (await indexManager.RebuildAsync(index))
+                var reset = await indexProfileManager.ResetAsync(index);
+
+                if (reset)
+                {
+                    await indexProfileManager.UpdateAsync(index);
+                }
+
+                // Always attempt to rebuild the index even if we failed to reset it.
+                var rebuilt = await indexManager.RebuildAsync(index);
+
+                if (rebuilt && reset)
                 {
                     await indexProfileManager.SynchronizeAsync(index);
                 }

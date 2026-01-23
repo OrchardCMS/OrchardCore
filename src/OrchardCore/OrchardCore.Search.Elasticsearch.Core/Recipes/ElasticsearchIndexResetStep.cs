@@ -49,15 +49,22 @@ public sealed class ElasticsearchIndexResetStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                await _indexProfileManager.ResetAsync(index);
-                await _indexProfileManager.UpdateAsync(index);
+                var reset = await _indexProfileManager.ResetAsync(index);
+
+                if (reset)
+                {
+                    await _indexProfileManager.UpdateAsync(index);
+                }
 
                 if (!await indexManager.ExistsAsync(index.IndexFullName))
                 {
                     await indexManager.CreateAsync(index);
                 }
 
-                await _indexProfileManager.SynchronizeAsync(index);
+                if (reset)
+                {
+                    await _indexProfileManager.SynchronizeAsync(index);
+                }
             }
         }
     }
