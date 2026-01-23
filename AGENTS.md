@@ -342,7 +342,7 @@ corepack enable
 yarn
 
 # Build all assets including gulp
-yarn build -gr
+yarn build
 ```
 
 ### Assets.json Configuration
@@ -724,7 +724,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 1. Follow existing code style and conventions
 2. Include unit tests for new functionality
 3. Update documentation if adding new features
-4. Run asset build if modifying CSS/JS: `yarn build -gr`
+4. Run asset build if modifying CSS/JS: `yarn build`
 5. Ensure all tests pass: `dotnet test`
 6. Link related GitHub issues using `Fixes #IssueId`
 7. Add release notes for significant changes in `src/docs/releases/`
@@ -742,7 +742,7 @@ dotnet clean
 dotnet run --project src/OrchardCore.Cms.Web
 
 # Build assets
-yarn build -gr
+yarn build
 
 # Lint JavaScript/TypeScript
 yarn lint
