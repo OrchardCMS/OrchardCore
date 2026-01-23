@@ -69,7 +69,10 @@ public class DefaultContentManager : IContentManager
         ArgumentException.ThrowIfNullOrEmpty(contentType);
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
-        contentTypeDefinition ??= new ContentTypeDefinitionBuilder().Named(contentType).Build();
+
+        contentTypeDefinition ??= new ContentTypeDefinitionBuilder()
+            .WithName(contentType)
+            .Build();
 
         // Create a new kernel for the model instance.
         var context = new ActivatingContentContext(new ContentItem() { ContentType = contentTypeDefinition.Name })

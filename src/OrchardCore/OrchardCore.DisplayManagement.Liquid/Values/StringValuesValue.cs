@@ -131,6 +131,7 @@ internal sealed class StringValuesValue : FluidValue
         return NilValue.Instance;
     }
 
+    [Obsolete("This method has been deprecated, please use GetIndexAsync() instead.")]
     protected override FluidValue GetIndex(FluidValue index, TemplateContext context)
     {
         var i = (int)index.ToNumberValue();
@@ -142,6 +143,11 @@ internal sealed class StringValuesValue : FluidValue
 
         return NilValue.Instance;
     }
+
+    // Using the original method for backward compatibility.
+#pragma warning disable CS0618 // Type or member is obsolete
+    public override ValueTask<FluidValue> GetIndexAsync(FluidValue index, TemplateContext context) => GetIndex(index, context);
+#pragma warning restore CS0618 // Type or member is obsolete
 
     public override bool ToBooleanValue()
         => true;

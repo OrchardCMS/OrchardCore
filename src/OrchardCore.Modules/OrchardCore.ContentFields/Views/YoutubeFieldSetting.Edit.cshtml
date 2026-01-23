@@ -10,6 +10,14 @@
 
 <div class="mb-3">
     <div class="w-md-75 w-xl-50 pe-md-3">
+        <label asp-for="Placeholder" class="form-label">@T["Placeholder"]</label>
+        <input asp-for="Placeholder" class="form-control" />
+    </div>
+    <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
+</div>
+
+<div class="mb-3">
+    <div class="w-md-75 w-xl-50 pe-md-3">
         <label asp-for="Hint" class="form-label">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
     </div>

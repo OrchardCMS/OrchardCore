@@ -44,7 +44,7 @@ public class UsersByIdFilter : ILiquidFilter
                 return FluidValue.Create(missingUsers.Concat(cachedUsers).ToList(), ctx.Options);
             }
 
-            return NilValue.Empty;
+            return EmptyValue.Instance;
         }
 
         if (input.Type == FluidValues.Array)

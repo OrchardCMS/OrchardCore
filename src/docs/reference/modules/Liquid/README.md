@@ -386,25 +386,27 @@ Returns the user's unique identifier.
 {{ User | user_id }}
 ```
 
-##### users_by_id filter
+#### User Object Properties
 
-Loads a single or multiple user objects from the database by id(s).
-
-The resulting object has access to the following properties:
+When using the `users_by_id` or `users_by_name` filters to load user objects from the database, the following properties are available:
 
 | Property             | Example                      | Description                                                                           |
 |----------------------|------------------------------|---------------------------------------------------------------------------------------|
-| `UserId`             | `42z3ps88pm8d40zn9cfwbee45c` | The id of the authenticated user.                                                     |
-| `UserName`           | `admin`                      | The name of the authenticated user.                                                   |
-| `NormalizedUserName` | `ADMIN`                      | The normailzed name of the authenticated user.                                        |
-| `Email`              | `admin@gmail.com`            | The email of the authenticated user.                                                  |
-| `NormailizedEmail`   | `ADMIN@GMAIL.COM`            | The normalized email of the authenticated user.                                       |
-| `EmailConfirmed`     | `true`                       | True if the user has confirmed his email or if the email confirmation is not required |
+| `UserId`             | `42z3ps88pm8d40zn9cfwbee45c` | The id of the user.                                                                   |
+| `UserName`           | `admin`                      | The name of the user.                                                                 |
+| `NormalizedUserName` | `ADMIN`                      | The normalized name of the user.                                                      |
+| `Email`              | `admin@gmail.com`            | The email of the user.                                                                |
+| `NormalizedEmail`    | `ADMIN@GMAIL.COM`            | The normalized email of the user.                                                     |
+| `EmailConfirmed`     | `true`                       | True if the user has confirmed their email or if email confirmation is not required   |
 | `IsEnabled`          | `true`                       | True if the user is enabled                                                           |
 | `RoleNames`          | `[Editor,Contributor]`       | An array of role names assigned to the user                                           |
 | `Properties`         | `UserProfile.FirstName.Text` | Holds the Custom Users Settings of the user.                                          |
 
-You can use this filter to load the user information of the current authenticated user like this.
+##### users_by_id filter
+
+Loads a single or multiple user objects from the database by id(s). See [User Object Properties](#user-object-properties) for available properties.
+
+You can use this filter to load the user information of the current authenticated user like this:
 
 ```liquid
 {% assign user = User | user_id | users_by_id %}
@@ -412,10 +414,33 @@ You can use this filter to load the user information of the current authenticate
 {{ user.UserName }} - {{ user.Email }}
 ```
 
-You can use this filter with the UserPicker field to load the picked user's information.
+You can use this filter with the UserPicker field to load the picked user's information:
 
 ```liquid
 {% assign users = Model.ContentItem.Content.SomeType.UserPicker.UserIds | users_by_id %}
+
+{% for user in users %}
+  {{ user.UserName }} - {{ user.Email }}
+{% endfor %}
+```
+
+##### users_by_name filter
+
+Loads a single or multiple user objects from the database by username(s). The username is automatically normalized before querying. See [User Object Properties](#user-object-properties) for available properties.
+
+You can use this filter to load a user by their username:
+
+```liquid
+{% assign user = "admin" | users_by_name %}
+
+{{ user.UserName }} - {{ user.Email }}
+```
+
+You can also use this filter with an array of usernames:
+
+```liquid
+{% assign usernames = "admin,editor,contributor" | split: "," %}
+{% assign users = usernames | users_by_name %}
 
 {% for user in users %}
   {{ user.UserName }} - {{ user.Email }}

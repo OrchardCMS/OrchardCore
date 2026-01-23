@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Shapes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Flows.Models;
@@ -16,20 +16,17 @@ public sealed class AdminController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
     public AdminController(
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
-        IContentItemDisplayManager contentItemDisplayManager,
         IShapeFactory shapeFactory,
         IUpdateModelAccessor updateModelAccessor)
     {
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
-        _contentItemDisplayManager = contentItemDisplayManager;
         _shapeFactory = shapeFactory;
         _updateModelAccessor = updateModelAccessor;
     }
@@ -50,10 +47,12 @@ public sealed class AdminController : Controller
 
         if (flowMetadata)
         {
+            var settings = (await _contentDefinitionManager.GetTypeDefinitionAsync(parentContentType))?.Parts.SingleOrDefault(x => x.Name == partName)?.GetSettings<FlowPartSettings>();
             var metadata = new FlowMetadata();
             contentItem.Weld(metadata);
             colSize = (int)Math.Round(metadata.Size / 100.0 * 12);
-            containedContentTypes = await GetContainedContentTypesAsync(parentContentType, partName);
+            containedContentTypes = await GetContainedContentTypesAsync(settings);
+            metadata.Alignment = GetDefaultAlignment(settings);
 
             cardCollectionType = nameof(FlowPart);
         }
@@ -63,35 +62,36 @@ public sealed class AdminController : Controller
         }
 
         // Create a Card Shape
-        var contentCard = await _shapeFactory.New.ContentCard(
+        var contentCard = await _shapeFactory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+        {
             // Updater is the controller for AJAX Requests
-            Updater: _updateModelAccessor.ModelUpdater,
+            shape.Updater = _updateModelAccessor.ModelUpdater;
             // Shape Specific
-            CollectionShapeType: cardCollectionType,
-            ContentItem: contentItem,
-            BuildEditor: true,
-            ParentContentType: parentContentType,
-            CollectionPartName: partName,
-            ContainedContentTypes: containedContentTypes,
+            shape.CollectionShapeType = cardCollectionType;
+            shape.ContentItem = contentItem;
+            shape.BuildEditor = true;
+            shape.ParentContentType = parentContentType;
+            shape.CollectionPartName = partName;
+            shape.ContainedContentTypes = containedContentTypes;
             // Card Specific Properties
-            TargetId: targetId,
-            Inline: true,
-            CanMove: true,
-            CanDelete: true,
+            shape.TargetId = targetId;
+            shape.Inline = true;
+            shape.CanMove = true;
+            shape.CanDelete = true;
             // Input hidden
             // Prefixes
-            PrefixValue: prefix,
-            PrefixesName: prefixesName,
+            shape.PrefixValue = prefix;
+            shape.PrefixesName = prefixesName;
             // ContentTypes
-            ContentTypesName: contentTypesName,
+            shape.ContentTypesName = contentTypesName;
             // ContentItems
-            ContentItemsName: contentItemsName
-        );
-        // Only Add ColumnSize Property if Part has FlowMetadata
-        if (flowMetadata)
-        {
-            contentCard.ColumnSize = colSize;
-        }
+            shape.ContentItemsName = contentItemsName;
+            // Only Add ColumnSize Property if Part has FlowMetadata
+            if (flowMetadata)
+            {
+                shape.ColumnSize = colSize;
+            }
+        });
 
         var model = new BuildEditorViewModel
         {
@@ -100,10 +100,8 @@ public sealed class AdminController : Controller
         return View("Display", model);
     }
 
-    private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(string contentType, string partName)
+    private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(FlowPartSettings settings)
     {
-        var settings = (await _contentDefinitionManager.GetTypeDefinitionAsync(contentType))?.Parts.SingleOrDefault(x => x.Name == partName)?.GetSettings<FlowPartSettings>();
-
         if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
         {
             return await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync();
@@ -124,5 +122,15 @@ public sealed class AdminController : Controller
         }
 
         return definitions;
+    }
+    private static FlowAlignment GetDefaultAlignment(FlowPartSettings settings)
+    {
+        
+        if (settings?.DefaultAlignment == null)
+        {
+            return FlowAlignment.Justify;
+        }
+
+        return settings.DefaultAlignment.Value;
     }
 }

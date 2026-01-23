@@ -3,6 +3,7 @@ name: Publish a patch release
 about: Publish a new Orchard Core patch release
 title: 'Release v'
 labels: release
+type: task
 assignees: ''
 
 ---
