@@ -202,11 +202,7 @@ public abstract class NamedIndexingService
                     // Delete all the deleted documents from the index.
                     var deletedDocumentIds = indexEntry.Value.Select(x => x.Id);
 
-                    Console.WriteLine($"Deleting the following ids in order to update them {string.Join(';', deletedDocumentIds)} at {DateTime.UtcNow}");
-
                     await trackerEntry.DocumentIndexManager.DeleteDocumentsAsync(trackerEntry.IndexProfile, deletedDocumentIds);
-
-                    Console.WriteLine($"Updating the following ids after we deleted them {string.Join(';', deletedDocumentIds)} at {DateTime.UtcNow}");
 
                     // Upload documents to the index.
                     if (await trackerEntry.DocumentIndexManager.AddOrUpdateDocumentsAsync(trackerEntry.IndexProfile, indexEntry.Value))
