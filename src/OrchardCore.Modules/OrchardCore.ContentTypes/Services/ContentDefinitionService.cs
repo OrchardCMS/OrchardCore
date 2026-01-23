@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -20,11 +21,24 @@ public class ContentDefinitionService : IContentDefinitionService
     public ContentDefinitionService(
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers,
+            IEnumerable<ContentPart> contentParts,
+            IEnumerable<ContentField> contentFields,
             ILogger<ContentDefinitionService> logger,
             IStringLocalizer<ContentDefinitionService> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
+
+        foreach (var element in contentParts.Select(x => x.GetType()))
+        {
+            logger.LogWarning("The content part '{ContentPart}' should not be registered in DI. Use AddContentPart<T>() instead.", element);
+        }
+
+        foreach (var element in contentFields.Select(x => x.GetType()))
+        {
+            logger.LogWarning("The content field '{ContentField}' should not be registered in DI. Use AddContentField<T>() instead.", element);
+        }
+
         _logger = logger;
         S = stringLocalizer;
     }
