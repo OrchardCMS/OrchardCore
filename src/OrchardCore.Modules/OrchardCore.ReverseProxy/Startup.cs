@@ -29,9 +29,9 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddSiteDisplayDriver<ReverseProxySettingsDisplayDriver>();
 
-        services.AddSingleton<ReverseProxyService>();
+        services.AddSingleton<IReverseProxyService, ReverseProxyService>();
 
-        services.AddTransient<IConfigureOptions<ForwardedHeadersOptions>, ForwardedHeadersOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<ReverseProxySettings>, ReverseProxySettingsConfiguration>();
     }
 }
 
