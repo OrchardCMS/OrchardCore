@@ -31,12 +31,12 @@ public class ContentDefinitionService : IContentDefinitionService
 
         foreach (var element in contentParts.Select(x => x.GetType()))
         {
-            logger.LogWarning("The content part '{ContentPart}' should not be registered in DI. Use AddContentPart<T>() instead.", element);
+            logger.LogError("The content part '{ContentPart}' should not be registered in DI. Use AddContentPart<T>() instead.", element);
         }
 
         foreach (var element in contentFields.Select(x => x.GetType()))
         {
-            logger.LogWarning("The content field '{ContentField}' should not be registered in DI. Use AddContentField<T>() instead.", element);
+            logger.LogError("The content field '{ContentField}' should not be registered in DI. Use AddContentField<T>() instead.", element);
         }
 
         _logger = logger;
