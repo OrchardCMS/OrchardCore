@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.Features.Deployment;
+using OrchardCore.Features.Recipes.Descriptors;
 using OrchardCore.Features.Recipes.Executors;
 using OrchardCore.Features.Services;
 using OrchardCore.Modules;
@@ -18,6 +19,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddRecipeExecutionStep<FeatureStep>();
+        services.AddRecipeStepDescriptor<FeatureStepDescriptor>();
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IModuleService, ModuleService>();
         services.AddNavigationProvider<AdminMenu>();

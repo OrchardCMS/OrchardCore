@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Deployment;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.RecipeSteps;
+using OrchardCore.ContentTypes.RecipeSteps.Descriptors;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.Deployment;
 using OrchardCore.Modules;
@@ -33,6 +34,7 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<ContentDefinitionStep>();
         services.AddRecipeExecutionStep<ReplaceContentDefinitionStep>();
         services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();
+        services.AddRecipeStepDescriptor<ContentDefinitionStepDescriptor>();
 
         services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();

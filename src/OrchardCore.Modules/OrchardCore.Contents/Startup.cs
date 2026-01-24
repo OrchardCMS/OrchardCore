@@ -24,6 +24,7 @@ using OrchardCore.Contents.Indexing;
 using OrchardCore.Contents.Liquid;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Recipes;
+using OrchardCore.Contents.Recipes.Descriptors;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.Settings;
@@ -149,6 +150,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
         services.AddScoped<IContentHandler, ContentsHandler>();
         services.AddRecipeExecutionStep<ContentStep>();
+        services.AddRecipeStepDescriptor<ContentStepDescriptor>();
 
         services.AddScoped<IDocumentIndexHandler, FullTextContentIndexHandler>();
         services.AddScoped<IDocumentIndexHandler, AspectsContentIndexHandler>();
