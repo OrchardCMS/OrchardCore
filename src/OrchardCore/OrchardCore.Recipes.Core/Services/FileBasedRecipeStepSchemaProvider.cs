@@ -14,7 +14,8 @@ public class FileBasedRecipeStepSchemaProvider : IRecipeStepSchemaProvider
     private readonly IFileProvider _fileProvider;
     private readonly string _schemaFilePath;
     private readonly ILogger _logger;
-    private JsonObject _cachedSchema;
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private volatile JsonObject _cachedSchema;
 
     /// <summary>
     /// Creates a new instance of <see cref="FileBasedRecipeStepSchemaProvider"/>.
@@ -45,22 +46,30 @@ public class FileBasedRecipeStepSchemaProvider : IRecipeStepSchemaProvider
     /// <inheritdoc />
     public async ValueTask<JsonObject> GetSchemaAsync()
     {
+        // Fast path: check if already cached.
         if (_cachedSchema is not null)
         {
             return _cachedSchema;
         }
 
-        var fileInfo = _fileProvider.GetFileInfo(_schemaFilePath);
-
-        if (!fileInfo.Exists)
-        {
-            _logger.LogWarning("Schema file not found for recipe step '{StepName}' at path '{SchemaFilePath}'.",
-                StepName, _schemaFilePath);
-            return null;
-        }
-
+        await _semaphore.WaitAsync();
         try
         {
+            // Double-check after acquiring lock.
+            if (_cachedSchema is not null)
+            {
+                return _cachedSchema;
+            }
+
+            var fileInfo = _fileProvider.GetFileInfo(_schemaFilePath);
+
+            if (!fileInfo.Exists)
+            {
+                _logger.LogWarning("Schema file not found for recipe step '{StepName}' at path '{SchemaFilePath}'.",
+                    StepName, _schemaFilePath);
+                return null;
+            }
+
             await using var stream = fileInfo.CreateReadStream();
             var jsonDocument = await JsonDocument.ParseAsync(stream);
             _cachedSchema = JsonObject.Create(jsonDocument.RootElement);
@@ -71,6 +80,10 @@ public class FileBasedRecipeStepSchemaProvider : IRecipeStepSchemaProvider
             _logger.LogError(ex, "Failed to parse JSON schema file for recipe step '{StepName}' at path '{SchemaFilePath}'.",
                 StepName, _schemaFilePath);
             return null;
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 }

@@ -16,6 +16,9 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
         IEnumerable<IRecipeStepDescriptor> stepDescriptors,
         IEnumerable<IRecipeStepSchemaProvider> schemaProviders)
     {
+        ArgumentNullException.ThrowIfNull(stepDescriptors);
+        ArgumentNullException.ThrowIfNull(schemaProviders);
+
         _stepDescriptors = stepDescriptors;
         _schemaProviders = schemaProviders;
     }
@@ -26,11 +29,17 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
 
     /// <inheritdoc />
     public IRecipeStepDescriptor GetStepDescriptor(string stepName)
-        => _stepDescriptors.FirstOrDefault(d => string.Equals(d.Name, stepName, StringComparison.OrdinalIgnoreCase));
+    {
+        ArgumentException.ThrowIfNullOrEmpty(stepName);
+
+        return _stepDescriptors.FirstOrDefault(d => string.Equals(d.Name, stepName, StringComparison.OrdinalIgnoreCase));
+    }
 
     /// <inheritdoc />
     public async ValueTask<JsonObject> GetStepSchemaAsync(string stepName)
     {
+        ArgumentException.ThrowIfNullOrEmpty(stepName);
+
         // First, check if there's a schema provider for this step.
         var schemaProvider = _schemaProviders.FirstOrDefault(p =>
             string.Equals(p.StepName, stepName, StringComparison.OrdinalIgnoreCase));
