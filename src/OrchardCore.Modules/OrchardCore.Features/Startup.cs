@@ -1,8 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.Features.Deployment;
-using OrchardCore.Features.Recipes.Descriptors;
-using OrchardCore.Features.Recipes.Executors;
+using OrchardCore.Features.Recipes;
 using OrchardCore.Features.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -18,8 +17,9 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddRecipeExecutionStep<FeatureStep>();
-        services.AddRecipeStepDescriptor<FeatureStepDescriptor>();
+        // Register the unified step for both recipe import and deployment export.
+        services.AddRecipeDeploymentStep<UnifiedFeatureStep>();
+
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IModuleService, ModuleService>();
         services.AddNavigationProvider<AdminMenu>();

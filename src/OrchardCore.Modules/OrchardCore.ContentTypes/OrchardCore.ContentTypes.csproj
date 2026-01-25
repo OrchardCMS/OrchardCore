@@ -27,4 +27,8 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="RecipeSteps\Descriptors\" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Deployment.Controllers;
 
@@ -21,6 +23,7 @@ public sealed class ImportController : Controller
 {
     private readonly IDeploymentManager _deploymentManager;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IRecipeSchemaService _recipeSchemaService;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
 
@@ -30,6 +33,7 @@ public sealed class ImportController : Controller
     public ImportController(
         IDeploymentManager deploymentManager,
         IAuthorizationService authorizationService,
+        IRecipeSchemaService recipeSchemaService,
         INotifier notifier,
         ILogger<ImportController> logger,
         IHtmlLocalizer<ImportController> htmlLocalizer,
@@ -38,6 +42,7 @@ public sealed class ImportController : Controller
     {
         _deploymentManager = deploymentManager;
         _authorizationService = authorizationService;
+        _recipeSchemaService = recipeSchemaService;
         _notifier = notifier;
         _logger = logger;
         H = htmlLocalizer;
@@ -134,7 +139,10 @@ public sealed class ImportController : Controller
             return Forbid();
         }
 
-        return View();
+        var schema = _recipeSchemaService.GetCombinedSchema();
+        var schemaJson = JsonSerializer.Serialize(schema, JOptions.Default);
+
+        return View(new ImportJsonViewModel { Schema = schemaJson });
     }
 
     [HttpPost]
@@ -148,6 +156,20 @@ public sealed class ImportController : Controller
         if (!model.Json.IsJson(JOptions.Document))
         {
             ModelState.AddModelError(nameof(model.Json), S["The recipe is written in an incorrect JSON format."]);
+        }
+        else
+        {
+            // Validate against the JSON Schema.
+            var recipeNode = JsonNode.Parse(model.Json);
+            var validationResult = _recipeSchemaService.ValidateRecipe(recipeNode);
+
+            if (!validationResult.IsValid)
+            {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(nameof(model.Json), S["Schema validation error at {0}: {1}", error.Path, error.Message]);
+                }
+            }
         }
 
         if (ModelState.IsValid)
@@ -183,6 +205,10 @@ public sealed class ImportController : Controller
                 }
             }
         }
+
+        // Repopulate schema for the view.
+        var schema = _recipeSchemaService.GetCombinedSchema();
+        model.Schema = JsonSerializer.Serialize(schema, JOptions.Default);
 
         return View(model);
     }

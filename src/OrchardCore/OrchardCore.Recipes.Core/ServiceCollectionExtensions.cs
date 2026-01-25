@@ -15,8 +15,16 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRecipeReader, RecipeReader>();
         services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentFeatureProvider>();
 
-        // Register the recipe schema service for schema discovery and validation.
-        services.TryAddSingleton<IRecipeSchemaService, RecipeSchemaService>();
+        // Register the recipe schema services for schema discovery and validation.
+        services.TryAddScoped<IRecipeSchemaService, RecipeSchemaService>();
+        services.TryAddSingleton<IRecipeStepSchemaEvaluator, RecipeStepSchemaEvaluator>();
+
+        // Register the unified recipe/deployment step handler bridge.
+        // This allows IRecipeDeploymentStep implementations to work with the existing pipeline
+        // during migration from the obsolete IRecipeStepHandler interface.
+#pragma warning disable CS0618 // Type or member is obsolete - required for backwards compatibility
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IRecipeStepHandler, RecipeDeploymentStepHandler>());
+#pragma warning restore CS0618
 
         return services;
     }

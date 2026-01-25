@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Json.Schema;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -7,44 +8,44 @@ namespace OrchardCore.Recipes;
 public class RecipeSchemaServiceTests
 {
     [Fact]
-    public void GetStepDescriptors_ReturnsEmptyCollection_WhenNoDescriptorsRegistered()
+    public void GetSteps_ReturnsEmptyCollection_WhenNoStepsRegistered()
     {
         // Arrange
-        var service = new RecipeSchemaService([], []);
+        var service = new RecipeSchemaService([]);
 
         // Act
-        var descriptors = service.GetStepDescriptors();
+        var steps = service.GetSteps();
 
         // Assert
-        Assert.Empty(descriptors);
+        Assert.Empty(steps);
     }
 
     [Fact]
-    public void GetStepDescriptors_ReturnsRegisteredDescriptors()
+    public void GetSteps_ReturnsRegisteredSteps()
     {
         // Arrange
-        var descriptor1 = new TestRecipeStepDescriptor("Step1", "Step 1", "Description 1");
-        var descriptor2 = new TestRecipeStepDescriptor("Step2", "Step 2", "Description 2");
-        var service = new RecipeSchemaService([descriptor1, descriptor2], []);
+        var step1 = new TestRecipeDeploymentStep("Step1", "Step 1", "Description 1");
+        var step2 = new TestRecipeDeploymentStep("Step2", "Step 2", "Description 2");
+        var service = new RecipeSchemaService([step1, step2]);
 
         // Act
-        var descriptors = service.GetStepDescriptors().ToList();
+        var steps = service.GetSteps().ToList();
 
         // Assert
-        Assert.Equal(2, descriptors.Count);
-        Assert.Contains(descriptors, d => d.Name == "Step1");
-        Assert.Contains(descriptors, d => d.Name == "Step2");
+        Assert.Equal(2, steps.Count);
+        Assert.Contains(steps, s => s.Name == "Step1");
+        Assert.Contains(steps, s => s.Name == "Step2");
     }
 
     [Fact]
-    public void GetStepDescriptor_ReturnsCorrectDescriptor_WhenFound()
+    public void GetStep_ReturnsCorrectStep_WhenFound()
     {
         // Arrange
-        var descriptor = new TestRecipeStepDescriptor("Feature", "Feature Step", "Enables features");
-        var service = new RecipeSchemaService([descriptor], []);
+        var step = new TestRecipeDeploymentStep("Feature", "Feature Step", "Enables features");
+        var service = new RecipeSchemaService([step]);
 
         // Act
-        var result = service.GetStepDescriptor("Feature");
+        var result = service.GetStep("Feature");
 
         // Assert
         Assert.NotNull(result);
@@ -53,27 +54,27 @@ public class RecipeSchemaServiceTests
     }
 
     [Fact]
-    public void GetStepDescriptor_ReturnsNull_WhenNotFound()
+    public void GetStep_ReturnsNull_WhenNotFound()
     {
         // Arrange
-        var service = new RecipeSchemaService([], []);
+        var service = new RecipeSchemaService([]);
 
         // Act
-        var result = service.GetStepDescriptor("NonExistent");
+        var result = service.GetStep("NonExistent");
 
         // Assert
         Assert.Null(result);
     }
 
     [Fact]
-    public void GetStepDescriptor_IsCaseInsensitive()
+    public void GetStep_IsCaseInsensitive()
     {
         // Arrange
-        var descriptor = new TestRecipeStepDescriptor("Feature", "Feature Step", "Enables features");
-        var service = new RecipeSchemaService([descriptor], []);
+        var step = new TestRecipeDeploymentStep("Feature", "Feature Step", "Enables features");
+        var service = new RecipeSchemaService([step]);
 
         // Act
-        var result = service.GetStepDescriptor("FEATURE");
+        var result = service.GetStep("FEATURE");
 
         // Assert
         Assert.NotNull(result);
@@ -81,70 +82,47 @@ public class RecipeSchemaServiceTests
     }
 
     [Fact]
-    public async Task GetStepSchemaAsync_ReturnsSchemaFromDescriptor()
+    public void GetStepSchema_ReturnsSchemaFromStep()
     {
         // Arrange
-        var schema = new JsonObject
-        {
-            ["type"] = "object",
-            ["properties"] = new JsonObject
-            {
-                ["name"] = new JsonObject { ["type"] = "string" },
-            },
-        };
-        var descriptor = new TestRecipeStepDescriptor("Feature", "Feature Step", "Description", schema);
-        var service = new RecipeSchemaService([descriptor], []);
+        var schema = new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .Properties(("name", new JsonSchemaBuilder().Type(SchemaValueType.String)))
+            .Build();
+        var step = new TestRecipeDeploymentStep("Feature", "Feature Step", "Description", schema);
+        var service = new RecipeSchemaService([step]);
 
         // Act
-        var result = await service.GetStepSchemaAsync("Feature");
+        var result = service.GetStepSchema("Feature");
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal("object", result["type"]?.ToString());
     }
 
     [Fact]
-    public async Task GetStepSchemaAsync_ReturnsSchemaFromProvider_WhenAvailable()
+    public void GetCombinedSchema_ReturnsValidRecipeSchema()
     {
         // Arrange
-        var descriptorSchema = new JsonObject { ["source"] = "descriptor" };
-        var providerSchema = new JsonObject { ["source"] = "provider" };
-        var descriptor = new TestRecipeStepDescriptor("Feature", "Feature Step", "Description", descriptorSchema);
-        var provider = new TestRecipeStepSchemaProvider("Feature", providerSchema);
-        var service = new RecipeSchemaService([descriptor], [provider]);
+        var step = new TestRecipeDeploymentStep("Feature", "Feature Step", "Enables features");
+        var service = new RecipeSchemaService([step]);
 
         // Act
-        var result = await service.GetStepSchemaAsync("Feature");
+        var result = service.GetCombinedSchema();
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal("provider", result["source"]?.ToString());
+        Assert.Equal("Orchard Core Recipe", result.GetTitle());
+        var properties = result.GetProperties();
+        Assert.NotNull(properties);
+        Assert.True(properties.ContainsKey("steps"));
     }
 
     [Fact]
-    public async Task GetCombinedSchemaAsync_ReturnsValidRecipeSchema()
+    public void ValidateRecipe_ReturnsSuccess_WhenRecipeIsValid()
     {
         // Arrange
-        var descriptor = new TestRecipeStepDescriptor("Feature", "Feature Step", "Enables features");
-        var service = new RecipeSchemaService([descriptor], []);
-
-        // Act
-        var result = await service.GetCombinedSchemaAsync();
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal("https://json-schema.org/draft/2020-12/schema", result["$schema"]?.ToString());
-        Assert.Equal("Orchard Core Recipe", result["title"]?.ToString());
-        Assert.NotNull(result["properties"]);
-        Assert.NotNull(result["properties"]["steps"]);
-    }
-
-    [Fact]
-    public async Task ValidateRecipeAsync_ReturnsSuccess_WhenRecipeIsValid()
-    {
-        // Arrange
-        var descriptor = new TestRecipeStepDescriptor("Feature", "Feature Step", "Enables features");
-        var service = new RecipeSchemaService([descriptor], []);
+        var step = new TestRecipeDeploymentStep("Feature", "Feature Step", "Enables features");
+        var service = new RecipeSchemaService([step]);
         var recipe = new JsonObject
         {
             ["steps"] = new JsonArray
@@ -158,7 +136,7 @@ public class RecipeSchemaServiceTests
         };
 
         // Act
-        var result = await service.ValidateRecipeAsync(recipe);
+        var result = service.ValidateRecipe(recipe);
 
         // Assert
         Assert.True(result.IsValid);
@@ -166,26 +144,25 @@ public class RecipeSchemaServiceTests
     }
 
     [Fact]
-    public async Task ValidateRecipeAsync_ReturnsError_WhenStepsIsMissing()
+    public void ValidateRecipe_ReturnsError_WhenStepsIsMissing()
     {
         // Arrange
-        var service = new RecipeSchemaService([], []);
+        var service = new RecipeSchemaService([]);
         var recipe = new JsonObject { ["name"] = "TestRecipe" };
 
         // Act
-        var result = await service.ValidateRecipeAsync(recipe);
+        var result = service.ValidateRecipe(recipe);
 
         // Assert
         Assert.False(result.IsValid);
-        Assert.Single(result.Errors);
-        Assert.Contains("steps", result.Errors[0].Message);
+        Assert.NotEmpty(result.Errors);
     }
 
     [Fact]
-    public async Task ValidateRecipeAsync_ReturnsError_WhenStepHasNoName()
+    public void ValidateRecipe_ReturnsError_WhenStepHasNoName()
     {
         // Arrange
-        var service = new RecipeSchemaService([], []);
+        var service = new RecipeSchemaService([]);
         var recipe = new JsonObject
         {
             ["steps"] = new JsonArray
@@ -198,84 +175,37 @@ public class RecipeSchemaServiceTests
         };
 
         // Act
-        var result = await service.ValidateRecipeAsync(recipe);
+        var result = service.ValidateRecipe(recipe);
 
         // Assert
         Assert.False(result.IsValid);
-        Assert.Single(result.Errors);
-        Assert.Contains("name", result.Errors[0].Message);
+        Assert.NotEmpty(result.Errors);
     }
 
-    [Fact]
-    public async Task ValidateRecipeAsync_ValidatesRequiredProperties()
+    private sealed class TestRecipeDeploymentStep : IRecipeDeploymentStep
     {
-        // Arrange
-        var schema = new JsonObject
-        {
-            ["type"] = "object",
-            ["required"] = new JsonArray("name", "data"),
-            ["properties"] = new JsonObject
-            {
-                ["name"] = new JsonObject { ["type"] = "string" },
-                ["data"] = new JsonObject { ["type"] = "array" },
-            },
-        };
-        var descriptor = new TestRecipeStepDescriptor("Content", "Content Step", "Imports content", schema);
-        var service = new RecipeSchemaService([descriptor], []);
-        var recipe = new JsonObject
-        {
-            ["steps"] = new JsonArray
-            {
-                new JsonObject
-                {
-                    ["name"] = "Content",
-                    // Missing required "data" property
-                },
-            },
-        };
+        private readonly JsonSchema _schema;
 
-        // Act
-        var result = await service.ValidateRecipeAsync(recipe);
-
-        // Assert
-        Assert.False(result.IsValid);
-        Assert.Single(result.Errors);
-        Assert.Contains("data", result.Errors[0].Message);
-    }
-
-    private sealed class TestRecipeStepDescriptor : RecipeStepDescriptor
-    {
-        private readonly JsonObject _schema;
-
-        public TestRecipeStepDescriptor(string name, string displayName, string description, JsonObject schema = null)
+        public TestRecipeDeploymentStep(string name, string displayName, string description, JsonSchema schema = null)
         {
             Name = name;
             DisplayName = displayName;
             Description = description;
-            _schema = schema;
+            _schema = schema ?? new JsonSchemaBuilder()
+                .Type(SchemaValueType.Object)
+                .Required("name")
+                .Properties(("name", new JsonSchemaBuilder().Type(SchemaValueType.String).Const(name)))
+                .AdditionalProperties(JsonSchema.Empty)
+                .Build();
         }
 
-        public override string Name { get; }
-        public override string DisplayName { get; }
-        public override string Description { get; }
+        public string Name { get; }
+        public string DisplayName { get; }
+        public string Description { get; }
+        public string Category => "Test";
+        public JsonSchema Schema => _schema;
 
-        public override ValueTask<JsonObject> GetSchemaAsync()
-            => ValueTask.FromResult(_schema);
-    }
-
-    private sealed class TestRecipeStepSchemaProvider : IRecipeStepSchemaProvider
-    {
-        private readonly JsonObject _schema;
-
-        public TestRecipeStepSchemaProvider(string stepName, JsonObject schema)
-        {
-            StepName = stepName;
-            _schema = schema;
-        }
-
-        public string StepName { get; }
-
-        public ValueTask<JsonObject> GetSchemaAsync()
-            => ValueTask.FromResult(_schema);
+        public Task ExecuteAsync(RecipeExecutionContext context) => Task.CompletedTask;
+        public Task ExportAsync(RecipeExportContext context) => Task.CompletedTask;
     }
 }

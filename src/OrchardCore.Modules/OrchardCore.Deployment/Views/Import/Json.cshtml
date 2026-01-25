@@ -1,30 +1,75 @@
 @model OrchardCore.Deployment.ViewModels.ImportJsonViewModel
 <zone Name="Title"><h1>@RenderTitleSegments(T["JSON Import"])</h1></zone>
 
-<style asp-name="codemirror"></style>
-<script asp-name="codemirror" at="Foot"></script>
-<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
-<script asp-name="codemirror-mode-javascript" at="Foot"></script>
-
 @Html.ValidationSummary()
 
-<form asp-action="Json">
+<form asp-action="Json" method="post" class="no-multisubmit">
     <div class="mb-3">
-        <textarea asp-for="Json" class="form-control mb-2" rows="20"></textarea>
+        <label asp-for="Json" class="form-label">@T["Recipe JSON"]</label>
+        <div id="@Html.IdFor(x => x.Json)_editor" data-schema="@Model.Schema" style="min-height: 500px; border: 1px solid var(--bs-border-color);"></div>
+        <textarea asp-for="Json" class="d-none"></textarea>
+        <span asp-validation-for="Json"></span>
+        <span class="hint">@T["Enter a valid recipe JSON. The editor provides autocomplete and validation based on registered recipe steps."]</span>
     </div>
     <button class="btn btn-primary import" type="submit">@T["Import"]</button>
+    <a class="btn btn-secondary" asp-action="Index">@T["Cancel"]</a>
 </form>
 
-<script at="Foot">
-$(function () {
-    var textArea = document.getElementById('@Html.IdFor(x => x.Json)');
+<script at="Foot" asp-name="recipe-import-editor" depends-on="monaco, admin">
+$(document).ready(function () {
+    require(['vs/editor/editor.main'], function () {
+        var html = document.documentElement;
+        const mutationObserver = new MutationObserver(setTheme);
+        mutationObserver.observe(html, { attributes: true });
 
-    var editor = CodeMirror.fromTextArea(textArea, {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "javascript" },
+        function setTheme() {
+            var theme = html.dataset.bsTheme;
+            if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                monaco.editor.setTheme('vs-dark');
+            } else {
+                monaco.editor.setTheme('vs');
+            }
+        }
+
+        setTheme();
+
+        var modelUri = monaco.Uri.parse("x://orchardcore.deployment.recipe.json");
+        var editorElement = document.getElementById('@Html.IdFor(x => x.Json)_editor');
+        var textArea = document.getElementById('@Html.IdFor(x => x.Json)');
+        var schemaData = editorElement.dataset.schema;
+        var schema = schemaData ? JSON.parse(schemaData) : null;
+
+        var initialValue = textArea.value || JSON.stringify({
+            "name": "",
+            "displayName": "",
+            "description": "",
+            "steps": []
+        }, null, 2);
+
+        var model = monaco.editor.createModel(initialValue, "json", modelUri);
+
+        if (schema) {
+            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                validate: true,
+                schemas: [{
+                    uri: "x://orchardcore.deployment.recipe.schema.json",
+                    fileMatch: [modelUri.toString()],
+                    schema: schema
+                }]
+            });
+        }
+
+        var editor = monaco.editor.create(editorElement, {
+            model: model,
+            automaticLayout: true,
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false
+        });
+
+        // Update textarea before form submission.
+        document.querySelector('form').addEventListener('submit', function () {
+            textArea.value = editor.getValue();
+        });
     });
 });
 </script>

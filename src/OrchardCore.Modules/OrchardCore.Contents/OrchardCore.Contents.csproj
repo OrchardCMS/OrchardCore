@@ -43,4 +43,8 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Recipes\Descriptors\" />
+  </ItemGroup>
+
 </Project>
