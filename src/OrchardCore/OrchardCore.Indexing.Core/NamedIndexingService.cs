@@ -199,12 +199,8 @@ public abstract class NamedIndexingService
 
                     var trackerEntry = tracker[indexEntry.Key];
 
-                    // Delete all the deleted documents from the index.
-                    var deletedDocumentIds = indexEntry.Value.Select(x => x.Id);
-
-                    await trackerEntry.DocumentIndexManager.DeleteDocumentsAsync(trackerEntry.IndexProfile, deletedDocumentIds);
-
-                    // Upload documents to the index.
+                    // AddOrUpdateDocumentsAsync is an upsert operation that handles both adding new documents
+                    // and updating existing ones. Implementations should handle any necessary deletions internally.
                     if (await trackerEntry.DocumentIndexManager.AddOrUpdateDocumentsAsync(trackerEntry.IndexProfile, indexEntry.Value))
                     {
                         // We know none of the previous batches failed to update this index.
