@@ -1,9 +1,11 @@
 using Azure;
 using Azure.Search.Documents.Indexes.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
 using static OrchardCore.Indexing.DocumentIndex;
@@ -18,15 +20,18 @@ public sealed class AzureAISearchIndexManager : IIndexManager
     private readonly AzureAIClientFactory _clientFactory;
     private readonly ILogger _logger;
     private readonly IEnumerable<IIndexEvents> _indexEvents;
+    private readonly IServiceProvider _serviceProvider;
 
     public AzureAISearchIndexManager(
         AzureAIClientFactory clientFactory,
         ILogger<AzureAISearchIndexManager> logger,
-        IEnumerable<IIndexEvents> indexEvents)
+        IEnumerable<IIndexEvents> indexEvents,
+        IServiceProvider serviceProvider)
     {
         _clientFactory = clientFactory;
         _logger = logger;
         _indexEvents = indexEvents;
+        _serviceProvider = serviceProvider;
     }
 
     public async Task<bool> CreateAsync(IndexProfile indexProfile)
@@ -121,6 +126,21 @@ public sealed class AzureAISearchIndexManager : IIndexManager
 
     public async Task<bool> RebuildAsync(IndexProfile indexProfile)
     {
+        var distributedLock = _serviceProvider.GetRequiredService<IDistributedLock>();
+
+        // Acquire a distributed lock to prevent concurrent rebuild operations that could cause
+        // the index to be temporarily unavailable during the delete and create window.
+        (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync(
+            $"AzureAIRebuild-{indexProfile.Id}",
+            TimeSpan.FromSeconds(3),
+            TimeSpan.FromMinutes(15));
+
+        if (!isLocked)
+        {
+            _logger.LogWarning("Unable to acquire lock for rebuilding index {IndexName}. Another rebuild may be in progress.", indexProfile.Name);
+            return false;
+        }
+
         try
         {
             var context = new IndexRebuildContext(indexProfile);
@@ -145,9 +165,12 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unable to update Azure AI Search index.");
+            return false;
         }
-
-        return false;
+        finally
+        {
+            await locker.DisposeAsync();
+        }
     }
 
     private static SearchIndex GetSearchIndex(IndexProfile indexProfile)

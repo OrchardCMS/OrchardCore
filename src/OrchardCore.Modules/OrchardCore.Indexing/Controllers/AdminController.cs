@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 
@@ -452,18 +453,39 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        await _indexProfileManager.ResetAsync(indexProfile);
-        await _indexProfileManager.UpdateAsync(indexProfile);
+        var distributedLock = _serviceProvider.GetRequiredService<IDistributedLock>();
 
-        if (await indexManager.RebuildAsync(indexProfile))
+        // Acquire a distributed lock to prevent concurrent rebuild operations for this index.
+        (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync(
+            $"AdminRebuild-{indexProfile.Id}",
+            TimeSpan.FromSeconds(3),
+            TimeSpan.FromMinutes(15));
+
+        if (!isLocked)
         {
-            await _indexProfileManager.SynchronizeAsync(indexProfile);
-
-            await _notifier.SuccessAsync(H["An index has been rebuilt successfully. The synchronizing process was triggered in the background."]);
+            await _notifier.WarningAsync(H["Unable to rebuild index '{0}'. Another rebuild may be in progress.", indexProfile.Name]);
+            return RedirectToAction(nameof(Index));
         }
-        else
+
+        try
         {
-            await _notifier.ErrorAsync(H["An error occurred while rebuilding the index."]);
+            await _indexProfileManager.ResetAsync(indexProfile);
+            await _indexProfileManager.UpdateAsync(indexProfile);
+
+            if (await indexManager.RebuildAsync(indexProfile))
+            {
+                await _indexProfileManager.SynchronizeAsync(indexProfile);
+
+                await _notifier.SuccessAsync(H["An index has been rebuilt successfully. The synchronizing process was triggered in the background."]);
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["An error occurred while rebuilding the index."]);
+            }
+        }
+        finally
+        {
+            await locker.DisposeAsync();
         }
 
         return RedirectToAction(nameof(Index));
@@ -590,6 +612,8 @@ public sealed class AdminController : Controller
                     break;
                 case IndexingEntityAction.Rebuild:
                     var rebuildCounter = 0;
+                    var distributedLock = _serviceProvider.GetRequiredService<IDistributedLock>();
+
                     foreach (var id in itemIds)
                     {
                         var indexProfile = await _indexProfileManager.FindByIdAsync(id);
@@ -610,16 +634,36 @@ public sealed class AdminController : Controller
                             continue;
                         }
 
-                        if (!await indexManager.RebuildAsync(indexProfile))
+                        // Acquire a distributed lock to prevent concurrent rebuild operations for this index.
+                        (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync(
+                            $"AdminBulkRebuild-{indexProfile.Id}",
+                            TimeSpan.FromSeconds(3),
+                            TimeSpan.FromMinutes(15));
+
+                        if (!isLocked)
                         {
+                            // Skip this index if we can't acquire the lock (another rebuild is in progress).
                             continue;
                         }
 
-                        rebuildCounter++;
+                        try
+                        {
+                            await _indexProfileManager.ResetAsync(indexProfile);
+                            await _indexProfileManager.UpdateAsync(indexProfile);
 
-                        await _indexProfileManager.ResetAsync(indexProfile);
-                        await _indexProfileManager.UpdateAsync(indexProfile);
-                        await _indexProfileManager.SynchronizeAsync(indexProfile);
+                            if (!await indexManager.RebuildAsync(indexProfile))
+                            {
+                                continue;
+                            }
+
+                            await _indexProfileManager.SynchronizeAsync(indexProfile);
+
+                            rebuildCounter++;
+                        }
+                        finally
+                        {
+                            await locker.DisposeAsync();
+                        }
                     }
 
                     if (rebuildCounter == 0)

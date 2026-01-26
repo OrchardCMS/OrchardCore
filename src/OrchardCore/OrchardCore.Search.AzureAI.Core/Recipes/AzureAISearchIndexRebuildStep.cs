@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Indexing;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.AzureAI.Deployment;
@@ -33,6 +34,7 @@ public sealed class AzureAISearchIndexRebuildStep : NamedRecipeStepHandler
         {
             var indexProfileManager = scope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
             var indexManager = scope.ServiceProvider.GetKeyedService<IIndexManager>(AzureAISearchConstants.ProviderName);
+            var distributedLock = scope.ServiceProvider.GetRequiredService<IDistributedLock>();
 
             var indexProfiles = model.IncludeAll
             ? await indexProfileManager.GetByProviderAsync(AzureAISearchConstants.ProviderName)
@@ -41,10 +43,29 @@ public sealed class AzureAISearchIndexRebuildStep : NamedRecipeStepHandler
 
             foreach (var indexProfile in indexProfiles)
             {
-                await indexProfileManager.ResetAsync(indexProfile);
-                await indexProfileManager.UpdateAsync(indexProfile);
-                await indexManager.RebuildAsync(indexProfile);
-                await indexProfileManager.SynchronizeAsync(indexProfile);
+                // Acquire a distributed lock to prevent concurrent rebuild operations for this index.
+                (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync(
+                    $"AzureAIRebuildStep-{indexProfile.Id}",
+                    TimeSpan.FromSeconds(3),
+                    TimeSpan.FromMinutes(15));
+
+                if (!isLocked)
+                {
+                    // Skip this index if we can't acquire the lock (another rebuild is in progress).
+                    continue;
+                }
+
+                try
+                {
+                    await indexProfileManager.ResetAsync(indexProfile);
+                    await indexProfileManager.UpdateAsync(indexProfile);
+                    await indexManager.RebuildAsync(indexProfile);
+                    await indexProfileManager.SynchronizeAsync(indexProfile);
+                }
+                finally
+                {
+                    await locker.DisposeAsync();
+                }
             }
         });
     }

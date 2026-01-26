@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Indexing.Core.Deployments;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -33,6 +34,7 @@ public sealed class RebuildIndexStep : NamedRecipeStepHandler
         await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("rebuild-indexes", async scope =>
         {
             var indexProfileManager = scope.ServiceProvider.GetService<IIndexProfileManager>();
+            var distributedLock = scope.ServiceProvider.GetRequiredService<IDistributedLock>();
 
             var indexes = model.IncludeAll
                 ? await indexProfileManager.GetAllAsync()
@@ -42,22 +44,43 @@ public sealed class RebuildIndexStep : NamedRecipeStepHandler
 
             foreach (var index in indexes)
             {
-                if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
-                {
-                    indexManager = scope.ServiceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
-                    indexManagers[index.ProviderName] = indexManager;
-                }
+                // Acquire a distributed lock to prevent concurrent rebuild operations for this index.
+                // This ensures that the ResetAsync, UpdateAsync, RebuildAsync, and SynchronizeAsync
+                // sequence is not interrupted by other rebuild operations.
+                (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync(
+                    $"RebuildIndexStep-{index.Id}",
+                    TimeSpan.FromSeconds(3),
+                    TimeSpan.FromMinutes(15));
 
-                if (indexManager is null)
+                if (!isLocked)
                 {
+                    // Skip this index if we can't acquire the lock (another rebuild is in progress).
                     continue;
                 }
 
-                await indexProfileManager.ResetAsync(index);
-                await indexProfileManager.UpdateAsync(index);
-                if (await indexManager.RebuildAsync(index))
+                try
                 {
-                    await indexProfileManager.SynchronizeAsync(index);
+                    if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
+                    {
+                        indexManager = scope.ServiceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
+                        indexManagers[index.ProviderName] = indexManager;
+                    }
+
+                    if (indexManager is null)
+                    {
+                        continue;
+                    }
+
+                    await indexProfileManager.ResetAsync(index);
+                    await indexProfileManager.UpdateAsync(index);
+                    if (await indexManager.RebuildAsync(index))
+                    {
+                        await indexProfileManager.SynchronizeAsync(index);
+                    }
+                }
+                finally
+                {
+                    await locker.DisposeAsync();
                 }
             }
         });
