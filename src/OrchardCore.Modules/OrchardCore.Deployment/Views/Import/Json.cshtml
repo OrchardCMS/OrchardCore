@@ -40,10 +40,9 @@
             var schema = schemaData ? JSON.parse(schemaData) : null;
 
             var initialValue = textArea.value || JSON.stringify({
-                "name": "",
-                "displayName": "",
-                "description": "",
-                "steps": []
+                "steps": [
+
+                ]
             }, null, 2);
 
             var model = monaco.editor.createModel(initialValue, "json", modelUri);

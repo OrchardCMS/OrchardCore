@@ -169,9 +169,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         return partsSchemaBuilder.Build();
     }
 
-    private JsonSchema BuildContentPartSchema(
-    List<JsonSchema> partSettingsSchemas,
-    List<JsonSchema> fieldSettingsSchemas)
+    private JsonSchema BuildContentPartSchema(List<JsonSchema> partSettingsSchemas, List<JsonSchema> fieldSettingsSchemas)
     {
         var fieldSchema = BuildContentPartFieldSchema(fieldSettingsSchemas);
 
@@ -233,8 +231,49 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
             .Build();
     }
 
+
+    private static JsonSchema BuildKnownContentFieldSettingsSchema()
+    {
+        return new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .Properties(
+                ("ContentPartFieldSettings", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.Object)
+                    .Properties(
+                        ("DisplayName", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.String)
+                            .Description("The displayed name of the part.")),
+                        ("Description", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.String)
+                            .Description("The description of the part.")),
+                        ("Editor", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.String)
+                            .Description("The editor used for this field.")),
+                        ("DisplayMode", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.String)
+                            .Description("The display mode used for this field.")),
+                        ("Position", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.String)
+                            .Description("The position of the field within the content part.")))
+                    )
+             )
+            .AdditionalProperties(true)
+            .Build();
+    }
     private JsonSchema BuildContentPartFieldSchema(List<JsonSchema> fieldSettingsSchemas)
     {
+        var knownSettingsSchema = BuildKnownContentFieldSettingsSchema();
+
+        // Combine known + dynamic settings into ONE anyOf
+        var anyOfSchemas = new List<JsonSchema> { knownSettingsSchema };
+        anyOfSchemas.AddRange(fieldSettingsSchemas);
+
+        var settingsSchema = new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .AnyOf(anyOfSchemas)
+            .AdditionalProperties(true)
+            .Build();
+
         // Base schema for a content part field.
         var fieldSchemaBuilder = new JsonSchemaBuilder()
             .Type(SchemaValueType.Object)
@@ -246,32 +285,9 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
                 ("Name", new JsonSchemaBuilder()
                     .Type(SchemaValueType.String)
                     .Description("The technical name of the field.")),
-                ("Settings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
-                    .Properties(
-                        ("ContentPartFieldSettings", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Object)
-                            .Properties(
-                                ("DisplayName", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                                ("Description", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                                ("Position", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                                ("DisplayMode", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                                ("Editor", new JsonSchemaBuilder().Type(SchemaValueType.String)))
-                            .AdditionalProperties(false)))
-                    .AdditionalProperties(true)))
+                ("Settings", settingsSchema))
             .Required("FieldName", "Name")
             .AdditionalProperties(true);
-
-        // Merge all dynamic field settings into Settings.
-        if (fieldSettingsSchemas.Count > 0)
-        {
-            fieldSchemaBuilder = fieldSchemaBuilder
-                .Properties(
-                    ("Settings", new JsonSchemaBuilder()
-                        .Type(SchemaValueType.Object)
-                        .AnyOf(fieldSettingsSchemas)
-                        .AdditionalProperties(true)));
-        }
 
         return fieldSchemaBuilder.Build();
     }
