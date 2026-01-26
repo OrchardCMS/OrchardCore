@@ -3,11 +3,13 @@ using Lucene.Net.Index;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Lucene.Core;
 using OrchardCore.Modules;
 using OrchardCore.Search.Lucene.Model;
@@ -27,6 +29,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     private readonly ILogger _logger;
 
     private readonly IEnumerable<IIndexEvents> _indexEvents;
+    private readonly IServiceProvider _serviceProvider;
     private readonly SpatialContext _ctx;
     private readonly GeohashPrefixTree _grid;
 
@@ -34,7 +37,8 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         ILuceneIndexStore indexStore,
         ILuceneIndexingState indexingState,
         ILogger<LuceneIndexManager> logger,
-        IEnumerable<IIndexEvents> indexEvents
+        IEnumerable<IIndexEvents> indexEvents,
+        IServiceProvider serviceProvider
         )
     {
         _indexStore = indexStore;
@@ -42,6 +46,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         _logger = logger;
 
         _indexEvents = indexEvents;
+        _serviceProvider = serviceProvider;
 
         // Typical geospatial context.
         // These can also be constructed from SpatialContextFactory.
@@ -85,29 +90,51 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        var context = new IndexRebuildContext(index);
+        var distributedLock = _serviceProvider.GetRequiredService<IDistributedLock>();
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
+        // Acquire a distributed lock to prevent concurrent rebuild operations that could cause
+        // the index to be temporarily unavailable during the delete and create window.
+        (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync(
+            $"LuceneRebuild-{index.Id}",
+            TimeSpan.FromSeconds(3),
+            TimeSpan.FromMinutes(15));
 
-        if (await ExistsAsync(index.IndexFullName))
+        if (!isLocked)
         {
-            await _indexStore.RemoveAsync(index);
+            _logger.LogWarning("Unable to acquire lock for rebuilding index {IndexName}. Another rebuild may be in progress.", index.Name);
+            return false;
         }
 
         try
         {
-            await _indexStore.WriteAndClose(index);
+            var context = new IndexRebuildContext(index);
+
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
+
+            if (await ExistsAsync(index.IndexFullName))
+            {
+                await _indexStore.RemoveAsync(index);
+            }
+
+            try
+            {
+                await _indexStore.WriteAndClose(index);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating index: {IndexFullName}", index.IndexFullName);
+
+                return false;
+            }
+
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
+
+            return true;
         }
-        catch (Exception ex)
+        finally
         {
-            _logger.LogError(ex, "Error creating index: {IndexFullName}", index.IndexFullName);
-
-            return false;
+            await locker.DisposeAsync();
         }
-
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
-
-        return true;
     }
 
     public async Task<bool> DeleteAsync(IndexProfile index)
