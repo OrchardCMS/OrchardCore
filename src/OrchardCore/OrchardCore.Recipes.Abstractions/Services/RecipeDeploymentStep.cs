@@ -18,15 +18,6 @@ public abstract class RecipeDeploymentStep<TModel> : IRecipeDeploymentStep
     public abstract string Name { get; }
 
     /// <inheritdoc />
-    public abstract string DisplayName { get; }
-
-    /// <inheritdoc />
-    public abstract string Description { get; }
-
-    /// <inheritdoc />
-    public virtual string Category => "General";
-
-    /// <inheritdoc />
     public JsonSchema Schema => _schema ??= BuildSchema();
 
     /// <summary>
@@ -62,6 +53,9 @@ public abstract class RecipeDeploymentStep<TModel> : IRecipeDeploymentStep
 
         var stepData = SerializeStep(model);
 
+        // Ensure the name property is set.
+        stepData["name"] = Name;
+
         context.AddStep(stepData);
     }
 
@@ -93,10 +87,8 @@ public abstract class RecipeDeploymentStep<TModel> : IRecipeDeploymentStep
     protected virtual JsonObject SerializeStep(TModel model)
     {
         var json = JsonSerializer.SerializeToNode(model, JOptions.Default);
-        var result = json?.AsObject() ?? new JsonObject();
 
-        // Ensure the name property is set.
-        result["name"] = Name;
+        var result = json?.AsObject() ?? new JsonObject();
 
         return result;
     }

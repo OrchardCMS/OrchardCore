@@ -26,22 +26,13 @@ public sealed class UnifiedRecipesStep : RecipeImportStep<UnifiedRecipesStep.Rec
     public override string Name => "Recipes";
 
     /// <inheritdoc />
-    public override string DisplayName => "Recipes";
-
-    /// <inheritdoc />
-    public override string Description => "Executes nested recipes by name.";
-
-    /// <inheritdoc />
-    public override string Category => "Configuration";
-
-    /// <inheritdoc />
     protected override JsonSchema BuildSchema()
     {
         return new JsonSchemaBuilder()
             .Schema(MetaSchemas.Draft202012Id)
             .Type(SchemaValueType.Object)
-            .Title(Name)
-            .Description(Description)
+            .Title("Recipes")
+            .Description("Executes nested recipes by name.")
             .Required("name", "Values")
             .Properties(
                 ("name", new JsonSchemaBuilder()

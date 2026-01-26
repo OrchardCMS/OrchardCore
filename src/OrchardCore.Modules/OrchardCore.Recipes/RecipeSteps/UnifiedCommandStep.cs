@@ -34,22 +34,13 @@ public sealed class UnifiedCommandStep : RecipeImportStep<UnifiedCommandStep.Com
     public override string Name => "Command";
 
     /// <inheritdoc />
-    public override string DisplayName => "Command";
-
-    /// <inheritdoc />
-    public override string Description => "Executes CLI commands.";
-
-    /// <inheritdoc />
-    public override string Category => "Configuration";
-
-    /// <inheritdoc />
     protected override JsonSchema BuildSchema()
     {
         return new JsonSchemaBuilder()
             .Schema(MetaSchemas.Draft202012Id)
             .Type(SchemaValueType.Object)
             .Title(Name)
-            .Description(Description)
+            .Description("Executes CLI commands.")
             .Required("name", "Commands")
             .Properties(
                 ("name", new JsonSchemaBuilder()

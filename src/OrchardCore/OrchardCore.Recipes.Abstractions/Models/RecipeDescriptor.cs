@@ -30,11 +30,7 @@ public class RecipeDescriptor : IRecipeDescriptor
     public IFileInfo RecipeFileInfo { get; set; }
     public IFileProvider FileProvider { get; set; }
 
-    /// <inheritdoc />
-    /// <remarks>
-    /// File-based recipe descriptors do not provide a schema by default.
-    /// Use <see cref="FileRecipeDescriptor"/> for schema support based on X.recipe.schema.json files.
-    /// </remarks>
+
     public virtual Task<JsonSchema> GetSchemaAsync()
     {
         // File-based recipes don't have schema by default.

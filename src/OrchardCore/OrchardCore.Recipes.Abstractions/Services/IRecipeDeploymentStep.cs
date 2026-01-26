@@ -15,21 +15,6 @@ public interface IRecipeDeploymentStep
     string Name { get; }
 
     /// <summary>
-    /// Gets the display name shown in UI.
-    /// </summary>
-    string DisplayName { get; }
-
-    /// <summary>
-    /// Gets a description of what this step does.
-    /// </summary>
-    string Description { get; }
-
-    /// <summary>
-    /// Gets the category for grouping in UI.
-    /// </summary>
-    string Category { get; }
-
-    /// <summary>
     /// Gets the JSON Schema that defines this step's structure.
     /// </summary>
     JsonSchema Schema { get; }

@@ -40,15 +40,6 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
     public override string Name => "ContentDefinition";
 
     /// <inheritdoc />
-    public override string DisplayName => "Content Definition";
-
-    /// <inheritdoc />
-    public override string Description => "Creates or updates content type and part definitions.";
-
-    /// <inheritdoc />
-    public override string Category => "Content";
-
-    /// <inheritdoc />
     protected override JsonSchema BuildSchema()
     {
         // Build schemas for all registered content parts.
@@ -82,7 +73,8 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         return new JsonSchemaBuilder()
             .Schema(MetaSchemas.Draft202012Id)
             .Type(SchemaValueType.Object)
-            .Title(Name)
+            .Title("Content Definition")
+            .Description("Creates or updates content type and part definitions.")
             .Required("name")
             .Properties(
                 ("name", new JsonSchemaBuilder()

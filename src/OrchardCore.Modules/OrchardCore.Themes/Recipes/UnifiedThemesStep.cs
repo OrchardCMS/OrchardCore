@@ -26,22 +26,13 @@ public sealed class UnifiedThemesStep : RecipeDeploymentStep<UnifiedThemesStep.T
     public override string Name => "Themes";
 
     /// <inheritdoc />
-    public override string DisplayName => "Themes";
-
-    /// <inheritdoc />
-    public override string Description => "Sets the site and admin themes for the Orchard Core application.";
-
-    /// <inheritdoc />
-    public override string Category => "Configuration";
-
-    /// <inheritdoc />
     protected override JsonSchema BuildSchema()
     {
         return new JsonSchemaBuilder()
             .Schema(MetaSchemas.Draft202012Id)
             .Type(SchemaValueType.Object)
             .Title(Name)
-            .Description(Description)
+            .Description("Sets the site and admin themes for the Orchard Core application.")
             .Required("name")
             .Properties(
                 ("name", new JsonSchemaBuilder()

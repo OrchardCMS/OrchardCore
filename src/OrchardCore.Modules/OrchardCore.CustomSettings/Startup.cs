@@ -27,7 +27,10 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, CustomSettingsAuthorizationHandler>();
 
-        services.AddRecipeExecutionStep<CustomSettingsStep>();
+		#pragma warning disable CS0618 // Type or member is obsolete
+		services.AddRecipeExecutionStep<CustomSettingsStep>();
+		#pragma warning restore CS0618 // Type or member is obsolete
+		services.AddRecipeDeploymentStep<CustomSettingsRecipeStep>();
 
         services.Configure<ContentTypeDefinitionOptions>(options =>
         {

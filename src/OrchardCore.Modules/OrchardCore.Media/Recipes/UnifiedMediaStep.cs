@@ -34,22 +34,13 @@ public sealed class UnifiedMediaStep : RecipeImportStep<UnifiedMediaStep.MediaSt
     public override string Name => "media";
 
     /// <inheritdoc />
-    public override string DisplayName => "Media";
-
-    /// <inheritdoc />
-    public override string Description => "Imports media files into the media library.";
-
-    /// <inheritdoc />
-    public override string Category => "Media";
-
-    /// <inheritdoc />
     protected override JsonSchema BuildSchema()
     {
         return new JsonSchemaBuilder()
             .Schema(MetaSchemas.Draft202012Id)
             .Type(SchemaValueType.Object)
             .Title(Name)
-            .Description(Description)
+            .Description("Imports media files into the media library.")
             .Required("name", "Files")
             .Properties(
                 ("name", new JsonSchemaBuilder()

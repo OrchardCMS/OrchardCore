@@ -11,6 +11,7 @@ namespace OrchardCore.AdminMenu.Recipes;
 /// <summary>
 /// This recipe step creates a set of admin menus.
 /// </summary>
+[Obsolete($"Use {nameof(AdminMenuRecipeStep)} instead. This class will be removed in a future version.", false)]
 public sealed class AdminMenuStep : NamedRecipeStepHandler
 {
     private readonly IAdminMenuService _adminMenuService;
@@ -44,9 +45,4 @@ public sealed class AdminMenuStep : NamedRecipeStepHandler
             await _adminMenuService.SaveAsync(adminMenu);
         }
     }
-}
-
-public class AdminMenuStepModel
-{
-    public JsonArray Data { get; set; }
 }

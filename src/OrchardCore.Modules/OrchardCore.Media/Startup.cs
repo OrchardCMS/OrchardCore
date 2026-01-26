@@ -190,7 +190,10 @@ public sealed class Startup : StartupBase
         // Media Profiles
         services.AddScoped<MediaProfilesManager>();
         services.AddScoped<IMediaProfileService, MediaProfileService>();
+
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<MediaProfileStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Media Name Normalizer
         services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();

@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Json.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents.Core;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -24,40 +25,15 @@ public sealed class UnifiedContentStep : RecipeDeploymentStep<UnifiedContentStep
     public override string Name => "Content";
 
     /// <inheritdoc />
-    public override string DisplayName => "Content";
-
-    /// <inheritdoc />
-    public override string Description => "Imports content items into the Orchard Core application.";
-
-    /// <inheritdoc />
-    public override string Category => "Content";
-
-    /// <inheritdoc />
     protected override JsonSchema BuildSchema()
     {
-        var contentItemSchema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
-            .Required("ContentItemId", "ContentType")
-            .Properties(
-                ("ContentItemId", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The unique identifier for the content item.")),
-                ("ContentItemVersionId", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The version identifier for the content item.")),
-                ("ContentType", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The type of content item.")),
-                ("DisplayText", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The display text for the content item.")),
-                ("Latest", new JsonSchemaBuilder().Type(SchemaValueType.Boolean).Description("Whether this is the latest version.")),
-                ("Published", new JsonSchemaBuilder().Type(SchemaValueType.Boolean).Description("Whether this content item is published.")),
-                ("ModifiedUtc", new JsonSchemaBuilder().Type(SchemaValueType.String).Format(Formats.DateTime).Description("The UTC date/time when the content item was last modified.")),
-                ("PublishedUtc", new JsonSchemaBuilder().Type(SchemaValueType.String).Format(Formats.DateTime).Description("The UTC date/time when the content item was published.")),
-                ("CreatedUtc", new JsonSchemaBuilder().Type(SchemaValueType.String).Format(Formats.DateTime).Description("The UTC date/time when the content item was created.")),
-                ("Owner", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The owner of the content item.")),
-                ("Author", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The author of the content item.")))
-            .AdditionalProperties(JsonSchema.True)
-            .Build();
+
 
         return new JsonSchemaBuilder()
             .Schema(MetaSchemas.Draft202012Id)
             .Type(SchemaValueType.Object)
-            .Title(Name)
-            .Description(Description)
+            .Title("Content")
+            .Description("Imports content items into the Orchard Core application.")
             .Required("name", "data")
             .Properties(
                 ("name", new JsonSchemaBuilder()
@@ -67,7 +43,7 @@ public sealed class UnifiedContentStep : RecipeDeploymentStep<UnifiedContentStep
                 ("data", new JsonSchemaBuilder()
                     .Type(SchemaValueType.Array)
                     .Description("Array of content items to import.")
-                    .Items(contentItemSchema)))
+                    .Items(ContentCommonSchemas.ContentItemSchema)))
             .AdditionalProperties(JsonSchema.True)
             .Build();
     }

@@ -38,22 +38,13 @@ public sealed class UnifiedFeatureStep : RecipeDeploymentStep<UnifiedFeatureStep
     public override string Name => "Feature";
 
     /// <inheritdoc />
-    public override string DisplayName => "Feature";
-
-    /// <inheritdoc />
-    public override string Description => "Enables or disables features in the Orchard Core application.";
-
-    /// <inheritdoc />
-    public override string Category => "Configuration";
-
-    /// <inheritdoc />
     protected override JsonSchema BuildSchema()
     {
         return new JsonSchemaBuilder()
             .Schema(MetaSchemas.Draft202012Id)
             .Type(SchemaValueType.Object)
             .Title(Name)
-            .Description(Description)
+            .Description("Enables or disables features in the Orchard Core application.")
             .Required("name")
             .Properties(
                 ("name", new JsonSchemaBuilder()

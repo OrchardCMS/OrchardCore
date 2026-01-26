@@ -22,22 +22,13 @@ public sealed class UnifiedSettingsStep : RecipeDeploymentStep<UnifiedSettingsSt
     public override string Name => "Settings";
 
     /// <inheritdoc />
-    public override string DisplayName => "Settings";
-
-    /// <inheritdoc />
-    public override string Description => "Updates site settings for the Orchard Core application.";
-
-    /// <inheritdoc />
-    public override string Category => "Configuration";
-
-    /// <inheritdoc />
     protected override JsonSchema BuildSchema()
     {
         return new JsonSchemaBuilder()
             .Schema(MetaSchemas.Draft202012Id)
             .Type(SchemaValueType.Object)
-            .Title(Name)
-            .Description(Description)
+            .Title("Site Settings")
+            .Description("Updates site settings for the Orchard Core application.")
             .Required("name")
             .Properties(
                 ("name", new JsonSchemaBuilder()
@@ -92,7 +83,7 @@ public sealed class UnifiedSettingsStep : RecipeDeploymentStep<UnifiedSettingsSt
                     .Type(SchemaValueType.String)
                     .Enum("Disabled", "FromConfiguration", "Enabled")
                     .Description("Cache mode setting.")))
-            .AdditionalProperties(JsonSchema.Empty)
+            .AdditionalProperties(JsonSchema.True)
             .Build();
     }
 

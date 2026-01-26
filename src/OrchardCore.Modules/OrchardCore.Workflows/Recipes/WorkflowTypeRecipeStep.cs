@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Json.Schema;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
@@ -14,8 +15,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Recipes;
 
-[Obsolete($"Use {nameof(WorkflowTypeRecipeStep)} instead. This class will be removed in a future version.", false)]
-public sealed class WorkflowTypeStep : NamedRecipeStepHandler
+public sealed class WorkflowTypeRecipeStep : RecipeImportStep<WorkflowStepModel>
 {
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly ISecurityTokenService _securityTokenService;
@@ -23,12 +23,12 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
     private readonly LinkGenerator _linkGenerator;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public WorkflowTypeStep(IWorkflowTypeStore workflowTypeStore,
+    public WorkflowTypeRecipeStep(
+        IWorkflowTypeStore workflowTypeStore,
         ISecurityTokenService securityTokenService,
         IHttpContextAccessor httpContextAccessor,
         LinkGenerator linkGenerator,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
-        : base("WorkflowType")
     {
         _workflowTypeStore = workflowTypeStore;
         _securityTokenService = securityTokenService;
@@ -37,15 +37,13 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-public sealed class WorkflowStepModel
-{
-    public JsonArray Data { get; set; }
-}
+    public override string Name => "WorkflowType";
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
+    protected override JsonSchema BuildSchema()
+        => JsonSchema.Empty;
+
+    protected override async Task ImportAsync(WorkflowStepModel model, RecipeExecutionContext context)
     {
-        var model = context.Step.ToObject<WorkflowStepModel>();
-
         foreach (var token in model.Data.Cast<JsonObject>())
         {
             var workflow = token.ToObject<WorkflowType>(_jsonSerializerOptions);

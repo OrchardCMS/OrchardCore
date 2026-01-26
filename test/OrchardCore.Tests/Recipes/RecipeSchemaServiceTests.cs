@@ -24,8 +24,8 @@ public class RecipeSchemaServiceTests
     public void GetSteps_ReturnsRegisteredSteps()
     {
         // Arrange
-        var step1 = new TestRecipeDeploymentStep("Step1", "Step 1", "Description 1");
-        var step2 = new TestRecipeDeploymentStep("Step2", "Step 2", "Description 2");
+        var step1 = new TestRecipeDeploymentStep("Step1");
+        var step2 = new TestRecipeDeploymentStep("Step2");
         var service = new RecipeSchemaService([step1, step2]);
 
         // Act
@@ -41,7 +41,7 @@ public class RecipeSchemaServiceTests
     public void GetStep_ReturnsCorrectStep_WhenFound()
     {
         // Arrange
-        var step = new TestRecipeDeploymentStep("Feature", "Feature Step", "Enables features");
+        var step = new TestRecipeDeploymentStep("Feature");
         var service = new RecipeSchemaService([step]);
 
         // Act
@@ -50,7 +50,6 @@ public class RecipeSchemaServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal("Feature", result.Name);
-        Assert.Equal("Feature Step", result.DisplayName);
     }
 
     [Fact]
@@ -70,7 +69,7 @@ public class RecipeSchemaServiceTests
     public void GetStep_IsCaseInsensitive()
     {
         // Arrange
-        var step = new TestRecipeDeploymentStep("Feature", "Feature Step", "Enables features");
+        var step = new TestRecipeDeploymentStep("Feature");
         var service = new RecipeSchemaService([step]);
 
         // Act
@@ -89,7 +88,7 @@ public class RecipeSchemaServiceTests
             .Type(SchemaValueType.Object)
             .Properties(("name", new JsonSchemaBuilder().Type(SchemaValueType.String)))
             .Build();
-        var step = new TestRecipeDeploymentStep("Feature", "Feature Step", "Description", schema);
+        var step = new TestRecipeDeploymentStep("Feature", schema);
         var service = new RecipeSchemaService([step]);
 
         // Act
@@ -103,7 +102,7 @@ public class RecipeSchemaServiceTests
     public void GetCombinedSchema_ReturnsValidRecipeSchema()
     {
         // Arrange
-        var step = new TestRecipeDeploymentStep("Feature", "Feature Step", "Enables features");
+        var step = new TestRecipeDeploymentStep("Feature");
         var service = new RecipeSchemaService([step]);
 
         // Act
@@ -121,7 +120,7 @@ public class RecipeSchemaServiceTests
     public void ValidateRecipe_ReturnsSuccess_WhenRecipeIsValid()
     {
         // Arrange
-        var step = new TestRecipeDeploymentStep("Feature", "Feature Step", "Enables features");
+        var step = new TestRecipeDeploymentStep("Feature");
         var service = new RecipeSchemaService([step]);
         var recipe = new JsonObject
         {
@@ -186,11 +185,9 @@ public class RecipeSchemaServiceTests
     {
         private readonly JsonSchema _schema;
 
-        public TestRecipeDeploymentStep(string name, string displayName, string description, JsonSchema schema = null)
+        public TestRecipeDeploymentStep(string name, JsonSchema schema = null)
         {
             Name = name;
-            DisplayName = displayName;
-            Description = description;
             _schema = schema ?? new JsonSchemaBuilder()
                 .Type(SchemaValueType.Object)
                 .Required("name")
@@ -200,12 +197,11 @@ public class RecipeSchemaServiceTests
         }
 
         public string Name { get; }
-        public string DisplayName { get; }
-        public string Description { get; }
-        public string Category => "Test";
+
         public JsonSchema Schema => _schema;
 
         public Task ExecuteAsync(RecipeExecutionContext context) => Task.CompletedTask;
+
         public Task ExportAsync(RecipeExportContext context) => Task.CompletedTask;
     }
 }

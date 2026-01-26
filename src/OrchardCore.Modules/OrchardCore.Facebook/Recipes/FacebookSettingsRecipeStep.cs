@@ -1,31 +1,26 @@
-using System.Text.Json.Nodes;
+using Json.Schema;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Facebook.Recipes;
 
-/// <summary>
-/// This recipe step sets general Facebook Login settings.
-/// </summary>
-public sealed class FacebookSettingsStep : NamedRecipeStepHandler
+public sealed class FacebookSettingsRecipeStep : RecipeImportStep<FacebookCoreSettingsStepModel>
 {
     private readonly IFacebookService _facebookService;
 
-    public FacebookSettingsStep(IFacebookService facebookService)
-        : base("FacebookCoreSettings")
+    public FacebookSettingsRecipeStep(IFacebookService facebookService)
     {
         _facebookService = facebookService;
     }
 
-    protected override async Task HandleAsync(RecipeExecutionContext context)
-    {
-        if (!string.Equals(context.Name, "FacebookCoreSettings", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
+    public override string Name => "FacebookCoreSettings";
 
-        var model = context.Step.ToObject<FacebookCoreSettingsStepModel>();
+    protected override JsonSchema BuildSchema()
+        => JsonSchema.Empty;
+
+    protected override async Task ImportAsync(FacebookCoreSettingsStepModel model, RecipeExecutionContext context)
+    {
         var settings = await _facebookService.GetSettingsAsync();
 
         settings.AppId = model.AppId;
