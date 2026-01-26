@@ -1,0 +1,61 @@
+@model SecretEditViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(Model.IsNew ? T["Create Secret"] : T["Edit Secret"])</h1></zone>
+
+<form asp-action="@(Model.IsNew ? "Create" : "Edit")" method="post" class="no-multisubmit">
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">@T["Name"]</label>
+        @if (Model.IsNew)
+        {
+            <input asp-for="Name" class="form-control" />
+        }
+        else
+        {
+            <input asp-for="Name" class="form-control" readonly />
+        }
+        <span asp-validation-for="Name" class="text-danger"></span>
+        <span class="hint">@T["A unique identifier for this secret."]</span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SecretType" class="form-label">@T["Secret Type"]</label>
+        <select asp-for="SecretType" asp-items="@(new SelectList(Model.AvailableTypes))" class="form-select">
+        </select>
+        <span asp-validation-for="SecretType" class="text-danger"></span>
+    </div>
+
+    @if (Model.AvailableStores.Count > 1)
+    {
+        <div class="mb-3">
+            <label asp-for="Store" class="form-label">@T["Store"]</label>
+            <select asp-for="Store" asp-items="@(new SelectList(Model.AvailableStores))" class="form-select">
+            </select>
+            <span class="hint">@T["The secret store where this secret will be saved."]</span>
+        </div>
+    }
+    else
+    {
+        <input type="hidden" asp-for="Store" value="@Model.AvailableStores.FirstOrDefault()" />
+    }
+
+    <div class="mb-3">
+        <label asp-for="SecretValue" class="form-label">@T["Secret Value"]</label>
+        <input type="password" asp-for="SecretValue" class="form-control" autocomplete="new-password" />
+        <span asp-validation-for="SecretValue" class="text-danger"></span>
+        @if (!Model.IsNew)
+        {
+            <span class="hint">@T["Leave empty to keep the current value. Enter a new value to update it."]</span>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">@T["Description"]</label>
+        <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+        <span class="hint">@T["An optional description for this secret."]</span>
+    </div>
+
+    <div class="mb-3">
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
+    </div>
+</form>

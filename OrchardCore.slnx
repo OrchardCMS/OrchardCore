@@ -153,6 +153,8 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Roles/OrchardCore.Roles.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Scripting/OrchardCore.Scripting.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Security/OrchardCore.Security.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Secrets.Azure/OrchardCore.Secrets.Azure.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Secrets/OrchardCore.Secrets.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Settings/OrchardCore.Settings.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Setup/OrchardCore.Setup.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Sms.Azure/OrchardCore.Sms.Azure.csproj" />
@@ -261,6 +263,8 @@
     <Project Path="src/OrchardCore/OrchardCore.Shells.Azure/OrchardCore.Shells.Azure.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Shortcodes.Abstractions/OrchardCore.Shortcodes.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sitemaps.Abstractions/OrchardCore.Sitemaps.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.Secrets.Abstractions/OrchardCore.Secrets.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.Secrets.Core/OrchardCore.Secrets.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sms.Abstractions/OrchardCore.Sms.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sms.Core/OrchardCore.Sms.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Taxonomies.Core/OrchardCore.Taxonomies.Core.csproj" />

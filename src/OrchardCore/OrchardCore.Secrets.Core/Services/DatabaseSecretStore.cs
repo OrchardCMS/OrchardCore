@@ -1,0 +1,114 @@
+using System.Text.Json;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Documents;
+using OrchardCore.Secrets.Models;
+
+namespace OrchardCore.Secrets.Services;
+
+/// <summary>
+/// A database-backed secret store using YesSql and Data Protection for encryption.
+/// </summary>
+public class DatabaseSecretStore : ISecretStore
+{
+    private const string DataProtectionPurpose = "OrchardCore.Secrets";
+
+    private readonly IDocumentManager<SecretsDocument> _documentManager;
+    private readonly IDataProtector _dataProtector;
+    private readonly ILogger _logger;
+
+    public DatabaseSecretStore(
+        IDocumentManager<SecretsDocument> documentManager,
+        IDataProtectionProvider dataProtectionProvider,
+        ILogger<DatabaseSecretStore> logger)
+    {
+        _documentManager = documentManager;
+        _dataProtector = dataProtectionProvider.CreateProtector(DataProtectionPurpose);
+        _logger = logger;
+    }
+
+    /// <inheritdoc />
+    public string Name => "Database";
+
+    /// <inheritdoc />
+    public bool IsReadOnly => false;
+
+    /// <inheritdoc />
+    public async Task<T> GetSecretAsync<T>(string name) where T : class, ISecret
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        var document = await _documentManager.GetOrCreateImmutableAsync();
+
+        if (!document.Secrets.TryGetValue(name, out var entry))
+        {
+            return null;
+        }
+
+        try
+        {
+            var decryptedData = _dataProtector.Unprotect(entry.EncryptedData);
+            return JsonSerializer.Deserialize<T>(decryptedData);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to decrypt secret '{SecretName}'.", name);
+            return null;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task SaveSecretAsync<T>(string name, T secret) where T : class, ISecret
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNull(secret);
+
+        var document = await _documentManager.GetOrCreateMutableAsync();
+
+        var json = JsonSerializer.Serialize(secret);
+        var encryptedData = _dataProtector.Protect(json);
+
+        var now = DateTime.UtcNow;
+        var isNew = !document.Secrets.ContainsKey(name);
+
+        document.Secrets[name] = new SecretEntry
+        {
+            Name = name,
+            Type = typeof(T).FullName,
+            EncryptedData = encryptedData,
+            CreatedUtc = isNew ? now : document.Secrets[name].CreatedUtc,
+            UpdatedUtc = now,
+            Description = isNew ? null : document.Secrets[name].Description,
+        };
+
+        await _documentManager.UpdateAsync(document);
+    }
+
+    /// <inheritdoc />
+    public async Task RemoveSecretAsync(string name)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        var document = await _documentManager.GetOrCreateMutableAsync();
+
+        if (document.Secrets.Remove(name))
+        {
+            await _documentManager.UpdateAsync(document);
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<SecretInfo>> GetSecretInfosAsync()
+    {
+        var document = await _documentManager.GetOrCreateImmutableAsync();
+
+        return document.Secrets.Values.Select(entry => new SecretInfo
+        {
+            Name = entry.Name,
+            Store = Name,
+            Type = entry.Type,
+            CreatedUtc = entry.CreatedUtc,
+            UpdatedUtc = entry.UpdatedUtc,
+        });
+    }
+}
