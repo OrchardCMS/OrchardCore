@@ -1,6 +1,5 @@
 using Azure;
 using Azure.Search.Documents.Indexes.Models;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
@@ -28,10 +27,10 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         IEnumerable<IIndexEvents> indexEvents,
         IDistributedLock distributedLock)
     {
+        _clientFactory = clientFactory;
         _distributedLock = distributedLock;
         _logger = logger;
         _indexEvents = indexEvents;
-        _serviceProvider = serviceProvider;
     }
 
     public async Task<bool> CreateAsync(IndexProfile indexProfile)

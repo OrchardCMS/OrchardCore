@@ -105,70 +105,26 @@ public class SiteContext : IDisposable
         HttpContextAccessor.HttpContext = null;
     }
 
-    // Waits up to 60 seconds for all outstanding deferred tasks and HTTP background jobs to complete.
-    // This handles the case where deferred tasks can schedule HTTP background jobs, and those jobs
-    // can schedule more deferred tasks, creating a chain of work that needs to fully complete.
-    public async Task WaitForDeferredTasksAsync(CancellationToken cancellationToken)
+    // Waits up to 60 seconds for all outstanding deferred tasks to complete by making sure no shell scope is
+    // currently executing.
+    public Task WaitForDeferredTasksAsync(CancellationToken cancellationToken)
     {
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(DeferredTasksTimeoutSeconds));
-
-        // Track stability - both deferred tasks and HTTP background jobs should remain idle for a brief period.
-        var stableIterations = 0;
-        const int requiredStableIterations = 5;
-
-        while (!cts.Token.IsCancellationRequested)
+        return UsingTenantScopeAsync(async scope =>
         {
-            var activeScopes = 0;
-            var activeJobs = HttpBackgroundJob.ActiveJobsCount;
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(DeferredTasksTimeoutSeconds));
 
-            // Check active scopes within a tenant scope.
-            await UsingTenantScopeAsync(scope =>
+            // If there is only one active scope (the current one), it means that all deferred tasks have completed.
+            while (!cts.Token.IsCancellationRequested &&
+                    scope.ShellContext.ActiveScopes > 1)
             {
-                activeScopes = scope.ShellContext.ActiveScopes;
-                return Task.CompletedTask;
-            });
-
-            // We consider the system stable when:
-            // - Only 1 active scope (the one we just used to check)
-            // - No active HTTP background jobs
-            // But since we're outside the scope now, activeScopes should be 0 or we need to subtract 1
-            // Actually, since UsingTenantScopeAsync has completed, the scope is disposed.
-            // So we need to check if there are other active scopes.
-
-            // Re-check after the scope is disposed
-            activeJobs = HttpBackgroundJob.ActiveJobsCount;
-
-            // Check if there are any other active scopes by creating a temporary scope
-            var hasOtherScopes = false;
-            await UsingTenantScopeAsync(scope =>
-            {
-                // If ActiveScopes > 1, there are other scopes running
-                hasOtherScopes = scope.ShellContext.ActiveScopes > 1;
-                return Task.CompletedTask;
-            });
-
-            if (!hasOtherScopes && activeJobs == 0)
-            {
-                stableIterations++;
-                if (stableIterations >= requiredStableIterations)
-                {
-                    // System has been stable for multiple checks.
-                    break;
-                }
-            }
-            else
-            {
-                // Reset stability counter if there's activity.
-                stableIterations = 0;
+                await Task.Delay(WaitDelayMilliseconds, cancellationToken);
             }
 
-            await Task.Delay(WaitDelayMilliseconds, cancellationToken);
-        }
-
-        if (cts.IsCancellationRequested)
-        {
-            throw new TimeoutException("Not all deferred tasks have completed within the expected time frame.");
-        }
+            if (cts.IsCancellationRequested)
+            {
+                throw new TimeoutException("Not all deferred tasks have completed within the expected time frame.");
+            }
+        });
     }
 
     // Waits up to 90 seconds for all outstanding HTTP background jobs.
