@@ -10,6 +10,11 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IRecipeHarvester, ApplicationRecipeHarvester>();
         services.AddScoped<IRecipeHarvester, RecipeHarvester>();
+
+        // Register the ServiceProvider-based recipe harvester for code-defined recipes.
+        // This harvester collects IRecipeDescriptor instances registered via AddRecipe<T>().
+        services.AddScoped<IRecipeHarvester, ServiceProviderRecipeHarvester>();
+
         services.AddTransient<IRecipeExecutor, RecipeExecutor>();
         services.AddScoped<IRecipeMigrator, RecipeMigrator>();
         services.AddScoped<IRecipeReader, RecipeReader>();

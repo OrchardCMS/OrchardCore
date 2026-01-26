@@ -171,7 +171,14 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
         services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
         services.AddDataMigration<Migrations>();
+
+        // Register unified recipe deployment steps.
+        services.AddRecipeDeploymentStep<UnifiedMediaStep>();
+
+        // Legacy step registrations for backward compatibility.
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<MediaStep>();
+#pragma warning restore CS0618
 
         // MIME types
         services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();

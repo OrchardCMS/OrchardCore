@@ -23,6 +23,21 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
+    /// Registers a code-based recipe descriptor that can be discovered by the ServiceProviderRecipeHarvester.
+    /// This allows recipes to be defined entirely in code using <see cref="CodeRecipeDescriptor"/>.
+    /// </summary>
+    /// <typeparam name="TRecipe">The type of the recipe descriptor.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddRecipe<TRecipe>(this IServiceCollection services)
+        where TRecipe : class, IRecipeDescriptor
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IRecipeDescriptor, TRecipe>());
+
+        return services;
+    }
+
+    /// <summary>
     /// Registers a recipe step handler.
     /// </summary>
     /// <typeparam name="TImplementation">The type of the recipe step handler.</typeparam>

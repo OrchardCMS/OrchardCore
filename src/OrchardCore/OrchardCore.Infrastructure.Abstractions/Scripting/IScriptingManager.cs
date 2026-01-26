@@ -18,12 +18,22 @@ public interface IScriptingManager
     /// <summary>
     /// Executes some prefixed script by looking for a matching scripting engine.
     /// </summary>
-    /// <param name="directive">The directive to execute. A directive is made of a. </param>
-    /// <param name="fileProvider">An optional <see cref="IFileProvider"/> instance.</param>
-    /// <param name="basePath">The base path.</param>
+    /// <param name="directive">The directive to execute. A directive is made of a prefix and script separated by colon.</param>
+    /// <param name="fileProvider">An optional <see cref="IFileProvider"/> instance for file-based operations.</param>
+    /// <param name="basePath">The base path for file resolution.</param>
     /// <param name="scopedMethodProviders">A list of method providers scoped to the script evaluation.</param>
     /// <returns>The result of the script if any.</returns>
     object Evaluate(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders);
+
+    /// <summary>
+    /// Executes some prefixed script by looking for a matching scripting engine without file context.
+    /// Use this overload when the recipe source does not provide file-based operations.
+    /// </summary>
+    /// <param name="directive">The directive to execute. A directive is made of a prefix and script separated by colon.</param>
+    /// <param name="scopedMethodProviders">A list of method providers scoped to the script evaluation.</param>
+    /// <returns>The result of the script if any.</returns>
+    object Evaluate(string directive, IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
+        => Evaluate(directive, null, null, scopedMethodProviders);
 
     /// <summary>
     /// The list of available method providers for this <see cref="IScriptingManager"/>

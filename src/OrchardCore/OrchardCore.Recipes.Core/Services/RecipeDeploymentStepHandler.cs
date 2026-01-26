@@ -17,7 +17,9 @@ namespace OrchardCore.Recipes.Services;
 /// on the one that matches the step name.
 /// </para>
 /// </remarks>
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class RecipeDeploymentStepHandler : IRecipeStepHandler
+#pragma warning restore CS0618 // Type or member is obsolete
 {
     private readonly IEnumerable<IRecipeDeploymentStep> _steps;
 

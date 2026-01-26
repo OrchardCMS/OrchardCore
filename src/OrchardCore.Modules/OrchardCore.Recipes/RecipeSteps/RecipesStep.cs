@@ -8,7 +8,10 @@ namespace OrchardCore.Recipes.RecipeSteps;
 /// <summary>
 /// This recipe step executes a set of external recipes.
 /// </summary>
+[Obsolete($"Use {nameof(UnifiedRecipesStep)} instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class RecipesStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
 
@@ -30,7 +33,7 @@ public sealed class RecipesStep : NamedRecipeStepHandler
         var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(harvester => harvester.HarvestRecipesAsync()));
         var recipes = recipeCollections.SelectMany(recipe => recipe).ToDictionary(recipe => recipe.Name);
 
-        var innerRecipes = new List<RecipeDescriptor>();
+        var innerRecipes = new List<IRecipeDescriptor>();
         foreach (var recipe in step.Values)
         {
             if (!recipes.TryGetValue(recipe.Name, out var value))

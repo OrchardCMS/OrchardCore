@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Recipes.Models;
 
@@ -12,9 +13,9 @@ public class RecipeExecutionContext
 
     public JsonObject Step { get; set; }
 
-    public RecipeDescriptor RecipeDescriptor { get; set; }
+    public IRecipeDescriptor RecipeDescriptor { get; set; }
 
-    public IEnumerable<RecipeDescriptor> InnerRecipes { get; set; }
+    public IEnumerable<IRecipeDescriptor> InnerRecipes { get; set; }
 
     public IList<string> Errors { get; } = [];
 }

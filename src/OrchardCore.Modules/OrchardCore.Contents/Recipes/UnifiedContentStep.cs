@@ -50,7 +50,7 @@ public sealed class UnifiedContentStep : RecipeDeploymentStep<UnifiedContentStep
                 ("CreatedUtc", new JsonSchemaBuilder().Type(SchemaValueType.String).Format(Formats.DateTime).Description("The UTC date/time when the content item was created.")),
                 ("Owner", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The owner of the content item.")),
                 ("Author", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The author of the content item.")))
-            .AdditionalProperties(JsonSchema.Empty)
+            .AdditionalProperties(JsonSchema.True)
             .Build();
 
         return new JsonSchemaBuilder()
@@ -68,7 +68,7 @@ public sealed class UnifiedContentStep : RecipeDeploymentStep<UnifiedContentStep
                     .Type(SchemaValueType.Array)
                     .Description("Array of content items to import.")
                     .Items(contentItemSchema)))
-            .AdditionalProperties(JsonSchema.False)
+            .AdditionalProperties(JsonSchema.True)
             .Build();
     }
 

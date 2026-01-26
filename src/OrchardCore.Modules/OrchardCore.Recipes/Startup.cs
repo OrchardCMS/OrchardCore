@@ -17,8 +17,16 @@ public sealed class Startup : StartupBase
     {
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<RecipesPermissionProvider>();
+
+        // Register unified recipe deployment steps.
+        services.AddRecipeDeploymentStep<UnifiedRecipesStep>();
+        services.AddRecipeDeploymentStep<UnifiedCommandStep>();
+
+        // Legacy step registrations for backward compatibility.
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<CommandStep>();
         services.AddRecipeExecutionStep<RecipesStep>();
+#pragma warning restore CS0618
 
         services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
     }

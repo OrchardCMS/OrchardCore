@@ -1,8 +1,14 @@
+using Json.Schema;
 using Microsoft.Extensions.FileProviders;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Recipes.Models;
 
-public class RecipeDescriptor
+/// <summary>
+/// Represents a recipe descriptor that provides metadata and content for a recipe.
+/// This class implements <see cref="IRecipeDescriptor"/> for compatibility with the unified recipe system.
+/// </summary>
+public class RecipeDescriptor : IRecipeDescriptor
 {
     public string Name { get; set; }
     public string DisplayName { get; set; }
@@ -23,4 +29,27 @@ public class RecipeDescriptor
 
     public IFileInfo RecipeFileInfo { get; set; }
     public IFileProvider FileProvider { get; set; }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// File-based recipe descriptors do not provide a schema by default.
+    /// Use <see cref="FileRecipeDescriptor"/> for schema support based on X.recipe.schema.json files.
+    /// </remarks>
+    public virtual Task<JsonSchema> GetSchemaAsync()
+    {
+        // File-based recipes don't have schema by default.
+        // The schema is built from all registered steps via IRecipeSchemaService.
+        return Task.FromResult<JsonSchema>(null);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<Stream> OpenReadStreamAsync()
+    {
+        if (RecipeFileInfo is null)
+        {
+            throw new InvalidOperationException("RecipeFileInfo is not set.");
+        }
+
+        return Task.FromResult(RecipeFileInfo.CreateReadStream());
+    }
 }
