@@ -13,11 +13,6 @@ public interface IContentFieldSchemaHandler
     string FieldName { get; }
 
     /// <summary>
-    /// Gets the order in which this handler runs.
-    /// </summary>
-    int Order => 0;
-
-    /// <summary>
     /// Builds the JSON Schema for this content field's settings.
     /// </summary>
     /// <returns>The JSON Schema for the field settings, or null if no schema is available.</returns>

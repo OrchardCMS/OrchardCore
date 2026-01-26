@@ -13,11 +13,6 @@ public interface IContentPartSchemaHandler
     string PartName { get; }
 
     /// <summary>
-    /// Gets the order in which this handler runs.
-    /// </summary>
-    int Order => 0;
-
-    /// <summary>
     /// Builds the JSON Schema for this content part's settings.
     /// </summary>
     /// <returns>The JSON Schema for the part settings, or null if no schema is available.</returns>

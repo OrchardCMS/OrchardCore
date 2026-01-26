@@ -51,49 +51,38 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
     /// <inheritdoc />
     protected override JsonSchema BuildSchema()
     {
-        var definitions = new Dictionary<string, JsonSchema>();
-
         // Build schemas for all registered content parts.
-        var partSettingsSchemas = new Dictionary<string, JsonSchema>();
-        foreach (var handler in _partSchemaHandlers.OrderBy(h => h.Order))
+        var partSettingsSchemas = new List<JsonSchema>();
+        foreach (var handler in _partSchemaHandlers)
         {
             var schema = handler.BuildSettingsSchema();
             if (schema is not null)
             {
-                partSettingsSchemas[handler.PartName] = schema;
-                definitions[$"Part_{handler.PartName}_Settings"] = schema;
+                partSettingsSchemas.Add(schema);
             }
         }
 
         // Build schemas for all registered content fields.
-        var fieldSettingsSchemas = new Dictionary<string, JsonSchema>();
-        foreach (var handler in _fieldSchemaHandlers.OrderBy(h => h.Order))
+        var fieldSettingsSchemas = new List<JsonSchema>();
+        foreach (var handler in _fieldSchemaHandlers)
         {
             var schema = handler.BuildSettingsSchema();
             if (schema is not null)
             {
-                fieldSettingsSchemas[handler.FieldName] = schema;
-                definitions[$"Field_{handler.FieldName}_Settings"] = schema;
+                fieldSettingsSchemas.Add(schema);
             }
         }
 
-        // Build content type part attachment schema with dynamic settings based on part name.
-        var contentTypePartSchema = BuildContentTypePartSchema(partSettingsSchemas);
-
-        // Build content part field schema with dynamic settings based on field type.
-        var contentPartFieldSchema = BuildContentPartFieldSchema(fieldSettingsSchemas);
-
         // Build content type schema.
-        var contentTypeSchema = BuildContentTypeSchema(contentTypePartSchema);
+        var contentTypeSchema = BuildContentTypeSchema(partSettingsSchemas);
 
         // Build content part schema with fields.
-        var contentPartSchema = BuildContentPartSchema(contentPartFieldSchema, partSettingsSchemas);
+        var contentPartSchema = BuildContentPartSchema(partSettingsSchemas, fieldSettingsSchemas);
 
-        var schemaBuilder = new JsonSchemaBuilder()
+        return new JsonSchemaBuilder()
             .Schema(MetaSchemas.Draft202012Id)
             .Type(SchemaValueType.Object)
             .Title(Name)
-            .Description(Description)
             .Required("name")
             .Properties(
                 ("name", new JsonSchemaBuilder()
@@ -107,130 +96,14 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
                 ("ContentParts", new JsonSchemaBuilder()
                     .Type(SchemaValueType.Array)
                     .Items(contentPartSchema)
-                    .Description("Content part definitions to create or update.")));
-
-        // Add all definitions to the schema.
-        if (definitions.Count > 0)
-        {
-            schemaBuilder.Defs(definitions);
-        }
-
-        return schemaBuilder.Build();
-    }
-
-    private JsonSchema BuildContentTypePartSchema(Dictionary<string, JsonSchema> partSettingsSchemas)
-    {
-        // Build a settings schema that includes all known part settings as optional properties.
-        var settingsProperties = new Dictionary<string, JsonSchema>();
-        foreach (var (partName, schema) in partSettingsSchemas)
-        {
-            settingsProperties[$"{partName}Settings"] = schema;
-        }
-
-        var settingsSchema = settingsProperties.Count > 0
-            ? new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .Properties(settingsProperties.Select(kvp => (kvp.Key, kvp.Value)).ToArray())
-                .AdditionalProperties(JsonSchema.Empty)
-                .Description("Settings for this part attachment.")
-                .Build()
-            : new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .AdditionalProperties(JsonSchema.Empty)
-                .Description("Settings for this part attachment.")
-                .Build();
-
-        return new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
-            .Required("Name", "PartName")
-            .Properties(
-                ("Name", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The technical name of the part attachment.")),
-                ("PartName", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
-                    .Description("The name of the part being attached.")
-                    .Enum(_contentOptions.ContentPartOptions.Select(p => p.Type.Name).ToArray())),
-                ("Settings", settingsSchema))
-            .AdditionalProperties(JsonSchema.Empty)
+                    .Description("Content part definitions to create or update.")))
             .Build();
     }
 
-    private JsonSchema BuildContentPartFieldSchema(Dictionary<string, JsonSchema> fieldSettingsSchemas)
+    private JsonSchema BuildContentTypeSchema(List<JsonSchema> partSettingsSchemas)
     {
-        // Build a settings schema that includes all known field settings as optional properties.
-        var settingsProperties = new Dictionary<string, JsonSchema>();
-        foreach (var (fieldName, schema) in fieldSettingsSchemas)
-        {
-            settingsProperties[$"{fieldName}Settings"] = schema;
-        }
-
-        var settingsSchema = settingsProperties.Count > 0
-            ? new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .Properties(settingsProperties.Select(kvp => (kvp.Key, kvp.Value)).ToArray())
-                .AdditionalProperties(JsonSchema.Empty)
-                .Description("Settings for this field.")
-                .Build()
-            : new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .AdditionalProperties(JsonSchema.Empty)
-                .Description("Settings for this field.")
-                .Build();
-
-        return new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
-            .Required("Name", "FieldName")
-            .Properties(
-                ("Name", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The technical name of the field.")),
-                ("FieldName", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
-                    .Description("The type of field.")
-                    .Enum(_contentOptions.ContentFieldOptions.Select(f => f.Type.Name).ToArray())),
-                ("Settings", settingsSchema))
-            .AdditionalProperties(JsonSchema.Empty)
-            .Build();
-    }
-
-    private static JsonSchema BuildContentTypeSchema(JsonSchema contentTypePartSchema)
-    {
-        return new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
-            .Required("Name")
-            .Properties(
-                ("Name", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The technical name of the content type.")),
-                ("DisplayName", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The display name of the content type.")),
-                ("Settings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
-                    .AdditionalProperties(JsonSchema.Empty)
-                    .Description("Settings for this content type.")),
-                ("ContentTypePartDefinitionRecords", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
-                    .Items(contentTypePartSchema)
-                    .Description("Parts attached to this content type.")))
-            .AdditionalProperties(JsonSchema.Empty)
-            .Build();
-    }
-
-    private JsonSchema BuildContentPartSchema(JsonSchema contentPartFieldSchema, Dictionary<string, JsonSchema> partSettingsSchemas)
-    {
-        // Build settings schema with all part settings handlers.
-        var settingsProperties = new Dictionary<string, JsonSchema>();
-        foreach (var (partName, schema) in partSettingsSchemas)
-        {
-            settingsProperties[$"{partName}Settings"] = schema;
-        }
-
-        var settingsSchema = settingsProperties.Count > 0
-            ? new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .Properties(settingsProperties.Select(kvp => (kvp.Key, kvp.Value)).ToArray())
-                .AdditionalProperties(JsonSchema.Empty)
-                .Description("Settings for this content part.")
-                .Build()
-            : new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .AdditionalProperties(JsonSchema.Empty)
-                .Description("Settings for this content part.")
-                .Build();
+        // Build the ContentTypePartDefinitionRecords schema with known part settings.
+        var partSchema = BuildContentTypePartSchema(partSettingsSchemas);
 
         return new JsonSchemaBuilder()
             .Type(SchemaValueType.Object)
@@ -238,15 +111,156 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
             .Properties(
                 ("Name", new JsonSchemaBuilder()
                     .Type(SchemaValueType.String)
-                    .Description("The technical name of the content part.")
-                    .Enum(_contentOptions.ContentPartOptions.Select(p => p.Type.Name).ToArray())),
-                ("Settings", settingsSchema),
+                    .Description("The technical name of the content type.")),
+                ("DisplayName", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.String)
+                    .Description("The display name of the content type.")),
+                ("Settings", new JsonSchemaBuilder()
+                    .AnyOf(
+                        // Known structure: ContentTypeSettings object.
+                        new JsonSchemaBuilder()
+                            .Type(SchemaValueType.Object)
+                            .Properties(
+                                ("ContentTypeSettings", new JsonSchemaBuilder()
+                                    .Type(SchemaValueType.Object)
+                                    .Properties(
+                                        ("Creatable", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
+                                        ("Listable", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
+                                        ("Draftable", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
+                                        ("Versionable", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
+                                        ("Securable", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)))
+                                    .AdditionalProperties(false)))
+                            .AdditionalProperties(true),
+                        // Fallback: any object.
+                        new JsonSchemaBuilder()
+                            .Type(SchemaValueType.Object)
+                            .AdditionalProperties(true))
+                    .Description("Settings for this content type.")),
+                ("ContentTypePartDefinitionRecords", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.Array)
+                    .Items(partSchema)
+                    .Description("Parts attached to this content type.")))
+            .AdditionalProperties(true)
+            .Build();
+    }
+
+    private JsonSchema BuildContentTypePartSchema(List<JsonSchema> partSettingsSchemas)
+    {
+        // Base schema for a content type part.
+        var partsSchemaBuilder = new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .Properties(
+                ("PartName", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.String)
+                    .Description("The name of the part being attached.")
+                    .AnyOf(
+                        // Known parts.
+                        new JsonSchemaBuilder().Enum(_contentOptions.ContentPartOptions.Select(p => p.Type.Name).ToArray()),
+                        // Disallow names ending with 'Field'.
+                        new JsonSchemaBuilder()
+                            .Type(SchemaValueType.String)
+                            .Pattern(@"^(?!.*Field$).+"))),
+                ("Name", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.String)
+                    .Description("The technical name of the part attachment.")),
+                ("Settings", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.Object)
+                    .AdditionalProperties(true)))
+            .Required("PartName", "Name")
+            .AdditionalProperties(true);
+
+        // Merge all dynamic part settings into Settings.
+        if (partSettingsSchemas.Count > 0)
+        {
+            partsSchemaBuilder = partsSchemaBuilder
+                .Properties(
+                    ("Settings", new JsonSchemaBuilder()
+                        .Type(SchemaValueType.Object)
+                        .AllOf(partSettingsSchemas)
+                        .AdditionalProperties(true)));
+        }
+
+        return partsSchemaBuilder.Build();
+    }
+
+    private JsonSchema BuildContentPartSchema(
+        List<JsonSchema> partSettingsSchemas,
+        List<JsonSchema> fieldSettingsSchemas)
+    {
+        // Build the ContentPartFieldDefinitionRecords schema.
+        var fieldSchema = BuildContentPartFieldSchema(fieldSettingsSchemas);
+
+        var partsSchemaBuilder = new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .Required("Name")
+            .Properties(
+                ("Name", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.String)
+                    .Description("The technical name of the content part.")),
+                ("Settings", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.Object)
+                    .AdditionalProperties(true)),
                 ("ContentPartFieldDefinitionRecords", new JsonSchemaBuilder()
                     .Type(SchemaValueType.Array)
-                    .Items(contentPartFieldSchema)
+                    .Items(fieldSchema)
                     .Description("Fields defined on this content part.")))
-            .AdditionalProperties(JsonSchema.Empty)
-            .Build();
+            .AdditionalProperties(true);
+
+        // Merge all dynamic part settings into Settings.
+        if (partSettingsSchemas.Count > 0)
+        {
+            partsSchemaBuilder = partsSchemaBuilder
+                .Properties(
+                    ("Settings", new JsonSchemaBuilder()
+                        .Type(SchemaValueType.Object)
+                        .AllOf(partSettingsSchemas)
+                        .AdditionalProperties(true)));
+        }
+
+        return partsSchemaBuilder.Build();
+    }
+
+    private JsonSchema BuildContentPartFieldSchema(List<JsonSchema> fieldSettingsSchemas)
+    {
+        // Base schema for a content part field.
+        var fieldSchemaBuilder = new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .Properties(
+                ("FieldName", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.String)
+                    .Description("The type of field.")
+                    .Enum(_contentOptions.ContentFieldOptions.Select(f => f.Type.Name).ToArray())),
+                ("Name", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.String)
+                    .Description("The technical name of the field.")),
+                ("Settings", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.Object)
+                    .Properties(
+                        ("ContentPartFieldSettings", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.Object)
+                            .Properties(
+                                ("DisplayName", new JsonSchemaBuilder().Type(SchemaValueType.String)),
+                                ("Description", new JsonSchemaBuilder().Type(SchemaValueType.String)),
+                                ("Position", new JsonSchemaBuilder().Type(SchemaValueType.String)),
+                                ("DisplayMode", new JsonSchemaBuilder().Type(SchemaValueType.String)),
+                                ("Editor", new JsonSchemaBuilder().Type(SchemaValueType.String)))
+                            .AdditionalProperties(false)))
+                    .AdditionalProperties(true)))
+            .Required("FieldName", "Name")
+            .AdditionalProperties(true);
+
+        // Merge all dynamic field settings into Settings.
+        if (fieldSettingsSchemas.Count > 0)
+        {
+            fieldSchemaBuilder = fieldSchemaBuilder
+                .Properties(
+                    ("Settings", new JsonSchemaBuilder()
+                        .Type(SchemaValueType.Object)
+                        .AllOf(fieldSettingsSchemas)
+                        .AdditionalProperties(true)));
+        }
+
+        return fieldSchemaBuilder.Build();
     }
 
     /// <inheritdoc />
