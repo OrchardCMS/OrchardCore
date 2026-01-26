@@ -29,7 +29,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     private readonly ILogger _logger;
 
     private readonly IEnumerable<IIndexEvents> _indexEvents;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IDistributedLock _distributedLock;
     private readonly SpatialContext _ctx;
     private readonly GeohashPrefixTree _grid;
 
@@ -38,15 +38,14 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         ILuceneIndexingState indexingState,
         ILogger<LuceneIndexManager> logger,
         IEnumerable<IIndexEvents> indexEvents,
-        IServiceProvider serviceProvider
+        IDistributedLock distributedLock
         )
     {
         _indexStore = indexStore;
         _indexingState = indexingState;
         _logger = logger;
-
         _indexEvents = indexEvents;
-        _serviceProvider = serviceProvider;
+        _distributedLock = distributedLock;
 
         // Typical geospatial context.
         // These can also be constructed from SpatialContextFactory.
@@ -90,11 +89,9 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        var distributedLock = _serviceProvider.GetRequiredService<IDistributedLock>();
-
         // Acquire a distributed lock to prevent concurrent rebuild operations that could cause
         // the index to be temporarily unavailable during the delete and create window.
-        (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync(
+        (var locker, var isLocked) = await _distributedLock.TryAcquireLockAsync(
             $"LuceneRebuild-{index.Id}",
             TimeSpan.FromSeconds(3),
             TimeSpan.FromMinutes(15));

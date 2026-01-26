@@ -88,7 +88,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly ElasticsearchOptions _elasticSearchOptions;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IDistributedLock _distributedLock;
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
 
     public ElasticsearchIndexManager(
@@ -97,7 +97,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         IEnumerable<IIndexEvents> indexEvents,
         IClock clock,
         ILogger<ElasticsearchIndexManager> logger,
-        IServiceProvider serviceProvider
+        IDistributedLock distributedLock
         )
     {
         _elasticClient = elasticClient;
@@ -105,7 +105,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         _indexEvents = indexEvents;
         _clock = clock;
         _logger = logger;
-        _serviceProvider = serviceProvider;
+        _distributedLock = distributedLock;
     }
 
     /// <summary>
@@ -239,11 +239,9 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        var distributedLock = _serviceProvider.GetRequiredService<IDistributedLock>();
-
         // Acquire a distributed lock to prevent concurrent rebuild operations that could cause
         // the index to be temporarily unavailable during the delete and create window.
-        (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync(
+        (var locker, var isLocked) = await _distributedLock.TryAcquireLockAsync(
             $"ElasticsearchRebuild-{index.Id}",
             TimeSpan.FromSeconds(3),
             TimeSpan.FromMinutes(15));

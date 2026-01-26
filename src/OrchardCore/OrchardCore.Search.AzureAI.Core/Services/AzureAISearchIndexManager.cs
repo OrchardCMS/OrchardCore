@@ -20,15 +20,15 @@ public sealed class AzureAISearchIndexManager : IIndexManager
     private readonly AzureAIClientFactory _clientFactory;
     private readonly ILogger _logger;
     private readonly IEnumerable<IIndexEvents> _indexEvents;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IDistributedLock _distributedLock;
 
     public AzureAISearchIndexManager(
         AzureAIClientFactory clientFactory,
         ILogger<AzureAISearchIndexManager> logger,
         IEnumerable<IIndexEvents> indexEvents,
-        IServiceProvider serviceProvider)
+        IDistributedLock distributedLock)
     {
-        _clientFactory = clientFactory;
+        _distributedLock = distributedLock;
         _logger = logger;
         _indexEvents = indexEvents;
         _serviceProvider = serviceProvider;
@@ -126,11 +126,11 @@ public sealed class AzureAISearchIndexManager : IIndexManager
 
     public async Task<bool> RebuildAsync(IndexProfile indexProfile)
     {
-        var distributedLock = _serviceProvider.GetRequiredService<IDistributedLock>();
+        ArgumentNullException.ThrowIfNull(indexProfile);
 
         // Acquire a distributed lock to prevent concurrent rebuild operations that could cause
         // the index to be temporarily unavailable during the delete and create window.
-        (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync(
+        (var locker, var isLocked) = await _distributedLock.TryAcquireLockAsync(
             $"AzureAIRebuild-{indexProfile.Id}",
             TimeSpan.FromSeconds(3),
             TimeSpan.FromMinutes(15));
