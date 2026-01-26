@@ -1,9 +1,11 @@
 @model EditPartViewModel
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
+@using Microsoft.Extensions.Options
 
-@inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
+@inject IOptions<ContentOptions> ContentOptions
 
 @{
     var orderedFields = Model.PartDefinition.Fields
@@ -12,7 +14,7 @@
         .Select(x => x.Field)
         .ToList();
 
-    var fields = (await ContentDefinitionService.GetFieldsAsync()).ToList();
+    var fields = ContentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type).ToList();
 }
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1></zone>
 
