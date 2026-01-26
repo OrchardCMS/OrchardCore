@@ -46,7 +46,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         var partSettingsSchemas = new List<JsonSchema>();
         foreach (var handler in _partSchemaHandlers)
         {
-            var schema = handler.BuildSettingsSchema();
+            var schema = handler.GetSettingsSchema();
             if (schema is not null)
             {
                 partSettingsSchemas.Add(schema);
@@ -57,7 +57,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         var fieldSettingsSchemas = new List<JsonSchema>();
         foreach (var handler in _fieldSchemaHandlers)
         {
-            var schema = handler.BuildSettingsSchema();
+            var schema = handler.GetSettingsSchema();
             if (schema is not null)
             {
                 fieldSettingsSchemas.Add(schema);
@@ -145,13 +145,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
                 ("PartName", new JsonSchemaBuilder()
                     .Type(SchemaValueType.String)
                     .Description("The name of the part being attached.")
-                    .AnyOf(
-                        // Known parts.
-                        new JsonSchemaBuilder().Enum(_contentOptions.ContentPartOptions.Select(p => p.Type.Name).ToArray()),
-                        // Disallow names ending with 'Field'.
-                        new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
-                            .Pattern(@"^(?!.*Field$).+"))),
+                    .Enum(_contentOptions.ContentPartOptions.Select(p => p.Type.Name).ToArray())),
                 ("Name", new JsonSchemaBuilder()
                     .Type(SchemaValueType.String)
                     .Description("The technical name of the part attachment.")),
@@ -168,7 +162,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
                 .Properties(
                     ("Settings", new JsonSchemaBuilder()
                         .Type(SchemaValueType.Object)
-                        .AllOf(partSettingsSchemas)
+                        .AnyOf(partSettingsSchemas)
                         .AdditionalProperties(true)));
         }
 
@@ -176,11 +170,22 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
     }
 
     private JsonSchema BuildContentPartSchema(
-        List<JsonSchema> partSettingsSchemas,
-        List<JsonSchema> fieldSettingsSchemas)
+    List<JsonSchema> partSettingsSchemas,
+    List<JsonSchema> fieldSettingsSchemas)
     {
-        // Build the ContentPartFieldDefinitionRecords schema.
         var fieldSchema = BuildContentPartFieldSchema(fieldSettingsSchemas);
+
+        var knownSettingsSchema = BuildKnownContentPartSettingsSchema();
+
+        // Combine known + dynamic settings into ONE anyOf
+        var anyOfSchemas = new List<JsonSchema> { knownSettingsSchema };
+        anyOfSchemas.AddRange(partSettingsSchemas);
+
+        var settingsSchema = new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .AnyOf(anyOfSchemas)
+            .AdditionalProperties(true)
+            .Build();
 
         var partsSchemaBuilder = new JsonSchemaBuilder()
             .Type(SchemaValueType.Object)
@@ -189,27 +194,43 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
                 ("Name", new JsonSchemaBuilder()
                     .Type(SchemaValueType.String)
                     .Description("The technical name of the content part.")),
-                ("Settings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
-                    .AdditionalProperties(true)),
+                ("Settings", settingsSchema),
                 ("ContentPartFieldDefinitionRecords", new JsonSchemaBuilder()
                     .Type(SchemaValueType.Array)
                     .Items(fieldSchema)
                     .Description("Fields defined on this content part.")))
             .AdditionalProperties(true);
 
-        // Merge all dynamic part settings into Settings.
-        if (partSettingsSchemas.Count > 0)
-        {
-            partsSchemaBuilder = partsSchemaBuilder
-                .Properties(
-                    ("Settings", new JsonSchemaBuilder()
-                        .Type(SchemaValueType.Object)
-                        .AllOf(partSettingsSchemas)
-                        .AdditionalProperties(true)));
-        }
-
         return partsSchemaBuilder.Build();
+    }
+
+    private static JsonSchema BuildKnownContentPartSettingsSchema()
+    {
+        return new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .Properties(
+                ("ContentPartSettings", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.Object)
+                    .Properties(
+                        ("Attachable", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.Boolean)
+                            .Description("Whether this part can be manually attached to a content type.")),
+                        ("Reusable", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.Boolean)
+                            .Description("Whether the part can be attached multiple times to a content type.")),
+                        ("DisplayName", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.String)
+                            .Description("The displayed name of the part.")),
+                        ("Description", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.String)
+                            .Description("The description of the part.")),
+                        ("DefaultPosition", new JsonSchemaBuilder()
+                            .Type(SchemaValueType.String)
+                            .Description("The default position of the part when attached to a type.")))
+                    )
+             )
+            .AdditionalProperties(true)
+            .Build();
     }
 
     private JsonSchema BuildContentPartFieldSchema(List<JsonSchema> fieldSettingsSchemas)
@@ -248,7 +269,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
                 .Properties(
                     ("Settings", new JsonSchemaBuilder()
                         .Type(SchemaValueType.Object)
-                        .AllOf(fieldSettingsSchemas)
+                        .AnyOf(fieldSettingsSchemas)
                         .AdditionalProperties(true)));
         }
 

@@ -49,5 +49,7 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
 
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddContentPartSchemaHandler<BagPartSchemaHandler>();
+        services.AddContentPartSchemaHandler<FlowPartSchemaHandler>();
     }
 }

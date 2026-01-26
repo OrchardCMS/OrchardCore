@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="RecipeSteps\Descriptors\" />
+    <Folder Include="Schemas\Parts\" />
   </ItemGroup>
 
 </Project>

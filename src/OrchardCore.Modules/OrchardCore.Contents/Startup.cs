@@ -209,6 +209,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
+        services.AddContentPartSchemaHandler<CommonPartSchemaHandler>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
