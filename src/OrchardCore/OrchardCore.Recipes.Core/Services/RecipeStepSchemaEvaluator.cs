@@ -62,7 +62,7 @@ public sealed class RecipeStepSchemaEvaluator : IRecipeStepSchemaEvaluator
     {
         ArgumentNullException.ThrowIfNull(recipeData);
 
-        var combinedSchema = _schemaService.GetCombinedSchema();
+        var combinedSchema = _schemaService.GetRecipeSchema();
         return Evaluate(recipeData, combinedSchema);
     }
 

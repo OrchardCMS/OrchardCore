@@ -34,7 +34,7 @@ public interface IRecipeSchemaService
     /// This schema can be used for validation and IDE autocompletion.
     /// </summary>
     /// <returns>The combined <see cref="JsonSchema"/> for recipes.</returns>
-    JsonSchema GetCombinedSchema();
+    JsonSchema GetRecipeSchema();
 
     /// <summary>
     /// Validates a recipe against the combined schema.

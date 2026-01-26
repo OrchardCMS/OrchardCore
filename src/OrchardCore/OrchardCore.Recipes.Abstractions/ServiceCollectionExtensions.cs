@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
 
     /// <summary>
     /// Registers a code-based recipe descriptor that can be discovered by the ServiceProviderRecipeHarvester.
-    /// This allows recipes to be defined entirely in code using <see cref="CodeRecipeDescriptor"/>.
+    /// This allows recipes to be defined entirely in code.
     /// </summary>
     /// <typeparam name="TRecipe">The type of the recipe descriptor.</typeparam>
     /// <param name="services">The service collection.</param>
@@ -47,7 +47,6 @@ public static class ServiceCollectionExtensions
     /// This method is obsolete. Use <see cref="AddRecipeDeploymentStep{TStep}"/> instead.
     /// </remarks>
     [Obsolete($"Use {nameof(AddRecipeDeploymentStep)} instead. This method will be removed in a future version.", false)]
-#pragma warning disable CS0618 // Type or member is obsolete - required for backwards compatibility
     public static IServiceCollection AddRecipeExecutionStep<TImplementation>(this IServiceCollection services)
         where TImplementation : class, IRecipeStepHandler
     {
@@ -55,5 +54,4 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-#pragma warning restore CS0618
 }

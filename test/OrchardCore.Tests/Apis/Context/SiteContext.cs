@@ -147,7 +147,7 @@ public class SiteContext : IDisposable
         });
     }
 
-    public Task RunRecipeAsync(string recipeName, string recipePath)
+    public Task RunRecipeAsync(string recipeName)
     {
         return UsingTenantScopeAsync(async scope =>
         {
@@ -160,7 +160,7 @@ public class SiteContext : IDisposable
 
             var recipes = recipeCollections.SelectMany(recipeCollection => recipeCollection);
             var recipe = recipes
-                .FirstOrDefault(recipe => recipe.RecipeFileInfo.Name == recipeName && recipe.BasePath == recipePath);
+                .FirstOrDefault(recipe => recipe.Name.Equals(recipeName, StringComparison.OrdinalIgnoreCase));
 
             var executionId = Guid.NewGuid().ToString("n");
 

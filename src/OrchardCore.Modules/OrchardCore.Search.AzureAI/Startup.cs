@@ -88,9 +88,11 @@ public sealed class RecipeStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<AzureAISearchIndexRebuildStep>();
         services.AddRecipeExecutionStep<AzureAISearchIndexResetStep>();
         services.AddRecipeExecutionStep<AzureAISearchIndexSettingsStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }
 

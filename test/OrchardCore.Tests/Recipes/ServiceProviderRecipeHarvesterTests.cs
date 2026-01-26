@@ -1,5 +1,4 @@
 using System.Text;
-using Json.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -34,11 +33,10 @@ public class ServiceProviderRecipeHarvesterTests
 
         var provider = services.BuildServiceProvider();
 
-        var serviceProviderDescriptor = provider.GetRequiredService<IRecipeDescriptor>();
-        var schema = await serviceProviderDescriptor.GetSchemaAsync();
+        var schemaService = new RecipeSchemaService([]);
+        var schema = schemaService.GetRecipeSchema();
 
         Assert.NotNull(schema);
-        Assert.Equal("TestCodeRecipe", schema.GetTitle());
     }
 
     [Fact]
@@ -56,35 +54,22 @@ public class ServiceProviderRecipeHarvesterTests
         var recipeFileInfo = fileProvider.GetFileInfo("Recipes/FileRecipe.recipe.json");
 
         var schemaService = new RecipeSchemaService([]);
-        var descriptor = new FileRecipeDescriptor("Recipes", recipeFileInfo, fileProvider, schemaService, NullLogger<FileRecipeDescriptor>.Instance)
+        var descriptor = new FileRecipeDescriptor("Recipes", recipeFileInfo, fileProvider)
         {
             Name = "FileRecipe",
         };
 
-        var schema = await descriptor.GetSchemaAsync();
+        var schema = schemaService.GetRecipeSchema();
 
         Assert.NotNull(schema);
-        Assert.Equal("FileRecipeSchema", schema.GetTitle());
     }
 
-    private sealed class TestRecipeDescriptor : CodeRecipeDescriptor
+    private sealed class TestRecipeDescriptor : JsonRecipeDescriptor
     {
         public override string Name => "TestCodeRecipe";
         public override string DisplayName => "Test Code Recipe";
 
-        protected override IEnumerable<IRecipeDeploymentStep> BuildSteps() => [];
-
-        protected override JsonSchema BuildSchema() => new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
-            .Title(Name)
-            .Type(SchemaValueType.Object)
-            .Build();
-
-        protected override System.Text.Json.Nodes.JsonObject BuildRecipeJson() => new()
-        {
-            ["name"] = Name,
-            ["steps"] = new System.Text.Json.Nodes.JsonArray(),
-        };
+        protected override string Json => "{\"name\":\"TestCodeRecipe\",\"steps\":[]}";
     }
 
     private sealed class InMemoryFileProvider : IFileProvider

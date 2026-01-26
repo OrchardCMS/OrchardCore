@@ -65,9 +65,11 @@ public sealed class RecipesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<CreateOrUpdateIndexProfileStep>();
         services.AddRecipeExecutionStep<ResetIndexStep>();
         services.AddRecipeExecutionStep<RebuildIndexStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }
 

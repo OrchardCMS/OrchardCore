@@ -139,7 +139,7 @@ public sealed class ImportController : Controller
             return Forbid();
         }
 
-        var schema = _recipeSchemaService.GetCombinedSchema();
+        var schema = _recipeSchemaService.GetRecipeSchema();
         var schemaJson = JsonSerializer.Serialize(schema, JOptions.Default);
 
         return View(new ImportJsonViewModel { Schema = schemaJson });
@@ -207,7 +207,7 @@ public sealed class ImportController : Controller
         }
 
         // Repopulate schema for the view.
-        var schema = _recipeSchemaService.GetCombinedSchema();
+        var schema = _recipeSchemaService.GetRecipeSchema();
         model.Schema = JsonSerializer.Serialize(schema, JOptions.Default);
 
         return View(model);

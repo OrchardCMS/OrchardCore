@@ -28,6 +28,8 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<RecipesStep>();
 #pragma warning restore CS0618
 
+        services.AddSingleton<IRecipeDescriptor, SaasRecipeDescriptor>();
+
         services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
     }
 }

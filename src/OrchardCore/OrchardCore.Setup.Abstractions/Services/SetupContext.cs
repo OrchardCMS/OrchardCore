@@ -1,5 +1,5 @@
 using OrchardCore.Environment.Shell;
-using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Setup.Services;
 
@@ -21,7 +21,7 @@ public class SetupContext
     /// <summary>
     /// Gets or sets the site recipe.
     /// </summary>
-    public RecipeDescriptor Recipe { get; set; }
+    public IRecipeDescriptor Recipe { get; set; }
 
     /// <summary>
     /// Gets or sets the errors that occurred during the setup.

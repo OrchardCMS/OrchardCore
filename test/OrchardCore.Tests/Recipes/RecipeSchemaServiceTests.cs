@@ -106,7 +106,7 @@ public class RecipeSchemaServiceTests
         var service = new RecipeSchemaService([step]);
 
         // Act
-        var result = service.GetCombinedSchema();
+        var result = service.GetRecipeSchema();
 
         // Assert
         Assert.NotNull(result);

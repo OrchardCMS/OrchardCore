@@ -41,7 +41,7 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
     }
 
     /// <inheritdoc />
-    public JsonSchema GetCombinedSchema()
+    public JsonSchema GetRecipeSchema()
     {
         if (_combinedSchema is not null)
         {
@@ -162,7 +162,7 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
     /// <inheritdoc />
     public RecipeSchemaValidationResult ValidateRecipe(JsonNode recipe)
     {
-        var schema = GetCombinedSchema();
+        var schema = GetRecipeSchema();
         var result = schema.Evaluate(recipe, new EvaluationOptions { OutputFormat = OutputFormat.List });
 
         if (result.IsValid)

@@ -24,7 +24,9 @@ public sealed class Startup : StartupBase
         services.AddScoped<TemplatesManager>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<TemplateStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Template shortcuts in settings
         services.AddScoped<IContentPartDefinitionDisplayDriver, TemplateContentPartDefinitionDriver>();

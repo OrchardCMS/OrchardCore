@@ -1,5 +1,5 @@
-using Json.Schema;
 using Microsoft.Extensions.FileProviders;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Recipes.Models;
@@ -12,14 +12,23 @@ public class RecipeDescriptor : IRecipeDescriptor
 {
     public string Name { get; set; }
     public string DisplayName { get; set; }
+
     public string Description { get; set; }
+
     public string Author { get; set; }
+
     public string WebSite { get; set; }
+
     public string Version { get; set; }
+
     public bool IsSetupRecipe { get; set; }
+
     public DateTime? ExportUtc { get; set; }
+
     public string[] Categories { get; set; }
+
     public string[] Tags { get; set; }
+
     public bool RequireNewScope { get; set; } = true;
 
     /// <summary>
@@ -28,15 +37,11 @@ public class RecipeDescriptor : IRecipeDescriptor
     public string BasePath { get; set; }
 
     public IFileInfo RecipeFileInfo { get; set; }
+
     public IFileProvider FileProvider { get; set; }
 
-
-    public virtual Task<JsonSchema> GetSchemaAsync()
-    {
-        // File-based recipes don't have schema by default.
-        // The schema is built from all registered steps via IRecipeSchemaService.
-        return Task.FromResult<JsonSchema>(null);
-    }
+    public bool IsAvailable(ShellSettings shellSettings)
+        => true;
 
     /// <inheritdoc />
     public virtual Task<Stream> OpenReadStreamAsync()

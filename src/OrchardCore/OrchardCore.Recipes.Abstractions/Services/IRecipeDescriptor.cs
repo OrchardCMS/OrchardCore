@@ -1,4 +1,4 @@
-using Json.Schema;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Recipes.Services;
 
@@ -68,15 +68,10 @@ public interface IRecipeDescriptor
     bool RequireNewScope { get; }
 
     /// <summary>
-    /// Gets the JSON Schema that defines the structure of this recipe, including all its steps.
-    /// The schema is used for validation and IDE autocompletion.
-    /// </summary>
-    /// <returns>The <see cref="JsonSchema"/> for this recipe.</returns>
-    Task<JsonSchema> GetSchemaAsync();
-
-    /// <summary>
     /// Opens a stream to read the recipe content.
     /// </summary>
     /// <returns>A stream containing the recipe JSON content.</returns>
     Task<Stream> OpenReadStreamAsync();
+
+    bool IsAvailable(ShellSettings shellSettings);
 }

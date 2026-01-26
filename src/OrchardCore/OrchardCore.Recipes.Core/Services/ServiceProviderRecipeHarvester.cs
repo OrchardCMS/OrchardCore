@@ -19,21 +19,8 @@ public sealed class ServiceProviderRecipeHarvester : IRecipeHarvester
     }
 
     /// <inheritdoc />
-    public Task<IEnumerable<Models.RecipeDescriptor>> HarvestRecipesAsync()
+    public Task<IEnumerable<IRecipeDescriptor>> HarvestRecipesAsync()
     {
-        var descriptors = _recipeDescriptors
-            .Select(ToRecipeDescriptor)
-            .ToList();
-
-        return Task.FromResult<IEnumerable<Models.RecipeDescriptor>>(descriptors);
-    }
-
-    /// <summary>
-    /// Converts an <see cref="IRecipeDescriptor"/> to the legacy <see cref="Models.RecipeDescriptor"/> format
-    /// for backward compatibility with existing infrastructure.
-    /// </summary>
-    private static Models.RecipeDescriptor ToRecipeDescriptor(IRecipeDescriptor descriptor)
-    {
-        return new CodeRecipeDescriptorAdapter(descriptor);
+        return Task.FromResult(_recipeDescriptors);
     }
 }

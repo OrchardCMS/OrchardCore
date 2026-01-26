@@ -9,7 +9,6 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Scripting;
 using OrchardCore.Tests.Apis.Context;
-using JsonSchema = Json.Schema.JsonSchema;
 
 namespace OrchardCore.Recipes;
 
@@ -172,12 +171,30 @@ public class RecipeExecutorTests
         public string[] Tags => [];
         public bool RequireNewScope => true;
 
-        public Task<JsonSchema> GetSchemaAsync() => Task.FromResult<JsonSchema>(null);
+        public bool IsAvailable(ShellSettings shellSettings)
+            => true;
 
         public Task<Stream> OpenReadStreamAsync()
         {
-            var json = "{\"name\":\"TestCodeRecipe\",\"steps\":[{\"name\":\"Content\",\"data\":[{\"TitlePart\":{\"Title\":\"Hello\"}}]}]}";
-            return Task.FromResult<Stream>(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)));
+            var json = """
+                {
+                    "name":"TestCodeRecipe",
+                    "steps":[
+                        {
+                            "name":"Content",
+                            "data":[
+                                {
+                                    "TitlePart":{
+                                        "Title":"Hello"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+                """;
+
+            return Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes(json)));
         }
     }
 }

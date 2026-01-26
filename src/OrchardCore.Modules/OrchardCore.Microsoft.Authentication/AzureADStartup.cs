@@ -26,7 +26,9 @@ public sealed class AzureADStartup : StartupBase
         services.AddPermissionProvider<Permissions>();
 
         services.AddSingleton<IAzureADService, AzureADService>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<AzureADSettingsStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         services.AddSiteDisplayDriver<AzureADSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenuAAD>();
