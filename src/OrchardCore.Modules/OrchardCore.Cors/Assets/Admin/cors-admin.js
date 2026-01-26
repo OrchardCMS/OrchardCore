@@ -45,7 +45,7 @@ var corsApp = new Vue({
             this.selectedPolicy = {
                 name: 'New policy',
                 allowedOrigins: [],
-                allowAnyOrigin: true,
+                allowAnyOrigin: false,
                 allowedMethods: [],
                 allowAnyMethod: true,
                 allowedHeaders: [],
