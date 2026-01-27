@@ -242,7 +242,7 @@ There are four options that can be configured for Dynamic Cache in the `General 
 - **From environment**: Enables the Dynamic Cache feature in the `Production` ASP.NET Core environment.
 - **Enabled**: Enables the Dynamic Cache feature.
 - **Disabled**: Disables the Dynamic Cache feature.
-- **Enabled with cache debug mode**: Enables the Dynamic Cache feature and activates debug mode.
+- **Enabled with cache debug mode**: Enables the Dynamic Cache feature and activates debug mode, which logs the cache context metadata on the page - as HTML comments - this is useful for troubleshooting cache-related issues.
 
 ## Video
 
