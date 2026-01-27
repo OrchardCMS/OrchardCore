@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Secrets.ViewModels;
 
@@ -13,6 +15,9 @@ namespace OrchardCore.Secrets.Controllers;
 public sealed class AdminController : Controller
 {
     private readonly ISecretManager _secretManager;
+    private readonly IEnumerable<ISecretTypeProvider> _secretTypeProviders;
+    private readonly IDisplayManager<SecretBase> _secretDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
 
@@ -21,12 +26,18 @@ public sealed class AdminController : Controller
 
     public AdminController(
         ISecretManager secretManager,
+        IEnumerable<ISecretTypeProvider> secretTypeProviders,
+        IDisplayManager<SecretBase> secretDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IAuthorizationService authorizationService,
         INotifier notifier,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
         _secretManager = secretManager;
+        _secretTypeProviders = secretTypeProviders;
+        _secretDisplayManager = secretDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         _authorizationService = authorizationService;
         _notifier = notifier;
         S = stringLocalizer;
@@ -57,21 +68,50 @@ public sealed class AdminController : Controller
         return View(model);
     }
 
-    public async Task<IActionResult> Create()
+    public async Task<IActionResult> Create(string type)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SecretsPermissions.ManageSecrets))
         {
             return Forbid();
         }
 
+        // If no type specified, show type selection
+        if (string.IsNullOrEmpty(type))
+        {
+            var typeSelectionModel = new SecretTypeSelectionViewModel
+            {
+                AvailableTypes = _secretTypeProviders.Select(p => new SecretTypeViewModel
+                {
+                    Name = p.Name,
+                    DisplayName = p.DisplayName,
+                    Description = p.Description,
+                }).ToList(),
+            };
+
+            return View("SelectType", typeSelectionModel);
+        }
+
+        // Find the provider for this type
+        var provider = _secretTypeProviders.FirstOrDefault(p => p.Name.Equals(type, StringComparison.OrdinalIgnoreCase));
+        if (provider == null)
+        {
+            return NotFound();
+        }
+
+        // Create a new secret instance and build the editor
+        var secret = (SecretBase)provider.Create();
+        var shape = await _secretDisplayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true);
+
         var model = new SecretEditViewModel
         {
             IsNew = true,
+            SecretType = provider.Name,
+            SecretTypeDisplayName = provider.DisplayName,
             AvailableStores = _secretManager.GetStores()
                 .Where(s => !s.IsReadOnly)
                 .Select(s => s.Name)
                 .ToList(),
-            AvailableTypes = GetAvailableSecretTypes(),
+            Editor = shape,
         };
 
         return View(nameof(Edit), model);
@@ -86,27 +126,38 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
+        // Find the provider for this type
+        var provider = _secretTypeProviders.FirstOrDefault(p => p.Name.Equals(model.SecretType, StringComparison.OrdinalIgnoreCase));
+        if (provider == null)
+        {
+            return NotFound();
+        }
+
+        // Check if secret already exists
+        var existingSecret = await _secretManager.GetSecretAsync<ISecret>(model.Name);
+        if (existingSecret != null)
+        {
+            ModelState.AddModelError(nameof(model.Name), S["A secret with this name already exists."]);
+        }
+
+        // Create new secret and update from form
+        var secret = (SecretBase)provider.Create();
+        var shape = await _secretDisplayManager.UpdateEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true);
+
         if (ModelState.IsValid)
         {
-            var existingSecret = await _secretManager.GetSecretAsync<ISecret>(model.Name);
-            if (existingSecret != null)
-            {
-                ModelState.AddModelError(nameof(model.Name), S["A secret with this name already exists."]);
-            }
-            else
-            {
-                await SaveSecretAsync(model);
-                await _notifier.SuccessAsync(H["Secret created successfully."]);
-                return RedirectToAction(nameof(Index));
-            }
+            await SaveSecretAsync(model.Name, secret, model.Store);
+            await _notifier.SuccessAsync(H["Secret created successfully."]);
+            return RedirectToAction(nameof(Index));
         }
 
         model.IsNew = true;
+        model.SecretTypeDisplayName = provider.DisplayName;
         model.AvailableStores = _secretManager.GetStores()
             .Where(s => !s.IsReadOnly)
             .Select(s => s.Name)
             .ToList();
-        model.AvailableTypes = GetAvailableSecretTypes();
+        model.Editor = shape;
 
         return View(nameof(Edit), model);
     }
@@ -131,17 +182,34 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
+        var typeName = GetSimpleTypeName(secretInfo.Type);
+        var provider = _secretTypeProviders.FirstOrDefault(p => p.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
+        if (provider == null)
+        {
+            return NotFound();
+        }
+
+        // Get the actual secret to build the editor
+        var secret = await _secretManager.GetSecretAsync<SecretBase>(name);
+        if (secret == null)
+        {
+            secret = (SecretBase)provider.Create();
+        }
+
+        var shape = await _secretDisplayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false);
+
         var model = new SecretEditViewModel
         {
             IsNew = false,
             Name = secretInfo.Name,
             Store = secretInfo.Store,
-            SecretType = GetSimpleTypeName(secretInfo.Type),
+            SecretType = typeName,
+            SecretTypeDisplayName = provider.DisplayName,
             AvailableStores = _secretManager.GetStores()
                 .Where(s => !s.IsReadOnly)
                 .Select(s => s.Name)
                 .ToList(),
-            AvailableTypes = GetAvailableSecretTypes(),
+            Editor = shape,
         };
 
         return View(model);
@@ -149,25 +217,42 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(SecretEditViewModel model)
+    public async Task<IActionResult> EditPost(SecretEditViewModel model, string name)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SecretsPermissions.ManageSecrets))
         {
             return Forbid();
         }
 
+        var typeName = model.SecretType;
+        var provider = _secretTypeProviders.FirstOrDefault(p => p.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
+        if (provider == null)
+        {
+            return NotFound();
+        }
+
+        // Get existing secret or create new one
+        var secret = await _secretManager.GetSecretAsync<SecretBase>(name);
+        if (secret == null)
+        {
+            secret = (SecretBase)provider.Create();
+        }
+
+        var shape = await _secretDisplayManager.UpdateEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false);
+
         if (ModelState.IsValid)
         {
-            await SaveSecretAsync(model);
+            await SaveSecretAsync(name, secret, model.Store);
             await _notifier.SuccessAsync(H["Secret updated successfully."]);
             return RedirectToAction(nameof(Index));
         }
 
+        model.SecretTypeDisplayName = provider.DisplayName;
         model.AvailableStores = _secretManager.GetStores()
             .Where(s => !s.IsReadOnly)
             .Select(s => s.Name)
             .ToList();
-        model.AvailableTypes = GetAvailableSecretTypes();
+        model.Editor = shape;
 
         return View(model);
     }
@@ -191,69 +276,16 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task SaveSecretAsync(SecretEditViewModel model)
+    private async Task SaveSecretAsync(string name, ISecret secret, string store)
     {
-        ISecret secret = model.SecretType switch
+        if (!string.IsNullOrEmpty(store))
         {
-            nameof(TextSecret) => new TextSecret { Text = model.SecretValue },
-            nameof(RsaKeySecret) => CreateRsaKeySecret(model),
-            nameof(X509Secret) => CreateX509Secret(model),
-            _ => throw new InvalidOperationException($"Unknown secret type: {model.SecretType}"),
-        };
-
-        if (!string.IsNullOrEmpty(model.Store))
-        {
-            await _secretManager.SaveSecretAsync(model.Name, secret, model.Store);
+            await _secretManager.SaveSecretAsync(name, secret, store);
         }
         else
         {
-            await _secretManager.SaveSecretAsync(model.Name, secret);
+            await _secretManager.SaveSecretAsync(name, secret);
         }
-    }
-
-    private static RsaKeySecret CreateRsaKeySecret(SecretEditViewModel model)
-    {
-        var rsaSecret = new RsaKeySecret();
-
-        // If generating new key, create RSA key pair
-        if (model.GenerateNewKey)
-        {
-            using var rsa = System.Security.Cryptography.RSA.Create(model.KeySize > 0 ? model.KeySize : 2048);
-            rsaSecret.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
-            rsaSecret.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
-            rsaSecret.IncludesPrivateKey = true;
-            rsaSecret.KeySize = model.KeySize > 0 ? model.KeySize : 2048;
-        }
-        else
-        {
-            // Using provided values
-            rsaSecret.PublicKey = model.PublicKey;
-            rsaSecret.PrivateKey = model.PrivateKey;
-            rsaSecret.IncludesPrivateKey = !string.IsNullOrEmpty(model.PrivateKey);
-            rsaSecret.KeySize = model.KeySize > 0 ? model.KeySize : 2048;
-        }
-
-        return rsaSecret;
-    }
-
-    private static X509Secret CreateX509Secret(SecretEditViewModel model)
-    {
-        return new X509Secret
-        {
-            Thumbprint = model.Thumbprint,
-            StoreLocation = Enum.TryParse<System.Security.Cryptography.X509Certificates.StoreLocation>(model.StoreLocation, out var loc) ? loc : System.Security.Cryptography.X509Certificates.StoreLocation.CurrentUser,
-            StoreName = Enum.TryParse<System.Security.Cryptography.X509Certificates.StoreName>(model.StoreName, out var name) ? name : System.Security.Cryptography.X509Certificates.StoreName.My,
-        };
-    }
-
-    private static List<string> GetAvailableSecretTypes()
-    {
-        return
-        [
-            nameof(TextSecret),
-            nameof(RsaKeySecret),
-            nameof(X509Secret),
-        ];
     }
 
     private static string GetSimpleTypeName(string fullTypeName)

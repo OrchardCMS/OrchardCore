@@ -6,6 +6,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Secrets.Deployment;
 using OrchardCore.Secrets.Drivers;
+using OrchardCore.Secrets.Providers;
 using OrchardCore.Secrets.Recipes;
 using OrchardCore.Secrets.Services;
 using OrchardCore.Security.Permissions;
@@ -21,6 +22,11 @@ public sealed class Startup : StartupBase
 
         services.AddPermissionProvider<SecretsPermissionProvider>();
         services.AddNavigationProvider<AdminMenu>();
+
+        // Register secret types (extensible by other modules)
+        services.AddSecretType<TextSecretTypeProvider>();
+        services.AddSecretType<RsaKeySecretTypeProvider>();
+        services.AddSecretType<X509SecretTypeProvider>();
 
         // Display drivers for secret types
         services.AddDisplayDriver<SecretBase, TextSecretDisplayDriver>();

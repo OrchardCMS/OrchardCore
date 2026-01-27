@@ -1,0 +1,26 @@
+@model OrchardCore.Secrets.ViewModels.SecretTypeSelectionViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Select Secret Type"])</h1></zone>
+
+<div class="row">
+    @foreach (var type in Model.AvailableTypes)
+    {
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@type.DisplayName</h5>
+                    <p class="card-text text-muted">@type.Description</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a asp-action="Create" asp-route-type="@type.Name" class="btn btn-primary">
+                        @T["Create {0}", type.DisplayName]
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="mt-3">
+    <a class="btn btn-secondary" asp-action="Index">@T["Cancel"]</a>
+</div>

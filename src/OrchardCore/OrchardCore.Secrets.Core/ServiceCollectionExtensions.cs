@@ -33,4 +33,17 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Adds a secret type provider to the service collection.
+    /// </summary>
+    /// <typeparam name="T">The type of secret type provider to add.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
+    public static IServiceCollection AddSecretType<T>(this IServiceCollection services) where T : class, ISecretTypeProvider
+    {
+        services.AddScoped<ISecretTypeProvider, T>();
+
+        return services;
+    }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Secrets.ViewModels;
 
@@ -16,23 +17,13 @@ public class SecretEditViewModel
     [Required]
     public string SecretType { get; set; }
 
-    /// <summary>
-    /// For TextSecret: the secret value.
-    /// </summary>
-    public string SecretValue { get; set; }
-
-    // RsaKeySecret properties
-    public bool GenerateNewKey { get; set; }
-    public int KeySize { get; set; } = 2048;
-    public string PublicKey { get; set; }
-    public string PrivateKey { get; set; }
-
-    // X509Secret properties
-    public string Thumbprint { get; set; }
-    public string StoreLocation { get; set; }
-    public string StoreName { get; set; }
+    public string SecretTypeDisplayName { get; set; }
 
     public IList<string> AvailableStores { get; set; } = [];
 
-    public IList<string> AvailableTypes { get; set; } = [];
+    /// <summary>
+    /// The editor shape built by the display driver.
+    /// </summary>
+    [BindNever]
+    public dynamic Editor { get; set; }
 }
