@@ -19,7 +19,7 @@
 
     <div class="mb-3">
         <label asp-for="SecretType" class="form-label">@T["Secret Type"]</label>
-        <select asp-for="SecretType" asp-items="@(new SelectList(Model.AvailableTypes))" class="form-select">
+        <select asp-for="SecretType" asp-items="@(new SelectList(Model.AvailableTypes))" class="form-select" id="secretTypeSelect">
         </select>
         <span asp-validation-for="SecretType" class="text-danger"></span>
     </div>
@@ -38,14 +38,82 @@
         <input type="hidden" asp-for="Store" value="@Model.AvailableStores.FirstOrDefault()" />
     }
 
-    <div class="mb-3">
-        <label asp-for="SecretValue" class="form-label">@T["Secret Value"]</label>
-        <input type="password" asp-for="SecretValue" class="form-control" autocomplete="new-password" />
-        <span asp-validation-for="SecretValue" class="text-danger"></span>
-        @if (!Model.IsNew)
-        {
-            <span class="hint">@T["Leave empty to keep the current value. Enter a new value to update it."]</span>
-        }
+    <!-- TextSecret fields -->
+    <div id="textSecretFields" class="secret-type-fields">
+        <div class="mb-3">
+            <label asp-for="SecretValue" class="form-label">@T["Secret Value"]</label>
+            <input type="password" asp-for="SecretValue" class="form-control" autocomplete="new-password" />
+            <span asp-validation-for="SecretValue" class="text-danger"></span>
+            @if (!Model.IsNew)
+            {
+                <span class="hint">@T["Leave empty to keep the current value. Enter a new value to update it."]</span>
+            }
+        </div>
+    </div>
+
+    <!-- RsaKeySecret fields -->
+    <div id="rsaKeySecretFields" class="secret-type-fields" style="display: none;">
+        <div class="mb-3">
+            <div class="form-check">
+                <input asp-for="GenerateNewKey" class="form-check-input" type="checkbox" id="generateNewKeyCheckbox" />
+                <label asp-for="GenerateNewKey" class="form-check-label">@T["Generate new RSA key pair"]</label>
+            </div>
+            <span class="hint">@T["Check to automatically generate a new RSA key pair."]</span>
+        </div>
+
+        <div class="mb-3" id="keySizeField">
+            <label asp-for="KeySize" class="form-label">@T["Key Size"]</label>
+            <select asp-for="KeySize" class="form-select">
+                <option value="2048">2048 bits</option>
+                <option value="3072">3072 bits</option>
+                <option value="4096">4096 bits</option>
+            </select>
+            <span class="hint">@T["The size of the RSA key in bits."]</span>
+        </div>
+
+        <div id="manualKeyFields">
+            <div class="mb-3">
+                <label asp-for="PublicKey" class="form-label">@T["Public Key (Base64)"]</label>
+                <textarea asp-for="PublicKey" class="form-control font-monospace" rows="4"></textarea>
+                <span class="hint">@T["Base64-encoded RSA public key."]</span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PrivateKey" class="form-label">@T["Private Key (Base64)"]</label>
+                <textarea asp-for="PrivateKey" class="form-control font-monospace" rows="6"></textarea>
+                <span class="hint">@T["Base64-encoded RSA private key. Leave empty for public-key-only secrets."]</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- X509Secret fields -->
+    <div id="x509SecretFields" class="secret-type-fields" style="display: none;">
+        <div class="mb-3">
+            <label asp-for="Thumbprint" class="form-label">@T["Certificate Thumbprint"]</label>
+            <input asp-for="Thumbprint" class="form-control font-monospace" />
+            <span asp-validation-for="Thumbprint" class="text-danger"></span>
+            <span class="hint">@T["The SHA-1 thumbprint of the certificate in the certificate store."]</span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="StoreLocation" class="form-label">@T["Store Location"]</label>
+            <select asp-for="StoreLocation" class="form-select">
+                <option value="CurrentUser">Current User</option>
+                <option value="LocalMachine">Local Machine</option>
+            </select>
+            <span class="hint">@T["The certificate store location."]</span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="StoreName" class="form-label">@T["Store Name"]</label>
+            <select asp-for="StoreName" class="form-select">
+                <option value="My">Personal (My)</option>
+                <option value="Root">Trusted Root Certification Authorities</option>
+                <option value="CertificateAuthority">Intermediate Certification Authorities</option>
+                <option value="TrustedPeople">Trusted People</option>
+            </select>
+            <span class="hint">@T["The certificate store name."]</span>
+        </div>
     </div>
 
     <div class="mb-3">
@@ -59,3 +127,38 @@
         <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
     </div>
 </form>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function() {
+        const secretTypeSelect = document.getElementById('secretTypeSelect');
+        const generateNewKeyCheckbox = document.getElementById('generateNewKeyCheckbox');
+
+        function updateFieldsVisibility() {
+            const secretType = secretTypeSelect.value;
+
+            // Hide all secret type fields
+            document.querySelectorAll('.secret-type-fields').forEach(el => el.style.display = 'none');
+
+            // Show appropriate fields based on secret type
+            if (secretType === 'TextSecret') {
+                document.getElementById('textSecretFields').style.display = 'block';
+            } else if (secretType === 'RsaKeySecret') {
+                document.getElementById('rsaKeySecretFields').style.display = 'block';
+                updateRsaKeyFieldsVisibility();
+            } else if (secretType === 'X509Secret') {
+                document.getElementById('x509SecretFields').style.display = 'block';
+            }
+        }
+
+        function updateRsaKeyFieldsVisibility() {
+            const generateNew = generateNewKeyCheckbox.checked;
+            document.getElementById('manualKeyFields').style.display = generateNew ? 'none' : 'block';
+        }
+
+        secretTypeSelect.addEventListener('change', updateFieldsVisibility);
+        generateNewKeyCheckbox.addEventListener('change', updateRsaKeyFieldsVisibility);
+
+        // Initial visibility
+        updateFieldsVisibility();
+    });
+</script>

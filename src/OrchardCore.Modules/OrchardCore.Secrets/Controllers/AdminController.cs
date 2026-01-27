@@ -71,10 +71,7 @@ public sealed class AdminController : Controller
                 .Where(s => !s.IsReadOnly)
                 .Select(s => s.Name)
                 .ToList(),
-            AvailableTypes =
-            [
-                nameof(TextSecret),
-            ],
+            AvailableTypes = GetAvailableSecretTypes(),
         };
 
         return View(nameof(Edit), model);
@@ -109,7 +106,7 @@ public sealed class AdminController : Controller
             .Where(s => !s.IsReadOnly)
             .Select(s => s.Name)
             .ToList();
-        model.AvailableTypes = [nameof(TextSecret)];
+        model.AvailableTypes = GetAvailableSecretTypes();
 
         return View(nameof(Edit), model);
     }
@@ -144,7 +141,7 @@ public sealed class AdminController : Controller
                 .Where(s => !s.IsReadOnly)
                 .Select(s => s.Name)
                 .ToList(),
-            AvailableTypes = [nameof(TextSecret)],
+            AvailableTypes = GetAvailableSecretTypes(),
         };
 
         return View(model);
@@ -170,7 +167,7 @@ public sealed class AdminController : Controller
             .Where(s => !s.IsReadOnly)
             .Select(s => s.Name)
             .ToList();
-        model.AvailableTypes = [nameof(TextSecret)];
+        model.AvailableTypes = GetAvailableSecretTypes();
 
         return View(model);
     }
@@ -196,22 +193,67 @@ public sealed class AdminController : Controller
 
     private async Task SaveSecretAsync(SecretEditViewModel model)
     {
-        switch (model.SecretType)
+        ISecret secret = model.SecretType switch
         {
-            case nameof(TextSecret):
-                var textSecret = new TextSecret { Text = model.SecretValue };
-                if (!string.IsNullOrEmpty(model.Store))
-                {
-                    await _secretManager.SaveSecretAsync(model.Name, textSecret, model.Store);
-                }
-                else
-                {
-                    await _secretManager.SaveSecretAsync(model.Name, textSecret);
-                }
-                break;
-            default:
-                throw new InvalidOperationException($"Unknown secret type: {model.SecretType}");
+            nameof(TextSecret) => new TextSecret { Text = model.SecretValue },
+            nameof(RsaKeySecret) => CreateRsaKeySecret(model),
+            nameof(X509Secret) => CreateX509Secret(model),
+            _ => throw new InvalidOperationException($"Unknown secret type: {model.SecretType}"),
+        };
+
+        if (!string.IsNullOrEmpty(model.Store))
+        {
+            await _secretManager.SaveSecretAsync(model.Name, secret, model.Store);
         }
+        else
+        {
+            await _secretManager.SaveSecretAsync(model.Name, secret);
+        }
+    }
+
+    private static RsaKeySecret CreateRsaKeySecret(SecretEditViewModel model)
+    {
+        var rsaSecret = new RsaKeySecret();
+
+        // If generating new key, create RSA key pair
+        if (model.GenerateNewKey)
+        {
+            using var rsa = System.Security.Cryptography.RSA.Create(model.KeySize > 0 ? model.KeySize : 2048);
+            rsaSecret.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
+            rsaSecret.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
+            rsaSecret.IncludesPrivateKey = true;
+            rsaSecret.KeySize = model.KeySize > 0 ? model.KeySize : 2048;
+        }
+        else
+        {
+            // Using provided values
+            rsaSecret.PublicKey = model.PublicKey;
+            rsaSecret.PrivateKey = model.PrivateKey;
+            rsaSecret.IncludesPrivateKey = !string.IsNullOrEmpty(model.PrivateKey);
+            rsaSecret.KeySize = model.KeySize > 0 ? model.KeySize : 2048;
+        }
+
+        return rsaSecret;
+    }
+
+    private static X509Secret CreateX509Secret(SecretEditViewModel model)
+    {
+        return new X509Secret
+        {
+            Thumbprint = model.Thumbprint,
+            StoreLocation = Enum.TryParse<System.Security.Cryptography.X509Certificates.StoreLocation>(model.StoreLocation, out var loc) ? loc : System.Security.Cryptography.X509Certificates.StoreLocation.CurrentUser,
+            StoreName = Enum.TryParse<System.Security.Cryptography.X509Certificates.StoreName>(model.StoreName, out var name) ? name : System.Security.Cryptography.X509Certificates.StoreName.My,
+        };
+    }
+
+    private static List<string> GetAvailableSecretTypes()
+    {
+        return
+        [
+            nameof(TextSecret),
+            nameof(RsaKeySecret),
+            nameof(X509Secret),
+        ];
     }
 
     private static string GetSimpleTypeName(string fullTypeName)
