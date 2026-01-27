@@ -10,6 +10,59 @@ The Secrets module provides a secure way to store and manage sensitive data such
 - Recipe support for importing secrets during setup
 - Deployment step for exporting secret metadata
 
+## Getting Started
+
+### Enabling the Feature
+
+1. Navigate to **Admin → Configuration → Features**
+2. Search for "Secrets"
+3. Click **Enable** on the "Secrets" feature
+
+![Enabling the Secrets feature](images/features-secrets.png)
+
+### Accessing the Secrets Admin
+
+Once enabled, the Secrets admin is available under the **Security** menu:
+
+1. In the admin sidebar, click **Security** to expand the menu
+2. Click **Secrets** to open the secrets management page
+
+![Secrets menu location](images/admin-menu.png)
+
+### Managing Secrets
+
+#### Viewing Secrets
+
+The Secrets index page displays all stored secrets with their name, type, store, and last updated date.
+
+![Secrets list](images/secrets-list.png)
+
+#### Creating a Secret
+
+1. Click **Add Secret** on the Secrets index page
+2. Fill in the required fields:
+   - **Name**: A unique identifier for the secret (e.g., `SmtpPassword`, `ApiKey`)
+   - **Secret Type**: Select the type of secret (e.g., `TextSecret`)
+   - **Secret Value**: The actual secret value (will be encrypted before storage)
+   - **Description**: Optional description for documentation purposes
+3. Click **Save**
+
+![Create secret form](images/secret-create.png)
+
+#### Editing a Secret
+
+1. Click **Edit** next to the secret you want to modify
+2. Update the fields as needed
+   - Note: The secret value field is empty for security. Leave it empty to keep the existing value, or enter a new value to update it.
+3. Click **Save**
+
+![Edit secret form](images/secret-edit.png)
+
+#### Deleting a Secret
+
+1. Click **Delete** next to the secret you want to remove
+2. Confirm the deletion in the dialog
+
 ## Configuration
 
 ### Database Store (Default)
