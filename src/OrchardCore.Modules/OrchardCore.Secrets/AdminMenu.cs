@@ -20,12 +20,14 @@ public sealed class AdminMenu : AdminNavigationProvider
         {
             builder
                 .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Secrets"], S["Secrets"].PrefixPosition(), secrets => secrets
-                        .AddClass("secrets")
-                        .Id("secrets")
-                        .Action(nameof(AdminController.Index), typeof(AdminController).ControllerName(), "OrchardCore.Secrets")
-                        .Permission(SecretsPermissions.ViewSecrets)
-                        .LocalNav()
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Secrets"], S["Secrets"].PrefixPosition(), secrets => secrets
+                            .AddClass("secrets")
+                            .Id("secrets")
+                            .Action(nameof(AdminController.Index), typeof(AdminController).ControllerName(), "OrchardCore.Secrets")
+                            .Permission(SecretsPermissions.ViewSecrets)
+                            .LocalNav()
+                        )
                     )
                 );
 
@@ -33,13 +35,15 @@ public sealed class AdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Security"], security => security
-                .Add(S["Secrets"], S["Secrets"].PrefixPosition(), secrets => secrets
-                    .AddClass("secrets")
-                    .Id("secrets")
-                    .Action(nameof(AdminController.Index), typeof(AdminController).ControllerName(), "OrchardCore.Secrets")
-                    .Permission(SecretsPermissions.ViewSecrets)
-                    .LocalNav()
+            .Add(S["Settings"], settings => settings
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
+                    .Add(S["Secrets"], S["Secrets"].PrefixPosition(), secrets => secrets
+                        .AddClass("secrets")
+                        .Id("secrets")
+                        .Action(nameof(AdminController.Index), typeof(AdminController).ControllerName(), "OrchardCore.Secrets")
+                        .Permission(SecretsPermissions.ViewSecrets)
+                        .LocalNav()
+                    )
                 )
             );
 

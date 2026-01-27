@@ -22,10 +22,11 @@ The Secrets module provides a secure way to store and manage sensitive data such
 
 ### Accessing the Secrets Admin
 
-Once enabled, the Secrets admin is available under the **Security** menu:
+Once enabled, the Secrets admin is available under the **Settings → Security** menu:
 
-1. In the admin sidebar, click **Security** to expand the menu
-2. Click **Secrets** to open the secrets management page
+1. In the admin sidebar, click **Settings** to expand the menu
+2. Click **Security** to see the security settings
+3. Click **Secrets** to open the secrets management page
 
 ![Secrets menu location](images/admin-menu.png)
 
