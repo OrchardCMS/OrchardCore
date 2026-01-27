@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddSecrets(this IServiceCollection services)
     {
         services.AddScoped<ISecretManager, SecretManager>();
+        services.AddScoped<ISecretEncryptionService, SecretEncryptionService>();
 
         return services;
     }

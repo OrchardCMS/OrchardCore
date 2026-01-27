@@ -5,13 +5,16 @@ using Moq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Recipes;
+using OrchardCore.Secrets.Services;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using ISecret = OrchardCore.Secrets.ISecret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
 public class SecretsRecipeStepTests
 {
     private readonly Mock<ISecretManager> _secretManagerMock;
+    private readonly Mock<ISecretEncryptionService> _encryptionServiceMock;
     private readonly Mock<IConfiguration> _configurationMock;
     private readonly Mock<ILogger<SecretsRecipeStep>> _loggerMock;
     private readonly Mock<IStringLocalizer<SecretsRecipeStep>> _localizerMock;
@@ -19,6 +22,7 @@ public class SecretsRecipeStepTests
     public SecretsRecipeStepTests()
     {
         _secretManagerMock = new Mock<ISecretManager>();
+        _encryptionServiceMock = new Mock<ISecretEncryptionService>();
         _configurationMock = new Mock<IConfiguration>();
         _loggerMock = new Mock<ILogger<SecretsRecipeStep>>();
         _localizerMock = new Mock<IStringLocalizer<SecretsRecipeStep>>();
@@ -28,6 +32,7 @@ public class SecretsRecipeStepTests
     {
         return new SecretsRecipeStep(
             _secretManagerMock.Object,
+            _encryptionServiceMock.Object,
             _configurationMock.Object,
             _loggerMock.Object,
             _localizerMock.Object);
@@ -58,12 +63,12 @@ public class SecretsRecipeStepTests
             Step = recipeStep,
         };
 
-        TextSecret capturedSecret = null;
+        ISecret capturedSecret = null;
         _secretManagerMock
             .Setup(m => m.SaveSecretAsync(
                 It.IsAny<string>(),
-                It.IsAny<TextSecret>()))
-            .Callback<string, TextSecret>((name, secret) => capturedSecret = secret)
+                It.IsAny<ISecret>()))
+            .Callback<string, ISecret>((name, secret) => capturedSecret = secret)
             .Returns(Task.CompletedTask);
 
         // Act
@@ -71,10 +76,11 @@ public class SecretsRecipeStepTests
 
         // Assert
         _secretManagerMock.Verify(
-            m => m.SaveSecretAsync(It.Is<string>(s => s == "TestSecret"), It.IsAny<TextSecret>()),
+            m => m.SaveSecretAsync(It.Is<string>(s => s == "TestSecret"), It.IsAny<ISecret>()),
             Times.Once);
         Assert.NotNull(capturedSecret);
-        Assert.Equal("secret-value-from-recipe", capturedSecret.Text);
+        var textSecret = Assert.IsType<TextSecret>(capturedSecret);
+        Assert.Equal("secret-value-from-recipe", textSecret.Text);
     }
 
     [Fact]
@@ -106,12 +112,12 @@ public class SecretsRecipeStepTests
             .Setup(c => c["OrchardCore_Secrets__EnvSecret"])
             .Returns("env-secret-value");
 
-        TextSecret capturedSecret = null;
+        ISecret capturedSecret = null;
         _secretManagerMock
             .Setup(m => m.SaveSecretAsync(
                 It.IsAny<string>(),
-                It.IsAny<TextSecret>()))
-            .Callback<string, TextSecret>((name, secret) => capturedSecret = secret)
+                It.IsAny<ISecret>()))
+            .Callback<string, ISecret>((name, secret) => capturedSecret = secret)
             .Returns(Task.CompletedTask);
 
         // Act
@@ -119,10 +125,11 @@ public class SecretsRecipeStepTests
 
         // Assert
         _secretManagerMock.Verify(
-            m => m.SaveSecretAsync(It.Is<string>(s => s == "EnvSecret"), It.IsAny<TextSecret>()),
+            m => m.SaveSecretAsync(It.Is<string>(s => s == "EnvSecret"), It.IsAny<ISecret>()),
             Times.Once);
         Assert.NotNull(capturedSecret);
-        Assert.Equal("env-secret-value", capturedSecret.Text);
+        var textSecret = Assert.IsType<TextSecret>(capturedSecret);
+        Assert.Equal("env-secret-value", textSecret.Text);
     }
 
     [Fact]
@@ -157,12 +164,12 @@ public class SecretsRecipeStepTests
             .Setup(c => c["OrchardCore:Secrets:ColonSecret"])
             .Returns("colon-secret-value");
 
-        TextSecret capturedSecret = null;
+        ISecret capturedSecret = null;
         _secretManagerMock
             .Setup(m => m.SaveSecretAsync(
                 It.IsAny<string>(),
-                It.IsAny<TextSecret>()))
-            .Callback<string, TextSecret>((name, secret) => capturedSecret = secret)
+                It.IsAny<ISecret>()))
+            .Callback<string, ISecret>((name, secret) => capturedSecret = secret)
             .Returns(Task.CompletedTask);
 
         // Act
@@ -170,7 +177,8 @@ public class SecretsRecipeStepTests
 
         // Assert
         Assert.NotNull(capturedSecret);
-        Assert.Equal("colon-secret-value", capturedSecret.Text);
+        var textSecret = Assert.IsType<TextSecret>(capturedSecret);
+        Assert.Equal("colon-secret-value", textSecret.Text);
     }
 
     [Fact]
@@ -207,7 +215,7 @@ public class SecretsRecipeStepTests
 
         // Assert
         _secretManagerMock.Verify(
-            m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>()),
+            m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<ISecret>()),
             Times.Never);
     }
 
@@ -242,7 +250,7 @@ public class SecretsRecipeStepTests
         // Assert - the error message uses the localizer S["..."]
         Assert.NotEmpty(context.Errors);
         _secretManagerMock.Verify(
-            m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>()),
+            m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<ISecret>()),
             Times.Never);
     }
 
@@ -275,7 +283,7 @@ public class SecretsRecipeStepTests
         _secretManagerMock
             .Setup(m => m.SaveSecretAsync(
                 It.IsAny<string>(),
-                It.IsAny<TextSecret>(),
+                It.IsAny<ISecret>(),
                 It.IsAny<string>()))
             .Returns(Task.CompletedTask);
 
@@ -286,7 +294,7 @@ public class SecretsRecipeStepTests
         _secretManagerMock.Verify(
             m => m.SaveSecretAsync(
                 It.Is<string>(s => s == "StoreSpecificSecret"),
-                It.IsAny<TextSecret>(),
+                It.IsAny<ISecret>(),
                 It.Is<string>(s => s == "AzureKeyVault")),
             Times.Once);
     }
@@ -329,7 +337,7 @@ public class SecretsRecipeStepTests
         _secretManagerMock
             .Setup(m => m.SaveSecretAsync(
                 It.IsAny<string>(),
-                It.IsAny<TextSecret>()))
+                It.IsAny<ISecret>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -337,7 +345,7 @@ public class SecretsRecipeStepTests
 
         // Assert
         _secretManagerMock.Verify(
-            m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>()),
+            m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<ISecret>()),
             Times.Exactly(3));
     }
 
@@ -364,7 +372,7 @@ public class SecretsRecipeStepTests
 
         // Assert - should not throw
         _secretManagerMock.Verify(
-            m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>()),
+            m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<ISecret>()),
             Times.Never);
     }
 }
