@@ -485,7 +485,7 @@ Both `RsaKeySecret` and `X509Secret` can be used for cryptographic operations, b
 The most common secret type for storing string values like passwords, API keys, and connection strings.
 
 ```csharp
-public class TextSecret : SecretBase
+public class TextSecret : ISecret
 {
     public string Text { get; set; }
 }
@@ -513,7 +513,7 @@ var apiKey = retrieved?.Text;
 For storing RSA cryptographic keys directly in the secrets store. The key material is encrypted and stored in the database, making it portable across deployments.
 
 ```csharp
-public class RsaKeySecret : SecretBase
+public class RsaKeySecret : ISecret
 {
     public string PublicKey { get; set; }      // Base64-encoded RSA public key
     public string PrivateKey { get; set; }     // Base64-encoded RSA private key
@@ -560,7 +560,7 @@ signingKey.ImportRSAPrivateKey(Convert.FromBase64String(retrieved.PrivateKey), o
 For referencing X.509 certificates from the operating system's certificate store. The secret stores only the certificate reference (thumbprint, location, store name) - the actual certificate remains in the OS certificate store.
 
 ```csharp
-public class X509Secret : SecretBase
+public class X509Secret : ISecret
 {
     public StoreLocation StoreLocation { get; set; }  // CurrentUser or LocalMachine
     public StoreName StoreName { get; set; }          // My, Root, etc.

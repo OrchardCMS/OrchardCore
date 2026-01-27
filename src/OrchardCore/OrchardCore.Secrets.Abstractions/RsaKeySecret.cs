@@ -3,7 +3,7 @@ namespace OrchardCore.Secrets;
 /// <summary>
 /// A secret containing RSA key material for cryptographic operations.
 /// </summary>
-public class RsaKeySecret : SecretBase
+public class RsaKeySecret : ISecret
 {
     /// <summary>
     /// Gets or sets the RSA public key in Base64 format.

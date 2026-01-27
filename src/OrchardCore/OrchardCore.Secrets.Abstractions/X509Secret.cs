@@ -5,7 +5,7 @@ namespace OrchardCore.Secrets;
 /// <summary>
 /// Represents a secret that references an X.509 certificate from the certificate store.
 /// </summary>
-public class X509Secret : SecretBase
+public class X509Secret : ISecret
 {
     /// <summary>
     /// Gets or sets the certificate store location.

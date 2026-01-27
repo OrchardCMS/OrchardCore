@@ -35,9 +35,9 @@ public sealed class Startup : StartupBase
         services.AddJsonDerivedTypeInfo<X509Secret, ISecret>();
 
         // Display drivers for secret types
-        services.AddDisplayDriver<SecretBase, TextSecretDisplayDriver>();
-        services.AddDisplayDriver<SecretBase, RsaSecretDisplayDriver>();
-        services.AddDisplayDriver<SecretBase, X509SecretDisplayDriver>();
+        services.AddDisplayDriver<ISecret, TextSecretDisplayDriver>();
+        services.AddDisplayDriver<ISecret, RsaSecretDisplayDriver>();
+        services.AddDisplayDriver<ISecret, X509SecretDisplayDriver>();
 
         services.AddDeployment<SecretsDeploymentSource, SecretsDeploymentStep, SecretsDeploymentStepDriver>();
         services.AddRecipeExecutionStep<SecretsRecipeStep>();

@@ -6,7 +6,7 @@ using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers;
 
-public sealed class TextSecretDisplayDriver : DisplayDriver<SecretBase, TextSecret>
+public sealed class TextSecretDisplayDriver : DisplayDriver<ISecret, TextSecret>
 {
     internal readonly IStringLocalizer S;
 
