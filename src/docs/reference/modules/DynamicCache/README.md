@@ -239,7 +239,7 @@ Each item that is displayed by the query will now add its own cache dependency t
 
 There are four options that can be configured for Dynamic Cache in the `General Settings`:
 
-- **From environment**: Enables the Dynamic Cache feature in `Production` environment.
+- **From environment**: Enables the Dynamic Cache feature in the `Production` ASP.NET Core environment.
 - **Enabled**: Enables the Dynamic Cache feature.
 - **Disabled**: Disables the Dynamic Cache feature.
 - **Enabled with cache debug mode**: Enables the Dynamic Cache feature and activates debug mode.
