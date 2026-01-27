@@ -467,6 +467,76 @@ public override void ConfigureServices(IServiceCollection services)
 
 ## Security Considerations
 
+### How Secrets Are Encrypted
+
+The Secrets module uses **ASP.NET Core Data Protection** to encrypt all secrets before storing them in the database. Here's how it works:
+
+1. **Encryption Process**: When you save a secret, it's serialized to JSON and then encrypted using the Data Protection API
+2. **Key Management**: Data Protection automatically generates and manages encryption keys
+3. **Storage**: Encrypted secrets are stored in the `SecretsDocument` in the database
+
+The encryption is transparent - you work with plain text values in the Admin UI and code, but the actual stored data is always encrypted.
+
+### Configuring Data Protection Keys (Important for Production)
+
+By default, Data Protection stores keys in a local folder, which works for development but **will cause problems in production** because:
+
+- Keys are lost when containers restart
+- Multiple server instances can't share keys
+- Secrets encrypted on one server can't be decrypted on another
+
+#### For Azure App Service / Azure Deployments
+
+Use Azure Blob Storage and Azure Key Vault for key persistence:
+
+```csharp
+// In Program.cs or Startup.cs
+services.AddDataProtection()
+    .PersistKeysToAzureBlobStorage(new Uri("https://yourstorage.blob.core.windows.net/dataprotection/keys.xml"))
+    .ProtectKeysWithAzureKeyVault(new Uri("https://yourvault.vault.azure.net/keys/DataProtectionKey"), new DefaultAzureCredential());
+```
+
+Or use the `OrchardCore.DataProtection.Azure` module:
+
+```json
+{
+  "OrchardCore": {
+    "OrchardCore_DataProtection_Azure": {
+      "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",
+      "ContainerName": "dataprotection",
+      "BlobName": "keys.xml",
+      "CreateContainer": true
+    }
+  }
+}
+```
+
+#### For Docker / Kubernetes
+
+Mount a persistent volume for keys:
+
+```csharp
+services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
+    .SetApplicationName("OrchardCore");
+```
+
+Or use Redis:
+
+```csharp
+services.AddDataProtection()
+    .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+```
+
+#### For Multi-Server Deployments
+
+All servers must share the same Data Protection keys. Options:
+
+1. **Azure Blob Storage** (recommended for Azure)
+2. **Redis** (recommended for Kubernetes)
+3. **Database** (using `PersistKeysToDbContext`)
+4. **Shared file system** (NFS, Azure Files)
+
 ### Encryption at Rest
 
 All secrets stored in the database are encrypted using ASP.NET Core Data Protection. This means:
@@ -503,6 +573,7 @@ For production environments, consider Azure Key Vault for:
 3. **Rotate regularly**: Implement secret rotation policies
 4. **Audit access**: Enable logging to track who accesses secrets
 5. **Principle of least privilege**: Grant only necessary permissions to users and services
+6. **Configure Data Protection**: Always configure key persistence for production deployments
 
 ## Related Issues
 
