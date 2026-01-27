@@ -21,9 +21,16 @@ public class SecretEditViewModel
 
     public IList<string> AvailableStores { get; set; } = [];
 
-    /// <summary>
-    /// The editor shape built by the display driver.
-    /// </summary>
-    [BindNever]
-    public dynamic Editor { get; set; }
+    // TextSecret properties
+    public string TextValue { get; set; }
+
+    // RsaKeySecret properties
+    public string RsaPublicKey { get; set; }
+    public string RsaPrivateKey { get; set; }
+    public int RsaKeySize { get; set; } = 2048;
+
+    // X509Secret properties
+    public string X509StoreLocation { get; set; }
+    public string X509StoreName { get; set; }
+    public string X509Thumbprint { get; set; }
 }
