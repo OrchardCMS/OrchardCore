@@ -19,19 +19,19 @@
         <span class="hint">@T["A unique identifier for this secret."]</span>
     </div>
 
-    @if (Model.AvailableStores.Count > 1)
-    {
-        <div class="mb-3">
-            <label asp-for="Store" class="form-label">@T["Store"]</label>
+    <div class="mb-3">
+        <label asp-for="Store" class="form-label">@T["Store"]</label>
+        @if (Model.AvailableStores.Count > 1)
+        {
             <select asp-for="Store" asp-items="@(new SelectList(Model.AvailableStores))" class="form-select">
             </select>
-            <span class="hint">@T["The secret store where this secret will be saved."]</span>
-        </div>
-    }
-    else
-    {
-        <input type="hidden" asp-for="Store" value="@Model.AvailableStores.FirstOrDefault()" />
-    }
+        }
+        else
+        {
+            <input asp-for="Store" class="form-control" readonly />
+        }
+        <span class="hint">@T["The secret store where this secret will be saved."]</span>
+    </div>
 
     @* Render type-specific fields based on secret type *@
     @if (Model.SecretType == "TextSecret")
