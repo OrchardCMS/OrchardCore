@@ -135,27 +135,9 @@ public class SiteContext : IDisposable
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(HttpBackgroundJobsTimeoutSeconds));
 
-            // Track stability - jobs should remain at 0 for a brief period to handle nested job spawning.
-            var stableIterations = 0;
-            const int requiredStableIterations = 5;
-
-            while (!cts.Token.IsCancellationRequested)
+            while (!cts.Token.IsCancellationRequested &&
+                    HttpBackgroundJob.ActiveJobsCount > 0)
             {
-                if (HttpBackgroundJob.ActiveJobsCount == 0)
-                {
-                    stableIterations++;
-                    if (stableIterations >= requiredStableIterations)
-                    {
-                        // Jobs have been at 0 for multiple checks - they're stable.
-                        break;
-                    }
-                }
-                else
-                {
-                    // Reset stability counter if there are active jobs.
-                    stableIterations = 0;
-                }
-
                 await Task.Delay(WaitDelayMilliseconds, cancellationToken);
             }
 
