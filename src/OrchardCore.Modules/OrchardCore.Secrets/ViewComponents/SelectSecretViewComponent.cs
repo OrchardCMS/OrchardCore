@@ -19,17 +19,19 @@ public class SelectSecretViewComponent : ViewComponent
     }
 
     public async Task<IViewComponentResult> InvokeAsync(
-        string secretType,
         string selectedSecret,
         string htmlId,
         string htmlName,
+        IEnumerable<string> secretTypes = null,
         bool required = false)
     {
         var secretInfos = await _secretManager.GetSecretInfosAsync();
 
+        var allowedTypes = secretTypes?.ToList() ?? [];
+
         var secrets = secretInfos
-            .Where(info => string.IsNullOrEmpty(secretType) ||
-                          string.Equals(secretType, info.Type, StringComparison.OrdinalIgnoreCase))
+            .Where(info => allowedTypes.Count == 0 ||
+                          allowedTypes.Any(t => string.Equals(t, info.Type, StringComparison.OrdinalIgnoreCase)))
             .Select(info => new SelectListItem
             {
                 Text = info.Name,
