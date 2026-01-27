@@ -545,3 +545,61 @@ Environment variables are still useful for providing initial secret values durin
 1. Keep environment variables for deployment/setup
 2. Use the Secrets recipe step to import values during site setup
 3. After setup, secrets are stored encrypted in the database or Key Vault
+
+## Module Integrations
+
+The Secrets module provides optional integration modules for common use cases.
+
+### SMTP Email Secrets (`OrchardCore.Email.Smtp.Secrets`)
+
+This feature allows you to store SMTP passwords as secrets instead of in settings.
+
+**Prerequisites:**
+- `OrchardCore.Email.Smtp` - SMTP email provider
+- `OrchardCore.Secrets` - Core secrets module
+
+**Setup:**
+1. Enable the `OrchardCore.Email.Smtp.Secrets` feature
+2. Create a `TextSecret` with your SMTP password
+3. Go to **Configuration → Settings → Email**
+4. In the SMTP settings, select your password secret from the **Password Secret** dropdown
+
+**Benefits:**
+- SMTP password stored encrypted in secrets store
+- Can use Azure Key Vault for password storage
+- Password not visible in settings export
+
+### OpenID Connect Secrets (`OrchardCore.OpenId.Secrets`)
+
+This feature allows you to store OpenID Connect signing and encryption keys as secrets instead of using auto-generated certificates.
+
+**Prerequisites:**
+- `OrchardCore.OpenId.Server` - OpenID Connect server
+- `OrchardCore.Secrets` - Core secrets module
+
+**Setup:**
+1. Enable the `OrchardCore.OpenId.Secrets` feature
+2. Create an `RsaKeySecret` for signing (with private key)
+3. Optionally create a separate `RsaKeySecret` for encryption
+4. Go to **Security → OpenID Connect → Server Settings**
+5. In the **RSA Keys from Secrets** card, select your secrets
+
+**Benefits:**
+- Keys persist across deployments and container restarts
+- Can share signing keys across multiple instances
+- Keys stored in Azure Key Vault for HSM-backed security
+- Addresses issues #7137 and #13205
+
+**Generating RSA Keys:**
+```csharp
+using var rsa = RSA.Create(2048);
+var secret = new RsaKeySecret
+{
+    PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey()),
+    PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey()),
+    IncludesPrivateKey = true
+};
+await _secretManager.SaveSecretAsync("OpenId.SigningKey", secret);
+```
+
+Or use the Admin UI to create an RSA secret with auto-generated keys.
