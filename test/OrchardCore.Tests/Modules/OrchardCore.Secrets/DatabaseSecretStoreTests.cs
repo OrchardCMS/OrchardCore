@@ -1,8 +1,10 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using OrchardCore.Documents;
+using OrchardCore.Json;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Services;
@@ -15,6 +17,7 @@ public class DatabaseSecretStoreTests
     private readonly Mock<IDataProtectionProvider> _dataProtectionProviderMock;
     private readonly Mock<IDataProtector> _dataProtectorMock;
     private readonly Mock<ILogger<DatabaseSecretStore>> _loggerMock;
+    private readonly IOptions<DocumentJsonSerializerOptions> _jsonOptions;
     private readonly DatabaseSecretStore _store;
 
     public DatabaseSecretStoreTests()
@@ -24,6 +27,11 @@ public class DatabaseSecretStoreTests
         _dataProtectorMock = new Mock<IDataProtector>();
         _loggerMock = new Mock<ILogger<DatabaseSecretStore>>();
 
+        // Set up JSON serializer options with polymorphic support for ISecret
+        var docJsonOptions = new DocumentJsonSerializerOptions();
+        docJsonOptions.SerializerOptions.TypeInfoResolver = new DefaultSecretTypeResolver();
+        _jsonOptions = Options.Create(docJsonOptions);
+
         _dataProtectionProviderMock
             .Setup(p => p.CreateProtector(It.IsAny<string>()))
             .Returns(_dataProtectorMock.Object);
@@ -31,6 +39,7 @@ public class DatabaseSecretStoreTests
         _store = new DatabaseSecretStore(
             _documentManagerMock.Object,
             _dataProtectionProviderMock.Object,
+            _jsonOptions,
             _loggerMock.Object);
     }
 
@@ -67,7 +76,9 @@ public class DatabaseSecretStoreTests
     {
         // Arrange
         var secret = new TextSecret { Text = "secret-value" };
-        var serialized = JsonSerializer.Serialize(secret);
+        // Serialize with the type discriminator using the polymorphic options
+        var serializerOptions = new JsonSerializerOptions { TypeInfoResolver = new DefaultSecretTypeResolver() };
+        var serialized = JsonSerializer.Serialize<global::OrchardCore.Secrets.ISecret>(secret, serializerOptions);
 
         // The encrypted data needs to be base64-encoded (what IDataProtector.Protect returns)
         // When Unprotect is called with a string, it base64-decodes it first
@@ -324,5 +335,34 @@ public class DatabaseSecretStoreTests
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(
             () => _store.SaveSecretAsync<TextSecret>("name", null));
+    }
+}
+
+/// <summary>
+/// Simple type resolver for tests that supports polymorphic serialization of ISecret types.
+/// </summary>
+internal sealed class DefaultSecretTypeResolver : System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver
+{
+    public override System.Text.Json.Serialization.Metadata.JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
+    {
+        var typeInfo = base.GetTypeInfo(type, options);
+
+        if (type == typeof(global::OrchardCore.Secrets.ISecret))
+        {
+            typeInfo.PolymorphismOptions = new System.Text.Json.Serialization.Metadata.JsonPolymorphismOptions
+            {
+                TypeDiscriminatorPropertyName = "$type",
+                IgnoreUnrecognizedTypeDiscriminators = true,
+                UnknownDerivedTypeHandling = System.Text.Json.Serialization.JsonUnknownDerivedTypeHandling.FailSerialization,
+                DerivedTypes =
+                {
+                    new System.Text.Json.Serialization.Metadata.JsonDerivedType(typeof(TextSecret), nameof(TextSecret)),
+                    new System.Text.Json.Serialization.Metadata.JsonDerivedType(typeof(RsaKeySecret), nameof(RsaKeySecret)),
+                    new System.Text.Json.Serialization.Metadata.JsonDerivedType(typeof(X509Secret), nameof(X509Secret)),
+                },
+            };
+        }
+
+        return typeInfo;
     }
 }

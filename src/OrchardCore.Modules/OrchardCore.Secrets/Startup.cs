@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -27,6 +28,11 @@ public sealed class Startup : StartupBase
         services.AddSecretType<TextSecretTypeProvider>();
         services.AddSecretType<RsaKeySecretTypeProvider>();
         services.AddSecretType<X509SecretTypeProvider>();
+
+        // Register polymorphic JSON serialization for secret types
+        services.AddJsonDerivedTypeInfo<TextSecret, ISecret>();
+        services.AddJsonDerivedTypeInfo<RsaKeySecret, ISecret>();
+        services.AddJsonDerivedTypeInfo<X509Secret, ISecret>();
 
         // Display drivers for secret types
         services.AddDisplayDriver<SecretBase, TextSecretDisplayDriver>();

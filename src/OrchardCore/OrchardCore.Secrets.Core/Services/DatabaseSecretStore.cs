@@ -1,7 +1,9 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Documents;
+using OrchardCore.Json;
 using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
@@ -15,15 +17,18 @@ public class DatabaseSecretStore : ISecretStore
 
     private readonly IDocumentManager<SecretsDocument> _documentManager;
     private readonly IDataProtector _dataProtector;
+    private readonly JsonSerializerOptions _serializerOptions;
     private readonly ILogger _logger;
 
     public DatabaseSecretStore(
         IDocumentManager<SecretsDocument> documentManager,
         IDataProtectionProvider dataProtectionProvider,
+        IOptions<DocumentJsonSerializerOptions> documentJsonSerializerOptions,
         ILogger<DatabaseSecretStore> logger)
     {
         _documentManager = documentManager;
         _dataProtector = dataProtectionProvider.CreateProtector(DataProtectionPurpose);
+        _serializerOptions = documentJsonSerializerOptions.Value.SerializerOptions;
         _logger = logger;
     }
 
@@ -48,7 +53,9 @@ public class DatabaseSecretStore : ISecretStore
         try
         {
             var decryptedData = _dataProtector.Unprotect(entry.EncryptedData);
-            return JsonSerializer.Deserialize<T>(decryptedData);
+            // Deserialize as ISecret to use polymorphic deserialization, then cast to T
+            var secret = JsonSerializer.Deserialize<ISecret>(decryptedData, _serializerOptions);
+            return secret as T;
         }
         catch (Exception ex)
         {
@@ -65,7 +72,8 @@ public class DatabaseSecretStore : ISecretStore
 
         var document = await _documentManager.GetOrCreateMutableAsync();
 
-        var json = JsonSerializer.Serialize(secret);
+        // Serialize as ISecret to include type discriminator for polymorphic serialization
+        var json = JsonSerializer.Serialize<ISecret>(secret, _serializerOptions);
         var encryptedData = _dataProtector.Protect(json);
 
         var now = DateTime.UtcNow;
@@ -74,7 +82,7 @@ public class DatabaseSecretStore : ISecretStore
         document.Secrets[name] = new SecretEntry
         {
             Name = name,
-            Type = typeof(T).FullName,
+            Type = secret.GetType().FullName,
             EncryptedData = encryptedData,
             CreatedUtc = isNew ? now : document.Secrets[name].CreatedUtc,
             UpdatedUtc = now,
