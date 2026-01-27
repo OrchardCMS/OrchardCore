@@ -9,7 +9,7 @@
                 <div class="col">
                 </div>
                 <div class="col-auto">
-                    <a class="btn btn-secondary create" asp-action="Create">@T["Add Secret"]</a>
+                    <button type="button" class="btn btn-secondary create" data-bs-toggle="modal" data-bs-target="#modalSecretTypes">@T["Add Secret"]</button>
                 </div>
             </div>
         </div>
@@ -66,3 +66,54 @@
         }
     </ul>
 </form>
+
+<!-- Modal for selecting secret type -->
+<div class="modal fade" id="modalSecretTypes" tabindex="-1" role="dialog" aria-labelledby="available-secret-types-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="available-secret-types-title">@T["Select Secret Type"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input class="form-control" id="secret-type-search" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+                </div>
+                <div id="secret-type-cards" class="row row-cols-1 row-cols-md-2 g-2">
+                    @foreach (var secretType in Model.AvailableTypes)
+                    {
+                        <div class="col secret-type-item" data-name="@secretType.DisplayName.ToLowerInvariant()">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">@secretType.DisplayName</h5>
+                                    <p class="card-text text-muted small">@secretType.Description</p>
+                                </div>
+                                <div class="card-footer bg-transparent text-end">
+                                    <a asp-action="Create" asp-route-type="@secretType.Name" class="btn btn-primary btn-sm">@T["Create"]</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script at="Foot">
+    document.getElementById('secret-type-search').addEventListener('input', function() {
+        var filter = this.value.toLowerCase();
+        var items = document.querySelectorAll('.secret-type-item');
+        items.forEach(function(item) {
+            var name = item.getAttribute('data-name');
+            if (name.indexOf(filter) > -1) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+</script>

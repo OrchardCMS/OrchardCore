@@ -3,6 +3,7 @@ namespace OrchardCore.Secrets.ViewModels;
 public class SecretIndexViewModel
 {
     public IList<SecretEntryViewModel> Secrets { get; set; } = [];
+    public IList<SecretTypeViewModel> AvailableTypes { get; set; } = [];
 }
 
 public class SecretEntryViewModel

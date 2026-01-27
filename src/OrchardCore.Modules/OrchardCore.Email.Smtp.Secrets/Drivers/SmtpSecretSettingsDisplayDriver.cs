@@ -4,7 +4,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Smtp.Secrets.ViewModels;
-using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Smtp.Secrets.Drivers;
@@ -13,19 +12,16 @@ public sealed class SmtpSecretSettingsDisplayDriver : SiteDisplayDriver<SmtpSecr
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ISecretManager _secretManager;
 
     protected override string SettingsGroupId
         => EmailSettings.GroupId;
 
     public SmtpSecretSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService,
-        ISecretManager secretManager)
+        IAuthorizationService authorizationService)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _secretManager = secretManager;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite site, SmtpSecretSettings settings, BuildEditorContext context)
@@ -35,18 +31,9 @@ public sealed class SmtpSecretSettingsDisplayDriver : SiteDisplayDriver<SmtpSecr
             return null;
         }
 
-        var secretInfos = await _secretManager.GetSecretInfosAsync();
-
-        // Filter to only TextSecret types which can contain passwords
-        var textSecrets = secretInfos
-            .Where(s => s.Type == nameof(TextSecret))
-            .Select(s => s.Name)
-            .OrderBy(n => n);
-
         return Initialize<SmtpSecretSettingsViewModel>("SmtpSecretSettings_Edit", model =>
         {
             model.PasswordSecretName = settings.PasswordSecretName;
-            model.AvailableSecrets = textSecrets;
         }).Location("Content:5.1#SMTP")
         .OnGroup(SettingsGroupId);
     }

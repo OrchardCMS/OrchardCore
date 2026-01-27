@@ -56,6 +56,12 @@ public sealed class AdminController : Controller
                 CreatedUtc = info.CreatedUtc,
                 UpdatedUtc = info.UpdatedUtc,
             }).ToList(),
+            AvailableTypes = _secretTypeProviders.Select(p => new SecretTypeViewModel
+            {
+                Name = p.Name,
+                DisplayName = p.DisplayName,
+                Description = p.Description,
+            }).ToList(),
         };
 
         return View(model);
@@ -68,20 +74,10 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        // If no type specified, show type selection
+        // If no type specified, redirect to Index (type selection is handled via modal)
         if (string.IsNullOrEmpty(type))
         {
-            var typeSelectionModel = new SecretTypeSelectionViewModel
-            {
-                AvailableTypes = _secretTypeProviders.Select(p => new SecretTypeViewModel
-                {
-                    Name = p.Name,
-                    DisplayName = p.DisplayName,
-                    Description = p.Description,
-                }).ToList(),
-            };
-
-            return View("SelectType", typeSelectionModel);
+            return RedirectToAction(nameof(Index));
         }
 
         // Find the provider for this type
