@@ -290,6 +290,33 @@ export OrchardCore_Secrets__ApiKey=myapikey
 
 The module supports three built-in secret types, each designed for specific use cases:
 
+### Choosing Between RsaKeySecret and X509Secret
+
+Both `RsaKeySecret` and `X509Secret` can be used for cryptographic operations, but they serve different deployment models:
+
+| Aspect | RsaKeySecret | X509Secret |
+|--------|--------------|------------|
+| **Storage** | Key material stored in database (encrypted) | Reference to OS certificate store |
+| **Portability** | ✅ Travels with database backup | ❌ Cert must exist on each machine |
+| **Container-friendly** | ✅ Works without mounting certs | ❌ Requires cert pre-installed |
+| **Key generation** | ✅ Generate in Admin UI | ❌ Create cert externally |
+| **Cross-platform** | ✅ Works identically everywhere | ⚠️ Enumeration varies by OS |
+| **Certificate metadata** | ❌ No issuer, expiry, subject | ✅ Full X.509 metadata |
+| **CA-issued certs** | ❌ Not applicable | ✅ Works with CA certs |
+| **Security model** | Key stored encrypted in DB | Key never leaves OS secure store |
+
+**When to use RsaKeySecret:**
+- OpenID Connect signing keys that must persist across container restarts
+- JWT signing for APIs (self-contained, portable)
+- Multi-server deployments where keys should auto-sync via database
+- Development/testing without certificate infrastructure
+
+**When to use X509Secret:**
+- CA-issued certificates (SSL/TLS, client authentication)
+- Azure App Service certificates uploaded via portal
+- Enterprise PKI where certificates are managed by IT
+- Scenarios requiring certificate metadata (issuer validation, expiry checking)
+
 ### TextSecret
 
 The most common secret type for storing string values like passwords, API keys, and connection strings.
@@ -320,22 +347,31 @@ var apiKey = retrieved?.Text;
 
 ### RsaKeySecret
 
-For storing RSA cryptographic keys, commonly used for JWT signing, encryption, and authentication.
+For storing RSA cryptographic keys directly in the secrets store. The key material is encrypted and stored in the database, making it portable across deployments.
 
 ```csharp
 public class RsaKeySecret : SecretBase
 {
-    public string PublicKey { get; set; }      // Base64-encoded
-    public string PrivateKey { get; set; }     // Base64-encoded (optional)
+    public string PublicKey { get; set; }      // Base64-encoded RSA public key
+    public string PrivateKey { get; set; }     // Base64-encoded RSA private key
     public bool IncludesPrivateKey { get; set; }
+    public int KeySize { get; set; } = 2048;
 }
 ```
 
 **Use cases:**
-- OpenID Connect signing keys
+- OpenID Connect signing keys (addresses issues #7137, #13205)
 - JWT token signing/validation
 - Data encryption/decryption
 - Digital signatures
+- Any scenario requiring portable RSA keys
+
+**Benefits over X509Secret:**
+- Key travels with database backup/restore
+- Works in containers without cert mounting
+- Can generate keys directly in Admin UI
+- Works identically on Windows/Linux/macOS
+- Automatically shared across servers via database
 
 **Example:**
 ```csharp
@@ -345,7 +381,8 @@ var secret = new RsaKeySecret
 {
     PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey()),
     PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey()),
-    IncludesPrivateKey = true
+    IncludesPrivateKey = true,
+    KeySize = 2048
 };
 await _secretManager.SaveSecretAsync("OpenId.SigningKey", secret);
 
@@ -357,7 +394,7 @@ signingKey.ImportRSAPrivateKey(Convert.FromBase64String(retrieved.PrivateKey), o
 
 ### X509Secret
 
-For referencing X.509 certificates from the Windows Certificate Store. This is useful when certificates are managed by the operating system or deployed via Azure App Service.
+For referencing X.509 certificates from the operating system's certificate store. The secret stores only the certificate reference (thumbprint, location, store name) - the actual certificate remains in the OS certificate store.
 
 ```csharp
 public class X509Secret : SecretBase
@@ -365,14 +402,28 @@ public class X509Secret : SecretBase
     public StoreLocation StoreLocation { get; set; }  // CurrentUser or LocalMachine
     public StoreName StoreName { get; set; }          // My, Root, etc.
     public string Thumbprint { get; set; }            // Certificate thumbprint
+    
+    public X509Certificate2 GetCertificate();         // Loads cert from OS store
 }
 ```
 
 **Use cases:**
-- SSL/TLS certificates
+- CA-issued SSL/TLS certificates
 - Code signing certificates
-- Azure App Service certificates
+- Azure App Service certificates (uploaded via portal)
 - Client authentication certificates
+- Enterprise PKI scenarios
+- Any certificate managed by IT infrastructure
+
+**How it works:**
+1. Certificate is installed in OS certificate store (manually, via Azure, or via deployment)
+2. X509Secret stores the thumbprint and store location as a "binding"
+3. At runtime, `GetCertificate()` loads the actual certificate from the OS store
+
+**Cross-platform notes:**
+- **Windows:** Full access to CurrentUser and LocalMachine stores; Admin UI shows available certs
+- **Linux:** Limited to CurrentUser store (~/.dotnet/corefx/cryptography); Admin UI may be empty
+- **macOS:** Keychain access; may require permissions for LocalMachine
 
 **Example:**
 ```csharp
@@ -390,7 +441,8 @@ var retrieved = await _secretManager.GetSecretAsync<X509Secret>("Ssl.Certificate
 var certificate = retrieved?.GetCertificate();
 if (certificate != null)
 {
-    // Use the X509Certificate2 instance
+    // certificate is an X509Certificate2 instance
+    // Use for SSL, signing, encryption, etc.
 }
 ```
 
