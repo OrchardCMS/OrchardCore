@@ -907,7 +907,7 @@ public class DefaultContentManager : IContentManager
 
         if (!activeVersions.Any())
         {
-            return false;
+            return true;
         }
 
         var context = new RemoveContentContext(contentItem, true);
@@ -924,7 +924,7 @@ public class DefaultContentManager : IContentManager
             }
             else
             {
-                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deleting {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deleting {0} '{1}' has been cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
             }
 
             return false;
@@ -938,6 +938,7 @@ public class DefaultContentManager : IContentManager
         }
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
+
         return true;
     }
 
