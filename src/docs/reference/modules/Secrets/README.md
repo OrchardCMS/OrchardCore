@@ -286,6 +286,169 @@ export OrchardCore_Secrets__SmtpPassword=mypassword
 export OrchardCore_Secrets__ApiKey=myapikey
 ```
 
+## Deployment Step
+
+The Secrets Deployment Step allows you to export secrets as part of a deployment plan. This is useful for migrating secrets between tenants or environments.
+
+### Basic Export (Metadata Only)
+
+By default, secrets are exported without their values for security. The import process then reads values from environment variables:
+
+```json
+{
+  "name": "Secrets",
+  "Secrets": [
+    {
+      "Name": "SmtpPassword",
+      "Store": "Database"
+    }
+  ]
+}
+```
+
+### Encrypted Export
+
+For scenarios where you need to transfer actual secret values (e.g., tenant migration, environment cloning), you can use encrypted export with RSA or X509 keys.
+
+#### How It Works
+
+1. **Export**: Secrets are encrypted using RSA+AES hybrid encryption
+   - A random AES-256 key is generated for each secret
+   - The secret value is encrypted with AES
+   - The AES key is encrypted with RSA public key
+2. **Import**: On the target system
+   - The AES key is decrypted using RSA private key
+   - The secret value is decrypted using the AES key
+   - The decrypted secret is saved to the secrets store
+
+#### Setting Up Encryption Keys
+
+**Option 1: Using RsaKeySecret (Recommended)**
+
+1. Create an `RsaKeySecret` on **both** source and target systems with the same key material:
+
+```csharp
+using var rsa = RSA.Create(2048);
+var deploymentKey = new RsaKeySecret
+{
+    PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey()),
+    PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey()),
+    IncludesPrivateKey = true
+};
+await _secretManager.SaveSecretAsync("Deployment.EncryptionKey", deploymentKey);
+```
+
+Or create via Admin UI:
+1. Go to **Settings → Security → Secrets**
+2. Click **Add Secret**
+3. Select type **RsaKeySecret**
+4. Check **Generate New Key**
+5. Name it `Deployment.EncryptionKey`
+6. Save
+
+Then export this key and import it on the target system (via recipe or manual creation).
+
+**Option 2: Using X509Secret**
+
+Use an X.509 certificate installed on both systems:
+
+1. Install the same certificate on source and target machines
+2. Create an `X509Secret` pointing to the certificate on both systems
+3. Ensure the certificate has a private key for decryption
+
+#### Creating an Encrypted Export
+
+1. Go to **Configuration → Import/Export → Deployment Plans**
+2. Create or edit a deployment plan
+3. Add a **Secrets** step
+4. In the **Encryption Key** dropdown, select your encryption key (e.g., `Deployment.EncryptionKey`)
+5. Execute the deployment plan
+
+The exported JSON will contain encrypted secret values:
+
+```json
+{
+  "name": "Secrets",
+  "EncryptionKeyName": "Deployment.EncryptionKey",
+  "Secrets": {
+    "SmtpPassword": {
+      "SecretInfo": {
+        "Store": "Database",
+        "Type": "TextSecret"
+      },
+      "EncryptedKey": "BASE64_RSA_ENCRYPTED_AES_KEY...",
+      "EncryptedData": "BASE64_AES_ENCRYPTED_SECRET...",
+      "IV": "BASE64_AES_IV..."
+    }
+  }
+}
+```
+
+#### Importing Encrypted Secrets
+
+1. Ensure the encryption key exists on the target system with the **private key**
+2. Import the recipe using standard methods (Import/Export, setup recipe, or API)
+3. The recipe step will:
+   - Look up the encryption key by name
+   - Decrypt each secret
+   - Save to the secrets store
+
+**Important Requirements:**
+- The encryption key must exist on the target with the same name
+- For `RsaKeySecret`: `IncludesPrivateKey` must be `true`
+- For `X509Secret`: The certificate must have a private key
+
+### Multi-Tenant Migration Example
+
+**Scenario:** Clone secrets from `TenantA` to `TenantB`
+
+**Step 1: Create Deployment Key on Source**
+```bash
+# On TenantA, create an RSA key for deployment
+# Use Admin UI or programmatically
+```
+
+**Step 2: Export Key Material**
+```json
+{
+  "steps": [
+    {
+      "name": "Secrets",
+      "Secrets": [
+        {
+          "Name": "Deployment.EncryptionKey",
+          "Store": "Database",
+          "Value": "... (if exporting unencrypted for initial setup)"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Step 3: Import Key on Target**
+- Create the same `Deployment.EncryptionKey` on TenantB
+- Must have identical key material (public + private)
+
+**Step 4: Export Secrets from Source**
+1. Create deployment plan with Secrets step
+2. Select `Deployment.EncryptionKey` for encryption
+3. Execute and download the recipe JSON
+
+**Step 5: Import on Target**
+1. Upload the recipe JSON to TenantB
+2. Run the recipe
+3. Secrets are decrypted and stored
+
+### Security Best Practices
+
+1. **Protect the encryption key**: The encryption key itself should be treated as highly sensitive
+2. **Use different keys per environment**: Don't share deployment keys between production and non-production
+3. **Rotate keys periodically**: Create new deployment keys and re-encrypt exports regularly
+4. **Delete exported files**: Don't leave encrypted exports in accessible locations
+5. **Audit key usage**: Log when deployment keys are used for export/import
+6. **Consider X509 for compliance**: Use CA-issued certificates for audit trails
+
 ## Secret Types
 
 The module supports three built-in secret types, each designed for specific use cases:
