@@ -1,12 +1,130 @@
 # Secrets (`OrchardCore.Secrets`)
 
-The Secrets module provides a secure way to store and manage sensitive data such as passwords, API keys, and certificates. It supports multiple secret stores including a built-in database store and Azure Key Vault.
+The Secrets module provides a secure, centralized way to store and manage sensitive data such as passwords, API keys, connection strings, and certificates. It addresses common challenges in managing secrets across development, staging, and production environments.
+
+## Why Use the Secrets Module?
+
+### The Problem
+
+Managing sensitive configuration in web applications presents several challenges:
+
+1. **Security Risks**: Storing passwords and API keys in `appsettings.json` or environment variables can lead to accidental exposure through source control, logs, or configuration dumps.
+
+2. **Deployment Complexity**: When using deployment plans or recipes to set up new tenants, secrets cannot be included directly without compromising security.
+
+3. **Multi-Environment Management**: Different environments (development, staging, production) often need different secrets, making configuration management complex.
+
+4. **Certificate Management**: Storing certificates for OpenID Connect, signing tokens, or SSL can be problematic, especially in multi-server deployments where file-based certificates aren't accessible.
+
+5. **Audit and Rotation**: Without a centralized secret store, it's difficult to track who accessed secrets or rotate them across all services.
+
+### The Solution
+
+The Secrets module provides:
+
+- **Encrypted Storage**: All secrets are encrypted using ASP.NET Core Data Protection before being stored in the database.
+- **Centralized Management**: A single admin UI to view, create, update, and delete all secrets.
+- **Multiple Backends**: Support for database storage (default) and Azure Key Vault for enterprise scenarios.
+- **Deployment Support**: Export secret metadata (not values) and import secrets from environment variables during setup.
+- **Type Safety**: Different secret types (text, RSA keys, X.509 certificates) with appropriate handling for each.
+
+## Common Use Cases
+
+### 1. SMTP Email Credentials
+
+Store your email server password securely instead of in configuration files:
+
+```csharp
+// In your email service
+var passwordSecret = await _secretManager.GetSecretAsync<TextSecret>("Email.SmtpPassword");
+var password = passwordSecret?.Text;
+```
+
+### 2. Third-Party API Keys
+
+Manage API keys for services like payment gateways, analytics, or social media:
+
+```csharp
+// Store API keys with descriptive names
+await _secretManager.SaveSecretAsync("Stripe.SecretKey", new TextSecret { Text = "sk_live_..." });
+await _secretManager.SaveSecretAsync("SendGrid.ApiKey", new TextSecret { Text = "SG...." });
+await _secretManager.SaveSecretAsync("Google.MapsApiKey", new TextSecret { Text = "AIza..." });
+```
+
+### 3. OpenID Connect Signing Keys
+
+Store RSA keys for JWT token signing without filesystem dependencies:
+
+```csharp
+// Generate and store signing keys
+var rsaSecret = new RsaKeySecret 
+{ 
+    IncludesPrivateKey = true,
+    PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey()),
+    PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey())
+};
+await _secretManager.SaveSecretAsync("OpenId.SigningKey", rsaSecret);
+```
+
+### 4. Database Connection Strings
+
+Protect database credentials, especially for production environments:
+
+```csharp
+var connectionSecret = await _secretManager.GetSecretAsync<TextSecret>("Database.ConnectionString");
+var connectionString = connectionSecret?.Text ?? defaultConnectionString;
+```
+
+### 5. Multi-Tenant SaaS Deployments
+
+When deploying new tenants with recipes, define which secrets are needed without exposing values:
+
+**Recipe file (safe to commit):**
+```json
+{
+  "steps": [
+    {
+      "name": "Secrets",
+      "Secrets": [
+        { "Name": "Smtp.Password" },
+        { "Name": "Payment.ApiKey" },
+        { "Name": "Analytics.TrackingId" }
+      ]
+    }
+  ]
+}
+```
+
+**Environment variables (set during deployment):**
+```bash
+export OrchardCore_Secrets__Smtp__Password="actual-password"
+export OrchardCore_Secrets__Payment__ApiKey="actual-api-key"
+export OrchardCore_Secrets__Analytics__TrackingId="UA-12345"
+```
+
+### 6. Azure Key Vault for Production
+
+For production environments, use Azure Key Vault for hardware-backed security and centralized secret management:
+
+```json
+{
+  "OrchardCore": {
+    "OrchardCore_Secrets_Azure": {
+      "VaultUri": "https://mycompany-prod.vault.azure.net/"
+    }
+  }
+}
+```
+
+With Managed Identity, no credentials are needed in configuration—Azure handles authentication automatically.
 
 ## Features
 
 - Secure storage of sensitive data using ASP.NET Core Data Protection
 - Multiple secret store providers (database, Azure Key Vault)
+- Three secret types: Text, RSA Keys, and X.509 Certificates
 - Admin UI for managing secrets
+- ViewComponent for selecting secrets in other module UIs
 - Recipe support for importing secrets during setup
 - Deployment step for exporting secret metadata
 
@@ -170,9 +288,11 @@ export OrchardCore_Secrets__ApiKey=myapikey
 
 ## Secret Types
 
+The module supports three built-in secret types, each designed for specific use cases:
+
 ### TextSecret
 
-The most common secret type for storing string values like passwords and API keys.
+The most common secret type for storing string values like passwords, API keys, and connection strings.
 
 ```csharp
 public class TextSecret : SecretBase
@@ -181,18 +301,114 @@ public class TextSecret : SecretBase
 }
 ```
 
+**Use cases:**
+- SMTP passwords
+- API keys (Stripe, SendGrid, etc.)
+- Database connection strings
+- OAuth client secrets
+
+**Example:**
+```csharp
+// Store an API key
+var secret = new TextSecret { Text = "sk_live_abc123..." };
+await _secretManager.SaveSecretAsync("Stripe.SecretKey", secret);
+
+// Retrieve and use
+var retrieved = await _secretManager.GetSecretAsync<TextSecret>("Stripe.SecretKey");
+var apiKey = retrieved?.Text;
+```
+
 ### RsaKeySecret
 
-For storing RSA key material.
+For storing RSA cryptographic keys, commonly used for JWT signing, encryption, and authentication.
 
 ```csharp
 public class RsaKeySecret : SecretBase
 {
-    public string KeyAsXml { get; set; }
+    public string PublicKey { get; set; }      // Base64-encoded
+    public string PrivateKey { get; set; }     // Base64-encoded (optional)
     public bool IncludesPrivateKey { get; set; }
-    public int KeySize { get; set; }
 }
 ```
+
+**Use cases:**
+- OpenID Connect signing keys
+- JWT token signing/validation
+- Data encryption/decryption
+- Digital signatures
+
+**Example:**
+```csharp
+// Generate and store a new RSA key pair
+using var rsa = RSA.Create(2048);
+var secret = new RsaKeySecret
+{
+    PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey()),
+    PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey()),
+    IncludesPrivateKey = true
+};
+await _secretManager.SaveSecretAsync("OpenId.SigningKey", secret);
+
+// Retrieve and use for signing
+var retrieved = await _secretManager.GetSecretAsync<RsaKeySecret>("OpenId.SigningKey");
+using var signingKey = RSA.Create();
+signingKey.ImportRSAPrivateKey(Convert.FromBase64String(retrieved.PrivateKey), out _);
+```
+
+### X509Secret
+
+For referencing X.509 certificates from the Windows Certificate Store. This is useful when certificates are managed by the operating system or deployed via Azure App Service.
+
+```csharp
+public class X509Secret : SecretBase
+{
+    public StoreLocation StoreLocation { get; set; }  // CurrentUser or LocalMachine
+    public StoreName StoreName { get; set; }          // My, Root, etc.
+    public string Thumbprint { get; set; }            // Certificate thumbprint
+}
+```
+
+**Use cases:**
+- SSL/TLS certificates
+- Code signing certificates
+- Azure App Service certificates
+- Client authentication certificates
+
+**Example:**
+```csharp
+// Reference a certificate by thumbprint
+var secret = new X509Secret
+{
+    StoreLocation = StoreLocation.LocalMachine,
+    StoreName = StoreName.My,
+    Thumbprint = "ABC123DEF456..."
+};
+await _secretManager.SaveSecretAsync("Ssl.Certificate", secret);
+
+// Retrieve and use the certificate
+var retrieved = await _secretManager.GetSecretAsync<X509Secret>("Ssl.Certificate");
+var certificate = retrieved?.GetCertificate();
+if (certificate != null)
+{
+    // Use the X509Certificate2 instance
+}
+```
+
+## Using the SelectSecret ViewComponent
+
+When building custom modules that need to reference secrets, you can use the `SelectSecret` ViewComponent to provide a dropdown of available secrets:
+
+```html
+@await Component.InvokeAsync("SelectSecret", new { 
+    secretType = "TextSecret",      // Filter by type (optional)
+    selectedSecret = Model.SecretName,
+    htmlId = "SecretName",
+    htmlName = "SecretName",
+    required = true
+})
+```
+
+This renders a dropdown populated with all secrets of the specified type, making it easy to let administrators select which secret to use for a particular configuration.
 
 ## Permissions
 
@@ -242,9 +458,90 @@ public override void ConfigureServices(IServiceCollection services)
 }
 ```
 
+**Potential custom store implementations:**
+- HashiCorp Vault
+- AWS Secrets Manager
+- Google Cloud Secret Manager
+- CyberArk
+- 1Password Connect
+
+## Security Considerations
+
+### Encryption at Rest
+
+All secrets stored in the database are encrypted using ASP.NET Core Data Protection. This means:
+
+- Secrets are encrypted before being written to the database
+- Encryption keys are managed by the Data Protection system
+- In production, configure Data Protection to persist keys securely (Azure Blob Storage, Redis, etc.)
+
+### Access Control
+
+- Only users with the `ManageSecrets` permission can create, edit, or delete secrets
+- The `ViewSecrets` permission allows viewing secret metadata (names, types) but not actual values
+- Secret values are never returned to the browser after creation (edit forms show empty password fields)
+
+### Deployment Security
+
+- Never include secret values directly in recipe files or deployment plans
+- Use environment variables to provide secret values during deployment
+- Deployment exports include only metadata (name, type, store) not actual values
+
+### Azure Key Vault Benefits
+
+For production environments, consider Azure Key Vault for:
+
+- Hardware Security Module (HSM) backed key storage
+- Centralized access policies and audit logging
+- Automatic secret rotation capabilities
+- Managed Identity support (no credentials in configuration)
+
+### Best Practices
+
+1. **Use descriptive names**: Name secrets clearly (e.g., `Smtp.Password`, `Stripe.LiveSecretKey`)
+2. **Separate by environment**: Use different Azure Key Vaults for dev/staging/production
+3. **Rotate regularly**: Implement secret rotation policies
+4. **Audit access**: Enable logging to track who accesses secrets
+5. **Principle of least privilege**: Grant only necessary permissions to users and services
+
 ## Related Issues
 
-- [#7137](https://github.com/OrchardCMS/OrchardCore/issues/7137) - Keyset does not exist crash with OpenID certificates
-- [#13205](https://github.com/OrchardCMS/OrchardCore/issues/13205) - External storage for OpenID certificates
-- [#5558](https://github.com/OrchardCMS/OrchardCore/issues/5558) - Missing deployment steps for settings with secrets
-- [#3259](https://github.com/OrchardCMS/OrchardCore/issues/3259) - Certificate selection from Azure AppService in OpenID
+This module addresses several long-standing issues in Orchard Core:
+
+| Issue | Problem | How Secrets Module Helps |
+|-------|---------|-------------------------|
+| [#7137](https://github.com/OrchardCMS/OrchardCore/issues/7137) | "Keyset does not exist" crash with OpenID certificates | Store signing keys as `RsaKeySecret` instead of file-based certificates |
+| [#13205](https://github.com/OrchardCMS/OrchardCore/issues/13205) | External storage needed for OpenID certificates | Use Azure Key Vault or database storage for certificates |
+| [#5558](https://github.com/OrchardCMS/OrchardCore/issues/5558) | Deployment steps can't handle secrets | Secrets recipe step imports from environment variables |
+| [#3259](https://github.com/OrchardCMS/OrchardCore/issues/3259) | Certificate selection in Azure App Service | `X509Secret` can reference certificates from the certificate store |
+
+## Migration Guide
+
+### From appsettings.json Passwords
+
+If you're currently storing passwords in configuration:
+
+**Before:**
+```json
+{
+  "OrchardCore": {
+    "OrchardCore_Email_Smtp": {
+      "Password": "my-smtp-password"
+    }
+  }
+}
+```
+
+**After:**
+1. Enable the Secrets module
+2. Create a secret named `Smtp.Password` with the password value
+3. Update your code to retrieve the password from the secret store
+4. Remove the password from configuration files
+
+### From Environment Variables
+
+Environment variables are still useful for providing initial secret values during deployment, but the Secrets module provides a better runtime storage mechanism:
+
+1. Keep environment variables for deployment/setup
+2. Use the Secrets recipe step to import values during site setup
+3. After setup, secrets are stored encrypted in the database or Key Vault

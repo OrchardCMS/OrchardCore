@@ -6,9 +6,15 @@ namespace OrchardCore.Secrets;
 public class RsaKeySecret : SecretBase
 {
     /// <summary>
-    /// Gets or sets the RSA key in XML format.
+    /// Gets or sets the RSA public key in Base64 format.
     /// </summary>
-    public string KeyAsXml { get; set; }
+    public string PublicKey { get; set; }
+
+    /// <summary>
+    /// Gets or sets the RSA private key in Base64 format.
+    /// This should only be set if <see cref="IncludesPrivateKey"/> is true.
+    /// </summary>
+    public string PrivateKey { get; set; }
 
     /// <summary>
     /// Gets or sets whether this key includes the private key.
@@ -18,5 +24,5 @@ public class RsaKeySecret : SecretBase
     /// <summary>
     /// Gets or sets the key size in bits.
     /// </summary>
-    public int KeySize { get; set; }
+    public int KeySize { get; set; } = 2048;
 }
