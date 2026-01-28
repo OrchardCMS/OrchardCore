@@ -101,6 +101,12 @@
     </div>
 
     <div class="mb-3">
+        <label asp-for="ExpiresUtc" class="form-label">@T["Expiration Date"]</label>
+        <input asp-for="ExpiresUtc" type="date" class="form-control" />
+        <span class="hint">@T["Optional. This is informational only and does not automatically disable the secret. Use for rotation reminders and alerts."]</span>
+    </div>
+
+    <div class="mb-3">
         <button class="btn btn-primary save" type="submit">@T["Save"]</button>
         <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
     </div>

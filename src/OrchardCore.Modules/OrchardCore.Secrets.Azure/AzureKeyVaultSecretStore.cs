@@ -87,7 +87,7 @@ public class AzureKeyVaultSecretStore : ISecretStore
     }
 
     /// <inheritdoc />
-    public async Task SaveSecretAsync<T>(string name, T secret) where T : class, ISecret
+    public async Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
     {
         if (_secretClient == null)
         {
@@ -110,7 +110,15 @@ public class AzureKeyVaultSecretStore : ISecretStore
                 secretValue = JsonSerializer.Serialize(secret);
             }
 
-            await _secretClient.SetSecretAsync(sanitizedName, secretValue);
+            var keyVaultSecret = new KeyVaultSecret(sanitizedName, secretValue);
+
+            // Apply expiration if specified
+            if (options?.ExpiresUtc.HasValue == true)
+            {
+                keyVaultSecret.Properties.ExpiresOn = options.ExpiresUtc.Value;
+            }
+
+            await _secretClient.SetSecretAsync(keyVaultSecret);
         }
         catch (Exception ex)
         {
@@ -170,6 +178,7 @@ public class AzureKeyVaultSecretStore : ISecretStore
                     Type = nameof(TextSecret), // Key Vault stores strings, we default to TextSecret
                     CreatedUtc = secretProperties.CreatedOn?.UtcDateTime,
                     UpdatedUtc = secretProperties.UpdatedOn?.UtcDateTime,
+                    ExpiresUtc = secretProperties.ExpiresOn?.UtcDateTime,
                 });
             }
         }

@@ -48,7 +48,7 @@ public class SecretManager : ISecretManager
     }
 
     /// <inheritdoc />
-    public async Task SaveSecretAsync<T>(string name, T secret) where T : class, ISecret
+    public async Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
     {
         var store = GetDefaultWritableStore();
         if (store == null)
@@ -56,11 +56,11 @@ public class SecretManager : ISecretManager
             throw new InvalidOperationException("No writable secret store is available.");
         }
 
-        await store.SaveSecretAsync(name, secret);
+        await store.SaveSecretAsync(name, secret, options);
     }
 
     /// <inheritdoc />
-    public async Task SaveSecretAsync<T>(string name, T secret, string storeName) where T : class, ISecret
+    public async Task SaveSecretAsync<T>(string name, T secret, string storeName, SecretSaveOptions options = null) where T : class, ISecret
     {
         var store = GetStore(storeName);
         if (store == null)
@@ -73,7 +73,7 @@ public class SecretManager : ISecretManager
             throw new InvalidOperationException($"Secret store '{storeName}' is read-only.");
         }
 
-        await store.SaveSecretAsync(name, secret);
+        await store.SaveSecretAsync(name, secret, options);
     }
 
     /// <inheritdoc />

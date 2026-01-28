@@ -65,7 +65,7 @@ public class DatabaseSecretStore : ISecretStore
     }
 
     /// <inheritdoc />
-    public async Task SaveSecretAsync<T>(string name, T secret) where T : class, ISecret
+    public async Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentNullException.ThrowIfNull(secret);
@@ -77,16 +77,17 @@ public class DatabaseSecretStore : ISecretStore
         var encryptedData = _dataProtector.Protect(json);
 
         var now = DateTime.UtcNow;
-        var isNew = !document.Secrets.ContainsKey(name);
+        var existingEntry = document.Secrets.TryGetValue(name, out var existing) ? existing : null;
 
         document.Secrets[name] = new SecretEntry
         {
             Name = name,
             Type = secret.GetType().FullName,
             EncryptedData = encryptedData,
-            CreatedUtc = isNew ? now : document.Secrets[name].CreatedUtc,
+            CreatedUtc = existingEntry?.CreatedUtc ?? now,
             UpdatedUtc = now,
-            Description = isNew ? null : document.Secrets[name].Description,
+            Description = options?.Description ?? existingEntry?.Description,
+            ExpiresUtc = options?.ExpiresUtc ?? existingEntry?.ExpiresUtc,
         };
 
         await _documentManager.UpdateAsync(document);
@@ -117,6 +118,7 @@ public class DatabaseSecretStore : ISecretStore
             Type = entry.Type,
             CreatedUtc = entry.CreatedUtc,
             UpdatedUtc = entry.UpdatedUtc,
+            ExpiresUtc = entry.ExpiresUtc,
         });
     }
 }

@@ -55,6 +55,7 @@ public sealed class AdminController : Controller
                 Type = GetSimpleTypeName(info.Type),
                 CreatedUtc = info.CreatedUtc,
                 UpdatedUtc = info.UpdatedUtc,
+                ExpiresUtc = info.ExpiresUtc,
             }).ToList(),
             AvailableTypes = _secretTypeProviders.Select(p => new SecretTypeViewModel
             {
@@ -133,7 +134,12 @@ public sealed class AdminController : Controller
         if (ModelState.IsValid)
         {
             var secret = CreateSecretFromModel(model, null);
-            await SaveSecretAsync(model.Name, secret, model.Store);
+            var options = new SecretSaveOptions
+            {
+                Description = model.Description,
+                ExpiresUtc = model.ExpiresUtc,
+            };
+            await SaveSecretAsync(model.Name, secret, model.Store, options);
             await _notifier.SuccessAsync(H["Secret created successfully."]);
             return RedirectToAction(nameof(Index));
         }
@@ -185,6 +191,7 @@ public sealed class AdminController : Controller
             Store = secretInfo.Store,
             SecretType = typeName,
             SecretTypeDisplayName = provider.DisplayName,
+            ExpiresUtc = secretInfo.ExpiresUtc,
             AvailableStores = _secretManager.GetStores()
                 .Where(s => !s.IsReadOnly)
                 .Select(s => s.Name)
@@ -222,7 +229,12 @@ public sealed class AdminController : Controller
         if (ModelState.IsValid)
         {
             var secret = CreateSecretFromModel(model, existingSecret);
-            await SaveSecretAsync(name, secret, model.Store);
+            var options = new SecretSaveOptions
+            {
+                Description = model.Description,
+                ExpiresUtc = model.ExpiresUtc,
+            };
+            await SaveSecretAsync(name, secret, model.Store, options);
             await _notifier.SuccessAsync(H["Secret updated successfully."]);
             return RedirectToAction(nameof(Index));
         }
@@ -340,15 +352,15 @@ public sealed class AdminController : Controller
         };
     }
 
-    private async Task SaveSecretAsync(string name, ISecret secret, string store)
+    private async Task SaveSecretAsync(string name, ISecret secret, string store, SecretSaveOptions options)
     {
         if (!string.IsNullOrEmpty(store))
         {
-            await _secretManager.SaveSecretAsync(name, secret, store);
+            await _secretManager.SaveSecretAsync(name, secret, store, options);
         }
         else
         {
-            await _secretManager.SaveSecretAsync(name, secret);
+            await _secretManager.SaveSecretAsync(name, secret, options);
         }
     }
 

@@ -146,8 +146,8 @@ public class SecretManagerTests
         await manager.SaveSecretAsync("test-secret", secret);
 
         // Assert
-        writableStore.Verify(s => s.SaveSecretAsync("test-secret", secret), Times.Once);
-        readOnlyStore.Verify(s => s.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>()), Times.Never);
+        writableStore.Verify(s => s.SaveSecretAsync("test-secret", secret, It.IsAny<SecretSaveOptions>()), Times.Once);
+        readOnlyStore.Verify(s => s.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>(), It.IsAny<SecretSaveOptions>()), Times.Never);
     }
 
     [Fact]
@@ -187,8 +187,8 @@ public class SecretManagerTests
         await manager.SaveSecretAsync("test-secret", secret, "Store2");
 
         // Assert
-        store2.Verify(s => s.SaveSecretAsync("test-secret", secret), Times.Once);
-        store1.Verify(s => s.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>()), Times.Never);
+        store2.Verify(s => s.SaveSecretAsync("test-secret", secret, It.IsAny<SecretSaveOptions>()), Times.Once);
+        store1.Verify(s => s.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>(), It.IsAny<SecretSaveOptions>()), Times.Never);
     }
 
     [Fact]
@@ -289,3 +289,4 @@ public class SecretManagerTests
         Assert.Equal(2, stores.Count);
     }
 }
+

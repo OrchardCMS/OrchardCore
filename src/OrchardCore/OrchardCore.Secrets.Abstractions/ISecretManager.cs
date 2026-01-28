@@ -29,7 +29,8 @@ public interface ISecretManager
     /// <typeparam name="T">The type of secret to save.</typeparam>
     /// <param name="name">The name of the secret.</param>
     /// <param name="secret">The secret to save.</param>
-    Task SaveSecretAsync<T>(string name, T secret) where T : class, ISecret;
+    /// <param name="options">Optional save options including description and expiration.</param>
+    Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret;
 
     /// <summary>
     /// Saves a secret with the specified name to a specific store.
@@ -38,7 +39,8 @@ public interface ISecretManager
     /// <param name="name">The name of the secret.</param>
     /// <param name="secret">The secret to save.</param>
     /// <param name="storeName">The name of the store to save to.</param>
-    Task SaveSecretAsync<T>(string name, T secret, string storeName) where T : class, ISecret;
+    /// <param name="options">Optional save options including description and expiration.</param>
+    Task SaveSecretAsync<T>(string name, T secret, string storeName, SecretSaveOptions options = null) where T : class, ISecret;
 
     /// <summary>
     /// Removes a secret by its name from all stores.

@@ -20,19 +20,27 @@
         {
             <li class="list-group-item text-bg-theme">
                 <div class="row">
-                    <div class="col-md-4"><strong>@T["Name"]</strong></div>
+                    <div class="col-md-3"><strong>@T["Name"]</strong></div>
                     <div class="col-md-2"><strong>@T["Type"]</strong></div>
                     <div class="col-md-2"><strong>@T["Store"]</strong></div>
-                    <div class="col-md-2"><strong>@T["Updated"]</strong></div>
-                    <div class="col-md-2"><strong>@T["Actions"]</strong></div>
+                    <div class="col-md-2"><strong>@T["Expires"]</strong></div>
+                    <div class="col-md-3"><strong>@T["Actions"]</strong></div>
                 </div>
             </li>
             @foreach (var secret in Model.Secrets)
             {
-                <li class="list-group-item">
+                <li class="list-group-item @(secret.IsExpired ? "list-group-item-danger" : secret.IsExpiringSoon ? "list-group-item-warning" : "")">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <a asp-action="Edit" asp-route-name="@secret.Name">@secret.Name</a>
+                            @if (secret.IsExpired)
+                            {
+                                <span class="badge text-bg-danger ms-1" title="@T["This secret has expired"]">@T["Expired"]</span>
+                            }
+                            else if (secret.IsExpiringSoon)
+                            {
+                                <span class="badge text-bg-warning ms-1" title="@T["This secret expires within 30 days"]">@T["Expiring"]</span>
+                            }
                         </div>
                         <div class="col-md-2">
                             @(secret.Type?.Split('.').LastOrDefault() ?? "Unknown")
@@ -41,14 +49,18 @@
                             <span class="badge text-bg-info">@secret.Store</span>
                         </div>
                         <div class="col-md-2">
-                            @if (secret.UpdatedUtc.HasValue)
+                            @if (secret.ExpiresUtc.HasValue)
                             {
-                                <span title="@secret.UpdatedUtc.Value.ToString("g")">
-                                    @secret.UpdatedUtc.Value.ToString("d")
+                                <span title="@secret.ExpiresUtc.Value.ToString("g")">
+                                    @secret.ExpiresUtc.Value.ToString("d")
                                 </span>
                             }
+                            else
+                            {
+                                <span class="text-muted">@T["Never"]</span>
+                            }
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <a asp-action="Edit" asp-route-name="@secret.Name" class="btn btn-sm btn-primary">@T["Edit"]</a>
                             <a asp-action="Delete" asp-route-name="@secret.Name" class="btn btn-sm btn-danger" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete Secret"]" data-message="@T["Are you sure you want to delete this secret?"]">@T["Delete"]</a>
                         </div>

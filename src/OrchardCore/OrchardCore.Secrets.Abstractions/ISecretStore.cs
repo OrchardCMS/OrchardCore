@@ -30,7 +30,8 @@ public interface ISecretStore
     /// <typeparam name="T">The type of secret to save.</typeparam>
     /// <param name="name">The name of the secret.</param>
     /// <param name="secret">The secret to save.</param>
-    Task SaveSecretAsync<T>(string name, T secret) where T : class, ISecret;
+    /// <param name="options">Optional save options including description and expiration.</param>
+    Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret;
 
     /// <summary>
     /// Removes a secret by its name.

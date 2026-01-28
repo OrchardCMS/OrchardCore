@@ -13,4 +13,8 @@ public class SecretEntryViewModel
     public string Type { get; set; }
     public DateTime? CreatedUtc { get; set; }
     public DateTime? UpdatedUtc { get; set; }
+    public DateTime? ExpiresUtc { get; set; }
+
+    public bool IsExpired => ExpiresUtc.HasValue && ExpiresUtc.Value < DateTime.UtcNow;
+    public bool IsExpiringSoon => ExpiresUtc.HasValue && !IsExpired && ExpiresUtc.Value < DateTime.UtcNow.AddDays(30);
 }

@@ -31,6 +31,12 @@ public class SecretEntry
     public DateTime UpdatedUtc { get; set; }
 
     /// <summary>
+    /// Gets or sets when the secret expires. This is informational only and
+    /// does not automatically disable the secret. Use for rotation reminders and alerts.
+    /// </summary>
+    public DateTime? ExpiresUtc { get; set; }
+
+    /// <summary>
     /// Gets or sets an optional description for the secret.
     /// </summary>
     public string Description { get; set; }

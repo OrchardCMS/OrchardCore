@@ -14,6 +14,11 @@ public class SecretEditViewModel
 
     public string Description { get; set; }
 
+    /// <summary>
+    /// Optional expiration date. Informational only - does not automatically disable the secret.
+    /// </summary>
+    public DateTime? ExpiresUtc { get; set; }
+
     [Required]
     public string SecretType { get; set; }
 
