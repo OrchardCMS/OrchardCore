@@ -32,6 +32,8 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IReverseProxyService, ReverseProxyService>();
 
         services.AddTransient<IConfigureOptions<ReverseProxySettings>, ReverseProxySettingsConfiguration>();
+
+        services.AddTransient<IConfigureOptions<ForwardedHeadersOptions>, ForwardedHeadersOptionsConfiguration>();
     }
 }
 
