@@ -26,5 +26,6 @@ public sealed class Startup : Modules.StartupBase
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
         services.AddSingleton<IStartupFilter, PreviewStartupFilter>();
+        services.AddContentPartSchemaHandler<PreviewPartSchemaHandler>();
     }
 }

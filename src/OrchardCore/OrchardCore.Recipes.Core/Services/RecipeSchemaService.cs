@@ -1,0 +1,215 @@
+using System.Text.Json.Nodes;
+using Json.Schema;
+using OrchardCore.Recipes.Models;
+
+namespace OrchardCore.Recipes.Services;
+
+/// <summary>
+/// Default implementation of <see cref="IRecipeSchemaService"/> that aggregates schema information
+/// from registered <see cref="IRecipeDeploymentStep"/> instances.
+/// </summary>
+public sealed class RecipeSchemaService : IRecipeSchemaService
+{
+    private readonly IEnumerable<IRecipeDeploymentStep> _steps;
+    private JsonSchema _combinedSchema;
+
+    public RecipeSchemaService(IEnumerable<IRecipeDeploymentStep> steps)
+    {
+        ArgumentNullException.ThrowIfNull(steps);
+        _steps = steps;
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<IRecipeDeploymentStep> GetSteps()
+        => _steps;
+
+    /// <inheritdoc />
+    public IRecipeDeploymentStep GetStep(string stepName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(stepName);
+
+        return _steps.FirstOrDefault(s => string.Equals(s.Name, stepName, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <inheritdoc />
+    public JsonSchema GetStepSchema(string stepName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(stepName);
+
+        var step = GetStep(stepName);
+        return step?.Schema ?? CreateMinimalStepSchema(stepName);
+    }
+
+    /// <inheritdoc />
+    public JsonSchema GetRecipeSchema()
+    {
+        if (_combinedSchema is not null)
+        {
+            return _combinedSchema;
+        }
+
+        var stepSchemas = new Dictionary<string, JsonSchema>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var step in _steps)
+        {
+            if (string.IsNullOrEmpty(step.Name))
+            {
+                continue;
+            }
+
+            JsonSchema existing = null;
+
+            if (stepSchemas.TryGetValue(step.Name, out var exitingSchema))
+            {
+                existing = exitingSchema;
+            }
+
+            var stepSchema = step.Schema;
+
+            if (stepSchema is not null)
+            {
+                if (existing is not null)
+                {
+                    // Combine schemas for steps with the same name using allOf.
+                    stepSchema = new JsonSchemaBuilder()
+                        .AllOf(existing, stepSchema)
+                        .Build();
+
+                    stepSchemas[step.Name] = stepSchema;
+                }
+                else
+                {
+                    stepSchemas.Add(step.Name, stepSchema);
+                }
+            }
+            else
+            {
+                if (existing is not null)
+                {
+                    continue;
+                }
+
+                // Create a minimal schema for steps without a defined schema.
+
+                var minimalSchema = CreateMinimalStepSchema(step.Name);
+                stepSchemas.Add(step.Name, minimalSchema);
+            }
+        }
+
+        var processedStepSchemas = stepSchemas
+            .Select(kv =>
+            {
+                var stepName = kv.Key;
+                var stepSchema = kv.Value;
+
+                // Wrap the schema with an AllOf to enforce name enum
+                return new JsonSchemaBuilder()
+                    .AllOf(
+                        // 1. Discriminator / enum
+                        new JsonSchemaBuilder()
+                            .Type(SchemaValueType.Object)
+                            .Properties(
+                                ("name", new JsonSchemaBuilder()
+                                    .Type(SchemaValueType.String)
+                                    .Enum(stepSchemas.Keys)
+                                    .Description("The step name.")))
+                            .Required("name"),
+
+                        // 2. The step's existing schema (payload only)
+                        stepSchema
+                    )
+                    .UnevaluatedProperties(false) // only allow defined properties
+                    .Build();
+            })
+            .ToArray();
+
+        // Build the combined schema following JSON Schema specification.
+        var combinedSchemaBuilder = new JsonSchemaBuilder()
+            .Schema(MetaSchemas.Draft202012Id)
+            .Id("https://orchardcore.net/schemas/recipe.json")
+            .Title("Orchard Core Recipe")
+            .Description("Schema for Orchard Core recipe files that define configuration steps.")
+            .Type(SchemaValueType.Object)
+            .Properties(
+                ("name", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The unique name of the recipe.")),
+                ("displayName", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The display name of the recipe.")),
+                ("description", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("A description of what the recipe does.")),
+                ("author", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The author of the recipe.")),
+                ("website", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The website URL associated with the recipe.")),
+                ("version", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The version of the recipe.")),
+                ("issetuprecipe", new JsonSchemaBuilder().Type(SchemaValueType.Boolean).Description("Indicates whether this is a setup recipe.")),
+                ("categories", new JsonSchemaBuilder().Type(SchemaValueType.Array).Items(new JsonSchemaBuilder().Type(SchemaValueType.String)).Description("Categories this recipe belongs to.")),
+                ("tags", new JsonSchemaBuilder().Type(SchemaValueType.Array).Items(new JsonSchemaBuilder().Type(SchemaValueType.String)).Description("Tags associated with this recipe.")),
+                ("variables", new JsonSchemaBuilder().Type(SchemaValueType.Object).Description("Variables that can be used in the recipe.").AdditionalProperties(JsonSchema.Empty)),
+                ("steps", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.Array)
+                    .Description("The list of recipe steps to execute.")
+                    .Items(processedStepSchemas.Length > 0
+                        ? new JsonSchemaBuilder().AnyOf(processedStepSchemas)
+                        : new JsonSchemaBuilder()
+                            .Type(SchemaValueType.Object)
+                            .Required("name")
+                            .Properties(("name", new JsonSchemaBuilder().Type(SchemaValueType.String))).Enum(stepSchemas.Keys)
+                    ).MinItems(1))
+            )
+            .Required("steps");
+
+        _combinedSchema = combinedSchemaBuilder.Build();
+
+        return _combinedSchema;
+    }
+
+    /// <inheritdoc />
+    public RecipeSchemaValidationResult ValidateRecipe(JsonNode recipe)
+    {
+        var schema = GetRecipeSchema();
+        var result = schema.Evaluate(recipe, new EvaluationOptions { OutputFormat = OutputFormat.List });
+
+        if (result.IsValid)
+        {
+            return RecipeSchemaValidationResult.Success();
+        }
+
+        var errors = new List<RecipeSchemaValidationError>();
+        CollectErrors(result, errors);
+
+        return RecipeSchemaValidationResult.Failure(errors);
+    }
+
+    private static JsonSchema CreateMinimalStepSchema(string stepName)
+    {
+        return new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .Title(stepName)
+            .Required("name")
+            .Properties(
+                ("name", new JsonSchemaBuilder()
+                    .Type(SchemaValueType.String)
+                    .Const(stepName)))
+            .AdditionalProperties(JsonSchema.Empty)
+            .Build();
+    }
+
+    private static void CollectErrors(EvaluationResults result, List<RecipeSchemaValidationError> errors)
+    {
+        if (!result.IsValid && result.Errors is not null)
+        {
+            foreach (var error in result.Errors)
+            {
+                errors.Add(new RecipeSchemaValidationError
+                {
+                    Path = result.InstanceLocation?.ToString() ?? "/",
+                    Message = error.Value,
+                });
+            }
+        }
+
+        if (result.Details is not null)
+        {
+            foreach (var detail in result.Details)
+            {
+                CollectErrors(detail, errors);
+            }
+        }
+    }
+}

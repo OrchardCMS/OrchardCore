@@ -12,6 +12,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Seo.Drivers;
+using OrchardCore.Seo.Handlers;
 using OrchardCore.Seo.Indexes;
 using OrchardCore.Seo.Models;
 using OrchardCore.Seo.Services;
@@ -40,6 +41,7 @@ public sealed class Startup : StartupBase
         services.AddSiteDisplayDriver<RobotsSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IRobotsProvider, SiteSettingsRobotsProvider>();
+        services.AddContentPartSchemaHandler<SeoMetaPartSchemaHandler>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

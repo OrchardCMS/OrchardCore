@@ -29,8 +29,3 @@ public sealed class FacebookLoginSettingsStep : NamedRecipeStepHandler
         await _loginService.UpdateSettingsAsync(settings);
     }
 }
-
-public sealed class FacebookLoginSettingsStepModel
-{
-    public string CallbackPath { get; set; }
-}

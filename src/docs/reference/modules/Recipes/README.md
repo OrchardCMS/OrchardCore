@@ -68,15 +68,100 @@ These helpers allow dynamic expressions inside recipe values using a special syn
 
 ---
 
-## Custom Recipes
+## Creating Custom Recipe Steps
 
-To create a new recipe step, implement the `IRecipeStepHandler` interface and its `ExecuteAsync` method:
+Recipe steps handle both **import** (recipe execution) and **export** (deployment). The unified `IRecipeDeploymentStep` interface provides a single implementation that handles both.
+
+### Using `RecipeDeploymentStep<TModel>`
+
+The recommended approach is to inherit from `RecipeDeploymentStep<TModel>`:
 
 ```csharp
-public async Task ExecuteAsync(RecipeExecutionContext context)
+public sealed class MyCustomStep : RecipeDeploymentStep<MyCustomStep.StepModel>
+{
+    private readonly IMyService _myService;
+
+    public MyCustomStep(IMyService myService)
+    {
+        _myService = myService;
+    }
+
+    public override string Name => "MyCustomStep";
+    public override string DisplayName => "My Custom Step";
+    public override string Description => "Does something custom.";
+    public override string Category => "Custom";
+
+    protected override JsonSchema BuildSchema()
+    {
+        return new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .Required("name")
+            .Properties(
+                ("name", new JsonSchemaBuilder().Type(SchemaValueType.String).Const(Name)),
+                ("customProperty", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("Your custom property.")))
+            .Build();
+    }
+
+    protected override async Task ImportAsync(StepModel model, RecipeExecutionContext context)
+    {
+        // Handle recipe import.
+        await _myService.ProcessAsync(model.CustomProperty);
+    }
+
+    protected override async Task<StepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        // Build the model for deployment export.
+        var data = await _myService.GetDataAsync();
+        return new StepModel { CustomProperty = data };
+    }
+
+    public sealed class StepModel
+    {
+        public string Name { get; set; }
+        public string CustomProperty { get; set; }
+    }
+}
 ```
 
-Alternatively, you can extend `NamedRecipeStepHandler` and implement the required abstract method, providing additional functionality for named steps.
+### Registration
+
+Register your step in your module's `Startup.cs`:
+
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    services.AddRecipeDeploymentStep<MyCustomStep>();
+}
+```
+
+### Import-Only or Export-Only Steps
+
+For steps that only handle import (no deployment export):
+
+```csharp
+public sealed class MyImportOnlyStep : RecipeImportStep<MyImportOnlyStep.StepModel>
+{
+    // No need to implement BuildExportModelAsync.
+}
+```
+
+For steps that only handle export (no recipe import):
+
+```csharp
+public sealed class MyExportOnlyStep : RecipeExportOnlyStep<MyExportOnlyStep.StepModel>
+{
+    // No need to implement ImportAsync.
+}
+```
+
+## JSON Schema Validation
+
+Recipe steps define JSON Schema that enables:
+
+- **Validation** during import to catch errors early.
+- **IntelliSense** in the JSON Import editor with autocomplete suggestions.
+
+The `BuildSchema()` method in your step defines the expected structure.
 
 ## Built-in Recipe Steps
 

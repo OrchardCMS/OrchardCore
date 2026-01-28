@@ -37,9 +37,16 @@ public class RecipeExecutor : IRecipeExecutor
         S = stringLocalizer;
     }
 
-    public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, IDictionary<string, object> environment, CancellationToken cancellationToken)
+    public async Task<string> ExecuteAsync(string executionId, IRecipeDescriptor recipeDescriptor, IDictionary<string, object> environment, CancellationToken cancellationToken)
     {
-        await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
+        ArgumentNullException.ThrowIfNull(recipeDescriptor);
+
+        var legacyDescriptor = recipeDescriptor as RecipeDescriptor;
+
+        if (legacyDescriptor is not null)
+        {
+            await _recipeEventHandlers.InvokeAsync((handler, executionId, legacyDescriptor) => handler.RecipeExecutingAsync(executionId, legacyDescriptor), executionId, legacyDescriptor, _logger);
+        }
 
         try
         {
@@ -51,7 +58,7 @@ public class RecipeExecutor : IRecipeExecutor
 
             var result = new RecipeResult { ExecutionId = executionId };
 
-            await using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
+            await using (var stream = await recipeDescriptor.OpenReadStreamAsync())
             {
                 using var doc = await JsonDocument.ParseAsync(stream, JOptions.Document, cancellationToken);
                 if (doc.RootElement.ValueKind != JsonValueKind.Object)
@@ -132,7 +139,10 @@ public class RecipeExecutor : IRecipeExecutor
                                 foreach (var descriptor in recipeStep.InnerRecipes)
                                 {
                                     var innerExecutionId = Guid.NewGuid().ToString();
-                                    descriptor.RequireNewScope = recipeDescriptor.RequireNewScope;
+                                    if (descriptor is RecipeDescriptor innerLegacy)
+                                    {
+                                        innerLegacy.RequireNewScope = recipeDescriptor.RequireNewScope;
+                                    }
                                     await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
                                 }
                             }
@@ -141,13 +151,19 @@ public class RecipeExecutor : IRecipeExecutor
                 }
             }
 
-            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
+            if (legacyDescriptor is not null)
+            {
+                await _recipeEventHandlers.InvokeAsync((handler, executionId, legacyDescriptor) => handler.RecipeExecutedAsync(executionId, legacyDescriptor), executionId, legacyDescriptor, _logger);
+            }
 
             return executionId;
         }
         catch (Exception)
         {
-            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.ExecutionFailedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
+            if (legacyDescriptor is not null)
+            {
+                await _recipeEventHandlers.InvokeAsync((handler, executionId, legacyDescriptor) => handler.ExecutionFailedAsync(executionId, legacyDescriptor), executionId, legacyDescriptor, _logger);
+            }
 
             throw;
         }
@@ -159,13 +175,12 @@ public class RecipeExecutor : IRecipeExecutor
 
     private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
     {
-        var shellScope = recipeStep.RecipeDescriptor.RequireNewScope
+        var shellScope = recipeStep.RecipeDescriptor?.RequireNewScope != false
             ? await _shellHost.GetScopeAsync(_shellSettings)
             : ShellScope.Current;
 
         await shellScope.UsingAsync(async scope =>
         {
-            var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
             var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
 
             // Substitutes the script elements by their actual values.
@@ -175,10 +190,15 @@ public class RecipeExecutor : IRecipeExecutor
 
             await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, _logger);
 
+            // Execute legacy step handlers. This includes the RecipeDeploymentStepHandler bridge
+            // which routes to IRecipeDeploymentStep implementations.
+#pragma warning disable CS0618 // Type or member is obsolete
+            var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
             foreach (var recipeStepHandler in recipeStepHandlers)
             {
                 await recipeStepHandler.ExecuteAsync(recipeStep);
             }
+#pragma warning restore CS0618 // Type or member is obsolete
 
             await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, _logger);
 
@@ -241,10 +261,13 @@ public class RecipeExecutor : IRecipeExecutor
 
                     value = value.Trim('[', ']');
 
+                    // For file-based recipes (RecipeDescriptor), pass file context for [file:...] support.
+                    // For code-based recipes (IRecipeDescriptor), use the simpler overload without file context.
+                    var legacyDescriptor = context.RecipeDescriptor as RecipeDescriptor;
                     value = (scriptingManager.Evaluate(
                         value,
-                        context.RecipeDescriptor.FileProvider,
-                        context.RecipeDescriptor.BasePath,
+                        legacyDescriptor?.FileProvider,
+                        legacyDescriptor?.BasePath,
                         _methodProviders[context.ExecutionId])
                         ?? string.Empty).ToString();
                 }

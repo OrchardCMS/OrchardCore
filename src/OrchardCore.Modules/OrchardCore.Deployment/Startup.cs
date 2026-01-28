@@ -35,7 +35,10 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
 
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
+        services.AddRecipeDeploymentStep<DeploymentPlansRecipeDeploymentStep>();
 
         services.AddDeployment<DeploymentPlanDeploymentSource, DeploymentPlanDeploymentStep, DeploymentPlanDeploymentStepDriver>();
 

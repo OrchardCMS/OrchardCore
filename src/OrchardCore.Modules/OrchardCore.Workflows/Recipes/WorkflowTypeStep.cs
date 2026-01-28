@@ -14,6 +14,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Recipes;
 
+[Obsolete($"Use {nameof(WorkflowTypeRecipeStep)} instead. This class will be removed in a future version.", false)]
 public sealed class WorkflowTypeStep : NamedRecipeStepHandler
 {
     private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -35,6 +36,11 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
         _linkGenerator = linkGenerator;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
+
+public sealed class WorkflowStepModel
+{
+    public JsonArray Data { get; set; }
+}
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
@@ -77,9 +83,4 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
 
         return _linkGenerator.GetPathByAction(_httpContextAccessor.HttpContext, "Invoke", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
     }
-}
-
-public sealed class WorkflowStepModel
-{
-    public JsonArray Data { get; set; }
 }

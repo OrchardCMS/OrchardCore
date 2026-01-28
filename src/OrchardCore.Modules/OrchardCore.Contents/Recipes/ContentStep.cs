@@ -10,7 +10,13 @@ namespace OrchardCore.Contents.Recipes;
 /// <summary>
 /// This recipe step creates a set of content items.
 /// </summary>
+/// <remarks>
+/// This class is obsolete. Implement <see cref="IRecipeDeploymentStep"/> instead.
+/// </remarks>
+[Obsolete($"Implement {nameof(IRecipeDeploymentStep)} instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete - required for backwards compatibility
 public sealed class ContentStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     public ContentStep()
         : base("Content")
@@ -43,6 +49,10 @@ public sealed class ContentStep : NamedRecipeStepHandler
     }
 }
 
+/// <remarks>
+/// This class is obsolete. Use your own model class instead.
+/// </remarks>
+[Obsolete("Use your own model class instead. This class will be removed in a future version.", false)]
 public sealed class ContentStepModel
 {
     public JsonArray Data { get; set; }

@@ -34,5 +34,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, TitlePartSettingsDisplayDriver>();
 
         services.AddDataMigration<Migrations>();
+        services.AddContentPartSchemaHandler<TitlePartSchemaHandler>();
     }
 }
