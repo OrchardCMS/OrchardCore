@@ -182,6 +182,26 @@ The Secrets index page displays all stored secrets with their name, type, store,
 1. Click **Delete** next to the secret you want to remove
 2. Confirm the deletion in the dialog
 
+### Secret Expiration
+
+Secrets can have an optional expiration date. This is an **informational** feature designed to help with secret rotation planning:
+
+- **Purpose**: Track when secrets should be rotated or renewed
+- **Behavior**: Expired secrets **continue to work** - expiration does not automatically disable them
+- **Visual Indicators**: 
+  - Expired secrets show a red "Expired" badge
+  - Secrets expiring within 30 days show a yellow "Expiring" badge
+  - The secrets list highlights expired/expiring secrets with colored backgrounds
+
+**Use Cases for Expiration:**
+
+1. **API Key Rotation**: Set expiration to remind when to rotate third-party API keys
+2. **Certificate Renewal**: Track when X.509 certificates need to be renewed
+3. **Compliance**: Meet regulatory requirements for periodic credential rotation
+4. **Automation**: External systems can query secret metadata to trigger rotation workflows
+
+To set an expiration date, use the "Expiration Date" field in the secret editor. Leave it empty for secrets that don't expire.
+
 ## Configuration
 
 ### Database Store (Default)
@@ -865,10 +885,27 @@ This feature allows you to store OpenID Connect signing and encryption keys as s
 
 **Setup:**
 1. Enable the `OrchardCore.OpenId.Secrets` feature
-2. Create an `RsaKeySecret` for signing (with private key)
-3. Optionally create a separate `RsaKeySecret` for encryption
+2. Create an `RsaKeySecret` for signing (with private key) or an `X509Secret` referencing a certificate
+3. Optionally create a separate secret for encryption
 4. Go to **Security → OpenID Connect → Server Settings**
 5. In the **RSA Keys from Secrets** card, select your secrets
+
+**Automatic Migration:**
+
+When you enable `OrchardCore.OpenId.Secrets`, existing X.509 certificate configurations from OpenID Server settings are automatically migrated:
+
+- If you previously configured signing/encryption certificates via the OpenID Server settings UI
+- The module creates `X509Secret` entries referencing those certificates
+- The `OpenIdSecretSettings` is updated to point to the new secrets
+- Your existing certificate configurations continue to work seamlessly
+
+**Secret Type Fallback:**
+
+The module supports both `RsaKeySecret` and `X509Secret` for signing/encryption keys:
+
+1. First, it tries to load the configured secret as an `RsaKeySecret` (portable, recommended)
+2. If not found, it falls back to `X509Secret` (certificate store reference)
+3. This allows gradual migration from certificate-based to RSA key-based secrets
 
 **Benefits:**
 - Keys persist across deployments and container restarts
