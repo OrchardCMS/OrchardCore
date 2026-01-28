@@ -234,6 +234,16 @@ Each item that is displayed by the query will now add its own cache dependency t
 !!! note
     This has been renamed from `<cache>` to `<dynamic-cache>` to prevent collisions with the ASP.NET Core cache tag helper.
 
+
+## Cache Options
+
+There are four options that can be configured for Dynamic Cache in the `General Settings`:
+
+- **From environment**: Enables the Dynamic Cache feature in the `Production` ASP.NET Core environment.
+- **Enabled**: Enables the Dynamic Cache feature.
+- **Disabled**: Disables the Dynamic Cache feature.
+- **Enabled with cache debug mode**: Enables the Dynamic Cache feature and activates debug mode, which logs the cache context metadata on the page - as HTML comments - this is useful for troubleshooting cache-related issues.
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Fx2e-Sy9FF8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
