@@ -2,11 +2,13 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.DisplayManagement
+@using OrchardCore.Localization.Data
 
 @model EditFieldViewModel
 
 @inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
 @inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+@inject IDataLocalizer D
 
 @{
     var theme = await ThemeManager.GetThemeAsync();
@@ -14,9 +16,12 @@
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
     var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var returnUrl = ViewData["returnUrl"]?.ToString();
+    var fieldContext = $"{Model.PartFieldDefinition.PartDefinition.Name}.{Model.DisplayName}";
+    string localizedFieldName = D[Model.DisplayName, fieldContext];
+    string localizedPartName = D[Model.PartFieldDefinition.PartDefinition.DisplayName(), "Content Types"];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", Model.DisplayName, Model.PartFieldDefinition.PartDefinition.DisplayName()])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", localizedFieldName, localizedPartName])</h1></zone>
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()

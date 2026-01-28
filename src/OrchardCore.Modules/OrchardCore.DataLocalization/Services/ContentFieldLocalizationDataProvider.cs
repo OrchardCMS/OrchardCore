@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Localization.Data;
 
 namespace OrchardCore.DataLocalization.Services;
@@ -10,16 +11,24 @@ public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    private static readonly string _contentFieldsContext = "Content Fields";
-
     public ContentFieldDataLocalizationProvider(IContentDefinitionManager contentDefinitionManager)
     {
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    // TODO: Check if there's a better way to get the fields
     public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
-        => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+    {
+        var typeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+
+        // Use the field's DisplayName as the key with a context based on PartName.FieldDisplayName.
+        // This ensures uniqueness when the same part has multiple fields of the same type.
+        return typeDefinitions
             .SelectMany(t => t.Parts)
-            .SelectMany(p => p.PartDefinition.Fields.Select(f => new DataLocalizedString(_contentFieldsContext, f.Name, string.Empty)));
+            .SelectMany(p => p.PartDefinition.Fields.Select(f =>
+                new DataLocalizedString(
+                    $"{p.PartDefinition.Name}.{f.DisplayName()}",
+                    f.DisplayName(),
+                    string.Empty)))
+            .DistinctBy(d => $"{d.Context}|{d.Name}");
+    }
 }
