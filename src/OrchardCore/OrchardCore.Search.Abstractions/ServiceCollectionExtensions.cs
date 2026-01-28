@@ -11,7 +11,9 @@ public static class ServiceCollectionExtensions
     {
         ArgumentException.ThrowIfNullOrEmpty(providerName);
 
-        services.TryAddEnumerable(ServiceDescriptor.KeyedScoped<ISearchService, TService>(providerName));
+        services.TryAddScoped<TService>();
+        services.AddScoped<ISearchService>(sp => sp.GetRequiredService<TService>());
+        services.TryAddEnumerable(ServiceDescriptor.KeyedScoped<ISearchService, TService>(providerName, (sp, key) => sp.GetRequiredService<TService>()));
 
         return services;
     }
