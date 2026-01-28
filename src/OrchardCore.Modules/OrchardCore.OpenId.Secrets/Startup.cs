@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenIddict.Server;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Secrets.Drivers;
@@ -14,5 +15,6 @@ public sealed class Startup : StartupBase
     {
         services.AddScoped<IDisplayDriver<OpenIdSecretSettings>, OpenIdSecretSettingsDisplayDriver>();
         services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>, OpenIdSecretsOptionsConfiguration>();
+        services.AddScoped<IDataMigration, Migrations>();
     }
 }
