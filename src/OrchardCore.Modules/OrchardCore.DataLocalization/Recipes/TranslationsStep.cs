@@ -14,8 +14,7 @@ namespace OrchardCore.DataLocalization.Recipes;
 public sealed class TranslationsStep : IRecipeStepHandler
 {
     private readonly TranslationsManager _translationsManager;
-
-    protected readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public TranslationsStep(
         TranslationsManager translationsManager,

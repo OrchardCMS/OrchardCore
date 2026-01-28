@@ -265,6 +265,7 @@ nav:
               - HTTPS: reference/modules/Https/README.md
               - Key Vault (Azure): reference/modules/KeyVault.Azure/README.md
               - Localization: reference/modules/Localize/README.md
+              - Data Localization: reference/modules/DataLocalization/README.md
               - Logging Serilog: reference/modules/Logging.Serilog/README.md
               - Mini Profiler: reference/modules/MiniProfiler/README.md
               - Modules: reference/modules/Modules/README.md
