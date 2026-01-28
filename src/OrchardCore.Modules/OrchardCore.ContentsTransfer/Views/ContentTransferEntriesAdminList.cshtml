@@ -1,0 +1,177 @@
+@model ListContentTransferEntriesViewModel
+
+<!-- Hidden submit button do not remove -->
+<input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+<input type="submit" name="submit.BulkAction" class="visually-hidden" />
+@Html.HiddenFor(o => o.Options.BulkAction)
+
+<div class="card text-bg-theme mb-3 position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3">
+            @if (Model.Header?.Search != null)
+            {
+                <div class="col">
+                    @await DisplayAsync(Model.Header.Search)
+                </div>
+            }
+
+            @if (Model.Header?.Create != null)
+            {
+                <div class="col-auto">
+                    @await DisplayAsync(Model.Header.Create)
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<ul class="list-group with-checkbox">
+
+    @if (Model.Header?.Summary != null || Model.Header?.Actions != null)
+    {
+        <li class="list-group-item text-bg-theme">
+            <div class="row gx-3">
+                @if (Model.Header.Summary != null)
+                {
+                    <div class="col">
+                        @await DisplayAsync(Model.Header.Summary)
+                    </div>
+                }
+                @if (Model.Header.Actions != null)
+                {
+                    <div class="col col-md-auto text-end">
+                        @await DisplayAsync(Model.Header.Actions)
+                    </div>
+                }
+            </div>
+        </li>
+    }
+    @if (Model.Entries.Count > 0)
+    {
+        foreach (var entry in Model.Entries)
+        {
+            <li class="list-group-item">
+                @await DisplayAsync(entry)
+            </li>
+        }
+    }
+    else
+    {
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0">
+                @T["No items found."]
+            </div>
+        </li>
+    }
+</ul>
+
+@await DisplayAsync(Model.Pager)
+
+<script asp-name="bootstrap-select" depends-on="bootstrap" at="Foot"></script>
+<script at="Foot">
+    (function () {
+        let actions = document.getElementById("actions");
+        let items = document.getElementById("items");
+        let filters = document.querySelectorAll(".filter");
+        let selectAllCtrl = document.getElementById("select-all");
+        let selectedItems = document.getElementById("selected-items");
+        let itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
+        let menuItems = document.querySelectorAll(".dropdown-menu .dropdown-item");
+        let selectPickers = document.querySelectorAll(".selectpicker:not(.nosubmit)");
+        let filtersSubmit = document.querySelector("[name='submit.Filter']");
+
+        // This applies to all filter selectpickers on page. Add .nosubmit to not submit
+        for (let i = 0; i < selectPickers.length; i++) {
+            selectPickers[i].addEventListener('changed.bs.select', (t) => {
+                filtersSubmit.dispatchEvent(new Event('click'));
+            });
+        }
+        console.log(itemsCheckboxes.length);
+
+        for (let i = 0; i < menuItems.length; i++) {
+            let menuItem = menuItems[i];
+
+            if (menuItem.getAttribute('data-action')) {
+                menuItem.addEventListener('click', function () {
+
+                    if (selectedItems.length > 1) {
+                        var $this = $(this);
+                        confirmDialog({
+                            ...$this.data(), callback: function (r) {
+                                if (r) {
+                                    $("#@Html.IdFor(o => o.Options.BulkAction)").val($this.data("action"));
+                                    $("[name='submit.BulkAction']").click();
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        const showElements = (elements) => {
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].classList.remove('d-none');
+            }
+        }
+
+        const hideElements = (elements) => {
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].classList.add('d-none');
+            }
+        }
+
+        const displayActionsOrFilters = () => {
+
+            if (selectedItems.length > 1) {
+                showElements(actions);
+                hideElements(filters);
+                showElements(selectedItems);
+                hideElements(items);
+
+                return;
+            }
+
+            hideElements(actions);
+            showElements(filters);
+            hideElements(selectedItems);
+            showElements(items);
+        }
+
+        const getTotalSelected = () => {
+            let selectedItemsCount = 0;
+
+            for (let x = 0; x < itemsCheckboxes.length; x++) {
+
+                if (itemsCheckboxes[x].checked) {
+                    selectedItemsCount++;
+                }
+            }
+
+            return selectedItemsCount;
+        }
+
+        selectAllCtrl.addEventListener('click', () => {
+            for (let i = 0; i < itemsCheckboxes.length; i++) {
+                itemsCheckboxes[i].checked = selectAllCtrl.checked;
+            }
+            let selectedItemsCount = getTotalSelected();
+            selectedItems.innerText = selectedItemsCount + ' @T["selected"]';
+            displayActionsOrFilters();
+        });
+
+        for (let i = 0; i < itemsCheckboxes.length; i++) {
+
+            itemsCheckboxes[i].addEventListener("click", () => {
+                let itemsCount = itemsCheckboxes.length;
+                let selectedItemsCount = getTotalSelected();
+                selectAllCtrl.checked = selectedItemsCount == itemsCount;
+                selectAllCtrl.setAttribute("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+                selectedItems.innerText = selectedItemsCount + ' @T["selected"]';
+                displayActionsOrFilters();
+            });
+        }
+
+    })();
+</script>
