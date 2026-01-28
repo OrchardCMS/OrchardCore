@@ -36,8 +36,9 @@ public class DataLocalizationProviderTests
         var dataLocalizationProvider = new ContentFieldDataLocalizationProvider(contentDefinitionManager.Object);
         var localizedStrings = await dataLocalizationProvider.GetDescriptorsAsync();
 
-        Assert.Equal(5, localizedStrings.Count());
-        Assert.True(localizedStrings.All(s => s.Context == "Content Fields"));
+        Assert.Equal(2, localizedStrings.Count());
+        Assert.Equal("BlogPost.TextField", localizedStrings.ElementAt(0).Context);
+        Assert.Equal("Person.TextField", localizedStrings.ElementAt(1).Context);
     }
 
     private static ContentTypeDefinition CreateContentTypeDefinition(string name, string displayName, string[] fields)
