@@ -81,6 +81,10 @@ input[type="password"]::-ms-clear {
     top: 0.25rem;
 }
 
+[dir="rtl"] .has-filter .form-control-feedback {
+    left: 1rem;
+}
+
 .has-search .form-control-feedback {
     left: 1.75rem;
 }
