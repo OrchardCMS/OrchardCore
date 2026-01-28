@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Smtp.Secrets.Drivers;
 using OrchardCore.Email.Smtp.Secrets.Services;
@@ -14,5 +15,6 @@ public sealed class Startup : StartupBase
     {
         services.AddScoped<IDisplayDriver<ISite>, SmtpSecretSettingsDisplayDriver>();
         services.AddSingleton<IPostConfigureOptions<SmtpOptions>, SmtpSecretsOptionsConfiguration>();
+        services.AddScoped<IDataMigration, Migrations>();
     }
 }
