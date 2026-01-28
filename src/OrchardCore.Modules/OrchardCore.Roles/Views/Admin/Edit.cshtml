@@ -1,5 +1,7 @@
 @model EditRoleViewModel
 @using OrchardCore.Roles.ViewModels
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 
 <zone Name="Title">
     <h1>
@@ -72,7 +74,7 @@
             {
                 <fieldset class="permissions-list">
                     <legend>
-                        <span>@group.Key.Title</span>
+                        <span>@D[group.Key.Title, "Permissions"]</span>
                         @if (!string.IsNullOrEmpty(group.Key.Source))
                         {
                             <span class="hint">(@group.Key.Source)</span>
@@ -93,9 +95,9 @@
                                 var description = string.IsNullOrEmpty(permission.Description)
                                     ? permission.Name
                                     : permission.Description;
-                                <tr data-text="@description">
+                                <tr data-text="@D[description, "Permissions"]">
                                     <td class="col-10">
-                                        @description
+                                        @D[description, "Permissions"]
                                         @if (permission.IsSecurityCritical)
                                         {
                                             <div class="float-end">
