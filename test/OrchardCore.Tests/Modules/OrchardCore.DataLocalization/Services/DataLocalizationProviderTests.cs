@@ -36,9 +36,17 @@ public class DataLocalizationProviderTests
         var dataLocalizationProvider = new ContentFieldDataLocalizationProvider(contentDefinitionManager.Object);
         var localizedStrings = await dataLocalizationProvider.GetDescriptorsAsync();
 
-        Assert.Equal(2, localizedStrings.Count());
-        Assert.Equal("BlogPost.TextField", localizedStrings.ElementAt(0).Context);
-        Assert.Equal("Person.TextField", localizedStrings.ElementAt(1).Context);
+        Assert.Equal(5, localizedStrings.Count());
+
+        var localizedStringGroups = localizedStrings
+            .GroupBy(s => s.Context.Split('.').First())
+            .ToList();
+
+        Assert.Equal(2, localizedStringGroups.Count);
+        Assert.Equal("BlogPost", localizedStringGroups.ElementAt(0).Key);
+        Assert.Equal("Person", localizedStringGroups.ElementAt(1).Key);
+        Assert.Equal(3, localizedStringGroups.ElementAt(0).Count());
+        Assert.Equal(2, localizedStringGroups.ElementAt(1).Count());
     }
 
     private static ContentTypeDefinition CreateContentTypeDefinition(string name, string displayName, string[] fields)
@@ -48,7 +56,7 @@ public class DataLocalizationProviderTests
 
         foreach (var field in fields)
         {
-            contentPartFieldDefinitions.Add(new ContentPartFieldDefinition(new ContentFieldDefinition("TextField"), field, settings));
+            contentPartFieldDefinitions.Add(new ContentPartFieldDefinition(new ContentFieldDefinition(field), field, settings));
         }
 
         return new ContentTypeDefinition(
