@@ -64,14 +64,18 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html);
 
-        if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
+        if (settings.SanitizeHtml)
+        {
+            model.Html = _htmlSanitizerService.Sanitize(viewModel.Html);
+        }
+
+        if (settings.RenderLiquid
+            && !string.IsNullOrEmpty(viewModel.Html)
+            && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
         {
             var partName = context.TypePartDefinition.DisplayName();
-            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
-        }
-        else
-        {
-            model.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html),
+                S["{0} contains invalid Liquid expression: {1}", partName, string.Join(" ", errors)]);
         }
 
         return Edit(model, context);
@@ -84,7 +88,7 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
         model.ContentItem = htmlBodyPart.ContentItem;
         var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
-        if (!settings.SanitizeHtml)
+        if (settings.RenderLiquid)
         {
             model.Html = await _liquidTemplateManager.RenderStringAsync(htmlBodyPart.Html, _htmlEncoder, model,
                 new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
