@@ -1,12 +1,14 @@
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
 @using System.Linq
+@using Microsoft.Extensions.Options
 
 @model EditTypeViewModel
 
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
+@inject IOptions<ContentOptions> ContentOptions
 
 @{
     var contentSettings = Model.TypeDefinition.GetSettings<ContentSettings>();
@@ -50,7 +52,7 @@
         .ToList();
     }
 
-    var fields = (await ContentDefinitionService.GetFieldsAsync()).ToList();
+    var fields = ContentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type).ToList();
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
