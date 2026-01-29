@@ -9,4 +9,6 @@ public class ReverseProxySettings
     public string[] KnownNetworks { get; set; } = [];
 
     public string[] KnownProxies { get; set; } = [];
+
+    public bool FromConfiguration { get; set; }
 }
