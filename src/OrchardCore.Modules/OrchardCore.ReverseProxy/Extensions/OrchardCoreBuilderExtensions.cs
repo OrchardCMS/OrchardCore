@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.ReverseProxy.Configuration;
 using OrchardCore.ReverseProxy.Settings;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ public static class OrchardCoreBuilderExtensions
         {
             var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_ReverseProxy");
 
+            tenantServices.AddTransient<ReverseProxyConfigurationMarker>();
             tenantServices.PostConfigure<ReverseProxySettings>(settings => configurationSection.Bind(settings));
         });
 

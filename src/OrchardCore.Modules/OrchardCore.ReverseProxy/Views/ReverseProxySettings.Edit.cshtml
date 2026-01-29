@@ -4,6 +4,14 @@
 
 @inject IClientIPAddressAccessor ClientIPAddressAccessor
 
+@if (Model.IsOverriddenByConfiguration)
+{
+    <div class="alert alert-warning" role="alert">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>@T["Warning: Reverse proxy settings from the 'OrchardCore_ReverseProxy' section in appsettings.json will be merged with these settings. Values from the configuration file will take precedence over settings configured here."]</span>
+    </div>
+}
+
 <div class="mb-3" asp-validation-class-for="EnableXForwardedFor">
     <div class="form-check">
         <label class="form-check-label">

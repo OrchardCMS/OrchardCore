@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.ReverseProxy.Configuration;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.ReverseProxy.ViewModels;
 using OrchardCore.Settings;
@@ -18,15 +19,18 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IServiceProvider _serviceProvider;
 
     public ReverseProxySettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IServiceProvider serviceProvider)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        _serviceProvider = serviceProvider;
     }
 
     protected override string SettingsGroupId
@@ -48,6 +52,7 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
             model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
             model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
             model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
+            model.IsOverriddenByConfiguration = IsConfiguredViaAppSettings();
         }).Location("Content:2")
         .OnGroup(SettingsGroupId);
     }
@@ -85,5 +90,10 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
         _shellReleaseManager.RequestRelease();
 
         return await EditAsync(site, settings, context);
+    }
+
+    private bool IsConfiguredViaAppSettings()
+    {
+        return _serviceProvider.GetService(typeof(ReverseProxyConfigurationMarker)) is not null;
     }
 }

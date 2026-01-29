@@ -7,4 +7,6 @@ public class ReverseProxySettingsViewModel
     public bool EnableXForwardedProto { get; set; }
 
     public bool EnableXForwardedHost { get; set; }
+
+    public bool IsOverriddenByConfiguration { get; set; }
 }
