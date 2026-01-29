@@ -1,35 +1,32 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
+using OrchardCore.ReverseProxy.Settings;
 
 namespace OrchardCore.ReverseProxy.Services;
 
 public sealed class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
 {
-    private readonly IReverseProxyService _reverseProxyService;
+    private readonly ReverseProxySettings _reverseProxySettings;
 
-    public ForwardedHeadersOptionsConfiguration(IReverseProxyService reverseProxyService)
+    public ForwardedHeadersOptionsConfiguration(IOptions<ReverseProxySettings> reverseProxySettingsOptions)
     {
-        _reverseProxyService = reverseProxyService;
+        _reverseProxySettings = reverseProxySettingsOptions.Value;
     }
 
     public void Configure(ForwardedHeadersOptions options)
     {
-        var reverseProxySettings = _reverseProxyService.GetSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
-
-        options.ForwardedHeaders = reverseProxySettings.ForwardedHeaders;
+        options.ForwardedHeaders = _reverseProxySettings.ForwardedHeaders;
 
         options.KnownIPNetworks.Clear();
         options.KnownProxies.Clear();
 
-        foreach (var network in reverseProxySettings.KnownNetworks)
+        foreach (var network in _reverseProxySettings.KnownNetworks)
         {
             options.KnownIPNetworks.Add(IPNetwork.Parse(network));
         }
 
-        foreach (var proxy in reverseProxySettings.KnownProxies)
+        foreach (var proxy in _reverseProxySettings.KnownProxies)
         {
             options.KnownProxies.Add(IPAddress.Parse(proxy));
         }
