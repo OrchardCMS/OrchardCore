@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
 namespace OrchardCore.ReverseProxy.ViewModels;
 
 public class ReverseProxySettingsViewModel
@@ -9,7 +7,4 @@ public class ReverseProxySettingsViewModel
     public bool EnableXForwardedProto { get; set; }
 
     public bool EnableXForwardedHost { get; set; }
-
-    [BindNever]
-    public bool FromConfiguration { get; set; }
 }

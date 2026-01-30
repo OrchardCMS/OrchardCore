@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.HttpOverrides;
 
 namespace OrchardCore.ReverseProxy.Settings;
@@ -10,5 +11,6 @@ public class ReverseProxySettings
 
     public string[] KnownProxies { get; set; } = [];
 
-    public bool FromConfiguration { get; set; }
+    [JsonIgnore]
+    internal bool FromConfiguration { get; set; }
 }

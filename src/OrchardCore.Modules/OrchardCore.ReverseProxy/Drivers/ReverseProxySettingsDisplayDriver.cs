@@ -68,7 +68,6 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
 
         return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
         {
-            model.FromConfiguration = currentSettings.FromConfiguration;
             model.EnableXForwardedFor = currentSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
             model.EnableXForwardedHost = currentSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
             model.EnableXForwardedProto = currentSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);

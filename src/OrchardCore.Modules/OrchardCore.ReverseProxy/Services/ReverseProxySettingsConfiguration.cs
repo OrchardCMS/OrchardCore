@@ -5,9 +5,9 @@ namespace OrchardCore.ReverseProxy.Services;
 
 public class ReverseProxySettingsConfiguration : IConfigureOptions<ReverseProxySettings>
 {
-    private readonly IReverseProxyService _reverseProxyService;
+    private readonly ReverseProxyService _reverseProxyService;
 
-    public ReverseProxySettingsConfiguration(IReverseProxyService reverseProxyService)
+    public ReverseProxySettingsConfiguration(ReverseProxyService reverseProxyService)
         => _reverseProxyService = reverseProxyService;
 
     public void Configure(ReverseProxySettings options)
