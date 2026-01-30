@@ -149,19 +149,17 @@ public abstract class NamedIndexingService
                 return;
             }
 
-            var tasks = new List<RecordIndexingTask>();
-
-            while (tasks.Count <= BatchSize)
+            while (true)
             {
                 List<RecordIndexingTask> currentBatch = null;
+                var batchProcessedSuccessfully = false;
                 
                 try
                 {
                     // Load the next batch of tasks.
                     currentBatch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize, Name)).ToList();
-                    tasks = currentBatch;
 
-                    if (tasks.Count == 0)
+                    if (currentBatch.Count == 0)
                     {
                         break;
                     }
@@ -169,11 +167,11 @@ public abstract class NamedIndexingService
                     // Group all DocumentIndex by index to batch update them.
                     var updatedDocumentsByIndex = tracker.Values.ToDictionary(x => x.IndexProfile.Id, b => new List<DocumentIndex>());
 
-                    await BeforeProcessingTasksAsync(tasks, tracker.Values);
+                    await BeforeProcessingTasksAsync(currentBatch, tracker.Values);
 
                     foreach (var entry in tracker.Values)
                     {
-                        foreach (var task in tasks)
+                        foreach (var task in currentBatch)
                         {
                             if (task.Id < entry.LastTaskId)
                             {
@@ -204,7 +202,8 @@ public abstract class NamedIndexingService
                         }
                     }
 
-                    lastTaskId = tasks.Last().Id;
+                    lastTaskId = currentBatch.Last().Id;
+                    batchProcessedSuccessfully = true;
 
                     foreach (var indexEntry in updatedDocumentsByIndex)
                     {
@@ -237,12 +236,12 @@ public abstract class NamedIndexingService
                     // Log batch processing error and continue with next batch if possible
                     Logger.LogError(ex, "Error processing batch of indexing tasks. Attempting to continue with next batch.");
                     
-                    // Move to next batch by incrementing lastTaskId if we have a successfully loaded batch
-                    if (currentBatch != null && currentBatch.Count > 0)
+                    // Move to next batch only if we haven't already updated lastTaskId and we successfully loaded tasks
+                    if (!batchProcessedSuccessfully && currentBatch != null && currentBatch.Count > 0)
                     {
                         lastTaskId = currentBatch.Last().Id;
                     }
-                    else
+                    else if (currentBatch == null || currentBatch.Count == 0)
                     {
                         // If we couldn't load tasks, break the loop to avoid infinite retry
                         break;
