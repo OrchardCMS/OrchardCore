@@ -153,10 +153,13 @@ public abstract class NamedIndexingService
 
             while (tasks.Count <= BatchSize)
             {
+                List<RecordIndexingTask> currentBatch = null;
+                
                 try
                 {
                     // Load the next batch of tasks.
-                    tasks = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize, Name)).ToList();
+                    currentBatch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize, Name)).ToList();
+                    tasks = currentBatch;
 
                     if (tasks.Count == 0)
                     {
@@ -234,14 +237,14 @@ public abstract class NamedIndexingService
                     // Log batch processing error and continue with next batch if possible
                     Logger.LogError(ex, "Error processing batch of indexing tasks. Attempting to continue with next batch.");
                     
-                    // Move to next batch by incrementing lastTaskId if we have tasks
-                    if (tasks.Count > 0)
+                    // Move to next batch by incrementing lastTaskId if we have a successfully loaded batch
+                    if (currentBatch != null && currentBatch.Count > 0)
                     {
-                        lastTaskId = tasks.Last().Id;
+                        lastTaskId = currentBatch.Last().Id;
                     }
                     else
                     {
-                        // If we can't load tasks, break the loop to avoid infinite retry
+                        // If we couldn't load tasks, break the loop to avoid infinite retry
                         break;
                     }
                 }
