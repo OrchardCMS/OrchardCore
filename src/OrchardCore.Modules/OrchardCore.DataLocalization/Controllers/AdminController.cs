@@ -253,35 +253,67 @@ public class AdminController : Controller
                 continue;
             }
 
-            // Group by context.
-            var contextGroups = descriptorsList.GroupBy(d => d.Context);
-
-            foreach (var contextGroup in contextGroups)
+            // Group by primary context (first part before ';').
+            foreach (var primaryGroup in descriptorsList.GroupBy(d => GetPrimaryContext(d.Context)))
             {
-                var existingGroup = groups.FirstOrDefault(g => g.Name == contextGroup.Key);
+                var existingGroup = groups.FirstOrDefault(g => g.Name == primaryGroup.Key);
 
                 if (existingGroup == null)
                 {
                     existingGroup = new TranslatableStringGroupViewModel
                     {
-                        Name = contextGroup.Key,
+                        Name = primaryGroup.Key,
+                        SubGroups = [],
                         Strings = [],
                     };
                     groups.Add(existingGroup);
                 }
 
-                foreach (var descriptor in contextGroup)
+                // Group by sub-context (second part after ';', if present).
+                foreach (var subGroup in primaryGroup.GroupBy(d => GetSubContext(d.Context)))
                 {
-                    var key = $"{descriptor.Context}|{descriptor.Name}";
-                    existingTranslations.TryGetValue(key, out var translatedValue);
+                    TranslatableStringSubGroupViewModel existingSubGroup = null;
 
-                    existingGroup.Strings.Add(new TranslatableStringViewModel
+                    if (subGroup.Key != null)
                     {
-                        Context = descriptor.Context,
-                        Key = descriptor.Name,
-                        Value = translatedValue ?? string.Empty,
-                    });
+                        existingSubGroup = existingGroup.SubGroups.FirstOrDefault(sg => sg.Name == subGroup.Key);
+
+                        if (existingSubGroup == null)
+                        {
+                            existingSubGroup = new TranslatableStringSubGroupViewModel
+                            {
+                                Name = subGroup.Key,
+                                Strings = [],
+                            };
+                            existingGroup.SubGroups.Add(existingSubGroup);
+                        }
+                    }
+
+                    foreach (var descriptor in subGroup)
+                    {
+                        var key = $"{descriptor.Context}|{descriptor.Name}";
+                        existingTranslations.TryGetValue(key, out var translatedValue);
+
+                        var stringViewModel = new TranslatableStringViewModel
+                        {
+                            Context = descriptor.Context,
+                            Key = descriptor.Name,
+                            Value = translatedValue ?? string.Empty,
+                        };
+
+                        if (existingSubGroup != null)
+                        {
+                            existingSubGroup.Strings.Add(stringViewModel);
+                        }
+                        else
+                        {
+                            existingGroup.Strings.Add(stringViewModel);
+                        }
+                    }
                 }
+
+                // Sort sub-groups alphabetically.
+                existingGroup.SubGroups = existingGroup.SubGroups.OrderBy(sg => sg.Name).ToList();
             }
         }
 
@@ -336,9 +368,9 @@ public class AdminController : Controller
                 Translated = cultureTranslated,
             });
 
-            // Calculate per-category statistics for this culture.
+            // Calculate per-category statistics for this culture (use primary context).
             var categoryStats = allDescriptors
-                .GroupBy(d => d.Context)
+                .GroupBy(d => GetPrimaryContext(d.Context))
                 .Select(g => new CategoryStatisticsViewModel
                 {
                     Category = g.Key,
@@ -360,5 +392,19 @@ public class AdminController : Controller
         };
 
         return statistics;
+    }
+
+    private const char ContextSeparator = ';';
+
+    private static string GetPrimaryContext(string context)
+    {
+        var index = context.IndexOf(ContextSeparator);
+        return index < 0 ? context : context[..index];
+    }
+
+    private static string GetSubContext(string context)
+    {
+        var index = context.IndexOf(ContextSeparator);
+        return index < 0 ? null : context[(index + 1)..];
     }
 }

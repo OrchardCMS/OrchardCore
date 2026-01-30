@@ -20,13 +20,13 @@ public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
     {
         var typeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
-        // Use the field's DisplayName as the key with a context based on PartName.FieldDisplayName.
-        // This ensures uniqueness when the same part has multiple fields of the same type.
+        // Use "Content Fields" as primary context and part name as sub-context for grouping.
+        // Format: "Content Fields;PartName" where PartName is the content part name.
         return typeDefinitions
             .SelectMany(t => t.Parts)
             .SelectMany(p => p.PartDefinition.Fields.Select(f =>
                 new DataLocalizedString(
-                    $"{p.PartDefinition.Name}.{f.DisplayName()}",
+                    $"Content Fields;{p.PartDefinition.Name}",
                     f.DisplayName(),
                     string.Empty)))
             .DistinctBy(d => $"{d.Context}|{d.Name}");

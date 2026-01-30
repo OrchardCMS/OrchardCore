@@ -91,10 +91,11 @@
         <fieldset class="translations-list mb-3" v-for="(provider, index) in filteredProviders" :key="provider.name">
             <legend>
                 <span>{{ provider.name }}</span>
-                <span class="hint">({{ getFilteredStrings(provider).length }} @T["strings"]<span v-if="getTranslatedCount(provider) > 0">, {{ getTranslatedCount(provider) }} @T["translated"]</span>)</span>
+                <span class="hint">({{ getTotalStringsCount(provider) }} @T["strings"]<span v-if="getTotalTranslatedCount(provider) > 0">, {{ getTotalTranslatedCount(provider) }} @T["translated"]</span>)</span>
             </legend>
 
-            <table class="table">
+            <!-- Ungrouped strings (no sub-groups) -->
+            <table v-if="getFilteredStrings(provider.strings).length > 0" class="table">
                 <thead>
                     <tr>
                         <th class="col-5">@T["Original"]</th>
@@ -102,7 +103,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="str in getFilteredStrings(provider)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
+                    <tr v-for="str in getFilteredStrings(provider.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
                         <td class="col-5">
                             <code>{{ str.key }}</code>
                         </td>
@@ -116,6 +117,36 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- Sub-groups -->
+            <div v-for="subGroup in getFilteredSubGroups(provider)" :key="subGroup.name" class="ms-3 mb-3">
+                <h6 class="text-muted border-bottom pb-1">
+                    {{ subGroup.name }}
+                    <span class="hint">({{ getFilteredStrings(subGroup.strings).length }} @T["strings"])</span>
+                </h6>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th class="col-5">@T["Original"]</th>
+                            <th class="col-7">@T["Translation"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="str in getFilteredStrings(subGroup.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
+                            <td class="col-5">
+                                <code>{{ str.key }}</code>
+                            </td>
+                            <td class="col-7">
+                                <input type="text" class="form-control form-control-sm"
+                                       v-model="str.value"
+                                       :disabled="isReadOnly"
+                                       :placeholder="str.key"
+                                       @@input="onTranslationChange(str)" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </fieldset>
     </div>
 
@@ -181,7 +212,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     result = result.filter(p => p.name === this.categoryFilter);
                 }
 
-                return result;
+                // Filter out providers with no matching strings
+                return result.filter(p => 
+                    this.getFilteredStrings(p.strings).length > 0 || 
+                    this.getFilteredSubGroups(p).length > 0
+                );
             },
             canEditCurrentCulture() {
                 const culture = this.cultures.find(c => c.name === this.currentCulture);
@@ -189,8 +224,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
-            getFilteredStrings(provider) {
-                let result = provider.strings;
+            getFilteredStrings(strings) {
+                if (!strings) return [];
+                let result = strings;
 
                 // Filter by missing only
                 if (this.showMissingOnly) {
@@ -208,8 +244,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 return result;
             },
-            getTranslatedCount(provider) {
-                return provider.strings.filter(s => s.value && s.value.trim() !== '').length;
+            getFilteredSubGroups(provider) {
+                if (!provider.subGroups) return [];
+                
+                return provider.subGroups.filter(sg => 
+                    this.getFilteredStrings(sg.strings).length > 0
+                );
+            },
+            getTotalStringsCount(provider) {
+                let count = (provider.strings || []).length;
+                if (provider.subGroups) {
+                    count += provider.subGroups.reduce((sum, sg) => sum + (sg.strings || []).length, 0);
+                }
+                return count;
+            },
+            getTotalTranslatedCount(provider) {
+                let count = (provider.strings || []).filter(s => s.value && s.value.trim() !== '').length;
+                if (provider.subGroups) {
+                    count += provider.subGroups.reduce((sum, sg) => 
+                        sum + (sg.strings || []).filter(s => s.value && s.value.trim() !== '').length, 0);
+                }
+                return count;
             },
             onTranslationChange(str) {
                 this.isDirty = true;
@@ -227,16 +282,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.saveTranslations();
                 }, 2000);
             },
-            async saveTranslations() {
-                if (this.isReadOnly || !this.canEditCurrentCulture || this.isSaving) {
-                    return;
-                }
-
-                this.isSaving = true;
-
-                try {
-                    const translations = [];
-                    for (const provider of this.providers) {
+            getAllStrings() {
+                const translations = [];
+                for (const provider of this.providers) {
+                    // Collect ungrouped strings
+                    if (provider.strings) {
                         for (const str of provider.strings) {
                             translations.push({
                                 context: str.context,
@@ -245,6 +295,32 @@ document.addEventListener('DOMContentLoaded', function () {
                             });
                         }
                     }
+                    // Collect strings from sub-groups
+                    if (provider.subGroups) {
+                        for (const subGroup of provider.subGroups) {
+                            if (subGroup.strings) {
+                                for (const str of subGroup.strings) {
+                                    translations.push({
+                                        context: str.context,
+                                        key: str.key,
+                                        value: str.value || ''
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                return translations;
+            },
+            async saveTranslations() {
+                if (this.isReadOnly || !this.canEditCurrentCulture || this.isSaving) {
+                    return;
+                }
+
+                this.isSaving = true;
+
+                try {
+                    const translations = this.getAllStrings();
 
                     const response = await fetch(this.saveUrl, {
                         method: 'POST',
