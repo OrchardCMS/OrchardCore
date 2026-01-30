@@ -1,0 +1,20 @@
+@using OrchardCore.Settings
+@model PropertyConfigurationMetadata
+
+@if (Model != null && Model.IsOverriddenByFile)
+{
+    <div class="alert alert-warning py-2 mb-2" role="alert">
+        <small>
+            <i class="fa-solid fa-exclamation-triangle me-1"></i>
+            @T["This value is overridden by configuration file."]
+            @if (Model.IsSensitive)
+            {
+                <span class="fw-bold">@T["Effective value: {0}", Model.GetMaskedValue()]</span>
+            }
+            else if (Model.EffectiveValue != null)
+            {
+                <span class="fw-bold">@T["Effective value: {0}", Model.EffectiveValue]</span>
+            }
+        </small>
+    </div>
+}
