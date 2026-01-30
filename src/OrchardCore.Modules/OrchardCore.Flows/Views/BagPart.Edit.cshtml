@@ -2,9 +2,11 @@
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Localization.Data
 @model BagPartEditViewModel
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IDataLocalizer D
 @{
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
@@ -69,7 +71,7 @@
        data-flowmetadata="false"
        data-parent-content-type="@parentContentType"
        data-part-name="@partName"
-       href="javascript:;">@T["Add {0}", type.DisplayName]</a>
+       href="javascript:;">@T["Add {0}", D[type.DisplayName, "Content Types"]]</a>
     }
     else if (totalItems > 1)
     {
@@ -90,7 +92,7 @@
                data-flowmetadata="false"
                data-parent-content-type="@parentContentType"
                data-part-name="@partName"
-               href="javascript:;">@type.DisplayName</a>
+               href="javascript:;">@D[type.DisplayName, "Content Types"]</a>
                 }
             </div>
         </div>
