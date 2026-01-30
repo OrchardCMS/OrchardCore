@@ -7,11 +7,11 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure.Html;
-using OrchardCore.Menu.Models;
-using OrchardCore.Menu.Settings;
-using OrchardCore.Menu.ViewModels;
+using OrchardCore.Html.Models;
+using OrchardCore.Html.Settings;
+using OrchardCore.Html.ViewModels;
 
-namespace OrchardCore.Menu.Drivers;
+namespace OrchardCore.Html.Drivers;
 
 public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<HtmlMenuItemPart>
 {

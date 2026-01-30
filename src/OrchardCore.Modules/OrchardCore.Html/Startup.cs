@@ -21,14 +21,18 @@ public sealed class Startup : StartupBase
     {
         services.Configure<TemplateOptions>(o => o.MemberAccessStrategy.Register<HtmlBodyPartViewModel>());
 
-        // Body Part
+        // HTML Body Part
         services.AddContentPart<HtmlBodyPart>()
             .UseDisplayDriver<HtmlBodyPartDisplayDriver>()
             .AddHandler<HtmlBodyPartHandler>();
 
+        // HTML Menu Item Part
+        services.AddContentPart<HtmlMenuItemPart>().UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
+
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartTrumbowygEditorSettingsDriver>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartMonacoEditorSettingsDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlMenuItemPartSettingsDisplayDriver>();
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentPartIndexHandler, HtmlBodyPartIndexHandler>();
     }

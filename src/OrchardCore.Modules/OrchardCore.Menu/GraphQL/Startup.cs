@@ -13,7 +13,6 @@ public sealed class Startup : StartupBase
     {
         services.AddObjectGraphType<MenuItemsListPart, MenuItemsListQueryObjectType>();
         services.AddObjectGraphType<LinkMenuItemPart, LinkMenuItemQueryObjectType>();
-        services.AddObjectGraphType<HtmlMenuItemPart, HtmlMenuItemQueryObjectType>();
         services.AddScoped<IContentTypeBuilder, MenuItemContentTypeBuilder>();
     }
 }

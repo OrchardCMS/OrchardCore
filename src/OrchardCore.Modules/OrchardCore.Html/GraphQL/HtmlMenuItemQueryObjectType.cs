@@ -1,7 +1,7 @@
 using GraphQL.Types;
-using OrchardCore.Menu.Models;
+using OrchardCore.Html.Models;
 
-namespace OrchardCore.Menu.GraphQL;
+namespace OrchardCore.Html.GraphQL;
 
 public class HtmlMenuItemQueryObjectType : ObjectGraphType<HtmlMenuItemPart>
 {

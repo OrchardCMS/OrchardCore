@@ -1,6 +1,6 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Menu.Models;
+namespace OrchardCore.Html.Models;
 
 public class HtmlMenuItemPart : ContentPart
 {
