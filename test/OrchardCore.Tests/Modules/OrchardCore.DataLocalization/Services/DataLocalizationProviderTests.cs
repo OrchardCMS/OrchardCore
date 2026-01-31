@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentTypes.Services;
-using OrchardCore.ContentTypes.ViewModels;
 
 namespace OrchardCore.DataLocalization.Services.Tests;
 
@@ -10,14 +9,14 @@ public class DataLocalizationProviderTests
     [Fact]
     public async Task ContentTypeDataLocalizationProvider_GetLocalizedStrings()
     {
-        var contentDefinitionService = new Mock<IContentDefinitionService>();
-        contentDefinitionService.Setup(cds => cds.GetTypesAsync())
-            .ReturnsAsync(() => new List<EditTypeViewModel> {
-                new() { DisplayName = "Article" },
-                new() { DisplayName = "BlogPost" },
-                new() { DisplayName = "News" },
+        var contentDefinitionManager = new Mock<IContentDefinitionManager>();
+        contentDefinitionManager.Setup(cds => cds.ListTypeDefinitionsAsync())
+            .ReturnsAsync(() => new List<ContentTypeDefinition> {
+                new("Article", "Article"),
+                new("BlogPost", "BlogPost"),
+                new("News", "News"),
             });
-        var dataLocalizationProvider = new ContentTypeDataLocalizationProvider(contentDefinitionService.Object);
+        var dataLocalizationProvider = new ContentTypeDataLocalizationProvider(contentDefinitionManager.Object);
         var localizedStrings = await dataLocalizationProvider.GetDescriptorsAsync();
 
         Assert.Equal(3, localizedStrings.Count());
@@ -27,24 +26,14 @@ public class DataLocalizationProviderTests
     [Fact]
     public async Task ContentFieldDataLocalizationProvider_GetLocalizedStrings()
     {
-        var contentDefinitionService = new Mock<IContentDefinitionService>();
-        contentDefinitionService.Setup(cds => cds.GetTypesAsync())
-            .ReturnsAsync(() => new List<EditTypeViewModel>
+        var contentDefinitionManager = new Mock<IContentDefinitionManager>();
+        contentDefinitionManager.Setup(cds => cds.ListTypeDefinitionsAsync())
+            .ReturnsAsync(() => new List<ContentTypeDefinition>
             {
-                new()
-                {
-                    Name = "BlogPost",
-                    DisplayName = "Blog Post",
-                    TypeDefinition = CreateContentTypeDefinition("BlogPost", "Blog Post", ["Title", "Body", "Author"]),
-                },
-                new()
-                {
-                    Name = "Person",
-                    DisplayName = "Person",
-                    TypeDefinition = CreateContentTypeDefinition("Person", "Person",  ["FirstName", "LastName"]),
-                },
+                CreateContentTypeDefinition("BlogPost", "Blog Post", ["Title", "Body", "Author"]),
+                CreateContentTypeDefinition("Person", "Person",  ["FirstName", "LastName"]),
             });
-        var dataLocalizationProvider = new ContentFieldDataLocalizationProvider(contentDefinitionService.Object);
+        var dataLocalizationProvider = new ContentFieldDataLocalizationProvider(contentDefinitionManager.Object);
         var localizedStrings = await dataLocalizationProvider.GetDescriptorsAsync();
 
         Assert.Equal(5, localizedStrings.Count());

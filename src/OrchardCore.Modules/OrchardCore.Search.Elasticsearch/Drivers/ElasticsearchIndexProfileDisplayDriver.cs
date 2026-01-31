@@ -1,3 +1,5 @@
+using System.Text;
+using Elastic.Clients.Elasticsearch;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -6,6 +8,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 
@@ -14,14 +17,17 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<IndexProfile>
 {
     private readonly ElasticsearchOptions _elasticsearchOptions;
+    private readonly ElasticsearchClient _elasticsearchClient;
 
     internal readonly IStringLocalizer S;
 
     public ElasticsearchIndexProfileDisplayDriver(
+        ElasticsearchClient elasticsearchClient,
         IOptions<ElasticsearchOptions> elasticsearchOptions,
         IStringLocalizer<ElasticsearchIndexProfileDisplayDriver> stringLocalizer)
     {
         _elasticsearchOptions = elasticsearchOptions.Value;
+        _elasticsearchClient = elasticsearchClient;
         S = stringLocalizer;
     }
 
@@ -54,9 +60,10 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
         var queryData = Initialize<ElasticsearchDefaultQueryViewModel>("ElasticsearchQuerySettings_Edit", model =>
         {
-            var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
             var queryMetadata = indexProfile.As<ElasticsearchDefaultQueryMetadata>();
 
+            model.SearchType = queryMetadata.SearchType;
+            model.DefaultQuery = queryMetadata.DefaultQuery;
             model.QueryAnalyzerName = queryMetadata.QueryAnalyzerName ?? ElasticsearchConstants.DefaultAnalyzer;
             model.Analyzers = _elasticsearchOptions.Analyzers.Select(x => new SelectListItem(x.Key, x.Key));
             model.SearchTypes =
@@ -65,6 +72,8 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
                 new(S["Query String Query"], ElasticsearchConstants.QueryStringSearchType),
                 new(S["Custom Query"], ElasticsearchConstants.CustomSearchType),
             ];
+
+            var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
 
             if (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any())
             {
@@ -114,16 +123,40 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
         await context.Updater.TryUpdateModelAsync(queryModel, Prefix);
 
-        if (queryModel.DefaultSearchFields?.Length > 0)
+        var queryMetadata = new ElasticsearchDefaultQueryMetadata
         {
-            indexProfile.Put(new ElasticsearchDefaultQueryMetadata
+            QueryAnalyzerName = queryModel.QueryAnalyzerName ?? ElasticsearchConstants.DefaultAnalyzer,
+            DefaultQuery = queryModel.DefaultQuery,
+            SearchType = queryModel.SearchType,
+            DefaultSearchFields = queryModel.DefaultSearchFields?.Where(x => x.Selected)?.Select(x => x.Value).ToArray(),
+        };
+
+        if (queryModel.SearchType == ElasticsearchConstants.CustomSearchType)
+        {
+            var query = queryModel.DefaultQuery?.Trim();
+
+            if (string.IsNullOrEmpty(query))
             {
-                QueryAnalyzerName = queryModel.QueryAnalyzerName ?? ElasticsearchConstants.DefaultAnalyzer,
-                DefaultQuery = queryModel.DefaultQuery,
-                SearchType = queryModel.SearchType,
-                DefaultSearchFields = queryModel.DefaultSearchFields.Where(x => x.Selected).Select(x => x.Value).ToArray(),
-            });
+                context.Updater.ModelState.AddModelError(Prefix, nameof(queryModel.DefaultQuery), S["The default query field is required when using a custom search type."]);
+            }
+            else
+            {
+                using var stream = new MemoryStream(Encoding.UTF8.GetBytes(query));
+
+                try
+                {
+                    await _elasticsearchClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
+
+                    queryMetadata.DefaultQuery = query;
+                }
+                catch
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(queryModel.DefaultQuery), S["The default query field is not a valid Elasticsearch query."]);
+                }
+            }
         }
+
+        indexProfile.Put(queryMetadata);
 
         return Edit(indexProfile, context);
     }

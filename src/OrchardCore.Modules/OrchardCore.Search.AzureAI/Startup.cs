@@ -12,6 +12,7 @@ using OrchardCore.Recipes;
 using OrchardCore.Search.AzureAI.Core;
 using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
+using OrchardCore.Search.AzureAI.Flows;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Migrations;
 using OrchardCore.Search.AzureAI.Recipes;
@@ -101,5 +102,14 @@ public sealed class DeploymentStartup : StartupBase
         services.AddDeployment<AzureAISearchIndexDeploymentSource, AzureAISearchIndexDeploymentStep, AzureAISearchIndexDeploymentStepDriver>();
         services.AddDeployment<AzureAISearchIndexRebuildDeploymentSource, AzureAISearchIndexRebuildDeploymentStep, AzureAISearchIndexRebuildDeploymentStepDriver>();
         services.AddDeployment<AzureAISearchIndexResetDeploymentSource, AzureAISearchIndexResetDeploymentStep, AzureAISearchIndexResetDeploymentStepDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Flows")]
+public sealed class FlowsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IAzureAISearchFieldIndexEvents, BagPartAzureAISearchFieldIndexEvents>();
     }
 }

@@ -158,6 +158,7 @@ public static class StringExtensions
     }
 
     // Not accounting for only \r (e.g. Apple OS 9 carriage return only new lines).
+    [Obsolete("This method will be removed in future releases. Use string.ReplaceLineEndings() instead")]
     public static string ReplaceNewLinesWith(this string text, string replacement)
     {
         return string.IsNullOrWhiteSpace(text)
@@ -169,6 +170,7 @@ public static class StringExtensions
     }
 
     private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+
     public static bool IsValidUrlSegment(this string segment)
     {
         // Valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
@@ -399,21 +401,6 @@ public static class StringExtensions
         var pattern = $"{string.Join("|", replacements.Keys)}";
         return Regex.Replace(original, pattern, match => replacements[match.Value]);
     }
-
-#if NET8_0
-    [Obsolete("Don't use 'TrimEnd' as this has a different behavior in .NET 9.0. Use 'OrchardCore.ContentManagement.Utilities.TrimEndString' instead.")]
-    public static string TrimEnd(this string rough, string trim = "")
-    {
-        if (rough == null)
-        {
-            return null;
-        }
-
-        return rough.EndsWith(trim, StringComparison.Ordinal)
-                   ? rough[..^trim.Length]
-                   : rough;
-    }
-#endif
 
     public static string ReplaceLastOccurrence(this string source, string find, string replace)
     {

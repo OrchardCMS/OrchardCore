@@ -45,7 +45,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                     ),
                 });
             }
-        }).Location("Detail", "Content");
+        }).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(FormInputElementVisibilityPart part, BuildPartEditorContext context)

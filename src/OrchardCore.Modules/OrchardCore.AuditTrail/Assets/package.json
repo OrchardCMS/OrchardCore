@@ -7,7 +7,7 @@
   "description": "A diff module for OrchardCore.",
   "dependencies": {
     "@popperjs/core": "2.11.8",
-    "bootstrap": "5.3.7",
+    "bootstrap": "5.3.8",
     "diff": "5.1.0",
     "react": "^16.14.0",
     "react-diff-viewer": "3.1.1",
@@ -21,6 +21,7 @@
     "@babel/preset-typescript": "^7.22.11",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
+    "ajv-formats": "^3.0.1",
     "assert": "^2.0.0",
     "css-loader": "^6.8.1",
     "null-loader": "^4.0.1",

@@ -50,8 +50,8 @@ public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<
             model.Part = fieldDisplayContext.ContentPart;
             model.PartFieldDefinition = fieldDisplayContext.PartFieldDefinition;
         })
-        .Location("Detail", "Content")
-        .Location("Summary", "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
     public override IDisplayResult Edit(ContentPickerField field, BuildFieldEditorContext context)

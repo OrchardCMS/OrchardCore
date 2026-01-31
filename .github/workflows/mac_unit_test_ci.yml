@@ -10,9 +10,9 @@ jobs:
     runs-on: macos-latest
     name: Unit Tests
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: ./.github/actions/setup-dotnet
     - name: Build and test
       run: |
         dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+        dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-restore --no-build

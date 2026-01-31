@@ -152,8 +152,10 @@ nav:
       - Microsoft Entra ID (Azure AD) integration: guides/microsoft-entra-id-integration/README.md
       - Create a Liquid Widget: guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: guides/query-content-items-based-on-taxonomy/README.md
-      - Assets manager: guides/assets-manager/README.md
-      - Gulp pipeline: guides/gulp-pipeline/README.md
+      - Manage Assets and NPM dependencies:
+        - Assets manager: guides/assets-manager/README.md
+        - Using NPM aliases: guides/assets-manager/NPM_ALIASING_GUIDE.md
+        - Gulp pipeline: guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
       - Content Relationships: topics/content-relationships/README.md
@@ -180,6 +182,7 @@ nav:
                   - Title: reference/modules/Title/README.md
                   - Autoroute: reference/modules/Autoroute/README.md
                   - Alias: reference/modules/Alias/README.md
+                  - Archive Later: reference/modules/ArchiveLater/README.md
                   - Html: reference/modules/Html/README.md
                   - Markdown: reference/modules/Markdown/README.md
                   - List: reference/modules/Lists/README.md
@@ -288,6 +291,10 @@ nav:
       - Libraries: reference/libraries/README.md
       - Glossary: reference/glossary/README.md
   - Releases Notes:
+      - 2.2.1: releases/2.2.1.md
+      - 2.2.0: releases/2.2.0.md
+      - 2.1.9: releases/2.1.9.md
+      - 2.1.8: releases/2.1.8.md
       - 2.1.7: releases/2.1.7.md
       - 2.1.6: releases/2.1.6.md
       - 2.1.5: releases/2.1.5.md
@@ -328,6 +335,7 @@ nav:
       - Contributing documentation: contributing/contributing-documentation.md
       - Reviewing pull requests: contributing/reviewing-pull-requests.md
       - Benchmarking: contributing/benchmarking.md
+      - Contributing to orchardcore.net: contributing/contributing-to-orchardcore-net.md
       - Developer Meetings: contributing/meetings.md
   - Community:
       - Contributors: community/contributors/README.md

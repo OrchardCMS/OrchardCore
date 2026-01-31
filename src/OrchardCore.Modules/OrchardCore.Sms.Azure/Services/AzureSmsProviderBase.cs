@@ -59,14 +59,21 @@ public abstract class AzureSmsProviderBase : ISmsProvider
         {
             _smsClient ??= new SmsClient(_providerOptions.ConnectionString);
 
-            var response = await _smsClient.SendAsync(_providerOptions.PhoneNumber, message.To, message.Body);
+            var senderNumber = _providerOptions.PhoneNumber;
+
+            if (!string.IsNullOrEmpty(message.From))
+            {
+                senderNumber = message.From;
+            }
+
+            var response = await _smsClient.SendAsync(senderNumber, message.To, message.Body);
 
             if (response.Value.Successful)
             {
                 return SmsResult.Success;
             }
 
-            return SmsResult.Failed(S["SMS message was not send."]);
+            return SmsResult.Failed(S["The SMS message has not been sent."]);
         }
         catch (Exception ex)
         {

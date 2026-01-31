@@ -5,8 +5,7 @@ runs:
   using: composite
   steps:
     - name: Set Up .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
       with:
         dotnet-version: | 
-          8.0.x
-          9.0.x
+          10.0.x

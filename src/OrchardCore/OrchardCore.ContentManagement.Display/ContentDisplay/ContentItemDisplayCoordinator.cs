@@ -58,9 +58,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                     await result.ApplyAsync(context);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
+                ex.LogException(_logger, displayDriver.GetType(), nameof(BuildDisplayAsync));
             }
         }
 
@@ -90,9 +90,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                         await result.ApplyAsync(context);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!ex.IsFatal())
                 {
-                    InvokeExtensions.HandleException(ex, _logger, partDisplayDrivers.GetType().Name, nameof(BuildDisplayAsync));
+                    ex.LogException(_logger, partDisplayDrivers.GetType(), nameof(BuildDisplayAsync));
                 }
             }
             var tempContext = context;
@@ -184,9 +184,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                             await result.ApplyAsync(context);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (!ex.IsFatal())
                     {
-                        InvokeExtensions.HandleException(ex, _logger, fieldDisplayDriver.GetType().Name, nameof(BuildDisplayAsync));
+                        ex.LogException(_logger, fieldDisplayDriver.GetType(), nameof(BuildDisplayAsync));
                     }
                 }
             }
@@ -222,9 +222,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                     await result.ApplyAsync(context);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(BuildEditorAsync));
+                ex.LogException(_logger, displayDriver.GetType(), nameof(BuildEditorAsync));
             }
         }
 
@@ -313,9 +313,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                     await result.ApplyAsync(context);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(UpdateEditorAsync));
+                ex.LogException(_logger, displayDriver.GetType(), nameof(UpdateEditorAsync));
             }
         }
 

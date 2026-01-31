@@ -1,3 +1,4 @@
+using System.Reflection;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
@@ -237,7 +238,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         return keyName;
     }
 
-    private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
+    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
     {
         foreach (var indexDocument in indexDocuments)
         {
@@ -245,7 +246,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         }
     }
 
-    private static SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
+    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
     {
         var doc = new SearchDocument();
 
@@ -271,7 +272,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 
             switch (entry.Type)
             {
-                case DocumentIndex.Types.Boolean:
+                case Types.Boolean:
                     if (entry.Value is bool boolValue)
                     {
                         doc.TryAdd(map.AzureFieldKey, boolValue);
@@ -304,6 +305,16 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
                     {
                         doc.TryAdd(map.AzureFieldKey, Convert.ToDouble(entry.Value));
                     }
+                    break;
+
+                case Types.Complex:
+
+                    doc.TryAdd(map.AzureFieldKey, GetNestedValue(entry.Value, map));
+                    break;
+
+                case Types.Vector:
+
+                    doc.TryAdd(map.AzureFieldKey, entry.Value);
                     break;
 
                 case Types.GeoPoint:
@@ -347,11 +358,80 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         return doc;
     }
 
+    private object GetNestedValue(object value, AzureAISearchIndexMap map)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+
+        if (value is string || value.GetType().IsPrimitive || value is DateTime || value is DateTimeOffset)
+        {
+            return value;
+        }
+
+        if (value is DateTimeOffset v)
+        {
+            return v.ToUniversalTime();
+        }
+
+        if (value is SearchDocument d)
+        {
+            return d;
+        }
+
+        if (value is IEnumerable<KeyValuePair<string, object>> dict)
+        {
+            var sd = new SearchDocument();
+
+            foreach (var kvp in dict)
+            {
+                sd[kvp.Key] = GetNestedValue(kvp.Value, map);
+            }
+
+            return sd;
+        }
+
+        if (value is IEnumerable<object> list)
+        {
+            return list.Select(c => GetNestedValue(c, map)).Where(i => i is not null).ToList();
+        }
+
+        if (map.Type == Types.Complex && map.SubFields is not null && map.SubFields.Count > 0)
+        {
+            var result = new SearchDocument();
+            var props = value.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var propsDictionary = props.ToDictionary(p => p.Name, StringComparer.Ordinal);
+
+            foreach (var subField in map.SubFields)
+            {
+                if (!propsDictionary.TryGetValue(subField.AzureFieldKey, out var prop))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    var propValue = prop.GetValue(value);
+                    result[subField.AzureFieldKey] = GetNestedValue(propValue, subField);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "An error occurred while processing property '{PropertyName}' for field '{FieldKey}'.", prop.Name, subField.AzureFieldKey);
+                }
+            }
+
+            return result;
+        }
+
+        return null;
+    }
+
     private static bool UseSingleValue(AzureAISearchIndexMap map)
     {
         // Full-text, Display-text-analyzed and non-collections support single value.
-        return map.AzureFieldKey == AzureAISearchIndexManager.FullTextKey
-            || map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey
-            || !map.IsCollection;
+        return map.AzureFieldKey == AzureAISearchIndexManager.FullTextKey ||
+            map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey ||
+            !map.IsCollection;
     }
 }

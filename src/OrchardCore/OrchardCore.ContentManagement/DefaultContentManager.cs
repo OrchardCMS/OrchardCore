@@ -69,7 +69,10 @@ public class DefaultContentManager : IContentManager
         ArgumentException.ThrowIfNullOrEmpty(contentType);
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
-        contentTypeDefinition ??= new ContentTypeDefinitionBuilder().Named(contentType).Build();
+
+        contentTypeDefinition ??= new ContentTypeDefinitionBuilder()
+            .WithName(contentType)
+            .Build();
 
         // Create a new kernel for the model instance.
         var context = new ActivatingContentContext(new ContentItem() { ContentType = contentTypeDefinition.Name })
@@ -311,7 +314,7 @@ public class DefaultContentManager : IContentManager
             }
         }
 
-        return finalItems;
+        return finalItems.OrderBy(contentItem => Array.IndexOf(ids, contentItem.ContentItemId));
     }
 
     public async Task<ContentItem> LoadAsync(ContentItem contentItem)

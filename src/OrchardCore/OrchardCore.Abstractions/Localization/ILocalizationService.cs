@@ -7,12 +7,6 @@ namespace OrchardCore.Localization;
 /// </summary>
 public interface ILocalizationService
 {
-    private static readonly CultureInfo[] _cultureAliases =
-    [
-        CultureInfo.GetCultureInfo("zh-CN"),
-        CultureInfo.GetCultureInfo("zh-TW")
-    ];
-
     /// <summary>
     /// Returns the default culture of the site.
     /// </summary>
@@ -26,12 +20,9 @@ public interface ILocalizationService
     /// <summary>
     /// Gets all cultures recognized by .NET, including culture aliases.
     /// </summary>
-    static CultureInfo[] GetAllCulturesAndAliases()
-    {
-        var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-            .Union(_cultureAliases)
-            .OrderBy(c => c.Name);
-
-        return cultures.ToArray();
-    }
+    IEnumerable<CultureInfo> GetAllCulturesAndAliases();
+    /// <summary>
+    /// Get whether to set the request culture to a parent culture in case the culture is not determined.
+    /// </summary>
+    bool FallBackToParentCultures { get; }
 }

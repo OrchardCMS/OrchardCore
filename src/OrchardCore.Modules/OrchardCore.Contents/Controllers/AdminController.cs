@@ -3,10 +3,8 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -335,14 +333,9 @@ public sealed class AdminController : Controller, IUpdateModel
     [Admin("Contents/ContentTypes/{id}/Create", "CreateContentItem")]
     public async Task<IActionResult> Create(string id)
     {
-        if (string.IsNullOrWhiteSpace(id))
-        {
-            return NotFound();
-        }
+        var contentItem = await _contentManager.NewAsync(id);
 
-        var contentItem = await CreateContentItemOwnedByCurrentUserAsync(id);
-
-        if (!await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
+        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, id, User.Identity.Name))
         {
             return Forbid();
         }
@@ -463,7 +456,6 @@ public sealed class AdminController : Controller, IUpdateModel
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
         return EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
-            await _contentManager.UpdateAsync(contentItem);
             await _contentManager.SaveDraftAsync(contentItem);
 
             var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
@@ -482,38 +474,38 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> EditAndPublishPOST(
         string contentItemId,
         [Bind(Prefix = "submit.Publish")] string submitPublish,
-        string returnUrl)
+        string returnUrl) => await PublishOrUnpublishAsync(submitPublish == "submit.PublishAndContinue", contentItemId, returnUrl, publish: true);
+
+    [HttpPost]
+    [ActionName(nameof(Edit))]
+    [FormValueRequired("submit.Unpublish")]
+    public async Task<IActionResult> EditAndUnpublishPOST(
+    string contentItemId,
+    [Bind(Prefix = "submit.Unpublish")] string submitUnpublish,
+    string returnUrl) => await PublishOrUnpublishAsync(submitUnpublish == "submit.UnpublishAndContinue", contentItemId, returnUrl, publish: false);
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(string contentItemId, string returnUrl)
     {
-        var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
+        var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-        var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-        if (content == null)
+        if (contentItem == null)
         {
             return NotFound();
         }
 
-        if (!await IsAuthorizedAsync(CommonPermissions.PublishContent, content))
+        if (!await IsAuthorizedAsync(CommonPermissions.DeleteContent, contentItem))
         {
             return Forbid();
         }
 
-        return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
-        {
-            await _contentManager.UpdateAsync(contentItem);
-            var published = await _contentManager.PublishAsync(contentItem);
+        await _contentManager.RemoveAsync(contentItem);
 
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+        await _notifier.SuccessAsync(H["Your content has been deleted."]);
 
-            if (published)
-            {
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                ? H["Your content has been published."]
-                : H["Your {0} has been published.", typeDefinition.DisplayName]);
-            }
-
-            return published;
-        });
+        return Url.IsLocalUrl(returnUrl)
+            ? this.LocalRedirect(returnUrl, true)
+            : RedirectToAction(nameof(List));
     }
 
     [HttpPost]
@@ -695,7 +687,7 @@ public sealed class AdminController : Controller, IUpdateModel
         bool stayOnSamePage,
         Func<ContentItem, Task<bool>> conditionallyPublish)
     {
-        var contentItem = await CreateContentItemOwnedByCurrentUserAsync(id);
+        var contentItem = await _contentManager.NewAsync(id);
 
         if (!await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
         {
@@ -749,6 +741,11 @@ public sealed class AdminController : Controller, IUpdateModel
         }
 
         var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
+
+        if (ModelState.IsValid)
+        {
+            await _contentManager.UpdateAsync(contentItem);
+        }
 
         if (!ModelState.IsValid || !(await conditionallyPublish(contentItem)))
         {
@@ -825,14 +822,6 @@ public sealed class AdminController : Controller, IUpdateModel
         return items;
     }
 
-    private async Task<ContentItem> CreateContentItemOwnedByCurrentUserAsync(string contentType)
-    {
-        var contentItem = await _contentManager.NewAsync(contentType);
-        contentItem.Owner = CurrentUserId();
-
-        return contentItem;
-    }
-
     private string _currentUserId;
 
     private string CurrentUserId()
@@ -856,5 +845,49 @@ public sealed class AdminController : Controller, IUpdateModel
         TempData[nameof(ModelState)] = JsonSerializer.Serialize(errors);
 
         return RedirectToAction(nameof(List));
+    }
+
+    private async Task<IActionResult> PublishOrUnpublishAsync(bool stayOnSamePage, string contentItemId, string returnUrl, bool publish)
+    {
+        var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+
+        if (content == null)
+        {
+            return NotFound();
+        }
+
+        if (!await IsAuthorizedAsync(CommonPermissions.PublishContent, content))
+        {
+            return Forbid();
+        }
+
+        return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        {
+            var hasBeenPublishedOrUnpublished = publish
+                ? await _contentManager.PublishAsync(contentItem)
+                : await _contentManager.UnpublishAsync(contentItem);
+
+            if (hasBeenPublishedOrUnpublished)
+            {
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+                if (publish)
+                {
+                    await _notifier.SuccessAsync(
+                        string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                            ? H["Your content has been published."]
+                            : H["Your {0} has been published.", typeDefinition.DisplayName]);
+                }
+                else
+                {
+                    await _notifier.SuccessAsync(
+                        string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                            ? H["Your content has been unpublished."]
+                            : H["Your {0} has been unpublished.", typeDefinition.DisplayName]);
+                }
+            }
+
+            return hasBeenPublishedOrUnpublished;
+        });
     }
 }

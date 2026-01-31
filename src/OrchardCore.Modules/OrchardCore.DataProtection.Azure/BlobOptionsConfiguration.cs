@@ -55,7 +55,7 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
 
             // Container name must be lowercase.
             var containerName = template.Render(templateContext, NullEncoder.Default).ToLowerInvariant();
-            options.ContainerName = containerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            options.ContainerName = containerName.ReplaceLineEndings(string.Empty);
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
@@ -112,7 +112,7 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
             var template = _fluidParser.Parse(options.BlobName);
 
             var blobName = template.Render(templateContext, NullEncoder.Default);
-            options.BlobName = blobName.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            options.BlobName = blobName.ReplaceLineEndings(string.Empty);
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {

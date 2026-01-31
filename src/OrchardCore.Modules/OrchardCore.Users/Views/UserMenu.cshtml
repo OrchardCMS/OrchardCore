@@ -14,7 +14,7 @@
                 }
             </a>
 
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <ul class="dropdown-menu dropdown-menu-end">
                 @await DisplayAsync(Model.AnonymousContent)
             </ul>
         </li>
@@ -24,7 +24,7 @@
 
     <li class="nav-item text-end">
         <a class="nav-link" asp-route-area="@UserConstants.Features.Users" asp-controller="Account" asp-action="Login">
-            <i class="fa-solid fa-sign-in-alt fa-fw" aria-hidden="true"></i> @T["Log in"]
+            <i class="fa-solid fa-right-to-bracket fa-width-auto" aria-hidden="true"></i> @T["Log in"]
         </a>
     </li>
 

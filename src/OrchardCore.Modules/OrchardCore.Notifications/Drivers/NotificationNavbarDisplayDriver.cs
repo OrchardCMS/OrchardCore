@@ -54,8 +54,8 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                 ? notifications.Count
                 : await _session.QueryIndex<NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection).CountAsync();
 
-            }).Location("Detail", "Content:9")
-            .Location("DetailAdmin", "Content:9");
+            }).Location(OrchardCoreConstants.DisplayType.Detail, "Content:9")
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:9");
 
         if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0 || _notificationOptions.SlidingCacheExpirationSeconds > 0)
         {
