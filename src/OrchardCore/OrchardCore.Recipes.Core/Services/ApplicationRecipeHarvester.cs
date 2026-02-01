@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Recipes.Services;
 
@@ -19,7 +18,7 @@ public class ApplicationRecipeHarvester : RecipeHarvester
     {
     }
 
-    public override Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
+    public override Task<IEnumerable<IRecipeDescriptor>> HarvestRecipesAsync()
     {
         return HarvestRecipesAsync("Recipes");
     }

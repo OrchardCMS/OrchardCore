@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentManagement;
 
@@ -139,6 +140,55 @@ public static class ServiceCollectionExtensions
             o.RemoveFieldHandler(builder.ContentFieldType, handlerType);
         });
 
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a content part schema handler that provides JSON Schema for part settings.
+    /// </summary>
+    /// <typeparam name="THandler">The handler type.</typeparam>
+    /// <param name="services">The service collection.</param>
+    public static IServiceCollection AddContentPartSchemaHandler<THandler>(this IServiceCollection services)
+        where THandler : class, IContentPartSchemaHandler
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IContentPartSchemaHandler, THandler>());
+        return services;
+    }
+
+    /// <summary>
+    /// Registers a content field schema handler that provides JSON Schema for field settings.
+    /// </summary>
+    /// <typeparam name="THandler">The handler type.</typeparam>
+    /// <param name="services">The service collection.</param>
+    public static IServiceCollection AddContentFieldSchemaHandler<THandler>(this IServiceCollection services)
+        where THandler : class, IContentFieldSchemaHandler
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IContentFieldSchemaHandler, THandler>());
+        return services;
+    }
+
+
+    /// <summary>
+    /// Registers a content part schema handler for the part being configured.
+    /// </summary>
+    /// <typeparam name="THandler">The handler type.</typeparam>
+    /// <param name="builder">The content part option builder.</param>
+    public static ContentPartOptionBuilder WithSchemaHandler<THandler>(this ContentPartOptionBuilder builder)
+        where THandler : class, IContentPartSchemaHandler
+    {
+        builder.Services.AddContentPartSchemaHandler<THandler>();
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a content field schema handler for the field being configured.
+    /// </summary>
+    /// <typeparam name="THandler">The handler type.</typeparam>
+    /// <param name="builder">The content field option builder.</param>
+    public static ContentFieldOptionBuilder WithSchemaHandler<THandler>(this ContentFieldOptionBuilder builder)
+        where THandler : class, IContentFieldSchemaHandler
+    {
+        builder.Services.AddContentFieldSchemaHandler<THandler>();
         return builder;
     }
 }

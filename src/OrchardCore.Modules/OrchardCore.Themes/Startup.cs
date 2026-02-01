@@ -22,7 +22,9 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<ThemesStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IThemeSelector, SiteThemeSelector>();
         services.AddScoped<ISiteThemeService, SiteThemeService>();

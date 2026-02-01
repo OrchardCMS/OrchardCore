@@ -40,7 +40,9 @@ public sealed class Startup : StartupBase
         services.AddScoped<RoleStore>();
         services.Replace(ServiceDescriptor.Scoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
         services.Replace(ServiceDescriptor.Scoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<RolesStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
         services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();

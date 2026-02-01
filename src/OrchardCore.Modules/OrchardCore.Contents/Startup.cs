@@ -148,7 +148,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
         services.AddScoped<IContentHandler, ContentsHandler>();
-        services.AddRecipeExecutionStep<ContentStep>();
+        services.AddRecipeDeploymentStep<UnifiedContentStep>();
 
         services.AddScoped<IDocumentIndexHandler, FullTextContentIndexHandler>();
         services.AddScoped<IDocumentIndexHandler, AspectsContentIndexHandler>();
@@ -209,6 +209,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
+        services.AddContentPartSchemaHandler<CommonPartSchemaHandler>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
