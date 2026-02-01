@@ -2,6 +2,8 @@
 @using System.Text.Json
 @using System.Text.Json.Nodes
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
     var selectedItems = JConvert.SerializeObject(Model.SelectedItems, JOptions.CamelCase);
@@ -12,13 +14,14 @@
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "ContentPickerAdmin", action = "SearchContentItems", part = partName, field = fieldName });
     var vueElementId = $"ContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <script asp-name="vue-multiselect-wrapper" at="Foot"></script>
 <style asp-name="vue-multiselect" version="2" at="Foot"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.ContentItemIds)_FieldWrapper">
-    <label asp-for="ContentItemIds" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="ContentItemIds" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
     <div class="@Orchard.GetEndClasses()">
         <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-edit-url="@editUrl" data-view-url="@viewUrl" data-search-url="@searchUrl" data-multiple="@multiple">
 

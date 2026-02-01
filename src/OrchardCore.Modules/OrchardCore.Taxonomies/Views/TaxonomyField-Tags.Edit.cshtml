@@ -4,7 +4,9 @@
 @using Microsoft.AspNetCore.Authorization
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore
+@using OrchardCore.Localization.Data
 @inject IAuthorizationService AuthorizationService
+@inject IDataLocalizer D
 
 @{
     var taxonomySettings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
@@ -22,13 +24,14 @@
     }
 
     var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <script asp-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.js" asp-name="tags-editor" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
 <style asp-src="~/OrchardCore.Taxonomies/Styles/tags-editor.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/tags-editor.css" asp-name="tags-editor" depends-on="vue-multiselect:2"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.TermContentItemIds)_FieldWrapper">
-    <label class="@Orchard.GetLabelClasses(inputRequired: taxonomySettings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <label class="@Orchard.GetLabelClasses(inputRequired: taxonomySettings.Required)">@localizedFieldName</label>
     <div class="@Orchard.GetEndClasses()">
         @if (!string.IsNullOrEmpty(taxonomySettings.Hint))
         {

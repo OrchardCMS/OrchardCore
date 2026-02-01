@@ -1,9 +1,12 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 @{
     const string DefaultColor = "#000000";
 
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 @if (settings.Type == FieldBehaviorType.GeneratedHidden)
@@ -93,7 +96,7 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@(fieldId)_FieldWrapper">
-    <label for="@(fieldId)_color" class="@Orchard.GetLabelClasses(inputRequired: settings.Required) d-block">@Model.PartFieldDefinition.DisplayName()</label>
+    <label for="@(fieldId)_color" class="@Orchard.GetLabelClasses(inputRequired: settings.Required) d-block">@localizedFieldName</label>
     <div id="@(fieldId)_color_wrapper" class="color_wrapper">
         <input id="@(fieldId)" asp-for="Text" type="hidden">
         <input id="@(fieldId)_color" class="color" oninput="setColorField('@fieldId')" type="color" value="@color" @(settings.Type == FieldBehaviorType.GeneratedDisabled ? "disabled" : "")>

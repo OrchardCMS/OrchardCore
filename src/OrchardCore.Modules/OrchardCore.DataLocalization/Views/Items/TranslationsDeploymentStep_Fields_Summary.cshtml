@@ -1,0 +1,21 @@
+@model OrchardCore.DataLocalization.Deployment.TranslationsDeploymentStep
+
+<p class="mb-0">@T["Adds translations to the deployment plan."]</p>
+
+@if (Model.IncludeAll)
+{
+    <span class="badge text-bg-info">@T["All cultures"]</span>
+}
+else if (Model.Cultures.Length > 0)
+{
+    <span class="hint">@T["Cultures:"]:@Model.Cultures.Length</span>
+    @foreach (var culture in Model.Cultures)
+    {
+        <span class="badge text-bg-secondary">@culture</span>
+    }
+}
+
+@if (Model.Categories.Length > 0)
+{
+    <span class="hint ms-2">@T["Categories:"] @Model.Categories.Length</span>
+}

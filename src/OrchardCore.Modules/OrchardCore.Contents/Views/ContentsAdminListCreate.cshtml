@@ -1,4 +1,9 @@
+@using OrchardCore.Localization.Data
+
 @model ContentOptionsViewModel
+
+@inject IDataLocalizer D
+
 @if (Model.CreatableTypes.Count == 0)
 {
     return;
@@ -17,7 +22,7 @@ else
         <ul class="dropdown-menu dropdown-menu-end scrollable">
             @foreach (var item in Model.CreatableTypes)
             {
-                <li><a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[Html.Encode(item.Text)]</a></li>
+                <li><a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@D[item.Text, "Content Types"]</a></li>
             }
         </ul>
     </div>

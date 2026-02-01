@@ -1,13 +1,15 @@
 @model OrchardCore.ContentFields.ViewModels.EditDateFieldViewModel
-
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<DateFieldSettings>();
     var language = Orchard.CultureName().Split('-')[0];
     var datepickerId = Html.IdFor(m => m.Value);
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
     <div class="@Orchard.GetEndClasses()">
         <div class="@Orchard.GetLimitedWidthWrapperClasses()">
             <div class="@Orchard.GetLimitedWidthClasses()">

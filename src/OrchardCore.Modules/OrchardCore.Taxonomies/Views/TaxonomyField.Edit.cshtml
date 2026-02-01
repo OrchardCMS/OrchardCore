@@ -3,14 +3,17 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
     int previousLevel = 0;
     int closingDivs = 0;
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.TermEntries)_FieldWrapper">
-    <label class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <label class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
     <div class="@Orchard.GetEndClasses()">
 
         @if (!string.IsNullOrEmpty(settings.Hint))

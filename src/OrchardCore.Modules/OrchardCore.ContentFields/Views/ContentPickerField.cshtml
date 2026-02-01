@@ -2,16 +2,19 @@
 @using OrchardCore.ContentManagement
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization.Data
 
 @inject OrchardCore.ContentManagement.IContentManager ContentManager
+@inject IDataLocalizer D
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
     var contentItems = await ContentManager.GetAsync(Model.ContentItemIds);
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <div class="field field-type-contentpickerfield field-name-@name">
-    <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
+    <span class="name">@localizedFieldName</span>
     @if (contentItems.Any())
     {
         foreach (var contentItem in contentItems)
