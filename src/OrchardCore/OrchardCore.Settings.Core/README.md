@@ -122,17 +122,20 @@ public override void ConfigureServices(IServiceCollection services)
 
 ### 5. Update Your View
 
-Use the metadata in your Razor view:
+Add tag helpers to your `_ViewImports.cshtml`:
+
+```razor
+@addTagHelper *, OrchardCore.Settings.Core
+@using OrchardCore.Settings
+```
+
+Use the tag helpers in your Razor view:
 
 ```razor
 @model MySettingsViewModel
 
-@if (Model.HasFileOverrides)
-{
-    <div class="alert alert-info">
-        Some settings are configured via appsettings.json.
-    </div>
-}
+@* Configuration alert banner - shows when file configuration is active *@
+<config-alert metadata="Model.Metadata" />
 
 <fieldset @(Model.IsReadOnly ? "disabled" : "")>
     <div class="mb-3">
@@ -140,10 +143,16 @@ Use the metadata in your Razor view:
             API Endpoint
             @if (Model.IsPropertyOverridden("ApiEndpoint"))
             {
-                <span class="badge text-bg-info">Config File</span>
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
             }
         </label>
-        <input asp-for="ApiEndpoint" class="form-control" />
+        @* Auto-disable input based on configuration metadata *@
+        <input asp-for="ApiEndpoint" class="form-control"
+               config-property="ApiEndpoint"
+               config-metadata="Model.Metadata"
+               config-readonly="Model.IsReadOnly" />
+        @* Override warning for individual property *@
+        <config-override-warning property="Model.GetPropertyMetadata(\"ApiEndpoint\")" />
     </div>
 </fieldset>
 ```
@@ -230,6 +239,86 @@ Disable all UI configuration in production:
 }
 ```
 
+## Tag Helpers
+
+Add to your `_ViewImports.cshtml`:
+
+```razor
+@addTagHelper *, OrchardCore.Settings.Core
+@using OrchardCore.Settings
+```
+
+### Available Tag Helpers
+
+#### `<config-alert>`
+
+Renders an alert banner when configuration file settings are active:
+
+```razor
+<config-alert metadata="Model.Metadata" />
+<config-alert metadata="Model.Metadata" show-overridden-properties="false" />
+```
+
+| Attribute | Description |
+|-----------|-------------|
+| `metadata` | The `SettingsConfigurationMetadata` object |
+| `show-overridden-properties` | Whether to list overridden properties (default: true) |
+
+#### `<config-badge>`
+
+Renders a badge indicating the configuration source:
+
+```razor
+<config-badge source="@ConfigurationSource.ConfigurationFile" />
+<config-badge source="@Model.GetPropertySource(\"PropertyName\")" />
+```
+
+| Attribute | Description |
+|-----------|-------------|
+| `source` | The `ConfigurationSource` enum value |
+| `size` | Badge size (default: "sm") |
+
+#### `<config-override-warning>`
+
+Renders a warning when a property is overridden by configuration file:
+
+```razor
+<config-override-warning property="Model.GetPropertyMetadata(\"PropertyName\")" />
+```
+
+| Attribute | Description |
+|-----------|-------------|
+| `property` | The `PropertyConfigurationMetadata` object |
+
+Note: This tag helper automatically suppresses output for properties using `Merge` strategy, since those values are combined rather than overridden.
+
+#### `<config-property-info>`
+
+Renders comprehensive property info including badge and effective value:
+
+```razor
+<config-property-info property-name="PropertyName" metadata="@Model.Metadata" />
+```
+
+| Attribute | Description |
+|-----------|-------------|
+| `property-name` | The property name |
+| `metadata` | The `SettingsConfigurationMetadata` object |
+| `show-effective-value` | Whether to show effective value (default: true) |
+
+#### `config-property` Attribute
+
+Auto-disables inputs based on configuration metadata:
+
+```razor
+<input asp-for="PropertyName"
+       config-property="PropertyName"
+       config-metadata="Model.Metadata"
+       config-readonly="Model.IsReadOnly" />
+```
+
+Works with `<input>`, `<select>`, and `<textarea>` elements.
+
 ## Built-in Merge Functions
 
 For custom scenarios, use built-in merge functions or create your own:
@@ -241,27 +330,6 @@ For custom scenarios, use built-in merge functions or create your own:
 - `BooleanOrMergeFunction` - OR logic for booleans
 - `BooleanAndMergeFunction` - AND logic for booleans
 - `StringConcatMergeFunction` - Concatenates strings
-
-## Tag Helpers
-
-Add to your `_ViewImports.cshtml`:
-
-```razor
-@addTagHelper *, OrchardCore.Settings.Core
-```
-
-### Available Tag Helpers
-
-- `<config-badge source="@Model.GetPropertySource("PropertyName")" />` - Renders source badge
-- `<config-property-info property-name="PropertyName" metadata="@Model.Metadata" />` - Full property info
-- `config-property` attribute on inputs - Auto-disables based on configuration
-
-## Partial Views
-
-Use shared partial views:
-
-- `_ConfigurationAlert.cshtml` - Shows banner when file configuration is active
-- `_PropertyOverrideWarning.cshtml` - Shows warning for individual overridden property
 
 ## API Reference
 
@@ -286,6 +354,8 @@ IReadOnlyDictionary<string, PropertyConfigurationMetadata> Properties { get; }
 bool IsPropertyOverridden(string propertyName);
 ConfigurationSource GetPropertySource(string propertyName);
 IEnumerable<PropertyConfigurationMetadata> GetOverriddenProperties();
+IEnumerable<PropertyConfigurationMetadata> GetUIConfigurableProperties();
+IEnumerable<PropertyConfigurationMetadata> GetSensitiveProperties();
 ```
 
 ### PropertyConfigurationMetadata
@@ -299,7 +369,22 @@ object EffectiveValue { get; }
 bool IsOverriddenByFile { get; }
 bool CanConfigureViaUI { get; }
 bool IsSensitive { get; }
+PropertyMergeStrategy MergeStrategy { get; }
 string GetMaskedValue();
+string GetDisplayValue();
+```
+
+### ConfigurableSettingsViewModel<TSettings>
+
+Base class for view models with helper methods:
+
+```csharp
+SettingsConfigurationMetadata Metadata { get; set; }
+bool HasFileOverrides { get; }
+bool IsReadOnly { get; }
+bool IsPropertyOverridden(string propertyName);
+ConfigurationSource GetPropertySource(string propertyName);
+PropertyConfigurationMetadata GetPropertyMetadata(string propertyName);
 ```
 
 ## Migration from Old Pattern
@@ -330,4 +415,10 @@ public class MyService
 
 ## Reference Implementation
 
-See `OrchardCore.ReverseProxy` module for a complete reference implementation.
+See `OrchardCore.ReverseProxy` module for a complete reference implementation demonstrating:
+
+- Settings class with `IConfigurableSettings` and `[ConfigurationProperty]` attributes
+- View model extending `ConfigurableSettingsViewModel<T>`
+- Display driver extending `ConfigurableSiteSettingsDisplayDriver<T, TViewModel>`
+- View using tag helpers (`<config-alert>`, `<config-badge>`, `<config-override-warning>`, `config-property`)
+- Service registration in Startup

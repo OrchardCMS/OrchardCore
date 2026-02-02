@@ -5,36 +5,22 @@
 
 @inject IClientIPAddressAccessor ClientIPAddressAccessor
 
-@if (Model.HasFileOverrides)
-{
-    <div class="alert alert-info" role="alert">
-        <h5 class="alert-heading">
-            <i class="fa-solid fa-file-code me-2"></i>@T["Configuration File Active"]
-        </h5>
-        <p class="mb-2">@T["Some settings are configured via appsettings.json and may override values entered here."]</p>
-        @if (Model.IsReadOnly)
-        {
-            <p class="mb-0 fw-bold">@T["UI configuration is disabled. All settings are managed through configuration files."]</p>
-        }
-        else
-        {
-            <p class="mb-0 small">
-                @T["Properties with the {0} badge are configured from files.", Html.Raw("<span class=\"badge text-bg-info\">Config File</span>")]
-            </p>
-        }
-    </div>
-}
+@* Configuration alert - shows when file configuration is active *@
+<config-alert metadata="Model.Metadata" />
 
 <fieldset @(Model.IsReadOnly ? "disabled" : "")>
     <div class="mb-3" asp-validation-class-for="EnableXForwardedFor">
         <div class="form-check">
             <label class="form-check-label">
-                <input asp-for="EnableXForwardedFor" class="form-check-input" />
+                <input asp-for="EnableXForwardedFor" class="form-check-input"
+                       config-property="ForwardedHeaders"
+                       config-metadata="Model.Metadata"
+                       config-readonly="Model.IsReadOnly" />
                 @T["Enables the forwarding of the HTTP header X-Forwarded-For"]
             </label>
             @if (Model.IsPropertyOverridden("ForwardedHeaders"))
             {
-                <span class="badge text-bg-info ms-2" title="@T["Value is set from appsettings.json"]" data-bs-toggle="tooltip">@T["Config File"]</span>
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
             }
         </div>
         <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-For"]</span>
@@ -44,12 +30,15 @@
     <div class="mb-3" asp-validation-class-for="EnableXForwardedProto">
         <div class="form-check">
             <label class="form-check-label">
-                <input asp-for="EnableXForwardedProto" class="form-check-input" />
+                <input asp-for="EnableXForwardedProto" class="form-check-input"
+                       config-property="ForwardedHeaders"
+                       config-metadata="Model.Metadata"
+                       config-readonly="Model.IsReadOnly" />
                 @T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]
             </label>
             @if (Model.IsPropertyOverridden("ForwardedHeaders"))
             {
-                <span class="badge text-bg-info ms-2" title="@T["Value is set from appsettings.json"]" data-bs-toggle="tooltip">@T["Config File"]</span>
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
             }
         </div>
         <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]</span>
@@ -59,12 +48,15 @@
     <div class="mb-3" asp-validation-class-for="EnableXForwardedHost">
         <div class="form-check">
             <label class="form-check-label">
-                <input asp-for="EnableXForwardedHost" class="form-check-input" />
+                <input asp-for="EnableXForwardedHost" class="form-check-input"
+                       config-property="ForwardedHeaders"
+                       config-metadata="Model.Metadata"
+                       config-readonly="Model.IsReadOnly" />
                 @T["Enables the forwarding of the HTTP header X-Forwarded-Host"]
             </label>
             @if (Model.IsPropertyOverridden("ForwardedHeaders"))
             {
-                <span class="badge text-bg-info ms-2" title="@T["Value is set from appsettings.json"]" data-bs-toggle="tooltip">@T["Config File"]</span>
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
             }
         </div>
         <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Host"]</span>
@@ -76,14 +68,22 @@
             @T["Known Networks"]
             @if (Model.IsPropertyOverridden("KnownNetworks"))
             {
-                <span class="badge text-bg-info ms-2" title="@T["Value is set from appsettings.json"]" data-bs-toggle="tooltip">@T["Config File"]</span>
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
             }
         </label>
-        <textarea asp-for="KnownNetworks" class="form-control" rows="3"></textarea>
+        <textarea asp-for="KnownNetworks" class="form-control" rows="3"
+                  config-property="KnownNetworks"
+                  config-metadata="Model.Metadata"
+                  config-readonly="Model.IsReadOnly"></textarea>
         <span class="hint">@T["Enter IP networks in CIDR notation, one per line (e.g., 10.0.0.0/8). These networks are trusted to forward headers."]</span>
-        @if (Model.GetPropertyMetadata("KnownNetworks")?.MergeStrategy == PropertyMergeStrategy.Merge)
+        @{
+            var knownNetworksMetadata = Model.GetPropertyMetadata("KnownNetworks");
+        }
+        @if (knownNetworksMetadata?.MergeStrategy == PropertyMergeStrategy.Merge)
         {
-            <span class="hint text-info">@T["Networks from both UI and configuration files will be combined."]</span>
+            <span class="hint text-info">
+                <i class="fa-solid fa-code-merge me-1"></i>@T["Networks from both UI and configuration files will be combined."]
+            </span>
         }
     </div>
 
@@ -92,14 +92,22 @@
             @T["Known Proxies"]
             @if (Model.IsPropertyOverridden("KnownProxies"))
             {
-                <span class="badge text-bg-info ms-2" title="@T["Value is set from appsettings.json"]" data-bs-toggle="tooltip">@T["Config File"]</span>
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
             }
         </label>
-        <textarea asp-for="KnownProxies" class="form-control" rows="3"></textarea>
+        <textarea asp-for="KnownProxies" class="form-control" rows="3"
+                  config-property="KnownProxies"
+                  config-metadata="Model.Metadata"
+                  config-readonly="Model.IsReadOnly"></textarea>
         <span class="hint">@T["Enter IP addresses of known reverse proxies, one per line. These proxies are trusted to forward headers."]</span>
-        @if (Model.GetPropertyMetadata("KnownProxies")?.MergeStrategy == PropertyMergeStrategy.Merge)
+        @{
+            var knownProxiesMetadata = Model.GetPropertyMetadata("KnownProxies");
+        }
+        @if (knownProxiesMetadata?.MergeStrategy == PropertyMergeStrategy.Merge)
         {
-            <span class="hint text-info">@T["Proxies from both UI and configuration files will be combined."]</span>
+            <span class="hint text-info">
+                <i class="fa-solid fa-code-merge me-1"></i>@T["Proxies from both UI and configuration files will be combined."]
+            </span>
         }
     </div>
 </fieldset>

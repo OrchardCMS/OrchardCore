@@ -68,7 +68,29 @@ public abstract class ConfigurableSettingsViewModel<TSettings>
     /// <summary>
     /// Gets whether there are any file-configured overrides.
     /// </summary>
-    public bool HasFileOverrides => Metadata?.IsConfiguredFromFile ?? false;
+    /// <remarks>
+    /// Checks both the <see cref="SettingsConfigurationMetadata.IsConfiguredFromFile"/> flag
+    /// and also scans properties for any with <see cref="ConfigurationSource.ConfigurationFile"/> source.
+    /// </remarks>
+    public bool HasFileOverrides
+    {
+        get
+        {
+            if (Metadata == null)
+            {
+                return false;
+            }
+
+            // Check the flag first
+            if (Metadata.IsConfiguredFromFile)
+            {
+                return true;
+            }
+
+            // Also check if any property has file source (defensive check)
+            return Metadata.GetOverriddenProperties().Any();
+        }
+    }
 
     /// <summary>
     /// Gets the display name for a specific property.

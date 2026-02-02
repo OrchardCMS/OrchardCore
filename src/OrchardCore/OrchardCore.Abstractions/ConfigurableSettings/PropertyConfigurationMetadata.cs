@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace OrchardCore.Settings;
 
 /// <summary>
@@ -98,7 +100,7 @@ public class PropertyConfigurationMetadata
     {
         if (!IsSensitive || EffectiveValue == null)
         {
-            return EffectiveValue?.ToString();
+            return GetDisplayValue();
         }
 
         var value = EffectiveValue.ToString();
@@ -117,5 +119,54 @@ public class PropertyConfigurationMetadata
 
         var maskedLength = value.Length - visibleChars;
         return new string(maskChar, maskedLength) + value[maskedLength..];
+    }
+
+    /// <summary>
+    /// Gets a display-friendly string representation of the effective value.
+    /// </summary>
+    /// <returns>A formatted string suitable for display in the UI.</returns>
+    public string GetDisplayValue()
+    {
+        return FormatValueForDisplay(EffectiveValue);
+    }
+
+    /// <summary>
+    /// Gets a display-friendly string representation of the file value.
+    /// </summary>
+    /// <returns>A formatted string suitable for display in the UI.</returns>
+    public string GetFileDisplayValue()
+    {
+        return FormatValueForDisplay(FileValue);
+    }
+
+    /// <summary>
+    /// Gets a display-friendly string representation of the database value.
+    /// </summary>
+    /// <returns>A formatted string suitable for display in the UI.</returns>
+    public string GetDatabaseDisplayValue()
+    {
+        return FormatValueForDisplay(DatabaseValue);
+    }
+
+    private static string FormatValueForDisplay(object value)
+    {
+        if (value == null)
+        {
+            return null;
+        }
+
+        // Handle arrays and collections
+        if (value is IEnumerable enumerable && value is not string)
+        {
+            var items = new List<string>();
+            foreach (var item in enumerable)
+            {
+                items.Add(item?.ToString() ?? "(null)");
+            }
+
+            return items.Count == 0 ? "(empty)" : string.Join(", ", items);
+        }
+
+        return value.ToString();
     }
 }
