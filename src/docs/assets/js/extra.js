@@ -96,8 +96,9 @@
     // Fetch the version list from the main branch
     fetchVersions(function(versions) {
       if (!versions || !versions.versions) {
-        // Fallback: show current version only
-        versionLabel.textContent = currentVersionSlug;
+        // Fallback: show current version slug with a user-friendly format
+        var fallbackName = currentVersionSlug === 'latest' ? 'Latest' : 'v' + currentVersionSlug;
+        versionLabel.textContent = fallbackName;
         return;
       }
 
@@ -147,7 +148,7 @@
     fetch(url)
       .then(function(response) {
         if (!response.ok) {
-          throw new Error('Failed to fetch versions');
+          throw new Error('Failed to fetch versions: HTTP ' + response.status);
         }
         return response.json();
       })
@@ -155,7 +156,7 @@
         callback(data);
       })
       .catch(function(error) {
-        console.warn('Could not fetch versions from ' + url + ':', error);
+        console.warn('Could not fetch versions from ' + url + ':', error.message);
         // If fetching from main branch failed and we're not local, no fallback
         callback(null);
       });
