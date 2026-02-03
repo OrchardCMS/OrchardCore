@@ -255,7 +255,6 @@ public class AdminController : Controller
                 continue;
             }
 
-            // Group by primary context (first part before ';').
             foreach (var primaryGroup in descriptors.GroupBy(d => GetPrimaryContext(d.Context)))
             {
                 var existingGroup = groups.FirstOrDefault(g => g.Name == primaryGroup.Key);
@@ -271,7 +270,6 @@ public class AdminController : Controller
                     groups.Add(existingGroup);
                 }
 
-                // Group by sub-context (second part after ';', if present).
                 foreach (var subGroup in primaryGroup.GroupBy(d => GetSubContext(d.Context)))
                 {
                     TranslatableStringSubGroupViewModel existingSubGroup = null;
@@ -329,13 +327,14 @@ public class AdminController : Controller
         var translationsDocument = await _translationsManager.GetTranslationsDocumentAsync();
 
         // Get all translatable strings.
-        IEnumerable<DataLocalizedString> descriptors = [];
+        var allDescriptors = new List<DataLocalizedString>();
         foreach (var provider in _localizationDataProviders)
         {
-            descriptors = await provider.GetDescriptorsAsync();
+            var descriptors = await provider.GetDescriptorsAsync();
+            allDescriptors.AddRange(descriptors);
         }
 
-        var totalStrings = descriptors.Count();
+        var totalStrings = allDescriptors.Count;
         var totalTranslated = 0;
 
         var statistics = new TranslationStatisticsViewModel
@@ -355,7 +354,7 @@ public class AdminController : Controller
                 ? translations.ToDictionary(t => $"{t.Context}|{t.Key}", t => t.Value, StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, string>();
 
-            var cultureTranslated = descriptors.Count(d => cultureTranslations.TryGetValue($"{d.Context}|{d.Name}", out var value) &&
+            var cultureTranslated = allDescriptors.Count(d => cultureTranslations.TryGetValue($"{d.Context}|{d.Name}", out var value) &&
                 !string.IsNullOrWhiteSpace(value));
 
             totalTranslated += cultureTranslated;
@@ -369,7 +368,7 @@ public class AdminController : Controller
             });
 
             // Calculate per-category statistics for this culture (use primary context).
-            var categoryStats = descriptors
+            var categoryStats = allDescriptors
                 .GroupBy(d => GetPrimaryContext(d.Context))
                 .Select(g => new CategoryStatisticsViewModel
                 {
