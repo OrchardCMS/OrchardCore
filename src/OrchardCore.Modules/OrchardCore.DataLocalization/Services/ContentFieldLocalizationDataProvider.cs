@@ -18,7 +18,7 @@ public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
         var typeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
         // Use "Content Fields" as primary context and part name as sub-context for grouping.
-        // Format: "Content Fields;PartName" where PartName is the content part name.
+        // Format: "Content Fields:PartName" where PartName is the content part name.
         return typeDefinitions
             .SelectMany(t => t.Parts)
             .SelectMany(p => p.PartDefinition.Fields.Select(f =>

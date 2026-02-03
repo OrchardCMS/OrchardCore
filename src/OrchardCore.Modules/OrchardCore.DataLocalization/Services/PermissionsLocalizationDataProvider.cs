@@ -31,6 +31,7 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
     {
         var descriptors = new List<DataLocalizedString>();
         var seenDescriptions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
         foreach (var provider in _permissionProviders)
@@ -45,8 +46,7 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
             foreach (var permission in permissions)
             {
                 // Skip permissions without descriptions or with template placeholders.
-                if (string.IsNullOrWhiteSpace(permission.Description) ||
-                    permission.Description.Contains("{0}"))
+                if (string.IsNullOrWhiteSpace(permission.Description) || permission.Description.Contains("{0}"))
                 {
                     continue;
                 }
@@ -67,23 +67,16 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
                     ? PermissionsContext
                     : PermissionsContext + Constants.ContextSeparator + groupName;
 
-                descriptors.Add(new DataLocalizedString(
-                    context,
-                    permission.Description,
-                    string.Empty));
+                descriptors.Add(new DataLocalizedString(context, permission.Description, string.Empty));
 
                 // Also add category if present and not a template.
-                if (!string.IsNullOrWhiteSpace(permission.Category) &&
-                    !permission.Category.Contains("{0}"))
+                if (!string.IsNullOrWhiteSpace(permission.Category) && !permission.Category.Contains("{0}"))
                 {
                     var categoryKey = $"{groupName}|{permission.Category}";
 
                     if (seenDescriptions.Add(categoryKey))
                     {
-                        descriptors.Add(new DataLocalizedString(
-                            context,
-                            permission.Category,
-                            string.Empty));
+                        descriptors.Add(new DataLocalizedString(context, permission.Category, string.Empty));
                     }
                 }
             }
@@ -99,7 +92,7 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
             return category;
         }
 
-        if (feature == null)
+        if (feature is null)
         {
             return null;
         }

@@ -50,12 +50,13 @@ public class AdminController : Controller
         }
 
         // Default to first allowed culture if none specified.
-        culture ??= allowedCultures.First().Name;
+        var firstCulture = allowedCultures[0].Name;
+        culture ??= firstCulture;
 
         // Validate the requested culture is allowed.
         if (!allowedCultures.Any(c => c.Name == culture))
         {
-            culture = allowedCultures.First().Name;
+            culture = firstCulture;
         }
 
         var isReadOnly = !allowedCultures.Any(c => c.Name == culture && c.CanEdit);
@@ -137,18 +138,22 @@ public class AdminController : Controller
                 Context = t.Context,
                 Key = t.Key,
                 Value = t.Value,
-            })
-            .ToList();
+            });
 
         await _translationsManager.UpdateTranslationAsync(model.Culture, translations);
 
-        return Ok(new { success = true, message = S["Translations saved successfully."].Value });
+        return Ok(new
+        {
+            success = true,
+            message = S["Translations saved successfully."].Value,
+        });
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAllowedCulturesJson()
     {
         var cultures = await GetAllowedCulturesAsync();
+
         return Ok(cultures);
     }
 
@@ -195,7 +200,9 @@ public class AdminController : Controller
     private async Task<IList<CultureViewModel>> GetAllowedCulturesAsync()
     {
         var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+
         var canManageAll = await _authorizationService.AuthorizeAsync(User, Permissions.ManageTranslations);
+
         var canView = await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations);
 
         var cultures = new List<CultureViewModel>();
@@ -212,6 +219,7 @@ public class AdminController : Controller
             if (!canEditCulture)
             {
                 var permission = Permissions.CreateCulturePermission(cultureName, displayName);
+
                 canEditCulture = await _authorizationService.AuthorizeAsync(User, permission);
             }
 
@@ -235,22 +243,20 @@ public class AdminController : Controller
         var translationsDocument = await _translationsManager.GetTranslationsDocumentAsync();
         var existingTranslations = translationsDocument.Translations.TryGetValue(culture, out var translations)
             ? translations.ToDictionary(t => $"{t.Context}|{t.Key}", t => t.Value, StringComparer.OrdinalIgnoreCase)
-            : new Dictionary<string, string>();
+            : [];
 
         var groups = new List<TranslatableStringGroupViewModel>();
-
         foreach (var provider in _localizationDataProviders)
         {
             var descriptors = await provider.GetDescriptorsAsync();
-            var descriptorsList = descriptors.ToList();
 
-            if (descriptorsList.Count == 0)
+            if (!descriptors.Any())
             {
                 continue;
             }
 
             // Group by primary context (first part before ';').
-            foreach (var primaryGroup in descriptorsList.GroupBy(d => GetPrimaryContext(d.Context)))
+            foreach (var primaryGroup in descriptors.GroupBy(d => GetPrimaryContext(d.Context)))
             {
                 var existingGroup = groups.FirstOrDefault(g => g.Name == primaryGroup.Key);
 
@@ -297,13 +303,13 @@ public class AdminController : Controller
                             Value = translatedValue ?? string.Empty,
                         };
 
-                        if (existingSubGroup != null)
+                        if (existingSubGroup is null)
                         {
-                            existingSubGroup.Strings.Add(stringViewModel);
+                            existingGroup.Strings.Add(stringViewModel);
                         }
                         else
                         {
-                            existingGroup.Strings.Add(stringViewModel);
+                            existingSubGroup.Strings.Add(stringViewModel);
                         }
                     }
                 }
@@ -323,14 +329,13 @@ public class AdminController : Controller
         var translationsDocument = await _translationsManager.GetTranslationsDocumentAsync();
 
         // Get all translatable strings.
-        var allDescriptors = new List<DataLocalizedString>();
+        IEnumerable<DataLocalizedString> descriptors = [];
         foreach (var provider in _localizationDataProviders)
         {
-            var descriptors = await provider.GetDescriptorsAsync();
-            allDescriptors.AddRange(descriptors);
+            descriptors = await provider.GetDescriptorsAsync();
         }
 
-        var totalStrings = allDescriptors.Count;
+        var totalStrings = descriptors.Count();
         var totalTranslated = 0;
 
         var statistics = new TranslationStatisticsViewModel
@@ -350,8 +355,7 @@ public class AdminController : Controller
                 ? translations.ToDictionary(t => $"{t.Context}|{t.Key}", t => t.Value, StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, string>();
 
-            var cultureTranslated = allDescriptors.Count(d =>
-                cultureTranslations.TryGetValue($"{d.Context}|{d.Name}", out var value) &&
+            var cultureTranslated = descriptors.Count(d => cultureTranslations.TryGetValue($"{d.Context}|{d.Name}", out var value) &&
                 !string.IsNullOrWhiteSpace(value));
 
             totalTranslated += cultureTranslated;
@@ -365,14 +369,13 @@ public class AdminController : Controller
             });
 
             // Calculate per-category statistics for this culture (use primary context).
-            var categoryStats = allDescriptors
+            var categoryStats = descriptors
                 .GroupBy(d => GetPrimaryContext(d.Context))
                 .Select(g => new CategoryStatisticsViewModel
                 {
                     Category = g.Key,
                     Total = g.Count(),
-                    Translated = g.Count(d =>
-                        cultureTranslations.TryGetValue($"{d.Context}|{d.Name}", out var value) &&
+                    Translated = g.Count(d => cultureTranslations.TryGetValue($"{d.Context}|{d.Name}", out var value) &&
                         !string.IsNullOrWhiteSpace(value)),
                 })
                 .OrderBy(c => c.Category)
@@ -394,13 +397,17 @@ public class AdminController : Controller
     {
         var index = context.IndexOf(Constants.ContextSeparator);
 
-        return index < 0 ? context : context[..index];
+        return index < 0
+            ? context
+            : context[..index];
     }
 
     private static string GetSubContext(string context)
     {
         var index = context.IndexOf(Constants.ContextSeparator);
 
-        return index < 0 ? null : context[(index + 1)..];
+        return index < 0
+            ? null
+            : context[(index + 1)..];
     }
 }
