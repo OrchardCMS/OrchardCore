@@ -12,15 +12,15 @@ public sealed class Permissions : IPermissionProvider
     /// <summary>
     /// Read-only permission to view translations and statistics.
     /// </summary>
-    public static readonly Permission ViewTranslations =
-        new("ViewTranslations", "View dynamic translations and statistics");
+    public static readonly Permission ViewDynamicTranslations =
+        new("ViewDynamicTranslations", "View dynamic translations and statistics");
 
     /// <summary>
     /// Permission to manage all dynamic translations.
-    /// Implies <see cref="ViewTranslations"/>.
+    /// Implies <see cref="ViewDynamicTranslations"/>.
     /// </summary>
     public static readonly Permission ManageTranslations =
-        new("ManageTranslations", "Manage all dynamic translations", [ViewTranslations]);
+        new("ManageTranslations", "Manage all dynamic translations", [ViewDynamicTranslations]);
 
     /// <summary>
     /// Legacy permission for managing dynamic localizations.
@@ -33,7 +33,7 @@ public sealed class Permissions : IPermissionProvider
     /// Template permission for culture-specific translation management.
     /// </summary>
     private static readonly Permission _manageTranslationsForCulture =
-        new("ManageTranslations_{0}", "Manage {0} translations", [ManageTranslations, ViewTranslations]);
+        new("ManageTranslations_{0}", "Manage {0} translations", [ManageTranslations, ViewDynamicTranslations]);
 
     private static readonly Dictionary<string, Permission> _culturePermissions = [];
 
@@ -85,7 +85,7 @@ public sealed class Permissions : IPermissionProvider
     {
         var permissions = new List<Permission>
         {
-            ViewTranslations,
+            ViewDynamicTranslations,
             ManageTranslations,
             ManageLocalization,
         };
@@ -115,7 +115,7 @@ public sealed class Permissions : IPermissionProvider
         new PermissionStereotype
         {
             Name = OrchardCoreConstants.Roles.Editor,
-            Permissions = [ViewTranslations],
+            Permissions = [ViewDynamicTranslations],
         },
     ];
 }

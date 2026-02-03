@@ -7,13 +7,13 @@
 }
 
 <zone Name="Title">
-    <h1>@RenderTitleSegments(T["Translations"])</h1>
+    <h1>@RenderTitleSegments(T["Dynamic Translations"])</h1>
 </zone>
 
 @if (Model.IsReadOnly)
 {
     <div class="alert alert-info" role="alert">
-        @T["You have read-only access to translations. Contact an administrator to request edit permissions."]
+        @T["You have read-only access to dynamic translations. Contact an administrator to request edit permissions."]
     </div>
 }
 

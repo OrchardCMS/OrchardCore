@@ -34,7 +34,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                             .Add(S["Translations"], S["Translations"].PrefixPosition(), translations => translations
                                 .AddClass("translations")
                                 .Id("translations")
-                                .Permission(Permissions.ViewTranslations)
+                                .Permission(Permissions.ViewDynamicTranslations)
                                 .Action(_routeValues["action"].ToString(), _routeValues["controller"].ToString(), _routeValues)
                                 .LocalNav()
                             )
@@ -48,10 +48,10 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
-                    .Add(S["Translations"], S["Translations"].PrefixPosition(), translations => translations
-                        .AddClass("translations")
-                        .Id("translations")
-                        .Permission(Permissions.ViewTranslations)
+                    .Add(S["Dynamic Translations"], S["Dynamic Translations"].PrefixPosition(), translations => translations
+                        .AddClass("dynamic-translations")
+                        .Id("dynamicTranslations")
+                        .Permission(Permissions.ViewDynamicTranslations)
                         .Action(_routeValues["action"].ToString(), _routeValues["controller"].ToString(), _routeValues)
                         .LocalNav()
                     )
