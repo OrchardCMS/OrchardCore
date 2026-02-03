@@ -1,6 +1,9 @@
 (function () {
   // Configuration
   var DOCS_HOSTNAME = 'docs.orchardcore.net';
+  // URL to fetch versions from - always points to the latest/main branch version
+  // This ensures all documentation versions show the same, up-to-date version list
+  var VERSIONS_URL = 'https://' + DOCS_HOSTNAME + '/en/latest/assets/versions.json';
 
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
@@ -69,15 +72,15 @@
 
   /**
    * Initializes the version selector dropdown functionality.
-   * Handles opening/closing the dropdown and switching between versions.
+   * Fetches the version list from the main branch and sets up event handlers.
    */
   function initVersionSelector() {
     var versionContainer = document.querySelector('.md-version');
     var versionButton = document.querySelector('.md-version__current');
     var versionLabel = document.getElementById('current-version-label');
-    var versionLinks = document.querySelectorAll('.md-version__link');
+    var versionList = document.getElementById('version-list');
 
-    if (!versionContainer || !versionButton) {
+    if (!versionContainer || !versionButton || !versionList) {
       return;
     }
 
@@ -90,27 +93,28 @@
     // Determine current version from URL
     var currentVersionSlug = determineSelectedBranch();
 
-    // Update the label and mark the current version
-    versionLinks.forEach(function(link) {
-      var slug = link.getAttribute('data-version-slug');
-      var name = link.getAttribute('data-version-name');
-
-      if (slug === currentVersionSlug) {
-        link.classList.add('is-current');
-        if (versionLabel) {
-          versionLabel.textContent = name;
-        }
+    // Fetch the version list from the main branch
+    fetchVersions(function(versions) {
+      if (!versions || !versions.versions) {
+        // Fallback: show current version only
+        versionLabel.textContent = currentVersionSlug;
+        return;
       }
+
+      // Populate the version list
+      populateVersionList(versionList, versions.versions, currentVersionSlug, versionLabel);
+
+      // Set up event handlers after populating the list
+      setupEventHandlers(versionContainer, versionButton, currentVersionSlug);
     });
 
-    // Toggle dropdown on button click
+    // Set up basic toggle functionality immediately (before fetch completes)
     versionButton.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
       versionContainer.classList.toggle('is-open');
     });
 
-    // Handle keyboard navigation
     versionButton.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -120,30 +124,100 @@
       }
     });
 
-    // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
       if (!versionContainer.contains(e.target)) {
         versionContainer.classList.remove('is-open');
       }
     });
+  }
 
-    // Handle version link clicks
+  /**
+   * Fetches the version list from the main branch.
+   * Falls back to local versions if fetch fails.
+   *
+   * @param {function} callback - Called with the versions data
+   */
+  function fetchVersions(callback) {
+    // For local development, try to use local versions file first
+    var isLocal = window.location.origin.indexOf('readthedocs') === -1 &&
+                  window.location.hostname !== DOCS_HOSTNAME;
+
+    var url = isLocal ? 'assets/versions.json' : VERSIONS_URL;
+
+    fetch(url)
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('Failed to fetch versions');
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        callback(data);
+      })
+      .catch(function(error) {
+        console.warn('Could not fetch versions from ' + url + ':', error);
+        // If fetching from main branch failed and we're not local, no fallback
+        callback(null);
+      });
+  }
+
+  /**
+   * Populates the version dropdown list with version items.
+   *
+   * @param {HTMLElement} listElement - The UL element to populate
+   * @param {Array} versions - Array of version objects
+   * @param {string} currentVersionSlug - The current version slug
+   * @param {HTMLElement} labelElement - The element showing the current version
+   */
+  function populateVersionList(listElement, versions, currentVersionSlug, labelElement) {
+    listElement.innerHTML = '';
+
+    versions.forEach(function(version) {
+      var li = document.createElement('li');
+      li.className = 'md-version__item';
+
+      var a = document.createElement('a');
+      a.href = '#';
+      a.className = 'md-version__link';
+      a.setAttribute('data-version-slug', version.slug);
+      a.setAttribute('data-version-name', version.name);
+      a.textContent = version.name;
+
+      if (version.slug === currentVersionSlug) {
+        a.classList.add('is-current');
+        if (labelElement) {
+          labelElement.textContent = version.name;
+        }
+      }
+
+      li.appendChild(a);
+      listElement.appendChild(li);
+    });
+  }
+
+  /**
+   * Sets up event handlers for version link clicks.
+   *
+   * @param {HTMLElement} versionContainer - The version selector container
+   * @param {HTMLElement} versionButton - The toggle button
+   * @param {string} currentVersionSlug - The current version slug
+   */
+  function setupEventHandlers(versionContainer, versionButton, currentVersionSlug) {
+    var versionLinks = document.querySelectorAll('.md-version__link');
+
     versionLinks.forEach(function(link) {
       link.addEventListener('click', function(e) {
         e.preventDefault();
         var targetVersionSlug = link.getAttribute('data-version-slug');
 
         if (targetVersionSlug === currentVersionSlug) {
-          // Already on this version, just close the dropdown
           versionContainer.classList.remove('is-open');
           return;
         }
 
-        // Navigate to the same page on the selected version
         navigateToVersion(targetVersionSlug);
       });
 
-      // Keyboard support for links
       link.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -161,7 +235,6 @@
    */
   function navigateToVersion(targetVersionSlug) {
     var currentPath = window.location.pathname;
-    var currentVersionSlug = determineSelectedBranch();
     var newPath;
 
     if (window.location.origin.indexOf('readthedocs') > -1) {

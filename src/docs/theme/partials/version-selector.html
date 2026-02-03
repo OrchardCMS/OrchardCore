@@ -1,4 +1,6 @@
 <!-- Version selector component for switching between documentation versions -->
+<!-- The version list is loaded dynamically from the main branch to ensure all versions -->
+<!-- are always visible regardless of which documentation version is being viewed -->
 <div class="md-version">
   <button class="md-version__current" aria-label="Select version">
     <span class="md-version__icon">
@@ -6,15 +8,9 @@
         <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/>
       </svg>
     </span>
-    <span class="md-version__label" id="current-version-label">{{ config.extra.version.default }}</span>
+    <span class="md-version__label" id="current-version-label">Loading...</span>
   </button>
-  <ul class="md-version__list">
-    {% for version in config.extra.version.versions %}
-    <li class="md-version__item">
-      <a href="#" class="md-version__link" data-version-slug="{{ version.slug }}" data-version-name="{{ version.name }}">
-        {{ version.name }}
-      </a>
-    </li>
-    {% endfor %}
+  <ul class="md-version__list" id="version-list">
+    <!-- Version list is populated dynamically by JavaScript -->
   </ul>
 </div>
