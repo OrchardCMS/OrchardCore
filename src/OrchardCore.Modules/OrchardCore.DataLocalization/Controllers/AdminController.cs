@@ -73,7 +73,7 @@ public class AdminController : Controller
 
     public async Task<IActionResult> Statistics()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewTranslations))
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations))
         {
             return Forbid();
         }
@@ -86,7 +86,7 @@ public class AdminController : Controller
     [HttpGet]
     public async Task<IActionResult> GetStrings(string culture)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewTranslations))
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations))
         {
             return Forbid();
         }
@@ -104,7 +104,7 @@ public class AdminController : Controller
     [HttpGet]
     public async Task<IActionResult> GetStatisticsJson()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewTranslations))
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations))
         {
             return Forbid();
         }
@@ -155,12 +155,8 @@ public class AdminController : Controller
     private async Task<bool> HasAnyTranslationPermissionAsync()
     {
         // Check if user has view permission or any edit permission.
-        if (await _authorizationService.AuthorizeAsync(User, Permissions.ViewTranslations))
-        {
-            return true;
-        }
-
-        if (await _authorizationService.AuthorizeAsync(User, Permissions.ManageTranslations))
+        if (await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations) ||
+            await _authorizationService.AuthorizeAsync(User, Permissions.ManageTranslations))
         {
             return true;
         }
@@ -200,7 +196,7 @@ public class AdminController : Controller
     {
         var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
         var canManageAll = await _authorizationService.AuthorizeAsync(User, Permissions.ManageTranslations);
-        var canView = await _authorizationService.AuthorizeAsync(User, Permissions.ViewTranslations);
+        var canView = await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations);
 
         var cultures = new List<CultureViewModel>();
 
