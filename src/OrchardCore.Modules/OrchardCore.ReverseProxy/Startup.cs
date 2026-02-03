@@ -29,7 +29,7 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddSiteDisplayDriver<ReverseProxySettingsDisplayDriver>();
 
-        services.AddSingleton<IReverseProxyService, ReverseProxyService>();
+        services.AddSingleton<ReverseProxyService>();
 
         services.AddTransient<IConfigureOptions<ReverseProxySettings>, ReverseProxySettingsConfiguration>();
 
