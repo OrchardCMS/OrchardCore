@@ -16,7 +16,7 @@
         <div class="d-flex align-items-center">
             <div class="flex-grow-1 me-3">
                 <div class="progress" style="height: 20px;">
-                    <div class="progress-bar" :class="getProgressClass(stats.overall.percentage)"
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" :class="getProgressClass(stats.overall.percentage)"
                          role="progressbar"
                          :style="{ width: stats.overall.percentage + '%' }"
                          :aria-valuenow="stats.overall.percentage"
@@ -50,7 +50,7 @@
                     </td>
                     <td>
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar" :class="getProgressClass(culture.percentage)"
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" :class="getProgressClass(culture.percentage)"
                                  role="progressbar"
                                  :style="{ width: culture.percentage + '%' }"
                                  :aria-valuenow="culture.percentage"
@@ -97,7 +97,7 @@
                     </td>
                     <td>
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar" :class="getProgressClass(category.percentage)"
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" :class="getProgressClass(category.percentage)"
                                  role="progressbar"
                                  :style="{ width: category.percentage + '%' }"
                                  :aria-valuenow="category.percentage"
