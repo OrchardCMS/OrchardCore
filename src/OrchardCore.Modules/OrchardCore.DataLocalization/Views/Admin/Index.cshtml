@@ -81,7 +81,7 @@
     <div v-if="!isLoading">
         <fieldset class="translations-list mb-3" v-for="(provider, index) in filteredProviders" :key="provider.name">
             <legend>
-                <span>{{ provider.name }}</span>
+                <span class="me-1">{{ provider.name }}</span>
                 <span class="hint">({{ getTotalStringsCount(provider) }} @T["strings"]<span v-if="getTotalTranslatedCount(provider) > 0">, {{ getTotalTranslatedCount(provider) }} @T["translated"]</span>)</span>
             </legend>
 
@@ -89,7 +89,7 @@
             <table v-if="getFilteredStrings(provider.strings).length > 0" class="table">
                 <thead>
                     <tr>
-                        <th class="col-5">@T["Original"]</th>
+                        <th class="col-5">@T["Key"]</th>
                         <th class="col-7">@T["Translation"]</th>
                     </tr>
                 </thead>
@@ -118,7 +118,7 @@
                 <table class="table table-sm">
                     <thead>
                         <tr>
-                            <th class="col-5">@T["Original"]</th>
+                            <th class="col-5">@T["Key"]</th>
                             <th class="col-7">@T["Translation"]</th>
                         </tr>
                     </thead>
