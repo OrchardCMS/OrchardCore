@@ -14,9 +14,6 @@ public static class OrchardCoreBuilderExtensions
 
             tenantServices.PostConfigure<ReverseProxySettings>(settings =>
             {
-                settings.KnownNetworks = [];
-                settings.KnownProxies = [];
-
                 configurationSection.Bind(settings);
 
                 settings.FromConfiguration = true;
