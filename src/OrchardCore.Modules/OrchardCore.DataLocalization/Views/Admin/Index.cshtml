@@ -10,15 +10,6 @@
     <h1>@RenderTitleSegments(T["Translations"])</h1>
 </zone>
 
-<zone Name="Breadcrumbs">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin", new { area = "OrchardCore.Admin" })">@T["Dashboard"]</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@T["Translations"]</li>
-        </ol>
-    </nav>
-</zone>
-
 @if (Model.IsReadOnly)
 {
     <div class="alert alert-info" role="alert">
