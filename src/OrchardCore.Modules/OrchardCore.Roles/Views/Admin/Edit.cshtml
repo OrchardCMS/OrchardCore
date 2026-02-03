@@ -72,9 +72,10 @@
 
             @foreach (var group in Model.RoleCategoryPermissions.OrderBy(x => x.Key.Title).ThenBy(x => x.Key.Source))
             {
+                var permissionsContext = $"Permissions;{group.Key.Title}";
                 <fieldset class="permissions-list">
                     <legend>
-                        <span>@D[group.Key.Title, "Permissions"]</span>
+                        <span>@D[group.Key.Title, permissionsContext]</span>
                         @if (!string.IsNullOrEmpty(group.Key.Source))
                         {
                             <span class="hint">(@group.Key.Source)</span>
@@ -95,9 +96,9 @@
                                 var description = string.IsNullOrEmpty(permission.Description)
                                     ? permission.Name
                                     : permission.Description;
-                                <tr data-text="@D[description, "Permissions"]">
+                                <tr data-text="@D[description, permissionsContext]">
                                     <td class="col-10">
-                                        @D[description, "Permissions"]
+                                        @D[description, permissionsContext]
                                         @if (permission.IsSecurityCritical)
                                         {
                                             <div class="float-end">

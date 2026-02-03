@@ -157,11 +157,11 @@
 
     <!-- Action buttons -->
     <div class="mb-3" v-if="!isReadOnly">
-        <button type="button" class="btn btn-primary save" @@click="saveTranslations" :disabled="!isDirty || isSaving">
+        <button type="button" class="btn btn-primary save me-2" @@click="saveTranslations" :disabled="!isDirty || isSaving">
             <span v-if="isSaving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
             @T["Save"]
         </button>
-        <a class="btn btn-secondary cancel" role="button" href="@Url.Action("Statistics", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Statistics"]</a>
+        <a class="btn btn-secondary" role="button" href="@Url.Action("Statistics", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Statistics"]</a>
     </div>
 </div>
 

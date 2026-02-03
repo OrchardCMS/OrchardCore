@@ -16,13 +16,6 @@ public sealed class AdminMenu : AdminNavigationProvider
         { "action", "Index" },
     };
 
-    private static readonly RouteValueDictionary _statisticsRouteValues = new()
-    {
-        { "area", "OrchardCore.DataLocalization" },
-        { "controller", "Admin" },
-        { "action", "Statistics" },
-    };
-
     internal readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
@@ -45,13 +38,6 @@ public sealed class AdminMenu : AdminNavigationProvider
                                 .Action(_routeValues["action"].ToString(), _routeValues["controller"].ToString(), _routeValues)
                                 .LocalNav()
                             )
-                            .Add(S["Translation Statistics"], S["Translation Statistics"].PrefixPosition(), statistics => statistics
-                                .AddClass("translationstatistics")
-                                .Id("translationstatistics")
-                                .Permission(Permissions.ViewTranslations)
-                                .Action(_statisticsRouteValues["action"].ToString(), _statisticsRouteValues["controller"].ToString(), _statisticsRouteValues)
-                                .LocalNav()
-                            )
                         )
                     )
                 );
@@ -67,13 +53,6 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .Id("translations")
                         .Permission(Permissions.ViewTranslations)
                         .Action(_routeValues["action"].ToString(), _routeValues["controller"].ToString(), _routeValues)
-                        .LocalNav()
-                    )
-                    .Add(S["Translation Statistics"], S["Translation Statistics"].PrefixPosition(), statistics => statistics
-                        .AddClass("translationstatistics")
-                        .Id("translationstatistics")
-                        .Permission(Permissions.ViewTranslations)
-                        .Action(_statisticsRouteValues["action"].ToString(), _statisticsRouteValues["controller"].ToString(), _statisticsRouteValues)
                         .LocalNav()
                     )
                 )
