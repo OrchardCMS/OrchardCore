@@ -1,13 +1,12 @@
 (function () {
-  // Initialize when DOM is ready
-  document.addEventListener('DOMContentLoaded', function() {
-    initVersionSelector();
-  });
+  // Configuration
+  var DOCS_HOSTNAME = 'docs.orchardcore.net';
 
-  // Also try to initialize on ReadTheDocs which may load scripts differently
+  // Initialize when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initVersionSelector);
   } else {
+    // DOM is already ready
     initVersionSelector();
   }
 
@@ -179,9 +178,8 @@
       }
     } else {
       // Local development or standalone MkDocs
-      // Simply redirect to the target version's root on RTD
-      var hostname = 'docs.orchardcore.net';
-      newPath = 'https://' + hostname + '/en/' + targetVersionSlug + '/';
+      // Redirect to the target version's root on RTD
+      newPath = 'https://' + DOCS_HOSTNAME + '/en/' + targetVersionSlug + '/';
       window.location.href = newPath;
       return;
     }
