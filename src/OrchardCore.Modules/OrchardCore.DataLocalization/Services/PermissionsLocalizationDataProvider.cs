@@ -1,4 +1,5 @@
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Data;
 using OrchardCore.Security.Permissions;
@@ -64,7 +65,7 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
 
                 var context = string.IsNullOrWhiteSpace(groupName)
                     ? PermissionsContext
-                    : $"{PermissionsContext};{groupName}";
+                    : PermissionsContext + Constants.ContextSeparator + groupName;
 
                 descriptors.Add(new DataLocalizedString(
                     context,
@@ -91,7 +92,7 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
         return descriptors;
     }
 
-    private static string GetGroupName(Environment.Extensions.Features.IFeatureInfo feature, string category)
+    private static string GetGroupName(IFeatureInfo feature, string category)
     {
         if (!string.IsNullOrWhiteSpace(category))
         {

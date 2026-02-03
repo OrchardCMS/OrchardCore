@@ -390,17 +390,17 @@ public class AdminController : Controller
         return statistics;
     }
 
-    private const char ContextSeparator = ';';
-
     private static string GetPrimaryContext(string context)
     {
-        var index = context.IndexOf(ContextSeparator);
+        var index = context.IndexOf(Constants.ContextSeparator);
+
         return index < 0 ? context : context[..index];
     }
 
     private static string GetSubContext(string context)
     {
-        var index = context.IndexOf(ContextSeparator);
+        var index = context.IndexOf(Constants.ContextSeparator);
+
         return index < 0 ? null : context[(index + 1)..];
     }
 }

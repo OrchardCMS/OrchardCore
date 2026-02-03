@@ -26,7 +26,7 @@ public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
             .SelectMany(t => t.Parts)
             .SelectMany(p => p.PartDefinition.Fields.Select(f =>
                 new DataLocalizedString(
-                    $"Content Fields;{p.PartDefinition.Name}",
+                    $"Content Fields{Constants.ContextSeparator}{p.PartDefinition.Name}",
                     f.DisplayName(),
                     string.Empty)))
             .DistinctBy(d => $"{d.Context}|{d.Name}");
