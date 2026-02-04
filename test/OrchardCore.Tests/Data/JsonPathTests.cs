@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Text.Json.Nodes;
 
 namespace OrchardCore.Tests.Data;
