@@ -1,33 +1,121 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Globalization;
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.DataLocalization;
 
 /// <summary>
-/// Represents the localization module permissions.
+/// Provides permissions for the Data Localization module.
 /// </summary>
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     /// <summary>
-    /// Gets a permission for managing the cultures.
+    /// Read-only permission to view translations and statistics.
     /// </summary>
-    public static readonly Permission ManageLocalization = new("ManageLocalization", "Manage dynamic localizations");
+    public static readonly Permission ViewDynamicTranslations =
+        new("ViewDynamicTranslations", "View dynamic translations and statistics");
 
-    private readonly IEnumerable<Permission> _allPermissions =
-    [
-        ManageLocalization
-    ];
+    /// <summary>
+    /// Permission to manage all dynamic translations.
+    /// Implies <see cref="ViewDynamicTranslations"/>.
+    /// </summary>
+    public static readonly Permission ManageTranslations =
+        new("ManageTranslations", "Manage all dynamic translations", [ViewDynamicTranslations]);
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    /// <summary>
+    /// Legacy permission for managing dynamic localizations.
+    /// Kept for backward compatibility; use <see cref="ManageTranslations"/> instead.
+    /// </summary>
+    public static readonly Permission ManageLocalization =
+        new("ManageLocalization", "Manage dynamic localizations", [ManageTranslations]);
+
+    /// <summary>
+    /// Template permission for culture-specific translation management.
+    /// </summary>
+    private static readonly Permission _manageTranslationsForCulture =
+        new("ManageTranslations_{0}", "Manage {0} translations", [ManageTranslations, ViewDynamicTranslations]);
+
+    private static readonly Dictionary<string, Permission> _culturePermissions = [];
+
+    private readonly ILocalizationService _localizationService;
+
+    public Permissions(ILocalizationService localizationService)
+    {
+        _localizationService = localizationService;
+    }
+
+    /// <summary>
+    /// Creates a dynamic permission for managing translations in a specific culture.
+    /// </summary>
+    /// <param name="cultureName">The culture name (e.g., "fr-FR").</param>
+    /// <param name="cultureDisplayName">The display name of the culture (e.g., "French (France)").</param>
+    /// <returns>A permission for managing translations in the specified culture.</returns>
+    public static Permission CreateCulturePermission(string cultureName, string cultureDisplayName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(cultureName);
+
+        if (_culturePermissions.TryGetValue(cultureName, out var existingPermission))
+        {
+            return existingPermission;
+        }
+
+        var permission = new Permission(
+            string.Format(_manageTranslationsForCulture.Name, cultureName),
+            string.Format(_manageTranslationsForCulture.Description, cultureDisplayName),
+            _manageTranslationsForCulture.ImpliedBy
+        )
+        {
+            Category = "Data Localization",
+        };
+
+        _culturePermissions[cultureName] = permission;
+
+        return permission;
+    }
+
+    /// <summary>
+    /// Gets the permission name for a specific culture.
+    /// </summary>
+    /// <param name="cultureName">The culture name (e.g., "fr-FR").</param>
+    /// <returns>The permission name (e.g., "ManageTranslations_fr-FR").</returns>
+    public static string GetCulturePermissionName(string cultureName)
+        => string.Format(_manageTranslationsForCulture.Name, cultureName);
+
+    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        var permissions = new List<Permission>
+        {
+            ViewDynamicTranslations,
+            ManageTranslations,
+            ManageLocalization,
+        };
+
+        var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+
+        foreach (var cultureName in supportedCultures)
+        {
+            var cultureInfo = CultureInfo.GetCultureInfo(cultureName);
+            var displayName = !string.IsNullOrEmpty(cultureInfo.DisplayName)
+                ? cultureInfo.DisplayName
+                : cultureInfo.NativeName;
+
+            permissions.Add(CreateCulturePermission(cultureName, displayName));
+        }
+
+        return permissions;
+    }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
-            Permissions = _allPermissions,
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions = [ManageTranslations],
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Editor,
+            Permissions = [ViewDynamicTranslations],
         },
     ];
 }
