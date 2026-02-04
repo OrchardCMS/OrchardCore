@@ -4,7 +4,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Data;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.DataLocalization.Services;
+namespace OrchardCore.Roles.Services;
 
 /// <summary>
 /// Provides permission descriptions as translatable strings for data localization.
