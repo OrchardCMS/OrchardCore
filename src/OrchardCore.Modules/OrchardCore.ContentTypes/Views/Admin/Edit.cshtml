@@ -1,12 +1,16 @@
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Localization.Data
 @using System.Linq
+@using Microsoft.Extensions.Options
 
 @model EditTypeViewModel
 
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
+@inject IOptions<ContentOptions> ContentOptions
+@inject IDataLocalizer D
 
 @{
     var contentSettings = Model.TypeDefinition.GetSettings<ContentSettings>();
@@ -50,10 +54,11 @@
         .ToList();
     }
 
-    var fields = (await ContentDefinitionService.GetFieldsAsync()).ToList();
+    var fields = ContentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type).ToList();
+    string localizedTypeName = D[Model.TypeDefinition.DisplayName, "Content Types"];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", localizedTypeName])</h1></zone>
 
 <form method="post">
     @Html.ValidationSummary()
@@ -99,7 +104,7 @@
                                     <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                                 }
                             </div>
-                            @fieldDefinition.DisplayName() <span class="hint dashed">@fieldDefinition.FieldDefinition.Name.CamelFriendly()</span>
+                            @D[fieldDefinition.DisplayName(), $"{typePart.PartDefinition.Name}.{fieldDefinition.DisplayName()}"] <span class="hint dashed">@fieldDefinition.FieldDefinition.Name.CamelFriendly()</span>
 
                             @if (!string.IsNullOrEmpty(fieldDefinition.DisplayMode()))
                             {
@@ -133,7 +138,7 @@
 
                 <li class="list-group-item@(partDefinition == typePart ? " bg-faded" : string.Empty)" style="cursor: move;">
                     <div class="w-100">
-                        @partDefinition.DisplayName()
+                        @D[partDefinition.DisplayName(), "Content Types"]
 
                         @if (partDefinition != typePart)
                         {

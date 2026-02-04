@@ -6,7 +6,9 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.DataLocalization;
 
@@ -26,13 +28,22 @@ public class Startup : StartupBase
         services.AddRecipeExecutionStep<TranslationsStep>();
 #pragma warning restore CS0618 // Type or member is obsolete
 
+        // Legacy deployment step (kept for backward compatibility).
         services.AddTransient<IDeploymentSource, AllDataTranslationsDeploymentSource>();
         services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllDataTranslationsDeploymentStep>());
         services.AddScoped<IDisplayDriver<DeploymentStep>, AllDataTranslationsDeploymentStepDriver>();
 
+        // New deployment step with culture/category filtering.
+        services.AddDeployment<TranslationsDeploymentSource, TranslationsDeploymentStep, TranslationsDeploymentStepDriver>();
+
         services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
         services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
+        services.AddScoped<ILocalizationDataProvider, PermissionsLocalizationDataProvider>();
+
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
 
         services.AddDataLocalization();
+        services.AddSingleton<IDataTranslationProvider, DataTranslationProvider>();
     }
 }
