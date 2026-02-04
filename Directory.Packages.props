@@ -24,7 +24,7 @@
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.3" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.3" />
     <PackageVersion Include="Jint" Version="4.5.0" />
-    <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
+    <PackageVersion Include="HtmlSanitizer" Version="9.1.893-beta" />
     <PackageVersion Include="Parlot" Version="1.5.7" />
     <PackageVersion Include="libphonenumber-csharp" Version="9.0.23" />
     <PackageVersion Include="Lorem.Universal.NET" Version="5.0.0" />

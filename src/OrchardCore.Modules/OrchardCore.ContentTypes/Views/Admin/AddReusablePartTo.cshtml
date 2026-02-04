@@ -1,10 +1,13 @@
 @model AddReusablePartViewModel
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 @{
     int i = 0;
+    string localizedTypeName = D[Model.Type.DisplayName, "Content Types"];
 }
 
 <script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
-<zone Name="Title"><h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1></zone>
+<zone Name="Title"><h1>@T["Add Named Part To \"{0}\"", localizedTypeName]</h1></zone>
 
 <form asp-action="AddReusablePartTo">
     @Html.ValidationSummary()
