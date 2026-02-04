@@ -2,17 +2,20 @@
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement.Metadata.Models
 @using Microsoft.AspNetCore.Localization
+@using OrchardCore.Localization.Data
 
 @inject OrchardCore.ContentLocalization.IContentLocalizationManager ContentLocalizationManager;
+@inject IDataLocalizer D
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
     var currentCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
     var contentItems = await ContentLocalizationManager.GetItemsForSetsAsync(Model.LocalizationSets, currentCulture);
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <div class="field field-type-localizationsetpickerfield field-name-@name">
-    <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
+    <span class="name">@localizedFieldName</span>
     @if (contentItems.Any())
     {
         foreach (var contentItem in contentItems)
