@@ -191,6 +191,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
         services.AddSingleton<IChunkFileUploadService, ChunkFileUploadService>();
         services.AddSingleton<IBackgroundTask, ChunkFileUploadBackgroundTask>();
+
+        services.AddScoped<IMediaSizeLimitProvider, ConfigurationMediaSizeLimitProvider>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
