@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Html.Models;
+using OrchardCore.Menu.Models;
 
-namespace OrchardCore.Html.ViewModels;
+namespace OrchardCore.Menu.ViewModels;
 
 public class HtmlMenuItemPartEditViewModel
 {

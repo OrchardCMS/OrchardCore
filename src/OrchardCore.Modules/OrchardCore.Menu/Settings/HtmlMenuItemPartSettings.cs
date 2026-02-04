@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace OrchardCore.Html.Settings;
+namespace OrchardCore.Menu.Settings;
 
 public class HtmlMenuItemPartSettings
 {

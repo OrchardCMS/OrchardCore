@@ -2,10 +2,10 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Html.Models;
-using OrchardCore.Html.ViewModels;
+using OrchardCore.Menu.Models;
+using OrchardCore.Menu.ViewModels;
 
-namespace OrchardCore.Html.Settings;
+namespace OrchardCore.Menu.Settings;
 
 public sealed class HtmlMenuItemPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<HtmlMenuItemPart>
 {

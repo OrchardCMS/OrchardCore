@@ -1,4 +1,4 @@
-namespace OrchardCore.Html.ViewModels;
+namespace OrchardCore.Menu.ViewModels;
 
 public class HtmlMenuItemPartSettingsViewModel
 {
