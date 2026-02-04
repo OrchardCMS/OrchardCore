@@ -17,32 +17,23 @@ public class MediaSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
     /// <inheritdoc />
     public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
     {
-        var providers = serviceProvider.GetRequiredService<IEnumerable<IMediaSizeLimitProvider>>();
+        var options = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
 
-        return new InternalMediaSizeFilter(providers);
+        return new InternalMediaSizeFilter(options.Value.MaxFileSize);
     }
 
-    private sealed class InternalMediaSizeFilter : IAsyncAuthorizationFilter, IRequestFormLimitsPolicy
+    private sealed class InternalMediaSizeFilter : IAuthorizationFilter, IRequestFormLimitsPolicy
     {
-        private readonly IEnumerable<IMediaSizeLimitProvider> _providers;
-        public InternalMediaSizeFilter(IEnumerable<IMediaSizeLimitProvider> providers)
+        private readonly long _maxFileSize;
+
+        public InternalMediaSizeFilter(long maxFileSize)
         {
-            _providers = providers;
+            _maxFileSize = maxFileSize;
         }
 
-        public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
+        public void OnAuthorization(AuthorizationFilterContext context)
         {
             ArgumentNullException.ThrowIfNull(context);
-
-            var maxFileSize = 0L;
-            foreach (var provider in _providers.OrderBy(provider => provider.Order))
-            {
-                if (await provider.GetMediaSizeLimitAsync() is { } max)
-                {
-                    maxFileSize = max;
-                    break;
-                }
-            }
 
             var effectiveFormPolicy = context.FindEffectivePolicy<IRequestFormLimitsPolicy>();
             if (effectiveFormPolicy == null || effectiveFormPolicy == this)
@@ -55,7 +46,7 @@ public class MediaSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
                     // Request form has not been read yet, so set the limits
                     var formOptions = new FormOptions
                     {
-                        MultipartBodyLengthLimit = maxFileSize,
+                        MultipartBodyLengthLimit = _maxFileSize,
                     };
 
                     features.Set<IFormFeature>(new FormFeature(context.HttpContext.Request, formOptions));
@@ -70,7 +61,7 @@ public class MediaSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
 
                 if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
                 {
-                    maxRequestBodySizeFeature.MaxRequestBodySize = maxFileSize;
+                    maxRequestBodySizeFeature.MaxRequestBodySize = _maxFileSize;
                 }
             }
         }
