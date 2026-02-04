@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection Configure<TOptions>(
         this IServiceCollection services, Func<IServiceProvider, TOptions, ValueTask> configureAsync)
-        where TOptions : class, new()
+        where TOptions : class, IAsyncOptions, new()
     {
         if (!services.Any(d => d.ServiceType == typeof(TOptions)))
         {
@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
     /// asynchronously a type of options just after a tenant container is created.
     /// </summary>
     public static IServiceCollection Configure<TOptions, TConfigure>(this IServiceCollection services)
-        where TOptions : class, new()
+        where TOptions : class, IAsyncOptions, new()
         where TConfigure : IAsyncConfigureOptions<TOptions>
     {
         if (!services.Any(d => d.ServiceType == typeof(TOptions)))
