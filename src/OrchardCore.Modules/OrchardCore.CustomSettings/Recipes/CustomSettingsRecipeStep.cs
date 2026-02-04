@@ -1,4 +1,4 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.Contents.Core;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -17,21 +17,21 @@ public sealed class CustomSettingsRecipeStep : RecipeImportStep<object>
 
     public override string Name => "custom-settings";
 
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
-        return new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Title("Custom Settings")
             .Description("Imports custom site settings.")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const("custom-settings")
                     .Description("The name of the settings step.")))
             .Required("name")
             .MinProperties(2) // at least "name" + one content item
                               // Allow any other property to be a content item
-            .AdditionalProperties(new JsonSchemaBuilder()
+            .AdditionalProperties(new RecipeStepSchemaBuilder()
                 .AllOf(ContentCommonSchemas.ContentItemSchema)
                 .Build())
             .Build();

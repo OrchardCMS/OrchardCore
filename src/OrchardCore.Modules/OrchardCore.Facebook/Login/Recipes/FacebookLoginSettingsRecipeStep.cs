@@ -1,4 +1,4 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Recipes.Models;
@@ -17,8 +17,8 @@ public sealed class FacebookLoginSettingsRecipeStep : RecipeImportStep<FacebookL
 
     public override string Name => nameof(FacebookLoginSettings);
 
-    protected override JsonSchema BuildSchema()
-        => JsonSchema.Empty;
+    protected override RecipeStepSchema BuildSchema()
+        => RecipeStepSchema.Any;
 
     protected override async Task ImportAsync(FacebookLoginSettingsStepModel model, RecipeExecutionContext context)
     {

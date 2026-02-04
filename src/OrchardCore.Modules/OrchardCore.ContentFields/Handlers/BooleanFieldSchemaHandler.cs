@@ -1,31 +1,31 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentFields.Handlers;
 
 internal sealed class BooleanFieldSchemaHandler : IContentFieldSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema != null)
         {
             return _schema;
         }
 
-        var builder = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        var builder = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("BooleanFieldSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("BooleanFieldSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("Label", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("Label", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("The label for the boolean field")
                         ),
-                        ("DefaultValue", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("DefaultValue", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("The default value for this field")
                         )
                     )

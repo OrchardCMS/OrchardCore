@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -32,45 +32,45 @@ public sealed class DeploymentPlansRecipeDeploymentStep : RecipeImportStep<Deplo
 
     public override string Name => "deployment";
 
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
-        return new JsonSchemaBuilder()
+        return new RecipeStepSchemaBuilder()
             .Title("Deployment")
             .Description("Imports deployment plans.")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Title("Deployment Name")),
-                ("Plans", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                ("Plans", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Items(
-                        new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Object)
+                        new RecipeStepSchemaBuilder()
+                            .TypeObject()
                             .Properties(
-                                ("Name", new JsonSchemaBuilder()
-                                    .Type(SchemaValueType.String)
+                                ("Name", new RecipeStepSchemaBuilder()
+                                    .TypeString()
                                     .Title("Plan Name")),
-                                ("Steps", new JsonSchemaBuilder()
-                                    .Type(SchemaValueType.Array)
+                                ("Steps", new RecipeStepSchemaBuilder()
+                                    .TypeArray()
                                     .Items(
-                                        new JsonSchemaBuilder()
-                                            .Type(SchemaValueType.Object)
+                                        new RecipeStepSchemaBuilder()
+                                            .TypeObject()
                                             .Properties(
-                                                ("Type", new JsonSchemaBuilder()
-                                                    .Type(SchemaValueType.String)
+                                                ("Type", new RecipeStepSchemaBuilder()
+                                                    .TypeString()
                                                     .Title("Step Type")),
-                                                ("Step", new JsonSchemaBuilder()
-                                                    .Type(SchemaValueType.Object)
+                                                ("Step", new RecipeStepSchemaBuilder()
+                                                    .TypeObject()
                                                     .Properties(
-                                                        ("FileName", new JsonSchemaBuilder()
-                                                            .Type(SchemaValueType.String)),
-                                                        ("FileContent", new JsonSchemaBuilder()
-                                                            .Type(SchemaValueType.String)),
-                                                        ("Id", new JsonSchemaBuilder()
-                                                            .Type(SchemaValueType.String)
+                                                        ("FileName", new RecipeStepSchemaBuilder()
+                                                            .TypeString()),
+                                                        ("FileContent", new RecipeStepSchemaBuilder()
+                                                            .TypeString()),
+                                                        ("Id", new RecipeStepSchemaBuilder()
+                                                            .TypeString()
                                                             .Title("Step ID")),
-                                                        ("Name", new JsonSchemaBuilder()
-                                                            .Type(SchemaValueType.String)
+                                                        ("Name", new RecipeStepSchemaBuilder()
+                                                            .TypeString()
                                                             .Title("Step Name"))
                                                     )
                                                     .Required("Id", "Name")

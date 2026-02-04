@@ -1,41 +1,41 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.Autoroute.Handlers;
 
 internal sealed class AutoroutePartSchemaHandler : IContentPartSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {
             return _schema;
         }
 
-        _schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        _schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("AutoroutePartSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("AutoroutePartSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("AllowCustomPath", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("AllowUpdatePath", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("ShowHomepageOption", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("AllowDisabled", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("Pattern", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("DefaultPatternIndex", new JsonSchemaBuilder().Type(SchemaValueType.Integer)),
-                        ("PatternIndex", new JsonSchemaBuilder().Type(SchemaValueType.Integer)),
-                        ("PerItemConfiguration", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("RouteContainedItems", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("RenderTitle", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("UpdateRouteWithChanges", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("ManageContainedItemRoutes", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("Absolute", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("ShowTitleInLink", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("AllowEmptyPath", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("AllowConflict", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)))
+                        ("AllowCustomPath", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("AllowUpdatePath", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("ShowHomepageOption", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("AllowDisabled", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("Pattern", new RecipeStepSchemaBuilder().TypeString()),
+                        ("DefaultPatternIndex", new RecipeStepSchemaBuilder().TypeInteger()),
+                        ("PatternIndex", new RecipeStepSchemaBuilder().TypeInteger()),
+                        ("PerItemConfiguration", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("RouteContainedItems", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("RenderTitle", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("UpdateRouteWithChanges", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("ManageContainedItemRoutes", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("Absolute", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("ShowTitleInLink", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("AllowEmptyPath", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("AllowConflict", new RecipeStepSchemaBuilder().TypeBoolean()))
                     .AdditionalProperties(true)))
             .AdditionalProperties(true)
             .Build();

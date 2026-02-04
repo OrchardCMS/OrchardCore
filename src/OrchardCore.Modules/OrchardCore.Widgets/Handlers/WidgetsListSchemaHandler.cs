@@ -1,28 +1,28 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.Widgets.Handlers;
 
 internal sealed class WidgetsListSchemaHandler : IContentPartSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema != null)
         {
             return _schema;
         }
 
-        var builder = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        var builder = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("WidgetsListPartSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("WidgetsListPartSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("Zones", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Array)
-                            .Items(new JsonSchemaBuilder().Type(SchemaValueType.String))
+                        ("Zones", new RecipeStepSchemaBuilder()
+                            .TypeArray()
+                            .Items(new RecipeStepSchemaBuilder().TypeString())
                         )
                     )
                     .AdditionalProperties(false) // only allow defined keys inside WidgetsListPartSettings

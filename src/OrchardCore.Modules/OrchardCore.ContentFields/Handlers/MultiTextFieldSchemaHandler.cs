@@ -1,28 +1,28 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentFields.Handlers;
 
 internal sealed class MultiTextFieldSchemaHandler : IContentFieldSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {
             return _schema;
         }
 
-        _schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        _schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("MultiTextFieldSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("MultiTextFieldSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("Hint", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("Required", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("Options", new JsonSchemaBuilder().Type(SchemaValueType.Array)))
+                        ("Hint", new RecipeStepSchemaBuilder().TypeString()),
+                        ("Required", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("Options", new RecipeStepSchemaBuilder().TypeArray()))
                     .AdditionalProperties(false)))
             .AdditionalProperties(true)
             .Build();

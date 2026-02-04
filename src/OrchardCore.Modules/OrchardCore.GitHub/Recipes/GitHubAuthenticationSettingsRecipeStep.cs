@@ -1,4 +1,4 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.Entities;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.Recipes.Models;
@@ -18,27 +18,27 @@ public sealed class GitHubAuthenticationSettingsRecipeStep : RecipeImportStep<Gi
 
     public override string Name => nameof(GitHubAuthenticationSettings);
 
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
-        return new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .SchemaDraft202012()
+            .TypeObject()
             .Title("GitHub Authentication Settings")
             .Description("Imports GitHub authentication settings.")
             .Required("name", "Files")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const(Name)
                     .Description("The name of the recipe step.")),
-                 ("ClientID", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                 ("ClientID", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The Client ID for GitHub authentication.")),
-                 ("ClientSecret", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                 ("ClientSecret", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The Client Secret for GitHub authentication.")),
-                 ("CallbackPath", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                 ("CallbackPath", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The Callback Path for GitHub authentication.")))
             .AdditionalProperties(false)
             .Build();

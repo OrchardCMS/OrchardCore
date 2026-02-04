@@ -1,34 +1,34 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentFields.Handlers;
 
 internal sealed class LinkFieldSchemaHandler : IContentFieldSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {
             return _schema;
         }
 
-        _schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        _schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("LinkFieldSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("LinkFieldSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("Hint", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("Required", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("HintLinkText", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("LinkTextMode", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("UrlPlaceholder", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("TextPlaceholder", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("DefaultUrl", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("DefaultText", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("DefaultTarget", new JsonSchemaBuilder().Type(SchemaValueType.String)))
+                        ("Hint", new RecipeStepSchemaBuilder().TypeString()),
+                        ("Required", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("HintLinkText", new RecipeStepSchemaBuilder().TypeString()),
+                        ("LinkTextMode", new RecipeStepSchemaBuilder().TypeString()),
+                        ("UrlPlaceholder", new RecipeStepSchemaBuilder().TypeString()),
+                        ("TextPlaceholder", new RecipeStepSchemaBuilder().TypeString()),
+                        ("DefaultUrl", new RecipeStepSchemaBuilder().TypeString()),
+                        ("DefaultText", new RecipeStepSchemaBuilder().TypeString()),
+                        ("DefaultTarget", new RecipeStepSchemaBuilder().TypeString()))
                     .AdditionalProperties(false)))
             .AdditionalProperties(true)
             .Build();

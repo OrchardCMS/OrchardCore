@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
-using Json.Schema;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Recipes;
@@ -84,9 +84,9 @@ public class RecipeSchemaServiceTests
     public void GetStepSchema_ReturnsSchemaFromStep()
     {
         // Arrange
-        var schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
-            .Properties(("name", new JsonSchemaBuilder().Type(SchemaValueType.String)))
+        var schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
+            .Properties(("name", new RecipeStepSchemaBuilder().TypeString()))
             .Build();
         var step = new TestRecipeDeploymentStep("Feature", schema);
         var service = new RecipeSchemaService([step]);
@@ -110,8 +110,8 @@ public class RecipeSchemaServiceTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal("Orchard Core Recipe", result.GetTitle());
-        var properties = result.GetProperties();
+        Assert.Equal("Orchard Core Recipe", result.SchemaObject["title"]?.GetValue<string>());
+        var properties = result.SchemaObject["properties"]?.AsObject();
         Assert.NotNull(properties);
         Assert.True(properties.ContainsKey("steps"));
     }
@@ -183,22 +183,22 @@ public class RecipeSchemaServiceTests
 
     private sealed class TestRecipeDeploymentStep : IRecipeDeploymentStep
     {
-        private readonly JsonSchema _schema;
+        private readonly RecipeStepSchema _schema;
 
-        public TestRecipeDeploymentStep(string name, JsonSchema schema = null)
+        public TestRecipeDeploymentStep(string name, RecipeStepSchema schema = null)
         {
             Name = name;
-            _schema = schema ?? new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
+            _schema = schema ?? new RecipeStepSchemaBuilder()
+                .TypeObject()
                 .Required("name")
-                .Properties(("name", new JsonSchemaBuilder().Type(SchemaValueType.String).Const(name)))
-                .AdditionalProperties(JsonSchema.Empty)
+                .Properties(("name", new RecipeStepSchemaBuilder().TypeString().Const(name)))
+                .AdditionalProperties(RecipeStepSchema.Any)
                 .Build();
         }
 
         public string Name { get; }
 
-        public JsonSchema Schema => _schema;
+        public RecipeStepSchema Schema => _schema;
 
         public Task ExecuteAsync(RecipeExecutionContext context) => Task.CompletedTask;
 

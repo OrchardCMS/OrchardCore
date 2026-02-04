@@ -1,29 +1,29 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.Contents.Handlers;
 
 internal sealed class CommonPartSchemaHandler : IContentPartSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {
             return _schema;
         }
 
-        _schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        _schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("CommonPartSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("CommonPartSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("OwnerEditor", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("DateEditor", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("DisplayDateEditor", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("DisplayOwnerEditor", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)))
+                        ("OwnerEditor", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("DateEditor", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("DisplayDateEditor", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("DisplayOwnerEditor", new RecipeStepSchemaBuilder().TypeBoolean()))
                     .AdditionalProperties(true)))
             .AdditionalProperties(true)
             .Build();

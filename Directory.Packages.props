@@ -4,7 +4,6 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="JsonSchema.Net" Version="7.4.0" />
     <PackageVersion Include="AngleSharp" Version="1.4.0" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.18.1" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.22" />

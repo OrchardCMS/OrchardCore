@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Json.Schema;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Schema;
 
 namespace OrchardCore.Recipes.Services;
 
@@ -12,18 +12,19 @@ namespace OrchardCore.Recipes.Services;
 public abstract class RecipeDeploymentStep<TModel> : IRecipeDeploymentStep
     where TModel : class, new()
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
     /// <inheritdoc />
     public abstract string Name { get; }
 
     /// <inheritdoc />
-    public JsonSchema Schema => _schema ??= BuildSchema();
+    public RecipeStepSchema Schema => _schema ??= BuildSchema();
 
     /// <summary>
     /// Builds the JSON Schema for this step.
+    /// Override this method to provide a schema. Returns null by default.
     /// </summary>
-    protected abstract JsonSchema BuildSchema();
+    protected virtual RecipeStepSchema BuildSchema() => null;
 
     /// <inheritdoc />
     public async Task ExecuteAsync(RecipeExecutionContext context)

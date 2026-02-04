@@ -1,31 +1,31 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentFields.Handlers;
 
 internal sealed class YoutubeFieldSchemaHandler : IContentFieldSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {
             return _schema;
         }
 
-        _schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        _schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("YoutubeFieldSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("YoutubeFieldSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("Hint", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("Required", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("Label", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("Width", new JsonSchemaBuilder().Type(SchemaValueType.Integer)),
-                        ("Height", new JsonSchemaBuilder().Type(SchemaValueType.Integer)),
-                        ("Placeholder", new JsonSchemaBuilder().Type(SchemaValueType.String)))
+                        ("Hint", new RecipeStepSchemaBuilder().TypeString()),
+                        ("Required", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("Label", new RecipeStepSchemaBuilder().TypeString()),
+                        ("Width", new RecipeStepSchemaBuilder().TypeInteger()),
+                        ("Height", new RecipeStepSchemaBuilder().TypeInteger()),
+                        ("Placeholder", new RecipeStepSchemaBuilder().TypeString()))
                     .AdditionalProperties(false)))
             .AdditionalProperties(true)
             .Build();

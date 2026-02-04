@@ -1,35 +1,35 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.Title.Handlers;
 
 internal sealed class TitlePartSchemaHandler : IContentPartSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema != null)
         {
             return _schema;
         }
 
-        var builder = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        var builder = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("TitlePartSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("TitlePartSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("RenderTitle", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Boolean)
+                        ("RenderTitle", new RecipeStepSchemaBuilder()
+                            .TypeBoolean()
                         ),
-                        ("Options", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("Options", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Enum("Editable", "GeneratedDisabled", "GeneratedHidden", "EditableRequired")
                             .Default("Editable")
                         ),
-                        ("Pattern", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("Pattern", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("This string must be a valid Liquid syntax")
                         )
                     )

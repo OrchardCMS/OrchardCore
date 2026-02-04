@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Core;
@@ -25,26 +25,26 @@ public sealed class UnifiedContentStep : RecipeDeploymentStep<UnifiedContentStep
     public override string Name => "Content";
 
     /// <inheritdoc />
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
 
 
-        return new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .SchemaDraft202012()
+            .TypeObject()
             .Title("Content")
             .Description("Imports content items into the Orchard Core application.")
             .Required("name", "data")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const(Name)
                     .Description("The name of the recipe step.")),
-                ("data", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                ("data", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Description("Array of content items to import.")
                     .Items(ContentCommonSchemas.ContentItemSchema)))
-            .AdditionalProperties(JsonSchema.True)
+            .AdditionalProperties(true)
             .Build();
     }
 

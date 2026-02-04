@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -22,68 +22,68 @@ public sealed class UnifiedSettingsStep : RecipeDeploymentStep<UnifiedSettingsSt
     public override string Name => "Settings";
 
     /// <inheritdoc />
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
-        return new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .SchemaDraft202012()
+            .TypeObject()
             .Title("Site Settings")
             .Description("Updates site settings for the Orchard Core application.")
             .Required("name")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const(Name)
                     .Description("The name of the recipe step.")),
-                ("BaseUrl", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("BaseUrl", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The base URL of the site.")),
-                ("Calendar", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("Calendar", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The calendar system to use.")),
-                ("MaxPagedCount", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Integer)
+                ("MaxPagedCount", new RecipeStepSchemaBuilder()
+                    .TypeInteger()
                     .Description("Maximum number of items to return in paged results.")),
-                ("MaxPageSize", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Integer)
+                ("MaxPageSize", new RecipeStepSchemaBuilder()
+                    .TypeInteger()
                     .Description("Maximum page size allowed.")),
-                ("PageSize", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Integer)
+                ("PageSize", new RecipeStepSchemaBuilder()
+                    .TypeInteger()
                     .Description("Default page size.")),
-                ("ResourceDebugMode", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("ResourceDebugMode", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Enum("Disabled", "FromConfiguration", "Enabled")
                     .Description("Resource debug mode setting.")),
-                ("SiteName", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("SiteName", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The name of the site.")),
-                ("PageTitleFormat", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("PageTitleFormat", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("Format string for page titles.")),
-                ("SuperUser", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("SuperUser", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The user ID of the super user.")),
-                ("TimeZoneId", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("TimeZoneId", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The time zone ID for the site.")),
-                ("UseCdn", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Boolean)
+                ("UseCdn", new RecipeStepSchemaBuilder()
+                    .TypeBoolean()
                     .Description("Whether to use CDN for resources.")),
-                ("CdnBaseUrl", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("CdnBaseUrl", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("Base URL for CDN resources.")),
-                ("AppendVersion", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Boolean)
+                ("AppendVersion", new RecipeStepSchemaBuilder()
+                    .TypeBoolean()
                     .Description("Whether to append version to resource URLs.")),
-                ("HomeRoute", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("HomeRoute", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Description("Route values for the home page.")
-                    .AdditionalProperties(JsonSchema.Empty)),
-                ("CacheMode", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                    .AdditionalProperties(RecipeStepSchema.Any)),
+                ("CacheMode", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Enum("Disabled", "FromConfiguration", "Enabled")
                     .Description("Cache mode setting.")))
-            .AdditionalProperties(JsonSchema.True)
+            .AdditionalProperties(true)
             .Build();
     }
 

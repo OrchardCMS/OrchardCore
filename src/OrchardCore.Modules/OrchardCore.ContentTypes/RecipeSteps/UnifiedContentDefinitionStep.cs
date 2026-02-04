@@ -1,4 +1,4 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
@@ -40,10 +40,10 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
     public override string Name => "ContentDefinition";
 
     /// <inheritdoc />
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
         // Build schemas for all registered content parts.
-        var partSettingsSchemas = new List<JsonSchema>();
+        var partSettingsSchemas = new List<RecipeStepSchema>();
         foreach (var handler in _partSchemaHandlers)
         {
             var schema = handler.GetSettingsSchema();
@@ -54,7 +54,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         }
 
         // Build schemas for all registered content fields.
-        var fieldSettingsSchemas = new List<JsonSchema>();
+        var fieldSettingsSchemas = new List<RecipeStepSchema>();
         foreach (var handler in _fieldSchemaHandlers)
         {
             var schema = handler.GetSettingsSchema();
@@ -70,87 +70,87 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         // Build content part schema with fields.
         var contentPartSchema = BuildContentPartSchema(partSettingsSchemas, fieldSettingsSchemas);
 
-        return new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .SchemaDraft202012()
+            .TypeObject()
             .Title("Content Definition")
             .Description("Creates or updates content type and part definitions.")
             .Required("name")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const(Name)
                     .Description("The name of the recipe step.")),
-                ("ContentTypes", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                ("ContentTypes", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Items(contentTypeSchema)
                     .Description("Content type definitions to create or update.")),
-                ("ContentParts", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                ("ContentParts", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Items(contentPartSchema)
                     .Description("Content part definitions to create or update.")))
             .Build();
     }
 
-    private JsonSchema BuildContentTypeSchema(List<JsonSchema> partSettingsSchemas)
+    private RecipeStepSchema BuildContentTypeSchema(List<RecipeStepSchema> partSettingsSchemas)
     {
         // Build the ContentTypePartDefinitionRecords schema with known part settings.
         var partSchema = BuildContentTypePartSchema(partSettingsSchemas);
 
-        return new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Required("Name")
             .Properties(
-                ("Name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("Name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The technical name of the content type.")),
-                ("DisplayName", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("DisplayName", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The display name of the content type.")),
-                ("Settings", new JsonSchemaBuilder()
+                ("Settings", new RecipeStepSchemaBuilder()
                     .AnyOf(
                         // Known structure: ContentTypeSettings object.
-                        new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Object)
+                        new RecipeStepSchemaBuilder()
+                            .TypeObject()
                             .Properties(
-                                ("ContentTypeSettings", new JsonSchemaBuilder()
-                                    .Type(SchemaValueType.Object)
+                                ("ContentTypeSettings", new RecipeStepSchemaBuilder()
+                                    .TypeObject()
                                     .Properties(
-                                        ("Creatable", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                                        ("Listable", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                                        ("Draftable", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                                        ("Versionable", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                                        ("Securable", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)))
+                                        ("Creatable", new RecipeStepSchemaBuilder().TypeBoolean()),
+                                        ("Listable", new RecipeStepSchemaBuilder().TypeBoolean()),
+                                        ("Draftable", new RecipeStepSchemaBuilder().TypeBoolean()),
+                                        ("Versionable", new RecipeStepSchemaBuilder().TypeBoolean()),
+                                        ("Securable", new RecipeStepSchemaBuilder().TypeBoolean()))
                                     .AdditionalProperties(false)))
                             .AdditionalProperties(true),
                         // Fallback: any object.
-                        new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Object)
+                        new RecipeStepSchemaBuilder()
+                            .TypeObject()
                             .AdditionalProperties(true))
                     .Description("Settings for this content type.")),
-                ("ContentTypePartDefinitionRecords", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                ("ContentTypePartDefinitionRecords", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Items(partSchema)
                     .Description("Parts attached to this content type.")))
             .AdditionalProperties(true)
             .Build();
     }
 
-    private JsonSchema BuildContentTypePartSchema(List<JsonSchema> partSettingsSchemas)
+    private RecipeStepSchema BuildContentTypePartSchema(List<RecipeStepSchema> partSettingsSchemas)
     {
         // Base schema for a content type part.
-        var partsSchemaBuilder = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        var partsSchemaBuilder = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("PartName", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("PartName", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The name of the part being attached.")
                     .Enum(_contentOptions.ContentPartOptions.Select(p => p.Type.Name).ToArray())),
-                ("Name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("Name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The technical name of the part attachment.")),
-                ("Settings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("Settings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .AdditionalProperties(true)))
             .Required("PartName", "Name")
             .AdditionalProperties(true);
@@ -160,8 +160,8 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         {
             partsSchemaBuilder = partsSchemaBuilder
                 .Properties(
-                    ("Settings", new JsonSchemaBuilder()
-                        .Type(SchemaValueType.Object)
+                    ("Settings", new RecipeStepSchemaBuilder()
+                        .TypeObject()
                         .AnyOf(partSettingsSchemas)
                         .AdditionalProperties(true)));
         }
@@ -169,61 +169,60 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         return partsSchemaBuilder.Build();
     }
 
-    private JsonSchema BuildContentPartSchema(List<JsonSchema> partSettingsSchemas, List<JsonSchema> fieldSettingsSchemas)
+    private RecipeStepSchema BuildContentPartSchema(List<RecipeStepSchema> partSettingsSchemas, List<RecipeStepSchema> fieldSettingsSchemas)
     {
         var fieldSchema = BuildContentPartFieldSchema(fieldSettingsSchemas);
 
         var knownSettingsSchema = BuildKnownContentPartSettingsSchema();
 
         // Combine known + dynamic settings into ONE anyOf
-        var anyOfSchemas = new List<JsonSchema> { knownSettingsSchema };
+        var anyOfSchemas = new List<RecipeStepSchema> { knownSettingsSchema };
         anyOfSchemas.AddRange(partSettingsSchemas);
 
-        var settingsSchema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        var settingsSchema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .AnyOf(anyOfSchemas)
             .AdditionalProperties(true)
             .Build();
 
-        var partsSchemaBuilder = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        var partsSchemaBuilder = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Required("Name")
-            .Properties(
-                ("Name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
-                    .Description("The technical name of the content part.")),
-                ("Settings", settingsSchema),
-                ("ContentPartFieldDefinitionRecords", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
-                    .Items(fieldSchema)
-                    .Description("Fields defined on this content part.")))
+            .Property("Name", new RecipeStepSchemaBuilder()
+                .TypeString()
+                .Description("The technical name of the content part."))
+            .Property("Settings", settingsSchema)
+            .Property("ContentPartFieldDefinitionRecords", new RecipeStepSchemaBuilder()
+                .TypeArray()
+                .Items(fieldSchema)
+                .Description("Fields defined on this content part."))
             .AdditionalProperties(true);
 
         return partsSchemaBuilder.Build();
     }
 
-    private static JsonSchema BuildKnownContentPartSettingsSchema()
+    private static RecipeStepSchema BuildKnownContentPartSettingsSchema()
     {
-        return new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("ContentPartSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("ContentPartSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("Attachable", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Boolean)
+                        ("Attachable", new RecipeStepSchemaBuilder()
+                            .TypeBoolean()
                             .Description("Whether this part can be manually attached to a content type.")),
-                        ("Reusable", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Boolean)
+                        ("Reusable", new RecipeStepSchemaBuilder()
+                            .TypeBoolean()
                             .Description("Whether the part can be attached multiple times to a content type.")),
-                        ("DisplayName", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("DisplayName", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("The displayed name of the part.")),
-                        ("Description", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("Description", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("The description of the part.")),
-                        ("DefaultPosition", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("DefaultPosition", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("The default position of the part when attached to a type.")))
                     )
              )
@@ -232,60 +231,59 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
     }
 
 
-    private static JsonSchema BuildKnownContentFieldSettingsSchema()
+    private static RecipeStepSchema BuildKnownContentFieldSettingsSchema()
     {
-        return new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("ContentPartFieldSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("ContentPartFieldSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("DisplayName", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("DisplayName", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("The displayed name of the part.")),
-                        ("Description", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("Description", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("The description of the part.")),
-                        ("Editor", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("Editor", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("The editor used for this field.")),
-                        ("DisplayMode", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("DisplayMode", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("The display mode used for this field.")),
-                        ("Position", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("Position", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Description("The position of the field within the content part.")))
                     )
              )
             .AdditionalProperties(true)
             .Build();
     }
-    private JsonSchema BuildContentPartFieldSchema(List<JsonSchema> fieldSettingsSchemas)
+    private RecipeStepSchema BuildContentPartFieldSchema(List<RecipeStepSchema> fieldSettingsSchemas)
     {
         var knownSettingsSchema = BuildKnownContentFieldSettingsSchema();
 
         // Combine known + dynamic settings into ONE anyOf
-        var anyOfSchemas = new List<JsonSchema> { knownSettingsSchema };
+        var anyOfSchemas = new List<RecipeStepSchema> { knownSettingsSchema };
         anyOfSchemas.AddRange(fieldSettingsSchemas);
 
-        var settingsSchema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        var settingsSchema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .AnyOf(anyOfSchemas)
             .AdditionalProperties(true)
             .Build();
 
         // Base schema for a content part field.
-        var fieldSchemaBuilder = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
-            .Properties(
-                ("FieldName", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
-                    .Description("The type of field.")
-                    .Enum(_contentOptions.ContentFieldOptions.Select(f => f.Type.Name).ToArray())),
-                ("Name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
-                    .Description("The technical name of the field.")),
-                ("Settings", settingsSchema))
+        var fieldSchemaBuilder = new RecipeStepSchemaBuilder()
+            .TypeObject()
+            .Property("FieldName", new RecipeStepSchemaBuilder()
+                .TypeString()
+                .Description("The type of field.")
+                .Enum(_contentOptions.ContentFieldOptions.Select(f => f.Type.Name).ToArray()))
+            .Property("Name", new RecipeStepSchemaBuilder()
+                .TypeString()
+                .Description("The technical name of the field."))
+            .Property("Settings", settingsSchema)
             .Required("FieldName", "Name")
             .AdditionalProperties(true);
 

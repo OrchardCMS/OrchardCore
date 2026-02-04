@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Recipes.Services;
@@ -14,9 +14,8 @@ public interface IRecipeStepSchemaEvaluator
     /// </summary>
     /// <param name="data">The JSON data to evaluate.</param>
     /// <param name="schema">The JSON schema to evaluate against.</param>
-    /// <param name="options">Optional evaluation options.</param>
     /// <returns>The evaluation result containing validity and any errors.</returns>
-    RecipeSchemaEvaluationResult Evaluate(JsonNode data, JsonSchema schema, EvaluationOptions options = null);
+    RecipeSchemaEvaluationResult Evaluate(JsonNode data, RecipeStepSchema schema);
 
     /// <summary>
     /// Evaluates a recipe step against its schema.

@@ -1,4 +1,4 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.Admin;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -26,26 +26,26 @@ public sealed class UnifiedThemesStep : RecipeDeploymentStep<UnifiedThemesStep.T
     public override string Name => "Themes";
 
     /// <inheritdoc />
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
-        return new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .SchemaDraft202012()
+            .TypeObject()
             .Title(Name)
             .Description("Sets the site and admin themes for the Orchard Core application.")
             .Required("name")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const(Name)
                     .Description("The name of the recipe step.")),
-                ("site", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("site", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The technical name of the site theme to activate.")),
-                ("admin", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("admin", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Description("The technical name of the admin theme to activate.")))
-            .AdditionalProperties(JsonSchema.False)
+            .AdditionalProperties(false)
             .Build();
     }
 

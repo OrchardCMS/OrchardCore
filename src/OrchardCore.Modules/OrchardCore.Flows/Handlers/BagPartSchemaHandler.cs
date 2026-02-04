@@ -1,37 +1,37 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.Flows.Handlers;
 
 internal sealed class BagPartSchemaHandler : IContentPartSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {
             return _schema;
         }
 
-        _schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        _schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("BagPartSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("BagPartSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("ContainedContentTypes", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Array)
-                            .Items(new JsonSchemaBuilder().Type(SchemaValueType.String))),
-                        ("DisplayType", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("Count", new JsonSchemaBuilder().Type(SchemaValueType.Integer)),
-                        ("ShowHeader", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("ReadOnly", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("OwnerEditor", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("InlineEditing", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("Many", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("CreateContentType", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("EnableItemReordering", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)))
+                        ("ContainedContentTypes", new RecipeStepSchemaBuilder()
+                            .TypeArray()
+                            .Items(new RecipeStepSchemaBuilder().TypeString())),
+                        ("DisplayType", new RecipeStepSchemaBuilder().TypeString()),
+                        ("Count", new RecipeStepSchemaBuilder().TypeInteger()),
+                        ("ShowHeader", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("ReadOnly", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("OwnerEditor", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("InlineEditing", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("Many", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("CreateContentType", new RecipeStepSchemaBuilder().TypeString()),
+                        ("EnableItemReordering", new RecipeStepSchemaBuilder().TypeBoolean()))
                     .AdditionalProperties(true)))
             .AdditionalProperties(true)
             .Build();

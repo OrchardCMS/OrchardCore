@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
@@ -39,8 +39,8 @@ public sealed class WorkflowTypeRecipeStep : RecipeImportStep<WorkflowStepModel>
 
     public override string Name => "WorkflowType";
 
-    protected override JsonSchema BuildSchema()
-        => JsonSchema.Empty;
+    protected override RecipeStepSchema BuildSchema()
+        => RecipeStepSchema.Any;
 
     protected override async Task ImportAsync(WorkflowStepModel model, RecipeExecutionContext context)
     {

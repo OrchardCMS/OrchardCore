@@ -1,12 +1,12 @@
 using System.Text.Json.Nodes;
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Recipes.Services;
 
 /// <summary>
-/// Default implementation of <see cref="IRecipeStepSchemaEvaluator"/> using JsonSchema.Net
-/// for JSON Schema evaluation capabilities for recipe validation.
+/// Default implementation of <see cref="IRecipeStepSchemaEvaluator"/> using the in-house
+/// RecipeStepSchemaValidator for JSON Schema evaluation capabilities for recipe validation.
 /// </summary>
 public sealed class RecipeStepSchemaEvaluator : IRecipeStepSchemaEvaluator
 {
@@ -19,20 +19,25 @@ public sealed class RecipeStepSchemaEvaluator : IRecipeStepSchemaEvaluator
     }
 
     /// <inheritdoc />
-    public RecipeSchemaEvaluationResult Evaluate(JsonNode data, JsonSchema schema, EvaluationOptions options = null)
+    public RecipeSchemaEvaluationResult Evaluate(JsonNode data, RecipeStepSchema schema)
     {
-        options ??= new EvaluationOptions { OutputFormat = OutputFormat.List };
-
         try
         {
-            var result = schema.Evaluate(data, options);
+            var result = RecipeStepSchemaValidator.Validate(schema, data);
 
             if (result.IsValid)
             {
                 return RecipeSchemaEvaluationResult.Success();
             }
 
-            var details = CollectErrorDetails(result);
+            var details = result.Errors.Select(error => new RecipeSchemaEvaluationDetail
+            {
+                InstanceLocation = "/",
+                EvaluationPath = "/",
+                Message = error,
+                IsValid = false,
+            }).ToList();
+
             return RecipeSchemaEvaluationResult.Failure(details, $"Schema validation failed with {details.Count} error(s).");
         }
         catch (Exception ex)
@@ -64,64 +69,5 @@ public sealed class RecipeStepSchemaEvaluator : IRecipeStepSchemaEvaluator
 
         var combinedSchema = _schemaService.GetRecipeSchema();
         return Evaluate(recipeData, combinedSchema);
-    }
-
-    private static List<RecipeSchemaEvaluationDetail> CollectErrorDetails(EvaluationResults result)
-    {
-        var details = new List<RecipeSchemaEvaluationDetail>();
-        CollectErrorDetailsRecursive(result, details);
-        return details;
-    }
-
-    private static void CollectErrorDetailsRecursive(EvaluationResults result, List<RecipeSchemaEvaluationDetail> details)
-    {
-        if (!result.IsValid)
-        {
-            if (result.Errors is not null && result.Errors.Count > 0)
-            {
-                foreach (var error in result.Errors)
-                {
-                    details.Add(new RecipeSchemaEvaluationDetail
-                    {
-                        InstanceLocation = result.InstanceLocation?.ToString() ?? "/",
-                        EvaluationPath = result.EvaluationPath?.ToString() ?? "/",
-                        SchemaKeyword = error.Key,
-                        Message = error.Value,
-                        IsValid = false,
-                    });
-                }
-            }
-            else if (!result.HasErrors && result.Details is not null)
-            {
-                // No direct errors, check nested details.
-                foreach (var detail in result.Details)
-                {
-                    CollectErrorDetailsRecursive(detail, details);
-                }
-            }
-            else if (!result.HasErrors)
-            {
-                // Generic failure without specific error message.
-                details.Add(new RecipeSchemaEvaluationDetail
-                {
-                    InstanceLocation = result.InstanceLocation?.ToString() ?? "/",
-                    EvaluationPath = result.EvaluationPath?.ToString() ?? "/",
-                    Message = "Validation failed.",
-                    IsValid = false,
-                });
-            }
-        }
-
-        // Always check nested details for any errors.
-        if (result.Details is not null)
-        {
-            foreach (var detail in result.Details)
-            {
-                if (!detail.IsValid)
-                {
-                    CollectErrorDetailsRecursive(detail, details);
-                }
-            }
-        }
     }
 }

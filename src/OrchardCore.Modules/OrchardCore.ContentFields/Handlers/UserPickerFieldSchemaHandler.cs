@@ -1,31 +1,31 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentFields.Handlers;
 
 internal sealed class UserPickerFieldSchemaHandler : IContentFieldSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {
             return _schema;
         }
 
-        _schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        _schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("UserPickerFieldSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("UserPickerFieldSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("Hint", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("Required", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("Multiple", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("DisplayAllUsers", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("DisplayedRoles", new JsonSchemaBuilder().Type(SchemaValueType.Array)),
-                        ("Placeholder", new JsonSchemaBuilder().Type(SchemaValueType.String)))
+                        ("Hint", new RecipeStepSchemaBuilder().TypeString()),
+                        ("Required", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("Multiple", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("DisplayAllUsers", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("DisplayedRoles", new RecipeStepSchemaBuilder().TypeArray()),
+                        ("Placeholder", new RecipeStepSchemaBuilder().TypeString()))
                     .AdditionalProperties(false)))
             .AdditionalProperties(true)
             .Build();

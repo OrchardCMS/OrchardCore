@@ -1,4 +1,4 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -16,8 +16,8 @@ public sealed class FacebookSettingsRecipeStep : RecipeImportStep<FacebookCoreSe
 
     public override string Name => "FacebookCoreSettings";
 
-    protected override JsonSchema BuildSchema()
-        => JsonSchema.Empty;
+    protected override RecipeStepSchema BuildSchema()
+        => RecipeStepSchema.Any;
 
     protected override async Task ImportAsync(FacebookCoreSettingsStepModel model, RecipeExecutionContext context)
     {

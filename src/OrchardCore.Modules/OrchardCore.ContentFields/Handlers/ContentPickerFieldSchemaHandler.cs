@@ -1,33 +1,33 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentFields.Handlers;
 
 internal sealed class ContentPickerFieldSchemaHandler : IContentFieldSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {
             return _schema;
         }
 
-        _schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        _schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("ContentPickerFieldSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("ContentPickerFieldSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("Hint", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("Required", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("Multiple", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("DisplayAllContentTypes", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("DisplayedContentTypes", new JsonSchemaBuilder().Type(SchemaValueType.Array)),
-                        ("DisplayedStereotypes", new JsonSchemaBuilder().Type(SchemaValueType.Array)),
-                        ("Placeholder", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("TitlePattern", new JsonSchemaBuilder().Type(SchemaValueType.String)))
+                        ("Hint", new RecipeStepSchemaBuilder().TypeString()),
+                        ("Required", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("Multiple", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("DisplayAllContentTypes", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("DisplayedContentTypes", new RecipeStepSchemaBuilder().TypeArray()),
+                        ("DisplayedStereotypes", new RecipeStepSchemaBuilder().TypeArray()),
+                        ("Placeholder", new RecipeStepSchemaBuilder().TypeString()),
+                        ("TitlePattern", new RecipeStepSchemaBuilder().TypeString()))
                     .AdditionalProperties(false)))
             .AdditionalProperties(true)
             .Build();

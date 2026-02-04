@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using Microsoft.Extensions.Options;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Contents.Core;
@@ -27,41 +27,41 @@ public sealed class AdminMenuRecipeStep : RecipeImportStep<AdminMenuStepModel>
 
     public override string Name => "AdminMenu";
 
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
-        return new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .SchemaDraft202012()
+            .TypeObject()
             .Title("Admin Menu")
             .Description("Imports admin menu definitions.")
             .Required("name", "data")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const(Name)
                     .Description("The name of the recipe step.")),
-                ("data", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                ("data", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Description("Array of admin menu definitions.")
-                    .Items(new JsonSchemaBuilder()
-                        .Type(SchemaValueType.Object)
+                    .Items(new RecipeStepSchemaBuilder()
+                        .TypeObject()
                         .Required("Id", "Name", "MenuItems")
                         .Properties(
-                            ("Id", new JsonSchemaBuilder()
-                                .Type(SchemaValueType.String)
+                            ("Id", new RecipeStepSchemaBuilder()
+                                .TypeString()
                                 .Description("The unique identifier for the admin menu item.")),
-                            ("Name", new JsonSchemaBuilder()
-                                .Type(SchemaValueType.String)
+                            ("Name", new RecipeStepSchemaBuilder()
+                                .TypeString()
                                 .Description("The display name of the admin menu.")),
-                            ("MenuItems", new JsonSchemaBuilder()
-                                .Type(SchemaValueType.Array)
+                            ("MenuItems", new RecipeStepSchemaBuilder()
+                                .TypeArray()
                                 .Description("The list of content items under this menu.")
                                 .Items(ContentCommonSchemas.ContentItemSchema))
                         )
-                        .AdditionalProperties(JsonSchema.True)
+                        .AdditionalProperties(true)
                         .Build()))
             )
-            .AdditionalProperties(JsonSchema.False)
+            .AdditionalProperties(false)
             .Build();
     }
 

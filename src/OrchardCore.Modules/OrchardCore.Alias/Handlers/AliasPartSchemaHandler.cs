@@ -1,31 +1,31 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.Alias.Handlers;
 
 internal sealed class AliasPartSchemaHandler : IContentPartSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {
             return _schema;
         }
 
-        _schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        _schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("AliasPartSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("AliasPartSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("Pattern", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("Pattern", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Default("{{ Model.ContentItem.DisplayText | slugify }}")
                             .Description("The pattern used to generate the alias. Must be valid Liquid syntax.")),
-                        ("Options", new JsonSchemaBuilder()
-                            .Type(SchemaValueType.String)
+                        ("Options", new RecipeStepSchemaBuilder()
+                            .TypeString()
                             .Enum("Editable", "GeneratedDisabled")
                             .Default("Editable")
                             .Description("Defines whether the alias is editable or generated-disabled.")))

@@ -1,6 +1,6 @@
-using Json.Schema;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Features.Recipes;
@@ -38,28 +38,28 @@ public sealed class UnifiedFeatureStep : RecipeDeploymentStep<UnifiedFeatureStep
     public override string Name => "Feature";
 
     /// <inheritdoc />
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
-        return new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .SchemaDraft202012()
+            .TypeObject()
             .Title(Name)
             .Description("Enables or disables features in the Orchard Core application.")
             .Required("name")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const(Name)
                     .Description("The name of the recipe step.")),
-                ("enable", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                ("enable", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Description("Array of feature IDs to enable.")
-                    .Items(new JsonSchemaBuilder().Type(SchemaValueType.String))),
-                ("disable", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                    .Items(new RecipeStepSchemaBuilder().TypeString())),
+                ("disable", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Description("Array of feature IDs to disable.")
-                    .Items(new JsonSchemaBuilder().Type(SchemaValueType.String))))
-            .AdditionalProperties(JsonSchema.False)
+                    .Items(new RecipeStepSchemaBuilder().TypeString())))
+            .AdditionalProperties(false)
             .Build();
     }
 

@@ -1,5 +1,5 @@
-using Json.Schema;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Schema;
 
 namespace OrchardCore.Recipes.Services;
 
@@ -16,8 +16,9 @@ public interface IRecipeDeploymentStep
 
     /// <summary>
     /// Gets the JSON Schema that defines this step's structure.
+    /// Returns <c>null</c> if no schema is defined.
     /// </summary>
-    JsonSchema Schema { get; }
+    RecipeStepSchema Schema { get; }
 
     /// <summary>
     /// Executes the recipe step during import.

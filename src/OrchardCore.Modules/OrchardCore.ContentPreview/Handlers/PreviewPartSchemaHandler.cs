@@ -1,17 +1,17 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentPreview.Handlers;
 
 internal sealed class PreviewPartSchemaHandler : IContentPartSchemaHandler
 {
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
-        return new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("PreviewPartSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("PreviewPartSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .AdditionalProperties(true)))
             .AdditionalProperties(true)
             .Build();

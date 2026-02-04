@@ -1,4 +1,4 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 
 namespace OrchardCore.ContentManagement.Metadata;
 
@@ -11,5 +11,5 @@ public interface IContentFieldSchemaHandler
     /// Builds the JSON Schema for this content field's settings.
     /// </summary>
     /// <returns>The JSON Schema for the field settings, or null if no schema is available.</returns>
-    JsonSchema GetSettingsSchema();
+    RecipeStepSchema GetSettingsSchema();
 }

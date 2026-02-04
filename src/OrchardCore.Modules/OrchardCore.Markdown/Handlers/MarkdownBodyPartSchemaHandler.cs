@@ -1,28 +1,28 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.Markdown.Handlers;
 
 internal sealed class MarkdownBodyPartSchemaHandler : IContentPartSchemaHandler
 {
-    private JsonSchema _schema;
+    private RecipeStepSchema _schema;
 
-    public JsonSchema GetSettingsSchema()
+    public RecipeStepSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {
             return _schema;
         }
 
-        _schema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        _schema = new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Properties(
-                ("MarkdownBodyPartSettings", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
+                ("MarkdownBodyPartSettings", new RecipeStepSchemaBuilder()
+                    .TypeObject()
                     .Properties(
-                        ("MarkdownEditor", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                        ("SanitizeHtml", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
-                        ("DefaultPosition", new JsonSchemaBuilder().Type(SchemaValueType.String)))
+                        ("MarkdownEditor", new RecipeStepSchemaBuilder().TypeString()),
+                        ("SanitizeHtml", new RecipeStepSchemaBuilder().TypeBoolean()),
+                        ("DefaultPosition", new RecipeStepSchemaBuilder().TypeString()))
                     .AdditionalProperties(true)))
             .AdditionalProperties(true)
             .Build();

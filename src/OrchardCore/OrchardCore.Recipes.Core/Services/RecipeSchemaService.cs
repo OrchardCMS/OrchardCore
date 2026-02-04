@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
-using Json.Schema;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Schema;
 
 namespace OrchardCore.Recipes.Services;
 
@@ -11,7 +11,7 @@ namespace OrchardCore.Recipes.Services;
 public sealed class RecipeSchemaService : IRecipeSchemaService
 {
     private readonly IEnumerable<IRecipeDeploymentStep> _steps;
-    private JsonSchema _combinedSchema;
+    private RecipeStepSchema _combinedSchema;
 
     public RecipeSchemaService(IEnumerable<IRecipeDeploymentStep> steps)
     {
@@ -32,7 +32,7 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
     }
 
     /// <inheritdoc />
-    public JsonSchema GetStepSchema(string stepName)
+    public RecipeStepSchema GetStepSchema(string stepName)
     {
         ArgumentException.ThrowIfNullOrEmpty(stepName);
 
@@ -41,14 +41,14 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
     }
 
     /// <inheritdoc />
-    public JsonSchema GetRecipeSchema()
+    public RecipeStepSchema GetRecipeSchema()
     {
         if (_combinedSchema is not null)
         {
             return _combinedSchema;
         }
 
-        var stepSchemas = new Dictionary<string, JsonSchema>(StringComparer.OrdinalIgnoreCase);
+        var stepSchemas = new Dictionary<string, RecipeStepSchema>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var step in _steps)
         {
@@ -57,11 +57,11 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
                 continue;
             }
 
-            JsonSchema existing = null;
+            RecipeStepSchema existing = null;
 
-            if (stepSchemas.TryGetValue(step.Name, out var exitingSchema))
+            if (stepSchemas.TryGetValue(step.Name, out var existingSchema))
             {
-                existing = exitingSchema;
+                existing = existingSchema;
             }
 
             var stepSchema = step.Schema;
@@ -71,7 +71,7 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
                 if (existing is not null)
                 {
                     // Combine schemas for steps with the same name using allOf.
-                    stepSchema = new JsonSchemaBuilder()
+                    stepSchema = new RecipeStepSchemaBuilder()
                         .AllOf(existing, stepSchema)
                         .Build();
 
@@ -90,7 +90,6 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
                 }
 
                 // Create a minimal schema for steps without a defined schema.
-
                 var minimalSchema = CreateMinimalStepSchema(step.Name);
                 stepSchemas.Add(step.Name, minimalSchema);
             }
@@ -102,54 +101,52 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
                 var stepName = kv.Key;
                 var stepSchema = kv.Value;
 
-                // Wrap the schema with an AllOf to enforce name enum
-                return new JsonSchemaBuilder()
-                    .AllOf(
-                        // 1. Discriminator / enum
-                        new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Object)
-                            .Properties(
-                                ("name", new JsonSchemaBuilder()
-                                    .Type(SchemaValueType.String)
-                                    .Enum(stepSchemas.Keys)
-                                    .Description("The step name.")))
-                            .Required("name"),
+                // Build discriminator schema.
+                var discriminatorSchema = new RecipeStepSchemaBuilder()
+                    .TypeObject()
+                    .Properties(
+                        ("name", new RecipeStepSchemaBuilder()
+                            .TypeString()
+                            .Enum(stepSchemas.Keys)
+                            .Description("The step name.")))
+                    .Required("name")
+                    .Build();
 
-                        // 2. The step's existing schema (payload only)
-                        stepSchema
-                    )
-                    .UnevaluatedProperties(false) // only allow defined properties
+                // Wrap the schema with an AllOf to enforce name enum.
+                return new RecipeStepSchemaBuilder()
+                    .AllOf(discriminatorSchema, stepSchema)
+                    .UnevaluatedProperties(false) // only allow defined properties.
                     .Build();
             })
             .ToArray();
 
         // Build the combined schema following JSON Schema specification.
-        var combinedSchemaBuilder = new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
+        var combinedSchemaBuilder = new RecipeStepSchemaBuilder()
+            .SchemaDraft202012()
             .Id("https://orchardcore.net/schemas/recipe.json")
             .Title("Orchard Core Recipe")
             .Description("Schema for Orchard Core recipe files that define configuration steps.")
-            .Type(SchemaValueType.Object)
+            .TypeObject()
             .Properties(
-                ("name", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The unique name of the recipe.")),
-                ("displayName", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The display name of the recipe.")),
-                ("description", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("A description of what the recipe does.")),
-                ("author", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The author of the recipe.")),
-                ("website", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The website URL associated with the recipe.")),
-                ("version", new JsonSchemaBuilder().Type(SchemaValueType.String).Description("The version of the recipe.")),
-                ("issetuprecipe", new JsonSchemaBuilder().Type(SchemaValueType.Boolean).Description("Indicates whether this is a setup recipe.")),
-                ("categories", new JsonSchemaBuilder().Type(SchemaValueType.Array).Items(new JsonSchemaBuilder().Type(SchemaValueType.String)).Description("Categories this recipe belongs to.")),
-                ("tags", new JsonSchemaBuilder().Type(SchemaValueType.Array).Items(new JsonSchemaBuilder().Type(SchemaValueType.String)).Description("Tags associated with this recipe.")),
-                ("variables", new JsonSchemaBuilder().Type(SchemaValueType.Object).Description("Variables that can be used in the recipe.").AdditionalProperties(JsonSchema.Empty)),
-                ("steps", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                ("name", new RecipeStepSchemaBuilder().TypeString().Description("The unique name of the recipe.")),
+                ("displayName", new RecipeStepSchemaBuilder().TypeString().Description("The display name of the recipe.")),
+                ("description", new RecipeStepSchemaBuilder().TypeString().Description("A description of what the recipe does.")),
+                ("author", new RecipeStepSchemaBuilder().TypeString().Description("The author of the recipe.")),
+                ("website", new RecipeStepSchemaBuilder().TypeString().Description("The website URL associated with the recipe.")),
+                ("version", new RecipeStepSchemaBuilder().TypeString().Description("The version of the recipe.")),
+                ("issetuprecipe", new RecipeStepSchemaBuilder().TypeBoolean().Description("Indicates whether this is a setup recipe.")),
+                ("categories", new RecipeStepSchemaBuilder().TypeArray().Items(new RecipeStepSchemaBuilder().TypeString()).Description("Categories this recipe belongs to.")),
+                ("tags", new RecipeStepSchemaBuilder().TypeArray().Items(new RecipeStepSchemaBuilder().TypeString()).Description("Tags associated with this recipe.")),
+                ("variables", new RecipeStepSchemaBuilder().TypeObject().Description("Variables that can be used in the recipe.").AdditionalProperties(RecipeStepSchema.Any)),
+                ("steps", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Description("The list of recipe steps to execute.")
                     .Items(processedStepSchemas.Length > 0
-                        ? new JsonSchemaBuilder().AnyOf(processedStepSchemas)
-                        : new JsonSchemaBuilder()
-                            .Type(SchemaValueType.Object)
+                        ? new RecipeStepSchemaBuilder().AnyOf(processedStepSchemas)
+                        : new RecipeStepSchemaBuilder()
+                            .TypeObject()
                             .Required("name")
-                            .Properties(("name", new JsonSchemaBuilder().Type(SchemaValueType.String))).Enum(stepSchemas.Keys)
+                            .Properties(("name", new RecipeStepSchemaBuilder().TypeString().Enum(stepSchemas.Keys)))
                     ).MinItems(1))
             )
             .Required("steps");
@@ -163,53 +160,33 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
     public RecipeSchemaValidationResult ValidateRecipe(JsonNode recipe)
     {
         var schema = GetRecipeSchema();
-        var result = schema.Evaluate(recipe, new EvaluationOptions { OutputFormat = OutputFormat.List });
+        var result = RecipeStepSchemaValidator.Validate(schema, recipe);
 
         if (result.IsValid)
         {
             return RecipeSchemaValidationResult.Success();
         }
 
-        var errors = new List<RecipeSchemaValidationError>();
-        CollectErrors(result, errors);
+        var errors = result.Errors.Select(e => new RecipeSchemaValidationError
+        {
+            Path = "/",
+            Message = e,
+        }).ToList();
 
         return RecipeSchemaValidationResult.Failure(errors);
     }
 
-    private static JsonSchema CreateMinimalStepSchema(string stepName)
+    private static RecipeStepSchema CreateMinimalStepSchema(string stepName)
     {
-        return new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .TypeObject()
             .Title(stepName)
             .Required("name")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const(stepName)))
-            .AdditionalProperties(JsonSchema.Empty)
+            .AdditionalProperties(RecipeStepSchema.Any)
             .Build();
-    }
-
-    private static void CollectErrors(EvaluationResults result, List<RecipeSchemaValidationError> errors)
-    {
-        if (!result.IsValid && result.Errors is not null)
-        {
-            foreach (var error in result.Errors)
-            {
-                errors.Add(new RecipeSchemaValidationError
-                {
-                    Path = result.InstanceLocation?.ToString() ?? "/",
-                    Message = error.Value,
-                });
-            }
-        }
-
-        if (result.Details is not null)
-        {
-            foreach (var detail in result.Details)
-            {
-                CollectErrors(detail, errors);
-            }
-        }
     }
 }

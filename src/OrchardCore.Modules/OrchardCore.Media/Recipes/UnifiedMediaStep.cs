@@ -1,4 +1,4 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -34,41 +34,41 @@ public sealed class UnifiedMediaStep : RecipeImportStep<UnifiedMediaStep.MediaSt
     public override string Name => "media";
 
     /// <inheritdoc />
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
-        return new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .SchemaDraft202012()
+            .TypeObject()
             .Title(Name)
             .Description("Imports media files into the media library.")
             .Required("name", "Files")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const(Name)
                     .Description("The name of the recipe step.")),
-                ("Files", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                ("Files", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Description("Array of media files to import.")
-                    .Items(new JsonSchemaBuilder()
-                        .Type(SchemaValueType.Object)
+                    .Items(new RecipeStepSchemaBuilder()
+                        .TypeObject()
                         .Required("TargetPath")
                         .Properties(
-                            ("TargetPath", new JsonSchemaBuilder()
-                                .Type(SchemaValueType.String)
+                            ("TargetPath", new RecipeStepSchemaBuilder()
+                                .TypeString()
                                 .Description("Path where the file will be stored in the media library.")),
-                            ("Path", new JsonSchemaBuilder()
-                                .Type(SchemaValueType.String)
+                            ("Path", new RecipeStepSchemaBuilder()
+                                .TypeString()
                                 .Description("Alias for TargetPath.")),
-                            ("Base64", new JsonSchemaBuilder()
-                                .Type(SchemaValueType.String)
+                            ("Base64", new RecipeStepSchemaBuilder()
+                                .TypeString()
                                 .Description("Base64 encoded file content.")),
-                            ("SourcePath", new JsonSchemaBuilder()
-                                .Type(SchemaValueType.String)
+                            ("SourcePath", new RecipeStepSchemaBuilder()
+                                .TypeString()
                                 .Description("Relative path to source file (file-based recipes only).")),
-                            ("SourceUrl", new JsonSchemaBuilder()
-                                .Type(SchemaValueType.String)
-                                .Format(Formats.Uri)
+                            ("SourceUrl", new RecipeStepSchemaBuilder()
+                                .TypeString()
+                                .Format("uri")
                                 .Description("URL to download the file from."))))))
             .AdditionalProperties(false)
             .Build();

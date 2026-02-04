@@ -1,4 +1,4 @@
-using Json.Schema;
+using OrchardCore.Recipes.Schema;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -26,31 +26,31 @@ public sealed class UnifiedRecipesStep : RecipeImportStep<UnifiedRecipesStep.Rec
     public override string Name => "Recipes";
 
     /// <inheritdoc />
-    protected override JsonSchema BuildSchema()
+    protected override RecipeStepSchema BuildSchema()
     {
-        return new JsonSchemaBuilder()
-            .Schema(MetaSchemas.Draft202012Id)
-            .Type(SchemaValueType.Object)
+        return new RecipeStepSchemaBuilder()
+            .SchemaDraft202012()
+            .TypeObject()
             .Title("Recipes")
             .Description("Executes nested recipes by name.")
             .Required("name", "Values")
             .Properties(
-                ("name", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
+                ("name", new RecipeStepSchemaBuilder()
+                    .TypeString()
                     .Const(Name)
                     .Description("The name of the recipe step.")),
-                ("Values", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Array)
+                ("Values", new RecipeStepSchemaBuilder()
+                    .TypeArray()
                     .Description("Array of recipes to execute.")
-                    .Items(new JsonSchemaBuilder()
-                        .Type(SchemaValueType.Object)
+                    .Items(new RecipeStepSchemaBuilder()
+                        .TypeObject()
                         .Required("name")
                         .Properties(
-                            ("executionid", new JsonSchemaBuilder()
-                                .Type(SchemaValueType.String)
+                            ("executionid", new RecipeStepSchemaBuilder()
+                                .TypeString()
                                 .Description("Optional execution ID for this recipe.")),
-                            ("name", new JsonSchemaBuilder()
-                                .Type(SchemaValueType.String)
+                            ("name", new RecipeStepSchemaBuilder()
+                                .TypeString()
                                 .Description("The name of the recipe to execute."))))))
             .AdditionalProperties(false)
             .Build();
