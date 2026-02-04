@@ -4,4 +4,5 @@ namespace Microsoft.Extensions.Options;
 /// Marks a type of options intended to be registered as a singleton and configured asynchronously
 /// by an <see cref="IAsyncConfigureOptions{TOptions}"/> just after a tenant container is created.
 /// </summary>
+[Obsolete("It's not necessary to indicate which options are configured asynchronously.")]
 public interface IAsyncOptions;
