@@ -642,7 +642,7 @@ public class JsonPathTests
     public void SelectNode_WithNullNode_ThrowsArgumentNullException()
     {
         // Arrange
-        JsonNode? json = null;
+        JsonNode json = null;
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => json.SelectNode("name"));
