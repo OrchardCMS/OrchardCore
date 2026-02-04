@@ -983,7 +983,7 @@ public class JsonPathTests
     public void TryGetValue_WithNullNode_ReturnsFalse()
     {
         // Arrange
-        JsonNode? node = null;
+        JsonNode node = null;
 
         // Act
         var success = node.TryGetValue<string>(out var value);
