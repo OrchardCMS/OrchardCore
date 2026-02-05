@@ -40,16 +40,16 @@ When a new minor or major release is created (e.g. `2.2.0`, `3.0.0`), follow the
     pip install -r src/docs/requirements.txt
     ```
 
-2. Deploy the new version using mike. Replace `<version>` with the `major.minor` version number (e.g. `2.2`):
+2. Deploy the new version using mike. Replace `<version>` with the `major.minor` version number (e.g. `2.2`). The `--push` flag publishes changes to the `gh-pages` branch:
 
     ```bash
-    mike deploy <version>
+    mike deploy --push <version>
     ```
 
 3. If this is the latest stable release, update the `latest` alias to point to it:
 
     ```bash
-    mike deploy --update-aliases <version> latest
+    mike deploy --push --update-aliases <version> latest
     ```
 
 4. Verify the deployed versions:
@@ -58,7 +58,7 @@ When a new minor or major release is created (e.g. `2.2.0`, `3.0.0`), follow the
     mike list
     ```
 
-5. Test locally to confirm the version selector works:
+5. Test locally to confirm the version selector works. By default mike serves on port 8000; use `--dev-addr` to choose a different port if needed:
 
     ```bash
     mike serve
