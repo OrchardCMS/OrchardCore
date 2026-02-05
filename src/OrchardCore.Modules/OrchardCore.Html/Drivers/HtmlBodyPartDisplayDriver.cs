@@ -59,7 +59,6 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
     public override async Task<IDisplayResult> UpdateAsync(HtmlBodyPart model, UpdatePartEditorContext context)
     {
         var viewModel = new HtmlBodyPartViewModel();
-
         var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html);
@@ -72,9 +71,7 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
             && !string.IsNullOrEmpty(viewModel.Html)
             && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
         {
-            context.Updater.ModelState.AddModelError(
-                Prefix,
-                nameof(viewModel.Html),
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html),
                 S["{0} contains invalid Liquid expression: {1}",
                     context.TypePartDefinition.DisplayName(),
                     string.Join(" ", errors)]);
@@ -88,6 +85,7 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
         model.Html = htmlBodyPart.Html;
         model.HtmlBodyPart = htmlBodyPart;
         model.ContentItem = htmlBodyPart.ContentItem;
+
         var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
         if (settings.RenderLiquid)
