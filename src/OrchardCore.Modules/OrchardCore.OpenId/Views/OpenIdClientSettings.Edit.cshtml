@@ -111,11 +111,21 @@
         </div>
     </div>
 
-    <div class="mb-3 collapse" asp-validation-class-for="ClientSecret">
-        <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
-        <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="new-password" placeholder="@(Model.HasClientSecret ? T["A client secret is securely stored. Provide a new one to replace it."]: T["Set a client secret for your new account."])" />
-        <span asp-validation-for="ClientSecret"></span>
-        <span class="hint">@T["The '{0}' assigned by the identity provider.", "client_secret"]</span>
+    <div class="mb-3 collapse">
+        <label asp-for="ClientSecretSecretName" class="form-label">@T["Client Secret"]</label>
+        @if (Model.HasClientSecret)
+        {
+            <p class="alert alert-info mb-2">@T["A legacy client secret is configured. Please create a new secret using the Secrets module and select it below to complete the migration."]</p>
+        }
+        @await Component.InvokeAsync("SelectSecret", new
+        {
+            secretTypes = new[] { "TextSecret" },
+            selectedSecret = Model.ClientSecretSecretName,
+            htmlId = "ClientSecretSecretName",
+            htmlName = Html.NameFor(m => m.ClientSecretSecretName).ToString(),
+            required = false
+        })
+        <span class="hint">@T["Select a secret containing the '{0}' assigned by the identity provider.", "client_secret"]</span>
     </div>
 </div>
 
@@ -244,7 +254,7 @@
 
             var responseModeElement = $("#@Html.IdFor(m => m.ResponseMode)");
 
-            var clientSecretElement = $("#@Html.IdFor(m => m.ClientSecret)");
+            var clientSecretElement = $("#@Html.IdFor(m => m.ClientSecretSecretName)");
 
             var queryOptionElement = $("#@OpenIdConnectResponseMode.Query");
             if (useCodeFlowElement.prop("checked")) {

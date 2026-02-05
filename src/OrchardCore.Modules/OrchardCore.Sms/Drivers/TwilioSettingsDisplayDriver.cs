@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -24,7 +22,6 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly INotifier _notifier;
 
     internal readonly IHtmlLocalizer H;
@@ -38,7 +35,6 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
-        IDataProtectionProvider dataProtectionProvider,
         INotifier notifier,
         IHtmlLocalizer<TwilioSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer)
@@ -47,7 +43,6 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
-        _dataProtectionProvider = dataProtectionProvider;
         _notifier = notifier;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -55,15 +50,18 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
 
     public override IDisplayResult Edit(ISite site, TwilioSettings settings, BuildEditorContext c)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<TwilioSettingsViewModel>("TwilioSettings_Edit", model =>
         {
             model.IsEnabled = settings.IsEnabled;
             model.PhoneNumber = settings.PhoneNumber;
             model.AccountSID = settings.AccountSID;
+            model.AuthTokenSecretName = settings.AuthTokenSecretName;
             model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5#Twilio")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SettingsGroupId);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwilioSettings settings, UpdateEditorContext context)
@@ -112,27 +110,22 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.AccountSID), S["Account SID requires a value."]);
             }
 
-            if (settings.AuthToken == null && string.IsNullOrWhiteSpace(model.AuthToken))
+#pragma warning disable CS0618 // Type or member is obsolete
+            // Validate that either a secret is selected or legacy auth token exists
+            if (string.IsNullOrWhiteSpace(model.AuthTokenSecretName) && string.IsNullOrWhiteSpace(settings.AuthToken))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.AuthToken), S["Auth Token required a value."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.AuthTokenSecretName), S["An auth token secret is required."]);
             }
+#pragma warning restore CS0618 // Type or member is obsolete
 
             // Has change should be evaluated before updating the value.
             hasChanges |= settings.PhoneNumber != model.PhoneNumber;
             hasChanges |= settings.AccountSID != model.AccountSID;
+            hasChanges |= settings.AuthTokenSecretName != model.AuthTokenSecretName;
 
             settings.PhoneNumber = model.PhoneNumber;
             settings.AccountSID = model.AccountSID;
-
-            if (!string.IsNullOrWhiteSpace(model.AuthToken))
-            {
-                var protector = _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName);
-
-                var protectedToken = protector.Protect(model.AuthToken);
-                hasChanges |= settings.AuthToken != protectedToken;
-
-                settings.AuthToken = protectedToken;
-            }
+            settings.AuthTokenSecretName = model.AuthTokenSecretName;
         }
 
         if (context.Updater.ModelState.IsValid && settings.IsEnabled && string.IsNullOrEmpty(smsSettings.DefaultProviderName))

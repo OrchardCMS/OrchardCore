@@ -19,10 +19,25 @@
         <span class="hint">@T["The default email address to use as a sender, unless the email sender is set."]</span>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="ConnectionString">
-        <label asp-for="ConnectionString" class="form-label">@T["Connection String"]</label>
-        <input type="text" asp-for="ConnectionString" class="form-control" placeholder="@(Model.HasConnectionString ? T["Connection string is securely stored. Leave blank for current connection string or enter a new one"] : T["Azure connection string"])" />
-        <span asp-validation-for="ConnectionString"></span>
+    <div class="mb-3" asp-validation-class-for="ConnectionStringSecretName">
+        <label asp-for="ConnectionStringSecretName" class="form-label">@T["Connection String Secret"]</label>
+        @await Component.InvokeAsync("SelectSecret", new
+        {
+            secretTypes = new[] { "TextSecret" },
+            selectedSecret = Model.ConnectionStringSecretName,
+            htmlId = "ConnectionStringSecretName",
+            htmlName = Html.NameFor(m => m.ConnectionStringSecretName).ToString(),
+            required = false
+        })
+        <span asp-validation-for="ConnectionStringSecretName"></span>
+        <span class="hint">@T["Select a secret containing the Azure Communication Services connection string."]</span>
+        @if (Model.HasConnectionString && string.IsNullOrWhiteSpace(Model.ConnectionStringSecretName))
+        {
+            <div class="alert alert-warning mt-2">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                @T["A legacy connection string is configured. Please migrate to using a secret for improved security."]
+            </div>
+        }
     </div>
 
 </div>

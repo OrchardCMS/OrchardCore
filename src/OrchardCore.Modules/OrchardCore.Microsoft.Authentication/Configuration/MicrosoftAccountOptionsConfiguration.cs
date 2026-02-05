@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Microsoft.Authentication.Settings;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration;
 
@@ -13,15 +14,18 @@ public class MicrosoftAccountOptionsConfiguration :
     IConfigureNamedOptions<MicrosoftAccountOptions>
 {
     private readonly MicrosoftAccountSettings _microsoftAccountSettings;
+    private readonly ISecretManager _secretManager;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger _logger;
 
     public MicrosoftAccountOptionsConfiguration(
         IOptions<MicrosoftAccountSettings> microsoftAccountSettings,
+        ISecretManager secretManager,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<MicrosoftAccountOptionsConfiguration> logger)
     {
         _microsoftAccountSettings = microsoftAccountSettings.Value;
+        _secretManager = secretManager;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
     }
@@ -33,8 +37,13 @@ public class MicrosoftAccountOptionsConfiguration :
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) ||
-            string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret))
+        // Check if configured with either new secrets or legacy settings.
+#pragma warning disable CS0618 // Type or member is obsolete
+        var hasAppSecret = !string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecretSecretName) ||
+                           !string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+        if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) || !hasAppSecret)
         {
             _logger.LogWarning("The Microsoft login provider is enabled but not configured.");
 
@@ -64,13 +73,38 @@ public class MicrosoftAccountOptionsConfiguration :
 
         options.ClientId = _microsoftAccountSettings.AppId;
 
-        try
+        // Try to get the secret from the Secrets module first.
+        if (!string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecretSecretName))
         {
-            options.ClientSecret = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount).Unprotect(_microsoftAccountSettings.AppSecret);
+            var secret = _secretManager.GetSecretAsync<TextSecret>(_microsoftAccountSettings.AppSecretSecretName)
+                .GetAwaiter()
+                .GetResult();
+
+            if (secret != null)
+            {
+                options.ClientSecret = secret.Text;
+            }
+            else
+            {
+                _logger.LogError("The Microsoft Account secret '{SecretName}' could not be found.", _microsoftAccountSettings.AppSecretSecretName);
+            }
         }
-        catch
+        else
         {
-            _logger.LogError("The Microsoft Account secret key could not be decrypted. It may have been encrypted using a different key.");
+            // Fall back to legacy encrypted setting.
+#pragma warning disable CS0618 // Type or member is obsolete
+            if (!string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret))
+            {
+                try
+                {
+                    options.ClientSecret = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount).Unprotect(_microsoftAccountSettings.AppSecret);
+                }
+                catch
+                {
+                    _logger.LogError("The Microsoft Account secret key could not be decrypted. It may have been encrypted using a different key.");
+                }
+            }
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         if (_microsoftAccountSettings.CallbackPath.HasValue)

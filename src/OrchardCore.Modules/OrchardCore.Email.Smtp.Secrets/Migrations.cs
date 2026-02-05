@@ -44,6 +44,8 @@ public sealed class Migrations : DataMigration
         var smtpSettings = site.As<SmtpSettings>();
         var smtpSecretSettings = site.As<SmtpSecretSettings>();
 
+        // Read from obsolete Password property for migration purposes
+#pragma warning disable CS0618 // Type or member is obsolete
         // Skip if no password is set or if already migrated
         if (string.IsNullOrWhiteSpace(smtpSettings.Password) ||
             !string.IsNullOrWhiteSpace(smtpSecretSettings.PasswordSecretName))
@@ -79,6 +81,7 @@ public sealed class Migrations : DataMigration
             // Update settings to reference the secret and clear the password
             smtpSecretSettings.PasswordSecretName = secretName;
             smtpSettings.Password = null;
+#pragma warning restore CS0618 // Type or member is obsolete
 
             site.Put(smtpSecretSettings);
             site.Put(smtpSettings);

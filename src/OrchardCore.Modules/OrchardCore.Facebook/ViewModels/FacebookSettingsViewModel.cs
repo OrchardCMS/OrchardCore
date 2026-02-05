@@ -7,8 +7,7 @@ public class FacebookSettingsViewModel
     [Required]
     public string AppId { get; set; }
 
-    [Required]
-    public string AppSecret { get; set; }
+    public string AppSecretSecretName { get; set; }
 
     [Required]
     public string SdkJs { get; set; }
@@ -19,5 +18,5 @@ public class FacebookSettingsViewModel
     [RegularExpression(@"(v)\d+\.\d+")]
     public string Version { get; set; }
 
-    public bool HasDecryptionError { get; set; }
+    public bool HasAppSecret { get; set; }
 }

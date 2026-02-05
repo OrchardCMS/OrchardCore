@@ -27,13 +27,24 @@
         <span asp-validation-for="AccountSID"></span>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="AuthToken">
-        <label asp-for="AuthToken" class="form-label">@T["Auth Token"]</label>
-        <input asp-for="AuthToken" class="form-control" />
-        <span asp-validation-for="AuthToken"></span>
-        @if (Model.HasAuthToken)
+    <div class="mb-3" asp-validation-class-for="AuthTokenSecretName">
+        <label asp-for="AuthTokenSecretName" class="form-label">@T["Auth Token Secret"]</label>
+        @await Component.InvokeAsync("SelectSecret", new
         {
-            <span class="hint">@T["Auth token was securely saved. Enter a new value if you wish to replace the existing secret."]</span>
+            secretTypes = new[] { "TextSecret" },
+            selectedSecret = Model.AuthTokenSecretName,
+            htmlId = "AuthTokenSecretName",
+            htmlName = Html.NameFor(m => m.AuthTokenSecretName).ToString(),
+            required = false
+        })
+        <span asp-validation-for="AuthTokenSecretName"></span>
+        <span class="hint">@T["Select a secret containing the Twilio Auth Token."]</span>
+        @if (Model.HasAuthToken && string.IsNullOrWhiteSpace(Model.AuthTokenSecretName))
+        {
+            <div class="alert alert-warning mt-2">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                @T["A legacy auth token is configured. Please migrate to using a secret for improved security."]
+            </div>
         }
     </div>
 </div>

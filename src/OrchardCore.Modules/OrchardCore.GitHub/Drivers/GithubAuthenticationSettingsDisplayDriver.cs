@@ -1,8 +1,5 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -17,22 +14,16 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger _logger;
 
     public GitHubAuthenticationSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<GitHubAuthenticationSettingsDisplayDriver> logger)
+        IHttpContextAccessor httpContextAccessor)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
     }
 
     protected override string SettingsGroupId
@@ -46,27 +37,12 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
             return null;
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<GitHubAuthenticationSettingsViewModel>("GitHubAuthenticationSettings_Edit", model =>
         {
             model.ClientID = settings.ClientID;
-            if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
-            {
-                try
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication);
-                    model.ClientSecret = protector.Unprotect(settings.ClientSecret);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
-                    model.ClientSecret = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
-            else
-            {
-                model.ClientSecret = string.Empty;
-            }
+            model.ClientSecretSecretName = settings.ClientSecretSecretName;
+            model.HasClientSecret = !string.IsNullOrWhiteSpace(settings.ClientSecret);
             if (settings.CallbackPath.HasValue)
             {
                 model.CallbackUrl = settings.CallbackPath.Value;
@@ -74,6 +50,7 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
             model.SaveTokens = settings.SaveTokens;
         }).Location("Content:5")
         .OnGroup(SettingsGroupId);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GitHubAuthenticationSettings settings, UpdateEditorContext context)
@@ -87,17 +64,12 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
         var model = new GitHubAuthenticationSettingsViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (context.Updater.ModelState.IsValid)
-        {
-            var protector = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication);
+        settings.ClientID = model.ClientID;
+        settings.ClientSecretSecretName = model.ClientSecretSecretName;
+        settings.CallbackPath = model.CallbackUrl;
+        settings.SaveTokens = model.SaveTokens;
 
-            settings.ClientID = model.ClientID;
-            settings.ClientSecret = protector.Protect(model.ClientSecret);
-            settings.CallbackPath = model.CallbackUrl;
-            settings.SaveTokens = model.SaveTokens;
-
-            _shellReleaseManager.RequestRelease();
-        }
+        _shellReleaseManager.RequestRelease();
 
         return await EditAsync(site, settings, context);
     }

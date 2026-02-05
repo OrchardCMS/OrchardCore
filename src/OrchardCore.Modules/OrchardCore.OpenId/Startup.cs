@@ -78,6 +78,8 @@ public sealed class ClientStartup : StartupBase
             // Built-in initializers:
             ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
         });
+
+        services.AddDataMigration<ClientSecretsMigration>();
     }
 }
 

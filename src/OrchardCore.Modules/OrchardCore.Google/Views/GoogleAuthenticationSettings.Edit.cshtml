@@ -6,11 +6,6 @@
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Google/#google-authentication" target="_blank">@T["See documentation"]</a>
 </p>
 
-@if (Model.HasDecryptionError)
-{
-    <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
-}
-
 <h3>@T["Google Authentication Settings"]</h3>
 
 <div class="mb-3 row" asp-validation-class-for="ClientID">
@@ -22,12 +17,26 @@
     </div>
 </div>
 
-<div class="mb-3 row" asp-validation-class-for="ClientSecret">
+<div class="mb-3 row" asp-validation-class-for="ClientSecretSecretName">
     <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-        <label asp-for="ClientSecret" class="form-label">@T["API secret key"]</label>
-        <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" autocomplete="off" />
-        <span asp-validation-for="ClientSecret"></span>
-        <span class="hint">@T["The client secret defined in Google API console for the application."]</span>
+        <label asp-for="ClientSecretSecretName" class="form-label">@T["API Secret Key"]</label>
+        @await Component.InvokeAsync("SelectSecret", new
+        {
+            secretTypes = new[] { "TextSecret" },
+            selectedSecret = Model.ClientSecretSecretName,
+            htmlId = "ClientSecretSecretName",
+            htmlName = Html.NameFor(m => m.ClientSecretSecretName).ToString(),
+            required = false
+        })
+        <span asp-validation-for="ClientSecretSecretName"></span>
+        <span class="hint">@T["Select a secret containing the Google client secret."]</span>
+        @if (Model.HasClientSecret && string.IsNullOrWhiteSpace(Model.ClientSecretSecretName))
+        {
+            <div class="alert alert-warning mt-2">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                @T["A legacy client secret is configured. Please migrate to using a secret for improved security."]
+            </div>
+        }
     </div>
 </div>
 

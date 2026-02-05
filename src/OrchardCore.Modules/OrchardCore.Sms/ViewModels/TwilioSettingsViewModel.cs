@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
 namespace OrchardCore.Sms.ViewModels;
 
 public class TwilioSettingsViewModel : SmsSettingsBaseViewModel
@@ -10,8 +8,7 @@ public class TwilioSettingsViewModel : SmsSettingsBaseViewModel
 
     public string AccountSID { get; set; }
 
-    public string AuthToken { get; set; }
+    public string AuthTokenSecretName { get; set; }
 
-    [BindNever]
     public bool HasAuthToken { get; set; }
 }

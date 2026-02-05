@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -37,6 +38,8 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<SmsPermissionProvider>();
         services.AddSiteDisplayDriver<SmsSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
+
+        services.AddScoped<IDataMigration, Migrations>();
     }
 }
 

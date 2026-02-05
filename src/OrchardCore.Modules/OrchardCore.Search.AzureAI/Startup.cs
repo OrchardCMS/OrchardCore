@@ -37,6 +37,7 @@ public sealed class Startup : StartupBase
         services.AddAzureAISearchServices();
         services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
         services.AddDataMigration<AzureAISearchIndexSettingsMigrations>();
+        services.AddDataMigration<ApiKeySecretsMigration>();
     }
 }
 

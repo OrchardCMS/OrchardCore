@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -24,7 +22,6 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly INotifier _notifier;
 
     internal readonly IHtmlLocalizer H;
@@ -38,7 +35,6 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
-        IDataProtectionProvider dataProtectionProvider,
         INotifier notifier,
         IHtmlLocalizer<AzureSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<AzureSettingsDisplayDriver> stringLocalizer)
@@ -47,7 +43,6 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
-        _dataProtectionProvider = dataProtectionProvider;
         _notifier = notifier;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -55,14 +50,17 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
 
     public override IDisplayResult Edit(ISite site, AzureSmsSettings settings, BuildEditorContext c)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<AzureSettingsViewModel>("AzureSmsSettings_Edit", model =>
         {
             model.IsEnabled = settings.IsEnabled;
             model.PhoneNumber = settings.PhoneNumber;
+            model.ConnectionStringSecretName = settings.ConnectionStringSecretName;
             model.HasConnectionString = !string.IsNullOrEmpty(settings.ConnectionString);
         }).Location("Content:5#Azure Communication Services")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SettingsGroupId);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureSmsSettings settings, UpdateEditorContext context)
@@ -109,21 +107,16 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
 
             settings.PhoneNumber = model.PhoneNumber;
 
-            if (string.IsNullOrWhiteSpace(model.ConnectionString) && settings.ConnectionString is null)
+#pragma warning disable CS0618 // Type or member is obsolete
+            // Validate that either a secret is selected or legacy connection string exists
+            if (string.IsNullOrWhiteSpace(model.ConnectionStringSecretName) && string.IsNullOrWhiteSpace(settings.ConnectionString))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionStringSecretName), S["A connection string secret is required."]);
             }
-            else if (!string.IsNullOrWhiteSpace(model.ConnectionString))
-            {
-                var protector = _dataProtectionProvider.CreateProtector(AzureSmsOptionsConfiguration.ProtectorName);
 
-                var protectedConnection = protector.Protect(model.ConnectionString);
-
-                // Check if the connection string changed before setting it.
-                hasChanges |= protectedConnection != settings.ConnectionString;
-
-                settings.ConnectionString = protectedConnection;
-            }
+            hasChanges |= model.ConnectionStringSecretName != settings.ConnectionStringSecretName;
+            settings.ConnectionStringSecretName = model.ConnectionStringSecretName;
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         if (context.Updater.ModelState.IsValid && settings.IsEnabled && string.IsNullOrEmpty(smsSettings.DefaultProviderName))

@@ -39,9 +39,11 @@ public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
         options.RequireCredentials = settings.RequireCredentials;
         options.UseDefaultCredentials = settings.UseDefaultCredentials;
         options.UserName = settings.UserName;
-        options.Password = settings.Password;
         options.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
 
+        // Read password from obsolete property for backward compatibility during migration.
+        // New installations should use OrchardCore.Email.Smtp.Secrets for password storage.
+#pragma warning disable CS0618 // Type or member is obsolete
         if (!string.IsNullOrWhiteSpace(settings.Password))
         {
             try
@@ -54,6 +56,7 @@ public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
                 _logger.LogError("The Smtp password could not be decrypted. It may have been encrypted using a different key.");
             }
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
         options.IsEnabled = settings.IsEnabled ?? options.ConfigurationExists();
     }
