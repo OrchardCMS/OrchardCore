@@ -42,7 +42,7 @@ public static class LocalizationServiceCollectionExtensions
         // Register no-op data localization services as defaults.
         // These can be replaced when the OrchardCore.DataLocalization module is enabled.
         services.TryAddSingleton<IDataLocalizerFactory, NullDataLocalizerFactory>();
-        services.TryAddTransient(sp =>
+        services.TryAddTransient<IDataLocalizer>(sp =>
         {
             var dataLocalizerFactory = sp.GetService<IDataLocalizerFactory>();
             return dataLocalizerFactory.Create();
@@ -84,7 +84,7 @@ public static class LocalizationServiceCollectionExtensions
         // Replace the null factory with the actual factory
         services.Replace(ServiceDescriptor.Singleton<IDataLocalizerFactory, DataLocalizerFactory>());
 
-        services.Replace(ServiceDescriptor.Transient(sp =>
+        services.Replace(ServiceDescriptor.Transient<IDataLocalizer>(sp =>
         {
             var dataLocalizerFactory = sp.GetService<IDataLocalizerFactory>();
             return dataLocalizerFactory.Create();
