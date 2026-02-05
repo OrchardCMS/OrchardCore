@@ -6,3 +6,4 @@ pymdown-extensions>=10.20.0
 mkdocs-exclude>=1.0.2
 mkdocs-redirects>=1.2.1
 mdx_truly_sane_lists>=1.2
+mike>=2.1.3
