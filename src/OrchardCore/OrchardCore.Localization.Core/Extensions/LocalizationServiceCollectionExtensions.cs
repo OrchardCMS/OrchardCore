@@ -68,18 +68,15 @@ public static class LocalizationServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        // Replace the no-op implementation with the actual data localization services.
         services.AddSingleton<IDataTranslationProvider, NullDataTranslationProvider>();
         services.AddTransient<DataResourceManager>();
-        
-        // Replace the null factory with the actual factory
-        services.Replace(ServiceDescriptor.Singleton<IDataLocalizerFactory, DataLocalizerFactory>());
+        services.AddSingleton<IDataLocalizerFactory, DataLocalizerFactory>();
 
-        services.Replace(ServiceDescriptor.Transient<IDataLocalizer>(sp =>
+        services.AddTransient(sp =>
         {
             var dataLocalizerFactory = sp.GetService<IDataLocalizerFactory>();
             return dataLocalizerFactory.Create();
-        }));
+        });
 
         return services;
     }
