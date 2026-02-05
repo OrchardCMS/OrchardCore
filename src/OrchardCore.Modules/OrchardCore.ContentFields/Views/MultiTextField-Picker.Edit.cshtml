@@ -1,6 +1,8 @@
 @model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
 @using System.Text.Json
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
     var selectedValues = new List<object>();
@@ -22,13 +24,14 @@
     var vueElementId = $"MultiTextField-Picker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
 
     var valuesKey = Html.NameFor(x => x.Values);
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.js" asp-name="multitextfieldpicker" at="Foot" depends-on="vuejs:2,vue-multiselect:2"></script>
 <style asp-name="vue-multiselect" version="2" at="Foot"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
-    <label class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <label class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
     <div class="@Orchard.GetEndClasses()">
         <div id="@vueElementId" class="multitextfieldpicker" data-selectedvalues="@jSelectedValues" data-options="@jOptions" data-valueskey="@valuesKey">
             <div class="w-xl-50">

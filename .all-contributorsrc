@@ -3475,6 +3475,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Notorious-Ali",
+      "name": "Seied Ali Mirkarimi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84094431?v=4",
+      "profile": "https://wakavi.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
