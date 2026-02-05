@@ -1,0 +1,403 @@
+@model OrchardCore.DataLocalization.ViewModels.TranslationEditorViewModel
+@using System.Text.Json
+
+@{
+    var culturesJson = JConvert.SerializeObject(Model.AllowedCultures, JOptions.CamelCase);
+    var providersJson = JConvert.SerializeObject(Model.Providers, JOptions.CamelCase);
+}
+
+<zone Name="Title">
+    <h1>@RenderTitleSegments(T["Dynamic Translations"])</h1>
+</zone>
+
+@if (Model.IsReadOnly)
+{
+    <div class="alert alert-info" role="alert">
+        @T["You have read-only access to dynamic translations. Contact an administrator to request edit permissions."]
+    </div>
+}
+
+<div id="translation-editor"
+     data-current-culture="@Model.CurrentCulture"
+     data-is-read-only="@Model.IsReadOnly.ToString().ToLowerInvariant()"
+     data-save-url="@Url.Action("Save", "Admin", new { area = "OrchardCore.DataLocalization" })"
+     data-get-strings-url="@Url.Action("GetStrings", "Admin", new { area = "OrchardCore.DataLocalization" })">
+
+    @Html.AntiForgeryToken()
+
+    <!-- Filters -->
+    <div class="mb-3">
+        <div class="row g-3">
+            <div class="col-xl-3 col-sm-6">
+                <label class="form-label" for="culture-select">@T["Culture"]</label>
+                <select id="culture-select" class="form-select" v-model="currentCulture" @@change="onCultureChange">
+                    <option v-for="culture in cultures" :key="culture.name" :value="culture.name">
+                        {{ culture.displayName }} ({{ culture.name }})
+                    </option>
+                </select>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+                <label class="form-label" for="filter-select">@T["Category"]</label>
+                <select id="filter-select" class="form-select" v-model="categoryFilter">
+                    <option value="">@T["All Categories"]</option>
+                    <option v-for="provider in providers" :key="provider.name" :value="provider.name">
+                        {{ provider.name }}
+                    </option>
+                </select>
+            </div>
+            <div class="col-xl-4 col-sm-8">
+                <label class="form-label" for="search-box">@T["Search"]</label>
+                <div class="input-group filter-options">
+                    <input id="search-box" type="search" class="form-control" v-model="searchQuery" placeholder="@T["Search translations"]" autocomplete="off" />
+                </div>
+            </div>
+            <div class="col-xl-2 col-sm-4">
+                <label class="form-label">&nbsp;</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="missing-only-toggle" v-model="showMissingOnly">
+                    <label class="form-check-label" for="missing-only-toggle">@T["Missing only"]</label>
+                </div>
+                <div class="form-check" v-if="!isReadOnly">
+                    <input class="form-check-input" type="checkbox" id="auto-save-toggle" v-model="autoSave">
+                    <label class="form-check-label" for="auto-save-toggle">@T["Auto-save"]</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status indicator -->
+    <div class="mb-3" v-if="isDirty && !isReadOnly">
+        <span class="badge text-bg-warning">@T["Unsaved changes"]</span>
+    </div>
+
+    <!-- Loading state -->
+    <div v-if="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">@T["Loading..."]</span>
+        </div>
+    </div>
+
+    <!-- Translation groups -->
+    <div v-if="!isLoading">
+        <fieldset class="translations-list mb-3" v-for="(provider, index) in filteredProviders" :key="provider.name">
+            <legend>
+                <span class="me-1">{{ provider.name }}</span>
+                <span class="hint">({{ getTotalStringsCount(provider) }} @T["strings"]<span v-if="getTotalTranslatedCount(provider) > 0">, {{ getTotalTranslatedCount(provider) }} @T["translated"]</span>)</span>
+            </legend>
+
+            <!-- Ungrouped strings (no sub-groups) -->
+            <table v-if="getFilteredStrings(provider.strings).length > 0" class="table">
+                <thead>
+                    <tr>
+                        <th class="col-5">@T["Key"]</th>
+                        <th class="col-7">@T["Translation"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="str in getFilteredStrings(provider.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
+                        <td class="col-5">
+                            <code>{{ str.key }}</code>
+                        </td>
+                        <td class="col-7">
+                            <input type="text" class="form-control"
+                                   v-model="str.value"
+                                   :disabled="isReadOnly"
+                                   :placeholder="str.key"
+                                   @@input="onTranslationChange(str)" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Sub-groups -->
+            <div v-for="subGroup in getFilteredSubGroups(provider)" :key="subGroup.name" class="ms-3 mb-3">
+                <h6 class="text-muted border-bottom pb-1">
+                    {{ subGroup.name }}
+                    <span class="hint">({{ getFilteredStrings(subGroup.strings).length }} @T["strings"])</span>
+                </h6>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th class="col-5">@T["Key"]</th>
+                            <th class="col-7">@T["Translation"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="str in getFilteredStrings(subGroup.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
+                            <td class="col-5">
+                                <code>{{ str.key }}</code>
+                            </td>
+                            <td class="col-7">
+                                <input type="text" class="form-control form-control-sm"
+                                       v-model="str.value"
+                                       :disabled="isReadOnly"
+                                       :placeholder="str.key"
+                                       @@input="onTranslationChange(str)" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+
+    <!-- Empty state -->
+    <div v-if="!isLoading && filteredProviders.length === 0" class="alert alert-info">
+        @T["No translatable strings found matching your criteria."]
+    </div>
+
+    <!-- Action buttons -->
+    <div class="mb-3" v-if="!isReadOnly">
+        <button type="button" class="btn btn-primary save me-2" @@click="saveTranslations" :disabled="!isDirty || isSaving">
+            <span v-if="isSaving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            @T["Save"]
+        </button>
+        <a class="btn btn-secondary" role="button" href="@Url.Action("Statistics", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Statistics"]</a>
+    </div>
+</div>
+
+<script asp-name="vuejs" at="Foot"></script>
+<script at="Foot">
+document.addEventListener('DOMContentLoaded', function () {
+    const editorEl = document.getElementById('translation-editor');
+    if (!editorEl) return;
+
+    // Data passed from server
+    const serverData = {
+        cultures: @Html.Raw(culturesJson),
+        providers: @Html.Raw(providersJson)
+    };
+
+    // Get antiforgery token from hidden input
+    const getAntiForgeryToken = () => {
+        const input = editorEl.querySelector('input[name="__RequestVerificationToken"]');
+        return input ? input.value : '';
+    };
+
+    const { createApp } = Vue;
+
+    const app = createApp({
+        data() {
+            return {
+                cultures: serverData.cultures,
+                currentCulture: editorEl.dataset.currentCulture || '',
+                providers: serverData.providers,
+                isReadOnly: editorEl.dataset.isReadOnly === 'true',
+                saveUrl: editorEl.dataset.saveUrl,
+                getStringsUrl: editorEl.dataset.getStringsUrl,
+                searchQuery: '',
+                categoryFilter: '',
+                showMissingOnly: false,
+                autoSave: true,
+                isDirty: false,
+                isLoading: false,
+                isSaving: false,
+                autoSaveTimeout: null,
+            };
+        },
+        computed: {
+            filteredProviders() {
+                let result = this.providers;
+
+                if (this.categoryFilter) {
+                    result = result.filter(p => p.name === this.categoryFilter);
+                }
+
+                // Filter out providers with no matching strings
+                return result.filter(p => 
+                    this.getFilteredStrings(p.strings).length > 0 || 
+                    this.getFilteredSubGroups(p).length > 0
+                );
+            },
+            canEditCurrentCulture() {
+                const culture = this.cultures.find(c => c.name === this.currentCulture);
+                return culture && culture.canEdit;
+            }
+        },
+        methods: {
+            getFilteredStrings(strings) {
+                if (!strings) return [];
+                let result = strings;
+
+                // Filter by missing only
+                if (this.showMissingOnly) {
+                    result = result.filter(s => !s.value || s.value.trim() === '');
+                }
+
+                // Filter by search query
+                if (this.searchQuery) {
+                    const query = this.searchQuery.toLowerCase();
+                    result = result.filter(s =>
+                        s.key.toLowerCase().includes(query) ||
+                        (s.value && s.value.toLowerCase().includes(query))
+                    );
+                }
+
+                return result;
+            },
+            getFilteredSubGroups(provider) {
+                if (!provider.subGroups) return [];
+                
+                return provider.subGroups.filter(sg => 
+                    this.getFilteredStrings(sg.strings).length > 0
+                );
+            },
+            getTotalStringsCount(provider) {
+                let count = (provider.strings || []).length;
+                if (provider.subGroups) {
+                    count += provider.subGroups.reduce((sum, sg) => sum + (sg.strings || []).length, 0);
+                }
+                return count;
+            },
+            getTotalTranslatedCount(provider) {
+                let count = (provider.strings || []).filter(s => s.value && s.value.trim() !== '').length;
+                if (provider.subGroups) {
+                    count += provider.subGroups.reduce((sum, sg) => 
+                        sum + (sg.strings || []).filter(s => s.value && s.value.trim() !== '').length, 0);
+                }
+                return count;
+            },
+            onTranslationChange(str) {
+                this.isDirty = true;
+
+                if (this.autoSave && !this.isReadOnly && this.canEditCurrentCulture) {
+                    this.scheduleAutoSave();
+                }
+            },
+            scheduleAutoSave() {
+                if (this.autoSaveTimeout) {
+                    clearTimeout(this.autoSaveTimeout);
+                }
+
+                this.autoSaveTimeout = setTimeout(() => {
+                    this.saveTranslations();
+                }, 2000);
+            },
+            getAllStrings() {
+                const translations = [];
+                for (const provider of this.providers) {
+                    // Collect ungrouped strings
+                    if (provider.strings) {
+                        for (const str of provider.strings) {
+                            translations.push({
+                                context: str.context,
+                                key: str.key,
+                                value: str.value || ''
+                            });
+                        }
+                    }
+                    // Collect strings from sub-groups
+                    if (provider.subGroups) {
+                        for (const subGroup of provider.subGroups) {
+                            if (subGroup.strings) {
+                                for (const str of subGroup.strings) {
+                                    translations.push({
+                                        context: str.context,
+                                        key: str.key,
+                                        value: str.value || ''
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                return translations;
+            },
+            async saveTranslations() {
+                if (this.isReadOnly || !this.canEditCurrentCulture || this.isSaving) {
+                    return;
+                }
+
+                this.isSaving = true;
+
+                try {
+                    const translations = this.getAllStrings();
+
+                    const response = await fetch(this.saveUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': getAntiForgeryToken()
+                        },
+                        body: JSON.stringify({
+                            culture: this.currentCulture,
+                            translations: translations
+                        })
+                    });
+
+                    if (response.ok) {
+                        this.isDirty = false;
+                        // Show success toast (using Bootstrap if available)
+                        this.showNotification('@T["Translations saved successfully."]', 'success');
+                    } else {
+                        const error = await response.json();
+                        this.showNotification(error.message || '@T["Failed to save translations."]', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Save error:', error);
+                    this.showNotification('@T["An error occurred while saving."]', 'danger');
+                } finally {
+                    this.isSaving = false;
+                }
+            },
+            async onCultureChange() {
+                if (this.isDirty) {
+                    if (!confirm('@T["You have unsaved changes. Do you want to discard them?"]')) {
+                        return;
+                    }
+                }
+
+                this.isLoading = true;
+                this.isDirty = false;
+
+                try {
+                    const response = await fetch(`${this.getStringsUrl}?culture=${encodeURIComponent(this.currentCulture)}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.providers = data.providers;
+
+                        // Update read-only state for the new culture
+                        const culture = this.cultures.find(c => c.name === this.currentCulture);
+                        this.isReadOnly = !culture || !culture.canEdit;
+                    }
+                } catch (error) {
+                    console.error('Load error:', error);
+                    this.showNotification('@T["Failed to load translations."]', 'danger');
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+            showNotification(message, type) {
+                // Create a simple toast notification
+                const toastContainer = document.querySelector('.toast-container') || this.createToastContainer();
+                const toastId = 'toast-' + Date.now();
+
+                const toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">${message}</div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+
+                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+                const toastEl = document.getElementById(toastId);
+                const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+                toast.show();
+
+                toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+            },
+            createToastContainer() {
+                const container = document.createElement('div');
+                container.className = 'toast-container position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '1100';
+                document.body.appendChild(container);
+                return container;
+            }
+        }
+    });
+
+    app.mount('#translation-editor');
+});
+</script>
