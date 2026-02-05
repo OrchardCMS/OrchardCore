@@ -86,10 +86,9 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
         var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html);
 
-        if (settings.SanitizeHtml)
-        {
-            field.Html = _htmlSanitizerService.Sanitize(viewModel.Html);
-        }
+        field.Html = settings.SanitizeHtml
+            ? _htmlSanitizerService.Sanitize(viewModel.Html)
+            : viewModel.Html;
 
         if (settings.RenderLiquid
             && !string.IsNullOrEmpty(viewModel.Html)

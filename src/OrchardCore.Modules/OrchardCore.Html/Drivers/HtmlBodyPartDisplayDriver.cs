@@ -64,18 +64,20 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html);
 
-        if (settings.SanitizeHtml)
-        {
-            model.Html = _htmlSanitizerService.Sanitize(viewModel.Html);
-        }
+        model.Html = settings.SanitizeHtml
+            ? _htmlSanitizerService.Sanitize(viewModel.Html)
+            : viewModel.Html;
 
         if (settings.RenderLiquid
             && !string.IsNullOrEmpty(viewModel.Html)
             && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
         {
-            var partName = context.TypePartDefinition.DisplayName();
-            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html),
-                S["{0} contains invalid Liquid expression: {1}", partName, string.Join(" ", errors)]);
+            context.Updater.ModelState.AddModelError(
+                Prefix,
+                nameof(viewModel.Html),
+                S["{0} contains invalid Liquid expression: {1}",
+                    context.TypePartDefinition.DisplayName(),
+                    string.Join(" ", errors)]);
         }
 
         return Edit(model, context);
