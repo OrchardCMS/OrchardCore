@@ -39,15 +39,6 @@ public static class LocalizationServiceCollectionExtensions
         services.AddSingleton<IHtmlLocalizerFactory, PortableObjectHtmlLocalizerFactory>();
         services.TryAddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
-        // Register no-op data localization services as defaults.
-        // These can be replaced when the OrchardCore.DataLocalization module is enabled.
-        services.TryAddSingleton<IDataLocalizerFactory, NullDataLocalizerFactory>();
-        services.TryAddTransient<IDataLocalizer>(sp =>
-        {
-            var dataLocalizerFactory = sp.GetService<IDataLocalizerFactory>();
-            return dataLocalizerFactory.Create();
-        });
-
         if (setupAction != null)
         {
             services.Configure(setupAction);

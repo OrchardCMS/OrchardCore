@@ -31,17 +31,13 @@ public class LocalizationServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddPortableObjectLocalization_RegistersNullDataLocalizer()
+    public void AddOrchardCore_RegistersNullDataLocalizer()
     {
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddLogging();
-        services.AddMemoryCache();
-        services.AddSingleton<IPluralRuleProvider, DefaultPluralRuleProvider>();
-
         // Act
-        services.AddPortableObjectLocalization();
+        services.AddOrchardCore();
 
         // Assert
         var serviceProvider = services.BuildServiceProvider();
@@ -69,8 +65,8 @@ public class LocalizationServiceCollectionExtensionsTests
         services.AddMemoryCache();
         services.AddSingleton<ILocalizationManager, LocalizationManager>();
 
-        // Act - First add PortableObject localization (which registers null data localizer)
-        services.AddPortableObjectLocalization();
+        // Act - First add OrchardCore (which registers null data localizer)
+        services.AddOrchardCore();
         // Then add DataLocalization (which should replace it)
         services.AddDataLocalization();
 
