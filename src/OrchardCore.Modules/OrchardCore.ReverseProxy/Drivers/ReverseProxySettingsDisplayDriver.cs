@@ -1,89 +1,78 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.ReverseProxy.ViewModels;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Drivers;
 
 namespace OrchardCore.ReverseProxy.Drivers;
 
-public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<ReverseProxySettings>
+public sealed class ReverseProxySettingsDisplayDriver : ConfigurableSiteSettingsDisplayDriver<ReverseProxySettings, ReverseProxySettingsViewModel>
 {
     public const string GroupId = "ReverseProxy";
 
-    private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
-
     public ReverseProxySettingsDisplayDriver(
+        IConfigurableSettingsService<ReverseProxySettings> settingsService,
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
+        : base(settingsService, shellReleaseManager, httpContextAccessor, authorizationService)
     {
-        _shellReleaseManager = shellReleaseManager;
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
     }
 
-    protected override string SettingsGroupId
-        => GroupId;
+    protected override string SettingsGroupId => GroupId;
 
-    public override async Task<IDisplayResult> EditAsync(ISite site, ReverseProxySettings settings, BuildEditorContext context)
+    protected override string EditShapeType => "ReverseProxySettings_Edit";
+
+    protected override Permission RequiredPermission => Permissions.ManageReverseProxySettings;
+
+    protected override void PopulateViewModel(ReverseProxySettingsViewModel model, ReverseProxySettings databaseSettings, ReverseProxySettings effectiveSettings)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
-        {
-            return null;
-        }
-
-        context.AddTenantReloadWarningWrapper();
-
-        return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
-        {
-            model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
-            model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
-            model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
-        }).Location("Content:2")
-        .OnGroup(SettingsGroupId);
+        // Use database settings for form fields (what user will edit)
+        model.EnableXForwardedFor = databaseSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
+        model.EnableXForwardedHost = databaseSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
+        model.EnableXForwardedProto = databaseSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
+        model.KnownNetworks = string.Join(System.Environment.NewLine, databaseSettings.KnownNetworks ?? []);
+        model.KnownProxies = string.Join(System.Environment.NewLine, databaseSettings.KnownProxies ?? []);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, ReverseProxySettings settings, UpdateEditorContext context)
+    protected override void UpdateSettings(ReverseProxySettings settings, ReverseProxySettingsViewModel model, SettingsConfigurationMetadata metadata)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
+        // Only update properties that can be configured via UI
+        if (ShouldUpdateProperty(nameof(ReverseProxySettings.ForwardedHeaders), metadata))
         {
-            return null;
+            settings.ForwardedHeaders = ForwardedHeaders.None;
+
+            if (model.EnableXForwardedFor)
+            {
+                settings.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
+            }
+
+            if (model.EnableXForwardedHost)
+            {
+                settings.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
+            }
+
+            if (model.EnableXForwardedProto)
+            {
+                settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
+            }
         }
 
-        var model = new ReverseProxySettingsViewModel();
-
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-        settings.ForwardedHeaders = ForwardedHeaders.None;
-
-        if (model.EnableXForwardedFor)
+        if (ShouldUpdateProperty(nameof(ReverseProxySettings.KnownNetworks), metadata))
         {
-            settings.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
+            settings.KnownNetworks = model.KnownNetworks?
+                .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
         }
 
-        if (model.EnableXForwardedHost)
+        if (ShouldUpdateProperty(nameof(ReverseProxySettings.KnownProxies), metadata))
         {
-            settings.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
+            settings.KnownProxies = model.KnownProxies?
+                .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
         }
-
-        if (model.EnableXForwardedProto)
-        {
-            settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
-        }
-
-        _shellReleaseManager.RequestRelease();
-
-        return await EditAsync(site, settings, context);
     }
 }
