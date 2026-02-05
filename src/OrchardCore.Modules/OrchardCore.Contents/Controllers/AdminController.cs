@@ -456,7 +456,6 @@ public sealed class AdminController : Controller, IUpdateModel
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
         return EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
-            await _contentManager.UpdateAsync(contentItem);
             await _contentManager.SaveDraftAsync(contentItem);
 
             var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
@@ -743,6 +742,11 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
 
+        if (ModelState.IsValid)
+        {
+            await _contentManager.UpdateAsync(contentItem);
+        }
+
         if (!ModelState.IsValid || !(await conditionallyPublish(contentItem)))
         {
             await _session.CancelAsync();
@@ -859,8 +863,6 @@ public sealed class AdminController : Controller, IUpdateModel
 
         return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
-            await _contentManager.UpdateAsync(contentItem);
-
             var hasBeenPublishedOrUnpublished = publish
                 ? await _contentManager.PublishAsync(contentItem)
                 : await _contentManager.UnpublishAsync(contentItem);

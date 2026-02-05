@@ -8,6 +8,7 @@ using OrchardCore.Cors.Settings;
 using OrchardCore.Cors.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
+using CorsConstants = Microsoft.AspNetCore.Cors.Infrastructure.CorsConstants;
 
 namespace OrchardCore.Cors.Controllers;
 
@@ -102,25 +103,35 @@ public sealed class AdminController : Controller
 
         foreach (var settingViewModel in model.Policies)
         {
-            corsPolicies.Add(new CorsPolicySetting
-            {
-                Name = settingViewModel.Name,
-                AllowAnyHeader = settingViewModel.AllowAnyHeader,
-                AllowAnyMethod = settingViewModel.AllowAnyMethod,
-                AllowAnyOrigin = settingViewModel.AllowAnyOrigin,
-                AllowCredentials = settingViewModel.AllowCredentials,
-                AllowedHeaders = settingViewModel.AllowedHeaders,
-                AllowedMethods = settingViewModel.AllowedMethods,
-                AllowedOrigins = settingViewModel.AllowedOrigins,
-                IsDefaultPolicy = settingViewModel.IsDefaultPolicy,
-                ExposedHeaders = settingViewModel.ExposedHeaders,
-            });
-
-            if (settingViewModel.AllowAnyOrigin && settingViewModel.AllowCredentials)
+            if (IsAnyOriginAllowed(settingViewModel) && settingViewModel.AllowCredentials)
             {
                 policyWarnings.Add(settingViewModel.Name);
             }
+            else
+            {
+                corsPolicies.Add(new CorsPolicySetting
+                {
+                    Name = settingViewModel.Name,
+                    AllowAnyHeader = settingViewModel.AllowAnyHeader,
+                    AllowAnyMethod = settingViewModel.AllowAnyMethod,
+                    AllowAnyOrigin = settingViewModel.AllowAnyOrigin,
+                    AllowCredentials = settingViewModel.AllowCredentials,
+                    AllowedHeaders = settingViewModel.AllowedHeaders,
+                    AllowedMethods = settingViewModel.AllowedMethods,
+                    AllowedOrigins = settingViewModel.AllowedOrigins,
+                    IsDefaultPolicy = settingViewModel.IsDefaultPolicy,
+                    ExposedHeaders = settingViewModel.ExposedHeaders,
+                });
+            }
         }
+
+        if (policyWarnings.Count > 0)
+        {
+            await _notifier.WarningAsync(H["Specifying AllowAnyOrigin and AllowCredentials is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {0} </strong><br />Refer to docs: <a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>.", string.Join(", ", policyWarnings)]);
+
+            return View(model);
+        }
+
         var corsSettings = new CorsSettings()
         {
             Policies = corsPolicies,
@@ -132,11 +143,9 @@ public sealed class AdminController : Controller
 
         await _notifier.SuccessAsync(H["The CORS settings have updated successfully."]);
 
-        if (policyWarnings.Count > 0)
-        {
-            await _notifier.WarningAsync(H["Specifying {0} and {1} is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {2} </strong><br />Refer to docs:<a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>", "AllowAnyOrigin", "AllowCredentias", string.Join(", ", policyWarnings)]);
-        }
-
         return View(model);
     }
+
+    private static bool IsAnyOriginAllowed(CorsPolicyViewModel corsPolicyViewModel)
+        => corsPolicyViewModel.AllowAnyOrigin || corsPolicyViewModel.AllowedOrigins.Any(origin => origin == CorsConstants.AnyOrigin);
 }

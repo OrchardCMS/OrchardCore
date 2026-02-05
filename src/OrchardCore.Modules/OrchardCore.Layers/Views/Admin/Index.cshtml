@@ -78,7 +78,7 @@
                                         <button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="@htmlId" data-bs-toggle="dropdown" aria-expanded="false">
                                             @T["Add Widget"]
                                         </button>
-                                        <ul class="dropdown-menu px-2 overflow-auto" aria-labelledby="@htmlId" style="max-height: 15rem;">
+                                        <ul class="dropdown-menu px-2 overflow-auto" style="max-height: 15rem;">
                                             @foreach (var type in widgetContentTypes)
                                             {
                                                 var contentItem = await ContentManager.NewAsync(type.Name);
