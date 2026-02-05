@@ -4,10 +4,8 @@ namespace OrchardCore.Localization.Data;
 /// A factory that creates instances of <see cref="NullDataLocalizer"/>.
 /// This is used when the OrchardCore.DataLocalization feature is not enabled.
 /// </summary>
-internal sealed class NullDataLocalizerFactory : IDataLocalizerFactory
+public sealed class NullDataLocalizerFactory : IDataLocalizerFactory
 {
-    private static readonly NullDataLocalizer _instance = new();
-
     /// <inheritdoc/>
-    public IDataLocalizer Create() => _instance;
+    public IDataLocalizer Create() => NullDataLocalizer.Instance;
 }

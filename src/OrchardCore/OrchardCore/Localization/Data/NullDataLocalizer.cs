@@ -6,8 +6,13 @@ namespace OrchardCore.Localization.Data;
 /// A no-op implementation of <see cref="IDataLocalizer"/> that returns the original values without translation.
 /// This is used when the OrchardCore.DataLocalization feature is not enabled.
 /// </summary>
-internal sealed class NullDataLocalizer : IDataLocalizer
+public sealed class NullDataLocalizer : IDataLocalizer
 {
+    /// <summary>
+    /// Returns the shared instance of <see cref="NullDataLocalizer"/>.
+    /// </summary>
+    public static NullDataLocalizer Instance { get; } = new NullDataLocalizer();
+
     /// <inheritdoc/>
     public DataLocalizedString this[string name, string context]
     {
