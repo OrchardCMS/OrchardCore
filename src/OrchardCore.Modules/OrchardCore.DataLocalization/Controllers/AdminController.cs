@@ -74,7 +74,7 @@ public class AdminController : Controller
 
     public async Task<IActionResult> Statistics()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations))
+        if (!await _authorizationService.AuthorizeAsync(User, DataLocalizationPermissions.ViewDynamicTranslations))
         {
             return Forbid();
         }
@@ -87,7 +87,7 @@ public class AdminController : Controller
     [HttpGet]
     public async Task<IActionResult> GetStrings(string culture)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations))
+        if (!await _authorizationService.AuthorizeAsync(User, DataLocalizationPermissions.ViewDynamicTranslations))
         {
             return Forbid();
         }
@@ -105,7 +105,7 @@ public class AdminController : Controller
     [HttpGet]
     public async Task<IActionResult> GetStatisticsJson()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations))
+        if (!await _authorizationService.AuthorizeAsync(User, DataLocalizationPermissions.ViewDynamicTranslations))
         {
             return Forbid();
         }
@@ -160,18 +160,18 @@ public class AdminController : Controller
     private async Task<bool> HasAnyTranslationPermissionAsync()
     {
         // Check if user has view permission or any edit permission.
-        if (await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations) ||
-            await _authorizationService.AuthorizeAsync(User, Permissions.ManageTranslations))
+        if (await _authorizationService.AuthorizeAsync(User, DataLocalizationPermissions.ViewDynamicTranslations) ||
+            await _authorizationService.AuthorizeAsync(User, DataLocalizationPermissions.ManageTranslations))
         {
             return true;
         }
 
-        // Check culture-specific permissions.
+        // Check culture-specific DatatLocalizationPermissions.
         var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
         foreach (var cultureName in supportedCultures)
         {
             var cultureInfo = CultureInfo.GetCultureInfo(cultureName);
-            var permission = Permissions.CreateCulturePermission(cultureName, cultureInfo.DisplayName);
+            var permission = DataLocalizationPermissions.CreateCulturePermission(cultureName, cultureInfo.DisplayName);
 
             if (await _authorizationService.AuthorizeAsync(User, permission))
             {
@@ -185,14 +185,14 @@ public class AdminController : Controller
     private async Task<bool> CanEditCultureAsync(string culture)
     {
         // ManageTranslations grants access to all cultures.
-        if (await _authorizationService.AuthorizeAsync(User, Permissions.ManageTranslations))
+        if (await _authorizationService.AuthorizeAsync(User, DataLocalizationPermissions.ManageTranslations))
         {
             return true;
         }
 
         // Check culture-specific permission.
         var cultureInfo = CultureInfo.GetCultureInfo(culture);
-        var permission = Permissions.CreateCulturePermission(culture, cultureInfo.DisplayName);
+        var permission = DataLocalizationPermissions.CreateCulturePermission(culture, cultureInfo.DisplayName);
 
         return await _authorizationService.AuthorizeAsync(User, permission);
     }
@@ -201,9 +201,9 @@ public class AdminController : Controller
     {
         var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
 
-        var canManageAll = await _authorizationService.AuthorizeAsync(User, Permissions.ManageTranslations);
+        var canManageAll = await _authorizationService.AuthorizeAsync(User, DataLocalizationPermissions.ManageTranslations);
 
-        var canView = await _authorizationService.AuthorizeAsync(User, Permissions.ViewDynamicTranslations);
+        var canView = await _authorizationService.AuthorizeAsync(User, DataLocalizationPermissions.ViewDynamicTranslations);
 
         var cultures = new List<CultureViewModel>();
 
@@ -218,7 +218,7 @@ public class AdminController : Controller
 
             if (!canEditCulture)
             {
-                var permission = Permissions.CreateCulturePermission(cultureName, displayName);
+                var permission = DataLocalizationPermissions.CreateCulturePermission(cultureName, displayName);
 
                 canEditCulture = await _authorizationService.AuthorizeAsync(User, permission);
             }

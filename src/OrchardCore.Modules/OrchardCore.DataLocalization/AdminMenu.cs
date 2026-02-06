@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization.Data;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.DataLocalization;
@@ -34,7 +35,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                             .Add(S["Translations"], S["Translations"].PrefixPosition(), translations => translations
                                 .AddClass("translations")
                                 .Id("translations")
-                                .Permission(Permissions.ViewDynamicTranslations)
+                                .Permission(DataLocalizationPermissions.ViewDynamicTranslations)
                                 .Action(_routeValues["action"].ToString(), _routeValues["controller"].ToString(), _routeValues)
                                 .LocalNav()
                             )
@@ -51,7 +52,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Add(S["Dynamic Translations"], S["Dynamic Translations"].PrefixPosition(), translations => translations
                         .AddClass("dynamic-translations")
                         .Id("dynamicTranslations")
-                        .Permission(Permissions.ViewDynamicTranslations)
+                        .Permission(DataLocalizationPermissions.ViewDynamicTranslations)
                         .Action(_routeValues["action"].ToString(), _routeValues["controller"].ToString(), _routeValues)
                         .LocalNav()
                     )
