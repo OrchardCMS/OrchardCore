@@ -2,7 +2,6 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
@@ -13,14 +12,11 @@ namespace OrchardCore.Secrets.Services;
 public class SecretEncryptionService : ISecretEncryptionService
 {
     private readonly ISecretManager _secretManager;
-    private readonly ILogger _logger;
 
     public SecretEncryptionService(
-        ISecretManager secretManager,
-        ILogger<SecretEncryptionService> logger)
+        ISecretManager secretManager)
     {
         _secretManager = secretManager;
-        _logger = logger;
     }
 
     /// <inheritdoc />
