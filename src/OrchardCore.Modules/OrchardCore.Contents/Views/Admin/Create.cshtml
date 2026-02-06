@@ -1,16 +1,19 @@
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Localization.Data
 
 @inject IContentDefinitionManager ContentDefinitionManager
+@inject IDataLocalizer D
 
 @{
     ContentItem contentItem = Model.ContentItem;
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
+    string localizedTypeDisplayName = D[typeDisplayName, "Content Types"];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["New {0}", typeDisplayName])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["New {0}", localizedTypeDisplayName])</h1></zone>
 
 <form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @if (!ViewContext.ModelState.IsValid)

@@ -43,6 +43,65 @@ public class ContentItemExtensions
     }
 
     [Fact]
+    public void WeldPreservesFieldsWhenPartWeldedAfterFields()
+    {
+        // arrange
+        var firstValue = "Hello";
+        var secondValue = "World";
+        var contentItem = new ContentItem { ContentType = "Product" };
+        var productPart = new ContentPart();
+        
+        // Weld fields to the part first
+        productPart.Weld("First", new TextField { Text = firstValue });
+        productPart.Weld("Second", new TextField { Text = secondValue });
+        
+        // act - weld the part to the content item
+        contentItem.Weld("ProductPart", productPart);
+        
+        // assert - fields should be preserved
+        var retrievedPart = contentItem.Get<ContentPart>("ProductPart");
+        Assert.NotNull(retrievedPart);
+        
+        var firstField = retrievedPart.Get<TextField>("First");
+        Assert.NotNull(firstField);
+        Assert.Equal(firstValue, firstField.Text);
+        
+        var secondField = retrievedPart.Get<TextField>("Second");
+        Assert.NotNull(secondField);
+        Assert.Equal(secondValue, secondField.Text);
+    }
+
+    [Fact]
+    public void WeldPreservesFieldsWhenPartWeldedBeforeFields()
+    {
+        // arrange
+        var firstValue = "Hello";
+        var secondValue = "World";
+        var contentItem = new ContentItem { ContentType = "Product" };
+        var productPart = new ContentPart();
+        
+        // Weld the part to the content item first
+        contentItem.Weld("ProductPart", productPart);
+        
+        // act - weld fields to the part after
+        var retrievedPart = contentItem.Get<ContentPart>("ProductPart");
+        retrievedPart.Weld("First", new TextField { Text = firstValue });
+        retrievedPart.Weld("Second", new TextField { Text = secondValue });
+        
+        // assert - fields should be preserved
+        var finalPart = contentItem.Get<ContentPart>("ProductPart");
+        Assert.NotNull(finalPart);
+        
+        var firstField = finalPart.Get<TextField>("First");
+        Assert.NotNull(firstField);
+        Assert.Equal(firstValue, firstField.Text);
+        
+        var secondField = finalPart.Get<TextField>("Second");
+        Assert.NotNull(secondField);
+        Assert.Equal(secondValue, secondField.Text);
+    }
+
+    [Fact]
     public void MergeReflectsChangesToWellKnownProperties()
     {
         // Setup
