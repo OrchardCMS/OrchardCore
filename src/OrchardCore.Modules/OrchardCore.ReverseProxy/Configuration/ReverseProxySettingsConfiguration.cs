@@ -1,24 +1,22 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.ReverseProxy.Settings;
+using OrchardCore.Settings;
 
-namespace OrchardCore.ReverseProxy.Services;
+namespace OrchardCore.ReverseProxy.Configuration;
 
 public class ReverseProxySettingsConfiguration : IConfigureOptions<ReverseProxySettings>
 {
-    private readonly ReverseProxyService _reverseProxyService;
+    private readonly ISiteService _siteService;
 
-    public ReverseProxySettingsConfiguration(ReverseProxyService reverseProxyService)
-        => _reverseProxyService = reverseProxyService;
+    public ReverseProxySettingsConfiguration(ISiteService siteService)
+        => _siteService = siteService;
 
     public void Configure(ReverseProxySettings options)
     {
-        var settings = _reverseProxyService.GetSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = _siteService.GetSettings<ReverseProxySettings>();
 
         options.ForwardedHeaders = settings.ForwardedHeaders;
         options.KnownNetworks = settings.KnownNetworks;
         options.KnownProxies = settings.KnownProxies;
     }
 }
-
