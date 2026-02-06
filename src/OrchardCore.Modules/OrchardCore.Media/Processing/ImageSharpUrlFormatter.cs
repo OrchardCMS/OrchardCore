@@ -2,31 +2,8 @@ using System.Globalization;
 using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Models;
-using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Processing;
-
-public enum ResizeMode
-{
-    Undefined,
-    Max,
-    Crop,
-    Pad,
-    BoxPad,
-    Min,
-    Stretch,
-}
-
-public enum Format
-{
-    Undefined,
-    Bmp,
-    Gif,
-    Jpg,
-    Png,
-    Tga,
-    WebP,
-}
 
 internal sealed class ImageSharpUrlFormatter
 {
