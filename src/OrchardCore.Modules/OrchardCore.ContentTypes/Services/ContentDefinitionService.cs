@@ -24,7 +24,6 @@ public class ContentDefinitionService : IContentDefinitionService
             IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers,
             IEnumerable<ContentPart> contentParts,
             IEnumerable<ContentField> contentFields,
-            IOptions<ContentOptions> contentOptions,
             IOptions<ContentTypesOptions> contentTypesOptions,
             ILogger<ContentDefinitionService> logger,
             IStringLocalizer<ContentDefinitionService> stringLocalizer)
