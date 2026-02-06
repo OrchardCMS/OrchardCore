@@ -1,36 +1,34 @@
+using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
+using OrchardCore.ReverseProxy.Settings;
 
 namespace OrchardCore.ReverseProxy.Services;
 
 public sealed class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
 {
-    private readonly ReverseProxyService _reverseProxyService;
+    private readonly ReverseProxySettings _reverseProxySettings;
 
-    public ForwardedHeadersOptionsConfiguration(ReverseProxyService reverseProxyService)
+    public ForwardedHeadersOptionsConfiguration(IOptions<ReverseProxySettings> reverseProxySettingsOptions)
     {
-        _reverseProxyService = reverseProxyService;
+        _reverseProxySettings = reverseProxySettingsOptions.Value;
     }
 
     public void Configure(ForwardedHeadersOptions options)
     {
-        var reverseProxySettings = _reverseProxyService.GetSettingsAsync().GetAwaiter().GetResult();
-        options.ForwardedHeaders = reverseProxySettings.ForwardedHeaders;
+        options.ForwardedHeaders = _reverseProxySettings.ForwardedHeaders;
 
-        // In .NET 10, KnownNetworks is obsolete, use KnownIPNetworks instead
         options.KnownIPNetworks.Clear();
         options.KnownProxies.Clear();
 
-        foreach (var network in reverseProxySettings.KnownNetworks)
+        foreach (var network in _reverseProxySettings.KnownNetworks)
         {
-            // In .NET 10, use System.Net.IPNetwork instead of the obsolete IPNetwork
-            options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(network));
+            options.KnownIPNetworks.Add(IPNetwork.Parse(network));
         }
 
-        foreach (var proxy in reverseProxySettings.KnownProxies)
+        foreach (var proxy in _reverseProxySettings.KnownProxies)
         {
-            options.KnownProxies.Add(System.Net.IPAddress.Parse(proxy));
+            options.KnownProxies.Add(IPAddress.Parse(proxy));
         }
     }
 }
