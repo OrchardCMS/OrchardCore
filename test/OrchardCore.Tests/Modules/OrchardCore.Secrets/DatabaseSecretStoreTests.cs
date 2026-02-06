@@ -13,6 +13,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
 public class DatabaseSecretStoreTests
 {
+    private static readonly JsonSerializerOptions _secretSerializerOptions = new() { TypeInfoResolver = new DefaultSecretTypeResolver() };
     private readonly Mock<IDocumentManager<SecretsDocument>> _documentManagerMock;
     private readonly Mock<IDataProtectionProvider> _dataProtectionProviderMock;
     private readonly Mock<IDataProtector> _dataProtectorMock;
@@ -77,8 +78,7 @@ public class DatabaseSecretStoreTests
         // Arrange
         var secret = new TextSecret { Text = "secret-value" };
         // Serialize with the type discriminator using the polymorphic options
-        var serializerOptions = new JsonSerializerOptions { TypeInfoResolver = new DefaultSecretTypeResolver() };
-        var serialized = JsonSerializer.Serialize<global::OrchardCore.Secrets.ISecret>(secret, serializerOptions);
+        var serialized = JsonSerializer.Serialize<global::OrchardCore.Secrets.ISecret>(secret, _secretSerializerOptions);
 
         // The encrypted data needs to be base64-encoded (what IDataProtector.Protect returns)
         // When Unprotect is called with a string, it base64-decodes it first

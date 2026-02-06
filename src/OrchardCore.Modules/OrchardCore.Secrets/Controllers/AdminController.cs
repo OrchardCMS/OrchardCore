@@ -287,7 +287,7 @@ public sealed class AdminController : Controller
         }
     }
 
-    private void PopulateModelFromSecret(SecretEditViewModel model, ISecret secret)
+    private static void PopulateModelFromSecret(SecretEditViewModel model, ISecret secret)
     {
         if (secret is X509Secret x509Secret)
         {
@@ -310,7 +310,7 @@ public sealed class AdminController : Controller
         };
     }
 
-    private TextSecret CreateTextSecret(SecretEditViewModel model, TextSecret existing)
+    private static TextSecret CreateTextSecret(SecretEditViewModel model, TextSecret existing)
     {
         var secret = existing ?? new TextSecret();
         if (!string.IsNullOrEmpty(model.TextValue))
@@ -320,7 +320,7 @@ public sealed class AdminController : Controller
         return secret;
     }
 
-    private RsaKeySecret CreateRsaKeySecret(SecretEditViewModel model, RsaKeySecret existing)
+    private static RsaKeySecret CreateRsaKeySecret(SecretEditViewModel model, RsaKeySecret existing)
     {
         if (existing != null)
         {
