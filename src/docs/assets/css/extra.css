@@ -3,3 +3,117 @@ code { font-size: 1em; }
 div.codehilite > pre {
     overflow-x: auto;
 }
+
+/* Version selector styles - positioned in header next to search */
+
+.md-version {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 0.4rem;
+    margin-right: 0.4rem;
+}
+
+.md-version__current {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.2rem;
+    color: var(--md-primary-bg-color);
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+}
+
+.md-version__current:hover,
+.md-version__current:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    outline: none;
+}
+
+.md-version__icon {
+    display: flex;
+    width: 0.9rem;
+    height: 0.9rem;
+    transition: transform 0.2s;
+}
+
+.md-version__icon svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+    transform: rotate(180deg);
+}
+
+.md-version.is-open .md-version__icon svg {
+    transform: rotate(0deg);
+}
+
+.md-version__label {
+    white-space: nowrap;
+}
+
+.md-version__list {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 200;
+    display: none;
+    min-width: 8rem;
+    max-height: 15rem;
+    margin: 0.2rem 0 0 0;
+    padding: 0.4rem 0;
+    background-color: var(--md-default-bg-color);
+    border-radius: 0.2rem;
+    box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.2);
+    list-style: none;
+    overflow-y: auto;
+}
+
+.md-version.is-open .md-version__list {
+    display: block;
+}
+
+.md-version__item {
+    margin: 0;
+    padding: 0;
+}
+
+.md-version__link {
+    display: block;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.7rem;
+    color: var(--md-default-fg-color);
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.md-version__link:hover,
+.md-version__link:focus {
+    background-color: var(--md-accent-fg-color--transparent);
+    color: var(--md-accent-fg-color);
+    outline: none;
+}
+
+.md-version__link.is-current {
+    font-weight: 600;
+    color: var(--md-accent-fg-color);
+}
+
+/* Dark mode adjustments */
+[data-md-color-scheme="slate"] .md-version__list {
+    box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.4);
+}
+
+/* Hide version selector on very small screens to prevent header overflow */
+@media screen and (max-width: 30rem) {
+    .md-version {
+        display: none;
+    }
+}

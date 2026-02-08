@@ -1,0 +1,16 @@
+<!-- Version selector component for switching between documentation versions -->
+<!-- The version list is loaded dynamically from the main branch to ensure all versions -->
+<!-- are always visible regardless of which documentation version is being viewed -->
+<div class="md-version">
+  <button class="md-version__current" aria-label="Select version">
+    <span class="md-version__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/>
+      </svg>
+    </span>
+    <span class="md-version__label" id="current-version-label">Loading...</span>
+  </button>
+  <ul class="md-version__list" id="version-list">
+    <!-- Version list is populated dynamically by JavaScript -->
+  </ul>
+</div>

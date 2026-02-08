@@ -29,6 +29,11 @@ theme:
     - 404.html
 
 extra:
+  version:
+    # Version list is now loaded dynamically from /en/latest/assets/versions.json
+    # This ensures all documentation versions show the same, up-to-date version selector
+    # To add a new version, update src/docs/assets/versions.json on the main branch
+    provider: custom
   social:
     - icon: fontawesome/solid/leaf
       link: https://orchardcore.net
@@ -82,6 +87,13 @@ markdown_extensions:
   - toc:
       permalink: true
 #  - markdown.extensions.nl2br
+
+extra_css:
+  - assets/css/extra.css
+  - assets/css/code-tabs.css
+
+extra_javascript:
+  - assets/js/extra.js
 
 plugins:
   - search
