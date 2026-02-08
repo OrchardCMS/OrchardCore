@@ -1,4 +1,4 @@
-namespace OrchardCore.DataLocalization;
+namespace OrchardCore.Localization.Data;
 
 public sealed class Constants
 {

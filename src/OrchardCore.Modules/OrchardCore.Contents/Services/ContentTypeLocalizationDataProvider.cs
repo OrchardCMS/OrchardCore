@@ -1,7 +1,7 @@
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Localization.Data;
 
-namespace OrchardCore.DataLocalization.Services;
+namespace OrchardCore.Contents.Services;
 
 public class ContentTypeDataLocalizationProvider : ILocalizationDataProvider
 {
