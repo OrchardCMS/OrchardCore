@@ -11,7 +11,7 @@ namespace OrchardCore.Recipes.Services;
 public sealed class RecipeSchemaService : IRecipeSchemaService
 {
     private readonly IEnumerable<IRecipeDeploymentStep> _steps;
-    private RecipeStepSchema _combinedSchema;
+    private JsonSchema _combinedSchema;
 
     public RecipeSchemaService(IEnumerable<IRecipeDeploymentStep> steps)
     {
@@ -32,7 +32,7 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
     }
 
     /// <inheritdoc />
-    public RecipeStepSchema GetStepSchema(string stepName)
+    public JsonSchema GetStepSchema(string stepName)
     {
         ArgumentException.ThrowIfNullOrEmpty(stepName);
 
@@ -41,14 +41,14 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
     }
 
     /// <inheritdoc />
-    public RecipeStepSchema GetRecipeSchema()
+    public JsonSchema GetRecipeSchema()
     {
         if (_combinedSchema is not null)
         {
             return _combinedSchema;
         }
 
-        var stepSchemas = new Dictionary<string, RecipeStepSchema>(StringComparer.OrdinalIgnoreCase);
+        var stepSchemas = new Dictionary<string, JsonSchema>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var step in _steps)
         {
@@ -57,7 +57,7 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
                 continue;
             }
 
-            RecipeStepSchema existing = null;
+            JsonSchema existing = null;
 
             if (stepSchemas.TryGetValue(step.Name, out var existingSchema))
             {
@@ -137,7 +137,7 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
                 ("issetuprecipe", new RecipeStepSchemaBuilder().TypeBoolean().Description("Indicates whether this is a setup recipe.")),
                 ("categories", new RecipeStepSchemaBuilder().TypeArray().Items(new RecipeStepSchemaBuilder().TypeString()).Description("Categories this recipe belongs to.")),
                 ("tags", new RecipeStepSchemaBuilder().TypeArray().Items(new RecipeStepSchemaBuilder().TypeString()).Description("Tags associated with this recipe.")),
-                ("variables", new RecipeStepSchemaBuilder().TypeObject().Description("Variables that can be used in the recipe.").AdditionalProperties(RecipeStepSchema.Any)),
+                ("variables", new RecipeStepSchemaBuilder().TypeObject().Description("Variables that can be used in the recipe.").AdditionalProperties(JsonSchema.Any)),
                 ("steps", new RecipeStepSchemaBuilder()
                     .TypeArray()
                     .Description("The list of recipe steps to execute.")
@@ -176,7 +176,7 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
         return RecipeSchemaValidationResult.Failure(errors);
     }
 
-    private static RecipeStepSchema CreateMinimalStepSchema(string stepName)
+    private static JsonSchema CreateMinimalStepSchema(string stepName)
     {
         return new RecipeStepSchemaBuilder()
             .TypeObject()
@@ -186,7 +186,7 @@ public sealed class RecipeSchemaService : IRecipeSchemaService
                 ("name", new RecipeStepSchemaBuilder()
                     .TypeString()
                     .Const(stepName)))
-            .AdditionalProperties(RecipeStepSchema.Any)
+            .AdditionalProperties(JsonSchema.Any)
             .Build();
     }
 }

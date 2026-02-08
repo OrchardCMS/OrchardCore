@@ -5,7 +5,7 @@ namespace OrchardCore.ContentPreview.Handlers;
 
 internal sealed class PreviewPartSchemaHandler : IContentPartSchemaHandler
 {
-    public RecipeStepSchema GetSettingsSchema()
+    public JsonSchema GetSettingsSchema()
     {
         return new RecipeStepSchemaBuilder()
             .TypeObject()

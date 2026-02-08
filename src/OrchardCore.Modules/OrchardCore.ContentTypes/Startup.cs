@@ -30,7 +30,8 @@ public sealed class Startup : StartupBase
 
         // Register the unified step for content definitions.
         services.AddRecipeDeploymentStep<UnifiedContentDefinitionStep>();
-
+        services.AddRecipeDeploymentStep<ReplaceContentDefinitionRecipeStep>();
+        services.AddRecipeDeploymentStep<DeleteContentDefinitionRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete - kept for backwards compatibility
         services.AddRecipeExecutionStep<ReplaceContentDefinitionStep>();
         services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();

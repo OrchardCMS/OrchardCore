@@ -34,7 +34,7 @@ public sealed class UnifiedMediaStep : RecipeImportStep<UnifiedMediaStep.MediaSt
     public override string Name => "media";
 
     /// <inheritdoc />
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         return new RecipeStepSchemaBuilder()
             .SchemaDraft202012()

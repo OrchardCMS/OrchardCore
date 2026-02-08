@@ -5,9 +5,9 @@ namespace OrchardCore.Alias.Handlers;
 
 internal sealed class AliasPartSchemaHandler : IContentPartSchemaHandler
 {
-    private RecipeStepSchema _schema;
+    private JsonSchema _schema;
 
-    public RecipeStepSchema GetSettingsSchema()
+    public JsonSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {

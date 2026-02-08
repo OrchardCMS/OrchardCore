@@ -40,10 +40,10 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
     public override string Name => "ContentDefinition";
 
     /// <inheritdoc />
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         // Build schemas for all registered content parts.
-        var partSettingsSchemas = new List<RecipeStepSchema>();
+        var partSettingsSchemas = new List<JsonSchema>();
         foreach (var handler in _partSchemaHandlers)
         {
             var schema = handler.GetSettingsSchema();
@@ -54,7 +54,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         }
 
         // Build schemas for all registered content fields.
-        var fieldSettingsSchemas = new List<RecipeStepSchema>();
+        var fieldSettingsSchemas = new List<JsonSchema>();
         foreach (var handler in _fieldSchemaHandlers)
         {
             var schema = handler.GetSettingsSchema();
@@ -92,7 +92,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
             .Build();
     }
 
-    private RecipeStepSchema BuildContentTypeSchema(List<RecipeStepSchema> partSettingsSchemas)
+    private JsonSchema BuildContentTypeSchema(List<JsonSchema> partSettingsSchemas)
     {
         // Build the ContentTypePartDefinitionRecords schema with known part settings.
         var partSchema = BuildContentTypePartSchema(partSettingsSchemas);
@@ -136,7 +136,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
             .Build();
     }
 
-    private RecipeStepSchema BuildContentTypePartSchema(List<RecipeStepSchema> partSettingsSchemas)
+    private JsonSchema BuildContentTypePartSchema(List<JsonSchema> partSettingsSchemas)
     {
         // Base schema for a content type part.
         var partsSchemaBuilder = new RecipeStepSchemaBuilder()
@@ -169,14 +169,14 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         return partsSchemaBuilder.Build();
     }
 
-    private RecipeStepSchema BuildContentPartSchema(List<RecipeStepSchema> partSettingsSchemas, List<RecipeStepSchema> fieldSettingsSchemas)
+    private JsonSchema BuildContentPartSchema(List<JsonSchema> partSettingsSchemas, List<JsonSchema> fieldSettingsSchemas)
     {
         var fieldSchema = BuildContentPartFieldSchema(fieldSettingsSchemas);
 
         var knownSettingsSchema = BuildKnownContentPartSettingsSchema();
 
         // Combine known + dynamic settings into ONE anyOf
-        var anyOfSchemas = new List<RecipeStepSchema> { knownSettingsSchema };
+        var anyOfSchemas = new List<JsonSchema> { knownSettingsSchema };
         anyOfSchemas.AddRange(partSettingsSchemas);
 
         var settingsSchema = new RecipeStepSchemaBuilder()
@@ -201,7 +201,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
         return partsSchemaBuilder.Build();
     }
 
-    private static RecipeStepSchema BuildKnownContentPartSettingsSchema()
+    private static JsonSchema BuildKnownContentPartSettingsSchema()
     {
         return new RecipeStepSchemaBuilder()
             .TypeObject()
@@ -231,7 +231,7 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
     }
 
 
-    private static RecipeStepSchema BuildKnownContentFieldSettingsSchema()
+    private static JsonSchema BuildKnownContentFieldSettingsSchema()
     {
         return new RecipeStepSchemaBuilder()
             .TypeObject()
@@ -259,12 +259,12 @@ public sealed class UnifiedContentDefinitionStep : RecipeDeploymentStep<UnifiedC
             .AdditionalProperties(true)
             .Build();
     }
-    private RecipeStepSchema BuildContentPartFieldSchema(List<RecipeStepSchema> fieldSettingsSchemas)
+    private JsonSchema BuildContentPartFieldSchema(List<JsonSchema> fieldSettingsSchemas)
     {
         var knownSettingsSchema = BuildKnownContentFieldSettingsSchema();
 
         // Combine known + dynamic settings into ONE anyOf
-        var anyOfSchemas = new List<RecipeStepSchema> { knownSettingsSchema };
+        var anyOfSchemas = new List<JsonSchema> { knownSettingsSchema };
         anyOfSchemas.AddRange(fieldSettingsSchemas);
 
         var settingsSchema = new RecipeStepSchemaBuilder()

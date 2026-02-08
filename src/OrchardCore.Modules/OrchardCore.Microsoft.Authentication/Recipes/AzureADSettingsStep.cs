@@ -9,7 +9,10 @@ namespace OrchardCore.Microsoft.Authentication.Recipes;
 /// <summary>
 /// This recipe step sets general Microsoft Entra ID settings.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class AzureADSettingsStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IAzureADService _azureADService;
 

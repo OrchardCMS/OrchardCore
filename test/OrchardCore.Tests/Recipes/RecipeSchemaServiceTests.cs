@@ -183,22 +183,22 @@ public class RecipeSchemaServiceTests
 
     private sealed class TestRecipeDeploymentStep : IRecipeDeploymentStep
     {
-        private readonly RecipeStepSchema _schema;
+        private readonly JsonSchema _schema;
 
-        public TestRecipeDeploymentStep(string name, RecipeStepSchema schema = null)
+        public TestRecipeDeploymentStep(string name, JsonSchema schema = null)
         {
             Name = name;
             _schema = schema ?? new RecipeStepSchemaBuilder()
                 .TypeObject()
                 .Required("name")
                 .Properties(("name", new RecipeStepSchemaBuilder().TypeString().Const(name)))
-                .AdditionalProperties(RecipeStepSchema.Any)
+                .AdditionalProperties(JsonSchema.Any)
                 .Build();
         }
 
         public string Name { get; }
 
-        public RecipeStepSchema Schema => _schema;
+        public JsonSchema Schema => _schema;
 
         public Task ExecuteAsync(RecipeExecutionContext context) => Task.CompletedTask;
 

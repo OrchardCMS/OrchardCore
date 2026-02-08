@@ -19,7 +19,7 @@ public sealed class RecipeStepSchemaEvaluator : IRecipeStepSchemaEvaluator
     }
 
     /// <inheritdoc />
-    public RecipeSchemaEvaluationResult Evaluate(JsonNode data, RecipeStepSchema schema)
+    public RecipeSchemaEvaluationResult Evaluate(JsonNode data, JsonSchema schema)
     {
         try
         {

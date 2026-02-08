@@ -15,7 +15,7 @@ public interface IRecipeStepSchemaEvaluator
     /// <param name="data">The JSON data to evaluate.</param>
     /// <param name="schema">The JSON schema to evaluate against.</param>
     /// <returns>The evaluation result containing validity and any errors.</returns>
-    RecipeSchemaEvaluationResult Evaluate(JsonNode data, RecipeStepSchema schema);
+    RecipeSchemaEvaluationResult Evaluate(JsonNode data, JsonSchema schema);
 
     /// <summary>
     /// Evaluates a recipe step against its schema.

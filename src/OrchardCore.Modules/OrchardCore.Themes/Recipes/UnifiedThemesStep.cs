@@ -26,7 +26,7 @@ public sealed class UnifiedThemesStep : RecipeDeploymentStep<UnifiedThemesStep.T
     public override string Name => "Themes";
 
     /// <inheritdoc />
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         return new RecipeStepSchemaBuilder()
             .SchemaDraft202012()

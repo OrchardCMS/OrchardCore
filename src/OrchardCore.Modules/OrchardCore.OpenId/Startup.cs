@@ -67,6 +67,7 @@ public sealed class ClientStartup : StartupBase
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
         services.AddSiteDisplayDriver<OpenIdClientSettingsDisplayDriver>();
 
+        services.AddRecipeDeploymentStep<OpenIdClientSettingsRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<OpenIdClientSettingsStep>();
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -113,6 +114,9 @@ public sealed class ServerStartup : StartupBase
             ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
         });
 
+        services.AddRecipeDeploymentStep<OpenIdServerSettingsRecipeStep>();
+        services.AddRecipeDeploymentStep<OpenIdApplicationRecipeStep>();
+        services.AddRecipeDeploymentStep<OpenIdScopeRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<OpenIdServerSettingsStep>()
             .AddRecipeExecutionStep<OpenIdApplicationStep>()
@@ -229,6 +233,7 @@ public sealed class ValidationStartup : StartupBase
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
         services.AddDisplayDriver<OpenIdValidationSettings, OpenIdValidationSettingsDisplayDriver>();
 
+        services.AddRecipeDeploymentStep<OpenIdValidationSettingsRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<OpenIdValidationSettingsStep>();
 #pragma warning restore CS0618 // Type or member is obsolete

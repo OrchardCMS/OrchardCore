@@ -26,15 +26,15 @@ public interface IRecipeSchemaService
     /// Gets the JSON schema for a specific recipe step.
     /// </summary>
     /// <param name="stepName">The name of the recipe step.</param>
-    /// <returns>The <see cref="RecipeStepSchema"/> for the step, or <c>null</c> if not available.</returns>
-    RecipeStepSchema GetStepSchema(string stepName);
+    /// <returns>The <see cref="JsonSchema"/> for the step, or <c>null</c> if not available.</returns>
+    JsonSchema GetStepSchema(string stepName);
 
     /// <summary>
     /// Builds and returns a combined JSON schema for all registered recipe steps.
     /// This schema can be used for validation and IDE autocompletion.
     /// </summary>
-    /// <returns>The combined <see cref="RecipeStepSchema"/> for recipes.</returns>
-    RecipeStepSchema GetRecipeSchema();
+    /// <returns>The combined <see cref="JsonSchema"/> for recipes.</returns>
+    JsonSchema GetRecipeSchema();
 
     /// <summary>
     /// Validates a recipe against the combined schema.

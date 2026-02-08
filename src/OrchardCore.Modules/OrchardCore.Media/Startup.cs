@@ -191,6 +191,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<MediaProfilesManager>();
         services.AddScoped<IMediaProfileService, MediaProfileService>();
 
+        services.AddRecipeDeploymentStep<MediaProfileRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<MediaProfileStep>();
 #pragma warning restore CS0618 // Type or member is obsolete

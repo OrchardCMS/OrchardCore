@@ -6,7 +6,7 @@ namespace OrchardCore.Recipes.Schema;
 /// Represents a JSON Schema used for recipe step validation and documentation.
 /// This is a lightweight in-house implementation that uses <see cref="JsonObject"/> as the backing storage.
 /// </summary>
-public sealed class RecipeStepSchema
+public sealed class JsonSchema
 {
     /// <summary>
     /// Gets or sets the backing JSON object for this schema.
@@ -14,10 +14,10 @@ public sealed class RecipeStepSchema
     public JsonObject SchemaObject { get; }
 
     /// <summary>
-    /// Creates a new instance of <see cref="RecipeStepSchema"/> with the specified JSON object.
+    /// Creates a new instance of <see cref="JsonSchema"/> with the specified JSON object.
     /// </summary>
     /// <param name="schemaObject">The JSON object representing the schema.</param>
-    public RecipeStepSchema(JsonObject schemaObject)
+    public JsonSchema(JsonObject schemaObject)
     {
         ArgumentNullException.ThrowIfNull(schemaObject);
         SchemaObject = schemaObject;
@@ -26,17 +26,17 @@ public sealed class RecipeStepSchema
     /// <summary>
     /// Creates an empty schema.
     /// </summary>
-    public static RecipeStepSchema Empty => new(new JsonObject());
+    public static JsonSchema Empty => new(new JsonObject());
 
     /// <summary>
     /// Creates a schema that allows any value (equivalent to JSON Schema {}).
     /// </summary>
-    public static RecipeStepSchema Any => new(new JsonObject());
+    public static JsonSchema Any => new(new JsonObject());
 
     /// <summary>
     /// Creates a schema that disallows any value (equivalent to JSON Schema false).
     /// </summary>
-    public static RecipeStepSchema False => new(new JsonObject { ["not"] = new JsonObject() });
+    public static JsonSchema False => new(new JsonObject { ["not"] = new JsonObject() });
 
     /// <summary>
     /// Converts the schema to a JSON string.
@@ -47,6 +47,6 @@ public sealed class RecipeStepSchema
     /// <summary>
     /// Creates a deep copy of the schema.
     /// </summary>
-    public RecipeStepSchema Clone()
+    public JsonSchema Clone()
         => new(SchemaObject.DeepClone().AsObject());
 }

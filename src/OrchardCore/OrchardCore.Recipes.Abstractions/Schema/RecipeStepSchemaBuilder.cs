@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 namespace OrchardCore.Recipes.Schema;
 
 /// <summary>
-/// Builder for creating <see cref="RecipeStepSchema"/> instances.
+/// Builder for creating <see cref="JsonSchema"/> instances.
 /// Provides a fluent API for defining JSON Schema structures.
 /// </summary>
 public sealed class RecipeStepSchemaBuilder
@@ -175,7 +175,7 @@ public sealed class RecipeStepSchemaBuilder
     /// </summary>
     /// <param name="name">The property name.</param>
     /// <param name="propertySchema">The property schema.</param>
-    public RecipeStepSchemaBuilder Property(string name, RecipeStepSchema propertySchema)
+    public RecipeStepSchemaBuilder Property(string name, JsonSchema propertySchema)
     {
         _properties ??= new JsonObject();
         _properties[name] = propertySchema.SchemaObject.DeepClone();
@@ -199,7 +199,7 @@ public sealed class RecipeStepSchemaBuilder
     /// Adds multiple properties to the schema.
     /// </summary>
     /// <param name="properties">Tuples of property names and their schemas.</param>
-    public RecipeStepSchemaBuilder Properties(params (string name, RecipeStepSchema schema)[] properties)
+    public RecipeStepSchemaBuilder Properties(params (string name, JsonSchema schema)[] properties)
     {
         foreach (var (name, schema) in properties)
         {
@@ -239,7 +239,7 @@ public sealed class RecipeStepSchemaBuilder
     /// Sets the items schema for arrays.
     /// </summary>
     /// <param name="itemsSchema">The schema for array items.</param>
-    public RecipeStepSchemaBuilder Items(RecipeStepSchema itemsSchema)
+    public RecipeStepSchemaBuilder Items(JsonSchema itemsSchema)
     {
         _schema["items"] = itemsSchema.SchemaObject.DeepClone();
         return this;
@@ -289,7 +289,7 @@ public sealed class RecipeStepSchemaBuilder
     /// Sets the additionalProperties schema.
     /// </summary>
     /// <param name="schema">The schema for additional properties.</param>
-    public RecipeStepSchemaBuilder AdditionalProperties(RecipeStepSchema schema)
+    public RecipeStepSchemaBuilder AdditionalProperties(JsonSchema schema)
     {
         _schema["additionalProperties"] = schema.SchemaObject.DeepClone();
         return this;
@@ -323,7 +323,7 @@ public sealed class RecipeStepSchemaBuilder
     /// Adds an allOf schema constraint.
     /// </summary>
     /// <param name="schemas">The schemas that must all match.</param>
-    public RecipeStepSchemaBuilder AllOf(params RecipeStepSchema[] schemas)
+    public RecipeStepSchemaBuilder AllOf(params JsonSchema[] schemas)
     {
         _allOf ??= new JsonArray();
         foreach (var schema in schemas)
@@ -351,7 +351,7 @@ public sealed class RecipeStepSchemaBuilder
     /// Adds an anyOf schema constraint.
     /// </summary>
     /// <param name="schemas">The schemas where at least one must match.</param>
-    public RecipeStepSchemaBuilder AnyOf(params RecipeStepSchema[] schemas)
+    public RecipeStepSchemaBuilder AnyOf(params JsonSchema[] schemas)
     {
         _anyOf ??= new JsonArray();
         foreach (var schema in schemas)
@@ -365,7 +365,7 @@ public sealed class RecipeStepSchemaBuilder
     /// Adds an anyOf schema constraint from a list.
     /// </summary>
     /// <param name="schemas">The schemas where at least one must match.</param>
-    public RecipeStepSchemaBuilder AnyOf(IEnumerable<RecipeStepSchema> schemas)
+    public RecipeStepSchemaBuilder AnyOf(IEnumerable<JsonSchema> schemas)
     {
         _anyOf ??= new JsonArray();
         foreach (var schema in schemas)
@@ -393,7 +393,7 @@ public sealed class RecipeStepSchemaBuilder
     /// Adds a oneOf schema constraint.
     /// </summary>
     /// <param name="schemas">The schemas where exactly one must match.</param>
-    public RecipeStepSchemaBuilder OneOf(params RecipeStepSchema[] schemas)
+    public RecipeStepSchemaBuilder OneOf(params JsonSchema[] schemas)
     {
         _oneOf ??= new JsonArray();
         foreach (var schema in schemas)
@@ -484,10 +484,10 @@ public sealed class RecipeStepSchemaBuilder
     }
 
     /// <summary>
-    /// Builds and returns the <see cref="RecipeStepSchema"/>.
+    /// Builds and returns the <see cref="JsonSchema"/>.
     /// </summary>
     /// <returns>The built schema.</returns>
-    public RecipeStepSchema Build()
+    public JsonSchema Build()
     {
         var result = _schema.DeepClone().AsObject();
 
@@ -516,6 +516,6 @@ public sealed class RecipeStepSchemaBuilder
             result["oneOf"] = _oneOf.DeepClone();
         }
 
-        return new RecipeStepSchema(result);
+        return new JsonSchema(result);
     }
 }

@@ -39,8 +39,8 @@ public sealed class WorkflowTypeRecipeStep : RecipeImportStep<WorkflowStepModel>
 
     public override string Name => "WorkflowType";
 
-    protected override RecipeStepSchema BuildSchema()
-        => RecipeStepSchema.Any;
+    protected override JsonSchema BuildSchema()
+        => JsonSchema.Any;
 
     protected override async Task ImportAsync(WorkflowStepModel model, RecipeExecutionContext context)
     {

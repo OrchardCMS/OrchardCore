@@ -5,9 +5,9 @@ namespace OrchardCore.Contents.Handlers;
 
 internal sealed class CommonPartSchemaHandler : IContentPartSchemaHandler
 {
-    private RecipeStepSchema _schema;
+    private JsonSchema _schema;
 
-    public RecipeStepSchema GetSettingsSchema()
+    public JsonSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {

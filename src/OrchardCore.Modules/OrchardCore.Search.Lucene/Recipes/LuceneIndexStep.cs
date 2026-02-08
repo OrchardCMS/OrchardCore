@@ -10,7 +10,10 @@ namespace OrchardCore.Search.Lucene.Recipes;
 /// <summary>
 /// This recipe step creates a Lucene index.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class LuceneIndexStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IIndexProfileManager _indexManager;
     private readonly ILogger _logger;

@@ -17,7 +17,7 @@ public sealed class CustomSettingsRecipeStep : RecipeImportStep<object>
 
     public override string Name => "custom-settings";
 
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         return new RecipeStepSchemaBuilder()
             .TypeObject()

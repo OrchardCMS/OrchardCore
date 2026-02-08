@@ -31,6 +31,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, PlacementContentPartFieldDefinitionDisplayDriver>();
 
         // Recipes
+        services.AddRecipeDeploymentStep<PlacementRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<PlacementStep>();
 #pragma warning restore CS0618 // Type or member is obsolete

@@ -8,7 +8,10 @@ namespace OrchardCore.Facebook.Recipes;
 /// <summary>
 /// This recipe step sets general Facebook Login settings.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class FacebookSettingsStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IFacebookService _facebookService;
 

@@ -116,6 +116,7 @@ public sealed class FeatureProfilesStartup : StartupBase
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
         services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();
 
+        services.AddRecipeDeploymentStep<Recipes.FeatureProfilesRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
 #pragma warning restore CS0618 // Type or member is obsolete

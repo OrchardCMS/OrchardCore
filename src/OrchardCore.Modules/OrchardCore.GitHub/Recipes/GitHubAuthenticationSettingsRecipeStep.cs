@@ -18,7 +18,7 @@ public sealed class GitHubAuthenticationSettingsRecipeStep : RecipeImportStep<Gi
 
     public override string Name => nameof(GitHubAuthenticationSettings);
 
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         return new RecipeStepSchemaBuilder()
             .SchemaDraft202012()

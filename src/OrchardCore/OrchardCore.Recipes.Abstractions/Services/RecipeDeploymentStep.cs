@@ -12,19 +12,19 @@ namespace OrchardCore.Recipes.Services;
 public abstract class RecipeDeploymentStep<TModel> : IRecipeDeploymentStep
     where TModel : class, new()
 {
-    private RecipeStepSchema _schema;
+    private JsonSchema _schema;
 
     /// <inheritdoc />
     public abstract string Name { get; }
 
     /// <inheritdoc />
-    public RecipeStepSchema Schema => _schema ??= BuildSchema();
+    public JsonSchema Schema => _schema ??= BuildSchema();
 
     /// <summary>
     /// Builds the JSON Schema for this step.
     /// Override this method to provide a schema. Returns null by default.
     /// </summary>
-    protected virtual RecipeStepSchema BuildSchema() => null;
+    protected virtual JsonSchema BuildSchema() => null;
 
     /// <inheritdoc />
     public async Task ExecuteAsync(RecipeExecutionContext context)

@@ -18,7 +18,7 @@ public interface IRecipeDeploymentStep
     /// Gets the JSON Schema that defines this step's structure.
     /// Returns <c>null</c> if no schema is defined.
     /// </summary>
-    RecipeStepSchema Schema { get; }
+    JsonSchema Schema { get; }
 
     /// <summary>
     /// Executes the recipe step during import.

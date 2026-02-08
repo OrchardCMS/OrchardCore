@@ -34,7 +34,7 @@ public sealed class UnifiedCommandStep : RecipeImportStep<UnifiedCommandStep.Com
     public override string Name => "Command";
 
     /// <inheritdoc />
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         return new RecipeStepSchemaBuilder()
             .SchemaDraft202012()

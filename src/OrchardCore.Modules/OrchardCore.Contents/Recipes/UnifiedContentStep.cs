@@ -25,7 +25,7 @@ public sealed class UnifiedContentStep : RecipeDeploymentStep<UnifiedContentStep
     public override string Name => "Content";
 
     /// <inheritdoc />
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
 
 

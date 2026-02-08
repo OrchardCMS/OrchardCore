@@ -38,7 +38,7 @@ public sealed class UnifiedFeatureStep : RecipeDeploymentStep<UnifiedFeatureStep
     public override string Name => "Feature";
 
     /// <inheritdoc />
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         return new RecipeStepSchemaBuilder()
             .SchemaDraft202012()

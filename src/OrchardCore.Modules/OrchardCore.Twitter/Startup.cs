@@ -36,6 +36,7 @@ public sealed class TwitterStartup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<ITwitterSettingsService, TwitterSettingsService>();
 
+        services.AddRecipeDeploymentStep<TwitterSettingsRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<TwitterSettingsStep>();
 #pragma warning restore CS0618 // Type or member is obsolete

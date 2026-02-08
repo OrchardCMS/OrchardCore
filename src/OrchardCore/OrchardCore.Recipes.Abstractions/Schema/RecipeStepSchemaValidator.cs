@@ -14,7 +14,7 @@ public static class RecipeStepSchemaValidator
     /// <param name="schema">The schema to validate against.</param>
     /// <param name="instance">The JSON instance to validate.</param>
     /// <returns>A validation result.</returns>
-    public static RecipeStepSchemaValidationResult Validate(RecipeStepSchema schema, JsonNode instance)
+    public static RecipeStepSchemaValidationResult Validate(JsonSchema schema, JsonNode instance)
     {
         ArgumentNullException.ThrowIfNull(schema);
 

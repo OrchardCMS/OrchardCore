@@ -32,7 +32,7 @@ public sealed class DeploymentPlansRecipeDeploymentStep : RecipeImportStep<Deplo
 
     public override string Name => "deployment";
 
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         return new RecipeStepSchemaBuilder()
             .Title("Deployment")

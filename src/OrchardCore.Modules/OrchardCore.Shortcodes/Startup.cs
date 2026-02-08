@@ -65,6 +65,7 @@ public sealed class ShortcodeTemplatesStartup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
 
+        services.AddRecipeDeploymentStep<ShortcodeTemplateRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
 #pragma warning restore CS0618 // Type or member is obsolete

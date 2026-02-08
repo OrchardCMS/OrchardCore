@@ -17,8 +17,8 @@ public sealed class FacebookLoginSettingsRecipeStep : RecipeImportStep<FacebookL
 
     public override string Name => nameof(FacebookLoginSettings);
 
-    protected override RecipeStepSchema BuildSchema()
-        => RecipeStepSchema.Any;
+    protected override JsonSchema BuildSchema()
+        => JsonSchema.Any;
 
     protected override async Task ImportAsync(FacebookLoginSettingsStepModel model, RecipeExecutionContext context)
     {

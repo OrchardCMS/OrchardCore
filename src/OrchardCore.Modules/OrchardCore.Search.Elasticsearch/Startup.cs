@@ -21,6 +21,7 @@ using OrchardCore.Search.Elasticsearch.Core.Handlers;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Recipes;
+using OrchardCore.Search.Elasticsearch.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Migrations;
@@ -77,6 +78,9 @@ public sealed class RecipeStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddRecipeDeploymentStep<ElasticsearchIndexRecipeStep>();
+        services.AddRecipeDeploymentStep<ElasticsearchIndexRebuildRecipeStep>();
+        services.AddRecipeDeploymentStep<ElasticsearchIndexResetRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<ElasticsearchIndexStep>();
         services.AddRecipeExecutionStep<ElasticsearchIndexRebuildStep>();

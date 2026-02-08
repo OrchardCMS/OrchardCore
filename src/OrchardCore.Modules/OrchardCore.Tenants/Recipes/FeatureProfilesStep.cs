@@ -9,7 +9,10 @@ namespace OrchardCore.Tenants.Recipes;
 /// <summary>
 /// This recipe step creates a set of feature profiles.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class FeatureProfilesStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly FeatureProfilesManager _featureProfilesManager;
 

@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
-using OrchardCore.Recipes.Schema;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Schema;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Settings.Recipes;
@@ -22,7 +22,7 @@ public sealed class UnifiedSettingsStep : RecipeDeploymentStep<UnifiedSettingsSt
     public override string Name => "Settings";
 
     /// <inheritdoc />
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         return new RecipeStepSchemaBuilder()
             .SchemaDraft202012()
@@ -78,7 +78,7 @@ public sealed class UnifiedSettingsStep : RecipeDeploymentStep<UnifiedSettingsSt
                 ("HomeRoute", new RecipeStepSchemaBuilder()
                     .TypeObject()
                     .Description("Route values for the home page.")
-                    .AdditionalProperties(RecipeStepSchema.Any)),
+                    .AdditionalProperties(JsonSchema.Any)),
                 ("CacheMode", new RecipeStepSchemaBuilder()
                     .TypeString()
                     .Enum("Disabled", "FromConfiguration", "Enabled")

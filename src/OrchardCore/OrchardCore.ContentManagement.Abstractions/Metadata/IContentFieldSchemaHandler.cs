@@ -11,5 +11,5 @@ public interface IContentFieldSchemaHandler
     /// Builds the JSON Schema for this content field's settings.
     /// </summary>
     /// <returns>The JSON Schema for the field settings, or null if no schema is available.</returns>
-    RecipeStepSchema GetSettingsSchema();
+    JsonSchema GetSettingsSchema();
 }

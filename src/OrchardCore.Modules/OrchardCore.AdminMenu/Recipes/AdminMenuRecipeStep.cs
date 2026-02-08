@@ -27,7 +27,7 @@ public sealed class AdminMenuRecipeStep : RecipeImportStep<AdminMenuStepModel>
 
     public override string Name => "AdminMenu";
 
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         return new RecipeStepSchemaBuilder()
             .SchemaDraft202012()

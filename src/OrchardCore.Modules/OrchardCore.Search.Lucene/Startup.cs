@@ -64,6 +64,9 @@ public sealed class RecipeStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddRecipeDeploymentStep<LuceneIndexRecipeStep>();
+        services.AddRecipeDeploymentStep<LuceneIndexRebuildRecipeStep>();
+        services.AddRecipeDeploymentStep<LuceneIndexResetRecipeStep>();
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<LuceneIndexStep>();
         services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();

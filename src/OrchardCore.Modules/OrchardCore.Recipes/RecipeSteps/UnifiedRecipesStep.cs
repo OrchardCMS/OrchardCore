@@ -26,7 +26,7 @@ public sealed class UnifiedRecipesStep : RecipeImportStep<UnifiedRecipesStep.Rec
     public override string Name => "Recipes";
 
     /// <inheritdoc />
-    protected override RecipeStepSchema BuildSchema()
+    protected override JsonSchema BuildSchema()
     {
         return new RecipeStepSchemaBuilder()
             .SchemaDraft202012()

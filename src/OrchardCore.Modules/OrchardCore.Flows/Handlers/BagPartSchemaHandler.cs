@@ -5,9 +5,9 @@ namespace OrchardCore.Flows.Handlers;
 
 internal sealed class BagPartSchemaHandler : IContentPartSchemaHandler
 {
-    private RecipeStepSchema _schema;
+    private JsonSchema _schema;
 
-    public RecipeStepSchema GetSettingsSchema()
+    public JsonSchema GetSettingsSchema()
     {
         if (_schema is not null)
         {

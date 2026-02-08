@@ -5,9 +5,9 @@ namespace OrchardCore.Title.Handlers;
 
 internal sealed class TitlePartSchemaHandler : IContentPartSchemaHandler
 {
-    private RecipeStepSchema _schema;
+    private JsonSchema _schema;
 
-    public RecipeStepSchema GetSettingsSchema()
+    public JsonSchema GetSettingsSchema()
     {
         if (_schema != null)
         {

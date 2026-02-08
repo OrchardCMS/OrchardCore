@@ -47,7 +47,10 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<LayerMetadataIndexProvider>();
         services.AddDataMigration<Migrations>();
         services.AddPermissionProvider<Permissions>();
+        services.AddRecipeDeploymentStep<LayerRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<LayerStep>();
+#pragma warning restore CS0618
         services.AddDeployment<AllLayersDeploymentSource, AllLayersDeploymentStep, AllLayersDeploymentStepDriver>();
         services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
     }

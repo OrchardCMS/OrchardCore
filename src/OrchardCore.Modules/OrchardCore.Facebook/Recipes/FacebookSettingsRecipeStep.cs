@@ -16,8 +16,8 @@ public sealed class FacebookSettingsRecipeStep : RecipeImportStep<FacebookCoreSe
 
     public override string Name => "FacebookCoreSettings";
 
-    protected override RecipeStepSchema BuildSchema()
-        => RecipeStepSchema.Any;
+    protected override JsonSchema BuildSchema()
+        => JsonSchema.Any;
 
     protected override async Task ImportAsync(FacebookCoreSettingsStepModel model, RecipeExecutionContext context)
     {

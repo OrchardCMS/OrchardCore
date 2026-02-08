@@ -4,7 +4,7 @@ namespace OrchardCore.Contents.Core;
 
 public static class ContentCommonSchemas
 {
-    public static readonly RecipeStepSchema ContentItemSchema = new RecipeStepSchemaBuilder()
+    public static readonly JsonSchema ContentItemSchema = new RecipeStepSchemaBuilder()
         .TypeObject()
         .Required("ContentItemId", "ContentType")
         .Properties(
