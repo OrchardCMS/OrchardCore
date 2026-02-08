@@ -8,6 +8,7 @@ It is used by default for the following parts and fields:
 
 - HTML Body Part
 - HTML Field
+- HTML Menu Item Part
 - Markdown Body Part
 - Markdown Field
 
