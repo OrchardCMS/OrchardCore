@@ -1,9 +1,6 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Recipes.Schema;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -12,17 +9,13 @@ namespace OrchardCore.Queries.Recipes;
 public sealed class QueryRecipeStep : RecipeImportStep<QueryRecipeStep.QueryStepModel>
 {
     private readonly IQueryManager _queryManager;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
-
     internal readonly IStringLocalizer S;
 
     public QueryRecipeStep(
         IQueryManager queryManager,
-        IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
         IStringLocalizer<QueryRecipeStep> stringLocalizer)
     {
         _queryManager = queryManager;
-        _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         S = stringLocalizer;
     }
 

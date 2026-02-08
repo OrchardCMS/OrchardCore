@@ -129,7 +129,7 @@ public sealed class LayerRecipeStep : RecipeImportStep<LayerRecipeStep.LayersSte
                 layer.LayerRule.Conditions.Clear();
                 foreach (var jCondition in layerStep.LayerRule.Conditions)
                 {
-                    var name = jCondition["Name"].ToString();
+                    var name = jCondition[nameof(RuleStepModel.Name)].ToString();
                     if (factories.TryGetValue(name, out var factory))
                     {
                         var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), _serializationOptions);

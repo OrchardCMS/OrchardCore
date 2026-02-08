@@ -4,6 +4,7 @@ using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using System.Security.Cryptography.X509Certificates;
 
 namespace OrchardCore.OpenId.Recipes;
 
@@ -136,13 +137,13 @@ public sealed class OpenIdServerSettingsRecipeStep : RecipeImportStep<OpenIdServ
 
     public sealed class OpenIdServerSettingsStepModel
     {
-        public int AccessTokenFormat { get; set; }
+        public OpenIdServerSettings.TokenFormat AccessTokenFormat { get; set; }
         public string Authority { get; set; }
-        public string EncryptionCertificateStoreLocation { get; set; }
-        public string EncryptionCertificateStoreName { get; set; }
+        public StoreLocation? EncryptionCertificateStoreLocation { get; set; }
+        public StoreName? EncryptionCertificateStoreName { get; set; }
         public string EncryptionCertificateThumbprint { get; set; }
-        public string SigningCertificateStoreLocation { get; set; }
-        public string SigningCertificateStoreName { get; set; }
+        public StoreLocation? SigningCertificateStoreLocation { get; set; }
+        public StoreName? SigningCertificateStoreName { get; set; }
         public string SigningCertificateThumbprint { get; set; }
         public bool EnableAuthorizationEndpoint { get; set; }
         public bool EnableLogoutEndpoint { get; set; }
