@@ -1,4 +1,4 @@
-namespace OrchardCore.Media.Processing;
+namespace OrchardCore.Media.Core.Processing;
 
 public enum ResizeMode
 {

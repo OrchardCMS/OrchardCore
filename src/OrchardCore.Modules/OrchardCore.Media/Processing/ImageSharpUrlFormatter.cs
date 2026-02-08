@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.AspNetCore.WebUtilities;
+using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Models;
 
