@@ -1,0 +1,113 @@
+@model OrchardCore.Secrets.ViewModels.SecretEditViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(Model.IsNew ? T["Create {0}", Model.SecretTypeDisplayName] : T["Edit Secret"])</h1></zone>
+
+<form asp-action="@(Model.IsNew ? "Create" : "Edit")" method="post" class="no-multisubmit">
+    <input type="hidden" asp-for="SecretType" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">@T["Name"]</label>
+        @if (Model.IsNew)
+        {
+            <input asp-for="Name" class="form-control" />
+        }
+        else
+        {
+            <input asp-for="Name" class="form-control" readonly />
+        }
+        <span asp-validation-for="Name" class="text-danger"></span>
+        <span class="hint">@T["A unique identifier for this secret."]</span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Store" class="form-label">@T["Store"]</label>
+        @if (Model.AvailableStores.Count > 1)
+        {
+            <select asp-for="Store" asp-items="@(new SelectList(Model.AvailableStores))" class="form-select">
+            </select>
+        }
+        else
+        {
+            <input asp-for="Store" class="form-control" readonly />
+        }
+        <span class="hint">@T["The secret store where this secret will be saved."]</span>
+    </div>
+
+    @* Render type-specific fields based on secret type *@
+    @if (Model.SecretType == "TextSecret")
+    {
+        <div class="mb-3">
+            <label asp-for="TextValue" class="form-label">@T["Secret Value"]</label>
+            <input asp-for="TextValue" type="password" class="form-control" autocomplete="new-password" placeholder="@(Model.IsNew ? T["Enter secret value"] : T["Enter new value to change, or leave empty to keep current"])" />
+            @if (!Model.IsNew)
+            {
+                <span class="hint">@T["Leave empty to keep the current value."]</span>
+            }
+        </div>
+    }
+    else if (Model.SecretType == "RsaKeySecret")
+    {
+        <div class="mb-3">
+            <label class="form-label">@T["RSA Key"]</label>
+            @if (Model.IsNew)
+            {
+                <div class="mb-2">
+                    <label asp-for="RsaKeySize" class="form-label">@T["Key Size"]</label>
+                    <select asp-for="RsaKeySize" class="form-select">
+                        <option value="2048">2048 bits</option>
+                        <option value="3072">3072 bits</option>
+                        <option value="4096">4096 bits</option>
+                    </select>
+                    <span class="hint">@T["A new RSA key pair will be generated with this key size."]</span>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    @T["RSA key is stored securely. The private key cannot be displayed."]
+                </div>
+            }
+        </div>
+    }
+    else if (Model.SecretType == "X509Secret")
+    {
+        <div class="mb-3">
+            <label asp-for="X509StoreLocation" class="form-label">@T["Store Location"]</label>
+            <select asp-for="X509StoreLocation" class="form-select">
+                <option value="CurrentUser">Current User</option>
+                <option value="LocalMachine">Local Machine</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="X509StoreName" class="form-label">@T["Store Name"]</label>
+            <select asp-for="X509StoreName" class="form-select">
+                <option value="My">Personal (My)</option>
+                <option value="Root">Trusted Root CAs (Root)</option>
+                <option value="CA">Intermediate CAs (CA)</option>
+                <option value="TrustedPeople">Trusted People</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="X509Thumbprint" class="form-label">@T["Thumbprint"]</label>
+            <input asp-for="X509Thumbprint" class="form-control" placeholder="@T["Certificate thumbprint (SHA-1)"]" />
+            <span class="hint">@T["The SHA-1 thumbprint of the certificate to use."]</span>
+        </div>
+    }
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">@T["Description"]</label>
+        <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+        <span class="hint">@T["An optional description for this secret."]</span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ExpiresUtc" class="form-label">@T["Expiration Date"]</label>
+        <input asp-for="ExpiresUtc" type="date" class="form-control" />
+        <span class="hint">@T["Optional. This is informational only and does not automatically disable the secret. Use for rotation reminders and alerts."]</span>
+    </div>
+
+    <div class="mb-3">
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
+    </div>
+</form>

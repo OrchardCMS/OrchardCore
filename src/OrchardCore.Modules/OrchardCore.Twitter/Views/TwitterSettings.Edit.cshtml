@@ -6,9 +6,9 @@
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/X/#x-twitter-integration" target="_blank">@T["See documentation"]</a>
 </p>
 
-@if (Model.HasDecryptionError)
+@if (Model.HasConsumerSecret || Model.HasAccessTokenSecret)
 {
-    <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+    <p class="alert alert-info">@T["Legacy secrets are configured. Please create new secrets using the Secrets module and select them below, then save to complete the migration."]</p>
 }
 
 <h3>@T["X (Twitter) Integration Settings"]</h3>
@@ -22,12 +22,18 @@
     </div>
 </div>
 
-<div class="mb-3 row" asp-validation-class-for="APISecretKey">
+<div class="mb-3 row">
     <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-        <label asp-for="APISecretKey" class="form-label">@T["API secret key"]</label>
-        <input asp-for="APISecretKey" class="form-control" type="password" value="@Model.APISecretKey" autocomplete="off" />
-        <span asp-validation-for="APISecretKey"></span>
-        <span class="hint">@T["The API secret defined in the Keys and tokens tab of X (Twitter) app dashboard."]</span>
+        <label asp-for="ConsumerSecretSecretName" class="form-label">@T["API secret key"]</label>
+        @await Component.InvokeAsync("SelectSecret", new
+        {
+            secretTypes = new[] { "TextSecret" },
+            selectedSecret = Model.ConsumerSecretSecretName,
+            htmlId = "ConsumerSecretSecretName",
+            htmlName = Html.NameFor(m => m.ConsumerSecretSecretName).ToString(),
+            required = false
+        })
+        <span class="hint">@T["Select a secret containing the API secret from the X (Twitter) app dashboard."]</span>
     </div>
 </div>
 
@@ -40,11 +46,17 @@
     </div>
 </div>
 
-<div class="mb-3 row" asp-validation-class-for="AccessTokenSecret">
+<div class="mb-3 row">
     <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-        <label asp-for="AccessTokenSecret" class="form-label">@T["Access Token Secret"]</label>
-        <input asp-for="AccessTokenSecret" class="form-control" type="password" value="@Model.AccessTokenSecret" autocomplete="off" />
-        <span asp-validation-for="AccessTokenSecret"></span>
-        <span class="hint">@T["The Access Token Secret in the Keys and tokens tab of X (Twitter) app dashboard."]</span>
+        <label asp-for="AccessTokenSecretSecretName" class="form-label">@T["Access Token Secret"]</label>
+        @await Component.InvokeAsync("SelectSecret", new
+        {
+            secretTypes = new[] { "TextSecret" },
+            selectedSecret = Model.AccessTokenSecretSecretName,
+            htmlId = "AccessTokenSecretSecretName",
+            htmlName = Html.NameFor(m => m.AccessTokenSecretSecretName).ToString(),
+            required = false
+        })
+        <span class="hint">@T["Select a secret containing the Access Token Secret from the X (Twitter) app dashboard."]</span>
     </div>
 </div>

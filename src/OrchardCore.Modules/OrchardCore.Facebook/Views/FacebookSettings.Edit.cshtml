@@ -6,11 +6,6 @@
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#core-components" target="_blank">@T["See documentation"]</a>
 </p>
 
-@if (Model.HasDecryptionError)
-{
-    <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
-}
-
 <h3>@T["Meta Integration"]</h3>
 
 <div class="mb-3" asp-validation-class-for="AppId">
@@ -20,11 +15,25 @@
     <span class="hint">@T["The Application ID found on the Meta developer portal parameters."]</span>
 </div>
 
-<div class="mb-3" asp-validation-class-for="AppSecret">
-    <label asp-for="AppSecret" class="form-label">@T["Secret Key"]</label>
-    <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" autocomplete="off" />
-    <span asp-validation-for="AppSecret"></span>
-    <span class="hint">@T["The Application secret key found on the Meta developer portal parameters."]</span>
+<div class="mb-3" asp-validation-class-for="AppSecretSecretName">
+    <label asp-for="AppSecretSecretName" class="form-label">@T["Secret Key"]</label>
+    @await Component.InvokeAsync("SelectSecret", new
+    {
+        secretTypes = new[] { "TextSecret" },
+        selectedSecret = Model.AppSecretSecretName,
+        htmlId = "AppSecretSecretName",
+        htmlName = Html.NameFor(m => m.AppSecretSecretName).ToString(),
+        required = false
+    })
+    <span asp-validation-for="AppSecretSecretName"></span>
+    <span class="hint">@T["Select a secret containing the Facebook application secret key."]</span>
+    @if (Model.HasAppSecret && string.IsNullOrWhiteSpace(Model.AppSecretSecretName))
+    {
+        <div class="alert alert-warning mt-2">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            @T["A legacy app secret is configured. Please migrate to using a secret for improved security."]
+        </div>
+    }
 </div>
 
 <div class="row">

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Facebook.Drivers;
 using OrchardCore.Facebook.Endpoints;
@@ -40,5 +41,7 @@ public sealed class Startup : StartupBase
         {
             options.Filters.Add<FBInitFilter>();
         });
+
+        services.AddScoped<IDataMigration, Migrations>();
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Google.Analytics;
 using OrchardCore.Google.Analytics.Drivers;
@@ -42,6 +43,8 @@ public sealed class GoogleAuthenticationStartup : StartupBase
         services.AddTransient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions, GoogleHandler>>();
 
         services.AddTransient<IConfigureOptions<GoogleAuthenticationSettings>, GoogleAuthenticationSettingsConfiguration>();
+
+        services.AddScoped<IDataMigration, Migrations>();
     }
 }
 

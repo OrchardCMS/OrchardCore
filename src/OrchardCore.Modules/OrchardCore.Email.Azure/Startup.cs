@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Azure.Email.Drivers;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Azure.Models;
 using OrchardCore.Email.Azure.Services;
@@ -36,5 +37,7 @@ public sealed class Startup
 
             options.IsEnabled = options.ConfigurationExists();
         });
+
+        services.AddScoped<IDataMigration, Migrations>();
     }
 }
