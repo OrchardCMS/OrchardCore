@@ -1,0 +1,26 @@
+@model ContentImportViewModel
+
+<div class="mb-3">
+    <label class="form-label" asp-for="File" id="FilenameLabel" data-placeholder="@T["Click browser to select file"]">@T["Click browser to select file"]</label>
+    <input type="file" class="form-control" asp-for="File" required accept=".xls,.xlsx,.csv">
+    <span asp-validation-for="File"></span>
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var file = document.getElementById('@Html.IdFor(x => x.File)');
+        var placeholder = document.getElementById('FilenameLabel');
+        if (!file || !placeholder) {
+            return;
+        }
+        file.addEventListener('change', function (e) {
+            if (e.target && e.target.files && e.target.files.length) {
+                placeholder.innerHTML = e.target.files[0].name;
+            } else {
+                placeholder.innerHTML = placeholder.getAttribute('data-placeholder');
+            }
+        });
+        file.dispatchEvent(new Event('change'));
+    });
+</script>
