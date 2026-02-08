@@ -9,7 +9,10 @@ namespace OrchardCore.Placements.Recipes;
 /// <summary>
 /// This recipe step creates a set of placements.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class PlacementStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly PlacementsManager _placementsManager;
 

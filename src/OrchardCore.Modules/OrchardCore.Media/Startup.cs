@@ -171,7 +171,14 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
         services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
         services.AddDataMigration<Migrations>();
+
+        // Register unified recipe deployment steps.
+        services.AddRecipeDeploymentStep<UnifiedMediaStep>();
+
+        // Legacy step registrations for backward compatibility.
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<MediaStep>();
+#pragma warning restore CS0618
 
         // MIME types
         services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
@@ -183,7 +190,11 @@ public sealed class Startup : StartupBase
         // Media Profiles
         services.AddScoped<MediaProfilesManager>();
         services.AddScoped<IMediaProfileService, MediaProfileService>();
+
+        services.AddRecipeDeploymentStep<MediaProfileRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<MediaProfileStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Media Name Normalizer
         services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();

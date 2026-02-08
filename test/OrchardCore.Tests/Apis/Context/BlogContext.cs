@@ -17,7 +17,7 @@ public class BlogContext : SiteContext
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        await RunRecipeAsync(luceneRecipeName, luceneRecipePath);
+        await RunRecipeAsync(luceneRecipeName);
         // await ResetLuceneIndexesAsync(luceneIndexName);
 
         var result = await GraphQLClient

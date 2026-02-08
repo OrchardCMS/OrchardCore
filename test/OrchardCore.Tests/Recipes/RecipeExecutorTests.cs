@@ -46,7 +46,7 @@ public class RecipeExecutorTests
 
             // Act
             var executionId = Guid.NewGuid().ToString("n");
-            var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo(recipeName) };
+            IRecipeDescriptor recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo(recipeName) };
             await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
 
             // Assert
@@ -66,7 +66,7 @@ public class RecipeExecutorTests
             var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
             // Act
             var executionId = Guid.NewGuid().ToString("n");
-            var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("recipe6") };
+            IRecipeDescriptor recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("recipe6") };
 
             var exception = await Assert.ThrowsAsync<RecipeExecutionException>(async () =>
             {
@@ -74,6 +74,41 @@ public class RecipeExecutorTests
             });
 
             Assert.Contains("Unable to add content-part to the 'Message' content-type. The part name cannot be null or empty.", exception.StepResult.Errors);
+        });
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ShouldWork_WithCodeRecipeDescriptor()
+    {
+        await (await CreateShellContext().CreateScopeAsync()).UsingAsync(async scope =>
+        {
+            // Arrange
+            var shellHostMock = new Mock<IShellHost>();
+
+            shellHostMock.Setup(h => h.GetScopeAsync(It.IsAny<ShellSettings>()))
+                .Returns(GetScopeAsync);
+
+            var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
+            var loggerMock = new Mock<ILogger<RecipeExecutor>>();
+            var localizerMock = new Mock<IStringLocalizer<RecipeExecutor>>();
+
+            localizerMock.Setup(localizer => localizer[It.IsAny<string>()])
+                .Returns((string name) => new LocalizedString(name, name));
+
+            var recipeExecutor = new RecipeExecutor(
+                shellHostMock.Object,
+                scope.ShellContext.Settings,
+                recipeEventHandlers,
+                loggerMock.Object,
+                localizerMock.Object);
+
+            // Act
+            var executionId = Guid.NewGuid().ToString("n");
+            IRecipeDescriptor recipeDescriptor = new TestCodeRecipeDescriptor();
+            await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
+
+            // Assert
+            // No exception means the code-based descriptor could be executed.
         });
     }
 
@@ -120,5 +155,46 @@ public class RecipeExecutorTests
         public Task RecipeExecutingAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
 
         public Task RecipeStepExecutingAsync(RecipeExecutionContext context) => Task.CompletedTask;
+    }
+
+    private sealed class TestCodeRecipeDescriptor : IRecipeDescriptor
+    {
+        public string Name => "TestCodeRecipe";
+        public string DisplayName => "Test Code Recipe";
+        public string Description => "";
+        public string Author => "";
+        public string WebSite => "";
+        public string Version => "1.0.0";
+        public bool IsSetupRecipe => false;
+        public DateTime? ExportUtc => null;
+        public string[] Categories => [];
+        public string[] Tags => [];
+        public bool RequireNewScope => true;
+
+        public bool IsAvailable(ShellSettings shellSettings)
+            => true;
+
+        public Task<Stream> OpenReadStreamAsync()
+        {
+            var json = """
+                {
+                    "name":"TestCodeRecipe",
+                    "steps":[
+                        {
+                            "name":"Content",
+                            "data":[
+                                {
+                                    "TitlePart":{
+                                        "Title":"Hello"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+                """;
+
+            return Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes(json)));
+        }
     }
 }

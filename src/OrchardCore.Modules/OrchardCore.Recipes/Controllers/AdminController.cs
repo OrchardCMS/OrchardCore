@@ -5,7 +5,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
@@ -19,7 +18,6 @@ public sealed class AdminController : Controller
 {
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
-    private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
     private readonly IRecipeExecutor _recipeExecutor;
@@ -33,7 +31,6 @@ public sealed class AdminController : Controller
     public AdminController(
         IShellHost shellHost,
         ShellSettings shellSettings,
-        IShellFeaturesManager shellFeaturesManager,
         IAuthorizationService authorizationService,
         IEnumerable<IRecipeHarvester> recipeHarvesters,
         IRecipeExecutor recipeExecutor,
@@ -45,7 +42,6 @@ public sealed class AdminController : Controller
     {
         _shellHost = shellHost;
         _shellSettings = shellSettings;
-        _shellFeaturesManager = shellFeaturesManager;
         _authorizationService = authorizationService;
         _recipeHarvesters = recipeHarvesters;
         _recipeExecutor = recipeExecutor;
@@ -64,18 +60,14 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
-        var recipes = await GetRecipesAsync(features);
+        var recipes = await GetRecipesAsync();
 
         var model = recipes.Select(recipe => new RecipeViewModel
         {
             Name = recipe.Name,
             DisplayName = recipe.DisplayName,
-            FileName = recipe.RecipeFileInfo.Name,
-            BasePath = recipe.BasePath,
             Tags = recipe.Tags,
             IsSetupRecipe = recipe.IsSetupRecipe,
-            Feature = features.FirstOrDefault(f => recipe.BasePath.Contains(f.Extension.SubPath))?.Name ?? "Application",
             Description = recipe.Description,
         }).ToArray();
 
@@ -83,17 +75,16 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult> Execute(string basePath, string fileName)
+    public async Task<ActionResult> Execute(string name)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RecipePermissions.ManageRecipes))
         {
             return Forbid();
         }
 
-        var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
-        var recipes = await GetRecipesAsync(features);
+        var recipes = await GetRecipesAsync();
 
-        var recipe = recipes.FirstOrDefault(c => c.RecipeFileInfo.Name == fileName && c.BasePath == basePath);
+        var recipe = recipes.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
         if (recipe == null)
         {
@@ -130,13 +121,12 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task<IEnumerable<RecipeDescriptor>> GetRecipesAsync(IEnumerable<IFeatureInfo> features)
+    private async Task<IEnumerable<IRecipeDescriptor>> GetRecipesAsync()
     {
         var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
         var recipes = recipeCollections.SelectMany(x => x)
             .Where(r => !r.IsSetupRecipe &&
-                (r.Tags == null || !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase)) &&
-                features.Any(f => r.BasePath != null && f.Extension?.SubPath != null && r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase)));
+                (r.Tags == null || !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase)));
 
         return recipes;
     }

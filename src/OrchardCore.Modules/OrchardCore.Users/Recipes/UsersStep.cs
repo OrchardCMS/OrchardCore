@@ -7,7 +7,10 @@ using YesSql;
 
 namespace OrchardCore.Users.Recipes;
 
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class UsersStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly UserManager<IUser> _userManager;
     private readonly ISession _session;

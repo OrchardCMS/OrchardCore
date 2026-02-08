@@ -12,14 +12,14 @@ public class TestRecipeHarvester : IRecipeHarvester
         _recipeReader = recipeReader;
     }
 
-    public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
+    public Task<IEnumerable<IRecipeDescriptor>> HarvestRecipesAsync()
         => HarvestRecipesAsync(
         [
             "Apis/Lucene/Recipes/luceneQueryTest.json",
             "Apis/GraphQL/ContentManagement/Recipes/DynamicContentTypeQueryTest.json"
         ]);
 
-    private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string[] paths)
+    private async Task<IEnumerable<IRecipeDescriptor>> HarvestRecipesAsync(string[] paths)
     {
         var recipeDescriptors = new List<RecipeDescriptor>();
         var testAssemblyFileProvider = new EmbeddedFileProvider(GetType().GetTypeInfo().Assembly);

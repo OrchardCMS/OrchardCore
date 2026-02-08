@@ -24,7 +24,10 @@ public sealed class StartupLogin : StartupBase
 
         services.AddSingleton<IFacebookLoginService, FacebookLoginService>();
         services.AddSiteDisplayDriver<FacebookLoginSettingsDisplayDriver>();
+        services.AddRecipeDeploymentStep<FacebookLoginSettingsRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<FacebookLoginSettingsStep>();
+#pragma warning restore CS0618
 
         // Register the options initializers required by the Facebook handler.
         // Orchard-specific initializers:

@@ -24,7 +24,10 @@ public sealed class Startup : StartupBase
         services.AddScoped<TemplatesManager>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddRecipeDeploymentStep<TemplateRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<TemplateStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Template shortcuts in settings
         services.AddScoped<IContentPartDefinitionDisplayDriver, TemplateContentPartDefinitionDriver>();
@@ -46,7 +49,10 @@ public sealed class AdminTemplatesStartup : StartupBase
         services.AddScoped<IShapeBindingResolver, AdminTemplatesShapeBindingResolver>();
         services.AddScoped<AdminPreviewTemplatesProvider>();
         services.AddNavigationProvider<AdminTemplatesAdminMenu>();
+        services.AddRecipeDeploymentStep<AdminTemplateRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<AdminTemplateStep>();
+#pragma warning restore CS0618
         services.AddDeployment<AllAdminTemplatesDeploymentSource, AllAdminTemplatesDeploymentStep, AllAdminTemplatesDeploymentStepDriver>();
     }
 }

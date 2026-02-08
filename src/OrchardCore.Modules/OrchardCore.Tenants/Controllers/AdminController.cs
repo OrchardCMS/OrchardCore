@@ -301,9 +301,6 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-        var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
-
         // Creates a default shell settings based on the configuration.
         using var shellSettings = _shellSettingsManager
             .CreateDefaultSettings()
@@ -312,6 +309,8 @@ public sealed class AdminController : Controller
 
         var currentFeatureProfiles = shellSettings.GetFeatureProfiles();
         var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfiles);
+
+        var recipes = await GetRecipesAsync(shellSettings);
 
         var model = new EditTenantViewModel
         {
@@ -354,14 +353,14 @@ public sealed class AdminController : Controller
             await ValidateViewModelAsync(model, true);
         }
 
+        // Creates a default shell settings based on the configuration.
+        using var shellSettings = _shellSettingsManager
+            .CreateDefaultSettings()
+            .AsUninitialized()
+            .AsDisposable();
+
         if (ModelState.IsValid)
         {
-            // Creates a default shell settings based on the configuration.
-            using var shellSettings = _shellSettingsManager
-                .CreateDefaultSettings()
-                .AsUninitialized()
-                .AsDisposable();
-
             shellSettings.Name = model.Name;
             shellSettings.RequestUrlHost = model.RequestUrlHost;
             shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
@@ -395,9 +394,7 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-        var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
-        model.Recipes = recipes;
+        model.Recipes = await GetRecipesAsync(shellSettings);
         model.FeatureProfilesItems = await GetFeatureProfilesAsync(model.FeatureProfiles);
 
         // If we got this far, something failed, redisplay form
@@ -674,5 +671,14 @@ public sealed class AdminController : Controller
         model.IsNewTenant = isNewTenant;
 
         ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
+    }
+
+    private async Task<IRecipeDescriptor[]> GetRecipesAsync(ShellSettings shellSettings)
+    {
+        var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+
+        var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe && x.IsAvailable(shellSettings)).OrderBy(r => r.DisplayName).ToArray();
+
+        return recipes;
     }
 }

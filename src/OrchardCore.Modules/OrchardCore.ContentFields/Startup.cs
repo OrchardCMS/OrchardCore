@@ -54,6 +54,7 @@ public sealed class Startup : StartupBase
         // Boolean Field
         services.AddContentField<BooleanField>()
             .UseDisplayDriver<BooleanFieldDisplayDriver>();
+        services.AddContentFieldSchemaHandler<BooleanFieldSchemaHandler>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, BooleanFieldIndexHandler>();
 
@@ -61,6 +62,7 @@ public sealed class Startup : StartupBase
         services.AddContentField<TextField>()
             .UseDisplayDriver<TextFieldDisplayDriver>()
             .AddHandler<TextFieldHandler>();
+        services.AddContentFieldSchemaHandler<TextFieldSchemaHandler>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, TextFieldIndexHandler>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldPredefinedListEditorSettingsDriver>();
@@ -70,6 +72,7 @@ public sealed class Startup : StartupBase
         // Html Field
         services.AddContentField<HtmlField>()
             .UseDisplayDriver<HtmlFieldDisplayDriver>();
+        services.AddContentFieldSchemaHandler<HtmlFieldSchemaHandler>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldMonacoEditorSettingsDriver>();
@@ -79,6 +82,7 @@ public sealed class Startup : StartupBase
         services.AddContentField<LinkField>()
             .UseDisplayDriver<LinkFieldDisplayDriver>()
             .AddHandler<LinkFieldHandler>();
+        services.AddContentFieldSchemaHandler<LinkFieldSchemaHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LinkFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, LinkFieldIndexHandler>();
@@ -87,6 +91,7 @@ public sealed class Startup : StartupBase
         services.AddContentField<MultiTextField>()
             .UseDisplayDriver<MultiTextFieldDisplayDriver>()
             .AddHandler<MultiTextFieldHandler>();
+        services.AddContentFieldSchemaHandler<MultiTextFieldSchemaHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, MultiTextFieldIndexHandler>();
@@ -95,6 +100,7 @@ public sealed class Startup : StartupBase
         services.AddContentField<NumericField>()
             .UseDisplayDriver<NumericFieldDisplayDriver>()
             .AddHandler<NumericFieldHandler>();
+        services.AddContentFieldSchemaHandler<NumericFieldSchemaHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, NumericFieldIndexHandler>();
@@ -103,6 +109,7 @@ public sealed class Startup : StartupBase
         services.AddContentField<DateTimeField>()
             .UseDisplayDriver<DateTimeFieldDisplayDriver>()
             .AddHandler<DateTimeFieldHandler>();
+        services.AddContentFieldSchemaHandler<DateTimeFieldSchemaHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateTimeFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, DateTimeFieldIndexHandler>();
@@ -111,6 +118,7 @@ public sealed class Startup : StartupBase
         services.AddContentField<DateField>()
             .UseDisplayDriver<DateFieldDisplayDriver>()
             .AddHandler<DateFieldHandler>();
+        services.AddContentFieldSchemaHandler<DateFieldSchemaHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, DateFieldIndexHandler>();
@@ -119,6 +127,7 @@ public sealed class Startup : StartupBase
         services.AddContentField<TimeField>()
             .UseDisplayDriver<TimeFieldDisplayDriver>()
             .AddHandler<TimeFieldHandler>();
+        services.AddContentFieldSchemaHandler<TimeFieldSchemaHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TimeFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, TimeFieldIndexHandler>();
@@ -127,6 +136,7 @@ public sealed class Startup : StartupBase
         services.AddContentField<YoutubeField>()
             .UseDisplayDriver<YoutubeFieldDisplayDriver>()
             .AddHandler<YoutubeFieldHandler>();
+        services.AddContentFieldSchemaHandler<YoutubeFieldSchemaHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, YoutubeFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, YoutubeFieldIndexHandler>();
@@ -135,6 +145,7 @@ public sealed class Startup : StartupBase
         services.AddContentField<ContentPickerField>()
             .UseDisplayDriver<ContentPickerFieldDisplayDriver>()
             .AddHandler<ContentPickerFieldHandler>();
+        services.AddContentFieldSchemaHandler<ContentPickerFieldSchemaHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
@@ -153,6 +164,8 @@ public sealed class LocalizationSetContentPickerStartup : StartupBase
         services.AddContentField<LocalizationSetContentPickerField>()
             .UseDisplayDriver<LocalizationSetContentPickerFieldDisplayDriver>()
             .AddHandler<LocalizationSetContentPickerFieldHandler>();
+
+        services.AddContentFieldSchemaHandler<LocalizationSetContentPickerFieldSchemaHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LocalizationSetContentPickerFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
@@ -194,6 +207,8 @@ public sealed class UserPickerStartup : StartupBase
             .UseDisplayDriver<UserPickerFieldDisplayDriver>(d => !string.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
             .UseDisplayDriver<UserPickerFieldUserNamesDisplayDriver>(d => string.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
             .AddHandler<UserPickerFieldHandler>();
+
+        services.AddContentFieldSchemaHandler<UserPickerFieldSchemaHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, UserPickerFieldSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, UserPickerFieldIndexHandler>();

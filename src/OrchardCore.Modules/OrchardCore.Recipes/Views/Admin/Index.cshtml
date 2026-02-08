@@ -22,54 +22,45 @@
 
 <form asp-action="Recipes">
     @{
-        var recipeGroups = Model.GroupBy(f => f.Feature).ToList();
         if (Model.Any())
         {
-            foreach (var recipeGroup in recipeGroups)
-            {
-                var groupName = recipeGroup.Key;
+            <div class="recipe-group">
 
-                <div class="recipe-group">
-                    @{
-                        var groupRecipeNames = string.Join(" ", recipeGroup.Select(r => r.DisplayName));
-                    }
-                    <h4 class="mb-2 mt-2" data-filter-value="@groupName @groupRecipeNames">@groupName</h4>
-                    <ul class="list-group" data-filter-value="@groupName @groupRecipeNames">
-                        @foreach (var recipe in recipeGroup.OrderBy(r => r.DisplayName))
-                        {
-                            <li class="list-group-item" data-filter-value="@groupName @recipe.DisplayName">
-                                <div class="row">
-                                    <div class="col">
-                                        <a id="btn-run-@Html.GenerateIdFromName(recipe.Name)" asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm float-end" data-title="@T["Recipes"]" data-message="@T["Are you sure you want to run the recipe?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="RemoveUrl UnsafeUrl">@T["Run"]</a>
-                                        <h6>
-                                            @recipe.DisplayName
-                                            @if (recipe.IsSetupRecipe)
+                <ul class="list-group">
+                    @foreach (var recipe in Model)
+                    {
+                        <li class="list-group-item" data-filter-value="@recipe.Name @recipe.DisplayName">
+                            <div class="row">
+                                <div class="col">
+                                    <a id="btn-run-@Html.GenerateIdFromName(recipe.Name)" asp-action="Execute" asp-route-name="@recipe.Name" role="button" class="btn btn-primary btn-sm float-end" data-title="@T["Recipes"]" data-message="@T["Are you sure you want to run the recipe?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="RemoveUrl UnsafeUrl">@T["Run"]</a>
+                                    <h6>
+                                        @recipe.DisplayName
+                                        @if (recipe.IsSetupRecipe)
+                                        {
+                                            <span class="badge text-bg-warning">
+                                                @T["Setup Recipe"]
+                                            </span>
+                                        }
+                                        @if (recipe.Tags != null && recipe.Tags.Any())
+                                        {
+                                            @foreach (var tag in recipe.Tags)
                                             {
-                                                <span class="badge text-bg-warning">
-                                                    @T["Setup Recipe"]
+                                                <span class="badge ta-badge">
+                                                    @tag
                                                 </span>
                                             }
-                                            @if (recipe.Tags != null && recipe.Tags.Any())
-                                            {
-                                                @foreach (var tag in recipe.Tags)
-                                                {
-                                                    <span class="badge ta-badge">
-                                                        @tag
-                                                    </span>
-                                                }
-                                            }
-                                        </h6>
-                                        <small class="text-muted">@recipe.Description</small>
-                                    </div>
+                                        }
+                                    </h6>
+                                    <small class="text-muted">@recipe.Description</small>
                                 </div>
-                            </li>
-                        }
-                    </ul>
-                </div>
-                <div id="list-alert" class="alert alert-info d-none" role="alert">
-                    @T["<strong>Nothing here!</strong> Your search returned no results."]
-                </div>
-            }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div id="list-alert" class="alert alert-info d-none" role="alert">
+                @T["<strong>Nothing here!</strong> Your search returned no results."]
+            </div>
         }
         else
         {

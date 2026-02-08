@@ -9,7 +9,10 @@ namespace OrchardCore.Twitter.Recipes;
 /// <summary>
 /// This recipe step sets Microsoft Account settings.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class TwitterSettingsStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly ITwitterSettingsService _twitterService;
 
