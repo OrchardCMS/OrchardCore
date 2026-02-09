@@ -16,7 +16,7 @@ Sitemap Indexes are configured by creating a Sitemap Index and selecting which S
 
 - Ensure the Sitemaps feature is enabled.
 
-- Go to _Configuration -> SEO -> Sitemaps_
+- Go to _Tools -> Search Engine Optimization -> Sitemaps_
 
 - Create a new Sitemap.
 
@@ -118,11 +118,11 @@ Sitemaps are cached on a tenant by tenant basic in the `wwwroot/sm-cache` folder
 
 The cache is automatically cleared when content items are published.
 
-To clear the cache manually use the _Configuration -> SEO -> Sitemaps Cache_ feature.
+To clear the cache manually use the _Tools -> Search Engine Optimization -> Sitemaps Cache_ feature.
 
 ## `robots.txt` File
 
-When both `SEO` and `Sitemaps` features are enabled and no `robots.txt` file is found on the filesystem, the sitemap indexes and sitemaps are added to the `robots.txt` file by default. This can be changed by navigating to **Configuration** >> **Settings** >> **SEO**.
+When both `SEO` and `Sitemaps` features are enabled and no `robots.txt` file is found on the filesystem, the sitemap indexes and sitemaps are added to the `robots.txt` file by default. This can be changed by navigating to **Settings** → **Search** → **Search Engine Optimization** → **Robots**.
 
 ## Video
 
