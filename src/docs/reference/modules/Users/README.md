@@ -49,7 +49,7 @@ This ensures user names are rendered consistently while making use of OrchardCor
 
 ## Two-factor Authentication
 
-Starting with version 1.7, OrchardCore is shipped with everything you need to secure your app with two-factor authentication. To use two-factor authentication, simply enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method" features. You can configure the process based on your need by navigating to `Security` >> `Settings` >> `User Login`. Click on the "Two-Factor Authentication" tab and update the settings as needed.
+Starting with version 1.7, OrchardCore is shipped with everything you need to secure your app with two-factor authentication. To use two-factor authentication, simply enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method" features. You can configure the process based on your need by navigating to `Settings` → `Security` → `User Login`. Click on the "Two-Factor Authentication" tab and update the settings as needed.
 
 ## User Localization
 
