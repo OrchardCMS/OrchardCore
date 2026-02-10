@@ -403,7 +403,7 @@ services.Configure<StaticFileOptions>(o => ...);
 
 Media profiles allow you to defined preset image resizing and formatting commands.
 
-You can create a media profile from the _Configuration -> Media -> Media Profiles_ menu.
+You can create a media profile from the _Media -> Profiles_ menu.
 
 When specifying a media profile with either the liquid, razor helper, or tag helper you provide the profile name, and any additional commands which you want to apply to the media item.
 

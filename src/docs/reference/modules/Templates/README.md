@@ -1039,7 +1039,7 @@ Views/Shared/{0}.cshtml
 
 For example, if you want to override the `OrchardCore.Users\Views\Account\Login.cshtml` view you would need to create a file in your theme and place it under `YourTheme\Views\OrchardCore.Users\Account\Login.cshtml`.  
 For this particular file, you would also need to select the `Use site theme for login page`
-option under the `Configuration->Login` page in the admin.
+option under the `Settings -> Security -> User Login` page in the admin.
 
 ## Videos
 
