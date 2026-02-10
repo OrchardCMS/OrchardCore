@@ -108,9 +108,27 @@ public class SubResourceIntegrityTests
             return null;
         }
 
-        var repositoryRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
+        var repositoryRoot = GetRepositoryRoot()
+            ?? Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         var relativePath = url[resourcePrefix.Length..].Replace('/', Path.DirectorySeparatorChar);
 
         return Path.Combine(repositoryRoot, "src", "OrchardCore.Modules", "OrchardCore.Resources", "wwwroot", relativePath);
+    }
+
+    private static string GetRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (directory is not null)
+        {
+            if (Directory.Exists(Path.Combine(directory.FullName, ".git")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        return null;
     }
 }
