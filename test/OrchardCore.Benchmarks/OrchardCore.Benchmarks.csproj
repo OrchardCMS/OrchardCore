@@ -4,7 +4,7 @@
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <RunBenchmarks Condition="'$(RunBenchmarks)' == ''">false</RunBenchmarks>
-    <GenerateTestingPlatformEntryPoint Condition="'$(RunBenchmarks)' != 'true'">true</GenerateTestingPlatformEntryPoint>
+    <GenerateTestingPlatformEntryPoint Condition="'$(RunBenchmarks)' != 'true'">false</GenerateTestingPlatformEntryPoint>
     <IsTestProject Condition="'$(RunBenchmarks)' != 'true'">true</IsTestProject>
     <TestProject Condition="'$(RunBenchmarks)' != 'true'">true</TestProject>
     <OutputType>Exe</OutputType>
