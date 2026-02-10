@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources;
+using SystemEnvironment = System.Environment;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Resources;
 
@@ -121,23 +122,19 @@ public class SubResourceIntegrityTests
 
     private static string GetRepositoryRoot()
     {
-        var environmentRoot = System.Environment.GetEnvironmentVariable("ORCHARDCORE_REPO_ROOT");
+        var environmentRoot = SystemEnvironment.GetEnvironmentVariable("ORCHARDCORE_REPO_ROOT");
         if (!string.IsNullOrWhiteSpace(environmentRoot) && Directory.Exists(environmentRoot))
         {
             return environmentRoot;
         }
 
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-
-        while (directory != null)
+        for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory != null; directory = directory.Parent)
         {
             if (Directory.Exists(Path.Combine(directory.FullName, ".git")) ||
                 File.Exists(Path.Combine(directory.FullName, "OrchardCore.sln")))
             {
                 return directory.FullName;
             }
-
-            directory = directory.Parent;
         }
 
         return string.Empty;
