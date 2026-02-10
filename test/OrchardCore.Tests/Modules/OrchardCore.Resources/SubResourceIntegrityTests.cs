@@ -6,8 +6,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources;
 
 public class SubResourceIntegrityTests
 {
-    private const string OrchardCoreResourcesPrefix = "~/OrchardCore.Resources/";
-
     [CIFact]
     public static async Task SavedSubResourceIntegritiesShouldMatchCurrentResources()
     {
@@ -41,10 +39,7 @@ public class SubResourceIntegrityTests
                 {
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityWithFallbackAsync(
-                            httpClient,
-                            resourceDefinition.UrlCdnDebug,
-                            resourceDefinition.UrlDebug);
+                        var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug);
 
                         Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity, StringComparison.Ordinal),
                             $"The debug {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
@@ -52,47 +47,13 @@ public class SubResourceIntegrityTests
 
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityWithFallbackAsync(
-                            httpClient,
-                            resourceDefinition.UrlCdn,
-                            resourceDefinition.Url);
+                        var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdn);
 
                         Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity, StringComparison.Ordinal),
                             $"The production {resourceType} {resourceDefinition.UrlCdn} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
                     }
                 }
             }
-        }
-    }
-
-    private static async Task<string> GetSubResourceIntegrityWithFallbackAsync(HttpClient httpClient, string url, string fallbackUrl)
-    {
-        try
-        {
-            return await GetSubResourceIntegrityAsync(httpClient, url);
-        }
-        catch (Exception exception) when (exception is HttpRequestException or OperationCanceledException)
-        {
-            string localPath;
-            try
-            {
-                localPath = GetLocalResourcePath(fallbackUrl);
-            }
-            catch (Exception fallbackException)
-            {
-                throw new InvalidOperationException(
-                    $"Unable to retrieve '{url}' and resolve the local fallback.",
-                    fallbackException);
-            }
-
-            if (!File.Exists(localPath))
-            {
-                throw new InvalidOperationException(
-                    $"Unable to retrieve '{url}' and no local fallback was found at '{localPath}'.",
-                    exception);
-            }
-
-            return await GetSubResourceIntegrityFromFileAsync(localPath);
         }
     }
 
@@ -104,49 +65,5 @@ public class SubResourceIntegrityTests
         var hash = await SHA384.HashDataAsync(memoryStream);
 
         return "sha384-" + Convert.ToBase64String(hash);
-    }
-
-    private static async Task<string> GetSubResourceIntegrityFromFileAsync(string filePath)
-    {
-        await using var fileStream = File.OpenRead(filePath);
-        var hash = await SHA384.HashDataAsync(fileStream);
-
-        return "sha384-" + Convert.ToBase64String(hash);
-    }
-
-    private static string GetLocalResourcePath(string url)
-    {
-        if (string.IsNullOrEmpty(url) || !url.StartsWith(OrchardCoreResourcesPrefix, StringComparison.Ordinal))
-        {
-            throw new ArgumentException(
-                $"Fallback URLs must start with '{OrchardCoreResourcesPrefix}'.",
-                nameof(url));
-        }
-
-        var repositoryRoot = GetRepositoryRoot();
-        var relativePath = url[OrchardCoreResourcesPrefix.Length..].Replace('/', Path.DirectorySeparatorChar);
-
-        return Path.Combine(repositoryRoot, "src", "OrchardCore.Modules", "OrchardCore.Resources", "wwwroot", relativePath);
-    }
-
-    private static string GetRepositoryRoot()
-    {
-        var environmentRoot = global::System.Environment.GetEnvironmentVariable("ORCHARDCORE_REPO_ROOT");
-        if (!string.IsNullOrWhiteSpace(environmentRoot) && Directory.Exists(environmentRoot))
-        {
-            return environmentRoot;
-        }
-
-        for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory != null; directory = directory.Parent)
-        {
-            if (Directory.Exists(Path.Combine(directory.FullName, ".git")) ||
-                File.Exists(Path.Combine(directory.FullName, "OrchardCore.sln")))
-            {
-                return directory.FullName;
-            }
-        }
-
-        throw new DirectoryNotFoundException(
-            "Unable to locate the OrchardCore repository root. Set ORCHARDCORE_REPO_ROOT to override.");
     }
 }
