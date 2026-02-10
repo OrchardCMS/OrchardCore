@@ -3,15 +3,16 @@
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <IsPackable>false</IsPackable>
-    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
-    <IsTestProject>false</IsTestProject>
-    <TestProject>false</TestProject>
+    <RunBenchmarks Condition="'$(RunBenchmarks)' == ''">false</RunBenchmarks>
+    <GenerateTestingPlatformEntryPoint Condition="'$(RunBenchmarks)' != 'true'">true</GenerateTestingPlatformEntryPoint>
+    <IsTestProject Condition="'$(RunBenchmarks)' != 'true'">true</IsTestProject>
+    <TestProject Condition="'$(RunBenchmarks)' != 'true'">true</TestProject>
     <OutputType>Exe</OutputType>
     <!-- Remove the underscores from member name -->
     <NoWarn>$(NoWarn);CA1707;EnableGenerateDocumentationFile</NoWarn>
     <!-- Without this, we get an "error CS0017: Program has more than one entry point defined." due to
     BenchmarkDotNet's auto-generated entry point. -->
-    <StartupObject>OrchardCore.Benchmarks.Program</StartupObject>
+    <StartupObject Condition="'$(RunBenchmarks)' == 'true'">OrchardCore.Benchmarks.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,11 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="xunit.v3.mtp-v2" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RunBenchmarks)' != 'true'">
+    <Compile Remove="Program.cs" />
   </ItemGroup>
 
   <ItemGroup>
