@@ -7,6 +7,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources;
 
 public class SubResourceIntegrityTests
 {
+    private const string OrchardCoreResourcesPrefix = "~/OrchardCore.Resources/";
+
     [CIFact]
     public static async Task SavedSubResourceIntegritiesShouldMatchCurrentResources()
     {
@@ -104,8 +106,7 @@ public class SubResourceIntegrityTests
 
     private static string GetLocalResourcePath(string url)
     {
-        const string resourcePrefix = "~/OrchardCore.Resources/";
-        if (string.IsNullOrEmpty(url) || !url.StartsWith(resourcePrefix, StringComparison.Ordinal))
+        if (string.IsNullOrEmpty(url) || !url.StartsWith(OrchardCoreResourcesPrefix, StringComparison.Ordinal))
         {
             return string.Empty;
         }
@@ -115,7 +116,7 @@ public class SubResourceIntegrityTests
         {
             return string.Empty;
         }
-        var relativePath = url[resourcePrefix.Length..].Replace('/', Path.DirectorySeparatorChar);
+        var relativePath = url[OrchardCoreResourcesPrefix.Length..].Replace('/', Path.DirectorySeparatorChar);
 
         return Path.Combine(repositoryRoot, "src", "OrchardCore.Modules", "OrchardCore.Resources", "wwwroot", relativePath);
     }
