@@ -21,7 +21,7 @@ public class EmailMessageValidator : EmailServiceEventsBase
             .Where(address => !_emailAddressValidator.Validate(address))
             .Select(address => S["Invalid email address for the sender: '{0}'.", address]);
 
-        AddError(context, nameof(message.From), invalidSender);
+        AddError(context, invalidSender);
 
         var recipients = message.GetRecipients();
 
@@ -29,35 +29,35 @@ public class EmailMessageValidator : EmailServiceEventsBase
             .Where(address => !_emailAddressValidator.Validate(address))
             .Select(address => S["Invalid email address for the recipient: '{0}'.", address]);
 
-        AddError(context, nameof(message.To), invalidTo);
+        AddError(context, invalidTo);
 
         var invalidCc = recipients.Cc
             .Where(address => !_emailAddressValidator.Validate(address))
             .Select(address => S["Invalid email address for the recipient: '{0}'.", address]);
 
-        AddError(context, nameof(message.Cc), invalidCc);
+        AddError(context, invalidCc);
 
         var invalidBcc = recipients.Bcc
             .Where(address => !_emailAddressValidator.Validate(address))
             .Select(address => S["Invalid email address for the recipient: '{0}'.", address]);
 
-        AddError(context, nameof(message.Bcc), invalidBcc);
+        AddError(context, invalidBcc);
 
         var invalidReplayTo = message.GetReplyTo()
             .Where(address => !_emailAddressValidator.Validate(address))
             .Select(address => S["Invalid email address for the recipient: '{0}'.", address]);
 
-        AddError(context, nameof(message.ReplyTo), invalidReplayTo);
+        AddError(context, invalidReplayTo);
 
         if (recipients.To.Count == 0 && recipients.Cc.Count == 0 && recipients.Bcc.Count == 0)
         {
-            AddError(context, string.Empty, [S["The mail message should have at least one of these headers: To, Cc or Bcc."]]);
+            AddError(context, [S["The mail message should have at least one of these headers: To, Cc or Bcc."]]);
         }
 
         return Task.CompletedTask;
     }
 
-    private static void AddError(MailMessageValidationContext context, string key, IEnumerable<LocalizedString> errorMessages)
+    private static void AddError(MailMessageValidationContext context, IEnumerable<LocalizedString> errorMessages)
     {
         if (!errorMessages.Any())
         {
