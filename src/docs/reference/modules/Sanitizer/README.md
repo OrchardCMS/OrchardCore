@@ -25,7 +25,7 @@ The elements sanitized by default are listed on this page: <https://github.com/m
 Orchard Core changes these defaults by:
 
 - allowing the attribute `class`
-- allowing the `mailto` scheme
+- allowing the `mailto` and `tel` schemes
 - removing the tag `form`
 
 ## Configuring the Sanitizer
