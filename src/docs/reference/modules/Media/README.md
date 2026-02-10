@@ -270,6 +270,32 @@ Or when using the MVC tag helpers and the image is resolved from static assets, 
 !!! note
     When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.Media` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
 
+### Razor Anchor Tag Helper
+
+The AnchorTagHelper in the Media module allows you to generate links (`<a>`) to files in the Media Library using logical paths, automatically resolving the correct URL.
+
+
+`asset-src` attribute is used to specify a logical path in the Media Library. It will be converted to a public href URL at render time.. e.g.:
+
+`<a asset-href="demo/site-gusta-la-oscuridad-Libro.png" class="btn btn-link btn-sm view-button">View</a>`
+
+Rendered HTML:
+
+`<a href="/media/demo/site-gusta-la-oscuridad-Libro.png?v=-xU7_qsnn4HeHXjHT1gPmep-7Ik68F_ZKYcNO9ChXXg" class="btn btn-link btn-sm view-button"> View </a>`
+
+`target` defines where the link will open. By default, it behaves like a normal `<a>` tag (_self), but you can set _blank to open in a new tab., e.g.:
+
+`<a href="demo/site-gusta-la-oscuridad-Libro.png?v=-xU7_qsnn4HeHXjHT1gPmep-7Ik68F_ZKYcNO9ChXXg" target="_blank" class="btn btn-link btn-sm view-button"> View </a>`
+
+Rendered HTML:
+
+`<a href="/media/demo/site-gusta-la-oscuridad-Libro.png?v=-xU7_qsnn4HeHXjHT1gPmep-7Ik68F_ZKYcNO9ChXXg" target="_blank" class="btn btn-link btn-sm view-button"> View </a>`
+
+Notes
+- The generated URL includes a version query string for cache busting.
+- You can use standard HTML attributes like class, target, rel, etc.
+
+
 ## Deployment Step Editor
 
 Keep these things in mind when working with the deployment step editor:
