@@ -105,11 +105,14 @@ public class SubResourceIntegrityTests
         const string resourcePrefix = "~/OrchardCore.Resources/";
         if (string.IsNullOrEmpty(url) || !url.StartsWith(resourcePrefix, StringComparison.OrdinalIgnoreCase))
         {
-            return null;
+            return string.Empty;
         }
 
-        var repositoryRoot = GetRepositoryRoot()
-            ?? Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
+        var repositoryRoot = GetRepositoryRoot();
+        if (string.IsNullOrEmpty(repositoryRoot))
+        {
+            repositoryRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
+        }
         var relativePath = url[resourcePrefix.Length..].Replace('/', Path.DirectorySeparatorChar);
 
         return Path.Combine(repositoryRoot, "src", "OrchardCore.Modules", "OrchardCore.Resources", "wwwroot", relativePath);
@@ -129,6 +132,6 @@ public class SubResourceIntegrityTests
             directory = directory.Parent;
         }
 
-        return null;
+        return string.Empty;
     }
 }
