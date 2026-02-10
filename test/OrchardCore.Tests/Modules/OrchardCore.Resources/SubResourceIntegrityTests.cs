@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.IO;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources;
 
@@ -73,7 +72,7 @@ public class SubResourceIntegrityTests
         catch (Exception exception) when (exception is HttpRequestException or OperationCanceledException)
         {
             var localPath = GetLocalResourcePath(fallbackUrl);
-            if (string.IsNullOrEmpty(localPath) || !File.Exists(localPath))
+            if (!File.Exists(localPath))
             {
                 throw new InvalidOperationException(
                     $"Unable to retrieve '{url}' and no local fallback was found.",
@@ -105,7 +104,7 @@ public class SubResourceIntegrityTests
     private static string GetLocalResourcePath(string url)
     {
         const string resourcePrefix = "~/OrchardCore.Resources/";
-        if (string.IsNullOrEmpty(url) || !url.StartsWith(resourcePrefix, StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrEmpty(url) || !url.StartsWith(resourcePrefix, StringComparison.Ordinal))
         {
             return string.Empty;
         }
