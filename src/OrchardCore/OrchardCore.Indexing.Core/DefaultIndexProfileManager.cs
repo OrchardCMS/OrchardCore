@@ -215,8 +215,16 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
             var handlers = scope.ServiceProvider.GetServices<IIndexProfileHandler>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<DefaultIndexProfileManager>>();
 
-            var synchronizedContext = new IndexProfileSynchronizedContext(index);
-            await handlers.InvokeAsync((handler, ctx) => handler.SynchronizedAsync(ctx), synchronizedContext, logger);
+            try
+            {
+                var synchronizedContext = new IndexProfileSynchronizedContext(index);
+                await handlers.InvokeAsync((handler, ctx) => handler.SynchronizedAsync(ctx), synchronizedContext, logger);
+            }
+            catch (Exception ex)
+            {
+                // Log synchronization errors without failing the entire background job
+                logger.LogError(ex, "Error synchronizing index profile {IndexName}. The synchronization will be retried on the next background task run.", index.Name);
+            }
         });
     }
 
