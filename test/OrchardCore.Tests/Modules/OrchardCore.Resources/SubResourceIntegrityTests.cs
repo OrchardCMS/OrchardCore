@@ -75,7 +75,9 @@ public class SubResourceIntegrityTests
             var localPath = GetLocalResourcePath(fallbackUrl);
             if (string.IsNullOrEmpty(localPath) || !File.Exists(localPath))
             {
-                throw;
+                throw new InvalidOperationException(
+                    $"Unable to retrieve '{url}' and no local fallback was found.",
+                    exception);
             }
 
             return await GetSubResourceIntegrityFromFileAsync(localPath);
@@ -120,6 +122,12 @@ public class SubResourceIntegrityTests
 
     private static string GetRepositoryRoot()
     {
+        var environmentRoot = System.Environment.GetEnvironmentVariable("ORCHARDCORE_REPO_ROOT");
+        if (!string.IsNullOrWhiteSpace(environmentRoot) && Directory.Exists(environmentRoot))
+        {
+            return environmentRoot;
+        }
+
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
 
         while (directory != null)
