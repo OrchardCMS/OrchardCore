@@ -111,7 +111,7 @@ public class SubResourceIntegrityTests
         var repositoryRoot = GetRepositoryRoot();
         if (string.IsNullOrEmpty(repositoryRoot))
         {
-            repositoryRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
+            return string.Empty;
         }
         var relativePath = url[resourcePrefix.Length..].Replace('/', Path.DirectorySeparatorChar);
 
@@ -122,9 +122,10 @@ public class SubResourceIntegrityTests
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
 
-        while (directory is not null)
+        while (directory != null)
         {
-            if (Directory.Exists(Path.Combine(directory.FullName, ".git")))
+            if (Directory.Exists(Path.Combine(directory.FullName, ".git")) ||
+                File.Exists(Path.Combine(directory.FullName, "OrchardCore.sln")))
             {
                 return directory.FullName;
             }
