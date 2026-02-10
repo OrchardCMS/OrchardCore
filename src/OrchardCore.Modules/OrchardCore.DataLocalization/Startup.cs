@@ -25,13 +25,13 @@ public class Startup : StartupBase
         services.AddScoped<TranslationsManager>();
         services.AddRecipeExecutionStep<TranslationsStep>();
 
-        // Legacy deployment step (kept for backward compatibility).
-        services.AddTransient<IDeploymentSource, AllDataTranslationsDeploymentSource>();
-        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllDataTranslationsDeploymentStep>());
-        services.AddScoped<IDisplayDriver<DeploymentStep>, AllDataTranslationsDeploymentStepDriver>();
+        //// Legacy deployment step (kept for backward compatibility).
+        //services.AddTransient<IDeploymentSource, AllDataTranslationsDeploymentSource>();
+        //services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllDataTranslationsDeploymentStep>());
+        //services.AddScoped<IDisplayDriver<DeploymentStep>, AllDataTranslationsDeploymentStepDriver>();
 
-        // New deployment step with culture/category filtering.
         services.AddDeployment<TranslationsDeploymentSource, TranslationsDeploymentStep, TranslationsDeploymentStepDriver>();
+        services.AddDeployment<AllDataTranslationsDeploymentSource, AllDataTranslationsDeploymentStep, AllDataTranslationsDeploymentStepDriver>();
 
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<INavigationProvider, AdminMenu>();
