@@ -4,6 +4,7 @@ using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Email.Azure.Models;
+using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Email.Azure.Services;
 
@@ -97,13 +98,13 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
     public abstract LocalizedString DisplayName { get; }
 
-    public virtual async Task<EmailResult> SendAsync(MailMessage message)
+    public virtual async Task<Result> SendAsync(MailMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
         if (!_providerOptions.IsEnabled)
         {
-            return EmailResult.FailedResult(S["The Azure Email Provider is disabled."]);
+            return Result.Failed(S["The Azure Email Provider is disabled."]);
         }
 
         var senderAddress = string.IsNullOrWhiteSpace(message.From)
@@ -121,41 +122,41 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                return EmailResult.FailedResult(nameof(message.From), S["Invalid email address for the sender: '{0}'.", senderAddress]);
+                return Result.Failed(S["Invalid email address for the sender: '{0}'.", senderAddress]);
             }
         }
 
-        var errors = new Dictionary<string, IList<LocalizedString>>();
+        var errors = new List<LocalizedString>();
         var emailMessage = FromMailMessage(message, errors);
 
         if (errors.Count > 0)
         {
-            return EmailResult.FailedResult(errors);
+            return Result.Failed(errors.ToArray());
         }
 
         try
         {
             _emailClient ??= new EmailClient(_providerOptions.ConnectionString);
 
-            var emailResult = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage);
+            var result = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage);
 
-            if (emailResult.HasValue)
+            if (result.HasValue)
             {
-                return EmailResult.SuccessResult;
+                return Result.Success();
             }
 
-            return EmailResult.FailedResult(string.Empty, S["An error occurred while sending an email."]);
+            return Result.Failed(S["An error occurred while sending an email."]);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while sending an email using the Azure Email Provider.");
 
             // IMPORTANT: Do not expose ex.Message as it could contain the connection string in a raw format!
-            return EmailResult.FailedResult(string.Empty, S["An error occurred while sending an email."]);
+            return Result.Failed(S["An error occurred while sending an email."]);
         }
     }
 
-    private EmailMessage FromMailMessage(MailMessage message, Dictionary<string, IList<LocalizedString>> errors)
+    private EmailMessage FromMailMessage(MailMessage message, List<LocalizedString> errors)
     {
         var recipients = message.GetRecipients();
 
@@ -168,7 +169,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                errors[nameof(recipients.To)].Add(S["Invalid email address for the 'To' recipient: '{0}'.", toRecipient]);
+                errors.Add(S["Invalid email address for the 'To' recipient: '{0}'.", toRecipient]);
             }
         }
 
@@ -181,7 +182,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                errors[nameof(recipients.Cc)].Add(S["Invalid email address for the 'CC' recipient: '{0}'.", ccRecipient]);
+                errors.Add(S["Invalid email address for the 'CC' recipient: '{0}'.", ccRecipient]);
             }
         }
 
@@ -194,7 +195,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                errors[nameof(recipients.Bcc)].Add(S["Invalid email address for the 'BCC' recipient: '{0}'.", bccRecipient]);
+                errors.Add(S["Invalid email address for the 'BCC' recipient: '{0}'.", bccRecipient]);
             }
         }
 
@@ -217,7 +218,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                errors[nameof(emailMessage.ReplyTo)].Add(S["Invalid email address to reply to: '{0}'.", replyTo]);
+                errors.Add(S["Invalid email address to reply to: '{0}'.", replyTo]);
             }
         }
 
@@ -239,9 +240,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                errors.TryAdd(nameof(message.Attachments), []);
-
-                errors[nameof(message.Attachments)].Add(S["Unable to attach the file named '{0}' since its type is not supported.", attachment.Filename]);
+                errors.Add(S["Unable to attach the file named '{0}' since its type is not supported.", attachment.Filename]);
 
                 _logger.LogWarning("The MIME type for the attachment '{Attachment}' is not supported.", attachment.Filename);
             }

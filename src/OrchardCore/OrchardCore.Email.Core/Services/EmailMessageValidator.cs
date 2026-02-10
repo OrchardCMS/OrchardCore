@@ -64,7 +64,6 @@ public class EmailMessageValidator : EmailServiceEventsBase
             return;
         }
 
-        context.Errors.TryAdd(key, []);
-        context.Errors[key].AddRange(errorMessages);
+        context.Errors.AddRange(errorMessages);
     }
 }
