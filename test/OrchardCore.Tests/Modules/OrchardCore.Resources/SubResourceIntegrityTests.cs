@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources;
-using SystemEnvironment = System.Environment;
+using Env = System.Environment;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Resources;
 
@@ -132,7 +132,7 @@ public class SubResourceIntegrityTests
 
     private static string GetRepositoryRoot()
     {
-        var environmentRoot = SystemEnvironment.GetEnvironmentVariable("ORCHARDCORE_REPO_ROOT");
+        var environmentRoot = Env.GetEnvironmentVariable("ORCHARDCORE_REPO_ROOT");
         if (!string.IsNullOrWhiteSpace(environmentRoot) && Directory.Exists(environmentRoot))
         {
             return environmentRoot;
