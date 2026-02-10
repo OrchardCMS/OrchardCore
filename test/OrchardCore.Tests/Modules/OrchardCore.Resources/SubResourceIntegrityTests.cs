@@ -131,7 +131,7 @@ public class SubResourceIntegrityTests
 
     private static string GetRepositoryRoot()
     {
-        var environmentRoot = Environment.GetEnvironmentVariable("ORCHARDCORE_REPO_ROOT");
+        var environmentRoot = global::System.Environment.GetEnvironmentVariable("ORCHARDCORE_REPO_ROOT");
         if (!string.IsNullOrWhiteSpace(environmentRoot) && Directory.Exists(environmentRoot))
         {
             return environmentRoot;
