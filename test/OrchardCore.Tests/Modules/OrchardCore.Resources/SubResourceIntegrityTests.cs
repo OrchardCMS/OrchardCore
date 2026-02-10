@@ -45,7 +45,7 @@ public class SubResourceIntegrityTests
                         var resourceIntegrity = await GetSubResourceIntegrityWithFallbackAsync(
                             httpClient,
                             resourceDefinition.UrlCdnDebug,
-                            resourceDefinition.UrlDebug ?? resourceDefinition.Url);
+                            resourceDefinition.UrlDebug);
 
                         Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity, StringComparison.Ordinal),
                             $"The debug {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
@@ -56,7 +56,7 @@ public class SubResourceIntegrityTests
                         var resourceIntegrity = await GetSubResourceIntegrityWithFallbackAsync(
                             httpClient,
                             resourceDefinition.UrlCdn,
-                            resourceDefinition.Url ?? resourceDefinition.UrlDebug);
+                            resourceDefinition.Url);
 
                         Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity, StringComparison.Ordinal),
                             $"The production {resourceType} {resourceDefinition.UrlCdn} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
