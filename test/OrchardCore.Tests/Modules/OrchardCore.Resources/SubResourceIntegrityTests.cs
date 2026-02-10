@@ -42,7 +42,7 @@ public class SubResourceIntegrityTests
                 {
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityAsync(
+                        var resourceIntegrity = await GetSubResourceIntegrityWithFallbackAsync(
                             httpClient,
                             resourceDefinition.UrlCdnDebug,
                             resourceDefinition.UrlDebug ?? resourceDefinition.Url);
@@ -53,7 +53,7 @@ public class SubResourceIntegrityTests
 
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityAsync(
+                        var resourceIntegrity = await GetSubResourceIntegrityWithFallbackAsync(
                             httpClient,
                             resourceDefinition.UrlCdn,
                             resourceDefinition.Url ?? resourceDefinition.UrlDebug);
@@ -66,7 +66,7 @@ public class SubResourceIntegrityTests
         }
     }
 
-    private static async Task<string> GetSubResourceIntegrityAsync(HttpClient httpClient, string url, string fallbackUrl)
+    private static async Task<string> GetSubResourceIntegrityWithFallbackAsync(HttpClient httpClient, string url, string fallbackUrl)
     {
         try
         {
@@ -74,11 +74,22 @@ public class SubResourceIntegrityTests
         }
         catch (Exception exception) when (exception is HttpRequestException or OperationCanceledException)
         {
-            var localPath = GetLocalResourcePath(fallbackUrl);
+            string localPath;
+            try
+            {
+                localPath = GetLocalResourcePath(fallbackUrl);
+            }
+            catch (Exception fallbackException)
+            {
+                throw new InvalidOperationException(
+                    $"Unable to retrieve '{url}' and resolve the local fallback.",
+                    fallbackException);
+            }
+
             if (!File.Exists(localPath))
             {
                 throw new InvalidOperationException(
-                    $"Unable to retrieve '{url}' and no local fallback was found.",
+                    $"Unable to retrieve '{url}' and no local fallback was found at '{localPath}'.",
                     exception);
             }
 
@@ -108,14 +119,12 @@ public class SubResourceIntegrityTests
     {
         if (string.IsNullOrEmpty(url) || !url.StartsWith(OrchardCoreResourcesPrefix, StringComparison.Ordinal))
         {
-            return string.Empty;
+            throw new ArgumentException(
+                $"Fallback URLs must start with '{OrchardCoreResourcesPrefix}'.",
+                nameof(url));
         }
 
         var repositoryRoot = GetRepositoryRoot();
-        if (string.IsNullOrEmpty(repositoryRoot))
-        {
-            return string.Empty;
-        }
         var relativePath = url[OrchardCoreResourcesPrefix.Length..].Replace('/', Path.DirectorySeparatorChar);
 
         return Path.Combine(repositoryRoot, "src", "OrchardCore.Modules", "OrchardCore.Resources", "wwwroot", relativePath);
@@ -138,6 +147,7 @@ public class SubResourceIntegrityTests
             }
         }
 
-        return string.Empty;
+        throw new DirectoryNotFoundException(
+            "Unable to locate the OrchardCore repository root. Set ORCHARDCORE_REPO_ROOT to override.");
     }
 }
