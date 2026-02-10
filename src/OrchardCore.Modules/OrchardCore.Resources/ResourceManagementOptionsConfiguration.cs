@@ -49,8 +49,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://code.jquery.com/jquery-3.7.1.js"
             )
             .SetCdnIntegrity(
-                "sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs",
-                "sha384-wsqsSADZR1YRBEZ4/kKHNSmU+aX8ojbnKUMN4RyD3jDkxw5mHtoe2z/T/n4l56U/"
+                "sha384-90cRKAqz5rEv2dmSUkxXhQ71VwdBfE+/DQH37gGbRm435aExDKrAwfWzqf2U9Gyj",
+                "sha384-vPcjzk1pBc2HS2MMQ1cC6XRRMBNl0W0vIrYXGBQwfRQPmU3AWswODLfE+NiOc8oJ"
             )
             .SetVersion("3.7.1");
 
@@ -65,8 +65,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://code.jquery.com/jquery-3.7.1.slim.js"
             )
             .SetCdnIntegrity(
-                "sha384-5AkRS45j4ukf+JbWAfHL8P4onPA9p0KwwP7pUdjSQA3ss9edbJUJc/XcYAiheSSz",
-                "sha384-5yyt26go0PtGiMk9qStZt+lySzAg8ZSY0i7q6l05kHEEChYiHvf0NsjlexoEdASI"
+                "sha384-tYfQ0TW90gat/4z6IzMOAmuEigFpRCjdoT/kcDq4sW0zhFZv0/x1A0Bku+hbhz+a",
+                "sha384-Ytvv9vHykIt8p2bjtGQKM0X8Ob0KZ3KIzAFagMrRnMaZOM1U+n46ckkNA7ToV4gN"
             )
             .SetVersion("3.7.1");
 
@@ -178,8 +178,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/jquery.easing@1.4.1/jquery.easing.js"
             )
             .SetCdnIntegrity(
-                "sha384-leGYpHE9Tc4N9OwRd98xg6YFpB9shlc/RkilpFi0ljr3QD4tFoFptZvgnnzzwG4Q",
-                "sha384-fwPA0FyfPOiDsglgAC4ZWmBGwpXSZNkq9IG+cM9HL4CkpNQo4xgCDkOIPdWypLMX"
+                "sha384-qQ9Qg/oUaI8vuFGgDgXw4RP5/r70SepIJJLXf68P8vzbVqwUltguiHM4TCevvCNc",
+                "sha384-ncG+zRj7Qwjl8Jv0ffHtlaEZjIJsIcwSBOM7kbHEdjc+Zp2IYM6/N73L1h8IokUs"
             )
             .SetVersion("1.4.1");
 
@@ -195,7 +195,7 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://code.jquery.com/ui/1.12.1/jquery-ui.js"
             )
             .SetCdnIntegrity(
-                "sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX",
+                "sha384-PtTRqvDhycIBU6x1wwIqnbDo8adeWIWP3AHmnrvccafo35E7oIvW7HPXn2YimvWu",
                 "sha384-JPbtLYL10d/Z1crlc6GGGGM3PavCzzoUJ1UxH0bXHOfguWHQ6XAWrIzW+MBGGXe5"
             )
             .SetVersion("1.12.1");
@@ -211,8 +211,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
             )
             .SetCdnIntegrity(
-                "sha384-kcAOn9fN4XSd+TGsNu2OQKSuV5ngOwt7tg73O4EpaD91QXvrfgvf0MR7/2dUjoI6",
-                "sha384-xewr6kSkq3dBbEtB6Z/3oFZmknWn7nHqhLVLrYgzEFRbU/DHSxW7K3B44yWUN60D"
+                "sha384-VK/ia2DWrvtO05YDcbWI8WE3WciOH0RhfPNuRJGSa3dpAs5szXWQuCnPNv/yzpO4",
+                "sha384-7UG1JWOW1s2Zo3gDfHmL9dAVD/QS57qS+pRAq3icsyDwzlkPRQlk4PDD0bySIiQq"
             )
             .SetVersion("1.12.1");
 
@@ -235,7 +235,7 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/nestedSortable@1.3.4/jquery.mjs.nestedSortable.js"
             )
             .SetCdnIntegrity(
-                "sha384-drmLwsDDXGEHmNZHoxS1StHzAllg9a/CKXv31Oe4wYiN9wqJNn+QQjAr6Cin+wyH"
+                "sha384-GOn0wN5TCmo2JM55Ie4FM6Wc8KYHNRz9HFR3+5O62o511NqB5/GfvueqYIsqiDYx"
             )
             .SetVersion("1.3.4");
 
@@ -250,8 +250,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/jquery-resizable-dom@0.35.0/dist/jquery-resizable.min.js"
             )
             .SetCdnIntegrity(
-                "sha384-1LMjDEezsSgzlRgsyFIAvLW7FWSdFIHqBGjUa+ad5EqtK1FORC8XpTJ/pahxj5GB",
-                "sha384-0yk9X0IG0cXxuN9yTTkps/3TNNI9ZcaKKhh8dgqOEAWGXxIYS5xaY2as6b32Ov3P"
+                "sha384-A8BwHVuK2L6D6mTP7c5jI64yBURCSn5RYLG47+1L9r7yQmUzEA9ZzvyFu2jTr0DB",
+                "sha384-gW2qsfyKKETetJGjvrJbTv26pEeyIAQRMHugW7H9CTkjdp2VkOa7wa/Y/+RjQPjH"
             )
             .SetVersion("0.35.0");
 
@@ -267,8 +267,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.fileupload.js"
             )
             .SetCdnIntegrity(
-                "sha384-t/a/G59hRbkwY9q4QtKeC8BJaq/iCa/XLqbU6//JWAIxECygr80ecZk1W/soXL1d",
-                "sha384-0kYSikha8p8NUXBb9/ZzkbnyTJ+q6uIYLDupH60G0s8ve9jFqDlCJGdOwEXOw9AF"
+                "sha384-oPidYlWnjJCuiFinRSsdj4FpU1EUNM7Xkz4A3m+oKEoRVViuxEB31y6ve1A8dDtf",
+                "sha384-fYFNyXCU8vp5TKBTyTzhi9/4gDjhlE/uOOuIICTnX7j+okCM9kOdHKaTb9wQzXTH"
             )
             .SetVersion("10.32.0");
 
@@ -284,8 +284,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.iframe-transport.js"
             )
             .SetCdnIntegrity(
-                "sha384-RVSdJCLiwGZtzkZOWdlpY6AyDhmZHVAAx3bAbBlRxBIp1dD/MkkMOcbgWP9SgR8E",
-                "sha384-KcPleywUX7NFvy4q5aDI6viwF9nSWwDfABktBjWRuDEZA0TmoyNcwimFmKgNtXlC"
+                "sha384-G/Klxup0q1POZiUloAjM6U8xiCp/I/sUq5zg/wciD2S+sMHW2VQnHpYIb9qIAkJM",
+                "sha384-u4DZ9uhRF+bLEERvATZAc7x2ZIXKIuMWh2My2Gx8XKlVf9j/yAjPfcB1HaVFpTov"
             )
             .SetVersion("10.32.0");
 
@@ -380,8 +380,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.js"
             )
             .SetCdnIntegrity(
-                "sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r",
-                "sha384-yBknSWNrSUPkBtbhhCJ07i/BOmbrigRhLKPzTAny+TT4uGAwIdfNTAkBd/3VzXbg"
+                "sha384-w08qLeaYYGfULYY4axDpr+KzNCEYGjJxa1mXR/xC5YxWI39BPCm1Ks94chNDIfGK",
+                "sha384-8l9JlEXB4QESzg/bKMSBCgu6KNcEkHMrJD4i8jpzjUNrzLnpfbMgCLzkuk03r+79"
             )
             .SetVersion("2.11.8");
 
@@ -462,8 +462,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.css"
             )
             .SetCdnIntegrity(
-                "sha384-xF1Y2i6HgC34+4EWddbDhlQuru7cLSKRcPT3hoL3mPoKoV+624vVSZJmegPX77vS",
-                "sha384-DtuOZ7LbR+xAYzDGD4YLpe9eiAayUBwZRqAcoy+RepIoV53tAoJbXnr4AX1xTJ43"
+                "sha384-lTAVMbmSsb9C2sL2gtTugtuieJWTnV2k85Jodojf+WhjsHkMPQe/1WHYWhIf2vdD",
+                "sha384-QCt5jFrPPLdutmZLdQcsuzdYemsKl+bZc9P7Hvpx+4TC67NgKQKbv4tVO07aGGzA"
             )
             .SetVersion("1.14.0");
 
@@ -497,7 +497,7 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.css"
             )
             .SetCdnIntegrity(
-                "sha384-PSZaVsyG9jDu8hFaSJev5s/9poIJlX7cuxSGdqCgXRHpo2DzIaZAyCd2rG/DJJmV",
+                "sha384-rhejjRpYUOHEdR3BoX+x2gSNwOQlCuthh/6xbw1wqQ83GlMRffFNslMwWUnXun2i",
                 "sha384-SW0/EWtnMakMnwC9RHA27DeNtNCLsJ0l+oZrXlFbb2123lhLdZIbiDiwRPogNY8T"
             )
             .SetVersion("15.7.0");
@@ -514,8 +514,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.js"
             )
             .SetCdnIntegrity(
-                "sha384-/gBUOLHADjY2rp6bHB0IyW9AC28q4OsnirJScje4l1crgYW7Qarx3dH8zcqcUgmy",
-                "sha384-ZRTsSqAkR2D5UR6P8ew9nDImNmAueqBx3QIljDVMucOjF3eVskkMIk50HUW239mY"
+                "sha384-y6kSXWdVaWzuN742bWHdpJZNQQ6nfINN18pht/kj203HFSPKfzN95XgoPEZeve96",
+                "sha384-0OYn5YE2tCc6aeFrEfOqFxQ8P/tQvc24CFDbh8MWHz/aFrbKR0oXdS7oDKRZb1DM"
             )
             .SetVersion("15.7.0");
 
@@ -529,7 +529,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetCdn(CodeMirrorUrl + "codemirror.min.css", CodeMirrorUrl + "codemirror.css")
             .SetCdnIntegrity(
-                "sha384-zaeBlB/vwYsDRSlFajnDd7OydJ0cWk+c2OWybl3eSUf6hW2EbhlCsQPqKr3gkznT",
+                "sha384-QBbn+jj0mlLn13+N8DzmYeUa5vU2O9FCnyrOb4Y4gH37MSacYNaNlYCdx9/fdmxk",
                 "sha384-bsaAhvdduZPAwUb7RRLRvDgtEtOsggrgjkr/EjPO1i/vdoi+DmdLaG79UOt6M5hD"
             )
             .SetVersion(CodeMirrorVersion);
@@ -545,7 +545,7 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/monokai.css"
             )
             .SetCdnIntegrity(
-                "sha384-05WuhgjXiqmZzcQ3vQRQ39HN356Yqb+SnhvELzFtpwS5b2IlqE8QsOO5LCSJ2znj",
+                "sha384-z3okljp+yeVQlz9vrnwTI3B7TG3tWU+d/7bsfs7KWXdLR/SNMpnjXXhZc9mln6iB",
                 "sha384-TvEldXruOSfbCQy2x7urguD4uK2Pd6WSyfNEJ6DxgYUTkxlJi/Wr3VD1x9mHwDn2"
             )
             .SetVersion(CodeMirrorVersion);
@@ -558,8 +558,8 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetCdn(CodeMirrorUrl + "codemirror.min.js", CodeMirrorUrl + "codemirror.js")
             .SetCdnIntegrity(
-                "sha384-FIV1f0SplvlwhOxrMYdXpUcnVM79A9u4ffl0lEOVVZunLMuGpxFyQmnBHl24EQFR",
-                "sha384-VAGlhrJE9eY6OkSfl3ioNR4jWUGp1mLeF/ECkHxBUEfTB9u2xVVH14acAUBDc3Y8"
+                "sha384-OCJzsVNZ42r3jy19kkLgEAf0TbIX1iYUTzEnxYDiGODWFL+DxJ+tYpNFPOOBEkn+",
+                "sha384-jPMfBH0D48AothM1Fg9a4pregGu8idOQf4XQKgDjU9+l0bVIxEEpHSPumk6jR+Ms"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -574,8 +574,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "addon/display/autorefresh.js"
             )
             .SetCdnIntegrity(
-                "sha384-pn83o6MtS8kicn/sV6AhRaBqXQ5tau8NzA2ovcobkcc1uRFP7D8CMhRx231QwKST",
-                "sha384-B1M1WS08oqd1y3zKAPdhkOSNwy+NYMREyK9qXNWl+QfXDlqj+Y+TYuBUkc/uAnox"
+                "sha384-6LCUgDTIOQLHc3VtZkEu+A0DNzWUvh6jR8f3FjlFiwLlFNvtjkocHgFZkUkObU/k",
+                "sha384-vIXwDPJxTIfAvzINonAgi2wNzv9X9pu5UFM49h8i9BgAwGq8NXdrLObMGCNzdmKo"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -590,7 +590,7 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "addon/display/fullscreen.css"
             )
             .SetCdnIntegrity(
-                "sha384-uuIczW2AGKADJpvg6YiNBJQWE7duDkgQDkndYEsbUGaLm8SPJZzlly6hcEo0aTlW",
+                "sha384-r4jtyNKTzYrZIr68p8MZO4WflnriZ0tNA/kiISe9d2T781Q88ginqkQHRQjgA/5E",
                 "sha384-+glu1jsbG+T5ocmkeMvIYh5w07IXKxmJZaCdkNbVfpEr3xi+M0gopFSR/oLKXxio"
             )
             .SetVersion(CodeMirrorVersion);
@@ -606,8 +606,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "addon/display/fullscreen.js"
             )
             .SetCdnIntegrity(
-                "sha384-mlEZFcWl5HzvZ6rIROEnNm825OC0Gw5KMZkilPtaJL7BGiluUu4c8Ws3IaNauZTh",
-                "sha384-vU/yRPnV0VIhELETYT5fG/k7uMzeHddzkMo4NFrLzHdJepeb46v0b61P8FADXtN4"
+                "sha384-/irBUG+eGJnaXAYq9J3N+irAUCfOxDLJTBgfn0orAbwGlmpXQI01tbrqSMeO5PcG",
+                "sha384-wWbuOW0mirn1m2diLxbZsRdR8q/m9fybrg5JlwpOwCLV5to+6t1r7TjOJZQt1zp7"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -622,8 +622,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "addon/edit/closetag.js"
             )
             .SetCdnIntegrity(
-                "sha384-WIyvbwMte2q6VXgBkN7prVo9ZSmBm47nI2ftVjoJLPY4yOu9gmI6lqaNXjBwHU5k",
-                "sha384-i4ai3UXE5wIk3ILN77PB9DhNmku+sefNKDTHXRvsrYX2bxWzm+EDmoBui5wsNU2v"
+                "sha384-CN6fyQa9Vz0ic+szGyrChz2HGJWn4StuMFA08hZmZ08rcOW4NIY6XeU/8owtr9mz",
+                "sha384-nk9aS3QWl4iIJNpEIvW7qxzbZPEJ4Ai3zamEmymNBuFrXMoOSVXilFsk9B9nWx4G"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -638,7 +638,7 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "addon/hint/show-hint.css"
             )
             .SetCdnIntegrity(
-                "sha384-qqTWkykzuDLx4yDYa7bVrwNwBHuqVvklDUMVaU4eezgNUEgGbP8Zv6i3u8OmtuWg",
+                "sha384-Y9FZOnrhd4D/YbcZJvm3MjQDPxxiQABT7WUWuTd4Qdn1hgqni987pFEBmUjVvtOm",
                 "sha384-ZZbLvEvLoXKrHo3Tkh7W8amMgoHFkDzWe8IAm1ZgxsG5y35H+fJCVMWwr0YBAEGA"
             )
             .SetVersion(CodeMirrorVersion);
@@ -654,8 +654,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "addon/hint/show-hint.js"
             )
             .SetCdnIntegrity(
-                "sha384-8i/ZCyq/QakicQDFEJhSl5oJEzzChdhEHhFBvtlxJMWdzohX6j+7O7L7NGgVjaL2",
-                "sha384-X99dMoDW1QAOqOa49NoR3mVQPZMAmWdk1EtGVfWHdqFrD0mKdc4TVCugISfW0wEv"
+                "sha384-gmkbKpI4uSUvMQ372Hrhgq46TqUdfDn7Qz9qdElZqApB6eFrf0/J6RI2rQn5zzH5",
+                "sha384-MbxpmsAbOTcNLmm0Pi6p181PaqxjvcCtHkQ2huIgRNSHcusqEjeI9FwxmLt8aOeN"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -671,8 +671,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "addon/hint/sql-hint.js"
             )
             .SetCdnIntegrity(
-                "sha384-TT6FzU/qfXKsyGpknyPBSW9YUv9boLL9TStdfYRJTMjLDdUaQwWceBVs8I326z16",
-                "sha384-v0PZIWVaXK+SdJWDH/8f3lMh+4SXRujsh67aPj27BlUq4ocyn0Yime8qyi8AArtz"
+                "sha384-2CRAZKsQwmtXczL56d45EGXzNfHDb/f5/8f3O5d3tFSPfvt0GHxvQPnW5GWPOZOf",
+                "sha384-9IJIxsm+MQm9MHIQApsEA/GeVlWvkujoNv9COxAg2OcogB7Zrhx3n3L+JiZbqe/N"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -687,8 +687,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "addon/mode/multiplex.js"
             )
             .SetCdnIntegrity(
-                "sha384-Qr/1hjoJmzEf6ToQLo1nr8/GF5ekpaqUx0DM71QHZ4N8+c8l8aqlQ25whgApmChE",
-                "sha384-pgj6NfGJNeIBDFqYM8m/ah3J269WhaJDiT0fN/C0c335qDMJAbfz/O2rVB53w+1D"
+                "sha384-QO8Gy9bs86dEc+EfhH2LGbfxQyzhI96mwMyReUIHYPJFhZtw22TYGdaHdv3VsEbV",
+                "sha384-PA5I+E3FtqpFUyKjBtF6ubP5O/Z4golErPikGzZZzkIZD12E8n6SRoRQ87gZDNoP"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -703,8 +703,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "addon/mode/simple.js"
             )
             .SetCdnIntegrity(
-                "sha384-5+aYjV0V2W3IwhAYp/9WOrGMv1TaYkCjnkkW7Hv3yJQo28MergRCSRaUIUzDUs2J",
-                "sha384-qeu+SDWpTAqXUyXdqdwbMDeYSQiv6rErEHLJ/cITY3wtuYhN2LdBSBZeS7Jyn8nv"
+                "sha384-eWNxbGs9iDGJ7jdtEdKMslzjGMVP8GoGgLwrTqaawAStsxLmSRtesDG0eKuKAgKh",
+                "sha384-eT7pXRoYxkghNs8+2n2psBiV6FCWLXkYpKHciOsxH3jXh8hGpIbdj9H8wIy58xS/"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -719,8 +719,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "addon/selection/active-line.js"
             )
             .SetCdnIntegrity(
-                "sha384-hcxaXyAtJ30s2NeDu1OHWsQRiHiWuYLTbI596+YFb+f2pFhzO0mDuahZziRPPDxg",
-                "sha384-QhD10EHRrst6CIOzeEBXQhUT95YVJN1EV8uX2Jb5S3+qw/ozbvUE5Zn5uILnZg96"
+                "sha384-Pg+PFP+CnVr/ziDFkx3vaxXdElbo+CGYfgELIx6IDLud8fqJpx7XC3OwMZn2WCx6",
+                "sha384-21rd9d3+qqokp1FSeMBgLsiKvkAnyj7X4N37ShXMkzZOe3fD2CScn7TVHMwRq31J"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -732,8 +732,8 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetCdn(CodeMirrorUrl + "mode/css/css.min.js", CodeMirrorUrl + "mode/css/css.js")
             .SetCdnIntegrity(
-                "sha384-fpeIC2FZuPmw7mIsTvgB5BNc8QVxQC/nWg2W+CgPYOAiBiYVuHe2E8HiTWHBMIJQ",
-                "sha384-ZD4C1ohrucZOfP7+jQSuBELICO7Z73CFD5stbjic1D3DbZk88mqj3KsRjSml/NCK"
+                "sha384-Vr9J5aRGQH4qQ6tJZLgY9lMfVpk/namFf3zmYeu6ahaiEokKvTFCLNX6Jss1sWBK",
+                "sha384-1z/v3gH6QlAel7ns+vnjSPSdxrLN978BYK/ShkjQbPHGJYCbzGFyYWNEKlXD6MBZ"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -748,8 +748,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "mode/htmlmixed/htmlmixed.js"
             )
             .SetCdnIntegrity(
-                "sha384-xYIbc5F55vPi7pb/lUnFj3wu24HlpAMZdtBHkNrb2YhPzJV3pX7+eqXT2PXSNMrw",
-                "sha384-0MH/N0DfWPIbCXDe9I7tmLw0dsJ4gKQUijwCcpaTgGxrTTrypsJwEOOqi5yhkQiK"
+                "sha384-BdW78xl0q4wHItvh/Nl42PP8AoGnH1kb7PeThtCyB2+ModiPGfVA6JqJ5CfIvwz7",
+                "sha384-rNcr0BJMkMD1sLGfrYQ9WEpAdGgsWOI2VQ4vJhb41HiUgdnjhBFYrvfh+v6tu0zg"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -764,8 +764,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 CodeMirrorUrl + "mode/javascript/javascript.js"
             )
             .SetCdnIntegrity(
-                "sha384-kmQrbJf09Uo1WRLMDVGoVG3nM6F48frIhcj7f3FDUjeRzsiHwyBWDjMUIttnIeAf",
-                "sha384-fgstVTG7RpZvquT2ZtQeU9iJXfvK9wTstlhasVKML77E5oe3Wi0AfLzY2grsjwmh"
+                "sha384-nyl58yZpfX4aIBYrazPO8IV3B3qfiHxEzpdgbUQPsCx1OTx3Uo9dBcuxq+Z45vQj",
+                "sha384-EACRH8P/9+DQZjGjjq1vhFmiqrPf1Iu4w7kV/TpFlPeUpUnt3OQqwMztEEu7Mpa0"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -777,8 +777,8 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetCdn(CodeMirrorUrl + "mode/sql/sql.min.js", CodeMirrorUrl + "mode/sql/sql.js")
             .SetCdnIntegrity(
-                "sha384-cof/65v3Fn+7YeqmMp8aCI1xZ2yeX8JnWhQYdMzaO7VDpBOtLjfdwx6pEfUo7SFT",
-                "sha384-Llr4/OHf89ufsfG7HbSwqB7KTd1d4hXok/Yxi72qWvLwtd6pz6nqJdOGlDdpjw6I"
+                "sha384-l7R+4PvLNDlYSa522cIW6qHGccaqsy/FhJA0n7/rPpaq3A05pKoqyL54LotL+2+3",
+                "sha384-fszfJHNBcGlkNX1E3VccBVrxeretfKR8i1uQQKoe5c1L5svQgh2YkUSXMbJokwkA"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -790,8 +790,8 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetCdn(CodeMirrorUrl + "mode/xml/xml.min.js", CodeMirrorUrl + "mode/xml/xml.js")
             .SetCdnIntegrity(
-                "sha384-xPpkMo5nDgD98fIcuRVYhxkZV6/9Y4L8s3p0J5c4MxgJkyKJ8BJr+xfRkq7kn6Tw",
-                "sha384-KX/+LdYWr3JcKfT7HK55DC3oPVJwnJSympb1qoO14sxVDtDIg+xHPVLltqJEbitI"
+                "sha384-ubGPyQamoWfGce0La5rlXVsqScO+sZitEG2df41MdTZtM73CBF5parHnxoiYlMe/",
+                "sha384-PDeqmcnK/E2dtTIjQutadkjWaouTVPZfYqXdPG1rHd1AoJVkfi2cqVHmTNGJN2uC"
             )
             .SetVersion(CodeMirrorVersion);
 
@@ -1052,8 +1052,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/trumbowyg@2.31.0/dist/trumbowyg.js"
             )
             .SetCdnIntegrity(
-                "sha384-l4+mVm18V4OOdz6MWO+OmyVods549M2rNdB/NAJkyPmPzuILPswXpFbMBJR9VtSm",
-                "sha384-40pW6SHEA5k9n7CwDgHLcTxfv/HcC3XRIjnLby5vA0tsRjwjWiHWOxS1L0nDvhvq"
+                "sha384-HwPWraqGhD+JNDENIuAVXh3yarmBS/CLaFJqNfSeIb2Ue2juC9+hwfsteiz6a66f",
+                "sha384-6cNM+WSjKCQXpZQorZs3wMoxgMfyTducBoKPs7VB/RIF6fR4UfWlkQRsROtRya3x"
             )
             .SetVersion("2.31.0");
 
@@ -1211,7 +1211,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetCdnIntegrity(
                 "sha384-/jkFGhPVLS9HIUzX09xB5W3coE5q1X5NXZA/PuOAdOaRxUPczlZmKzYEq9QcJnW0",
-                "sha384-do1oujgtpAbjFRK6zLARg2zWqak7wvdRd7R7BHxErnVtSx8QUGQTv+QMTxsI+Bxq"
+                "sha384-c7bUzrzrxav4bD0OYbcU3C3XlT51fLeIHdXokx4/pYjDT9TwCr40APgsgQgtisv6"
             )
             .SetVersion("1.15.3");
 
@@ -1262,8 +1262,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.js"
             )
             .SetCdnIntegrity(
-                "sha384-/vxhYfM1LENRhdpZ8dwEsQn/X4VhpbEZSiU4m/FwR+PVpzar4fkEOw8FP9Y+OfQN",
-                "sha384-b1TD0tFP+Ao4jmFaQw9RQxezUooFrLdlqfDfoh1SKv5L3jG7dD44QiwD+UzckH8W"
+                "sha384-GuH5Jcl+9xtm4YT9xsve9y6eGRHBRne9AhbMmjk9mF2D1uIzS/s1hDNUZNmTg5FZ",
+                "sha384-U9GRDpBCndMQMEzQtgMkRrqYHL5cC6eQy6mOmf/CtzuJje2pdg2G0UOzVMfv8iN5"
             )
             .SetVersion("3.0.5");
 

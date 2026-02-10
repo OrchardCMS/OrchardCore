@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.IO;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources;
 
@@ -39,7 +40,10 @@ public class SubResourceIntegrityTests
                 {
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug);
+                        var resourceIntegrity = await GetSubResourceIntegrityAsync(
+                            httpClient,
+                            resourceDefinition.UrlCdnDebug,
+                            resourceDefinition.UrlDebug ?? resourceDefinition.Url);
 
                         Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity, StringComparison.Ordinal),
                             $"The debug {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
@@ -47,13 +51,34 @@ public class SubResourceIntegrityTests
 
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdn);
+                        var resourceIntegrity = await GetSubResourceIntegrityAsync(
+                            httpClient,
+                            resourceDefinition.UrlCdn,
+                            resourceDefinition.Url ?? resourceDefinition.UrlDebug);
 
                         Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity, StringComparison.Ordinal),
                             $"The production {resourceType} {resourceDefinition.UrlCdn} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
                     }
                 }
             }
+        }
+    }
+
+    private static async Task<string> GetSubResourceIntegrityAsync(HttpClient httpClient, string url, string fallbackUrl)
+    {
+        try
+        {
+            return await GetSubResourceIntegrityAsync(httpClient, url);
+        }
+        catch (Exception exception) when (exception is HttpRequestException or OperationCanceledException)
+        {
+            var localPath = GetLocalResourcePath(fallbackUrl);
+            if (string.IsNullOrEmpty(localPath) || !File.Exists(localPath))
+            {
+                throw;
+            }
+
+            return await GetSubResourceIntegrityFromFileAsync(localPath);
         }
     }
 
@@ -65,5 +90,27 @@ public class SubResourceIntegrityTests
         var hash = await SHA384.HashDataAsync(memoryStream);
 
         return "sha384-" + Convert.ToBase64String(hash);
+    }
+
+    private static async Task<string> GetSubResourceIntegrityFromFileAsync(string filePath)
+    {
+        await using var fileStream = File.OpenRead(filePath);
+        var hash = await SHA384.HashDataAsync(fileStream);
+
+        return "sha384-" + Convert.ToBase64String(hash);
+    }
+
+    private static string GetLocalResourcePath(string url)
+    {
+        const string resourcePrefix = "~/OrchardCore.Resources/";
+        if (string.IsNullOrEmpty(url) || !url.StartsWith(resourcePrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var repositoryRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
+        var relativePath = url[resourcePrefix.Length..].Replace('/', Path.DirectorySeparatorChar);
+
+        return Path.Combine(repositoryRoot, "src", "OrchardCore.Modules", "OrchardCore.Resources", "wwwroot", relativePath);
     }
 }
