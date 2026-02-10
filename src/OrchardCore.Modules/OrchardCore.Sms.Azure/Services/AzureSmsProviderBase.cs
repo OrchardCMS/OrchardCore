@@ -1,6 +1,7 @@
 using Azure.Communication.Sms;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Infrastructure;
 using OrchardCore.Sms.Azure.Models;
 
 namespace OrchardCore.Sms.Azure.Services;
@@ -29,30 +30,30 @@ public abstract class AzureSmsProviderBase : ISmsProvider
 
     public abstract LocalizedString Name { get; }
 
-    public virtual async Task<SmsResult> SendAsync(SmsMessage message)
+    public virtual async Task<Result> SendAsync(SmsMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
         if (!_providerOptions.IsEnabled)
         {
-            return SmsResult.Failed(S["The Azure Communication Provider is disabled."]);
+            return Result.Failed(S["The Azure Communication Provider is disabled."]);
         }
 
         _logger.LogDebug("Attempting to send an SMS message using Azure Communication service to {Recipient}.", message.To);
 
         if (string.IsNullOrWhiteSpace(message.To))
         {
-            return SmsResult.Failed(S["A phone number is required for the recipient.", message.To]);
+            return Result.Failed(S["A phone number is required for the recipient.", message.To]);
         }
 
         if (!_phoneFormatValidator.IsValid(message.To))
         {
-            return SmsResult.Failed(S["Invalid phone number format for the recipient: '{0}'.", message.To]);
+            return Result.Failed(S["Invalid phone number format for the recipient: '{0}'.", message.To]);
         }
 
         if (string.IsNullOrEmpty(message.Body))
         {
-            return SmsResult.Failed(S["The message body is required.", message.To]);
+            return Result.Failed(S["The message body is required.", message.To]);
         }
 
         try
@@ -70,16 +71,16 @@ public abstract class AzureSmsProviderBase : ISmsProvider
 
             if (response.Value.Successful)
             {
-                return SmsResult.Success;
+                return Result.Success();
             }
 
-            return SmsResult.Failed(S["The SMS message has not been sent."]);
+            return Result.Failed(S["The SMS message has not been sent."]);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while sending an SMS using the Azure SMS Provider.");
 
-            return SmsResult.Failed(S["An error occurred while sending an SMS."]);
+            return Result.Failed(S["An error occurred while sending an SMS."]);
         }
     }
 }
