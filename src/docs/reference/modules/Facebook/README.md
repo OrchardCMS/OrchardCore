@@ -8,7 +8,7 @@
 - Meta Login
 - Meta Widgets
 
-Configuration can be set through the _Configuration -> Meta_ settings menu in the admin dashboard.
+Configuration can be set through the _Settings -> Integrations -> Meta App_ settings menu in the admin dashboard.
 
 ## Core Components
 
@@ -62,7 +62,7 @@ It defines the following widgets:
 
 ## Meta Pixel
 
-This feature provides you a way to add Meta Pixel tracking to your site. Simply navigate to _Configuration -> Settings -> Meta Pixel_ settings and provide your `Pixel Identifier`.
+This feature provides you a way to add Meta Pixel tracking to your site. Simply navigate to _Settings -> Integrations -> Meta Pixel_ settings and provide your `Pixel Identifier`.
 
 ## Meta Settings Configuration
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentTypes.Shapes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Widgets.Models;
@@ -13,17 +13,14 @@ namespace OrchardCore.Widgets.Controllers;
 public sealed class AdminController : Controller
 {
     private readonly IContentManager _contentManager;
-    private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
     public AdminController(
         IContentManager contentManager,
-        IContentItemDisplayManager contentItemDisplayManager,
         IShapeFactory shapeFactory,
         IUpdateModelAccessor updateModelAccessor)
     {
-        _contentItemDisplayManager = contentItemDisplayManager;
         _contentManager = contentManager;
         _shapeFactory = shapeFactory;
         _updateModelAccessor = updateModelAccessor;
@@ -43,37 +40,38 @@ public sealed class AdminController : Controller
         var cardCollectionType = nameof(WidgetsListPart);
 
         // Create a Card Shape
-        dynamic contentCard = await _shapeFactory.New.ContentCard(
+        var contentCard = await _shapeFactory.CreateAsync<ContentCardShape>("ContentCard", shape =>
+        {
             // Updater is the controller for AJAX Requests
-            Updater: _updateModelAccessor.ModelUpdater,
+            shape.Updater = _updateModelAccessor.ModelUpdater;
             // Shape Specific
-            CollectionShapeType: cardCollectionType,
-            ContentItem: contentItem,
-            BuildEditor: true,
-            ParentContentType: parentContentType,
-            CollectionPartName: partName,
+            shape.CollectionShapeType = cardCollectionType;
+            shape.ContentItem = contentItem;
+            shape.BuildEditor = true;
+            shape.ParentContentType = parentContentType;
+            shape.CollectionPartName = partName;
             // WidgetListPart Specific
-            ZoneValue: zone,
+            shape.ZoneValue = zone;
             // Card Specific Properties
-            TargetId: targetId,
-            Inline: true,
-            CanMove: true,
-            CanDelete: true,
+            shape.TargetId = targetId;
+            shape.Inline = true;
+            shape.CanMove = true;
+            shape.CanDelete = true;
             // Input hidden
             // Prefixes
-            PrefixValue: prefix,
-            PrefixesId: prefixesName.Replace('.', '_'),
-            PrefixesName: prefixesName,
+            shape.PrefixValue = prefix;
+            shape.PrefixesId = prefixesName.Replace('.', '_');
+            shape.PrefixesName = prefixesName;
             // ContentTypes
-            ContentTypesId: contentTypesName.Replace('.', '_'),
-            ContentTypesName: contentTypesName,
+            shape.ContentTypesId = contentTypesName.Replace('.', '_');
+            shape.ContentTypesName = contentTypesName;
             // ContentItems
-            ContentItemsId: contentItemsName.Replace('.', '_'),
-            ContentItemsName: contentItemsName,
+            shape.ContentItemsId = contentItemsName.Replace('.', '_');
+            shape.ContentItemsName = contentItemsName;
             // Zones
-            ZonesId: zonesName.Replace('.', '_'),
-            ZonesName: zonesName
-        );
+            shape.ZonesId = zonesName.Replace('.', '_');
+            shape.ZonesName = zonesName;
+        });
 
         var model = new BuildEditorViewModel
         {

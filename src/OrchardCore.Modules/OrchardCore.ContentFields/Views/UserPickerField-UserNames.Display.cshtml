@@ -1,12 +1,14 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldUserNamesViewModel
 @using OrchardCore.Mvc.Utilities
-
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <div class="field field-type-userpickerfield field-name-@name">
-    <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
+    <span class="name">@localizedFieldName</span>
     @if (Model.UserNames.Any())
     {
         foreach (var userName in Model.UserNames)

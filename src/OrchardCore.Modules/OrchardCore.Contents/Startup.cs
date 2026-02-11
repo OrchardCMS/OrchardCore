@@ -42,6 +42,7 @@ using OrchardCore.Feeds;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Settings;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -293,5 +294,15 @@ public sealed class FeedsStartup : StartupBase
     {
         // Feeds
         services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
+    }
+}
+
+[RequireFeatures("OrchardCore.DataLocalization")]
+public sealed class DataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
+        services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
     }
 }

@@ -91,7 +91,7 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
         {
             try
             {
-                await foreach (var blobItem in blobContainer.GetBlobsAsync(prefix: _options.BasePath))
+                await foreach (var blobItem in blobContainer.GetBlobsAsync(BlobTraits.None, BlobStates.None, _options.BasePath, CancellationToken.None))
                 {
                     var response = await blobContainer.DeleteBlobIfExistsAsync(blobItem.Name);
                     if (!response.Value)

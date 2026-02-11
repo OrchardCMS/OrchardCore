@@ -28,6 +28,11 @@ async function runVite(command, assetConfig) {
 
 // run the process
 const action = process.argv[2];
-const config = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));
+const encodedGroup = process.argv[3] ?? process.env.ASSETS_MANAGER_ENCODED_GROUP;
+if (!encodedGroup) {
+    console.error("Missing encoded group config.");
+    process.exit(1);
+}
+const config = JSON5.parse(Buffer.from(encodedGroup, "base64").toString("utf-8"));
 
 await runVite(action, config);

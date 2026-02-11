@@ -1,0 +1,53 @@
+@model OrchardCore.DataLocalization.ViewModels.TranslationsDeploymentStepViewModel
+
+<h5>@T["Translations"]</h5>
+
+<p>@T["Adds translations to the deployment plan."]</p>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="IncludeAll" id="@Html.IdFor(m => m.IncludeAll)" />
+        <label class="form-check-label" asp-for="IncludeAll">@T["Include all cultures"]</label>
+        <span class="hint">— @T["When unchecked, you can select specific cultures to export."]</span>
+    </div>
+</div>
+
+<div class="mb-3" id="cultures-selection" style="display: none;">
+    <label class="form-label">@T["Cultures"]</label>
+    <div>
+        @foreach (var culture in Model.AllCultures)
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="@Html.NameFor(m => m.Cultures)" value="@culture" id="culture-@culture" @(Model.Cultures.Contains(culture) ? "checked" : "") />
+                <label class="form-check-label" for="culture-@culture">@culture</label>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">@T["Categories"] <span class="hint">— @T["Leave empty to export all categories"]</span></label>
+    <div>
+        @foreach (var category in Model.AllCategories)
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="@Html.NameFor(m => m.Categories)" value="@category" id="category-@category.Replace(" ", "-")" @(Model.Categories.Contains(category) ? "checked" : "") />
+                <label class="form-check-label" for="category-@category.Replace(" ", "-")">@category</label>
+            </div>
+        }
+    </div>
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function() {
+        var includeAllCheckbox = document.getElementById('@Html.IdFor(m => m.IncludeAll)');
+        var culturesSelection = document.getElementById('cultures-selection');
+
+        function toggleCulturesSelection() {
+            culturesSelection.style.display = includeAllCheckbox.checked ? 'none' : 'block';
+        }
+
+        includeAllCheckbox.addEventListener('change', toggleCulturesSelection);
+        toggleCulturesSelection();
+    });
+</script>

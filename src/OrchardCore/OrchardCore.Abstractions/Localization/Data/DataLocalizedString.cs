@@ -5,14 +5,12 @@ public class DataLocalizedString
     public DataLocalizedString(string context, string name, string value)
         : this(context, name, value, resourceNotFound: false)
     {
-
     }
 
     public DataLocalizedString(string context, string name, string value, bool resourceNotFound)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(context, nameof(context));
         ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
-        //ArgumentNullException.ThrowIfNullOrEmpty(value, nameof(value));
 
         Context = context;
         Name = name;
@@ -22,6 +20,9 @@ public class DataLocalizedString
 
     public static implicit operator string(DataLocalizedString dataLocalizedString) => dataLocalizedString?.Value;
 
+    /// <summary>
+    /// The context string for categorization (e.g., "Content Types", "Content Fields;BlogPost").
+    /// </summary>
     public string Context { get; }
 
     public string Name { get; }

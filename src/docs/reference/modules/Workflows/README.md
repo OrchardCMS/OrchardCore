@@ -438,7 +438,7 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 
 ## Trimming
 
-Old workflow instances can be automatically deleted with the Trimming feature. This is enabled by default and you can configure it (including disabling it) in Configuration → Settings → Workflows Trimming. Without trimming, workflow instances remain in the database indefinitely.
+Old workflow instances can be automatically deleted with the Trimming feature. This is enabled by default and you can configure it (including disabling it) in Settings → Workflow Trimming. Without trimming, workflow instances remain in the database indefinitely.
 
 By default, the trimming background task runs once a day and removes at most 5000 workflow instances. You can change the frequency of the background task via [the `OrchardCore.BackgroundTasks` configuration](../BackgroundTasks/README.md), and the batch size via the `OrchardCore_Workflows` configuration from e.g. an `appsettings` file:
 

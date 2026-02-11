@@ -894,7 +894,6 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
     float: right;
     transition-duration: 0.2s;
     display: block;
-    transform: scale(2, 1);
 
     &:focus {
         outline: none;
@@ -906,12 +905,17 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
         text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
     }
 
-    &:before {
+    &::before {
         content: "\27EA";
+        display: inline-block;
+        transform: scale(2, 1);
     }
 }
 
 .left-sidebar-compact .leftbar-compactor {
     transition-duration: 0.2s;
-    transform: scale(-2, 1);
+
+    &::before {
+        transform: scale(-2, 1);
+    }
 }

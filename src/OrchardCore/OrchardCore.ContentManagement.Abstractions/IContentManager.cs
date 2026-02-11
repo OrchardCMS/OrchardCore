@@ -118,7 +118,8 @@ public interface IContentManager
     /// the content item.
     /// </summary>
     /// <param name="contentItem"></param>
-    Task RemoveAsync(ContentItem contentItem);
+    /// <returns>A <see cref="bool"/> indicating whether the item was actually removed or not (due to being canceled).</returns>
+    Task<bool> RemoveAsync(ContentItem contentItem);
 
     /// <summary>
     /// Deletes the draft version of a content item.

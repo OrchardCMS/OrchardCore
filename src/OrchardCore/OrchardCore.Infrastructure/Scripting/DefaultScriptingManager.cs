@@ -23,7 +23,7 @@ public class DefaultScriptingManager : IScriptingManager
         IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
     {
         var directiveIndex = directive.IndexOf(':');
-        if (directiveIndex == -1 || directiveIndex >= directive.Length - 2)
+        if (directiveIndex == -1 || directiveIndex >= directive.Length - 1)
         {
             return directive;
         }

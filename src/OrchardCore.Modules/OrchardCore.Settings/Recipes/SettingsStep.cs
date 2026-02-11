@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Routing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
-using Json.Path;
 
 namespace OrchardCore.Settings.Recipes;
 

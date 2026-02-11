@@ -4,14 +4,17 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var modalMediaId = "Modal" + Html.IdFor(m => m);
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 <style asp-name="media" at="Head"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
-    <label asp-for="Paths" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Paths" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
     <div class="@Orchard.GetEndClasses()" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
         {

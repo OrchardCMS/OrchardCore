@@ -355,6 +355,7 @@ public sealed class LiquidStartup : StartupBase
             });
         })
        .AddLiquidFilter<UsersByIdFilter>("users_by_id")
+       .AddLiquidFilter<UsersByNameFilter>("users_by_name")
        .AddLiquidFilter<HasPermissionFilter>("has_permission")
        .AddLiquidFilter<IsInRoleFilter>("is_in_role")
        .AddLiquidFilter<UserEmailFilter>("user_email");

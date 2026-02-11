@@ -182,10 +182,11 @@ public sealed class IndexingTaskManager : IIndexingTaskManager
 
             await transaction.CommitAsync();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            logger.LogError(ex, "An error occurred while updating indexing tasks");
+
             await transaction.RollbackAsync();
-            logger.LogError(e, "An error occurred while updating indexing tasks");
 
             throw;
         }

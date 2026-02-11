@@ -1,9 +1,11 @@
 @using Microsoft.AspNetCore.Authorization
 @using OrchardCore.ContentManagement
 @using OrchardCore.Contents
+@using OrchardCore.Localization.Data
 @model OrchardCore.Lists.ViewModels.ListPartNavigationAdminViewModel
 @inject IContentManager ContentManager
 @inject IAuthorizationService AuthorizationService
+@inject IDataLocalizer D
 @{
     var authorizedContentTypeDefinitions = new List<ContentTypeDefinition>();
     foreach (var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
@@ -28,7 +30,7 @@
             @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, Model.Container))
             {
                 <a class="btn btn-primary me-1" asp-action="Edit" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId" asp-route-area="OrchardCore.Contents">
-                    @T["Edit {0}", Model.ContainerContentTypeDefinition?.DisplayName]
+                    @T["Edit {0}", D[Model.ContainerContentTypeDefinition?.DisplayName, "Content Types"]]
                 </a>
             }
 
@@ -37,7 +39,7 @@
                 var contentTypeDefinition = authorizedContentTypeDefinitions.FirstOrDefault();
 
                 <a class="btn btn-secondary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.Container.ContentItemId" asp-route-ListPart.ContainerContentType="@Model.ContainerContentTypeDefinition?.Name" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                    @T["Create {0}", contentTypeDefinition.DisplayName]
+                    @T["Create {0}", D[contentTypeDefinition.DisplayName, "Content Types"]]
                 </a>
             }
             else if (authorizedContentTypeDefinitions.Count > 1)
@@ -45,12 +47,12 @@
                 <a class="btn btn-secondary dropdown-toggle" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     @T["New"]
                 </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <ul class="dropdown-menu">
                     @foreach (var containedContentTypeDefinition in authorizedContentTypeDefinitions)
                     {
                         <li>
                             <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.Container.ContentItemId" asp-route-ListPart.ContainerContentType="@Model.ContainerContentTypeDefinition?.Name" asp-route-ListPart.ContentType="@containedContentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                                @containedContentTypeDefinition.DisplayName
+                                @D[containedContentTypeDefinition.DisplayName, "Content Types"]
                             </a>
                         </li>
                     }

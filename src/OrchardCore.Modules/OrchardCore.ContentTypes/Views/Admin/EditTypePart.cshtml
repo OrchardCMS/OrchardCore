@@ -1,9 +1,11 @@
 @model EditTypePartViewModel
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.DisplayManagement
+@using OrchardCore.Localization.Data
 
 @inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
 @inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+@inject IDataLocalizer D
 
 @{
     var typePart = Model.TypePartDefinition;
@@ -11,9 +13,10 @@
     var shapeTable = await ShapeTableManager.GetShapeTableAsync(theme?.Id);
     var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
+    string localizedDisplayName = D[Model.DisplayName, "Content Types"];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Part - {0}", Model.DisplayName])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Part - {0}", localizedDisplayName])</h1></zone>
 
 <div class="alert alert-success" role="alert">
     @T["Some part settings common to all types can also be defined at the <a href=\"{0}\">Part Definition</a> level.", Url.Action("EditPart", new { id = typePart.PartDefinition.Name })]

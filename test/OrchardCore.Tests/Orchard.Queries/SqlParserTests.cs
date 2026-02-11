@@ -288,4 +288,20 @@ public class SqlParserTests
         Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
         Assert.Equal(expectedSql, FormatSql(rawQuery));
     }
+
+    [Theory]
+    [InlineData("select now()", "SELECT getUtcDate();")]
+    [InlineData("select NOW()", "SELECT getUtcDate();")]
+    [InlineData("select getdate()", "SELECT getdate();")]
+    [InlineData("select a where b > now()", "SELECT [a] WHERE [b] > getUtcDate();")]
+    [InlineData("SELECT * FROM ContentItemIndex WHERE CreatedUtc > now()", "SELECT * FROM [tp_ContentItemIndex] WHERE [CreatedUtc] > getUtcDate();")]
+    [InlineData("select now() as CurrentTime", "SELECT getUtcDate() AS CurrentTime;")]
+    [InlineData("select count(*), now()", "SELECT count(*), getUtcDate();")]
+    public void ShouldParseParameterlessFunctions(string sql, string expectedSql)
+    {
+        var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+        
+        Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
+        Assert.Equal(expectedSql, FormatSql(rawQuery));
+    }
 }

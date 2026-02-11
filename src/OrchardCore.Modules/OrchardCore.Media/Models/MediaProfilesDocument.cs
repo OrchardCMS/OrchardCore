@@ -1,6 +1,5 @@
 using OrchardCore.Data.Documents;
-using Format = OrchardCore.Media.Processing.Format;
-using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
+using OrchardCore.Media.Core.Processing;
 
 namespace OrchardCore.Media.Models;
 

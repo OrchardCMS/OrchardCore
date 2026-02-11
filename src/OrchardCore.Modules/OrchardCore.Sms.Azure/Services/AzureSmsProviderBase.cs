@@ -73,7 +73,7 @@ public abstract class AzureSmsProviderBase : ISmsProvider
                 return SmsResult.Success;
             }
 
-            return SmsResult.Failed(S["SMS message was not send."]);
+            return SmsResult.Failed(S["The SMS message has not been sent."]);
         }
         catch (Exception ex)
         {

@@ -152,8 +152,10 @@ nav:
       - Microsoft Entra ID (Azure AD) integration: guides/microsoft-entra-id-integration/README.md
       - Create a Liquid Widget: guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: guides/query-content-items-based-on-taxonomy/README.md
-      - Assets manager: guides/assets-manager/README.md
-      - Gulp pipeline: guides/gulp-pipeline/README.md
+      - Manage Assets and NPM dependencies:
+        - Assets manager: guides/assets-manager/README.md
+        - Using NPM aliases: guides/assets-manager/NPM_ALIASING_GUIDE.md
+        - Gulp pipeline: guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
       - Content Relationships: topics/content-relationships/README.md
@@ -263,6 +265,7 @@ nav:
               - HTTPS: reference/modules/Https/README.md
               - Key Vault (Azure): reference/modules/KeyVault.Azure/README.md
               - Localization: reference/modules/Localize/README.md
+              - Data Localization: reference/modules/DataLocalization/README.md
               - Logging Serilog: reference/modules/Logging.Serilog/README.md
               - Mini Profiler: reference/modules/MiniProfiler/README.md
               - Modules: reference/modules/Modules/README.md

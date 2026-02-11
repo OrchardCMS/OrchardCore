@@ -1286,7 +1286,6 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   font-size: 20px;
   transition-duration: 0.2s;
   display: block;
-  transform: scale(2, 1);
 }
 
 [dir="ltr"] .leftbar-compactor {
@@ -1307,11 +1306,16 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
 }
 
-.leftbar-compactor:before {
+.leftbar-compactor::before {
   content: "⟪";
+  display: inline-block;
+  transform: scale(2, 1);
 }
 
 .left-sidebar-compact .leftbar-compactor {
   transition-duration: 0.2s;
+}
+
+.left-sidebar-compact .leftbar-compactor::before {
   transform: scale(-2, 1);
 }

@@ -1,3 +1,4 @@
+@using OrchardCore.ContentTypes.Shapes
 @using OrchardCore.DisplayManagement
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
@@ -5,7 +6,7 @@
 @{
     var contentDefinitions = await ContentDefinitionManager.ListTypeDefinitionsAsync();
     //Set Model (Current Shape) as Child content of Outer Frame, Later this Model is used to render other shapes
-    var contentCardFrame = await New.ContentCard_Frame();
+    var contentCardFrameShape = (ContentCardFrameShape)await Factory.CreateAsync<ContentCardFrameShape>("ContentCard_Frame");
 
     var contentItem = Model.ContentItem;
     Model.ContentTypeValue = contentItem.ContentType;
@@ -42,9 +43,9 @@
             Model.Metadata.Alternates.Clear();
             Model.Metadata.Type = "ContentCard_Editor";
 
-            contentCardFrame.ChildContent = Model;
+            contentCardFrameShape.ChildContent = Model;
 
-            contentCardFrame.ColumnSize = Model.ColumnSize;
+            contentCardFrameShape.ColumnSize = Model.ColumnSize;
         }
         else
         {
@@ -58,9 +59,9 @@
             Model.Metadata.Alternates.Clear();
             Model.Metadata.Type = "ContentCard_Preview";
 
-            contentCardFrame.ChildContent = Model;
+            contentCardFrameShape.ChildContent = Model;
         }
         //Display Outer Frame
-        @await DisplayAsync(contentCardFrame)
+        @await DisplayAsync(contentCardFrameShape)
     }
 }

@@ -67,6 +67,8 @@ public class AwsFileStore : IFileStore
     public async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null,
         bool includeSubDirectories = false)
     {
+        path = this.NormalizePath(path);
+        
         var listObjectsResponse = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
         {
             BucketName = _options.BucketName,

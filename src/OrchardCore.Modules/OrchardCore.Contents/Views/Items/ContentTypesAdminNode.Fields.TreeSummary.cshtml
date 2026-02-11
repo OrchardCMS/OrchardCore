@@ -1,7 +1,9 @@
 @model ShapeViewModel<ContentTypesAdminNode>
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization.Data
 
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject IDataLocalizer D
 
 @{
     var allContentTypes = await ContentDefinitionManager.ListTypeDefinitionsAsync();
@@ -10,7 +12,7 @@
 
     var selectedDisplayNames = allContentTypes
         .Where(x => isSelected(x, selectedContentTypes))
-        .Select(x => x.DisplayName)
+        .Select(x => D[x.DisplayName, "Content Types"].ToString())
         .ToList();
 
     bool isSelected(ContentTypeDefinition ctd, ContentTypeEntry[] selectedList)

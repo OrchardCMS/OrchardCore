@@ -18,7 +18,7 @@ These guides are specific to Orchard Core CMS
 - [Adding a Menu Item to the Admin Navigation](add-admin-menu/README.md)
 - [Installing Localization Files](install-localization-files/README.md)
 - [How to use the assets manager](assets-manager/README.md)
-- [How to use the old Gulp assets transpiler/bundler/minifier pipeline](gulp-pipeline/README.md)
+- [Old (deprecated) Gulp pipeline docs (historical reference)](gulp-pipeline/README.md)
 - [Integrate facebook plugins](integrate-facebook-plugins/README.md)
 - [Implement Full Text search](implement-fulltext-search/README.md)
 - [Integrate AzureAD as external provider](microsoft-entra-id-integration/README.md)
