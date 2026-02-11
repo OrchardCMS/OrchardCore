@@ -43,7 +43,10 @@ internal sealed class ModularBackgroundService : BackgroundService
     {
         stoppingToken.Register(() =>
         {
-            _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
+            }
         });
 
         if (_options.ShellWarmup)
@@ -137,7 +140,10 @@ internal sealed class ModularBackgroundService : BackgroundService
                     if (!locked)
                     {
                         await shellScope.TerminateShellAsync();
-                        _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                        }
                         break;
                     }
                 }
@@ -200,12 +206,18 @@ internal sealed class ModularBackgroundService : BackgroundService
 
                     try
                     {
-                        _logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                        }
 
                         scheduler.Run();
                         await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
-                        _logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                        }
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
