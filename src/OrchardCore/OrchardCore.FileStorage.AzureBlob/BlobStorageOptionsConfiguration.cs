@@ -43,7 +43,10 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, "Unable to parse container name for {OptionName}.", typeof(TOptions).Name);
+                if (_logger.IsEnabled(LogLevel.Critical))
+                {
+                    _logger.LogCritical(e, "Unable to parse container name for {OptionName}.", typeof(TOptions).Name);
+                }
                 throw;
             }
         }
@@ -56,7 +59,10 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, "Unable to parse base path for {OptionName}.", typeof(TOptions).Name);
+                if (_logger.IsEnabled(LogLevel.Critical))
+                {
+                    _logger.LogCritical(e, "Unable to parse base path for {OptionName}.", typeof(TOptions).Name);
+                }
                 throw;
             }
         }
