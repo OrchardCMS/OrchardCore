@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using OrchardCore.ReverseProxy.Settings;
 
-namespace OrchardCore.ReverseProxy.Services;
+namespace OrchardCore.ReverseProxy.Configuration;
 
-public sealed class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
+internal sealed class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
 {
     private readonly ReverseProxySettings _reverseProxySettings;
 
