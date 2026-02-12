@@ -4,7 +4,7 @@ This feature provides SMS providers for sending SMS through [Azure Communication
 
 ## **Azure Communication Services** Provider Configuration
 
-Enabling this feature will introduce a new tab labeled **Azure Communication Services** within the SMS settings, allowing you to configure the service. To access these settings from the admin dashboard, navigate to `Configuration` → `Settings` → `Sms` and click on the **Azure Communication Services** tab. The following are the available settings.
+Enabling this feature will introduce a new tab labeled **Azure Communication Services** within the SMS settings, allowing you to configure the service. To access these settings from the admin dashboard, navigate to `Settings` → `Communication` → `SMS` and click on the **Azure Communication Services** tab. The following are the available settings.
 
 | Provider       | Description                                                                                                                               |
 |----------------|-------------------------------------------------------------------------------------------------------------------------------------------|

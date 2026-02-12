@@ -33,10 +33,6 @@ public class Startup : StartupBase
         // New deployment step with culture/category filtering.
         services.AddDeployment<TranslationsDeploymentSource, TranslationsDeploymentStep, TranslationsDeploymentStepDriver>();
 
-        services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
-        services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
-        services.AddScoped<ILocalizationDataProvider, PermissionsLocalizationDataProvider>();
-
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<INavigationProvider, AdminMenu>();
 

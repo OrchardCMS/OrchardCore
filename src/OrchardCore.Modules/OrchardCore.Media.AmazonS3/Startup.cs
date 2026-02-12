@@ -56,8 +56,11 @@ public sealed class Startup : Modules.StartupBase
         }
         else
         {
-            _logger.LogInformation(
-                "Starting with S3 Media Configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "Starting with S3 Media Configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
+            }
 
             services.AddSingleton<IMediaFileStoreCacheFileProvider>(serviceProvider =>
             {
@@ -173,8 +176,11 @@ public sealed class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
         }
         else
         {
-            _logger.LogInformation(
-                "Starting with ImageSharp Image Cache configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "Starting with ImageSharp Image Cache configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
+            }
 
             // Following https://docs.sixlabors.com/articles/imagesharp.web/imagecaches.html we'd use
             // SetCache<AWSS3StorageCache>() but that's only available on IImageSharpBuilder after AddImageSharp(),

@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Localization.Data;
 
-namespace OrchardCore.DataLocalization.Services;
+namespace OrchardCore.Contents.Services;
 
 public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
 {
