@@ -54,7 +54,11 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
         {
             if (!_emailAddressValidator.Validate(senderAddress))
             {
-                return Result.Failed(S["Invalid email address for the sender: '{0}'.", senderAddress]);
+                return Result.Failed(new ResultError
+                {
+                    Key = nameof(message.From),
+                    Message = S["Invalid email address for the sender: '{0}'.", senderAddress],
+                });
             }
 
             message.From = senderAddress;
@@ -82,7 +86,7 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
         }
         catch (Exception ex)
         {
-            return Result.Failed([S["An error occurred while sending an email: '{0}'", ex.Message]]);
+            return Result.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]);
         }
     }
 

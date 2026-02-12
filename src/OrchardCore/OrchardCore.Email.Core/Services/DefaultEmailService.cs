@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Infrastructure;
@@ -46,7 +47,21 @@ public class DefaultEmailService : IEmailService
         {
             await _emailServiceEvents.InvokeAsync((e) => e.FailedAsync(message), _logger);
 
-            return Result.Failed(validationContext.Errors.ToArray());
+            var i = 0;
+            var resultErrors = new ResultError[validationContext.Errors.Count];
+            foreach (var kvp in validationContext.Errors)
+            {
+                foreach (var error in kvp.Value)
+                {
+                    resultErrors[i++] = new ResultError
+                    {
+                        Key = kvp.Key,
+                        Message = error,
+                    };
+                }
+            }
+
+            return Result.Failed(resultErrors);
         }
 
         await _emailServiceEvents.InvokeAsync((e) => e.SendingAsync(message), _logger);

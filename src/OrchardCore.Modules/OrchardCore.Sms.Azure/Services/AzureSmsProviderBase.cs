@@ -43,17 +43,29 @@ public abstract class AzureSmsProviderBase : ISmsProvider
 
         if (string.IsNullOrWhiteSpace(message.To))
         {
-            return Result.Failed(S["A phone number is required for the recipient.", message.To]);
+            return Result.Failed(new ResultError
+            {
+                Key = nameof(message.To),
+                Message = S["A phone number is required for the recipient.", message.To],
+            });
         }
 
         if (!_phoneFormatValidator.IsValid(message.To))
         {
-            return Result.Failed(S["Invalid phone number format for the recipient: '{0}'.", message.To]);
+            return Result.Failed(new ResultError
+            {
+                Key = nameof(message.To),
+                Message = S["Invalid phone number format for the recipient: '{0}'.", message.To],
+            });
         }
 
         if (string.IsNullOrEmpty(message.Body))
         {
-            return Result.Failed(S["The message body is required.", message.To]);
+            return Result.Failed(new ResultError
+            {
+                Key = nameof(message.Body),
+                Message = S["The message body is required."],
+            });
         }
 
         try

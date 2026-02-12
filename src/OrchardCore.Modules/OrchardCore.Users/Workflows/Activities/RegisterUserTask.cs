@@ -1,4 +1,5 @@
 using System.Text.Encodings.Web;
+using Fluid.Parser;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
@@ -174,7 +175,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
             {
                 foreach (var error in result.Errors)
                 {
-                    updater.ModelState.AddModelError(error.Name, error.Value);
+                    updater.ModelState.TryAddModelError(error.Key, error.Message.Value);
                 }
             }
 

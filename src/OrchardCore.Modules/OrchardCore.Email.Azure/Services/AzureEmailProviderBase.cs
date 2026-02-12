@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
 using Azure;
 using Azure.Communication.Email;
@@ -122,16 +123,34 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                return Result.Failed(S["Invalid email address for the sender: '{0}'.", senderAddress]);
+                return Result.Failed(new ResultError
+                {
+                    Key = nameof(message.From),
+                    Message = S["Invalid email address for the sender: '{0}'.", senderAddress],
+                });
             }
         }
 
-        var errors = new List<LocalizedString>();
+        var errors = new Dictionary<string, IList<LocalizedString>>();
         var emailMessage = FromMailMessage(message, errors);
 
         if (errors.Count > 0)
         {
-            return Result.Failed(errors.ToArray());
+            var i = 0;
+            var resultErrors = new ResultError[errors.Count];
+            foreach (var kvp in errors)
+            {
+                foreach (var error in kvp.Value)
+                {
+                    resultErrors[i++] = new ResultError
+                    {
+                        Key = kvp.Key,
+                        Message = error,
+                    };
+                }
+            }
+
+            return Result.Failed(resultErrors);
         }
 
         try
@@ -156,7 +175,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         }
     }
 
-    private EmailMessage FromMailMessage(MailMessage message, List<LocalizedString> errors)
+    private EmailMessage FromMailMessage(MailMessage message, Dictionary<string, IList<LocalizedString>> errors)
     {
         var recipients = message.GetRecipients();
 
@@ -169,7 +188,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                errors.Add(S["Invalid email address for the 'To' recipient: '{0}'.", toRecipient]);
+                errors[nameof(recipients.To)].Add(S["Invalid email address for the 'To' recipient: '{0}'.", toRecipient]);
             }
         }
 
@@ -182,7 +201,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                errors.Add(S["Invalid email address for the 'CC' recipient: '{0}'.", ccRecipient]);
+                errors[nameof(recipients.Cc)].Add(S["Invalid email address for the 'CC' recipient: '{0}'.", ccRecipient]);
             }
         }
 
@@ -195,7 +214,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                errors.Add(S["Invalid email address for the 'BCC' recipient: '{0}'.", bccRecipient]);
+                errors[nameof(recipients.Bcc)].Add(S["Invalid email address for the 'BCC' recipient: '{0}'.", bccRecipient]);
             }
         }
 
@@ -218,7 +237,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                errors.Add(S["Invalid email address to reply to: '{0}'.", replyTo]);
+                errors[nameof(emailMessage.ReplyTo)].Add(S["Invalid email address to reply to: '{0}'.", replyTo]);
             }
         }
 
@@ -240,7 +259,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                errors.Add(S["Unable to attach the file named '{0}' since its type is not supported.", attachment.Filename]);
+                errors.TryAdd(nameof(message.Attachments), []);
 
                 _logger.LogWarning("The MIME type for the attachment '{Attachment}' is not supported.", attachment.Filename);
             }

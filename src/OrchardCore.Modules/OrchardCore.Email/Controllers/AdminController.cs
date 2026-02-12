@@ -87,7 +87,7 @@ public sealed class AdminController : Controller
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(error.Name, error.Value);
+                    ModelState.AddModelError(error.Key, error.Message.Value);
                 }
             }
             catch (InvalidEmailProviderException)
