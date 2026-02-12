@@ -80,7 +80,7 @@ public static class ConfigurableSettingsServiceCollectionExtensions
         where TMergeFunction : class, IPropertyMergeFunction
     {
         services.TryAddSingleton<TMergeFunction>();
-        services.TryAddSingleton(typeof(IPropertyMergeFunction), typeof(TMergeFunction));
+        services.TryAddSingleton<IPropertyMergeFunction, TMergeFunction>();
         return services;
     }
 }

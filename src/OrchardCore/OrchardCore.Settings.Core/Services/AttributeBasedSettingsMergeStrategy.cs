@@ -119,7 +119,7 @@ public class AttributeBasedSettingsMergeStrategy<TSettings> : ISettingsMergeStra
         };
     }
 
-    private object MergePropertyValue(
+    private static object MergePropertyValue(
         PropertyInfo propertyInfo,
         object databaseValue,
         object fileValue,
@@ -191,7 +191,7 @@ public class AttributeBasedSettingsMergeStrategy<TSettings> : ISettingsMergeStra
         };
     }
 
-    private object ExecuteCustomMerge(
+    private static object ExecuteCustomMerge(
         Type mergeFunctionType,
         object databaseValue,
         object fileValue,
@@ -280,7 +280,7 @@ public class AttributeBasedSettingsMergeStrategy<TSettings> : ISettingsMergeStra
         return fileValue;
     }
 
-    private static object MergeArrays(object databaseValue, object fileValue, Type propertyType)
+    private static Array MergeArrays(object databaseValue, object fileValue, Type propertyType)
     {
         var elementType = propertyType.GetElementType();
         var dbArray = databaseValue as Array;
@@ -477,7 +477,7 @@ public class AttributeBasedSettingsMergeStrategy<TSettings> : ISettingsMergeStra
         return _propertyCache.GetValueOrDefault(propertyName);
     }
 
-    internal class PropertyMergeInfo
+    internal sealed class PropertyMergeInfo
     {
         public PropertyInfo PropertyInfo { get; set; }
         public ConfigurationPropertyAttribute Attribute { get; set; }
