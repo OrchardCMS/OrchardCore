@@ -79,7 +79,10 @@ public class DefaultShapeTableManager : IShapeTableManager
         var extensionManager = _serviceProvider.GetRequiredService<IExtensionManager>();
         var typeFeatureProvider = _serviceProvider.GetRequiredService<ITypeFeatureProvider>();
 
-        logger.LogInformation("Start building shape table for {Theme}", themeId);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            logger.LogInformation("Start building shape table for {Theme}", themeId);
+        }
 
         HashSet<string> excludedFeatures;
 
@@ -140,7 +143,10 @@ public class DefaultShapeTableManager : IShapeTableManager
             bindings: descriptors.SelectMany(sd => sd.Bindings).ToFrozenDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
         );
 
-        logger.LogInformation("Done building shape table for {Theme}", themeId);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            logger.LogInformation("Done building shape table for {Theme}", themeId);
+        }
 
         _shapeTableCache[themeId ?? DefaultThemeIdKey] = Task.FromResult(shapeTable);
 

@@ -5,8 +5,8 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.ReverseProxy.Configuration;
 using OrchardCore.ReverseProxy.Drivers;
-using OrchardCore.ReverseProxy.Services;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -31,8 +31,6 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
         services.AddSiteDisplayDriver<ReverseProxySettingsDisplayDriver>();
-
-        services.AddSingleton<ReverseProxyService>();
 
         // Register the configurable settings infrastructure
         services.AddConfigurableSettings<ReverseProxySettings>(ConfigurationKey);

@@ -1,29 +1,28 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Services;
 
-namespace OrchardCore.ReverseProxy.Services;
+namespace OrchardCore.ReverseProxy.Configuration;
 
 public sealed class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
 {
-    private readonly ReverseProxyService _reverseProxyService;
+    private readonly ISiteService _siteService;
     private readonly ConfigurableSettingsServiceFactory<ReverseProxySettings> _settingsFactory;
 
     public ForwardedHeadersOptionsConfiguration(
-        ReverseProxyService reverseProxyService,
+        ISiteService siteService,
         ConfigurableSettingsServiceFactory<ReverseProxySettings> settingsFactory)
     {
-        _reverseProxyService = reverseProxyService;
+        _siteService = siteService;
         _settingsFactory = settingsFactory;
     }
 
     public void Configure(ForwardedHeadersOptions options)
     {
         // Get database settings via the existing service
-        var databaseSettings = _reverseProxyService.GetSettingsAsync().GetAwaiter().GetResult();
+        var databaseSettings = _siteService.GetSettings<ReverseProxySettings>();
 
         // Merge with file configuration using the factory (singleton-safe)
         var reverseProxySettings = _settingsFactory.MergeSettings(databaseSettings);

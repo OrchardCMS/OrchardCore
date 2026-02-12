@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Configuration;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.ReverseProxy;
 using OrchardCore.ReverseProxy.Settings;
 
