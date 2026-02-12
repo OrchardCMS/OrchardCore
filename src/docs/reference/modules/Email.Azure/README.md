@@ -4,7 +4,7 @@ This module adds Email providers for sending emails through [Azure Communication
 
 ## **Azure Communication Services** Provider Configuration
 
-Enabling this module will introduce a new tab labeled **Azure Communication Services** within the email settings, allowing you to configure the service. To access these settings, navigate to `Configuration` → `Settings` → `Email` and click on the **Azure Communication Services** tab. The following are the available settings
+Enabling this module will introduce a new tab labeled **Azure Communication Services** within the email settings, allowing you to configure the service. To access these settings, navigate to `Settings` → `Communication` → `Email` and click on the **Azure Communication Services** tab. The following are the available settings
 
 | Setting            | Description                                                                                                           |
 |--------------------|-----------------------------------------------------------------------------------------------------------------------|

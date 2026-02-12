@@ -17,7 +17,10 @@ public abstract class NamedIndexingService
     private readonly IEnumerable<IDocumentIndexHandler> _documentIndexHandlers;
     private readonly IServiceProvider _serviceProvider;
 
-    private const int _batchSize = 100;
+    /// <summary>
+    /// Gets the batch size for indexing operations. Can be overridden by derived classes to tune batch sizing.
+    /// </summary>
+    protected virtual int BatchSize => 100;
 
     protected NamedIndexingService(
         string name,
@@ -146,65 +149,102 @@ public abstract class NamedIndexingService
                 return;
             }
 
-            var tasks = new List<RecordIndexingTask>();
-
-            while (tasks.Count <= _batchSize)
+            while (true)
             {
-                // Load the next batch of tasks.
-                tasks = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, _batchSize, Name)).ToList();
-
-                if (tasks.Count == 0)
+                List<RecordIndexingTask> currentBatch = null;
+                var batchProcessedSuccessfully = false;
+                
+                try
                 {
-                    break;
-                }
+                    // Load the next batch of tasks.
+                    currentBatch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize, Name)).ToList();
 
-                // Group all DocumentIndex by index to batch update them.
-                var updatedDocumentsByIndex = tracker.Values.ToDictionary(x => x.IndexProfile.Id, b => new List<DocumentIndex>());
-
-                await BeforeProcessingTasksAsync(tasks, tracker.Values);
-
-                foreach (var entry in tracker.Values)
-                {
-                    foreach (var task in tasks)
+                    if (currentBatch.Count == 0)
                     {
-                        if (task.Id < entry.LastTaskId)
+                        break;
+                    }
+
+                    // Group all DocumentIndex by index to batch update them.
+                    var updatedDocumentsByIndex = tracker.Values.ToDictionary(x => x.IndexProfile.Id, b => new List<DocumentIndex>());
+
+                    await BeforeProcessingTasksAsync(currentBatch, tracker.Values);
+
+                    foreach (var entry in tracker.Values)
+                    {
+                        foreach (var task in currentBatch)
+                        {
+                            if (task.Id < entry.LastTaskId)
+                            {
+                                continue;
+                            }
+
+                            try
+                            {
+                                var buildIndexContext = await GetBuildDocumentIndexAsync(entry, task);
+
+                                if (buildIndexContext is null)
+                                {
+                                    continue;
+                                }
+
+                                await _documentIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), Logger);
+
+                                if (await ShouldTrackDocumentAsync(buildIndexContext, entry, task))
+                                {
+                                    updatedDocumentsByIndex[entry.IndexProfile.Id].Add(buildIndexContext.DocumentIndex);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // Log the error but continue processing remaining tasks
+                                Logger.LogError(ex, "Error processing indexing task {TaskId} for index {IndexName}. Continuing with remaining tasks.", task.Id, entry.IndexProfile.Name);
+                            }
+                        }
+                    }
+
+                    lastTaskId = currentBatch.Last().Id;
+                    batchProcessedSuccessfully = true;
+
+                    foreach (var indexEntry in updatedDocumentsByIndex)
+                    {
+                        if (indexEntry.Value.Count == 0)
                         {
                             continue;
                         }
 
-                        var buildIndexContext = await GetBuildDocumentIndexAsync(entry, task);
+                        var trackerEntry = tracker[indexEntry.Key];
 
-                        if (buildIndexContext is null)
+                        try
                         {
-                            continue;
+                            // AddOrUpdateDocumentsAsync is an upsert operation that handles both adding new documents
+                            // and updating existing ones. Implementations should handle any necessary deletions internally.
+                            if (await trackerEntry.DocumentIndexManager.AddOrUpdateDocumentsAsync(trackerEntry.IndexProfile, indexEntry.Value))
+                            {
+                                // We know none of the previous batches failed to update this index.
+                                await trackerEntry.DocumentIndexManager.SetLastTaskIdAsync(trackerEntry.IndexProfile, lastTaskId);
+                            }
                         }
-
-                        await _documentIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), Logger);
-
-                        if (await ShouldTrackDocumentAsync(buildIndexContext, entry, task))
+                        catch (Exception ex)
                         {
-                            updatedDocumentsByIndex[entry.IndexProfile.Id].Add(buildIndexContext.DocumentIndex);
+                            // Log the error but continue processing remaining indexes
+                            Logger.LogError(ex, "Error updating documents for index {IndexName}. Continuing with remaining indexes.", trackerEntry.IndexProfile.Name);
                         }
                     }
                 }
-
-                lastTaskId = tasks.Last().Id;
-
-                foreach (var indexEntry in updatedDocumentsByIndex)
+                catch (Exception ex)
                 {
-                    if (indexEntry.Value.Count == 0)
+                    // Log batch processing error and continue with next batch if possible
+                    Logger.LogError(ex, "Error processing batch of indexing tasks. Attempting to continue with next batch.");
+                    
+                    // Move to next batch only if we haven't already updated lastTaskId and we successfully loaded tasks
+                    if (!batchProcessedSuccessfully && currentBatch != null && currentBatch.Count > 0)
                     {
-                        continue;
+                        lastTaskId = currentBatch.Last().Id;
                     }
-
-                    var trackerEntry = tracker[indexEntry.Key];
-
-                    // AddOrUpdateDocumentsAsync is an upsert operation that handles both adding new documents
-                    // and updating existing ones. Implementations should handle any necessary deletions internally.
-                    if (await trackerEntry.DocumentIndexManager.AddOrUpdateDocumentsAsync(trackerEntry.IndexProfile, indexEntry.Value))
+                    else if (currentBatch == null || currentBatch.Count == 0)
                     {
-                        // We know none of the previous batches failed to update this index.
-                        await trackerEntry.DocumentIndexManager.SetLastTaskIdAsync(trackerEntry.IndexProfile, lastTaskId);
+                        // If we couldn't load tasks, break the loop to avoid infinite retry
+                        break;
                     }
                 }
             }
