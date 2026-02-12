@@ -135,19 +135,11 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         if (errors.Count > 0)
         {
-            var i = 0;
-            var resultErrors = new ResultError[errors.Count];
-            foreach (var kvp in errors)
+            var resultErrors = errors.SelectMany(kvp => kvp.Value.Select(error => new ResultError
             {
-                foreach (var error in kvp.Value)
-                {
-                    resultErrors[i++] = new ResultError
-                    {
-                        Key = kvp.Key,
-                        Message = error,
-                    };
-                }
-            }
+                Key = kvp.Key,
+                Message = error,
+            })).ToArray();
 
             return Result.Failed(resultErrors);
         }

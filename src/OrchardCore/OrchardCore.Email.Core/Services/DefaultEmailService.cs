@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrchardCore.Email.Core.Services;
 
@@ -47,19 +48,11 @@ public class DefaultEmailService : IEmailService
         {
             await _emailServiceEvents.InvokeAsync((e) => e.FailedAsync(message), _logger);
 
-            var i = 0;
-            var resultErrors = new ResultError[validationContext.Errors.Count];
-            foreach (var kvp in validationContext.Errors)
+            var resultErrors = validationContext.Errors.SelectMany(kvp => kvp.Value.Select(error => new ResultError
             {
-                foreach (var error in kvp.Value)
-                {
-                    resultErrors[i++] = new ResultError
-                    {
-                        Key = kvp.Key,
-                        Message = error,
-                    };
-                }
-            }
+                Key = kvp.Key,
+                Message = error,
+            })).ToArray();
 
             return Result.Failed(resultErrors);
         }
