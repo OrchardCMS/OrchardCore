@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -11,9 +12,57 @@ public class ContainedPartHandler : ContentHandlerBase
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public ContainedPartHandler(IServiceProvider serviceProvider)
+    internal readonly IStringLocalizer S;
+
+    public ContainedPartHandler(
+        IServiceProvider serviceProvider,
+        IStringLocalizer<ContainedPartHandler> localizer)
     {
         _serviceProvider = serviceProvider;
+        S = localizer;
+    }
+
+    public override async Task ValidatingAsync(ValidateContentContext context)
+    {
+        var contentType = context.ContentItem.ContentType;
+
+        // Resolve from DI to avoid circular references.
+        var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+        var allTypeDefinitions = await contentDefinitionManager.ListTypeDefinitionsAsync();
+
+        var isContainedType = allTypeDefinitions.Any(typeDef =>
+        {
+            var listPartDefinition = typeDef.Parts.FirstOrDefault(p =>
+                string.Equals(p.PartDefinition.Name, nameof(ListPart), StringComparison.Ordinal));
+
+            if (listPartDefinition == null)
+            {
+                return false;
+            }
+
+            var settings = listPartDefinition.GetSettings<ListPartSettings>();
+
+            return settings.ContainedContentTypes?.Contains(contentType) == true;
+        });
+
+        if (!isContainedType)
+        {
+            return;
+        }
+
+        var containedPart = context.ContentItem.As<ContainedPart>();
+
+        if (containedPart == null
+            || string.IsNullOrEmpty(containedPart.ListContentItemId))
+        {
+            context.Fail(S["The content item of type '{0}' must have a valid ListContentItemId as it is contained by a list.", contentType], nameof(ContainedPart.ListContentItemId));
+        }
+
+        if (containedPart == null
+            || string.IsNullOrEmpty(containedPart.ListContentType))
+        {
+            context.Fail(S["The content item of type '{0}' must have a valid ListContentType as it is contained by a list.", contentType], nameof(ContainedPart.ListContentType));
+        }
     }
 
     public override async Task CloningAsync(CloneContentContext context)
