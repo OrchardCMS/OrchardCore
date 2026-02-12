@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
 using Azure;
 using Azure.Communication.Email;
