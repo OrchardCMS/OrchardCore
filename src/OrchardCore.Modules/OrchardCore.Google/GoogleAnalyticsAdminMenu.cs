@@ -21,23 +21,6 @@ public sealed class GoogleAnalyticsAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), google => google
-                        .AddClass("googleAnalytics").Id("googleAnalytics")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageGoogleAnalytics)
-                        .LocalNav()
-                    )
-                )
-            );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations

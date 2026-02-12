@@ -35,24 +35,6 @@ public sealed class AdminMenu : AdminNavigationProvider
             return ValueTask.CompletedTask;
         }
 
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-               .Add(S["Configuration"], configuration => configuration
-                   .Add(S["Settings"], settings => settings
-                       .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
-                       .AddClass("azure-ai-search")
-                           .Id("azureaisearch")
-                           .Action("Index", "Admin", _routeValues)
-                           .Permission(AzureAISearchPermissions.ManageAzureAISearchISettings)
-                           .LocalNav()
-                       )
-                   )
-               );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Search"], S["Search"].PrefixPosition(), search => search
