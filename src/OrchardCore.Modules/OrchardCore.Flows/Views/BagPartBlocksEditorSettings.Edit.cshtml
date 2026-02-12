@@ -1,0 +1,15 @@
+@model OrchardCore.Flows.ViewModels.BagPartBlocksEditorSettingsViewModel
+
+<div id="@Html.IdFor(m => m)" class="type-part-editor type-part-editor-blocks">
+    <div class="mb-3">
+        <label asp-for="AddButtonText" class="form-label">@T["Add Button Text"]</label>
+        <input asp-for="AddButtonText" class="form-control" placeholder="@T["Add Block"]" />
+        <span class="hint">@T["(Optional) Custom text for the add button. Leave empty for default."]</span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ModalTitleText" class="form-label">@T["Modal Title Text"]</label>
+        <input asp-for="ModalTitleText" class="form-control" placeholder="@T["Select Block"]" />
+        <span class="hint">@T["(Optional) Custom text for the content type picker modal title. Leave empty for default."]</span>
+    </div>
+</div>
