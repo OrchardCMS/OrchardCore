@@ -136,9 +136,9 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldNotFail_WhenContentTypeIsCreatableAndListable()
+    public async Task ValidatingAsync_ShouldNotFail_WhenContentTypeIsCreatableWithoutContainedPart()
     {
-        SetupBlogWithBlogPostContainedType(creatableAndListable: true);
+        SetupBlogWithBlogPostContainedType(creatable: true);
 
         var contentItem = new ContentItem { ContentType = "BlogPost" };
         var context = new ValidateContentContext(contentItem);
@@ -148,7 +148,30 @@ public class ContainedPartHandlerTests
         Assert.Empty(context.ContentValidateResult.Errors);
     }
 
-    private void SetupBlogWithBlogPostContainedType(bool creatableAndListable = false)
+    [Fact]
+    public async Task ValidatingAsync_ShouldFail_WhenCreatableTypeHasContainedPartWithMissingFields()
+    {
+        SetupBlogWithBlogPostContainedType(creatable: true);
+
+        var contentItem = new ContentItem { ContentType = "BlogPost" };
+        contentItem.Weld<ContainedPart>();
+        contentItem.Alter<ContainedPart>(p =>
+        {
+            p.ListContentItemId = string.Empty;
+            p.ListContentType = string.Empty;
+        });
+
+        var context = new ValidateContentContext(contentItem);
+
+        await _handler.ValidatingAsync(context);
+
+        Assert.Contains(context.ContentValidateResult.Errors,
+            e => e.MemberNames.Contains(nameof(ContainedPart.ListContentItemId)));
+        Assert.Contains(context.ContentValidateResult.Errors,
+            e => e.MemberNames.Contains(nameof(ContainedPart.ListContentType)));
+    }
+
+    private void SetupBlogWithBlogPostContainedType(bool creatable = false)
     {
         var listPartSettings = new JsonObject
         {
@@ -175,12 +198,11 @@ public class ContainedPartHandlerTests
 
         var blogPostTypeSettings = new JsonObject();
 
-        if (creatableAndListable)
+        if (creatable)
         {
             blogPostTypeSettings[nameof(ContentTypeSettings)] = JsonSerializer.SerializeToNode(new ContentTypeSettings
             {
                 Creatable = true,
-                Listable = true,
             });
         }
 

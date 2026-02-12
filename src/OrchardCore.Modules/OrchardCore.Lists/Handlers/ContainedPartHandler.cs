@@ -36,18 +36,18 @@ public class ContainedPartHandler : ContentHandlerBase
             return;
         }
 
-        // If the content type is both Creatable and Listable, it can be created
-        // independently outside of a list, so containment is not required.
-        var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-        var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
-
-        if (contentTypeDefinition is null || contentTypeDefinition.IsCreatable())
-        {
-            return;
-        }
-
         if (!context.ContentItem.TryGet<ContainedPart>(out var containedPart))
         {
+            // Creatable content types can be created independently outside of a list,
+            // so containment is not required when there is no ContainedPart.
+            var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+
+            if (contentTypeDefinition is null || contentTypeDefinition.IsCreatable())
+            {
+                return;
+            }
+
             context.Fail(S["The content item of type '{0}' must be associated with a list via ContainedPart.", contentType], nameof(ContainedPart));
             return;
         }
