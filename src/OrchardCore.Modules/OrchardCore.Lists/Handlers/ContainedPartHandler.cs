@@ -41,9 +41,7 @@ public class ContainedPartHandler : ContentHandlerBase
         var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
         var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
 
-        if (contentTypeDefinition != null
-            && contentTypeDefinition.IsCreatable()
-            && contentTypeDefinition.IsListable())
+        if (contentTypeDefinition is null || contentTypeDefinition.IsCreatable())
         {
             return;
         }
