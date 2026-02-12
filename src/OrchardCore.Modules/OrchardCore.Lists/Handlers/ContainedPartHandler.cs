@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 
@@ -13,6 +14,8 @@ public class ContainedPartHandler : ContentHandlerBase
     private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
+
+    private HashSet<string> _containedContentTypes;
 
     public ContainedPartHandler(
         IServiceProvider serviceProvider,
@@ -26,33 +29,26 @@ public class ContainedPartHandler : ContentHandlerBase
     {
         var contentType = context.ContentItem.ContentType;
 
-        // Resolve from DI to avoid circular references.
-        var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-        var allTypeDefinitions = await contentDefinitionManager.ListTypeDefinitionsAsync();
+        var containedContentTypes = await GetContainedContentTypesAsync();
 
-        var isContainedType = allTypeDefinitions.Any(typeDef =>
-        {
-            var listPartDefinition = typeDef.Parts.FirstOrDefault(p =>
-                string.Equals(p.PartDefinition.Name, nameof(ListPart), StringComparison.Ordinal));
-
-            if (listPartDefinition == null)
-            {
-                return false;
-            }
-
-            var settings = listPartDefinition.GetSettings<ListPartSettings>();
-
-            return settings.ContainedContentTypes?.Contains(contentType) == true;
-        });
-
-        if (!isContainedType)
+        if (!containedContentTypes.Contains(contentType))
         {
             return;
         }
 
-        var containedPart = context.ContentItem.As<ContainedPart>();
+        // If the content type is both Creatable and Listable, it can be created
+        // independently outside of a list, so containment is not required.
+        var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+        var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
 
-        if (containedPart == null)
+        if (contentTypeDefinition != null
+            && contentTypeDefinition.IsCreatable()
+            && contentTypeDefinition.IsListable())
+        {
+            return;
+        }
+
+        if (!context.ContentItem.TryGet<ContainedPart>(out var containedPart))
         {
             context.Fail(S["The content item of type '{0}' must be associated with a list via ContainedPart.", contentType], nameof(ContainedPart));
             return;
@@ -67,6 +63,38 @@ public class ContainedPartHandler : ContentHandlerBase
         {
             context.Fail(S["The content item of type '{0}' must have a valid ListContentType as it is contained by a list.", contentType], nameof(ContainedPart.ListContentType));
         }
+    }
+
+    private async Task<HashSet<string>> GetContainedContentTypesAsync()
+    {
+        if (_containedContentTypes == null)
+        {
+            // Resolve from DI to avoid circular references.
+            var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+            var allTypeDefinitions = await contentDefinitionManager.ListTypeDefinitionsAsync();
+
+            _containedContentTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var typeDef in allTypeDefinitions)
+            {
+                var listPartDefinition = typeDef.Parts.FirstOrDefault(p =>
+                    string.Equals(p.PartDefinition.Name, nameof(ListPart), StringComparison.Ordinal));
+
+                if (listPartDefinition == null)
+                {
+                    continue;
+                }
+
+                var settings = listPartDefinition.GetSettings<ListPartSettings>();
+
+                if (settings.ContainedContentTypes != null)
+                {
+                    _containedContentTypes.UnionWith(settings.ContainedContentTypes);
+                }
+            }
+        }
+
+        return _containedContentTypes;
     }
 
     public override async Task CloningAsync(CloneContentContext context)

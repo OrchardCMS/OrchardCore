@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Lists.Handlers;
 using OrchardCore.Lists.Models;
 
@@ -134,7 +135,20 @@ public class ContainedPartHandlerTests
         Assert.Empty(context.ContentValidateResult.Errors);
     }
 
-    private void SetupBlogWithBlogPostContainedType()
+    [Fact]
+    public async Task ValidatingAsync_ShouldNotFail_WhenContentTypeIsCreatableAndListable()
+    {
+        SetupBlogWithBlogPostContainedType(creatableAndListable: true);
+
+        var contentItem = new ContentItem { ContentType = "BlogPost" };
+        var context = new ValidateContentContext(contentItem);
+
+        await _handler.ValidatingAsync(context);
+
+        Assert.Empty(context.ContentValidateResult.Errors);
+    }
+
+    private void SetupBlogWithBlogPostContainedType(bool creatableAndListable = false)
     {
         var listPartSettings = new JsonObject
         {
@@ -158,5 +172,26 @@ public class ContainedPartHandlerTests
         _contentDefinitionManager
             .Setup(m => m.ListTypeDefinitionsAsync())
             .ReturnsAsync([blogTypeDef]);
+
+        var blogPostTypeSettings = new JsonObject();
+
+        if (creatableAndListable)
+        {
+            blogPostTypeSettings[nameof(ContentTypeSettings)] = JsonSerializer.SerializeToNode(new ContentTypeSettings
+            {
+                Creatable = true,
+                Listable = true,
+            });
+        }
+
+        var blogPostTypeDef = new ContentTypeDefinition(
+            "BlogPost",
+            "Blog Post",
+            [],
+            blogPostTypeSettings);
+
+        _contentDefinitionManager
+            .Setup(m => m.GetTypeDefinitionAsync("BlogPost"))
+            .ReturnsAsync(blogPostTypeDef);
     }
 }
