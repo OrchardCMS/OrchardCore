@@ -130,7 +130,13 @@ By default this helper will also sanitize the Markdown.
 To disable sanitization:
 
 ```csharp
-@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, false)
+@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, sanitize: false)
+```
+
+Liquid code included in the Markdown can be rendered before the Markdown is converted into HTML. To enable this, set the `renderedLiquid` parameter to `true`:
+
+```csharp
+@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, renderLiquid: true)
 ```
 
 ## Markdown Configuration

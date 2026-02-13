@@ -16,23 +16,28 @@ public static class ContentRazorHelperExtensions
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="markdown">The markdown to convert.</param>
     /// <param name="sanitize">Whether to sanitize the markdown. Defaults to <see langword="true"/>.</param>
-    public static async Task<IHtmlContent> MarkdownToHtmlAsync(this IOrchardHelper orchardHelper, string markdown, bool sanitize = true)
+    /// <param name="renderLiquid">Whether Liquid should be rendered of displayed raw. Defaults to <see
+    /// langword="false"/>.</param>
+    public static async Task<IHtmlContent> MarkdownToHtmlAsync(
+        this IOrchardHelper orchardHelper,
+        string markdown,
+        bool sanitize = true,
+        bool renderLiquid = false)
     {
         var shortcodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortcodeService>();
         var markdownService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IMarkdownService>();
 
-        // The default Markdown option is to entity escape html
-        // so filters must be run after the markdown has been processed.
-        markdown = markdownService.ToHtml(markdown ?? string.Empty);
-
-        // The liquid rendering is for backwards compatibility and can be removed in a future version.
-        if (!sanitize)
+        if (renderLiquid)
         {
             var liquidTemplateManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ILiquidTemplateManager>();
             var htmlEncoder = orchardHelper.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
 
             markdown = await liquidTemplateManager.RenderStringAsync(markdown, htmlEncoder);
         }
+
+        // The default Markdown option is to entity escape html
+        // so filters must be run after the markdown has been processed.
+        markdown = markdownService.ToHtml(markdown ?? string.Empty);
 
         // TODO: provide context argument (optional on this helper as with the liquid helper?).
 
