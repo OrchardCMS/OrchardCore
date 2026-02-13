@@ -85,7 +85,10 @@ public sealed class Migrations : DataMigration
                 if (UpdateBody((JsonObject)contentItemVersion.Content))
                 {
                     await _session.SaveAsync(contentItemVersion);
-                    _logger.LogInformation("A content item version's BodyPart was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("A content item version's BodyPart was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
+                    }
                 }
 
                 lastDocumentId = contentItemVersion.Id;

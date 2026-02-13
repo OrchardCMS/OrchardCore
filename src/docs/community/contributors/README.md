@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-376-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-378-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -520,6 +520,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/plamco"><img src="https://avatars.githubusercontent.com/u/62053593?v=4?s=100" width="100px;" alt="plamco"/><br /><sub><b>plamco</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=plamco" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://andilentuli-portfolio.netlify.app/"><img src="https://avatars.githubusercontent.com/u/139638609?v=4?s=100" width="100px;" alt="Andile Ntuli"/><br /><sub><b>Andile Ntuli</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=MissAndileN" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://moamen-0.github.io/Moamen-Hassan-Portfolio/"><img src="https://avatars.githubusercontent.com/u/140275501?v=4?s=100" width="100px;" alt="Moamen Hassan"/><br /><sub><b>Moamen Hassan</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=moamen-0" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://wakavi.com"><img src="https://avatars.githubusercontent.com/u/84094431?v=4?s=100" width="100px;" alt="Seied Ali Mirkarimi"/><br /><sub><b>Seied Ali Mirkarimi</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Notorious-Ali" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/shivampandey0709"><img src="https://avatars.githubusercontent.com/u/59027725?v=4?s=100" width="100px;" alt="Shivam Pandey"/><br /><sub><b>Shivam Pandey</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=shivampandey0709" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

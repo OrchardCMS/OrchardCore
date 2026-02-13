@@ -714,7 +714,10 @@ public class DefaultContentManager : IContentManager
                 {
                     if (importedVersionIds.Contains(importingItem.ContentItemVersionId))
                     {
-                        _logger.LogInformation("Duplicate content item version id '{ContentItemVersionId}' skipped", importingItem.ContentItemVersionId);
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Duplicate content item version id '{ContentItemVersionId}' skipped", importingItem.ContentItemVersionId);
+                        }
                         continue;
                     }
 
@@ -776,7 +779,10 @@ public class DefaultContentManager : IContentManager
 
                     if (JsonNode.DeepEquals(jImporting, jOriginal))
                     {
-                        _logger.LogInformation("Importing '{ContentItemVersionId}' skipped as it is unchanged", importingItem.ContentItemVersionId);
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Importing '{ContentItemVersionId}' skipped as it is unchanged", importingItem.ContentItemVersionId);
+                        }
                         continue;
                     }
 
@@ -899,7 +905,7 @@ public class DefaultContentManager : IContentManager
         return aspect;
     }
 
-    public async Task RemoveAsync(ContentItem contentItem)
+    public async Task<bool> RemoveAsync(ContentItem contentItem)
     {
         ArgumentNullException.ThrowIfNull(contentItem);
 
@@ -910,12 +916,28 @@ public class DefaultContentManager : IContentManager
 
         if (!activeVersions.Any())
         {
-            return;
+            return true;
         }
 
         var context = new RemoveContentContext(contentItem, true);
 
         await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
+
+        if (context.Cancel)
+        {
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            {
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deletion of '{0}' has been cancelled.", contentItem.DisplayText]);
+            }
+            else
+            {
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deleting {0} '{1}' has been cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+            }
+
+            return false;
+        }
 
         foreach (var version in activeVersions)
         {
@@ -925,6 +947,8 @@ public class DefaultContentManager : IContentManager
         }
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
+
+        return true;
     }
 
     public async Task DiscardDraftAsync(ContentItem contentItem)

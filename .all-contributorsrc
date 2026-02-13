@@ -3475,6 +3475,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Notorious-Ali",
+      "name": "Seied Ali Mirkarimi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84094431?v=4",
+      "profile": "https://wakavi.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "shivampandey0709",
+      "name": "Shivam Pandey",
+      "avatar_url": "https://avatars.githubusercontent.com/u/59027725?v=4",
+      "profile": "https://github.com/shivampandey0709",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

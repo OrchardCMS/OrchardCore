@@ -16,7 +16,7 @@ It contains `TheAdmin` theme, and two recipes to base your installation on, but 
 
 !!! tip
     Any features that are not enabled by the selected setup recipe can be enabled after setup,
-    through the _Configuration -> Features_ menu.
+    through the _Tools -> Features_ menu.
 
 The second package `OrchardCore.Application.Cms.Targets` contains all of the above plus
 

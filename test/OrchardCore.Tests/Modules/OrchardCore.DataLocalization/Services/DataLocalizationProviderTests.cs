@@ -1,6 +1,8 @@
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Contents.Services;
+using OrchardCore.Localization.Data;
 
 namespace OrchardCore.DataLocalization.Services.Tests;
 
@@ -37,7 +39,16 @@ public class DataLocalizationProviderTests
         var localizedStrings = await dataLocalizationProvider.GetDescriptorsAsync();
 
         Assert.Equal(5, localizedStrings.Count());
-        Assert.True(localizedStrings.All(s => s.Context == "Content Fields"));
+
+        var localizedStringGroups = localizedStrings
+            .GroupBy(s => s.Context.Split(Constants.ContextSeparator).Last())
+            .ToList();
+
+        Assert.Equal(2, localizedStringGroups.Count);
+        Assert.Equal("BlogPost", localizedStringGroups.ElementAt(0).Key);
+        Assert.Equal("Person", localizedStringGroups.ElementAt(1).Key);
+        Assert.Equal(3, localizedStringGroups.ElementAt(0).Count());
+        Assert.Equal(2, localizedStringGroups.ElementAt(1).Count());
     }
 
     private static ContentTypeDefinition CreateContentTypeDefinition(string name, string displayName, string[] fields)
@@ -47,7 +58,7 @@ public class DataLocalizationProviderTests
 
         foreach (var field in fields)
         {
-            contentPartFieldDefinitions.Add(new ContentPartFieldDefinition(new ContentFieldDefinition("TextField"), field, settings));
+            contentPartFieldDefinitions.Add(new ContentPartFieldDefinition(new ContentFieldDefinition(field), field, settings));
         }
 
         return new ContentTypeDefinition(

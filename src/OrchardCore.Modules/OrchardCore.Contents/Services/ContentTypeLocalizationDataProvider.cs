@@ -1,10 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Localization.Data;
 
-namespace OrchardCore.DataLocalization.Services;
+namespace OrchardCore.Contents.Services;
 
 public class ContentTypeDataLocalizationProvider : ILocalizationDataProvider
 {

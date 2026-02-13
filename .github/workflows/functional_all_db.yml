@@ -31,11 +31,11 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.8.2
+      image: cypress/included:15.10.0
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: ./.github/actions/setup-dotnet
-    - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+    - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
       with:
         node-version: "15"
         package-manager-cache: false
@@ -59,7 +59,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.8.2
+      image: cypress/included:15.10.0
     env:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
@@ -87,7 +87,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.8.2
+      image: cypress/included:15.10.0
     services:
       postgres:
         image: postgres:11
@@ -130,7 +130,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.8.2
+      image: cypress/included:15.10.0
     services:
       mysql:
         image: mysql:8
@@ -169,7 +169,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.8.2
+      image: cypress/included:15.10.0
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
