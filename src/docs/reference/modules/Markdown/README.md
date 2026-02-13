@@ -133,7 +133,7 @@ To disable sanitization:
 @await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, sanitize: false)
 ```
 
-Liquid code included in the Markdown can be rendered before the Markdown is converted into HTML. To enable this, set the `renderedLiquid` parameter to `true`:
+Liquid code included in the Markdown can be rendered before the Markdown is converted into HTML. To enable this, set the `renderLiquid` parameter to `true`:
 
 ```csharp
 @await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, renderLiquid: true)
