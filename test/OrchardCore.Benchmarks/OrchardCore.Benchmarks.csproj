@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <IsPackable>false</IsPackable>
-    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
+    <IsTestingPlatformApplication>false</IsTestingPlatformApplication>
     <IsTestProject>false</IsTestProject>
     <TestProject>false</TestProject>
     <OutputType>Exe</OutputType>
