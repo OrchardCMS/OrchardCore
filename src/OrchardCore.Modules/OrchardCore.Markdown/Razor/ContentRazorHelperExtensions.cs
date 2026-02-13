@@ -37,18 +37,17 @@ public static class ContentRazorHelperExtensions
 
         // The default Markdown option is to entity escape html
         // so filters must be run after the markdown has been processed.
-        markdown = markdownService.ToHtml(markdown ?? string.Empty);
+        var html = markdownService.ToHtml(markdown ?? string.Empty);
 
         // TODO: provide context argument (optional on this helper as with the liquid helper?).
-
-        markdown = await shortcodeService.ProcessAsync(markdown);
+        html = await shortcodeService.ProcessAsync(markdown);
 
         if (sanitize)
         {
             var sanitizer = orchardHelper.HttpContext.RequestServices.GetRequiredService<IHtmlSanitizerService>();
-            markdown = sanitizer.Sanitize(markdown);
+            html = sanitizer.Sanitize(html);
         }
 
-        return new HtmlString(markdown);
+        return new HtmlString(html);
     }
 }
