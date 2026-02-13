@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Extensions;
@@ -54,7 +53,7 @@ internal static class LiquidViewTemplate
 
         // Defer the buffer disposing so that a template can be rendered twice.
         var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
-        ShellScope.Current.RegisterBeforeDispose((scope, content) => content.Dispose(), content);
+        ShellScope.Current.RegisterBeforeDispose(scope => content.Dispose());
 
         try
         {
