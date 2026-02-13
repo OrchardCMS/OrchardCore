@@ -44,7 +44,8 @@ public class MarkdownBodyQueryObjectType : ObjectGraphType<MarkdownBodyPart>
         var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
         var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
-        var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart", StringComparison.Ordinal));
+        var contentTypePartDefinition = contentTypeDefinition.Parts
+            .FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart", StringComparison.Ordinal));
         var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
         var markdown = ctx.Source.Markdown ?? string.Empty;

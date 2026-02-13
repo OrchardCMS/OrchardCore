@@ -46,7 +46,8 @@ public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
             try
             {
                 var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart", StringComparison.Ordinal));
+                var contentTypePartDefinition = contentTypeDefinition.Parts
+                    .FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart", StringComparison.Ordinal));
                 var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
                 var markdown = part.Markdown ?? string.Empty;
