@@ -35,8 +35,8 @@ public static class ContentRazorHelperExtensions
             markdown = await liquidTemplateManager.RenderStringAsync(markdown, htmlEncoder);
         }
 
-        // The default Markdown option is to entity escape html
-        // so filters must be run after the markdown has been processed.
+        // The default Markdown option is to entity escape html so filters must be run after the markdown has been
+        // processed.
         var html = markdownService.ToHtml(markdown ?? string.Empty);
 
         // TODO: provide context argument (optional on this helper as with the liquid helper?).

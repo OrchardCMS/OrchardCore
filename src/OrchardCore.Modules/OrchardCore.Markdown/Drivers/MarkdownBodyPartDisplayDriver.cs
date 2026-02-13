@@ -98,8 +98,8 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
                 new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
         }
 
-        // The default Markdown option is to entity escape html
-        // so filters must be run after the markdown has been processed.
+        // The default Markdown option is to entity escape html so filters must be run after the markdown has been
+        // processed.
         model.Html = _markdownService.ToHtml(model.Markdown ?? "");
 
         model.Html = await _shortcodeService.ProcessAsync(model.Html,

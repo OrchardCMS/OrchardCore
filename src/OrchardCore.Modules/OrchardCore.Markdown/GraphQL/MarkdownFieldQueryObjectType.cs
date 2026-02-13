@@ -78,8 +78,8 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
                 new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
         }
 
-        // The default Markdown option is to entity escape html
-        // so filters must be run after the markdown has been processed.
+        // The default Markdown option is to entity escape html so filters must be run after the markdown has been
+        // processed.
         var html = markdownService.ToHtml(markdown ?? string.Empty);
 
         html = await shortcodeService.ProcessAsync(html,
