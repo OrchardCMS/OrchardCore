@@ -48,7 +48,7 @@ public class Result
     /// <param name="value">The value returned by the operation.</param>
     /// <returns>A successful result instance with the specified value.</returns>
     public static Result<TValue> Success<TValue>(TValue value)
-        => new Result<TValue>(value, true, null);
+        => new Result<TValue>(value, true, []);
 
     /// <summary>
     /// Returns a failed result instance with the specified errors.
