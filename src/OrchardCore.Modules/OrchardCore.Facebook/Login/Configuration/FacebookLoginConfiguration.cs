@@ -102,7 +102,11 @@ public class FacebookLoginConfiguration :
                 if (secret != null && !string.IsNullOrWhiteSpace(secret.Text))
                 {
                     options.AppSecret = secret.Text;
-                    _logger.LogDebug("Facebook app secret loaded from secret '{SecretName}'.", _facebookSettings.AppSecretSecretName);
+
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Facebook app secret loaded from secret '{SecretName}'.", _facebookSettings.AppSecretSecretName);
+                    }
                 }
                 else
                 {

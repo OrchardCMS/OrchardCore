@@ -79,7 +79,10 @@ public sealed class Migrations : DataMigration
             site.Put(settings);
             await _siteService.UpdateSiteSettingsAsync(site);
 
-            _logger.LogInformation("Azure SMS connection string migrated to secret '{SecretName}'.", secretName);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Azure SMS connection string migrated to secret '{SecretName}'.", secretName);
+            }
         }
         catch (Exception ex)
         {

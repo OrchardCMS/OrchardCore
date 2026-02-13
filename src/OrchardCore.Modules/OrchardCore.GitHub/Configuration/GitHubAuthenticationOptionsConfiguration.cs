@@ -77,7 +77,11 @@ internal sealed class GitHubAuthenticationOptionsConfiguration : IConfigureNamed
                 if (secret != null && !string.IsNullOrWhiteSpace(secret.Text))
                 {
                     options.ClientSecret = secret.Text;
-                    _logger.LogDebug("GitHub client secret loaded from secret '{SecretName}'.", settings.ClientSecretSecretName);
+
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("GitHub client secret loaded from secret '{SecretName}'.", settings.ClientSecretSecretName);
+                    }
                 }
                 else
                 {

@@ -78,7 +78,10 @@ public sealed class Migrations : DataMigration
             site.Put(settings);
             await _siteService.UpdateSiteSettingsAsync(site);
 
-            _logger.LogInformation("GitHub client secret migrated to secret '{SecretName}'.", secretName);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("GitHub client secret migrated to secret '{SecretName}'.", secretName);
+            }
         }
         catch (Exception ex)
         {

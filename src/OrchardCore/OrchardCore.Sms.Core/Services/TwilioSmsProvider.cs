@@ -140,7 +140,11 @@ public class TwilioSmsProvider : ISmsProvider
                     if (secret != null && !string.IsNullOrWhiteSpace(secret.Text))
                     {
                         authToken = secret.Text;
-                        _logger.LogDebug("Twilio auth token loaded from secret '{SecretName}'.", settings.AuthTokenSecretName);
+
+                        if (_logger.IsEnabled(LogLevel.Debug))
+                        {
+                            _logger.LogDebug("Twilio auth token loaded from secret '{SecretName}'.", settings.AuthTokenSecretName);
+                        }
                     }
                     else
                     {

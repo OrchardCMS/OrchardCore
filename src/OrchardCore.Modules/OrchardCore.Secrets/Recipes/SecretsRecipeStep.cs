@@ -93,7 +93,11 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
                     };
 
                     secret = await _encryptionService.DecryptAsync(encrypted, encryptionKeyName, type);
-                    _logger.LogInformation("Secret '{SecretName}' decrypted successfully.", name);
+
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Secret '{SecretName}' decrypted successfully.", name);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -181,7 +185,10 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
             await _secretManager.SaveSecretAsync(name, secret);
         }
 
-        _logger.LogInformation("Secret '{SecretName}' imported successfully.", name);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Secret '{SecretName}' imported successfully.", name);
+        }
     }
 }
 

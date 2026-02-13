@@ -82,7 +82,11 @@ public class GoogleOptionsConfiguration :
                 if (secret != null && !string.IsNullOrWhiteSpace(secret.Text))
                 {
                     options.ClientSecret = secret.Text;
-                    _logger.LogDebug("Google client secret loaded from secret '{SecretName}'.", _googleAuthenticationSettings.ClientSecretSecretName);
+
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Google client secret loaded from secret '{SecretName}'.", _googleAuthenticationSettings.ClientSecretSecretName);
+                    }
                 }
                 else
                 {

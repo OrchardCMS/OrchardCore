@@ -47,7 +47,12 @@ public sealed class AzureSmsOptionsConfiguration : IConfigureOptions<AzureSmsOpt
                 if (secret != null && !string.IsNullOrWhiteSpace(secret.Text))
                 {
                     options.ConnectionString = secret.Text;
-                    _logger.LogDebug("Azure SMS connection string loaded from secret '{SecretName}'.", settings.ConnectionStringSecretName);
+
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Azure SMS connection string loaded from secret '{SecretName}'.", settings.ConnectionStringSecretName);
+                    }
+
                     return;
                 }
 
