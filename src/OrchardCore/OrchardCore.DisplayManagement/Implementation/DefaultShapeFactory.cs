@@ -99,7 +99,7 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
             ShapeFactory = creatingContext.ShapeFactory,
             ShapeType = creatingContext.ShapeType,
             Shape = await creatingContext.CreateAsync(creatingContext.State),
-            State = state
+            State = state,
         };
 
         var shape = createdContext.Shape
