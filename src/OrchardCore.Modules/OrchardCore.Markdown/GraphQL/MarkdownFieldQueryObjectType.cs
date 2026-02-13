@@ -58,28 +58,27 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
 
         var settings = contentPartFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
-        // The default Markdown option is to entity escape html
-        // so filters must be run after the markdown has been processed.
-        var html = markdownService.ToHtml(ctx.Source.Markdown ?? string.Empty);
-
-        // The liquid rendering is for backwards compatibility and can be removed in a future version.
-        if (!settings.SanitizeHtml)
+        var markdown = ctx.Source.Markdown ?? string.Empty;
+        if (settings.RenderLiquid)
         {
             var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
             var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
             var model = new MarkdownFieldViewModel()
             {
-                Markdown = ctx.Source.Markdown,
-                Html = html,
+                Markdown = markdown,
                 Field = ctx.Source,
                 Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
                 PartFieldDefinition = contentPartFieldDefinition,
             };
 
-            html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
+            markdown = await liquidTemplateManager.RenderStringAsync(model.Markdown, htmlEncoder, model,
                 new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
         }
+
+        // The default Markdown option is to entity escape html
+        // so filters must be run after the markdown has been processed.
+        var html = markdownService.ToHtml(markdown ?? string.Empty);
 
         html = await shortcodeService.ProcessAsync(html,
             new Context
