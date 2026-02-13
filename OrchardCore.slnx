@@ -64,7 +64,7 @@
     <File Path="renovate.json5" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj" />
+    <Project DefaultStartup="true" Path="src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj" />
   </Folder>
   <Folder Name="/src/OrchardCore.Frameworks/">
     <Project Path="src/OrchardCore/OrchardCore.Mvc.Core/OrchardCore.Mvc.Core.csproj" />
