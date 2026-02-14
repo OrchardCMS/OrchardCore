@@ -165,6 +165,7 @@
             iconPickerVue.show(node, 'sample-icon-' + node);
         });
 
+
         $('button.remove-icon').on('click', function (e) {
             var node = $(e.target).data('related-node');
             $('#' + node).val('');
