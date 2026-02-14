@@ -12,5 +12,4 @@ public class ContentTypeEntryViewModel
     public bool IsChecked { get; set; }
     public string ContentTypeId { get; set; }
     public string IconClass { get; set; }
-    public string CustomName { get; set; }
 }
