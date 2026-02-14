@@ -55,9 +55,9 @@ public class Result
     /// </summary>
     /// <param name="errors">The errors that occurred during the operation.</param>
     /// <returns>A failed result instance with the specified errors.</returns>
-    public static Result Failed(params ResultError[] errors)
+    public static Result Failed(params IEnumerable<ResultError> errors)
     {
-        var result = new Result { Succeeded = false };
+        var result = new Result();
 
         if (errors is not null)
         {
@@ -66,6 +66,13 @@ public class Result
 
         return result;
     }
+
+    /// <summary>
+    /// Returns a failed result instance with the specified errors.
+    /// </summary>
+    /// <param name="errors">The errors that occurred during the operation.</param>
+    /// <returns>A failed result instance with the specified errors.</returns>
+    public static Result Failed(params ResultError[] errors) => Failed(errors.AsEnumerable());
 
     /// <summary>
     /// Returns a failed result instance with the specified error message.

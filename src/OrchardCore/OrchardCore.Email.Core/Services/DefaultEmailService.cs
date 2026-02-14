@@ -52,7 +52,7 @@ public class DefaultEmailService : IEmailService
             {
                 Key = kvp.Key,
                 Message = error,
-            })).ToArray();
+            }));
 
             return Result.Failed(resultErrors);
         }

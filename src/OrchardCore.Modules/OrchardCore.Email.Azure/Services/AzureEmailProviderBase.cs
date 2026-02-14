@@ -139,7 +139,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             {
                 Key = kvp.Key,
                 Message = error,
-            })).ToArray();
+            }));
 
             return Result.Failed(resultErrors);
         }
