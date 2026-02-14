@@ -115,7 +115,7 @@ public partial class ArgumentsTests
         {
             Name = "Test",
             Value = 42,
-            IsActive = true
+            IsActive = true,
         };
 
         // Act
@@ -143,7 +143,7 @@ public partial class ArgumentsTests
             Count = 100,
             CreatedDate = new DateTime(2024, 1, 1),
             Tags = ["tag1", "tag2"],
-            Metadata = new Dictionary<string, string> { ["key"] = "value" }
+            Metadata = new Dictionary<string, string> { ["key"] = "value" },
         };
 
         // Act
@@ -160,7 +160,7 @@ public partial class ArgumentsTests
     }
 
     [GenerateArgumentsProvider]
-    private partial class TestSourceGeneratedModel
+    private sealed partial class TestSourceGeneratedModel
     {
         public string Name { get; set; }
         public int Value { get; set; }
@@ -168,7 +168,7 @@ public partial class ArgumentsTests
     }
 
     [GenerateArgumentsProvider]
-    private partial class TestComplexSourceGeneratedModel
+    private sealed partial class TestComplexSourceGeneratedModel
     {
         public string Id { get; set; }
         public string Title { get; set; }

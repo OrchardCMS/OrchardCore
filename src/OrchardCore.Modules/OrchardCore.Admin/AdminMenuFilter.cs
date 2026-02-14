@@ -75,7 +75,7 @@ public sealed partial class AdminMenuFilter : IAsyncResultFilter
     }
 
     [GenerateArgumentsProvider]
-    private partial class Args
+    private sealed partial class Args
     {
         public string MenuName { get;set; }
         public RouteData RouteData { get; set; }

@@ -2,79 +2,47 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Text;
+
+#nullable enable
 
 namespace OrchardCore.DisplayManagement.SourceGenerators;
 
 [Generator]
 public class ArgumentsProviderGenerator : IIncrementalGenerator
 {
+    private const string GenerateArgumentsProviderAttributeFullName = "OrchardCore.DisplayManagement.GenerateArgumentsProviderAttribute";
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Filter classes with the GenerateArgumentsProvider attribute
+        // Filter classes with the GenerateArgumentsProvider attribute using ForAttributeWithMetadataName
         var classDeclarations = context.SyntaxProvider
-            .CreateSyntaxProvider(
-                predicate: static (s, _) => IsSyntaxTargetForGeneration(s),
-                transform: static (ctx, _) => GetSemanticTargetForGeneration(ctx))
+            .ForAttributeWithMetadataName(
+                GenerateArgumentsProviderAttributeFullName,
+                predicate: static (node, _) => node is ClassDeclarationSyntax or RecordDeclarationSyntax,
+                transform: static (context, _) => GetTargetType(context))
             .Where(static m => m is not null);
 
-        // Combine with compilation
-        var compilationAndClasses = context.CompilationProvider.Combine(classDeclarations.Collect());
-
         // Generate source
-        context.RegisterSourceOutput(compilationAndClasses,
-            static (spc, source) => Execute(source.Left, source.Right, spc));
+        context.RegisterSourceOutput(classDeclarations.Collect(),
+            static (spc, types) => Execute(types!, spc));
     }
 
-    private static bool IsSyntaxTargetForGeneration(SyntaxNode node)
+    private static INamedTypeSymbol? GetTargetType(GeneratorAttributeSyntaxContext context)
     {
-        return node is ClassDeclarationSyntax or RecordDeclarationSyntax;
+        return context.TargetSymbol as INamedTypeSymbol;
     }
 
-    private static TypeDeclarationSyntax GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
-    {
-        var typeDeclaration = (TypeDeclarationSyntax)context.Node;
-
-        // Check if the type has the GenerateArgumentsProvider attribute
-        foreach (var attributeList in typeDeclaration.AttributeLists)
-        {
-            foreach (var attribute in attributeList.Attributes)
-            {
-                var symbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol;
-                if (symbol is IMethodSymbol attributeSymbol)
-                {
-                    var attributeType = attributeSymbol.ContainingType;
-                    if (attributeType.Name == "GenerateArgumentsProviderAttribute" &&
-                        attributeType.ContainingNamespace.ToDisplayString() == "OrchardCore.DisplayManagement")
-                    {
-                        return typeDeclaration;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static void Execute(Compilation compilation, ImmutableArray<TypeDeclarationSyntax> types, SourceProductionContext context)
+    private static void Execute(ImmutableArray<INamedTypeSymbol> types, SourceProductionContext context)
     {
         if (types.IsDefaultOrEmpty)
         {
             return;
         }
 
-        foreach (var typeDeclaration in types.Distinct())
+        foreach (var typeSymbol in types.Distinct<INamedTypeSymbol>(SymbolEqualityComparer.Default))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
-
-            var semanticModel = compilation.GetSemanticModel(typeDeclaration.SyntaxTree);
-            var typeSymbol = semanticModel.GetDeclaredSymbol(typeDeclaration) as INamedTypeSymbol;
-
-            if (typeSymbol is null)
-            {
-                continue;
-            }
 
             var source = GenerateArgumentsProviderImplementation(typeSymbol);
             if (!string.IsNullOrEmpty(source))
@@ -155,10 +123,10 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
             sb.AppendLine($"{currentIndent}        \"{property.Name}\",");
         }
         sb.AppendLine($"{currentIndent}    }};");
-
+        sb.AppendLine();
         sb.AppendLine($"{currentIndent}    global::OrchardCore.DisplayManagement.INamedEnumerable<object> global::OrchardCore.DisplayManagement.IArgumentsProvider.GetArguments()");
         sb.AppendLine($"{currentIndent}    {{");
-        sb.AppendLine($"{currentIndent}        var values = new object[{properties.Count}];");
+        sb.AppendLine($"{currentIndent}        var values = new object?[{properties.Count}];");
         sb.AppendLine();
 
         for (int i = 0; i < properties.Count; i++)

@@ -409,7 +409,7 @@ public partial class ContentItemDisplayCoordinator : IContentDisplayHandler
     }
 
     [GenerateArgumentsProvider]
-    private partial class Args
+    private sealed partial class Args
     {
         public string Identifier { get; set; }
     }
