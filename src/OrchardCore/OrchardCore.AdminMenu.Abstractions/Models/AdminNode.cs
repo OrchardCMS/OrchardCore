@@ -4,7 +4,10 @@ namespace OrchardCore.AdminMenu.Models;
 
 public class AdminNode : MenuItem
 {
+    public string MenuName { get; set; }
+
     public string UniqueId { get; set; } = Guid.NewGuid().ToString("n");
+
     public bool Enabled { get; set; } = true;
 
     public AdminNode GetMenuItemById(string id)
