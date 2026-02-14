@@ -6,6 +6,7 @@ public class AdminNode : MenuItem
 {
     public string UniqueId { get; set; } = Guid.NewGuid().ToString("n");
     public bool Enabled { get; set; } = true;
+    public string CustomAdminMenuName { get; set; }
 
     public AdminNode GetMenuItemById(string id)
     {

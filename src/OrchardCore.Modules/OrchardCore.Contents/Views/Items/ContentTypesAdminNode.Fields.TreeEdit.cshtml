@@ -79,7 +79,13 @@
                                     </div>
 
                                     <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
-
+                                        <div class="custom-name-section p-2 @(checkd ? "" : "d-none")" data-index="@i">
+                                        <div class="input-group input-group-sm">
+                                            <input asp-for="ContentTypes[i].CustomName"
+                                                   class="form-control"
+                                                   placeholder="@T["Custom Menu Name"]" />
+                                        </div>
+                                        </div>
                                         <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
                                             <button type="button" class="btn btn-primary sample-icon">
                                                 <i id="@("sample-icon-" + Html.IdFor(m => m.ContentTypes[i].IconClass))"
@@ -153,10 +159,15 @@
 
         $('.content-type-checkbox').on('click', function (e) {
             var listItem = $(e.target).closest('.list-group-item');
-
+            var customNameSection = listItem.find('.custom-name-section');
             var selected = $(e.target).prop('checked');
-            selected ? listItem.removeClass('disabled-content-type') : listItem.addClass('disabled-content-type');
-
+            if (selected) {
+                listItem.removeClass('disabled-content-type');
+                customNameSection.removeClass('d-none');
+            } else {
+                listItem.addClass('disabled-content-type');
+                customNameSection.addClass('d-none');
+            }
         });
 
         $('.icon-picker-trigger').on('click', function (e) {
