@@ -46,7 +46,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
                     ContentTypeId = x.Name,
                     IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
                     IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.IconClass ?? string.Empty,
-                    CustomName = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.CustomName ?? string.Empty
+                    CustomName = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.CustomName ?? string.Empty,
                 }).ToArray();
             }).Location("Content");
     }
