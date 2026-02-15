@@ -7,12 +7,22 @@ public static class Arguments
 {
     public static INamedEnumerable<T> FromT<T>(IEnumerable<T> arguments, IEnumerable<string> names)
     {
-        return new NamedEnumerable<T>(arguments, names);
+        var argumentsArray = arguments as T[] ?? arguments.ToArray();
+        var namesArray = names as string[] ?? names.ToArray();
+
+        return argumentsArray.Length == 0 && namesArray.Length == 0
+            ? Arguments<T>.Empty
+            : new NamedEnumerable<T>(argumentsArray, namesArray);
     }
 
     public static INamedEnumerable<object> From(IEnumerable<object> arguments, IEnumerable<string> names)
     {
-        return new NamedEnumerable<object>(arguments, names);
+        var argumentsArray = arguments as object[] ?? arguments.ToArray();
+        var namesArray = names as string[] ?? names.ToArray();
+
+        return argumentsArray.Length == 0 && namesArray.Length == 0
+            ? Empty
+            : new NamedEnumerable<object>(argumentsArray, namesArray);
     }
 
     public static INamedEnumerable<object> From(IDictionary<string, object> dictionary)
@@ -27,12 +37,22 @@ public static class Arguments
 
     public static INamedEnumerable<string> From(IDictionary<string, string> dictionary)
     {
-        return new NamedEnumerable<string>(dictionary.Values, dictionary.Keys);
+        if (dictionary.Count == 0)
+        {
+            return Arguments<string>.Empty;
+        }
+
+        return new NamedEnumerable<string>(dictionary.Values.ToArray(), dictionary.Keys.ToArray());
     }
 
     public static INamedEnumerable<string> From(Dictionary<string, string> dictionary)
     {
-        return new NamedEnumerable<string>(dictionary.Values, dictionary.Keys);
+        if (dictionary.Count == 0)
+        {
+            return Arguments<string>.Empty;
+        }
+
+        return new NamedEnumerable<string>(dictionary.Values.ToArray(), dictionary.Keys.ToArray());
     }
 
     /// <summary>
@@ -63,10 +83,10 @@ public static class Arguments
         private readonly ArraySegment<T> _positional;
         private IDictionary<string, T> _named;
 
-        public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
+        public NamedEnumerable(T[] arguments, string[] names)
         {
-            _arguments = arguments as T[] ?? arguments.ToArray();
-            _names = names as string[] ?? names.ToArray();
+            _arguments = arguments;
+            _names = names;
 
             ArgumentOutOfRangeException.ThrowIfLessThan(_arguments.Length, _names.Length);
 
@@ -94,6 +114,8 @@ public static class Arguments
         IList<T> INamedEnumerable<T>.Positional => _positional;
 
         IDictionary<string, T> INamedEnumerable<T>.Named => _named ??= new Named(_arguments, _names);
+
+        public int Count => _arguments.Length;
 
         private sealed class Named : IDictionary<string, T>
         {
@@ -238,4 +260,9 @@ public static class Arguments
     }
 
     public static readonly INamedEnumerable<object> Empty = From([], []);
+}
+
+public static class Arguments<T>
+{
+    public static readonly INamedEnumerable<T> Empty = Arguments.FromT(Array.Empty<T>(), Array.Empty<string>());
 }
