@@ -33,7 +33,7 @@
     <PackageVersion Include="Lucene.Net.QueryParser" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00017" />
     <PackageVersion Include="MailKit" Version="4.14.1" />
-    <PackageVersion Include="Markdig" Version="0.44.0" />
+    <PackageVersion Include="Markdig" Version="0.45.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.1" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="4.3.0" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.15.0" />
@@ -58,7 +58,7 @@
     <PackageVersion Include="SixLabors.ImageSharp.Web" Version="3.2.0" />
     <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="3.2.0" />
     <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.AWS" Version="3.2.0" />
-    <PackageVersion Include="StackExchange.Redis" Version="2.10.14" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.11.0" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
     <PackageVersion Include="YesSql" Version="5.4.7" />
@@ -98,7 +98,7 @@
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
     <!-- dotnet/extensions repository -->
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.2.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.3.0" />
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageVersion Include="System.IO.Hashing" Version="10.0.2" />
