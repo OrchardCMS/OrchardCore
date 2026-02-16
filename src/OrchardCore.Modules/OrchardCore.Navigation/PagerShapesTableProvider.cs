@@ -16,8 +16,6 @@ using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Navigation;
 
-// TODO: Replace anonymous types in Arguments.From with named types for better performance and maintainability.
-
 public class PagerShapesTableProvider : ShapeTableProvider
 {
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
