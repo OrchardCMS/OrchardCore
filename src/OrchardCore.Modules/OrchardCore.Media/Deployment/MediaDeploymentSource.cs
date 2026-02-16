@@ -37,10 +37,9 @@ public sealed class MediaDeploymentSource
 
         foreach (var path in output)
         {
-            await using (var stream = await _mediaFileStore.GetFileStreamAsync(path.SourcePath))
-            {
-                await result.FileBuilder.SetFileAsync(path.SourcePath, stream);
-            }
+            using var stream = await _mediaFileStore.GetFileStreamAsync(path.SourcePath);
+
+            await result.FileBuilder.SetFileAsync(path.SourcePath, stream);
         }
 
         // Adding media files
