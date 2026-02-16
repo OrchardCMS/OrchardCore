@@ -308,11 +308,3 @@ Generates `IArgumentsProvider` implementations for types marked with `[GenerateA
 Intercepts `Arguments.From(anonymousType)` calls and optimizes them using type inference.
 
 **Status:** ✅ Stable (.NET 9+)
-
-## See Also
-
-- [Arguments.cs](../../OrchardCore/OrchardCore.DisplayManagement/Arguments.cs) - Core Arguments class
-- [IArgumentsProvider.cs](../../OrchardCore/OrchardCore.DisplayManagement/IArgumentsProvider.cs) - Provider interface
-- [ArgumentsProviderGenerator.cs](../../OrchardCore/OrchardCore.SourceGenerators/ArgumentsProviderGenerator.cs) - Named type generator
-- [ArgumentsFromInterceptor.cs](../../OrchardCore/OrchardCore.SourceGenerators/ArgumentsFromInterceptor.cs) - Anonymous type interceptor
-- OrchardCore module examples - Real-world usage in production code
