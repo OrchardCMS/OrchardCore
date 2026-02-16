@@ -18,9 +18,9 @@ public static class HttpContextExtensions
 
     public static async ValueTask<ActionContext> GetActionContextAsync(this HttpContext httpContext)
     {
-        if (httpContext.Items.TryGetValue("OrchardCore:ActionContext", out var curActionContext))
+        if (httpContext.Items.TryGetValue("OrchardCore:ActionContext", out var currentActionContext))
         {
-            return (ActionContext)curActionContext;
+            return (ActionContext)currentActionContext;
         }
 
         var endpoint = httpContext.GetEndpoint();
