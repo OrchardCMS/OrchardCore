@@ -1,11 +1,10 @@
 using Fluid;
 using Fluid.Values;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters;
 
-public class NormalizeHtmlFilter : ILiquidFilter
+internal sealed class NormalizeHtmlFilter : ILiquidFilter
 {
     private readonly IHtmlNormalizer _htmlNormalizer;
 

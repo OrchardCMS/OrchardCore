@@ -21,15 +21,22 @@ internal sealed class DefaultHtmlNormalizer : IHtmlNormalizer
 
         var doc = new HtmlDocument
         {
-            OptionFixNestedTags = true,      // Fix nested tags
-            OptionAutoCloseOnEnd = true,     // Auto-close tags at the end
-            OptionCheckSyntax = true,        // Enable syntax checking
-            OptionOutputAsXml = false,       // Optional: keep it HTML style
+            // Fix nested tags.
+            OptionFixNestedTags = true,
+
+            // Auto-close tags at the end.
+            OptionAutoCloseOnEnd = true,
+
+            // Enable syntax checking.
+            OptionCheckSyntax = true,
+
+            // Optional: keep it HTML style.
+            OptionOutputAsXml = false,
         };
 
         doc.LoadHtml(html);
 
-        // This will automatically fix some of the malformed structure
+        // This will automatically fix some of the malformed structure.
         var normalizedHtml = doc.DocumentNode.OuterHtml;
 
         if (sanitize)
