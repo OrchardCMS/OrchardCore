@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Castle.Core" />
+    <PackageReference Include="HtmlAgilityPack" />
   </ItemGroup>
 
 </Project>

@@ -67,6 +67,7 @@
     <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.4.7" />
     <PackageVersion Include="YesSql.Filters.Query" Version="5.4.7" />
     <PackageVersion Include="ZString" Version="2.6.0" />
+    <PackageVersion Include="HtmlAgilityPack" Version="1.12.4" />
   </ItemGroup>
   <ItemGroup>
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" />

@@ -255,6 +255,18 @@ Sanitizes some HTML content.
 {{ output | sanitize_html | raw }}
 ```
 
+### `normalize_html`
+
+Normalizes HTML content (e.g., fixes malformed/nested tags). Optionally sanitizes the normalized output.
+
+```liquid
+{{ output | normalize_html | raw }}
+
+{{ output | normalize_html: true | raw }}
+
+{{ output | normalize_html: sanitize: true | raw }}
+```
+
 ### `shortcode`
 
 Renders Shortcodes. Should be combined with the `raw` filter.

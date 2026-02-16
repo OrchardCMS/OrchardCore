@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Events;
 using OrchardCore.DisplayManagement.Extensions;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.LocationExpander;
@@ -45,6 +46,7 @@ public static class OrchardCoreBuilderExtensions
                     options.Filters.Add<RazorViewActionFilter>();
                 });
 
+                services.AddScoped<IHtmlNormalizer, DefaultHtmlNormalizer>();
                 services.AddTransient<IConfigureOptions<NotifyJsonSerializerOptions>, NotifyJsonSerializerOptionsConfiguration>();
 
                 // Used as a service when we create a fake 'ActionContext'.
