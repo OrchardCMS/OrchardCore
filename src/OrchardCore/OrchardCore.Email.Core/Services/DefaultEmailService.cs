@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrchardCore.Email.Core.Services;
 
