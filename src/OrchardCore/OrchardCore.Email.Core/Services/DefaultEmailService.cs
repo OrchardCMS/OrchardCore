@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrchardCore.Email.Core.Services;
 
@@ -24,7 +27,7 @@ public class DefaultEmailService : IEmailService
         S = stringLocalizer;
     }
 
-    public async Task<EmailResult> SendAsync(MailMessage message, string name = null)
+    public async Task<Result> SendAsync(MailMessage message, string name = null)
     {
         var provider = await _providerResolver.GetAsync(name);
 
@@ -32,7 +35,7 @@ public class DefaultEmailService : IEmailService
         {
             _logger.LogError("Email settings must be configured before an Email message can be sent.");
 
-            return EmailResult.FailedResult(S["Email settings must be configured before an Email message can be sent."]);
+            return Result.Failed(S["Email settings must be configured before an Email message can be sent."]);
         }
 
         var validationContext = new MailMessageValidationContext(provider);
@@ -45,7 +48,13 @@ public class DefaultEmailService : IEmailService
         {
             await _emailServiceEvents.InvokeAsync((e) => e.FailedAsync(message), _logger);
 
-            return EmailResult.FailedResult(validationContext.Errors);
+            var resultErrors = validationContext.Errors.SelectMany(kvp => kvp.Value.Select(error => new ResultError
+            {
+                Key = kvp.Key,
+                Message = error,
+            }));
+
+            return Result.Failed(resultErrors);
         }
 
         await _emailServiceEvents.InvokeAsync((e) => e.SendingAsync(message), _logger);
