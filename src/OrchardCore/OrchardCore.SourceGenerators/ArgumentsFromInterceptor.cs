@@ -184,12 +184,6 @@ public class ArgumentsFromInterceptor : IIncrementalGenerator
         sb.AppendLine();
 
         // Generate the interceptor method
-        // Note: We use dynamic for property access. While this has some overhead, it's still much better than
-        // the reflection-based path in Arguments.From<T> because:
-        // 1. We skip all the type checking and IArgumentsProvider logic
-        // 2. We directly call Arguments.From(object[], string[]) which is optimized
-        // 3. Dynamic call sites are cached by the runtime
-        // 4. No dictionary lookups or cached PropertyInfo delegates needed
         sb.AppendLine($"        [global::System.Runtime.CompilerServices.InterceptsLocation({info.Location.Version}, \"{info.Location.Data}\")]");
         sb.AppendLine($"        public static global::OrchardCore.DisplayManagement.INamedEnumerable<object> InterceptFrom<T>(T anonymousObject) where T : notnull");
         sb.AppendLine("        {");
