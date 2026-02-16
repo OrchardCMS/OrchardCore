@@ -255,6 +255,8 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             {
                 errors.TryAdd(nameof(message.Attachments), []);
 
+                errors[nameof(message.Attachments)].Add(S["Unable to attach the file named '{0}' since its type is not supported.", attachment.Filename]);
+
                 _logger.LogWarning("The MIME type for the attachment '{Attachment}' is not supported.", attachment.Filename);
             }
         }
