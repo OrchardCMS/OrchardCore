@@ -5,6 +5,7 @@
     <!-- Remove the underscores from member name -->
     <OutputType>Exe</OutputType>
     <NoWarn>$(NoWarn);CA1707;EnableGenerateDocumentationFile</NoWarn>
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);OrchardCore.DisplayManagement.Generated</InterceptorsNamespaces>
   </PropertyGroup>
 
   <ItemGroup>
