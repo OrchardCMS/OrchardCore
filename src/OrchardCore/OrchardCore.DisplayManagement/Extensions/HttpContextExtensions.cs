@@ -8,26 +8,35 @@ namespace OrchardCore.DisplayManagement.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static Task<ActionContext> GetActionContextAsync(this IHttpContextAccessor httpContextAccessor)
+    public static ValueTask<ActionContext> GetActionContextAsync(this IHttpContextAccessor httpContextAccessor)
     {
         var httpContext = httpContextAccessor.HttpContext;
-        
+
         // In .NET 10, IActionContextAccessor is obsolete, so we create ActionContext directly
         return GetActionContextAsync(httpContext);
     }
 
-    public static async Task<ActionContext> GetActionContextAsync(this HttpContext httpContext)
+    public static async ValueTask<ActionContext> GetActionContextAsync(this HttpContext httpContext)
     {
-        var routeData = new RouteData();
-        routeData.Routers.Add(new RouteCollection());
+        if (httpContext.Items.TryGetValue("OrchardCore:ActionContext", out var currentActionContext))
+        {
+            return (ActionContext)currentActionContext;
+        }
 
-        var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+        var endpoint = httpContext.GetEndpoint();
+        var routeData = httpContext.GetRouteData();
+
+        var actionDescriptor = endpoint?.Metadata.GetMetadata<ActionDescriptor>() ?? new ActionDescriptor();
+
+        var actionContext = new ActionContext(httpContext, routeData, actionDescriptor );
         var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
         foreach (var filter in filters)
         {
             await filter.OnActionExecutionAsync(actionContext);
         }
+
+        httpContext.Items["OrchardCore:ActionContext"] = actionContext;
 
         return actionContext;
     }
