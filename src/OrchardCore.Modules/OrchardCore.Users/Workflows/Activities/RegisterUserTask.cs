@@ -174,10 +174,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
             {
                 foreach (var error in result.Errors)
                 {
-                    foreach (var errorMessage in error.Value)
-                    {
-                        updater.ModelState.TryAddModelError(error.Key, errorMessage);
-                    }
+                    updater.ModelState.TryAddModelError(error.Key, error.Message.Value);
                 }
             }
 
