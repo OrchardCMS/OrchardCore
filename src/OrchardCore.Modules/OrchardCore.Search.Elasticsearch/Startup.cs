@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
@@ -9,6 +11,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing.Core;
+using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -69,6 +72,8 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<IndexProfile, ElasticsearchIndexProfileDisplayDriver>();
 
         services.AddIndexProfileHandler<ElasticsearchIndexProfileHandler>();
+        
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IAuthorizationHandler, ElasticsearchIndexingAuthorizationHandler>());
     }
 }
 
