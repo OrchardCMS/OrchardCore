@@ -1,4 +1,5 @@
 using System.Text.Json.Settings;
+using Json.Path;
 
 #nullable enable
 
@@ -167,16 +168,15 @@ public static class JNode
     /// <summary>
     /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using JSONPath.
     /// </summary>
-    /// <param name="jsonNode">The JSON node which serves as the root of the current search.</param>
+    /// <param name="jsonNode">The JSON node which serves as the root of the current search..</param>
     /// <param name="path">The JSONPath query where <c>$</c> is <paramref name="jsonNode"/>.</param>
+    /// <param name="options">Optional settings to configure the JSONPath parser.</param>
     /// <remarks>
-    /// This method supports a subset of the JSONPath specification (RFC 9535) including:
-    /// - Property access: "property" or "$.property"
-    /// - Dot notation: "property1.property2"
-    /// - Array indexing: "array[0]" or "array[0].property"
-    /// - Recursive descent: "$..property"
+    /// This method uses JsonPath.Net to evaluate the <paramref name="path"/>. For more information on JSONPath, see the
+    /// specification at https://www.rfc-editor.org/rfc/rfc9535.html or the JsonPath.Net documentation at
+    /// https://docs.json-everything.net/path/basics/.
     /// </remarks>
-    public static JsonNode? SelectNode(this JsonNode jsonNode, string path)
+    public static JsonNode? SelectNode(this JsonNode jsonNode, string path, PathParsingOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(jsonNode);
         ArgumentNullException.ThrowIfNull(path);
@@ -187,15 +187,18 @@ public static class JNode
             return jsonNode;
         }
 
-        // Normalize the path to support both raw property names and paths starting with "$."
-        // This maintains backwards compatibility with JSONPaths written for Newtonsoft and for
-        // simple direct child property access too (e.g. when the path is "property" instead of "$.property").
+        // Without this JSONPath parsing fails (JsonPath.Parse throws "PathParseException: Path must start with '$'").
+        // Since the path always has to start with "$.", this alteration won't cause any problems. It's also necessary
+        // to maintain backwards compatibility with JSONPaths written for Newtonsoft and for simple direct child
+        // property access too (e.g. when the path is "property" instead of "$.property").
         if (path[0] != '$')
         {
             path = "$." + path;
         }
 
-        return JsonPathQuery.Evaluate(jsonNode, path);
+        return JsonPath.TryParse(path, out var jsonPath, options)
+            ? jsonPath.Evaluate(jsonNode).Matches?.FirstOrDefault()?.Value
+            : null;
     }
 
     /// <summary>
