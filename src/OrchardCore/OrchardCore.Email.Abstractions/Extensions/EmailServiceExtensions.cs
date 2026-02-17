@@ -1,3 +1,5 @@
+using OrchardCore.Infrastructure;
+
 namespace OrchardCore.Email;
 
 /// <summary>
@@ -14,7 +16,7 @@ public static class EmailServiceExtensions
     /// <param name="htmlBody">An optional email body in HTML format.</param>
     /// <param name="textBody">An optional email body in Text format.</param>
     /// <exception cref="System.ArgumentException"></exception>
-    public static Task<EmailResult> SendAsync(this IEmailService emailService, string to, string subject, string htmlBody, string textBody)
+    public static Task<Result> SendAsync(this IEmailService emailService, string to, string subject, string htmlBody, string textBody)
     {
         var message = new MailMessage
         {
@@ -36,7 +38,7 @@ public static class EmailServiceExtensions
     /// <param name="body">The email body.</param>
     /// <param name="isHtmlBody">Whether the <paramref name="body"/> is in HTML format or not. Defaults to <c>true</c>.</param>
     /// <exception cref="ArgumentException"></exception>
-    public static async Task<EmailResult> SendAsync(this IEmailService emailService, string to, string subject, string body, bool isHtmlBody = true)
+    public static async Task<Result> SendAsync(this IEmailService emailService, string to, string subject, string body, bool isHtmlBody = true)
     {
         string htmlBody = default;
         string textBody = default;
