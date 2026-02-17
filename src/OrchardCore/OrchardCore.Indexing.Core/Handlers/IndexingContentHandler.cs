@@ -183,12 +183,10 @@ public sealed class IndexingContentHandler : ContentHandlerBase
                 documents.Add(document);
             }
 
-            // Delete all of the documents that we'll be updating in this scope.
-            await documentIndexManager.DeleteDocumentsAsync(indexProfile, contentItems.Select(x => x.ContentItemId));
-
             if (documents.Count > 0)
             {
-                // Update all of the documents that were updated in this scope.
+                // AddOrUpdateDocumentsAsync is an upsert operation that handles both adding new documents
+                // and updating existing ones. Implementations should handle any necessary deletions internally.
                 await documentIndexManager.AddOrUpdateDocumentsAsync(indexProfile, documents);
             }
 

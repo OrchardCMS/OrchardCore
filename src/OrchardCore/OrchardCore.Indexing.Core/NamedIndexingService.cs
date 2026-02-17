@@ -153,7 +153,7 @@ public abstract class NamedIndexingService
             {
                 List<RecordIndexingTask> currentBatch = null;
                 var batchProcessedSuccessfully = false;
-                
+
                 try
                 {
                     // Load the next batch of tasks.
@@ -218,7 +218,7 @@ public abstract class NamedIndexingService
                         {
                             // AddOrUpdateDocumentsAsync is an upsert operation that handles both adding new documents
                             // and updating existing ones. Implementations should handle any necessary deletions internally.
-                            if (await trackerEntry.DocumentIndexManager.AddOrUpdateDocumentsAsync(trackerEntry.IndexProfile, indexEntry.Value))
+                            if (indexEntry.Value.Count > 0 && await trackerEntry.DocumentIndexManager.AddOrUpdateDocumentsAsync(trackerEntry.IndexProfile, indexEntry.Value))
                             {
                                 // We know none of the previous batches failed to update this index.
                                 await trackerEntry.DocumentIndexManager.SetLastTaskIdAsync(trackerEntry.IndexProfile, lastTaskId);
@@ -235,7 +235,7 @@ public abstract class NamedIndexingService
                 {
                     // Log batch processing error and continue with next batch if possible
                     Logger.LogError(ex, "Error processing batch of indexing tasks. Attempting to continue with next batch.");
-                    
+
                     // Move to next batch only if we haven't already updated lastTaskId and we successfully loaded tasks
                     if (!batchProcessedSuccessfully && currentBatch != null && currentBatch.Count > 0)
                     {
