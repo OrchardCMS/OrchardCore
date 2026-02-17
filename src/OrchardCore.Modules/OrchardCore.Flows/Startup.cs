@@ -42,6 +42,7 @@ public sealed class Startup : StartupBase
             .UseDisplayDriver<BagPartDisplayDriver>()
             .AddHandler<BagPartHandler>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartBlocksEditorSettingsDriver>();
         services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
 
         services.AddContentPart<FlowMetadata>();

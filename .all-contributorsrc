@@ -3493,6 +3493,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "weirdyang",
+      "name": "weirdyang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25576022?v=4",
+      "profile": "https://github.com/weirdyang",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

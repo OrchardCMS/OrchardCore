@@ -24,7 +24,7 @@
     }
 
     var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <script asp-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.js" asp-name="tags-editor" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>

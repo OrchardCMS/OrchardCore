@@ -76,3 +76,25 @@
     </div>
     <span class="hint">@T["(Optional) The stereotype of the content type. e.g., Widget, MenuItem, ..."]</span>
 </div>
+
+<div class="mb-3">
+    <div class="w-md-75 w-xl-50">
+        <label asp-for="Category" class="form-label">@T["Category"]</label>
+        <input asp-for="Category" list="categoryOptions" type="text" class="form-control">
+        <datalist id="categoryOptions">
+            @foreach (var category in Model.Options.Categories ?? Enumerable.Empty<string>())
+            {
+                <option value="@category">@category</option>
+            }
+        </datalist>
+    </div>
+    <span class="hint">@T["(Optional) Category for grouping content types in content type pickers. e.g., Common, Media, Layout, ..."]</span>
+</div>
+
+<div class="mb-3">
+    <div class="w-md-75 w-xl-50">
+        <label asp-for="ThumbnailPath" class="form-label">@T["Thumbnail"]</label>
+        <input asp-for="ThumbnailPath" type="text" class="form-control">
+    </div>
+    <span class="hint">@T["(Optional) Path to thumbnail image for content type pickers."]</span>
+</div>
