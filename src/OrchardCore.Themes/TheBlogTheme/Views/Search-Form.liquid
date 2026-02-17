@@ -5,9 +5,11 @@
 {% assign path = '~/search/' | append: index %}
 {% endif %}
 
+{% assign placeholder = Model.Placeholder | default: 'Enter your search term(s)' %}
+
 <form action="{{ path | href }}" method="get">
     <div class="input-group mb-3 mt-5">
-        <input name="Terms" type="text" class="form-control form-control-lg" value="{{ Model.Terms }}" placeholder="{{ 'Enter your search term(s)' | t }}" autofocus="" />
+        <input name="Terms" type="text" class="form-control form-control-lg" value="{{ Model.Terms }}" placeholder="{{ placeholder }}" autofocus="" />
         <button type="submit" class="btn btn-primary btn-sm">{{ "Search" | t }}</button>
     </div>
 </form>
