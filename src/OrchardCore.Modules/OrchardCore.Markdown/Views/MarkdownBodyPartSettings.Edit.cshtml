@@ -12,6 +12,6 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="RenderLiquid" checked="@Model.RenderLiquid" />
         <label class="form-check-label" asp-for="RenderLiquid">@T["Render Liquid"]</label>
-        <span class="hint dashed">@T["Whether Liquid markup is rendered or displayed raw."]</span>
+        <span class="hint dashed">@T["Whether Liquid markup is rendered or displayed raw. NOTE: Liquid support for Markdown Body Part will be removed in version 4.0; if you want to continue using Liquid, migrate your content to use Liquid Part instead."]</span>
     </div>
 </div>
