@@ -96,11 +96,9 @@ public class ShapeResult : IDisplayResult
             }
             else if (placement == null)
             {
-                placement = new PlacementInfo
-                {
-                    Location = _defaultLocation,
-                    DefaultPosition = context.DefaultPosition,
-                };
+                // If no default location is specified, use an empty placement to avoid null checks later on.
+                // No need to set the default position, as it will be ignored when the location is not specified.
+                placement = PlacementInfo.Empty;
             }
         }
         else

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 
 namespace OrchardCore.DisplayManagement.Descriptors;
 
@@ -21,6 +22,22 @@ public class PlacementInfo
     /// A shared instance representing a hidden placement.
     /// </summary>
     public static readonly PlacementInfo Hidden = new() { Location = HiddenLocation };
+
+    /// <summary>
+    /// A shared instance representing an empty placement with no properties set.
+    /// </summary>
+    public static readonly PlacementInfo Empty = new() { };
+
+    /// <summary>
+    /// Cache for commonly used PlacementInfo instances with only Location set.
+    /// </summary>
+    private static readonly ConcurrentDictionary<string, PlacementInfo> _locationCache = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Cache for commonly used PlacementInfo instances with Location and Source set.
+    /// Uses a tuple key of (location, source).
+    /// </summary>
+    private static readonly ConcurrentDictionary<(string Location, string Source), PlacementInfo> _locationSourceCache = new();
 
     // Cached parsing results
     private string[] _zones;
@@ -54,18 +71,34 @@ public class PlacementInfo
             return Hidden;
         }
 
-        return new PlacementInfo { Location = location };
+        // Cache PlacementInfo instances with only Location set to avoid repeated allocations
+        return _locationCache.GetOrAdd(location, static loc => new PlacementInfo { Location = loc });
     }
 
     /// <summary>
     /// Creates a new <see cref="PlacementInfo"/> by merging this instance with additional properties.
     /// Returns this instance if no properties need to be changed.
+    /// For simple cases where only Source changes on a cached location, returns a cached instance.
     /// </summary>
     public PlacementInfo WithSource(string source)
     {
         if (Source == source)
         {
             return this;
+        }
+
+        // If this is a cached location-only instance and we're just adding a source,
+        // try to use a cached location+source instance
+        if (ShapeType == null && DefaultPosition == null &&
+            Alternates == null && Wrappers == null && Source == null &&
+            !string.IsNullOrEmpty(Location) && !string.IsNullOrEmpty(source))
+        {
+            var cacheKey = (Location, source);
+            return _locationSourceCache.GetOrAdd(cacheKey, static key => new PlacementInfo
+            {
+                Location = key.Location,
+                Source = key.Source,
+            });
         }
 
         return new PlacementInfo
@@ -85,10 +118,10 @@ public class PlacementInfo
     /// </summary>
     public PlacementInfo WithDefaults(string location, string defaultPosition)
     {
-        var needsLocation = Location == null && location != null;
-        var needsDefaultPosition = DefaultPosition == null && defaultPosition != null;
+        var locationChanged = Location != location && location != null && Location == null;
+        var defaultPositionChanged = DefaultPosition != defaultPosition && defaultPosition != null && DefaultPosition == null;
 
-        if (!needsLocation && !needsDefaultPosition)
+        if (!locationChanged && !defaultPositionChanged)
         {
             return this;
         }
