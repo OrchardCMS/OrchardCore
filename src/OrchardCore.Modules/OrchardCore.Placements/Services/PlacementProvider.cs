@@ -61,15 +61,14 @@ public class PlacementProvider : IShapePlacementProvider
                         continue;
                     }
 
-                    placement = new PlacementInfo
-                    {
-                        Source = placement == null ? "OrchardCore.Placements" : $"{placement.Source},OrchardCore.Placements",
-                        Location = !string.IsNullOrEmpty(placementRule.Location) ? placementRule.Location : placement?.Location,
-                        ShapeType = !string.IsNullOrEmpty(placementRule.ShapeType) ? placementRule.ShapeType : placement?.ShapeType,
-                        DefaultPosition = placement?.DefaultPosition,
-                        Alternates = placement.CombineAlternates(placementRule.Alternates),
-                        Wrappers = placement.CombineWrappers(placementRule.Wrappers),
-                    };
+                    placement = new PlacementInfo(
+                        !string.IsNullOrEmpty(placementRule.Location) ? placementRule.Location : placement?.Location,
+                        placement == null ? "OrchardCore.Placements" : $"{placement.Source},OrchardCore.Placements",
+                        !string.IsNullOrEmpty(placementRule.ShapeType) ? placementRule.ShapeType : placement?.ShapeType,
+                        placement?.DefaultPosition,
+                        placement.CombineAlternates(placementRule.Alternates),
+                        placement.CombineWrappers(placementRule.Wrappers)
+                    );
                 }
             }
 

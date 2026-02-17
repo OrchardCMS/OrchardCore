@@ -1,4 +1,3 @@
-
 namespace OrchardCore.DisplayManagement.Descriptors;
 
 public static class PlacementInfoExtensions
@@ -20,16 +19,14 @@ public static class PlacementInfoExtensions
         }
         else if (second != null)
         {
-            var combined = new PlacementInfo
-            {
-                Alternates = CombineArrays(first.Alternates, second.Alternates),
-                Wrappers = CombineArrays(first.Wrappers, second.Wrappers),
-
-                ShapeType = string.IsNullOrEmpty(second.ShapeType) ? first.ShapeType : second.ShapeType,
-                Location = string.IsNullOrEmpty(second.Location) ? first.Location : second.Location,
-                DefaultPosition = string.IsNullOrEmpty(second.DefaultPosition) ? first.DefaultPosition : second.DefaultPosition,
-                Source = $"{first.Source},{second.Source}",
-            };
+            var combined = new PlacementInfo(
+                string.IsNullOrEmpty(second.Location) ? first.Location : second.Location,
+                $"{first.Source},{second.Source}",
+                string.IsNullOrEmpty(second.ShapeType) ? first.ShapeType : second.ShapeType,
+                string.IsNullOrEmpty(second.DefaultPosition) ? first.DefaultPosition : second.DefaultPosition,
+                CombineArrays(first.Alternates, second.Alternates),
+                CombineArrays(first.Wrappers, second.Wrappers)
+            );
 
             return combined;
         }

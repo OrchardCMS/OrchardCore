@@ -21,12 +21,12 @@ public class PlacementInfo
     /// <summary>
     /// A shared instance representing a hidden placement.
     /// </summary>
-    public static readonly PlacementInfo Hidden = new() { Location = HiddenLocation };
+    public static readonly PlacementInfo Hidden = new(HiddenLocation);
 
     /// <summary>
     /// A shared instance representing an empty placement with no properties set.
     /// </summary>
-    public static readonly PlacementInfo Empty = new() { };
+    public static readonly PlacementInfo Empty = new();
 
     /// <summary>
     /// Cache for commonly used PlacementInfo instances with only Location set.
@@ -39,21 +39,43 @@ public class PlacementInfo
     /// </summary>
     private static readonly ConcurrentDictionary<(string Location, string Source), PlacementInfo> _locationSourceCache = new();
 
-    // Cached parsing results
-    private string[] _zones;
-    private string _position;
-    private string _tab;
-    private string _group;
-    private string _card;
-    private string _column;
-    private bool _parsed;
+    private readonly string[] _zones;
+    private readonly string _position;
+    private readonly string _tab;
+    private readonly string _group;
+    private readonly string _card;
+    private readonly string _column;
 
-    public string Location { get; init; }
-    public string Source { get; init; }
-    public string ShapeType { get; init; }
-    public string DefaultPosition { get; init; }
-    public string[] Alternates { get; init; }
-    public string[] Wrappers { get; init; }
+    public string Location { get; }
+    public string Source { get; }
+    public string ShapeType { get; }
+    public string DefaultPosition { get; }
+    public string[] Alternates { get; }
+    public string[] Wrappers { get; }
+
+    public PlacementInfo()
+    {
+        _zones = [];
+    }
+
+    public PlacementInfo(string location, string source = null, string shapeType = null, string defaultPosition = null, string[] alternates = null, string[] wrappers = null)
+    {
+        Location = location;
+        Source = source;
+        ShapeType = shapeType;
+        DefaultPosition = defaultPosition;
+        Alternates = alternates;
+        Wrappers = wrappers;
+
+        if (!string.IsNullOrEmpty(location))
+        {
+            ParseLocation(location, out _zones, out _position, out _tab, out _group, out _card, out _column);
+        }
+        else
+        {
+            _zones = [];
+        }
+    }
 
     /// <summary>
     /// Creates a new <see cref="PlacementInfo"/> with the specified location.
@@ -71,8 +93,7 @@ public class PlacementInfo
             return Hidden;
         }
 
-        // Cache PlacementInfo instances with only Location set to avoid repeated allocations
-        return _locationCache.GetOrAdd(location, static loc => new PlacementInfo { Location = loc });
+        return _locationCache.GetOrAdd(location, static loc => new PlacementInfo(loc));
     }
 
     /// <summary>
@@ -87,29 +108,15 @@ public class PlacementInfo
             return this;
         }
 
-        // If this is a cached location-only instance and we're just adding a source,
-        // try to use a cached location+source instance
         if (ShapeType == null && DefaultPosition == null &&
             Alternates == null && Wrappers == null && Source == null &&
             !string.IsNullOrEmpty(Location) && !string.IsNullOrEmpty(source))
         {
             var cacheKey = (Location, source);
-            return _locationSourceCache.GetOrAdd(cacheKey, static key => new PlacementInfo
-            {
-                Location = key.Location,
-                Source = key.Source,
-            });
+            return _locationSourceCache.GetOrAdd(cacheKey, static key => new PlacementInfo(key.Location, key.Source));
         }
 
-        return new PlacementInfo
-        {
-            Location = Location,
-            Source = source,
-            ShapeType = ShapeType,
-            DefaultPosition = DefaultPosition,
-            Alternates = Alternates,
-            Wrappers = Wrappers,
-        };
+        return new PlacementInfo(Location, source, ShapeType, DefaultPosition, Alternates, Wrappers);
     }
 
     /// <summary>
@@ -126,15 +133,7 @@ public class PlacementInfo
             return this;
         }
 
-        return new PlacementInfo
-        {
-            Location = Location ?? location,
-            Source = Source,
-            ShapeType = ShapeType,
-            DefaultPosition = DefaultPosition ?? defaultPosition,
-            Alternates = Alternates,
-            Wrappers = Wrappers,
-        };
+        return new PlacementInfo(Location ?? location, Source, ShapeType, DefaultPosition ?? defaultPosition, Alternates, Wrappers);
     }
 
     public bool IsLayoutZone()
@@ -142,7 +141,6 @@ public class PlacementInfo
 
     public bool IsHidden()
     {
-        // If there are no placement or it's explicitly noop then its hidden.
         return string.IsNullOrEmpty(Location) || Location == HiddenLocation;
     }
 
@@ -153,49 +151,16 @@ public class PlacementInfo
     /// <returns></returns>
     public string[] GetZones()
     {
-        if (_zones != null)
-        {
-            return _zones;
-        }
-
-        if (string.IsNullOrEmpty(Location))
-        {
-            return _zones = [];
-        }
-
-        EnsureParsed();
-        return _zones;
+        return _zones ?? [];
     }
 
     public string GetPosition()
     {
-        if (_parsed)
-        {
-            return _position ?? DefaultPosition ?? "";
-        }
-
-        if (string.IsNullOrEmpty(Location))
-        {
-            return DefaultPosition ?? "";
-        }
-
-        EnsureParsed();
         return _position ?? DefaultPosition ?? "";
     }
 
     public string GetTab()
     {
-        if (_parsed)
-        {
-            return _tab ?? "";
-        }
-
-        if (string.IsNullOrEmpty(Location))
-        {
-            return "";
-        }
-
-        EnsureParsed();
         return _tab ?? "";
     }
 
@@ -205,17 +170,6 @@ public class PlacementInfo
     /// </summary>
     public string GetGroup()
     {
-        if (_parsed)
-        {
-            return _group;
-        }
-
-        if (string.IsNullOrEmpty(Location))
-        {
-            return null;
-        }
-
-        EnsureParsed();
         return _group;
     }
 
@@ -225,17 +179,6 @@ public class PlacementInfo
     /// </summary>
     public string GetCard()
     {
-        if (_parsed)
-        {
-            return _card;
-        }
-
-        if (string.IsNullOrEmpty(Location))
-        {
-            return null;
-        }
-
-        EnsureParsed();
         return _card;
     }
 
@@ -245,123 +188,102 @@ public class PlacementInfo
     /// </summary>
     public string GetColumn()
     {
-        if (_parsed)
-        {
-            return _column;
-        }
-
-        if (string.IsNullOrEmpty(Location))
-        {
-            return null;
-        }
-
-        EnsureParsed();
         return _column;
     }
 
-    private void EnsureParsed()
+    private static void ParseLocation(string location, out string[] zones, out string position, out string tab, out string group, out string card, out string column)
     {
-        if (_parsed)
-        {
-            return;
-        }
+        position = null;
+        tab = null;
+        group = null;
+        card = null;
+        column = null;
 
-        var location = Location;
-
-        // Strip the Layout marker.
-        if (IsLayoutZone())
+        if (location[0] == '/')
         {
             location = location[1..];
         }
 
-        // Parse zones
         var firstDelimiter = location.IndexOfAny(_delimiters);
-        string zones;
+        string zonesString;
         if (firstDelimiter == -1)
         {
-            zones = location;
+            zonesString = location;
         }
         else
         {
-            zones = location[..firstDelimiter];
+            zonesString = location[..firstDelimiter];
         }
-        _zones = zones.Split('.');
+        zones = zonesString.Split('.');
 
-        // Parse position
         var positionDelimiter = location.IndexOf(PositionDelimiter);
         if (positionDelimiter != -1)
         {
             var secondDelimiter = location.IndexOfAny(_delimiters, positionDelimiter + 1);
             if (secondDelimiter == -1)
             {
-                _position = location[(positionDelimiter + 1)..];
+                position = location[(positionDelimiter + 1)..];
             }
             else
             {
-                _position = location[(positionDelimiter + 1)..secondDelimiter];
+                position = location[(positionDelimiter + 1)..secondDelimiter];
             }
         }
 
-        // Parse tab
         var tabDelimiter = location.IndexOf(TabDelimiter);
         if (tabDelimiter != -1)
         {
             var nextDelimiter = location.IndexOfAny(_delimiters, tabDelimiter + 1);
             if (nextDelimiter == -1)
             {
-                _tab = location[(tabDelimiter + 1)..];
+                tab = location[(tabDelimiter + 1)..];
             }
             else
             {
-                _tab = location[(tabDelimiter + 1)..nextDelimiter];
+                tab = location[(tabDelimiter + 1)..nextDelimiter];
             }
         }
 
-        // Parse group
         var groupDelimiter = location.IndexOf(GroupDelimiter);
         if (groupDelimiter != -1)
         {
             var nextDelimiter = location.IndexOfAny(_delimiters, groupDelimiter + 1);
             if (nextDelimiter == -1)
             {
-                _group = location[(groupDelimiter + 1)..];
+                group = location[(groupDelimiter + 1)..];
             }
             else
             {
-                _group = location[(groupDelimiter + 1)..nextDelimiter];
+                group = location[(groupDelimiter + 1)..nextDelimiter];
             }
         }
 
-        // Parse card
         var cardDelimiter = location.IndexOf(CardDelimiter);
         if (cardDelimiter != -1)
         {
             var nextDelimiter = location.IndexOfAny(_delimiters, cardDelimiter + 1);
             if (nextDelimiter == -1)
             {
-                _card = location[(cardDelimiter + 1)..];
+                card = location[(cardDelimiter + 1)..];
             }
             else
             {
-                _card = location[(cardDelimiter + 1)..nextDelimiter];
+                card = location[(cardDelimiter + 1)..nextDelimiter];
             }
         }
 
-        // Parse column
         var colDelimiter = location.IndexOf(ColumnDelimiter);
         if (colDelimiter != -1)
         {
             var nextDelimiter = location.IndexOfAny(_delimiters, colDelimiter + 1);
             if (nextDelimiter == -1)
             {
-                _column = location[(colDelimiter + 1)..];
+                column = location[(colDelimiter + 1)..];
             }
             else
             {
-                _column = location[(colDelimiter + 1)..nextDelimiter];
+                column = location[(colDelimiter + 1)..nextDelimiter];
             }
         }
-
-        _parsed = true;
     }
 }

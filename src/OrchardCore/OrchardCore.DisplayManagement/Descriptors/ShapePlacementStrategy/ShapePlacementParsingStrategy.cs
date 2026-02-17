@@ -80,13 +80,14 @@ public class ShapePlacementParsingStrategy : ShapeTableProvider, IShapeTableHarv
                     predicate = matches.Aggregate(predicate, BuildPredicate);
                 }
 
-                var placement = new PlacementInfo
-                {
-                    Location = filter.Location,
-                    Alternates = filter.Alternates,
-                    Wrappers = filter.Wrappers,
-                    ShapeType = filter.ShapeType,
-                };
+                var placement = new PlacementInfo(
+                    filter.Location,
+                    null,
+                    filter.ShapeType,
+                    null,
+                    filter.Alternates,
+                    filter.Wrappers
+                );
 
                 builder.Describe(shapeType)
                     .From(featureDescriptor)
