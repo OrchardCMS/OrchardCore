@@ -1,9 +1,11 @@
 @using OrchardCore.ContentManagement
+@using OrchardCore.DisplayManagement
 
 @model SearchResultsViewModel
 
 @inject IContentItemDisplayManager DisplayManager
 @inject IContentManager ContentManager
+@inject IHtmlNormalizer HtmlNormalizer
 
 @if (Model.ContentItems != null && Model.ContentItems.Any())
 {
@@ -23,7 +25,7 @@
                     {
                         foreach (var fragment in fragments)
                         {
-                            @Html.Raw(fragment)
+                            @Html.Raw(HtmlNormalizer.Normalize(fragment))
                         }
                     }
                 }
