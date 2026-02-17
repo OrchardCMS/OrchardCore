@@ -23,6 +23,15 @@ public class PlacementInfo
     /// </summary>
     public static readonly PlacementInfo Hidden = new() { Location = HiddenLocation };
 
+    // Cached parsing results
+    private string[] _zones;
+    private string _position;
+    private string _tab;
+    private string _group;
+    private string _card;
+    private string _column;
+    private bool _parsed;
+
     public string Location { get; init; }
     public string Source { get; init; }
     public string ShapeType { get; init; }
@@ -97,9 +106,7 @@ public class PlacementInfo
     }
 
     public bool IsLayoutZone()
-    {
-        return Location?.StartsWith('/') == true;
-    }
+        => !string.IsNullOrEmpty(Location) && Location[0] == '/';
 
     public bool IsHidden()
     {
@@ -114,75 +121,50 @@ public class PlacementInfo
     /// <returns></returns>
     public string[] GetZones()
     {
+        if (_zones != null)
+        {
+            return _zones;
+        }
+
         if (string.IsNullOrEmpty(Location))
         {
-            return [];
+            return _zones = [];
         }
 
-        string zones;
-        var location = Location;
-
-        // Strip the Layout marker.
-        if (IsLayoutZone())
-        {
-            location = location[1..];
-        }
-
-        var firstDelimiter = location.IndexOfAny(_delimiters);
-        if (firstDelimiter == -1)
-        {
-            zones = location;
-        }
-        else
-        {
-            zones = location[..firstDelimiter];
-        }
-
-        return zones.Split('.');
+        EnsureParsed();
+        return _zones;
     }
 
     public string GetPosition()
     {
+        if (_parsed)
+        {
+            return _position ?? DefaultPosition ?? "";
+        }
+
         if (string.IsNullOrEmpty(Location))
         {
             return DefaultPosition ?? "";
         }
 
-        var contentDelimiter = Location.IndexOf(PositionDelimiter);
-        if (contentDelimiter == -1)
-        {
-            return DefaultPosition ?? "";
-        }
-
-        var secondDelimiter = Location.IndexOfAny(_delimiters, contentDelimiter + 1);
-        if (secondDelimiter == -1)
-        {
-            return Location[(contentDelimiter + 1)..];
-        }
-
-        return Location[(contentDelimiter + 1)..secondDelimiter];
+        EnsureParsed();
+        return _position ?? DefaultPosition ?? "";
     }
 
     public string GetTab()
     {
+        if (_parsed)
+        {
+            return _tab ?? "";
+        }
+
         if (string.IsNullOrEmpty(Location))
         {
             return "";
         }
 
-        var tabDelimiter = Location.IndexOf(TabDelimiter);
-        if (tabDelimiter == -1)
-        {
-            return "";
-        }
-
-        var nextDelimiter = Location.IndexOfAny(_delimiters, tabDelimiter + 1);
-        if (nextDelimiter == -1)
-        {
-            return Location[(tabDelimiter + 1)..];
-        }
-
-        return Location[(tabDelimiter + 1)..nextDelimiter];
+        EnsureParsed();
+        return _tab ?? "";
     }
 
     /// <summary>
@@ -191,24 +173,18 @@ public class PlacementInfo
     /// </summary>
     public string GetGroup()
     {
+        if (_parsed)
+        {
+            return _group;
+        }
+
         if (string.IsNullOrEmpty(Location))
         {
             return null;
         }
 
-        var groupDelimiter = Location.IndexOf(GroupDelimiter);
-        if (groupDelimiter == -1)
-        {
-            return null;
-        }
-
-        var nextDelimiter = Location.IndexOfAny(_delimiters, groupDelimiter + 1);
-        if (nextDelimiter == -1)
-        {
-            return Location[(groupDelimiter + 1)..];
-        }
-
-        return Location[(groupDelimiter + 1)..nextDelimiter];
+        EnsureParsed();
+        return _group;
     }
 
     /// <summary>
@@ -217,24 +193,18 @@ public class PlacementInfo
     /// </summary>
     public string GetCard()
     {
+        if (_parsed)
+        {
+            return _card;
+        }
+
         if (string.IsNullOrEmpty(Location))
         {
             return null;
         }
 
-        var cardDelimiter = Location.IndexOf(CardDelimiter);
-        if (cardDelimiter == -1)
-        {
-            return null;
-        }
-
-        var nextDelimiter = Location.IndexOfAny(_delimiters, cardDelimiter + 1);
-        if (nextDelimiter == -1)
-        {
-            return Location[(cardDelimiter + 1)..];
-        }
-
-        return Location[(cardDelimiter + 1)..nextDelimiter];
+        EnsureParsed();
+        return _card;
     }
 
     /// <summary>
@@ -243,23 +213,123 @@ public class PlacementInfo
     /// </summary>
     public string GetColumn()
     {
+        if (_parsed)
+        {
+            return _column;
+        }
+
         if (string.IsNullOrEmpty(Location))
         {
             return null;
         }
 
-        var colDelimiter = Location.IndexOf(ColumnDelimiter);
-        if (colDelimiter == -1)
+        EnsureParsed();
+        return _column;
+    }
+
+    private void EnsureParsed()
+    {
+        if (_parsed)
         {
-            return null;
+            return;
         }
 
-        var nextDelimiter = Location.IndexOfAny(_delimiters, colDelimiter + 1);
-        if (nextDelimiter == -1)
+        var location = Location;
+
+        // Strip the Layout marker.
+        if (IsLayoutZone())
         {
-            return Location[(colDelimiter + 1)..];
+            location = location[1..];
         }
 
-        return Location[(colDelimiter + 1)..nextDelimiter];
+        // Parse zones
+        var firstDelimiter = location.IndexOfAny(_delimiters);
+        string zones;
+        if (firstDelimiter == -1)
+        {
+            zones = location;
+        }
+        else
+        {
+            zones = location[..firstDelimiter];
+        }
+        _zones = zones.Split('.');
+
+        // Parse position
+        var positionDelimiter = location.IndexOf(PositionDelimiter);
+        if (positionDelimiter != -1)
+        {
+            var secondDelimiter = location.IndexOfAny(_delimiters, positionDelimiter + 1);
+            if (secondDelimiter == -1)
+            {
+                _position = location[(positionDelimiter + 1)..];
+            }
+            else
+            {
+                _position = location[(positionDelimiter + 1)..secondDelimiter];
+            }
+        }
+
+        // Parse tab
+        var tabDelimiter = location.IndexOf(TabDelimiter);
+        if (tabDelimiter != -1)
+        {
+            var nextDelimiter = location.IndexOfAny(_delimiters, tabDelimiter + 1);
+            if (nextDelimiter == -1)
+            {
+                _tab = location[(tabDelimiter + 1)..];
+            }
+            else
+            {
+                _tab = location[(tabDelimiter + 1)..nextDelimiter];
+            }
+        }
+
+        // Parse group
+        var groupDelimiter = location.IndexOf(GroupDelimiter);
+        if (groupDelimiter != -1)
+        {
+            var nextDelimiter = location.IndexOfAny(_delimiters, groupDelimiter + 1);
+            if (nextDelimiter == -1)
+            {
+                _group = location[(groupDelimiter + 1)..];
+            }
+            else
+            {
+                _group = location[(groupDelimiter + 1)..nextDelimiter];
+            }
+        }
+
+        // Parse card
+        var cardDelimiter = location.IndexOf(CardDelimiter);
+        if (cardDelimiter != -1)
+        {
+            var nextDelimiter = location.IndexOfAny(_delimiters, cardDelimiter + 1);
+            if (nextDelimiter == -1)
+            {
+                _card = location[(cardDelimiter + 1)..];
+            }
+            else
+            {
+                _card = location[(cardDelimiter + 1)..nextDelimiter];
+            }
+        }
+
+        // Parse column
+        var colDelimiter = location.IndexOf(ColumnDelimiter);
+        if (colDelimiter != -1)
+        {
+            var nextDelimiter = location.IndexOfAny(_delimiters, colDelimiter + 1);
+            if (nextDelimiter == -1)
+            {
+                _column = location[(colDelimiter + 1)..];
+            }
+            else
+            {
+                _column = location[(colDelimiter + 1)..nextDelimiter];
+            }
+        }
+
+        _parsed = true;
     }
 }
