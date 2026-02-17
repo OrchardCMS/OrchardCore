@@ -6,7 +6,7 @@
     const string DefaultColor = "#000000";
 
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 @if (settings.Type == FieldBehaviorType.GeneratedHidden)
