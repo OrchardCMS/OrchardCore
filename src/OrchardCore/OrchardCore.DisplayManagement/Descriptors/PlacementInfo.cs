@@ -1,4 +1,3 @@
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors;
 
@@ -36,8 +35,8 @@ public class PlacementInfo
     public string Source { get; init; }
     public string ShapeType { get; init; }
     public string DefaultPosition { get; init; }
-    public AlternatesCollection Alternates { get; init; }
-    public AlternatesCollection Wrappers { get; init; }
+    public string[] Alternates { get; init; }
+    public string[] Wrappers { get; init; }
 
     /// <summary>
     /// Creates a new <see cref="PlacementInfo"/> with the specified location.

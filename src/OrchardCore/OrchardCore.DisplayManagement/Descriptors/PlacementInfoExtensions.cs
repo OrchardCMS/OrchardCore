@@ -1,4 +1,3 @@
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors;
 
@@ -23,8 +22,8 @@ public static class PlacementInfoExtensions
         {
             var combined = new PlacementInfo
             {
-                Alternates = first.Alternates.Combine(second.Alternates),
-                Wrappers = first.Wrappers.Combine(second.Wrappers),
+                Alternates = CombineArrays(first.Alternates, second.Alternates),
+                Wrappers = CombineArrays(first.Wrappers, second.Wrappers),
 
                 ShapeType = string.IsNullOrEmpty(second.ShapeType) ? first.ShapeType : second.ShapeType,
                 Location = string.IsNullOrEmpty(second.Location) ? first.Location : second.Location,
@@ -39,30 +38,50 @@ public static class PlacementInfoExtensions
     }
 
     /// <summary>
-    /// Combines two <see cref="AlternatesCollection"/>.
+    /// Combines the alternates from the specified placement with the provided alternates array.
+    /// </summary>
+    /// <param name="placement">The placement information whose alternates will be combined. Can be null.</param>
+    /// <param name="alternates">An array of alternate strings to combine with the placement's alternates. Can be null.</param>
+    /// <returns>An array containing all alternates from both the placement and the provided array. Will be null if both sources are null,
+    /// or empty if one or both sources are empty.
+    /// </returns>
+    public static string[] CombineAlternates(this PlacementInfo placement, string[] alternates)
+        => CombineArrays(placement?.Alternates, alternates);
+
+    /// <summary>
+    /// Combines the wrapper arrays from the specified placement and the provided wrappers into a single array.
+    /// </summary>
+    /// <param name="placement">The placement information whose wrapper array will be combined. Can be null.</param>
+    /// <param name="wrappers">An array of wrapper strings to combine with the placement's wrappers. Can be null.</param>
+    /// <returns>An array containing all wrappers from both the placement and the provided wrappers. Will be null if both sources are null,
+    /// or empty if one or both sources are empty.
+    /// </returns>
+    public static string[] CombineWrappers(this PlacementInfo placement, string[] wrappers)
+        => CombineArrays(placement?.Wrappers, wrappers);
+
+    /// <summary>
+    /// Combines two string arrays.
     /// </summary>
     /// <remarks>
-    /// First and second can be null.
+    /// First and second can be null. Returns null if both are null.
     /// </remarks>
-    /// <param name="first">First collection.</param>
-    /// <param name="second">Second collection.</param>
-    /// <returns>Combined <see cref="AlternatesCollection"/>.</returns>
-    public static AlternatesCollection Combine(this AlternatesCollection first, AlternatesCollection second)
+    /// <param name="first">First array.</param>
+    /// <param name="second">Second array.</param>
+    /// <returns>Combined array or null.</returns>
+    private static string[] CombineArrays(string[] first, string[] second)
     {
-        if (first == null)
+        if (first == null || first.Length == 0)
         {
-            return second;
+            return second ?? first;
         }
-        else if (second != null)
+        else if (second != null && second.Length > 0)
         {
-            var combined = new AlternatesCollection();
-
-            combined.AddRange(first);
-            combined.AddRange(second);
-
+            var combined = new string[first.Length + second.Length];
+            Array.Copy(first, 0, combined, 0, first.Length);
+            Array.Copy(second, 0, combined, first.Length, second.Length);
             return combined;
         }
 
-        return first;
+        return first ?? second;
     }
 }

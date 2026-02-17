@@ -1,7 +1,6 @@
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.Placements.Services;
 
@@ -62,22 +61,14 @@ public class PlacementProvider : IShapePlacementProvider
                         continue;
                     }
 
-                    var alternates = placementRule.Alternates?.Length > 0
-                        ? (placement?.Alternates).Combine(new AlternatesCollection(placementRule.Alternates))
-                        : placement?.Alternates;
-
-                    var wrappers = placementRule.Wrappers?.Length > 0
-                        ? (placement?.Wrappers).Combine(new AlternatesCollection(placementRule.Wrappers))
-                        : placement?.Wrappers;
-
                     placement = new PlacementInfo
                     {
                         Source = placement == null ? "OrchardCore.Placements" : $"{placement.Source},OrchardCore.Placements",
                         Location = !string.IsNullOrEmpty(placementRule.Location) ? placementRule.Location : placement?.Location,
                         ShapeType = !string.IsNullOrEmpty(placementRule.ShapeType) ? placementRule.ShapeType : placement?.ShapeType,
                         DefaultPosition = placement?.DefaultPosition,
-                        Alternates = alternates,
-                        Wrappers = wrappers,
+                        Alternates = placement.CombineAlternates(placementRule.Alternates),
+                        Wrappers = placement.CombineWrappers(placementRule.Wrappers),
                     };
                 }
             }

@@ -200,12 +200,12 @@ public class ShapeResult : IDisplayResult
             newShapeMetadata.Wrappers.Clear();
         }
 
-        if (placement.Alternates != null)
+        if (placement.Alternates != null && placement.Alternates.Length > 0)
         {
             newShapeMetadata.Alternates.AddRange(placement.Alternates);
         }
 
-        if (placement.Wrappers != null)
+        if (placement.Wrappers != null && placement.Wrappers.Length > 0)
         {
             newShapeMetadata.Wrappers.AddRange(placement.Wrappers);
         }
