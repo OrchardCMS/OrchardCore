@@ -41,6 +41,16 @@ public static class DataMigrationExtensions
     /// </summary>
     public static async Task<int> ExecuteUpdateMethodsAsync(this IDataMigration migration, int version)
     {
+        if (migration is IDataMigrationWithCreate dataMigrationWithCreate)
+        {
+            return dataMigrationWithCreate.Create();
+        }
+        
+        if (migration is IDataMigrationWithCreateAsync dataMigrationWithCreateAsync)
+        {
+            return await dataMigrationWithCreateAsync.CreateAsync();
+        }
+        
         var updateMethods = GetUpdateMethods(migration);
         while (updateMethods.TryGetValue(version, out var methodInfo))
         {
