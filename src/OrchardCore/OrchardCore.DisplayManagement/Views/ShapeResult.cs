@@ -19,8 +19,12 @@ public class ShapeResult : IDisplayResult
     private string _differentiator;
     private string _prefix;
     private string _cacheId;
-    private Dictionary<string, string> _otherLocations;
     private StringValues _groupIds;
+    private Dictionary<string, string> _otherLocations;
+    private string _firstDisplayType;
+    private string _firstLocation;
+    private string _secondDisplayType;
+    private string _secondLocation;
 
     private Action<CacheContext> _cache;
     private Action<ShapeDisplayContext> _displaying;
@@ -63,7 +67,159 @@ public class ShapeResult : IDisplayResult
         return ApplyImplementationAsync(context, "Edit");
     }
 
-    private async Task ApplyImplementationAsync(BuildShapeContext context, string displayType)
+    /// <summary>
+    /// Sets the prefix of the form elements rendered in the shape.
+    /// </summary>
+    /// <remarks>
+    /// The goal is to isolate each shape when edited together.
+    /// </remarks>
+    public ShapeResult Prefix(string prefix)
+    {
+        _prefix = prefix;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the default location of the shape when no specific placement applies.
+    /// </summary>
+    public ShapeResult Location(string location)
+    {
+        _defaultLocation = location;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the location to use for a matching display type.
+    /// </summary>
+    public ShapeResult Location(string displayType, string location)
+    {
+        if (_otherLocations != null)
+        {
+            _otherLocations[displayType] = location;
+        }
+        else if (_firstDisplayType == null)
+        {
+            _firstDisplayType = displayType;
+            _firstLocation = location;
+        }
+        else if (_secondDisplayType == null)
+        {
+            _secondDisplayType = displayType;
+            _secondLocation = location;
+        }
+        else
+        {
+            _otherLocations = new Dictionary<string, string>(4)
+            {
+                [_firstDisplayType] = _firstLocation,
+                [_secondDisplayType] = _secondLocation,
+                [displayType] = location,
+            };
+            _firstDisplayType = null;
+            _firstLocation = null;
+            _secondDisplayType = null;
+            _secondLocation = null;
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the delegate to be executed when the shape is being displayed.
+    /// </summary>
+    public ShapeResult Displaying(Action<ShapeDisplayContext> displaying)
+    {
+        _displaying = displaying;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the delegate to be executed when the shape is rendered (not cached).
+    /// </summary>
+    public ShapeResult Processing(Func<IShape, Task> processing)
+    {
+        _processingAsync = processing;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the delegate to be executed when the shape is rendered (not cached).
+    /// </summary>
+    public ShapeResult Processing<T>(Func<T, Task> processing)
+    {
+        _processingAsync = shape => processing?.Invoke((T)shape);
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the shape name regardless its 'Differentiator'.
+    /// </summary>
+    public ShapeResult Name(string name)
+    {
+        _name = name;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a discriminator that is used to find the location of the shape when two shapes of the same type are displayed.
+    /// </summary>
+    public ShapeResult Differentiator(string differentiator)
+    {
+        _differentiator = differentiator;
+        return this;
+    }
+
+    /// <summary>
+    /// Adds the specified group identifier to the current shape result and returns the updated result.
+    /// </summary>
+    /// <param name="groupId">The group identifier to add.</param>
+    /// <returns>
+    /// The current <see cref="ShapeResult"/> instance with the specified group identifier added to its list of group identifiers.
+    /// </returns>
+    public ShapeResult OnGroup(string groupId)
+    {
+        _groupIds = StringValues.Concat(_groupIds, groupId);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the group identifiers the shape will be rendered in.
+    /// </summary>
+    /// <param name="groupIds"></param>
+    /// <returns></returns>
+    public ShapeResult OnGroup(params string[] groupIds)
+    {
+        ArgumentNullException.ThrowIfNull(groupIds);
+
+        _groupIds = StringValues.Concat(_groupIds, groupIds);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the caching properties of the shape to render.
+    /// </summary>
+    public ShapeResult Cache(string cacheId, Action<CacheContext> cache = null)
+    {
+        _cacheId = cacheId;
+        _cache = cache;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a condition that must return true for the shape to render.
+    /// The condition is only evaluated if the shape has been placed.
+    /// </summary>
+    public ShapeResult RenderWhen(Func<Task<bool>> renderPredicateAsync)
+    {
+        _renderPredicateAsync = renderPredicateAsync;
+        return this;
+    }
+
+    public IShape Shape { get; private set; }
+
+    private Task ApplyImplementationAsync(BuildShapeContext context, string displayType)
     {
         // If no location is set from the driver, use the one from the context.
         if (string.IsNullOrEmpty(_defaultLocation))
@@ -77,10 +233,20 @@ public class ShapeResult : IDisplayResult
         // Look for mapped display type locations.
         if (_otherLocations != null)
         {
-            string displayTypePlacement;
-            if (_otherLocations.TryGetValue(displayType, out displayTypePlacement))
+            if (_otherLocations.TryGetValue(displayType, out var displayTypePlacement))
             {
                 _defaultLocation = displayTypePlacement;
+            }
+        }
+        else if (_firstDisplayType != null)
+        {
+            if (string.Equals(_firstDisplayType, displayType, StringComparison.Ordinal))
+            {
+                _defaultLocation = _firstLocation;
+            }
+            else if (_secondDisplayType != null && string.Equals(_secondDisplayType, displayType, StringComparison.Ordinal))
+            {
+                _defaultLocation = _secondLocation;
             }
         }
 
@@ -99,7 +265,7 @@ public class ShapeResult : IDisplayResult
         // If the placement should be hidden, then stop rendering execution.
         if (placement.IsHidden())
         {
-            return;
+            return Task.CompletedTask;
         }
 
         // Parse group placement.
@@ -111,7 +277,7 @@ public class ShapeResult : IDisplayResult
             OnGroup(groupId);
         }
 
-        bool hasGroupConstraints = !StringValues.IsNullOrEmpty(_groupIds);
+        var hasGroupConstraints = !StringValues.IsNullOrEmpty(_groupIds);
 
         // If no specific group is requested, use "" as it represents "any group" when applied on a shape.
         // This allows to render shapes when no shape constraints are set and also on specific groups.
@@ -120,17 +286,41 @@ public class ShapeResult : IDisplayResult
         // If the shape's group doesn't match the currently rendered one, return.
         if (hasGroupConstraints && !_groupIds.Contains(requestedGroup, StringComparer.OrdinalIgnoreCase))
         {
-            return;
+            return Task.CompletedTask;
         }
 
         // If we try to render the shape without a group, but we require one, don't render it
         if (!hasGroupConstraints && !string.IsNullOrEmpty(context.GroupId))
         {
-            return;
+            return Task.CompletedTask;
         }
 
         // If a condition has been applied to this result evaluate it only if the shape has been placed.
-        if (_renderPredicateAsync != null && !await _renderPredicateAsync())
+        if (_renderPredicateAsync != null)
+        {
+            var renderPredicateTask = _renderPredicateAsync();
+
+            if (renderPredicateTask.IsCompletedSuccessfully)
+            {
+                if (!renderPredicateTask.Result)
+                {
+                    return Task.CompletedTask;
+                }
+
+                // Predicate evaluated synchronously and returned true, continue without task.
+                return BuildAndAddShapeAsync(context, displayType, placement, renderPredicateTask: null);
+            }
+
+            // Predicate needs async evaluation, pass task to be awaited later.
+            return BuildAndAddShapeAsync(context, displayType, placement, renderPredicateTask);
+        }
+
+        return BuildAndAddShapeAsync(context, displayType, placement, renderPredicateTask: null);
+    }
+
+    private async Task BuildAndAddShapeAsync(BuildShapeContext context, string displayType, PlacementInfo placement, Task<bool> renderPredicateTask)
+    {
+        if (renderPredicateTask != null && !await renderPredicateTask)
         {
             return;
         }
@@ -226,126 +416,9 @@ public class ShapeResult : IDisplayResult
             }
         }
 
-        position = !string.IsNullOrEmpty(position) ? position : null;
-
         if (parentShape is Shape shape)
         {
             await shape.AddAsync(newShape, position);
         }
     }
-
-    /// <summary>
-    /// Sets the prefix of the form elements rendered in the shape.
-    /// </summary>
-    /// <remarks>
-    /// The goal is to isolate each shape when edited together.
-    /// </remarks>
-    public ShapeResult Prefix(string prefix)
-    {
-        _prefix = prefix;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the default location of the shape when no specific placement applies.
-    /// </summary>
-    public ShapeResult Location(string location)
-    {
-        _defaultLocation = location;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the location to use for a matching display type.
-    /// </summary>
-    public ShapeResult Location(string displayType, string location)
-    {
-        _otherLocations ??= new Dictionary<string, string>(2);
-        _otherLocations[displayType] = location;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the delegate to be executed when the shape is being displayed.
-    /// </summary>
-    public ShapeResult Displaying(Action<ShapeDisplayContext> displaying)
-    {
-        _displaying = displaying;
-
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the delegate to be executed when the shape is rendered (not cached).
-    /// </summary>
-    public ShapeResult Processing(Func<IShape, Task> processing)
-    {
-        _processingAsync = processing;
-
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the delegate to be executed when the shape is rendered (not cached).
-    /// </summary>
-    public ShapeResult Processing<T>(Func<T, Task> processing)
-    {
-        _processingAsync = shape => processing?.Invoke((T)shape);
-
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the shape name regardless its 'Differentiator'.
-    /// </summary>
-    public ShapeResult Name(string name)
-    {
-        _name = name;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets a discriminator that is used to find the location of the shape when two shapes of the same type are displayed.
-    /// </summary>
-    public ShapeResult Differentiator(string differentiator)
-    {
-        _differentiator = differentiator;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the group identifiers the shape will be rendered in.
-    /// </summary>
-    /// <param name="groupIds"></param>
-    /// <returns></returns>
-    public ShapeResult OnGroup(params string[] groupIds)
-    {
-        ArgumentNullException.ThrowIfNull(groupIds);
-
-        _groupIds = StringValues.Concat(_groupIds, groupIds);
-
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the caching properties of the shape to render.
-    /// </summary>
-    public ShapeResult Cache(string cacheId, Action<CacheContext> cache = null)
-    {
-        _cacheId = cacheId;
-        _cache = cache;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets a condition that must return true for the shape to render.
-    /// The condition is only evaluated if the shape has been placed.
-    /// </summary>
-    public ShapeResult RenderWhen(Func<Task<bool>> renderPredicateAsync)
-    {
-        _renderPredicateAsync = renderPredicateAsync;
-        return this;
-    }
-
-    public IShape Shape { get; private set; }
 }
