@@ -4,12 +4,13 @@
             <li class="list-group-item">
             {% if Model.Highlights != null and Model.Highlights[item.ContentItemId] != null %}
                 {% assign highlights = Model.Highlights[item.ContentItemId] %}
+                <h2><a href="{{ item | display_url }}">{{ item | display_text }}</a></h2>
                 {% for key in highlights %}
                     {% assign content = key[1] %}
                     {% if content != null %}
-                        <h2><a href="{{ item | display_url }}">{{ item | display_text }}</a></h2>
                         {% for value in content %}
-                            {{ value | raw }}
+                            {% assign preparedFragment = value | strip_html | escape | replace: "{{{HIGHLIGHT_START}}}", "<span class=\"search-highlight\" style=\"color: red\">" | replace: "{{{HIGHLIGHT_END}}}", "</span>" %}
+                            {{ preparedFragment | raw }}
                         {% endfor %}
                     {% endif %}
                 {% endfor %}

@@ -6,7 +6,6 @@ using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Transport;
 using Elastic.Transport.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
@@ -343,6 +342,17 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         if (await ExistsAsync(context.IndexProfile.IndexFullName))
         {
             context.SearchRequest.Indices = context.IndexProfile.IndexFullName;
+
+            var highlight = context.SearchRequest.Highlight;
+            if (highlight != null)
+            {
+                highlight.PreTags ??= new List<string>();
+                highlight.PostTags ??= new List<string>();
+                highlight.PreTags.Clear();
+                highlight.PostTags.Clear();
+                highlight.PreTags.Add("{{{HIGHLIGHT_START}}}");
+                highlight.PostTags.Add("{{{HIGHLIGHT_END}}}");
+            }
 
             var searchResponse = await _elasticClient.SearchAsync<JsonObject>(context.SearchRequest);
 
