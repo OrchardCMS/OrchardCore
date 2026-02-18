@@ -9,6 +9,7 @@ public class PlacementProvider : IShapePlacementProvider
 {
     private readonly PlacementsManager _placementsManager;
     private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
+    private Task<IPlacementInfoResolver> _resolver;
 
     public PlacementProvider(
         PlacementsManager placementsManager,
@@ -18,16 +19,29 @@ public class PlacementProvider : IShapePlacementProvider
         _placementNodeFilterProviders = placementNodeFilterProviders;
     }
 
-    public async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context)
+    public Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context)
     {
-        var placements = await _placementsManager.ListShapePlacementsAsync();
-        return new PlacementInfoResolver(placements, _placementNodeFilterProviders);
+        if (_resolver != null)
+        {
+            return _resolver;
+        }
+
+        return BuildResolverAsync(this);
+
+        static async Task<IPlacementInfoResolver> BuildResolverAsync(PlacementProvider provider)
+        {
+            var placements = await provider._placementsManager.ListShapePlacementsAsync();
+            var resolver = new PlacementInfoResolver(placements, provider._placementNodeFilterProviders);
+            provider._resolver = Task.FromResult<IPlacementInfoResolver>(resolver);
+            return resolver;
+        }
     }
 
-    public class PlacementInfoResolver : IPlacementInfoResolver
+    private sealed class PlacementInfoResolver : IPlacementInfoResolver
     {
         private readonly IReadOnlyDictionary<string, PlacementNode[]> _placements;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
+        private readonly Dictionary<PlacementNode, Func<ShapePlacementContext, bool>> _predicateCache = new();
 
         public PlacementInfoResolver(
             IReadOnlyDictionary<string, PlacementNode[]> placements,
@@ -41,51 +55,56 @@ public class PlacementProvider : IShapePlacementProvider
         {
             PlacementInfo placement = null;
 
-            if (_placements.ContainsKey(placementContext.ShapeType))
+            if (!_placements.TryGetValue(placementContext.ShapeType, out var shapePlacements))
             {
-                var shapePlacements = _placements[placementContext.ShapeType];
+                return placement;
+            }
 
-                foreach (var placementRule in shapePlacements)
+            foreach (var placementRule in shapePlacements)
+            {
+                var filters = placementRule.Filters;
+
+                if (!_predicateCache.TryGetValue(placementRule, out var predicate))
                 {
-                    var filters = placementRule.Filters.ToList();
-
-                    Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, placementRule);
+                    predicate = ctx => CheckFilter(ctx, placementRule);
 
                     if (filters.Count > 0)
                     {
                         predicate = filters.Aggregate(predicate, BuildPredicate);
                     }
 
-                    if (!predicate(placementContext))
-                    {
-                        // Ignore rule
-                        continue;
-                    }
+                    _predicateCache[placementRule] = predicate;
+                }
 
-                    placement ??= new PlacementInfo
-                    {
-                        Source = "OrchardCore.Placements",
-                    };
+                if (!predicate(placementContext))
+                {
+                    // Ignore rule
+                    continue;
+                }
 
-                    if (!string.IsNullOrEmpty(placementRule.Location))
-                    {
-                        placement.Location = placementRule.Location;
-                    }
+                placement ??= new PlacementInfo
+                {
+                    Source = "OrchardCore.Placements",
+                };
 
-                    if (!string.IsNullOrEmpty(placementRule.ShapeType))
-                    {
-                        placement.ShapeType = placementRule.ShapeType;
-                    }
+                if (!string.IsNullOrEmpty(placementRule.Location))
+                {
+                    placement.Location = placementRule.Location;
+                }
 
-                    if (placementRule.Alternates?.Length > 0)
-                    {
-                        placement.Alternates = placement.Alternates.Combine(new AlternatesCollection(placementRule.Alternates));
-                    }
+                if (!string.IsNullOrEmpty(placementRule.ShapeType))
+                {
+                    placement.ShapeType = placementRule.ShapeType;
+                }
 
-                    if (placementRule.Wrappers?.Length > 0)
-                    {
-                        placement.Wrappers = placement.Wrappers.Combine(new AlternatesCollection(placementRule.Wrappers));
-                    }
+                if (placementRule.Alternates?.Length > 0)
+                {
+                    placement.Alternates = placement.Alternates.Combine(new AlternatesCollection(placementRule.Alternates));
+                }
+
+                if (placementRule.Wrappers?.Length > 0)
+                {
+                    placement.Wrappers = placement.Wrappers.Combine(new AlternatesCollection(placementRule.Wrappers));
                 }
             }
 

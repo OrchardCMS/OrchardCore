@@ -16,6 +16,7 @@ public class ShapePlacementParsingStrategy : ShapeTableProvider, IShapeTableHarv
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
     private readonly Dictionary<string, PlacementFile> _placementFileCache = new();
+    private readonly Dictionary<PlacementNode, Func<ShapePlacementContext, bool>> _predicateCache = new();
 
     public ShapePlacementParsingStrategy(
         IHostEnvironment hostingEnvironment,
@@ -72,13 +73,18 @@ public class ShapePlacementParsingStrategy : ShapeTableProvider, IShapeTableHarv
 
             foreach (var filter in entry.Value)
             {
-                var matches = filter.Filters.ToList();
+                var matches = filter.Filters;
 
-                Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
-
-                if (matches.Count > 0)
+                if (!_predicateCache.TryGetValue(filter, out var predicate))
                 {
-                    predicate = matches.Aggregate(predicate, BuildPredicate);
+                    predicate = ctx => CheckFilter(ctx, filter);
+
+                    if (matches.Count > 0)
+                    {
+                        predicate = matches.Aggregate(predicate, BuildPredicate);
+                    }
+
+                    _predicateCache[filter] = predicate;
                 }
 
                 var placement = new PlacementInfo
