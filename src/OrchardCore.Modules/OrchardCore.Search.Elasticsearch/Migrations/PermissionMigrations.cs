@@ -8,18 +8,18 @@ namespace OrchardCore.Search.Elasticsearch.Migrations;
 
 public class PermissionMigrations : DataMigration
 {
-    private readonly IRoleService _roleService;
+    private readonly RoleManager<IRole> _roleManager;
     private readonly IRoleStore<IRole> _roleStore;
 
-    public PermissionMigrations(IRoleService roleService, IRoleStore<IRole> roleStore)
+    public PermissionMigrations(RoleManager<IRole> roleManager, IRoleStore<IRole> roleStore)
     {
-        _roleService = roleService;
+        _roleManager = roleManager;
         _roleStore = roleStore;
     }
 
     public async Task<int> CreateAsync()
     {
-        foreach (var roleToUpdate in ReplaceObsoletePermissions(await _roleService.GetRolesAsync()))
+        foreach (var roleToUpdate in ReplaceObsoletePermissions(_roleManager.Roles.ToList()))
         {
             await _roleStore.UpdateAsync(roleToUpdate, CancellationToken.None);
         }
