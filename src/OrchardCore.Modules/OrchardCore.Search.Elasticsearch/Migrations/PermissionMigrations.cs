@@ -11,7 +11,7 @@ using static OrchardCore.Search.Elasticsearch.ElasticsearchIndexPermissionHelper
 
 namespace OrchardCore.Search.Elasticsearch.Migrations;
 
-public class PermissionMigrations : DataMigration, IDataMigrationWithCreate
+public class PermissionMigrations : DataMigration
 {
     private readonly ShellSettings _shellSettings;
 
