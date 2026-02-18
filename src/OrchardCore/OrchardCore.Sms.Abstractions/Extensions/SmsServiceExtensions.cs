@@ -1,3 +1,5 @@
+using OrchardCore.Infrastructure;
+
 namespace OrchardCore.Sms;
 
 /// <summary>
@@ -12,7 +14,7 @@ public static class SmsServiceExtensions
     /// <param name="to">The phone number to send the message to.</param>
     /// <param name="body">The body of the message to send.</param>
     /// <returns></returns>
-    public static Task<SmsResult> SendAsync(this ISmsService smsService, string to, string body)
+    public static Task<Result> SendAsync(this ISmsService smsService, string to, string body)
     {
         var message = new SmsMessage
         {
