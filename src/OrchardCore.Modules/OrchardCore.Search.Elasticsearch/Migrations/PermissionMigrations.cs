@@ -12,8 +12,6 @@ namespace OrchardCore.Search.Elasticsearch.Migrations;
 
 public class PermissionMigrations : DataMigration, IDataMigrationWithCreate
 {
-    public override bool SkipIfInitializing => true;
-
     public int Create()
     {
         ShellScope.AddDeferredTask(ReplaceObsoletePermissionsAsync);
