@@ -90,17 +90,17 @@ Here is an example of how to create `Elasticsearch` index profile using the `Ind
     {
       "name":"CreateOrUpdateIndexProfile",
       "indexes": [
-	    {
-		    "Name": "BlogPostsES",
+        {
+            "Name": "BlogPostsES",
             "IndexName": "blogposts",
-		    "ProviderName": "Elasticsearch",
-		    "Type": "Content",
-		    "Properties": {
-			    "ContentIndexMetadata": {
-				    "IndexLatest": false,
-				    "IndexedContentTypes": ["BlogPosts"],
-				    "Culture": "any"
-			    },
+            "ProviderName": "Elasticsearch",
+            "Type": "Content",
+            "Properties": {
+                "ContentIndexMetadata": {
+                    "IndexLatest": false,
+                    "IndexedContentTypes": ["BlogPosts"],
+                    "Culture": "any"
+                },
                 "ElasticsearchIndexMetadata": {
                     "AnalyzerName": "standard",
                     "StoreSourceData": true,
@@ -113,8 +113,8 @@ Here is an example of how to create `Elasticsearch` index profile using the `Ind
                         "Content.ContentItem.FullText"
                     ]
                 }
-		    }
-	    }
+            }
+        }
       ]
     }
   ]
