@@ -23,6 +23,15 @@ public class PolymorphicJsonTypeInfoResolver : DefaultJsonTypeInfoResolver
             return jsonTypeInfo;
         }
 
+        // Abstract and interface types are handled by ResilientPolymorphicJsonConverterFactory,
+        // which gracefully returns null for unrecognized type discriminators instead of throwing.
+        // This prevents crashes when a feature that registered a derived type has been disabled.
+
+        if (jsonTypeInfo.Type.IsAbstract || jsonTypeInfo.Type.IsInterface)
+        {
+            return jsonTypeInfo;
+        }
+
         // At that point we need to list the potential sub-classes that
         // this type could also represent.
 
