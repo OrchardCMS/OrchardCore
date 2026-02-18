@@ -25,7 +25,7 @@
                         foreach (var fragment in fragments)
                         {
                             var preparedFragment = Html.Encode(fragment.RemoveTags())
-                                .Replace("{{{HIGHLIGHT_START}}}", "<span class=\"search-highlight\" style=\"color: red\">")
+                                .Replace("{{{HIGHLIGHT_START}}}", "<span class=\"search-highlight\">")
                                 .Replace("{{{HIGHLIGHT_END}}}", "</span>");
                             @Html.Raw(preparedFragment)
                         }

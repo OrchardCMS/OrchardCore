@@ -9,7 +9,7 @@
                     {% assign content = key[1] %}
                     {% if content != null %}
                         {% for value in content %}
-                            {% assign preparedFragment = value | strip_html | escape | replace: "{{{HIGHLIGHT_START}}}", "<span class=\"search-highlight\" style=\"color: red\">" | replace: "{{{HIGHLIGHT_END}}}", "</span>" %}
+                            {% assign preparedFragment = value | strip_html | escape | replace: "{{{HIGHLIGHT_START}}}", "<span class=\"search-highlight\">" | replace: "{{{HIGHLIGHT_END}}}", "</span>" %}
                             {{ preparedFragment | raw }}
                         {% endfor %}
                     {% endif %}
