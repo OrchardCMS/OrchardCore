@@ -1,4 +1,3 @@
-using Elastic.Clients.Elasticsearch;
 using Json.Path;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
@@ -33,6 +32,8 @@ public class ElasticsearchQueryService
 
         result.TotalCount = searchResult.TotalCount;
         result.Highlights = [];
+        result.HighlightPreTags = context.SearchRequest.Highlight?.PreTags?.ToArray() ?? Array.Empty<string>();
+        result.HighlightPostTags = context.SearchRequest.Highlight?.PostTags?.ToArray() ?? Array.Empty<string>();
 
         foreach (var item in searchResult.TopDocs)
         {

@@ -23,4 +23,10 @@ public class SearchResultsViewModel : ShapeViewModel
 
     [BindNever]
     public Dictionary<string, IReadOnlyDictionary<string, IReadOnlyCollection<string>>> Highlights { get; set; }
+
+    [BindNever]
+    public IReadOnlyList<string> HighlightPreTags { get; set; }
+
+    [BindNever]
+    public IReadOnlyList<string> HighlightPostTags { get; set; }
 }

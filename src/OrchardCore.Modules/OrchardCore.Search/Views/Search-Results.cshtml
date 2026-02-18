@@ -24,9 +24,30 @@
                     {
                         foreach (var fragment in fragments)
                         {
-                            var preparedFragment = Html.Encode(fragment.RemoveTags())
-                                .Replace("{{{HIGHLIGHT_START}}}", "<span class=\"search-highlight\">")
-                                .Replace("{{{HIGHLIGHT_END}}}", "</span>");
+                            var preparedFragment = fragment;
+
+                            for (int i = 0; i < Model.HighlightPreTags.Count; i++)
+                            {
+                                preparedFragment = preparedFragment.Replace(Model.HighlightPreTags[i], $"{{{{HIGHLIGHT_PRE_TAG_{i}}}}}");
+                            }
+
+                            for (int i = 0; i < Model.HighlightPostTags.Count; i++)
+                            {
+                                preparedFragment = preparedFragment.Replace(Model.HighlightPostTags[i], $"{{{{HIGHLIGHT_POST_TAG_{i}}}}}");
+                            }
+
+                            preparedFragment = Html.Encode(preparedFragment.RemoveTags());
+
+                            for (int i = 0; i < Model.HighlightPreTags.Count; i++)
+                            {
+                                preparedFragment = preparedFragment.Replace($"{{{{HIGHLIGHT_PRE_TAG_{i}}}}}", Model.HighlightPreTags[i]);
+                            }
+
+                            for (int i = 0; i < Model.HighlightPostTags.Count; i++)
+                            {
+                                preparedFragment = preparedFragment.Replace($"{{{{HIGHLIGHT_POST_TAG_{i}}}}}", Model.HighlightPostTags[i]);
+                            }
+
                             @Html.Raw(preparedFragment)
                         }
                     }

@@ -293,7 +293,7 @@ The Elasticsearch module connection configuration can be set globally in the `ap
 !!! note
     When `CloudConnectionPool` connection type is used, `CertificateFingerprint` is not needed.
 
-The connection types documentation and examples can be found [in the official Elastiscarch documentation](https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-pooling.html).
+The connection types documentation and examples can be found [in the official Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-pooling.html).
 
 ### Indexing settings
 
@@ -317,6 +317,12 @@ By editing a given Elasticsearch index on the dashboard, you have access to gene
     }
   },
   "highlight": {
+    "pre_tags": [
+      "<span style='background-color: #FFF3CD;'>"
+    ],
+    "post_tags": [
+      "</span>"
+    ],
     "fields": {
       "Content.ContentItem.FullText": {
         "fragment_size": 150,

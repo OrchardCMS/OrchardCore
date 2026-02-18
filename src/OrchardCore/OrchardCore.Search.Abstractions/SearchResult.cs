@@ -6,6 +6,10 @@ public class SearchResult
 
     public Dictionary<string, IReadOnlyDictionary<string, IReadOnlyCollection<string>>> Highlights { get; set; }
 
+    public IReadOnlyList<string> HighlightPreTags { get; set; }
+
+    public IReadOnlyList<string> HighlightPostTags { get; set; }
+
     public bool Latest { get; set; }
 
     public bool Success { get; set; }

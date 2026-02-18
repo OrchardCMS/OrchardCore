@@ -343,17 +343,6 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         {
             context.SearchRequest.Indices = context.IndexProfile.IndexFullName;
 
-            var highlight = context.SearchRequest.Highlight;
-            if (highlight != null)
-            {
-                highlight.PreTags ??= new List<string>();
-                highlight.PostTags ??= new List<string>();
-                highlight.PreTags.Clear();
-                highlight.PostTags.Clear();
-                highlight.PreTags.Add("{{{HIGHLIGHT_START}}}");
-                highlight.PostTags.Add("{{{HIGHLIGHT_END}}}");
-            }
-
             var searchResponse = await _elasticClient.SearchAsync<JsonObject>(context.SearchRequest);
 
             if (!searchResponse.IsValidResponse)
