@@ -3,7 +3,6 @@ using OrchardCore.DataLocalization.Deployment;
 using OrchardCore.DataLocalization.Recipes;
 using OrchardCore.DataLocalization.Services;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -24,11 +23,6 @@ public class Startup : StartupBase
     {
         services.AddScoped<TranslationsManager>();
         services.AddRecipeExecutionStep<TranslationsStep>();
-
-        //// Legacy deployment step (kept for backward compatibility).
-        //services.AddTransient<IDeploymentSource, AllDataTranslationsDeploymentSource>();
-        //services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllDataTranslationsDeploymentStep>());
-        //services.AddScoped<IDisplayDriver<DeploymentStep>, AllDataTranslationsDeploymentStepDriver>();
 
         services.AddDeployment<TranslationsDeploymentSource, TranslationsDeploymentStep, TranslationsDeploymentStepDriver>();
         services.AddDeployment<AllDataTranslationsDeploymentSource, AllDataTranslationsDeploymentStep, AllDataTranslationsDeploymentStepDriver>();
