@@ -303,7 +303,7 @@ By editing a given Elasticsearch index on the dashboard, you have access to gene
 - Search type: Determines how the index will be searched.
   - Multi-Match Query: The default search type that uses the [`multi_match` query](https://www.elastic.co/docs/reference/query-languages/query-dsl/query-dsl-multi-match-query) to search across multiple fields, as configured.
   - Query String Query: Uses the [`query_string` query](https://www.elastic.co/docs/reference/query-languages/query-dsl/query-dsl-query-string-query), which allows for more complex queries using a query syntax.
-  - Custom Query: Allows you to define a custom Elasticsearch query for each search request. Liquid is supported, so use the `{{ term }}` template as a substitute for the user-provided search term. An example query that utilizes **search highlights** is shown below:
+  - Custom Query: Allows you to define a custom Elasticsearch query for each search request. Liquid is supported, so use the `{{ term }}` template in place of the user-provided search term. An example query that utilizes **search highlights** is shown below:
 
 ```json
 {
@@ -330,11 +330,11 @@ By editing a given Elasticsearch index on the dashboard, you have access to gene
 With this feature, Elasticsearch will return highlighted fragments wrapped in `<span class="search-highlight">` HTML tags, which can then be displayed in the Search module or other components. This enables the presentation of more relevant content that directly matches the search term.
 
 !!! note
-    Highlight requests only work when the content item is stored in Elasticsearch service, i.e. the "Store Source Data" checkbox under the index settings is checked.
+    Highlight requests only work when the content item is stored in the Elasticsearch service, i.e. the "Store Source Data" checkbox under the index settings is checked.
 
 ## Elasticsearch Analyzers
 
-As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../Configuration/README.md) file:
+As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only the `standard` analyzer is available. You may update the Elasticsearch configurations to enable any built-in or custom analyzers. For example, to enable the built-in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../Configuration/README.md) file:
 
 ```json
 {
