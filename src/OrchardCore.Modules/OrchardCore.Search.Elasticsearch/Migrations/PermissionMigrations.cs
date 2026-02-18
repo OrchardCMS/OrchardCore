@@ -14,6 +14,8 @@ public class PermissionMigrations : DataMigration
     private readonly IRoleService _roleService;
     private readonly IRoleStore<IRole> _roleStore;
 
+    public override bool SkipIfInitializing => true;
+
     public PermissionMigrations(
         IIndexProfileManager indexProfileManager,
         IRoleService roleService,
