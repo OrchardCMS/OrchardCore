@@ -217,6 +217,37 @@ public class AsyncOptionsConfigurationTests
         Assert.Equal("PostConfigured", options.Value);
     }
 
+    [Fact]
+    public async Task AsyncConfiguredOptions_WorkWithNestedScopes()
+    {
+        // Arrange
+        var shellBlueprint = CreateBlueprint();
+        AddStartup(shellBlueprint, typeof(AsyncOptionsStartup));
+
+        // Act
+        var container = await _shellContainerFactory.CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint);
+
+        // Run initializers
+        var shellContainerOptions = container.GetRequiredService<IOptions<ShellContainerOptions>>().Value;
+        foreach (var initializeAsync in shellContainerOptions.Initializers)
+        {
+            await initializeAsync(container);
+        }
+
+        // Create nested scopes
+        using var outerScope = container.CreateScope();
+        using var innerScope = outerScope.ServiceProvider.CreateScope();
+        
+        var outerOptions = outerScope.ServiceProvider.GetRequiredService<IOptions<TestAsyncOptions>>().Value;
+        var innerOptions = innerScope.ServiceProvider.GetRequiredService<IOptions<TestAsyncOptions>>().Value;
+
+        // Assert - both scopes should resolve the same configured options
+        Assert.NotNull(outerOptions);
+        Assert.NotNull(innerOptions);
+        Assert.Equal("AsyncConfigured", outerOptions.Value);
+        Assert.Equal("AsyncConfigured", innerOptions.Value);
+    }
+
     private static ShellBlueprint CreateBlueprint()
     {
         return new ShellBlueprint
