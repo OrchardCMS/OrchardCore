@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Security;
@@ -10,25 +12,11 @@ namespace OrchardCore.Search.Elasticsearch.Migrations;
 
 public class PermissionMigrations : DataMigration
 {
-    private readonly IIndexProfileManager _indexProfileManager;
-    private readonly IRoleService _roleService;
-    private readonly IRoleStore<IRole> _roleStore;
-
     public override bool SkipIfInitializing => true;
 
-    public PermissionMigrations(
-        IIndexProfileManager indexProfileManager,
-        IRoleService roleService,
-        IRoleStore<IRole> roleStore)
+    public int Create()
     {
-        _indexProfileManager = indexProfileManager;
-        _roleService = roleService;
-        _roleStore = roleStore;
-    }
-
-    public async Task<int> CreateAsync()
-    {
-        await ReplaceObsoletePermissionsAsync();
+        ShellScope.AddDeferredTask(ReplaceObsoletePermissionsAsync);
 
         return 1;
     }
@@ -37,9 +25,13 @@ public class PermissionMigrations : DataMigration
     /// Selects the roles that need to be updated, and replaces their <c>QueryElasticsearch{0}Index</c> permissions with
     /// the equivalent <c>QueryIndex_{0}</c> permissions. 
     /// </summary>
-    private async Task ReplaceObsoletePermissionsAsync()
+    private static async Task ReplaceObsoletePermissionsAsync(ShellScope shellScope)
     {
-        var allRoles = await _roleService.GetRolesAsync();
+        var indexProfileManager = shellScope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
+        var roleService = shellScope.ServiceProvider.GetRequiredService<IRoleService>();
+        var roleStore = shellScope.ServiceProvider.GetRequiredService<IRoleStore<IRole>>();
+        
+        var allRoles = await roleService.GetRolesAsync();
         var rolesToUpdate = allRoles
             .Where(role => role is Role)
             .Cast<Role>()
@@ -51,7 +43,7 @@ public class PermissionMigrations : DataMigration
             foreach (var claim in role.RoleClaims.Where(IsElasticsearchIndexPermissionClaim))
             {
                 var name = GetIndexNameFromPermissionName(claim.ClaimValue);
-                var indexProfile = await _indexProfileManager.FindByNameAndProviderAsync(
+                var indexProfile = await indexProfileManager.FindByNameAndProviderAsync(
                     name,
                     ElasticsearchConstants.ProviderName);
 
@@ -61,7 +53,7 @@ public class PermissionMigrations : DataMigration
                 }
             }
             
-            await _roleStore.UpdateAsync(role, CancellationToken.None);
+            await roleStore.UpdateAsync(role, CancellationToken.None);
         }
     }
 }
