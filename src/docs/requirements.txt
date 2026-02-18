@@ -6,3 +6,5 @@ pymdown-extensions>=10.20.0
 mkdocs-exclude>=1.0.2
 mkdocs-redirects>=1.2.1
 mdx_truly_sane_lists>=1.2
+# Pinning click because higher versions break file watching and auto-reload, see https://github.com/mkdocs/mkdocs/issues/4032.
+click<8.3
