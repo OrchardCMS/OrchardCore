@@ -28,6 +28,7 @@ public static class ElasticsearchIndexPermissionHelper
     }
     
     internal static bool IsElasticsearchIndexPermissionClaim(RoleClaim claim) =>
+        claim.ClaimType == nameof(Permission) &&
         claim.ClaimValue.StartsWithOrdinalIgnoreCase(PermissionNamePrefix) &&
         claim.ClaimValue.EndsWithOrdinalIgnoreCase(PermissionNameSuffix);
 

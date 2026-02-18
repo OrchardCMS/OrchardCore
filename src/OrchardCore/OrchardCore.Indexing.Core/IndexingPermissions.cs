@@ -6,14 +6,12 @@ namespace OrchardCore.Indexing.Core;
 
 public static class IndexingPermissions
 {
-    public const string PermissionNamePrefix = "QueryIndex_";
-    
     public static readonly Permission QuerySearchIndex = new("QuerySearchIndex", "Query any index");
 
     public static readonly Permission ManageIndexes = new("ManageIndexes", "Manage Indexes");
 
     private static readonly Permission _indexPermissionTemplate =
-        new(PermissionNamePrefix + "{0}", "Query '{0}' Index", [ManageIndexes, QuerySearchIndex]);
+        new("QueryIndex_{0}", "Query '{0}' Index", [ManageIndexes, QuerySearchIndex]);
 
     private static readonly ConcurrentDictionary<string, Permission> _permissions = [];
 
@@ -23,6 +21,7 @@ public static class IndexingPermissions
 
         return _permissions.GetOrAdd(indexProfile.Id, indexId => new Permission(
             string.Format(_indexPermissionTemplate.Name, indexProfile.Name),
-            string.Format(_indexPermissionTemplate.Description, indexProfile.Name), _indexPermissionTemplate.ImpliedBy));
+            string.Format(_indexPermissionTemplate.Description, indexProfile.Name),
+            _indexPermissionTemplate.ImpliedBy));
     }
 }

@@ -1,28 +1,32 @@
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Data.Migration;
+using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Security;
 using OrchardCore.Security.Services;
+using static OrchardCore.Search.Elasticsearch.ElasticsearchIndexPermissionHelper;
 
 namespace OrchardCore.Search.Elasticsearch.Migrations;
 
 public class PermissionMigrations : DataMigration
 {
-    private readonly RoleManager<IRole> _roleManager;
+    private readonly IIndexProfileManager _indexProfileManager;
+    private readonly IRoleService _roleService;
     private readonly IRoleStore<IRole> _roleStore;
 
-    public PermissionMigrations(RoleManager<IRole> roleManager, IRoleStore<IRole> roleStore)
+    public PermissionMigrations(
+        IIndexProfileManager indexProfileManager,
+        IRoleService roleService,
+        IRoleStore<IRole> roleStore)
     {
-        _roleManager = roleManager;
+        _indexProfileManager = indexProfileManager;
+        _roleService = roleService;
         _roleStore = roleStore;
     }
 
     public async Task<int> CreateAsync()
     {
-        foreach (var roleToUpdate in ReplaceObsoletePermissions(_roleManager.Roles.ToList()))
-        {
-            await _roleStore.UpdateAsync(roleToUpdate, CancellationToken.None);
-        }
+        await ReplaceObsoletePermissionsAsync();
 
         return 1;
     }
@@ -31,23 +35,31 @@ public class PermissionMigrations : DataMigration
     /// Selects the roles that need to be updated, and replaces their <c>QueryElasticsearch{0}Index</c> permissions with
     /// the equivalent <c>QueryIndex_{0}</c> permissions. 
     /// </summary>
-    private static List<Role> ReplaceObsoletePermissions(IEnumerable<IRole> allRoles)
+    private async Task ReplaceObsoletePermissionsAsync()
     {
+        var allRoles = await _roleService.GetRolesAsync();
         var rolesToUpdate = allRoles
             .Where(role => role is Role)
             .Cast<Role>()
-            .Where(role => role.RoleClaims.Any(ElasticsearchIndexPermissionHelper.IsElasticsearchIndexPermissionClaim))
+            .Where(role => role.RoleClaims.Any(IsElasticsearchIndexPermissionClaim))
             .ToList();
 
         foreach (var role in rolesToUpdate)
         {
-            foreach (var claim in role.RoleClaims.Where(ElasticsearchIndexPermissionHelper.IsElasticsearchIndexPermissionClaim))
+            foreach (var claim in role.RoleClaims.Where(IsElasticsearchIndexPermissionClaim))
             {
-                var name = ElasticsearchIndexPermissionHelper.GetIndexNameFromPermissionName(claim.ClaimValue);
-                claim.ClaimValue = IndexingPermissions.PermissionNamePrefix + name;
-            }
-        }
+                var name = GetIndexNameFromPermissionName(claim.ClaimValue);
+                var indexProfile = await _indexProfileManager.FindByNameAndProviderAsync(
+                    name,
+                    ElasticsearchConstants.ProviderName);
 
-        return rolesToUpdate;
+                if (indexProfile != null)
+                {
+                    claim.ClaimValue = IndexingPermissions.CreateDynamicPermission(indexProfile).Name;
+                }
+            }
+            
+            await _roleStore.UpdateAsync(role, CancellationToken.None);
+        }
     }
 }
