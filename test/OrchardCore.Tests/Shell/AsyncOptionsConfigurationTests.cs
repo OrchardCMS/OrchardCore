@@ -16,7 +16,6 @@ public class AsyncOptionsConfigurationTests
         .AsUninitialized();
 
     private readonly ShellContainerFactory _shellContainerFactory;
-    private readonly IServiceProvider _applicationServiceProvider;
 
     public AsyncOptionsConfigurationTests()
     {
@@ -29,7 +28,7 @@ public class AsyncOptionsConfigurationTests
         _shellContainerFactory = new ShellContainerFactory(
             new StubHostingEnvironment(),
             new StubExtensionManager(),
-            _applicationServiceProvider = applicationServices.BuildServiceProvider(),
+            applicationServices.BuildServiceProvider(),
             applicationServices,
             loggerMock.Object
         );
@@ -228,7 +227,7 @@ public class AsyncOptionsConfigurationTests
         };
     }
 
-    private static IFeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
+    private static FeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
     {
         var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, new ExtensionInfo(startupType.Name), null, false, false, false);
         shellBlueprint.Dependencies.Add(startupType, [featureInfo]);
