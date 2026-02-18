@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
@@ -12,9 +13,17 @@ namespace OrchardCore.Search.Elasticsearch.Migrations;
 
 public class PermissionMigrations : DataMigration, IDataMigrationWithCreate
 {
+    private readonly ShellSettings _shellSettings;
+
+    public PermissionMigrations(ShellSettings shellSettings) =>
+        _shellSettings = shellSettings;
+
     public int Create()
     {
-        ShellScope.AddDeferredTask(ReplaceObsoletePermissionsAsync);
+        if (!_shellSettings.IsInitializing())
+        {
+            ShellScope.AddDeferredTask(ReplaceObsoletePermissionsAsync);
+        }
 
         return 1;
     }
