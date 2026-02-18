@@ -136,7 +136,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                 var version = 0;
                 try
                 {
-                    version = await migration.ExecuteCreateMethodAsync();
+                    version = await migration.ExecuteCreateMethodIfNeededAsync(shellSettings);
                     version = await migration.ExecuteUpdateMethodsAsync(version);
                 }
                 catch (Exception ex)

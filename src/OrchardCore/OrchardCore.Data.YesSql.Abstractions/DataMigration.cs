@@ -4,7 +4,7 @@ namespace OrchardCore.Data.Migration;
 
 /// <summary>
 /// A <see cref="DataMigration"/> is discovered through method reflection
-/// and runs sequentially from the Create() method through UpdateFromX().
+/// and runs sequentially from the <c>Create()</c> method through <c>UpdateFromX()</c>.
 /// </summary>
 /// <example>
 /// Usage of method implementations:
@@ -22,6 +22,12 @@ namespace OrchardCore.Data.Migration;
 /// </example>
 public abstract class DataMigration : IDataMigration
 {
+    /// <inheritdocs />
+    public virtual bool SkipIfInitializing => false;
+
+    /// <inheritdocs />
+    public virtual int SkipIfInitializingReturnValue => 1;
+    
     /// <inheritdocs />
     public ISchemaBuilder SchemaBuilder { get; set; }
 }

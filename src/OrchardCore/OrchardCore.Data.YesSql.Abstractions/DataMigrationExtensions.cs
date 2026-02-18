@@ -1,3 +1,4 @@
+using OrchardCore.Environment.Shell;
 using System.Reflection;
 
 namespace OrchardCore.Data.Migration;
@@ -25,6 +26,15 @@ public static class DataMigrationExtensions
 
         return 0;
     }
+
+    /// <summary>
+    /// Executes the create method of the provided data migration, unless it's a new tenant and <see
+    /// cref="IDataMigration.SkipIfInitializing"/> is <see langword="true"/>".
+    /// </summary>
+    public static Task<int> ExecuteCreateMethodIfNeededAsync(this IDataMigration migration, ShellSettings shellSettings) =>
+        migration.SkipIfInitializing && shellSettings.IsInitializing()
+            ? Task.FromResult(migration.SkipIfInitializingReturnValue)
+            : migration.ExecuteCreateMethodAsync();
 
     /// <summary>
     /// Executes the update methods of the provided data migration. 
