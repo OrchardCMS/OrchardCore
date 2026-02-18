@@ -24,7 +24,7 @@ namespace OrchardCore.Search.AzureAI.Migrations;
 /// This migration will migrate any index that was created before v3 to use the new structure.
 /// This migration will be removed in future releases.
 /// </summary>
-internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
+internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration, IDataMigrationWithCreate
 {
     private readonly ShellSettings _shellSettings;
 
@@ -33,9 +33,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
         _shellSettings = shellSettings;
     }
 
-#pragma warning disable CA1822 // Mark members as static
     public int Create()
-#pragma warning restore CA1822 // Mark members as static
     {
         return 2;
     }

@@ -6,11 +6,9 @@ using OrchardCore.Indexing.Core;
 
 namespace OrchardCore.Indexing.DataMigrations;
 
-internal sealed class WorkerFeatureMigrations : DataMigration
+internal sealed class WorkerFeatureMigrations : DataMigration, IDataMigrationWithCreate
 {
-#pragma warning disable CA1822 // Member can be static
     public int Create()
-#pragma warning restore CA1822
     {
         ShellScope.AddDeferredTask(async scope =>
         {
