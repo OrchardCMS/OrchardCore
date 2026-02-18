@@ -15,8 +15,8 @@ This module provides a database-backed localization system for translating dynam
 
 ## Getting Started
 
-1. Enable the **Data Localization** feature in the admin under **Configuration → Features**
-2. Navigate to **Configuration → Localization → Translations** in the admin menu
+1. Enable the **Data Localization** feature in the admin under **Tools → Features**
+2. Navigate to **Settings → Localization → Dynamic Translations** in the admin menu
 3. Select a culture from the dropdown
 4. Edit translations for each category (Permissions, Content Types, etc.)
 5. Use the **Statistics** page to track translation progress
@@ -80,7 +80,7 @@ ManageTranslations                    (Full edit access - implies ViewTranslatio
 
 To allow a user to only edit translations for a specific culture:
 
-1. Go to **Security → Roles**
+1. Go to **Access Control → Roles**
 2. Edit the desired role
 3. Under **Data Localization**, check the culture-specific permission (e.g., "Manage fr-FR translations")
 

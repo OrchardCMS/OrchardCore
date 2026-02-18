@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -14,8 +15,8 @@ public class ContentDefinitionService : IContentDefinitionService
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
+    private readonly ContentTypesOptions _contentTypesOptions;
     private readonly ILogger _logger;
-
     protected readonly IStringLocalizer S;
 
     public ContentDefinitionService(
@@ -23,11 +24,13 @@ public class ContentDefinitionService : IContentDefinitionService
             IEnumerable<IContentDefinitionEventHandler> contentDefinitionEventHandlers,
             IEnumerable<ContentPart> contentParts,
             IEnumerable<ContentField> contentFields,
+            IOptions<ContentTypesOptions> contentTypesOptions,
             ILogger<ContentDefinitionService> logger,
             IStringLocalizer<ContentDefinitionService> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _contentDefinitionEventHandlers = contentDefinitionEventHandlers;
+        _contentTypesOptions = contentTypesOptions.Value;
 
         foreach (var element in contentParts.Select(x => x.GetType()))
         {
@@ -77,7 +80,16 @@ public class ContentDefinitionService : IContentDefinitionService
 
         // Ensure it has its own part.
         await _contentDefinitionManager.AlterTypeDefinitionAsync(name, builder => builder.WithPart(name));
-        await _contentDefinitionManager.AlterTypeDefinitionAsync(name, cfg => cfg.Creatable().Draftable().Versionable().Listable().Securable());
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(name, cfg =>
+        {
+            cfg.Creatable()
+                .Draftable()
+                .Versionable()
+                .Listable()
+                .Securable()
+                .WithThumbnailPath(_contentTypesOptions.DefaultThumbnailPath)
+                .WithCategory(_contentTypesOptions.DefaultCategory);
+        });
 
         var context = new ContentTypeCreatedContext
         {

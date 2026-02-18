@@ -55,6 +55,7 @@ public class CustomSettingsService
         return definitions;
     }
 
+    [Obsolete($"'{nameof(GetSettingsType)}' is obsolete and will be removed in a future version. Use '{nameof(GetSettingsTypeAsync)}' instead.")]
     public ContentTypeDefinition GetSettingsType(string settingsTypeName)
         => GetSettingsTypeAsync(settingsTypeName).Result;
 
@@ -72,15 +73,15 @@ public class CustomSettingsService
         return _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(settingsType));
     }
 
-    public Task<ContentItem> GetSettingsAsync(string settingsTypeName, Action isNew = null)
+    public async Task<ContentItem> GetSettingsAsync(string settingsTypeName, Action isNew = null)
     {
-        var settingsType = GetSettingsType(settingsTypeName);
+        var settingsType = await GetSettingsTypeAsync(settingsTypeName);
         if (settingsType == null)
         {
-            return Task.FromResult<ContentItem>(null);
+            return null;
         }
 
-        return GetSettingsAsync(settingsType, isNew);
+        return await GetSettingsAsync(settingsType, isNew);
     }
 
     public async Task<ContentItem> GetSettingsAsync(ContentTypeDefinition settingsType, Action isNew = null)
