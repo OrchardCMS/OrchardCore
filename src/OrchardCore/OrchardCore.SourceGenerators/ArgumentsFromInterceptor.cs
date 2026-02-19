@@ -191,7 +191,7 @@ public class ArgumentsFromInterceptor : IIncrementalGenerator
         // To cast the anonymous object to the correct type, we can use a new instance of the anonymous type and rely on type inference
         sb.AppendLine($"            var typedObject = InterceptorsHelper.Cast(anonymousObject, new {{ {string.Join(", ", info.Properties.Select(p => $"{p.Name} = ({p.TypeName})default")) } }});");
 
-        // Create the values array - using direct initialization with dynamic property access
+        // Create the values array - using direct initialization with typed property access
         sb.AppendLine($"            return global::OrchardCore.DisplayManagement.Arguments.From(");
         sb.AppendLine("                [");
         for (var i = 0; i < info.Properties.Length; i++)
