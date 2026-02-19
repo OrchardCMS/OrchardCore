@@ -142,6 +142,34 @@ public class LocationParserTests
     }
 
     [Theory]
+    [InlineData("Content", "")]
+    [InlineData("Content:5", "5")]
+    [InlineData("Content:5.1", "5.1")]
+    [InlineData("Content:5.1.2", "5.1.2")]
+    [InlineData("Content:before", "before")]
+    [InlineData("Content:after", "after")]
+    [InlineData("Content:before#Tab1", "before")]
+    [InlineData("Content:after#Tab1", "after")]
+    public void PositionShouldSupportSpecialAndDotFormats(string location, string expectedPosition)
+    {
+        Assert.Equal(expectedPosition, new PlacementInfo { Location = location }.GetPosition());
+    }
+
+    [Theory]
+    [InlineData("Content", null, "")]
+    [InlineData("Content", "", "")]
+    [InlineData("Content", "5", "5")]
+    [InlineData("Content", "0", "0")]
+    [InlineData("Content:3", "5", "3")]
+    public void GetPosition_ShouldUseDefaultPosition_WhenNoExplicitPosition(string location, string defaultPosition, string expectedPosition)
+    {
+        // When Location has no ':' delimiter, GetPosition returns DefaultPosition ?? "".
+        // When Location has a ':' delimiter, the explicit position takes precedence.
+        var placement = new PlacementInfo { Location = location, DefaultPosition = defaultPosition };
+        Assert.Equal(expectedPosition, placement.GetPosition());
+    }
+
+    [Theory]
     [InlineData("Content", null)]
     [InlineData("Content:5", null)]
     [InlineData("Content:5#Tab1", null)]

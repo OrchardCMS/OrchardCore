@@ -61,6 +61,39 @@ Placement information consists of:
 - `wrappers` (Optional): An array of shape types to use as wrappers for the current shape.
 - `shape` (Optional): A substitution shape type.
 
+#### Position format
+
+The `place` value follows the format `Zone:Position`, where:
+
+- **Zone** is the target zone name (e.g., `Content`, `Parts`).
+- **Position** is an optional numeric value that determines the ordering of shapes within the zone.
+
+Examples:
+
+| Place Value | Zone | Position | Description |
+|---|---|---|---|
+| `Content` | Content | *(empty, treated as 0)* | Places in Content zone at default position |
+| `Content:5` | Content | 5 | Places in Content zone at position 5 |
+| `Content:5.1` | Content | 5.1 | Places in Content zone at position 5.1 (between 5 and 6) |
+| `Content:before` | Content | before | Places at the very beginning of the zone |
+| `Content:after` | Content | after | Places at the very end of the zone |
+
+##### Position ordering rules
+
+Shapes within a zone are sorted by their position using these rules:
+
+- Positions are compared **numerically**, not alphabetically (e.g., `2` comes before `10`).
+- **Dot notation** is supported for sub-positioning: `1.1` comes after `1` but before `2`. Positions like `1.5` can be used to insert shapes between `1` and `2`.
+- The special keyword **`before`** places a shape before all numbered positions (internally mapped to `-9999`).
+- The special keyword **`after`** places a shape after all numbered positions (internally mapped to `9999`).
+- A shape with **no position** (empty string) is treated as position `0`.
+- When multiple shapes share the **same position**, they maintain their registration order (stable sort).
+
+The full ordering is: `before`, `0` (empty), `1`, `1.1`, `1.2`, `2`, `10`, then `after`.
+
+!!! note
+    Position ordering within a zone is determined solely by the position value. The module or project name does not affect the order of shapes within a zone.
+
 ```json
 {
   "TextField": [
@@ -144,6 +177,16 @@ Each of these modifiers support a position modifier for the group, in the format
 To apply a position modifier, or column width modifier, apply the appropriate value to every group name.
 
 Fields or Parts which do not have a grouping will fall into the default `Content` group when other fields apply a grouping.
+
+!!! warning "Shape position vs. group position"
+    The **position** (the number after `:`) controls the order of shapes **within a zone**. The **group position** (the number after `;`) controls the order of the **groups themselves** (e.g., which tab appears first). These are two different things.
+
+    For example, in `Parts:2#Settings;1`:
+
+    - `:2` → The shape renders at position **2** within the zone (after shapes at position 1).
+    - `#Settings;1` → The **Settings tab** is ordered at group position **1** among other tabs.
+
+    If multiple shapes share the same position value (e.g., all use `:1`), their order will depend on module registration order, which may not be predictable. Always use **distinct positions** for shapes that need a specific order within a zone.
 
 ### Examples
 
@@ -274,6 +317,85 @@ Our placement would look like this (note the `_Summary` suffix to ContentPart na
 ```
 
 This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where `DisplayAsync` was called.
+
+## Fluent Location API
+
+When setting placement locations in display drivers, you can use the `PlacementLocationBuilder` fluent API as an alternative to manually constructing location strings. This makes the placement intent more explicit and reduces mistakes.
+
+The builder enforces the **nesting hierarchy** through the type system: after calling `.Zone()` you can add a `.Tab()`, after `.Tab()` you can add a `.Card()`, and after `.Card()` you can add a `.Column()`. This mirrors the rendering hierarchy (**Zone → Tab → Card → Column**) and prevents misordering.
+
+### String syntax vs. Fluent API
+
+```csharp
+// String syntax (traditional):
+.Location("Parameters:5#Settings;1")
+
+// Fluent API (equivalent):
+.Location(l => l.Zone("Parameters", "5").Tab("Settings", "1"))
+```
+
+### Available methods
+
+The builder starts with `.Zone()` and each method returns a progressively narrower builder type:
+
+| Method | Returns | Description | String equivalent |
+|--------|---------|-------------|-------------------|
+| `.Zone("Content", "5")` | `PlacementZoneBuilder` | Sets the target zone and shape position (required) | `Content:5` |
+| `.AsLayoutZone()` | `PlacementZoneBuilder` | Targets a layout zone | `/` prefix |
+| `.Tab("Settings", "1")` | `PlacementTabBuilder` | Groups into a tab with optional group position | `#Settings;1` |
+| `.Card("Details", "2")` | `PlacementCardBuilder` | Groups into a card with optional group position | `%Details;2` |
+| `.Column("Left", "1", "9")` | `PlacementColumnBuilder` | Groups into a column with optional position and width | `\|Left_9;1` |
+| `.Group("search")` | *(same builder)* | Assigns a group (available at every level) | `@search` |
+
+**Hierarchy enforcement:** You can only move **deeper** in the nesting. `PlacementTabBuilder` exposes `.Card()` and `.Column()` but not `.Tab()`. `PlacementCardBuilder` exposes only `.Column()`. `PlacementColumnBuilder` is the terminal level. Levels can be skipped (e.g., `.Zone().Card()` without a `.Tab()` is valid).
+
+### Examples
+
+Place a shape at position 5 in the Content zone:
+
+```csharp
+.Location(l => l.Zone("Content", "5"))
+// Produces: "Content:5"
+```
+
+Place a shape in a tab:
+
+```csharp
+.Location(l => l.Zone("Parameters", "1").Tab("Settings", "1"))
+// Produces: "Parameters:1#Settings;1"
+```
+
+Full nesting — zone → tab → card → column:
+
+```csharp
+.Location(l => l
+    .Zone("Parameters", "5")
+    .Tab("Settings", "1")
+    .Card("Details", "2")
+    .Column("Left", "3", "9"))
+// Produces: "Parameters:5#Settings;1%Details;2|Left_9;3"
+```
+
+Place a shape in a column with a width (skipping tab and card):
+
+```csharp
+.Location(l => l.Zone("Parts", "0").Column("Content", "1", "9"))
+// Produces: "Parts:0|Content_9;1"
+```
+
+Place a shape in a layout zone:
+
+```csharp
+.Location(l => l.Zone("Content", "5").AsLayoutZone())
+// Produces: "/Content:5"
+```
+
+Set location per display type:
+
+```csharp
+.Location("Summary", l => l.Zone("Content", "1"))
+// Produces: "Content:1" for the "Summary" display type
+```
 
 ## Videos
 
