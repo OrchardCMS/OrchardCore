@@ -158,7 +158,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         if (_mediaCreatingEventHandlers.Any())
         {
             // Follows https://rules.sonarsource.com/csharp/RSPEC-3966
-            // Assumes that each stream should be disposed of only once by it's caller.
+            // Assumes that each stream should be disposed of only once by its caller.
             var outputStream = inputStream;
             try
             {
