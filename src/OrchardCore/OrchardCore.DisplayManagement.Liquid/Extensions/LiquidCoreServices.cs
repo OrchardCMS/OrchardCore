@@ -44,7 +44,6 @@ public static class LiquidCoreServices
         services.AddSingleton<IConfigureOptions<TemplateOptions>, TemplateOptionsConfigurations>();
 
         services.AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html");
-        services.AddLiquidFilter<NormalizeHtmlFilter>("normalize_html");
 
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddLiquidFilter<SupportedCulturesFilter>("supported_cultures");
