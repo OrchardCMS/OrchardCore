@@ -80,81 +80,23 @@ This is suitable for prototyping or infrequent usage where performance isn't cri
 
 ## Real-World Examples
 
-OrchardCore modules use source-generated models extensively:
-
-### Admin Navigation
-
-```csharp
-[GenerateArgumentsProvider]
-public partial class AdminNavigationShapeData
-{
-    public string Title { get; set; }
-    public string Url { get; set; }
-    public string IconClass { get; set; }
-    public int Position { get; set; }
-}
-```
+OrchardCore modules use source-generated models extensively. For example:
 
 ### Pager Shape
 
 ```csharp
 [GenerateArgumentsProvider]
-public partial class PagerShapeData
+public partial class PagerSlim
 {
-    public int Page { get; set; }
     public int PageSize { get; set; }
-    public int TotalItemCount { get; set; }
-}
-```
-
-### Content Item Summary
-
-```csharp
-[GenerateArgumentsProvider]
-public partial class ContentItemSummaryModel
-{
-    public string ContentItemId { get; set; }
-    public string DisplayText { get; set; }
-    public string ContentType { get; set; }
-    public DateTime? CreatedUtc { get; set; }
-    public DateTime? PublishedUtc { get; set; }
-    public bool IsPublished { get; set; }
-}
-```
-
-## Usage in Display Drivers
-
-```csharp
-public class MyDisplayDriver : DisplayDriver<ContentItem>
-{
-    public override IDisplayResult Display(ContentItem model, BuildDisplayContext context)
-    {
-        var summaryModel = new ContentItemSummaryModel
-        {
-            ContentItemId = model.ContentItemId,
-            DisplayText = model.DisplayText,
-            ContentType = model.ContentType,
-            CreatedUtc = model.CreatedUtc,
-            IsPublished = model.Published
-        };
-
-        return Initialize<IShape>("ContentItemSummary", shape =>
-        {
-            // Uses generated code - zero reflection!
-            var args = Arguments.From(summaryModel);
-            
-            foreach (var prop in args.Named)
-            {
-                shape.Properties[prop.Key] = prop.Value;
-            }
-        });
-    }
+    public string Before { get; set; }
+    public string After { get; set; }
 }
 ```
 
 ## What Gets Generated
 
-When you mark a class with `[GenerateArgumentsProvider]`, the generator creates:
+When you mark a class with `[GenerateArgumentsProvider]`, the generator basically creates:
 
 ```csharp
 // Your code:
