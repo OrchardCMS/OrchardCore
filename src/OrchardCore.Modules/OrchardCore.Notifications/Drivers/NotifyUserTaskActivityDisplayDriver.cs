@@ -50,14 +50,14 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
             }).Location("Content"));
         }
 
-        results.Add(Initialize<NotifyUserTaskActivityViewModel>("NotifyUserTaskActivity_Fields_Edit", model =>
+        results.Add(Initialize<NotifyUserTaskActivityViewModel, TActivity>("NotifyUserTaskActivity_Fields_Edit", static (model, activity) =>
         {
             model.Subject = activity.Subject.Expression;
             model.Summary = activity.Summary.Expression;
             model.TextBody = activity.TextBody.Expression;
             model.HtmlBody = activity.HtmlBody.Expression;
             model.IsHtmlPreferred = activity.IsHtmlPreferred;
-        }).Location("Content"));
+        }, activity).Location("Content"));
 
         return Combine(results);
     }
@@ -141,9 +141,9 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
         return CombineAsync(
-            Shape($"{ActivityName}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
+            Factory($"{ActivityName}_Fields_Thumbnail", static (TActivity a) => new ActivityViewModel<TActivity>(a), activity)
                 .Location("Thumbnail", "Content"),
-            Shape($"{ActivityName}_Fields_Design", new ActivityViewModel<TActivity>(activity))
+            Factory($"{ActivityName}_Fields_Design", static (TActivity a) => new ActivityViewModel<TActivity>(a), activity)
                 .Location("Design", "Content")
         );
     }

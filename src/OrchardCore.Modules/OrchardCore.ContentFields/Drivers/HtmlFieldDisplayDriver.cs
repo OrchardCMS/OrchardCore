@@ -41,7 +41,7 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
 
     public override IDisplayResult Display(HtmlField field, BuildFieldDisplayContext context)
     {
-        return Initialize<DisplayHtmlFieldViewModel>(GetDisplayShapeType(context), async model =>
+        return Initialize<DisplayHtmlFieldViewModel, HtmlFieldDisplayDriver, HtmlField, BuildFieldDisplayContext> (GetDisplayShapeType(context), static async (model, driver, field, context) =>
         {
             model.Html = field.Html;
             model.Field = field;
@@ -52,18 +52,18 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
 
             if (settings.RenderLiquid)
             {
-                model.Html = await _liquidTemplateManager.RenderStringAsync(field.Html, _htmlEncoder, model,
+                model.Html = await driver._liquidTemplateManager.RenderStringAsync(field.Html, driver._htmlEncoder, model,
                     new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
             }
 
-            model.Html = await _shortcodeService.ProcessAsync(model.Html,
+            model.Html = await driver._shortcodeService.ProcessAsync(model.Html,
                 new Context
                 {
                     ["ContentItem"] = field.ContentItem,
                     ["PartFieldDefinition"] = context.PartFieldDefinition,
                 });
 
-        })
+        }, this, field, context)
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
         .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }

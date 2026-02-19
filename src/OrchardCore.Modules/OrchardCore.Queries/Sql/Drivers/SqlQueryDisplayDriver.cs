@@ -35,14 +35,14 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
-            Dynamic("SqlQuery_SummaryAdmin", model =>
+            Dynamic("SqlQuery_SummaryAdmin", static (model, query) =>
             {
                 model.Query = query;
-            }).Location("Content:5"),
-            Dynamic("SqlQuery_Buttons_SummaryAdmin", model =>
+            }, query).Location("Content:5"),
+            Dynamic("SqlQuery_Buttons_SummaryAdmin", static (model, query) =>
             {
                 model.Query = query;
-            }).Location("Actions:2")
+            }, query).Location("Actions:2")
         );
     }
 

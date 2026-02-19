@@ -47,15 +47,15 @@ public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<Htm
         }
 
         return Combine(
-            Dynamic("HtmlMenuItemPart_Admin", shape =>
+            Dynamic("HtmlMenuItemPart_Admin", static (shape, part) =>
             {
                 shape.MenuItemPart = part;
-            })
+            }, part)
             .Location("Admin", "Content:10"),
-            Dynamic("HtmlMenuItemPart_Thumbnail", shape =>
+            Dynamic("HtmlMenuItemPart_Thumbnail", static (shape, part) =>
             {
                 shape.MenuItemPart = part;
-            })
+            }, part)
             .Location("Thumbnail", "Content:10")
         );
     }
