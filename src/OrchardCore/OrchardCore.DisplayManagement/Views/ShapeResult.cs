@@ -251,16 +251,27 @@ public class ShapeResult : IDisplayResult
         }
 
         // If no placement is found, use the default location.
-        placement ??= new PlacementInfo
+        if (placement == null)
         {
-            Location = _defaultLocation,
-        };
-
-        // If a placement was found without actual location, use the default.
-        // It can happen when just setting alternates or wrappers for instance.
-        placement.Location ??= _defaultLocation;
-
-        placement.DefaultPosition ??= context.DefaultPosition;
+            placement = PlacementInfo.FromLocation(_defaultLocation);
+            
+            // Only create a new instance if we need to add default position
+            if (placement != null && context.DefaultPosition != null)
+            {
+                placement = placement.WithDefaults(_defaultLocation, context.DefaultPosition);
+            }
+            else if (placement == null)
+            {
+                // If no default location is specified, use an empty placement to avoid null checks later on.
+                // No need to set the default position, as it will be ignored when the location is not specified.
+                placement = PlacementInfo.Empty;
+            }
+        }
+        else
+        {
+            // Use the WithDefaults method to avoid unnecessary allocations
+            placement = placement.WithDefaults(_defaultLocation, context.DefaultPosition);
+        }
 
         // If the placement should be hidden, then stop rendering execution.
         if (placement.IsHidden())
@@ -377,12 +388,12 @@ public class ShapeResult : IDisplayResult
             newShapeMetadata.Wrappers.Clear();
         }
 
-        if (placement.Alternates != null)
+        if (placement.Alternates != null && placement.Alternates.Length > 0)
         {
             newShapeMetadata.Alternates.AddRange(placement.Alternates);
         }
 
-        if (placement.Wrappers != null)
+        if (placement.Wrappers != null && placement.Wrappers.Length > 0)
         {
             newShapeMetadata.Wrappers.AddRange(placement.Wrappers);
         }
