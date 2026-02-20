@@ -2894,13 +2894,12 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     permittedStorage: function () {
                         if (isNaN(this.permittedStorageBytes)) return null;
-                        
-                        var result = ['KB', 'MB', 'GB', 'TB', 'PB'].reduce(
+
+                        const result = ['KB', 'MB', 'GB', 'TB', 'PB'].reduce(
                             (data, unit) => data.value > 1024 ? { value: data.value / 1024, unit: unit } : data,
                             { value: 111112138752, unit: 'B' });
-                        
-                        var value = Math.floor(result.value * 100) / 100;
-                        return value + ' ' + result.unit;
+
+                        return `${Math.floor(result.value * 100) / 100} ${result.unit}`;
                     }
                 },
                 watch: {
@@ -3158,7 +3157,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         }
                     },
                     getPermittedStorage: function () {
-                        var self = this;
+                        const self = this;
                         $.ajax({
                             url: document.getElementById('getPermittedStorageUrl').value,
                             method: 'POST',
